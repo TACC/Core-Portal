@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load staticfiles sekizai_tags %}
+{% block content %}
+
+<div class="container-fluid" ng-controller="SearchViewCtrl as vm">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+
+      <div class="input-group">
+        <input type="text" class="form-control input-lg" ng-model=vm.text placeholder="Search for...">
+        <span class="input-group-btn">
+          <button class="btn btn-default btn-lg" type="button" ng-click="vm.search(vm.text)">
+            <i class="fa fa-search"></i>
+          </button>
+        </span>
+      </div><!-- /input-group -->
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h2 ng-show="vm.results"> Search Results </h2>
+      <search-result make-url='vm.makeUrl(data)' data=data ng-repeat="data in vm.results"></search-result>
+    </div>
+  </div>
+</div>
+
+
+{% addtoblock "css" %}
+<link href="{% static 'portal/css/search.css' %}" rel="stylesheet">
+{% endaddtoblock %}
+
+{% endblock content %}

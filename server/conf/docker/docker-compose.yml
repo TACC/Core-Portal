@@ -1,0 +1,12 @@
+# This compose file is useful for testing https
+---
+version: "3"
+services:
+    django:
+      build:
+        context: ../../.
+        dockerfile: conf/docker/Dockerfile
+      image: ut-portal/portal:local
+      env_file: ../env_files/portal.env
+      command: /bin/bash
+      container_name: ut_django

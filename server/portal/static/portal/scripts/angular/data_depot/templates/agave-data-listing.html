@@ -1,0 +1,55 @@
+<dd-breadcrumb
+  listing="browser.listing"
+  skip-root="true"
+  custom-root="data.customRoot"
+  on-browse="onBrowse"
+  project="data.project"
+  item-href="resolveBreadcrumbHref">
+</dd-breadcrumb>
+<!--
+<dd-listing browser="browser"
+            on-browse="onBrowse"
+            on-select="onSelect"
+            on-detail="onDetail"
+            scroll-to-top="scrollToTop"
+            scroll-to-bottom="scrollToBottom">
+</dd-listing>
+-->
+
+<div class="alert alert-info" ng-show="browser.busyListing">
+  <p class="text-center">
+      <i class="fa fa-spinner fa-spin"></i> Loading...
+  </p>
+</div>
+<div class="table-responsive dd-listing-wrapper"> <!-- START FILE LISTING TABLE WRAPPER -->
+  <table class="table table-bordered table-striped"><!-- START FILE LISTING TABLE -->
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Size</th>
+        <th>Last Modified</th>
+        <th>Permissions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-ng-if="!browser.busyListing"
+          data-ng-repeat="file in browser.listing.children"
+          data-ng-click="onSelect($event, file)"
+          data-ng-class="{'dd-file-selected':  file._ui.selected}">
+          <td>
+            <i class="fa {{ file.icon() }} fa-fw"></i>
+            <a data-ng-href="{{ file.href }}"
+               data-ng-click="onBrowse($event, file)">
+               {{ file.name }}
+            </a>
+
+          </td>
+          <td>{{ file.length|bytes }}</td>
+          <td>{{ file.lastModified|date:"short" }}</td>
+          <td> {{ file.permissions | agaveperms}}
+      </tr>
+      <caption>
+      </caption>
+    </tbody>
+  </table> <!-- ENDS FILE LISTING TABLE -->
+</div> <!-- END FILE LISTING TABLE WRAPPER -->

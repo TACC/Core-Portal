@@ -1,0 +1,134 @@
+# This compose file is useful for testing https
+---
+version: "3"
+services:
+  redis:
+    image: redis:4.0
+    volumes:
+      - redis_data:/data
+      - ../redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6379:6379
+    # command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
+    container_name: ut_redis
+    hostname: ut_redis
+
+  rabbitmq:
+    image: rabbitmq:3.6.10-management
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
+      # - ../rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    env_file: ../env_files/rabbitmq.env
+    ports:
+      - 5672:5672
+      - 5673:5673
+      - 15673:15673
+      - 15672:15672
+    container_name: ut_rabbitmq
+    hostname: ut_rabbitmq
+
+  memcached:
+    image: memcached:latest
+    container_name: ut_memcached
+    hostname: ut_memcached
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+    ulimits:
+      memlock: -1
+    environment:
+      - ES_HEAP_SIZE:2g
+    volumes:
+      - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      - es_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    container_name: ut_elasticsearch
+    hostname: ut_elasticsearch
+
+  mysql:
+    image: mysql:5.6
+    volumes:
+      - ut_mysql_data:/var/lib/mysql
+      - ../mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    env_file: ../env_files/mysql.env
+    ports:
+      - 3306:3306
+    container_name: ut_mysql
+    hostname: ut_mysql
+
+  nginx:
+    image: nginx
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ../nginx/gzip.conf:/etc/nginx/gzip.conf
+      - ../nginx/dummy.crt:/etc/ssl/dummy.crt
+      - ../nginx/dummy.key:/etc/ssl/dummy.key
+      - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
+      - ../../.:/srv/www/portal
+    links:
+      - django:django
+    ports:
+      - 80:80
+      - 443:443
+    container_name: ut_nginx
+    hostname: ut_nginx
+
+  django:
+    image: ut-portal/portal:local
+    env_file: ../env_files/portal.env
+    # build:
+    #   context: ../../.
+    #   dockerfile: conf/docker/Dockerfile
+    links:
+      - memcached:memcached
+      - mysql:mysql
+      - rabbitmq:rabbitmq
+      - redis:redis
+      - elasticsearch:elasticsearch
+    volumes:
+      - ../../.:/srv/www/portal
+      #- ../../data/NHERI:/corral-repl/tacc/NHERI
+      - ../../data/static:/var/www/portal/static
+      - ../../data/media:/var/www/portal/media
+    ports:
+      - 8000:8000
+      - 5555:5555
+      - 9000:9000
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    command: ./manage.py runserver 0.0.0.0:8000
+    container_name: ut_django
+    hostname: ut_django
+
+  workers:
+    image: ut-portal/portal:local
+    env_file: ../env_files/portal.env
+    # build:
+    #   context: ../../.
+    #   dockerfile: conf/docker/Dockerfile
+    links:
+      - memcached:memcached
+      - mysql:mysql
+      - rabbitmq:rabbitmq
+      - redis:redis
+      - elasticsearch:elasticsearch
+    volumes:
+      - ../../.:/srv/www/portal
+      #- ../../data/NHERI:/corral-repl/tacc/NHERI
+      - ../../data/static:/var/www/portal/static
+      - ../../data/media:/var/www/portal/media
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    command: "celery -A portal worker -l debug"
+    container_name: des_workers
+    hostname: des_workers
+
+volumes:
+  redis_data:
+  ut_mysql_data:
+  es_data:
+  rabbitmq_data:

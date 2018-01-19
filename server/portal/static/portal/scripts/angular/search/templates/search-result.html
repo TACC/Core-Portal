@@ -1,0 +1,13 @@
+<div class="search-result clearfix">
+  <div class="col-md-6">
+    <i ng-if="listing.mimeType == 'text/directory'" class="fa fa-folder fa-lg"> </i>
+    <i ng-if="listing.mimeType != 'text/directory'" class="fa fa-file-o fa-lg"> </i>
+    <a ng-href="{{ url(listing) }}"> {{listing.name}} </a>
+  </div>
+  <div class="col-md-3">
+    <span> {{ listing.lastModified | date:'medium' }} </span>
+  </div>
+  <div class="col-md-3">
+    <span> {{ listing.length | bytes }} </span>
+  </div>
+</div>

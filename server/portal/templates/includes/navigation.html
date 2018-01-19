@@ -1,0 +1,122 @@
+{% load sd2e_nav_tags menu_tags cms_tags staticfiles %}
+<nav class="navbar navbar-default navbar-ds">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a href="/" class="navbar-left">
+        <img src="{% static 'portal/img/SD2E-Logo.png'%}" class="portal-branding nav-icon" style="height:45px;">
+      </a>
+      <!-- Normal Navbar -->
+      <ul class="nav navbar-nav hidden-xs">
+        {% if user.is_authenticated %}
+        <li class="dropdown {% active 'data-depot' %} {% active 'workspace' %}">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            Workbench <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li {% if request.get_full_path == '/data-depot/' %} class="active" {% else %} class="active" {% endif %}>
+              <a href="{% url 'data_depot:data_depot' %}">
+                <i class="fa fa-database nav-icon"></i> Data Depot
+              </a>
+            </li>
+            <!--
+            <li {% if request.get_full_path == '/workspace/' %} class="active" {% endif %}>
+              <a href="{% url 'workspace:workspace' %}">
+                <i class="fa fa-rocket nav-icon"></i> Workspace
+              </a>
+            </li> -->
+            <li>
+              <a href="//jupyter.sd2e.org/hub/login" target="_blank">
+                <img src="{% static 'portal/img/Jupyter.png'%}" class="nav-icon jupyter"> Jupyter Notebook <i class="fa fa-external-link nav-icon ext-link"></i>
+              </a>
+            </li>
+          </ul>
+        </li>
+        {% endif %}
+      </ul>
+      {% if section_root %}
+        <a class="navbar-brand">{{section_root.title}}</a>
+      {% endif %}
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navigation" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <!-- Collapsed Navbar -->
+    <div class="collapse navbar-collapse" id="main-navigation">
+      {% if user.is_authenticated %}
+      <ul class="nav navbar-nav">
+         {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
+      </ul>
+      {% endif %}
+      <ul class="nav navbar-nav navbar-right">
+      {% if user.is_authenticated %}
+      <div class="nav navbar-nav navbar-right"  ng-controller="NavSearchCtrl as vm">
+          <!-- <form class="navbar-form navbar-left navbar-input-group">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search" ng-model="vm.text"/>
+                <button
+                  type="submit"
+                  ng-click="vm.search(vm.text)"
+                  class="btn btn-default">
+                  <i class="fa fa-search"></i>
+                </button>
+              </div>
+          </form> -->
+
+
+
+        <li class="dropdown right-nav-links">
+          <a class="dropdown-toggle"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </a>
+          <ul class="dropdown-menu">
+
+            <li {% if request.get_full_path == '/accounts/profile/' %} class="active" {% endif %}>
+              <a href="{% url 'portal_accounts:manage_profile' %}">
+                <i class="fa fa-user-circle-o nav-icon"></i> My account
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'portal_accounts:logout' %}">
+                <i class="fa fa-sign-out nav-icon"></i> Log out
+              </a>
+            </li>
+            {% if user.is_impersonate %}
+            <li>
+              <i class="fa fa-user-secret nav-icon"></i>
+              <a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+        </li>
+        {% else %}
+
+        <li class="right-nav-links {% if request.get_full_path == '/about/' %} active {% endif %}">
+          <a href="/accounts/request-access/" class="btn btn-link-alt">
+            <i class="fa fa-group nav-icon"></i> Request Access
+          </a>
+        </li>
+        <li class="right-nav-links {% if request.get_full_path == '/accounts/login' %} active {% endif %}">
+          <a href="{% url 'portal_accounts:login' %}" class="btn btn-link-alt">
+            <i class="fa fa-sign-in nav-icon"></i> Log in
+          </a>
+        </li>
+        <!-- Hidden until auth flow is properly implemented.  -->
+        <!--
+        <li class="right-nav-links">
+          <a href="{% url 'portal_accounts:register' %}" class="btn btn-link-alt">
+            <i class="fa fa-user-plus nav-icon"></i> Register
+          </a>
+        </li>
+        -->
+        {% endif %}
+      </ul>
+    </div><!-- /.navbar-collapse -->
+</nav>

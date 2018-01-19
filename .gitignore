@@ -1,0 +1,80 @@
+# ignore intellij IDE things
+.idea/
+
+# OsX DS_Store nonsense
+.DS_Store
+nohup.out
+
+# ignore virtualenv folder
+.env/
+
+/portal/.docs/build/
+
+#ignore local static and media folders
+server/static
+server/portal/static/vendor/lib/node_modules
+server/media
+
+# Ignore local Django settings
+server/portal/settings/settings_local.py
+server/portal/settings/settings_secret.py
+server/portal/settings/settings_agave.py
+server/portal/settings/settings_celery.py
+server/portal/settings/elasticsearch.py
+server/portal/settings/settings_agave.sd2e.py
+
+#ignore portal.env
+portal.env
+
+# don't commit certs
+certs/
+
+# no node modules
+node_modules/
+
+# no client side build
+/portal/static/build/
+
+# no webpack compiled templates
+server/portal/templates/base.html
+
+# in case you leave that here
+datadump.json
+
+# no development databases
+db.sqlite3*
+
+# ignore various Python things
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+*.egg-info/
+.installed.cfg
+*.egg
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+*.mo
+*.pot
+*.log
+docs/_build/
+.docs/build/
+target/
+
+
+/server/conf/docker/logs.txt
+
+
+package-lock.json

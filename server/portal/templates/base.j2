@@ -1,0 +1,94 @@
+{% load cms_tags staticfiles sekizai_tags menu_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}{% page_attribute "page_title" %}{% endblock %} SD2E </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="{{ site.description }}">
+    <link rel="icon" href="{% static 'portal/img/favicon.png' %}">
+    <link rel="canonical" href="{{request.get_full_path}}">
+    <base href="/">
+    {% block head_extra %}{% endblock %}
+    <!-- styles -->
+    {% comment %}
+    {% stylesheet 'vendor' %}
+    {% stylesheet 'main' %}
+    {% endcomment %}
+    <!-- Vendor base css -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'portal/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/font-awesome/css/font-awesome.css' %}">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.css">
+    <link rel="stylesheet" href="{% static 'portal/css/portal.css' %}">
+
+    {% block styles %}{% endblock %}
+    {% render_block "css" %}
+  </head>
+  <body ng-app="portal">
+    <div class="content">
+      {% cms_toolbar %}
+      {# {% include 'includes/header.html' %}#}
+      {% include 'includes/navigation.html' %}
+      {% include 'includes/messages.html' %}
+      {% block breadcrumb %}{% endblock %}
+      {% block content %}{% endblock %}
+    </div>
+    {% include 'includes/footer.html' %}
+
+    <!-- scripts -->
+    <!-- Vendor base JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script src="{% static 'vendor/jquery/dist/jquery.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'vendor/underscore/underscore.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.js"></script>
+    <script src="{% static 'vendor/angular-sanitize/angular-sanitize.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-translate/dist/angular-translate.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-httpi/build/httpi.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-ui-bootstrap/dist/ui-bootstrap.js' %}"></script>
+    <script src="{% static 'vendor/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js' %}"></script>
+    <script src="https://cdn.rawgit.com/AngularClass/angular-websocket/v2.0.0/dist/angular-websocket.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+    <script src="{% static 'vendor/ng-storage/ngStorage.js' %}"></script>
+    <script src="{% static 'vendor/angular-cookies/angular-cookies.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-ui-router/release/angular-ui-router.min.js' %}"></script>
+    <script src="{% static 'vendor/tv4/tv4.js' %}"></script>
+    <script src="{% static 'vendor/objectpath/lib/ObjectPath.js' %}"></script>
+    <script src="{% static 'vendor/angular-schema-form/dist/schema-form.js' %}"></script>
+    <script src="{% static 'vendor/angular-schema-form/dist/bootstrap-decorator.js' %}"></script>
+    <script src="{% static 'vendor/angular-drag-and-drop-lists/angular-drag-and-drop-lists.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-xeditable/dist/js/xeditable.min.js' %}"></script>
+    <!-- Custom base js -->
+
+    <script src="<%= htmlWebpackPlugin.files.chunks.main.entry %>"></script>
+    <!--
+    <script  src="{% static 'portal/scripts/angular/main.module.js' %}"></script>
+    <script  src="{% static 'portal/scripts/angular/ng-modernizr.js' %}"></script>
+    <script  src="{% static 'portal/scripts/angular/ng-designsafe-filters.js' %}"></script>
+    <script  src="{% static 'portal/scripts/angular/ng-designsafe-directives.js' %}"></script>
+  -->
+    <!-- Extended templates JS -->
+    {% block scripts %}{% endblock %}
+    <!-- User Auth Check -->
+    <script type="text/javascript">
+      (function(angular) {
+        var django = angular.module('django.context', []);
+        django.constant('Django', {
+          user: "{{ request.user }}",
+          context: {
+            authenticated: {{ request.user.is_authenticated|yesno:"true,false,false" }}
+          }
+        });
+      })(angular);
+    </script>
+    {% render_block "js" %}
+    {% include 'includes/analytics.html' %}
+  </body>
+</html>
