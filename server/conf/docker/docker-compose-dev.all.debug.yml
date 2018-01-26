@@ -71,7 +71,7 @@ services:
     hostname: cep_nginx
 
   django:
-    image: ut-portal/portal:local
+    image: cep-portal/portal:local
     env_file: ../env_files/portal.env
     # build:
     #   context: ../../.
@@ -99,7 +99,7 @@ services:
     hostname: cep_django
 
   workers:
-    image: ut-portal/portal:local
+    image: cep-portal/portal:local
     env_file: ../env_files/portal.env
     # build:
     #   context: ../../.
