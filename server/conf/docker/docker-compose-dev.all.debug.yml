@@ -14,6 +14,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.6.10-management
     volumes:
+      - cep_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
+      # - ../rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     env_file: ../env_files/rabbitmq.env
     ports:
       - 5672:5672
@@ -37,7 +39,7 @@ services:
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
-      - es_data:/usr/share/elasticsearch/data
+      - cep_es_data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
     container_name: cep_elasticsearch
@@ -123,7 +125,7 @@ services:
     hostname: cep_workers
 
 volumes:
-  redis_data:
+  cep_redis_data:
   cep_mysql_data:
-  es_data:
-  rabbitmq_data:
+  cep_es_data:
+  cep_rabbitmq_data:
