@@ -9,7 +9,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   devtool: 'eval-source-map',
-  entry: './scripts/index.js',
+  entry: './src/index.js',
   output: {
     publicPath: '/static/build/',
     path: __dirname + "/build",
