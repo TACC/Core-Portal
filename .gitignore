@@ -21,7 +21,6 @@ server/portal/settings/settings_secret.py
 server/portal/settings/settings_agave.py
 server/portal/settings/settings_celery.py
 server/portal/settings/elasticsearch.py
-server/portal/settings/settings_agave.sd2e.py
 
 #ignore portal.env
 portal.env
