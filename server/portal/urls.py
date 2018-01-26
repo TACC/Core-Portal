@@ -9,7 +9,6 @@ from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 
-from portal.apps.auth.views import login_options as des_login_options
 from django.contrib.auth.views import logout as des_logout
 from portal.views.views import project_version as des_version
 #
@@ -29,7 +28,6 @@ urlpatterns = [
         pattern_name='portal_accounts:register', permanent=True), name='register'),
     url(r'^auth/', include('portal.apps.auth.urls',
                            namespace='portal_auth')),
-    url(r'^login/$', des_login_options, name='login'),
     url(r'^logout/$', des_logout,
         {'next_page': '/auth/logged-out/'}, name='logout'),
 

@@ -86,7 +86,7 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/portal
-      #- ../../data/NHERI:/corral-repl/tacc/NHERI
+      - ../../../client:/srv/www/client
       - ../../data/static:/var/www/portal/static
       - ../../data/media:/var/www/portal/media
     ports:
@@ -114,7 +114,6 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/portal
-      #- ../../data/NHERI:/corral-repl/tacc/NHERI
       - ../../data/static:/var/www/portal/static
       - ../../data/media:/var/www/portal/media
     dns:

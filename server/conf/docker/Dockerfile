@@ -42,4 +42,4 @@ WORKDIR /srv/www/portal
 
 RUN npm install
 
-RUN python manage.py collectstatic -c --traceback --noinput
+# RUN python manage.py collectstatic -c --traceback --noinput

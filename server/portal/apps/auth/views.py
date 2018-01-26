@@ -25,45 +25,6 @@ def logged_out(request):
     return render(request, 'designsafe/apps/auth/logged_out.html')
 
 
-def login_options(request):
-    if request.user.is_authenticated:
-        messages.info(request, 'You are already logged in!')
-        return HttpResponseRedirect('/')
-
-    message = False
-
-    try:
-        agave_status = AgaveServiceStatus()
-        ds_oauth_svc_id = getattr(settings, 'AGAVE_PORTAL_OAUTH_STATUS_ID',
-                                  '56bb6d92a216b873280008fd')
-        portal_status = (s for s in agave_status.status
-                             if s['id'] == ds_oauth_svc_id).next()
-        if portal_status and 'status_code' in portal_status:
-            if portal_status['status_code'] == 400:
-                message = {
-                    'class': 'warning',
-                    'text': 'SD2E API Services are experiencing a Partial Service '
-                            'Disruption. Some services may be unavailable.'
-                }
-            elif portal_status['status_code'] == 500:
-                message = {
-                    'class': 'danger',
-                    'text': 'SD2E API Services are experiencing a Service Disruption. '
-                            'Some services may be unavailable.'
-                }
-    except Exception as e:
-        logger.warn('Unable to check AgaveServiceStatus: %s', e.message)
-        agave_status = None
-        portal_status = None
-
-    context = {
-        'message': message,
-        'agave_status': agave_status,
-        'portal_status': portal_status,
-    }
-    return render(request, 'designsafe/apps/auth/login.html', context)
-
-
 # Create your views here.
 def agave_oauth(request):
     """First step for agave OAuth workflow.

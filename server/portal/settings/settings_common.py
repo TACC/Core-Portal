@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import logging
+
+logger = logging.getLogger(__file__)
 #pylint: disable=invalid-name
 gettext = lambda s: s
 #pylint: enable=invalid-name
@@ -174,6 +177,7 @@ MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, '../../','client'),
     ('vendor', os.path.join(BASE_DIR, '../node_modules')),
 ]
 
