@@ -9,10 +9,10 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   devtool: 'eval-source-map',
-  entry: './portal/static/portal/scripts/index.js',
+  entry: './scripts/index.js',
   output: {
     publicPath: '/static/build/',
-    path: __dirname + "/portal/static/build",
+    path: __dirname + "/build",
     filename: "bundle.[hash].js",
 
   },
@@ -35,14 +35,14 @@ module.exports = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(['./portal/static/build', './portal/templates/base.html'], { watch: true}),
+    new CleanWebpackPlugin(['./build', '../server/portal/templates/base.html'], { watch: true}),
     new ngAnnotatePlugin({add:true}),
     new LiveReloadPlugin(),
     new HtmlWebpackPlugin(
       {
        inject : false,
-       template : './portal/templates/base.j2',
-       filename: '../../templates/base.html'
+       template : '../server/portal/templates/base.j2',
+       filename: '../server/portal/templates/base.html'
      }
    ),
   ],
