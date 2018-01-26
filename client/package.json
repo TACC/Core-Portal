@@ -41,6 +41,8 @@
     "angular-xeditable": "^0.8.0",
     "bootstrap": "^3.3.7",
     "bootstrap-datepicker": "^1.6.4",
+    "css-loader": "^0.28.9",
+    "extract-text-webpack-plugin": "^3.0.2",
     "filesaver": "0.0.13",
     "font-awesome": "^4.7.0",
     "jasmine-core": "^2.5.2",

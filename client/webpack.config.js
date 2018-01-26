@@ -6,6 +6,7 @@ const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   devtool: 'eval-source-map',
@@ -31,7 +32,13 @@ module.exports = {
           presets: ['es2015']
         }
       },
-      {test: /\.css$/, use: 'css-loader'},
+      // {
+			// 	test: /\.css$/,
+			// 	use: ExtractTextPlugin.extract({
+			// 		fallback: "css-loader",
+			// 		use: "css-loader"
+			// 	})
+			// },
     ]
   },
   plugins: [
@@ -45,6 +52,9 @@ module.exports = {
        filename: '../../server/portal/templates/base.html'
      }
    ),
+  //  new ExtractTextPlugin({
+	// 		filename: "bundle.[hash].css"
+	// 	}),
   ],
 
   externals: {
