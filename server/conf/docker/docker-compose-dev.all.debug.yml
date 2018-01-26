@@ -1,4 +1,4 @@
-# This compose file is useful for testing https
+# This compose file is useful for testing https.
 ---
 version: "3"
 services:
