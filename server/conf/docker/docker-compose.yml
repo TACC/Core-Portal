@@ -6,7 +6,7 @@ services:
       build:
         context: ../../.
         dockerfile: conf/docker/Dockerfile
-      image: ut-portal/portal:local
+      image: cep-portal/portal:local
       env_file: ../env_files/portal.env
       command: /bin/bash
-      container_name: ut_django
+      container_name: cep_django
