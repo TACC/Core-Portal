@@ -42,7 +42,7 @@ module.exports = {
       {
        inject : false,
        template : '../server/portal/templates/base.j2',
-       filename: '../server/portal/templates/base.html'
+       filename: '../../server/portal/templates/base.html'
      }
    ),
   ],

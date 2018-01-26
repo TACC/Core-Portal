@@ -32,6 +32,9 @@ certs/
 # no node modules
 node_modules/
 
+# no client build
+client/build/
+
 # no client side build
 /portal/static/build/
 
