@@ -80,7 +80,7 @@ _server/portal/settings_
 
 ### Setup local accessing the portal:
 
-1. Add a record to your local `hosts` file: `cep.dev 127.0.0.1`.
+1. Add a record to your local `hosts` file for `cep.dev 127.0.0.1`
 
 - _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_agave.py` for `AGAVE_TENANT_ID`._
 
