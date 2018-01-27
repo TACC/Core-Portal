@@ -60,7 +60,7 @@ _server/portal/settings_
 
 #### Start the development environment:
 
-- `docker compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up`
+- `docker-compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up`
 
 
 #### Initialize the application in the `cep_django` container:
