@@ -92,7 +92,7 @@ After you clone the repository locally, there are several configuration steps re
 
   - _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_agave.py` for `AGAVE_TENANT_ID`._
 
-  2. Direct your browser to `https://cep.dev` or `http://cep.dev:8000`. This will directr tgeh browser to the django admin login. To login to the portal, point your browser to `https://cep.dev/accounts/login`.
+  2. Direct your browser to `https://cep.dev` or `http://cep.dev:8000`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/accounts/login`.
 
   - _NOTE: When logging in, make sure that you are going through SSL (`https://cep.dev/accounts/login`). After succesful login, you can use the debug server at `http://cep.dev:8000`._
 
