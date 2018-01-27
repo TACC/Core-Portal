@@ -31,13 +31,14 @@ After you clone the repository locally, there are several configuration steps re
   - `cp rabbitmq.sample.env rabbitmq.env`
 
   **server/portal/settings**
-  
+
   - `cd core-exp-portal/server/portal/settings`
   - `cp elasticsearch.example.py elasticsearch.py`
   - `cp settings_agave.example.py settings_agave.py`
   - `cp settings_celery.example.py settings_celery.py`
   - `cp settings_local.example.py settings_local.py`
   - `cp settings_secret.example.py settings_secret.py`
+
 
 2. Edit the following conf, env_files, nginx and settings files accordingly:
 
@@ -51,13 +52,16 @@ After you clone the repository locally, there are several configuration steps re
 
   - _Note: The files `server/conf/env_files/portal.env`, `server/portal/settings/elasticsearch.py` and `server/portal/settings/settings_celery.py` do not require edits though they can be customized to fit the neeeds of the project._
 
+
 3. Build the image for the portal's django container:
 
   - `docker-compose -f ./server/conf/docker/docker-compose.yml build`
 
+
 4. Start the development environment:
 
   - `docker compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up`
+
 
 5. Initialize the application in the `cep_django` container:
 
@@ -66,17 +70,20 @@ After you clone the repository locally, there are several configuration steps re
   - `python manage.py createsuperuser`
   - `python manage.py collectstatic`
 
+
 6. Install client-side dependencies and bundle code with webpack:
 
   - `cd client`
   - `npm install`
   - `npm run build`
 
+
 ### Setup local accessing the portal:
 
   1. Add a record to your local `hosts` file: `cep.dev 127.0.0.1`.
 
   - _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_agave.py` for `AGAVE_TENANT_ID`._
+
 
   2. Direct your browser to `https://cep.dev` or `http://cep.dev:8000`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/accounts/login`.
 
