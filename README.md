@@ -14,7 +14,7 @@
 
 After you clone the repository locally, there are several configuration steps required to prepare the project.
 
-1. Copy the example files for `server/conf`, `server/conf/env_files` and `server/portal/settings`:
+#### Copy the example files for `server/conf`, `server/conf/env_files` and `server/portal/settings`:
 
 _server/conf_
 
@@ -40,7 +40,7 @@ _server/portal/settings_
 - `cp settings_secret.example.py settings_secret.py`
 
 
-2. Edit the following conf, env_files, nginx and settings files accordingly:
+#### Edit the following conf, env_files, nginx and settings files accordingly:
 
 - `server/conf/env_files/mysql.env`
 - `server/conf/env_files/rabbitmq.env`
@@ -53,17 +53,17 @@ _server/portal/settings_
 - _Note: The files `server/conf/env_files/portal.env`, `server/portal/settings/elasticsearch.py` and `server/portal/settings/settings_celery.py` do not require edits though they can be customized to fit the neeeds of the project._
 
 
-3. Build the image for the portal's django container:
+#### Build the image for the portal's django container:
 
 - `docker-compose -f ./server/conf/docker/docker-compose.yml build`
 
 
-4. Start the development environment:
+#### Start the development environment:
 
 - `docker compose -f ./server/conf/docker/docker-compose-dev.all.debug.yml up`
 
 
-5. Initialize the application in the `cep_django` container:
+#### Initialize the application in the `cep_django` container:
 
 - `docker exec -it cep_django /bin/bash`
 - `python manage.py migrate`
@@ -71,7 +71,7 @@ _server/portal/settings_
 - `python manage.py collectstatic`
 
 
-6. Install client-side dependencies and bundle code with webpack:
+#### Install client-side dependencies and bundle code with webpack:
 
 - `cd client`
 - `npm install`
