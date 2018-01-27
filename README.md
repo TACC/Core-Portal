@@ -16,21 +16,21 @@ After you clone the repository locally, there are several configuration steps re
 
 1. Copy the example files for `server/conf`, `server/conf/env_files` and `server/portal/settings`:
 
-**server/conf**
+_server/conf_
 
 - `cd core-exp-portal/server/conf`
 - `cp mysql.sample.conf mysql.conf`
 - `cp rabbitmq.sample.conf rabbitmq.conf`
 - `cp redis.sample.conf redis.conf`
 
-**server/conf/env_files**
+_server/conf/env_files_
 
 - `cd core-exp-portal/server/conf/env_files`
 - `cp mysql.sample.env mysql.env`
 - `cp portal.sample.env portal.env`
 - `cp rabbitmq.sample.env rabbitmq.env`
 
-**server/portal/settings**
+_server/portal/settings_
 
 - `cd core-exp-portal/server/portal/settings`
 - `cp elasticsearch.example.py elasticsearch.py`
