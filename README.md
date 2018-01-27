@@ -16,28 +16,27 @@ After you clone the repository locally, there are several configuration steps re
 
 1. Copy the example files for `server/conf`, `server/conf/env_files` and `server/portal/settings`:
 
-  `# server/conf`
-  `cd core-exp-portal/server/conf`
+  ```
+  # server/conf
+  cd core-exp-portal/server/conf
+  cp mysql.sample.conf mysql.conf
+  cp rabbitmq.sample.conf rabbitmq.conf
+  cp redis.sample.conf redis.conf
 
-  `cp mysql.sample.conf mysql.conf`
-  `cp rabbitmq.sample.conf rabbitmq.conf`
-  `cp redis.sample.conf redis.conf`
+  # server/conf/env_files
+  cd core-exp-portal/server/conf/env_files
+  cp mysql.sample.env mysql.env
+  cp portal.sample.env portal.env
+  cp rabbitmq.sample.env rabbitmq.env
 
-  `# server/conf/env_files`
-  `cd core-exp-portal/server/conf/env_files`
-
-  `cp mysql.sample.env mysql.env`
-  `cp portal.sample.env portal.env`
-  `cp rabbitmq.sample.env rabbitmq.env`
-
-  `# server/portal/settings files.`
-  `cd core-exp-portal/server/portal/settings`
-
-  `cp elasticsearch.example.py elasticsearch.py`
-  `cp settings_agave.example.py settings_agave.py`
-  `cp settings_celery.example.py settings_celery.py`
-  `cp settings_local.example.py settings_local.py`
-  `cp settings_secret.example.py settings_secret.py`
+  # server/portal/settings files.
+  cd core-exp-portal/server/portal/settings
+  cp elasticsearch.example.py elasticsearch.py
+  cp settings_agave.example.py settings_agave.py
+  cp settings_celery.example.py settings_celery.py
+  cp settings_local.example.py settings_local.py
+  cp settings_secret.example.py settings_secret.py
+  ```
 
 2. Edit the following conf, env_files, nginx and settings files accordingly:
 
