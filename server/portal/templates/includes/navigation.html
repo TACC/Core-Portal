@@ -3,33 +3,15 @@
   <div class="container-fluid">
     <div class="navbar-header">
       <a href="/" class="navbar-left">
-        <img src="{% static 'portal/img/SD2E-Logo.png'%}" class="portal-branding nav-icon" style="height:45px;">
+        <img src="{% static 'img/logo.png'%}" class="portal-branding nav-icon" style="height:45px;">
       </a>
       <!-- Normal Navbar -->
       <ul class="nav navbar-nav hidden-xs">
         {% if user.is_authenticated %}
-        <li class="dropdown {% active 'data-depot' %} {% active 'workspace' %}">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            Workbench <span class="caret"></span>
+        <li class="{% active 'workbench' %}">
+          <a href="{% url 'workbench:index' %}">
+            Workbench
           </a>
-          <ul class="dropdown-menu">
-            <li {% if request.get_full_path == '/data-depot/' %} class="active" {% else %} class="active" {% endif %}>
-              <a href="{% url 'data_depot:data_depot' %}">
-                <i class="fa fa-database nav-icon"></i> Data Depot
-              </a>
-            </li>
-            <!--
-            <li {% if request.get_full_path == '/workspace/' %} class="active" {% endif %}>
-              <a href="{% url 'workspace:workspace' %}">
-                <i class="fa fa-rocket nav-icon"></i> Workspace
-              </a>
-            </li> -->
-            <li>
-              <a href="//jupyter.sd2e.org/hub/login" target="_blank">
-                <img src="{% static 'portal/img/Jupyter.png'%}" class="nav-icon jupyter"> Jupyter Notebook <i class="fa fa-external-link nav-icon ext-link"></i>
-              </a>
-            </li>
-          </ul>
         </li>
         {% endif %}
       </ul>

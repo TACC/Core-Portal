@@ -15,6 +15,8 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
 
  $urlRouterProvider.otherwise('/workbench/dashboard');
 
+
+
  $stateProvider
   .state('wb', {
     url: '/workbench',

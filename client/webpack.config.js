@@ -32,13 +32,13 @@ module.exports = {
           presets: ['es2015']
         }
       },
-      // {
-			// 	test: /\.css$/,
-			// 	use: ExtractTextPlugin.extract({
-			// 		fallback: "css-loader",
-			// 		use: "css-loader"
-			// 	})
-			// },
+      {
+				test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+            fallback:'style-loader',
+            use:['css-loader'],
+        })
+			},
     ]
   },
   plugins: [
@@ -49,12 +49,12 @@ module.exports = {
       {
        inject : false,
        template : '../server/portal/templates/base.j2',
-       filename: '../../server/portal/templates/base.html'
+       filename: '../../server/portal/templates/base.html',
      }
    ),
-  //  new ExtractTextPlugin({
-	// 		filename: "bundle.[hash].css"
-	// 	}),
+   new ExtractTextPlugin({
+			filename: "bundle.[hash].css"
+		}),
   ],
 
   externals: {

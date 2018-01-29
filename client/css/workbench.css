@@ -19,6 +19,7 @@
 
 .workbench-nav .side-nav-button.active {
   border: 1px solid grey;
+  background-color: #a7a7a7;
 }
 
 
