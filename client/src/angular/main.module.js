@@ -5,18 +5,69 @@ import {mod as workspace} from './workspace';
 import {mod as data_depot} from './data_depot';
 import {mod as search} from './search';
 
-function config($httpProvider, $locationProvider, $urlMatcherFactoryProvider) {
+function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProvider) {
  'ngInject';
  $locationProvider.html5Mode({ enabled: true, requireBase: true, rewriteLinks: false});
  // $urlMatcherFactoryProvider.strictMode(false);
  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+ $urlRouterProvider.otherwise('/workbench/dashboard');
+
+ $stateProvider
+  .state('wb', {
+    url: '/workbench',
+    templateUrl: '/static/src/angular/workbench/templates/home.html',
+    abstract: true,
+    resolve: {
+      'test': function () {console.log("home resolve");}
+    }
+  })
+  .state('wb.dashboard', {
+    'url': '/dashboard',
+    'templateUrl': '/static/src/angular/workbench/templates/dashboard.html',
+    'resolve': {
+      'test': function () {console.log("dashboard resolve");}
+    }
+  })
+  .state('wb.data_depot', {
+    'url': '/data-depot',
+    'templateUrl': '/static/src/angular/workbench/templates/data-depot.html',
+    'resolve': {
+      'test': function () {console.log("data-depot resolve");}
+    }
+  })
+  .state('wb.workspace', {
+    'url': '/workspace',
+    'templateUrl': '/static/src/angular/workbench/templates/workspace.html',
+    'resolve': {
+      'test': function () {console.log("workspace resolve");}
+    }
+  })
+  .state('wb.workspace.tray', {
+      url: '/workspace/:appId',
+      templateUrl: '/static/src/angular/workspace/templates/application-tray.html',
+      controller: 'ApplicationTrayCtrl'
+  })
+  .state('wb.help', {
+    'url': '/help',
+    'templateUrl': '/static/src/angular/workbench/templates/help.html',
+    'resolve': {
+      'test': function () {console.log("help resolve");}
+    }
+  })
+  .state('wb.search', {
+    'url': '/help',
+    'templateUrl': '/static/src/angular/workbench/templates/search.html',
+    'resolve': {
+      'test': function () {console.log("search resolve");}
+    }
+  });
 }
 
 let mod = angular.module('portal', [
   'ngCookies',
-  'httpi',
   'ui.bootstrap',
   'ui.router',
   'schemaForm',

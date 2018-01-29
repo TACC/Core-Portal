@@ -1,0 +1,28 @@
+.workbench {
+  min-height: 100%;
+  display: flex;
+  margin-top: -20px;
+}
+
+.workbench-nav {
+  background: #d3d3d3;
+  width: 100px;
+  flex: 0 0 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+.workbench-nav .side-nav-button {
+  font-size: 45px;
+  padding: 5px;
+}
+
+.workbench-nav .side-nav-button.active {
+  border: 1px solid grey;
+}
+
+
+.workbench-content {
+  flex: 1;
+  padding-top: 10px;
+}

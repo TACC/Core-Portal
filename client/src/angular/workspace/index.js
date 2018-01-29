@@ -8,7 +8,7 @@ function config($interpolateProvider, $httpProvider, $urlRouterProvider, $stateP
   'ngInject';
   $stateProvider.state('tray', {
       url: '/workspace/:appId',
-      templateUrl: '/static/portal/scripts/angular/workspace/templates/application-tray.html',
+      templateUrl: '/static/src/angular/workspace/templates/application-tray.html',
       controller: 'ApplicationTrayCtrl'
   });
 

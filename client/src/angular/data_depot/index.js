@@ -28,7 +28,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
     .state('db.myData', {
       url: '/agave/{systemId}/{filePath:any}/',
       controller: 'MyDataCtrl',
-      templateUrl: '/static/portal/scripts/angular/data_depot/templates/agave-data-listing.html',
+      templateUrl: '/static/src/angular/data_depot/templates/agave-data-listing.html',
     })
     .state('db.projects', {
       url: '/projects/',
@@ -37,17 +37,17 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
     .state('db.projects.list', {
       url: '',
       controller: 'ProjectListCtrl',
-      templateUrl: '/static/portal/scripts/angular/data_depot/templates/project-list.html',
+      templateUrl: '/static/src/angular/data_depot/templates/project-list.html',
     })
     .state('db.projects.listing', {
       url: '{systemId}/{filePath:any}',
       controller: 'ProjectListingCtrl',
-      templateUrl: '/static/portal/scripts/angular/data_depot/templates/agave-data-listing.html',
+      templateUrl: '/static/src/angular/data_depot/templates/agave-data-listing.html',
     })
     .state('db.communityData', {
       url: '/public/{systemId}/{filePath:any}',
       controller: 'CommunityDataCtrl',
-      templateUrl: '/static/portal/scripts/angular/data_depot/templates/agave-data-listing.html',
+      templateUrl: '/static/src/angular/data_depot/templates/agave-data-listing.html',
       params: {
         filePath: '/'
       },
@@ -55,7 +55,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
     .state('sharedData', {
       url: '/shared/{systemId}/{filePath:any}/',
       controller: 'SharedDataCtrl',
-      templateUrl: '/static/portal/scripts/angular/data-depot/templates/agave-shared-data-listing.html',
+      templateUrl: '/static/src/angular/data-depot/templates/agave-shared-data-listing.html',
       params: {
         systemId: 'utportal.storage.default',
         filePath: '$SHARE'

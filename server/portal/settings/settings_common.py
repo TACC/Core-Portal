@@ -80,7 +80,8 @@ INSTALLED_APPS = [
     'portal.apps.workspace',
     'portal.apps.signals',
     'portal.apps.workshops',
-    'portal.apps.search'
+    'portal.apps.search',
+    'portal.apps.workbench'
 ]
 
 MIDDLEWARE = [

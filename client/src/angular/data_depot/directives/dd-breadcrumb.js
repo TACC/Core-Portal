@@ -1,7 +1,7 @@
 export default function ddBreadcrumb() {
   return {
     restrict: 'E',
-    templateUrl: '/static/portal/scripts/angular/data_depot/templates/dd-breadcrumb.html',
+    templateUrl: '/static/src/angular/data_depot/templates/dd-breadcrumb.html',
     scope: {
       listing: '=',
       skipRoot: '=',

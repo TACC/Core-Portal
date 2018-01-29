@@ -46,6 +46,8 @@ urlpatterns = [
                               namespace='search')),
     url(r'^api/search/', include('portal.apps.search.api.urls',
                               namespace='search')),
+    url(r'^workbench/', include('portal.apps.workbench.urls',
+                               namespace='workbench')),
 
 
     # version check.
