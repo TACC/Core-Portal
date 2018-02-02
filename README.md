@@ -18,10 +18,10 @@ After you clone the repository locally, there are several configuration steps re
 
 _server/conf_
 
-- `cd core-exp-portal/server/conf`
-- `cp mysql.sample.cnf mysql.cnf`
-- `cp rabbitmq.sample.conf rabbitmq.conf`
-- `cp redis.sample.conf redis.conf`
+    `cd core-exp-portal/server/conf`
+    `cp mysql.sample.cnf mysql.cnf`
+    `cp rabbitmq.sample.conf rabbitmq.conf`
+    `cp redis.sample.conf redis.conf`
 
 _server/conf/env_files_
 
