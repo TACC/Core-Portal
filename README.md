@@ -83,6 +83,7 @@ _server/portal/settings_
   1. Add a record to your local `hosts` file for `cep.dev 127.0.0.1`
     - _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_agave.py` for `AGAVE_TENANT_ID`._
 
+
   2. Direct your browser to `https://cep.dev` or `http://cep.dev:8000`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/accounts/login`.
     - _NOTE: When logging in, make sure that you are going through SSL (`https://cep.dev/accounts/login`). After succesful login, you can use the debug server at `http://cep.dev:8000`._
 
