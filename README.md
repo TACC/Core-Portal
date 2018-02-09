@@ -1,5 +1,6 @@
 # README
 
+
 ## TACC Core Experimental Portal
 
 * v0.1.0
@@ -13,6 +14,7 @@
 ### Code Configuration
 
 After you clone the repository locally, there are several configuration steps required to prepare the project.
+
 
 #### Copy the example files for `server/conf`, `server/conf/env_files` and `server/portal/settings`:
 
@@ -33,10 +35,6 @@ _server/conf/env_files_
 _server/portal/settings_
 
     cd core-exp-portal/server/portal/settings
-    cp elasticsearch.example.py elasticsearch.py
-    cp settings_agave.example.py settings_agave.py
-    cp settings_celery.example.py settings_celery.py
-    cp settings_local.example.py settings_local.py
     cp settings_secret.example.py settings_secret.py
 
 
@@ -46,11 +44,9 @@ _server/portal/settings_
     server/conf/env_files/rabbitmq.env
     server/conf/nginx/nginx.conf
     server/conf/rabbitmq.conf
-    server/portal/settings/settings_agave.py
-    server/portal/settings/settings_local.py
     server/portal/settings/settings_secret.py
 
-- _Note: The files `server/conf/env_files/portal.env`, `server/portal/settings/elasticsearch.py` and `server/portal/settings/settings_celery.py` do not require edits though they can be customized to fit the neeeds of the project._
+- _Note: The file `server/conf/env_files/portal.env` does not require edits though it can be customized to fit the neeeds of the project._
 
 
 #### Build the image for the portal's django container:
@@ -94,10 +90,12 @@ _server/portal/settings_
 ### TBD
 
 - Fix self-signed certificates issues.
+- Choose either conf or env for config and eliminate some redundancy in setup.
 - Refactor app modules.
 - Enhance authentication workflow with abaco reactors.
 - Enhance DevOps with CI (unit testing, integration testing,  deployment, etc.)
 - Setup documentation generation for portal source code.
+
 
 ### Resources
 
