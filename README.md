@@ -91,6 +91,7 @@ _server/portal/settings_
 
 - Fix self-signed certificates issues.
 - Choose either conf or env for config and eliminate some redundancy in setup.
+  - What is the secure way to inject credentials here (akin to settings_secret.py)?
 - Refactor app modules.
 - Enhance authentication workflow with abaco reactors.
 - Enhance DevOps with CI (unit testing, integration testing,  deployment, etc.)
