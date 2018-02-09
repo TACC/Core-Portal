@@ -93,6 +93,7 @@ _server/portal/settings_
 - Choose either conf or env for config and eliminate some redundancy in setup. What is the secure way to inject credentials here (akin to settings_secret.py)?
 - Refactor app modules.
 - Enhance authentication workflow with abaco reactors.
+- Enhance user data storage setup with Celery task.
 - Enhance DevOps with CI (unit testing, integration testing,  deployment, etc.)
 - Setup documentation generation for portal source code.
 
