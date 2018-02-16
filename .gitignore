@@ -16,11 +16,13 @@ server/portal/static/vendor/lib/node_modules
 server/media
 
 # Ignore local Django settings
-server/portal/settings/settings_local.py
+#server/portal/settings/settings_local.py
 server/portal/settings/settings_secret.py
-server/portal/settings/settings_agave.py
-server/portal/settings/settings_celery.py
-server/portal/settings/elasticsearch.py
+#server/portal/settings/settings_agave.py
+#server/portal/settings/settings_celery.py
+#server/portal/settings/elasticsearch.py
+
+server/src
 
 #ignore portal.env
 portal.env
