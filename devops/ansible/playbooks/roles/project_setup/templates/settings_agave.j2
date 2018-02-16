@@ -1,0 +1,20 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "False"
+"""Agave settings
+"""
+
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+AGAVE_TENANT_ID = "{{django_settings_agave.AGAVE_TENANT_ID}}"
+AGAVE_TENANT_BASEURL = "{{django_settings_agave.AGAVE_TENANT_BASEURL}}"
+AGAVE_CLIENT_KEY = "{{django_settings_agave.AGAVE_CLIENT_KEY}}"
+AGAVE_CLIENT_SECRET = "{{django_settings_agave.AGAVE_CLIENT_SECRET}}"
+AGAVE_SUPER_TOKEN = "{{django_settings_agave.AGAVE_SUPER_TOKEN}}"
+
+"""
+Storage conf
+"""
+
+AGAVE_STORAGE_SYSTEM = "{{django_settings_agave.AGAVE_STORAGE_SYSTEM}}"
+AGAVE_DEFAULT_TRASH_NAME = "{{django_settings_agave.AGAVE_DEFAULT_TRASH_NAME}}"
+AGAVE_COMMUNITY_DATA_SYSTEM = "{{django_settings_agave.AGAVE_COMMUNITY_DATA_SYSTEM}}"

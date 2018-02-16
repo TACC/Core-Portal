@@ -1,0 +1,14 @@
+- name: Create uwsgi group
+  group: name=uwsgi state=present
+
+- name: Create nginx group
+  group: name=nginx state=present
+
+- name: Create nginx user
+  user: name=nginx
+
+- name: Create portal user
+  user: name=portal shell=/bin/bash groups=uwsgi,nginx,wheel append=yes uid=106
+
+- name: Create portal group
+  group: name=portal state=present gid=111

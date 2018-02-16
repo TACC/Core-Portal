@@ -40,13 +40,44 @@ _server/portal/settings_
 
 #### Edit the following conf, env_files, nginx and settings files accordingly:
 
-    server/conf/env_files/mysql.env
-    server/conf/env_files/rabbitmq.env
-    server/conf/nginx/nginx.conf
-    server/conf/rabbitmq.conf
-    server/portal/settings/settings_secret.py
+    # server/conf/mysql.cnf
+    # No edits required.
 
-- _Note: The file `server/conf/env_files/portal.env` does not require edits though it can be customized to fit the neeeds of the project._
+    # server/conf/rabbitmq.conf
+    ...
+    { default_pass, <<"dev">> },
+    { default_user, <<"dev">> },
+    { default_vhost, <<"dev">> },
+    ...
+
+    # server/conf/redis.conf
+    # No edits required.
+
+    # server/conf/env_files/mysql.env
+    MYSQL_ROOT_PASSWORD=dev
+    MYSQL_DATABASE=dev
+    MYSQL_USER=dev
+    MYSQL_PASSWORD=dev
+
+    # server/conf/env_files/portal.env
+    # No edits required.
+
+    # server/conf/env_files/rabbitmq.env
+    RABBITMQ_DEFAULT_USER=dev
+    RABBITMQ_DEFAULT_PASS=dev
+    RABBITMQ_DEFAULT_VHOST=dev
+
+    # server/conf/nginx/nginx.conf
+    # line 33:
+    server_name  cep.dev;
+    # line 39:
+    server_name  cep.dev;
+
+    # server/portal/settings/settings_secret.py
+    # These values will be secured in UT Stache under `CEP_portal_secrets`
+
+
+- _Note: Those files that do not require edits may still need to be customized to fit the neeeds of the project. Edit them as necessary._
 
 
 #### Build the image for the portal's django container:
@@ -64,6 +95,8 @@ _server/portal/settings_
     cd client
     npm install
     npm run build
+
+-  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time._
 
 
 #### Initialize the application in the `cep_django` container:
@@ -89,8 +122,9 @@ _server/portal/settings_
 
 ### TBD
 
+- Update Ansible scripts to support CEP deployment to staging VM (currently still configured for SD2E deployment).
+- Choose either conf or env for config and eliminate the redundancy in setup (using ansible to inject env vars into containers).
 - Fix self-signed certificates issues.
-- Choose either conf or env for config and eliminate some redundancy in setup. What is the secure way to inject credentials here (akin to settings_secret.py)?
 - Refactor app modules.
 - Enhance authentication workflow with abaco reactors.
 - Enhance user data storage setup with Celery task.
