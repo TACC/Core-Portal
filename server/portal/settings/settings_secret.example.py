@@ -13,12 +13,12 @@ _SECRET_KEY = 'CHANGE ME !'
 ########################
 
 # Database.
-_DJANGO_DB_ENGINE: 'django.db.backends.mysql',
-_DJANGO_DB_NAME: 'db_name',
-_DJANGO_DB_USER: 'user',
-_DJANGO_DB_PASSWORD: 'pw',
-_DJANGO_DB_HOST: 'host',
-_DJANGO_DB_PORT: '3306'
+_DJANGO_DB_ENGINE= 'django.db.backends.mysql'
+_DJANGO_DB_NAME= 'dev'
+_DJANGO_DB_USER= 'dev'
+_DJANGO_DB_PASSWORD= 'dev'
+_DJANGO_DB_HOST= 'mysql'
+_DJANGO_DB_PORT= '3306'
 
 # TAS Authentication.
 _TAS_URL='https://tas.tacc.utexas.edu/api'
@@ -40,30 +40,30 @@ _RECAPTCHA_USE_SSL='True'
 ########################
 
 # Agave Tenant.
-_AGAVE_TENANT_ID = 'tenant_name'
-_AGAVE_TENANT_BASEURL = 'https://agave.mytenant.org'
+_AGAVE_TENANT_ID = 'cep.dev'
+_AGAVE_TENANT_BASEURL = 'https://api.tacc.utexas.edu'
 
 # Agave Client Configuration
-_AGAVE_CLIENT_KEY = 'TH1$_!$-MY=K3Y!~'
-_AGAVE_CLIENT_SECRET = 'TH1$_!$-My=S3cr3t!~'
-_AGAVE_SUPER_TOKEN = 'S0m3T0k3n_tHaT-N3v3r=3xp1R35'
+_AGAVE_CLIENT_KEY = 'nffO5MK3H9ARcKluATPSW0ghpOAa'
+_AGAVE_CLIENT_SECRET = 'xJawaDUeOs2Kff2yST4tuF4hrGAa'
+_AGAVE_SUPER_TOKEN = '9da87cee1ea27a7dae9f6ba814b5bef'
 _AGAVE_STORAGE_SYSTEM = 'my.storage.default'
-_AGAVE_COMMUNITY_DATA_SYSTEM = 'storage_system'
+_AGAVE_COMMUNITY_DATA_SYSTEM = 'stampede'
 
 ########################
 # RABBITMQ SETTINGS
 ########################
 
-_BROKER_URL_USERNAME = 'username'
-_BROKER_URL_PWD = 'pwd'
-_BROKER_URL_HOST = 'localhost'
-_BROKER_URL_PORT = '123'
-_BROKER_URL_VHOST = 'vhost'
+_BROKER_URL_USERNAME = 'dev'
+_BROKER_URL_PWD = 'dev'
+_BROKER_URL_HOST = 'rabbitmq'
+_BROKER_URL_PORT = '5672'
+_BROKER_URL_VHOST = 'dev'
 
 _RESULT_BACKEND_USERNAME = 'username'
 _RESULT_BACKEND_PWD = 'pwd'
-_RESULT_BACKEND_HOST = 'localhost'
-_RESULT_BACKEND_PORT = '1234'
+_RESULT_BACKEND_HOST = 'redis'
+_RESULT_BACKEND_PORT = '6379'
 _RESULT_BACKEND_DB = '0'
 
 ########################
