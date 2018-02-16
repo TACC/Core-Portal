@@ -47,11 +47,6 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
       'test': function () {console.log("workspace resolve");}
     }
   })
-  .state('wb.workspace.tray', {
-      url: '/workspace/:appId',
-      templateUrl: '/static/src/angular/workspace/templates/application-tray.html',
-      controller: 'ApplicationTrayCtrl'
-  })
   .state('wb.help', {
     'url': '/help',
     'templateUrl': '/static/src/angular/workbench/templates/help.html',
