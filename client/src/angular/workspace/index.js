@@ -6,11 +6,6 @@ import angular from 'angular';
 
 function config($interpolateProvider, $httpProvider, $urlRouterProvider, $stateProvider, $translateProvider) {
   'ngInject';
-  $stateProvider.state('tray', {
-      url: '/workspace/:appId',
-      templateUrl: '/static/src/angular/workspace/templates/application-tray.html',
-      controller: 'ApplicationTrayCtrl'
-  });
 
   $translateProvider.translations('en', {
       error_system_monitor: "The execution system for this app is currently unavailable. Your job submission may fail.",
