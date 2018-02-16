@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import logging
+from portal.settings import settings_secret
 
 logger = logging.getLogger(__file__)
 #pylint: disable=invalid-name
@@ -26,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '__CHANGE_ME!__'
+SECRET_KEY = settings_secret._SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 #Cookie name. this can be whatever you want
 SESSION_COOKIE_NAME='sessionid'  # use the sessionid in your views code
