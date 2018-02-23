@@ -1,5 +1,5 @@
 .workbench {
-  min-height: 100%;
+  min-height: 100vh;
   display: flex;
   margin-top: -20px;
 }
@@ -21,7 +21,6 @@
   border: 1px solid grey;
   background-color: #a7a7a7;
 }
-
 
 .workbench-content {
   flex: 1;
