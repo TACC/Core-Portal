@@ -38,6 +38,9 @@ footer {
 
 .navbar-ds {
   background-image: url('/static/img/network-Header.jpg');
+  /* margin-bottom: 0; */
+  /* Adding this causes the workbench-nav to shift right. Weird. */
+  /* Can't determine how to remove tiny space between navbar and page-content... yet! */
 }
 
 .navbar.navbar-default {

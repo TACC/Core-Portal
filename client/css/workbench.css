@@ -6,23 +6,55 @@
 
 .workbench-nav {
   background: #d3d3d3;
-  width: 100px;
+  min-width: 7rem;
+  width: 7rem;
   flex: 0 0 50px;
   display: flex;
   flex-direction: column;
 }
 
 .workbench-nav .side-nav-button {
-  font-size: 45px;
-  padding: 5px;
+  cursor:pointer;
+  font-size: 4rem;
+  padding: 1rem;
+  text-align: center;
+  border: 0.1rem solid rgba(0,0,0,0);
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.workbench-nav .side-nav-button i {
+  color: #008cba;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.workbench-nav .side-nav-button:hover {
+  background: #ededed;
+  border-color: rgba(45,45,45,0.5);
+  border-right-width: 0.5rem;
+}
+
+.workbench-nav .side-nav-button:hover i {
+  color: #006687;
 }
 
 .workbench-nav .side-nav-button.active {
-  border: 1px solid grey;
-  background-color: #a7a7a7;
+  color: #FFFFFF;
+  background: #008cba;
+  border-color: rgba(45,45,45,1);
+  border-right-width: 0.5rem;
+}
+
+.workbench-nav .side-nav-button.active i {
+  color: #FFFFFF;
 }
 
 .workbench-content {
   flex: 1;
-  padding-top: 10px;
+  padding-top: 1rem;
 }
