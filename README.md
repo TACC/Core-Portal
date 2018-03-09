@@ -129,7 +129,7 @@ _server/portal/settings_
 - Enhance authentication workflow with abaco reactors.
 - Enhance user data storage setup with Celery task.
 - Enhance DevOps with CI (unit testing, integration testing,  deployment, etc.)
-- Setup documentation generation for portal source code.
+- Generate documentation for portal source code (sphinx?)
 
 
 ### Resources
