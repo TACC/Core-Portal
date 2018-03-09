@@ -1,4 +1,5 @@
-"""Celery config
+#jinja2: lstrip_blocks: "True", trim_blocks: "False"
+"""Agave settings
 """
 
 import os
@@ -6,22 +7,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 from kombu import Exchange, Queue
 #BROKER_URL = 'redis://redis:6379/0'
-_BROKER_URL_PROTOCOL = 'amqp://'
-_BROKER_URL_USERNAME = 'username'
-_BROKER_URL_PWD = 'pwd'
-_BROKER_URL_HOST = 'localhost'
-_BROKER_URL_PORT = '123'
-_BROKER_URL_VHOST = 'vhost'
-CELERY_BROKER_URL = ''.join([_BROKER_URL_PROTOCOL,_BROKER_URL_USERNAME, ':',
+_BROKER_URL_PROTOCOL = '{{celery_broker_url_protocol}}'
+_BROKER_URL_USERNAME = '{{celery_broker_url_username}}'
+_BROKER_URL_PWD = '{{celery_broker_url_pwd}}'
+_BROKER_URL_HOST = '{{celery_broker_url_host}}'
+_BROKER_URL_PORT = '{{celery_broker_url_port}}'
+_BROKER_URL_VHOST = '{{celery_broker_url_vhost}}'
+CELERY_BROKER_URL = ''.join([_BROKER_URL_PROTOCOL, _BROKER_URL_USERNAME, ':',
                       _BROKER_URL_PWD, '@', _BROKER_URL_HOST, ':',
                       _BROKER_URL_PORT, '/',_BROKER_URL_VHOST])
 #BROKER_URL = 'amqp://designsafe:pwd@rabbitmq:5672//'
-_RESULT_BACKEND_PROTOCOL = 'redis://'
-_RESULT_BACKEND_USERNAME = 'username'
-_RESULT_BACKEND_PWD = 'pwd'
-_RESULT_BACKEND_HOST = 'localhost'
-_RESULT_BACKEND_PORT = '1234'
-_RESULT_BACKEND_DB = '0'
+_RESULT_BACKEND_PROTOCOL = '{{celery_result_backend_protocol}}'
+_RESULT_BACKEND_USERNAME = '{{celery_result_backend_username}}'
+_RESULT_BACKEND_PWD = '{{celery_result_backend_pwd}}'
+_RESULT_BACKEND_HOST = '{{celery_result_backend_host}}'
+_RESULT_BACKEND_PORT = '{{celery_result_backend_port}}'
+_RESULT_BACKEND_DB = '{{celery_result_backend_db}}'
 CELERY_RESULT_BACKEND = ''.join([_RESULT_BACKEND_PROTOCOL,
                                  _RESULT_BACKEND_HOST, ':', _RESULT_BACKEND_PORT,
                                  '/', _RESULT_BACKEND_DB])
@@ -48,3 +49,4 @@ CELERY_QUEUES = (
 CELERY_DEFAULT_QUEUE = 'default'
 CELERY_DEFAULT_EXCHANGE = 'default'
 CELERY_DEFAULT_ROUTING_KEY = 'default'
+CELERY_TASK_PROTOCOL = 1

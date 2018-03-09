@@ -1,0 +1,126 @@
+#Genral vars
+local_dev: true
+selinux_enabled: true
+project_home_dir: /srv/www
+project_name: project
+project_python_version: python2
+
+#NGINX params
+nginx_user: portal portal
+nginx_error_log: /var/log/nginx/error.log
+nginx_worker_processes: auto
+nginx_worker_connections: 1024
+nginx_access_log: /var/log/nginx/access.log
+nginx_servers:
+    - name: "project.local"
+      default: true
+      livereload: false
+      ssl_cert_path: "/etc/ssl/certs/dummy.crt"
+      ssl_key_path: "/etc/ssl/certs/dummy.key"
+      uwsgi_upstream: "unix:/run/uwsgi/project.sock"
+    - name: "project.dev"
+      default: false
+      livereload: true
+      ssl_cert_path: "/etc/ssl/certs/dummy.crt"
+      ssl_key_path: "/etc/ssl/certs/dummy.key"
+      uwsgi_upstream: "unix:/run/uwsgi/project.sock"
+
+nginx_tls_certs_path: "certs"
+
+#UWSGI params
+uwsgi_plugins: python
+
+uwsgi_home: /srv/www/.envs/project
+uwsgi_chdir: /srv/www/project
+uwsgi_file: /srv/www/project/portal/wsgi.py
+uwsgi_callable: application
+uwsgi_module: portal.wsgi:application
+uwsgi_log_filename: portal.log
+uwsgi_log_maxsize: 100000000
+uwsgi_gid: portal
+uwsgi_uid: portal
+uwsgi_pid_file: /var/run/uwsgi/project-master.pid
+uwsgi_processes_no: 5
+uwsgi_harakiri: 60
+uwsgi_post_buffering: 4096
+uwsgi_max_requests: 500
+uwsgi_socket_path: /run/uwsgi/project.sock
+uwsgi_chown_socket: portal:portal
+uwsgi_chmod_socket: 664
+
+#git repo
+git_username: vagrant
+git_repo: git@bitbucket.org:taccaci/ut-portal-portal.git
+#git_repo_origin: https://bitbucket.org/taccaci/ut-portal-portal
+git_repo_version: master
+git_recursive: yes
+
+# Django settings
+
+django_settings_secret:
+  SECRET_KEY: "_CHANGE_ME!_" 
+
+django_settings_local:
+  DEBUG: "True"
+  SITE_ID: "1"
+  DATABASES: "{
+              'default': {
+                  'ENGINE': 'django.db.backends.sqlite3',
+                  'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
+              }
+          }"
+  STATIC_ROOT: "os.path.join(BASE_DIR, '../static')"
+  MEDIA_ROOT: "os.path.join(BASE_DIR, '../media')"
+
+django_settings_agave:
+  AGAVE_TENANT_ID: "myTennant"
+  AGAVE_TENANT_BASEURL: "https://api.mytennant.org"
+  AGAVE_CLIENT_KEY: "TH1$_!$-MY=K3Y!~"
+  AGAVE_CLIENT_SECRET: "TH1$_!$-My=S3cr3t!~"
+  AGAVE_SUPER_TOKEN: "S0m3T0k3n_tHaT-N3v3r=3xp1R35"
+  AGAVE_STORAGE_SYSTEM: "my.storage.default"
+  AGAVE_DEFAULT_TRASH_NAME: "Trash"
+
+es_hosts: ["host1", "host2"]
+es_default_index: "files"
+es_default_index_alias: "default"
+es_public_index: "publications"
+es_public_index_alias: "public"
+es_files_doc_type: "files"
+es_projects_doc_type: "projects"
+es_metadata_doc_type: "metadata"
+
+celeryd_user: "portal"
+celeryd_group: "portal"
+celeryd_working_dir: "/srv/www/project"
+celeryd_venv_bin: "/srv/www/.envs/project/bin/celery"
+celeryd_nodes: "worker01"
+celeryd_app: "proj.celery:app"
+celeryd_pid_file: "/var/run/celery/%n.pid"
+celeryd_log_file: "/var/log/celery/%n%I.log"
+celeryd_log_level: "debug"
+celeryd_opts: "--autoscale=6,3"
+
+celery_broker_url_protocol: "amqp://"
+celery_broker_url_username: "username"
+celery_broker_url_pwd: "password"
+celery_broker_url_host: "hostname"
+celery_broker_url_port: "5672"
+celery_broker_url_vhost: "vhost"
+celery_result_backend_protocol: "redis://"
+celery_result_backend_username: "username"
+celery_result_backend_pwd: "pwd"
+celery_result_backend_host: "hostname"
+celery_result_backend_port: "6379"
+celery_result_backend_db: "0"
+
+rabbitmq_admin_user: "admin"
+rabbitmq_admin_pwd: "pwd" 
+
+rabbitmq_add_vhosts:
+  - "def"
+
+rabbitmq_add_users:
+  - username: "user1"
+    pwd: "pwd"
+    vhost: "def"

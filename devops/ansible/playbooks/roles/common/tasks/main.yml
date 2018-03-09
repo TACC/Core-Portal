@@ -1,0 +1,70 @@
+---
+- name: Enable epel
+  yum: name=epel-release state=latest
+
+- name: Upgrade all packages
+  yum: name=* state=latest
+
+- name: Install git
+  yum: name=git state=present
+
+- name: Install mysql
+  yum: name=mysql state=present
+
+- name: Install mysql Devel
+  yum: name=mysql-devel state=present
+
+- name: Install postgresql Devel
+  yum: name=postgresql-devel state=present
+
+- name: Install vim
+  yum: name=vim state=present
+
+- name: Install python
+  yum: name=python state=present
+
+- name: Install python-setuptools
+  yum: name=python-setuptools state=present
+
+- name: Install python-devel
+  yum: name=python-devel state=present
+
+- name: Install syslog
+  yum: name=syslog
+
+- name: Install pip
+  yum: name=python-pip state=present
+
+# - name: Install http parser
+#   yum:
+#     name: https://kojipkgs.fedoraproject.org//packages/http-parser/2.7.1/3.el7/x86_64/http-parser-2.7.1-3.el7.x86_64.rpm
+#     state: present
+
+- name: Install nodejs
+  yum: name=nodejs state=present
+
+- name: Install npm
+  yum: name=npm state=present
+
+- name: Install bower
+  npm:
+    name: bower
+    state: present
+    global: yes
+
+- name: Update pip
+  pip:
+    name: "pip"
+    extra_args: "--upgrade"
+
+- name: Install 'Development Tools' package
+  yum: name="@Development tools" state=present
+
+- name: Install nfs-utils
+  yum: name=nfs-utils state=present
+
+- name: Install libsemanage-python
+  yum: name=libsemanage-python state=present
+
+- name: Install virtualenv
+  command: pip install virtualenv

@@ -1,0 +1,15 @@
+---
+- name: Install newrelic admin
+  pip:
+    name: newrelic
+
+- name: Newrelic infra template
+  template: src=newrelic-infra.yml.j2 dest=/etc/newrelic-infra.yml
+
+- name: Newrelic APM template
+  template: src=newrelic.ini.j2 dest=/etc/newrelic.ini
+
+- name: Restart Newrelic infra
+  service:
+    name: newrelic-infra
+    state: restarted

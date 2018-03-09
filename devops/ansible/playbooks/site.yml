@@ -1,0 +1,30 @@
+---
+# This playbook deploys the whole application stack in this site.
+
+# Apply common configuration to all hosts
+- hosts: all
+  become: true
+  roles:
+    - common
+    - users
+
+# Configure and deploy database servers.
+- hosts: dbservers
+  roles:
+    - elasticsearch
+    - rabbitmq
+    - redis
+    - mysql
+
+- hosts: workers
+  roles:
+    - celeryd
+    - git
+
+# Configure and deploy the web servers
+- hosts: webservers
+  roles:
+    - {role: nginx, tags: ['deploy']}
+    - {role: git, tags: ['deploy']}
+    - {role: project_setup, tags: ['deploy']}
+    - {role: uwsgi, tags: ['deploy']}

@@ -1,0 +1,109 @@
+---
+# RAbbitMq things
+
+- name: Install Erlang
+  yum:
+    name: erlang
+
+- name: Create rabbitmq directory
+  file:
+    path: "/opt/rabbitmq"
+    state: "directory"
+
+- name: Download rabbitmq
+  command: "wget -q -O /opt/rabbitmq/rabbitmq-server-3.6.9-1.el7.noarch.rpm --no-cookies --no-check-certificate \"https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.9/rabbitmq-server-3.6.9-1.el7.noarch.rpm\""
+
+- name: Import RabbitMQ public GPG Key
+  command: "rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc"
+
+- name: Install rabbitmq
+  yum:
+    name: /opt/rabbitmq/rabbitmq-server-3.6.9-1.el7.noarch.rpm
+
+- name: Enable rabbitmq service
+  command: systemctl enable rabbitmq-server.service
+
+- name: Start rabbitmq service
+  command: systemctl start rabbitmq-server.service
+
+#- name: Enable rabbitmq management
+#  command: "rabbitmq-plugins enable rabbitmq_management"
+
+- name: Enable rabbitmq management plugin
+  rabbitmq_plugin:
+    names: rabbitmq_management
+    state: enabled
+
+#- name: Check RabbitMQ users
+#  command: "rabbitmqctl list_users"
+#  register: rabbitmq_users
+#
+#- name: Check RabbitMQ vhosts
+#  command: "rabbitmqctl list_vhosts"
+#  register: rabbitmq_vhosts
+
+- name: Take care of permissions for rabbitmq libs
+  file:
+    path: "/var/lib/rabbitmq"
+    state: "directory"
+    owner: "rabbitmq"
+    group: "rabbitmq"
+
+#- name: Create admin user
+#  command: "rabbitmqctl add_user {{rabbitmq_admin_user}} {{rabbitmq_admin_pwd}}"
+#  when: "rabbitmq_users.stdout.find('{{rabbitmq_admin_user}}') == -1"
+#  
+#- name: Setting Admin User Tags 
+#  command: "rabbitmqctl set_user_tags {{rabbitmq_admin_user}} administrator"
+#  when: "rabbitmq_users.stdout.find('{{rabbitmq_admin_user}}') == -1"
+#
+#- name: Setting Admin Pems
+#  command: "rabbitmqctl set_permissions -p / {{rabbitmq_admin_user}} \".*\"  \".*\" \".*\""
+#  when: "rabbitmq_users.stdout.find('{{rabbitmq_admin_user}}') == -1"
+#
+#- name: Create vhosts
+#  command: "rabbitmqctl add_vhost {{item}}"
+#  when: "rabbitmq_vhosts.stdout.find('{{item}}') == -1"
+#  with_items: "{{ rabbitmq_add_vhosts }}"
+#
+#- name: Create users
+#  command: "rabbitmqctl add_user {{item.username}} {{item.pwd}}"
+#  when: "rabbitmq_users.stdout.find('{{item.username}}') == -1"
+#  with_items: "{{ rabbitmq_add_users }}"
+#
+#- name: Set user pems in vhosts
+#  command: "rabbitmqctl set_permissions -p {{item.vhost}} {{item.username}} \".*\"  \".*\" \".*\""
+#  when: "rabbitmq_users.stdout.find('{{item.username}}') == -1"
+#  with_items: "{{ rabbitmq_add_users }}"
+#
+
+- name: Create vhosts
+  rabbitmq_vhost:
+    name: "{{item}}"
+    state: present
+  with_items: "{{ rabbitmq_add_vhosts}}"
+  
+- name: Create Users
+  rabbitmq_user:
+     user: "{{item.username}}"
+     password:  "{{item.pwd}}"
+     vhost: "{{item.vhost}}"
+     configure_priv: .*
+     read_priv: .*
+     write_priv: .*
+     state: present
+     force: yes
+  with_items: "{{rabbitmq_add_users}}"
+
+- name: Create Admin User
+  rabbitmq_user:
+    user: "{{rabbitmq_admin_user}}"
+    password: "{{rabbitmq_admin_pwd}}"
+    vhost: "/"
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    state: present
+    force: yes
+    tags: "administrator"
+

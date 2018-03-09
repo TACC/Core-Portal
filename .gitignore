@@ -16,11 +16,13 @@ server/portal/static/vendor/lib/node_modules
 server/media
 
 # Ignore local Django settings
-server/portal/settings/settings_local.py
+#server/portal/settings/settings_local.py
 server/portal/settings/settings_secret.py
-server/portal/settings/settings_agave.py
-server/portal/settings/settings_celery.py
-server/portal/settings/elasticsearch.py
+#server/portal/settings/settings_agave.py
+#server/portal/settings/settings_celery.py
+#server/portal/settings/elasticsearch.py
+
+server/src
 
 #ignore portal.env
 portal.env
@@ -75,8 +77,84 @@ docs/_build/
 .docs/build/
 target/
 
-
 /server/conf/docker/logs.txt
 
-
 package-lock.json
+
+
+###############################
+# Ansible .gitignores content.
+
+/.vagrant
+/static
+Vagrantfile.local
+vagrantfile.local
+*.retry
+
+# Custom
+
+# Byte-compiled / optimized / DLL files
+*.zip
+*.exe
+*.msi
+__pycache__/
+*.py[cod]
+db.sqlite3
+logs/
+docker/requirements.txt
+.db/
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Ansible config files
+playbooks/hosts
+!playbooks/group_vars/*.example.yml
+!playbooks/roles/secret_files/.gitkeep

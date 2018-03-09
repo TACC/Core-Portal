@@ -1,0 +1,29 @@
+[Unit]
+Description=Celery Daemon Service
+After=network.target
+
+[Service]
+Type=forking
+User={{celeryd_user}}
+Group={{celeryd_group}}
+EnvironmentFile=/etc/conf.d/celery
+WorkingDirectory={{ celeryd_working_dir }}
+ExecStart={{celeryd_venv_bin}} multi start ${CELERY_NODES} \
+    -A ${CELERY_APP} \
+    --pidfile=${CELERY_PID_FILE} \
+    --logfile=${CELERY_LOG_FILE} \
+    --loglevel=${CELERY_LOG_LEVEL} \
+    ${CELERY_OPTS}
+ExecStop={{celeryd_venv_bin}} multi stopwait ${CELERY_NODES} \
+    --pidfile=${CELERY_PID_FILE}
+ExecReload={{celeryd_venv_bin}} multi restart ${CELERY_NODES} \
+    -A ${CELERY_APP} \
+    --pidfile=${CELERY_PID_FILE} \
+    --logfile=${CELERY_LOG_FILE} \
+    --loglevel=${CELERY_LOG_LEVEL} \
+    ${CELERY_OPTS}
+Restart=on-failure
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,45 @@
+---
+# SSL/TLS certs should already be in the host
+
+- name: Install nginx
+  yum: name=nginx state=present
+
+- name: Write configuration
+  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
+
+- name: Copy TLS certs
+  copy: src='{{ nginx_tls_certs_path }}' dest=/etc/ssl
+
+- name: Copy SSL cert
+  copy: src='../../secret_files/{{nginx_cert_file}}' dest=/etc/ssl/certs/
+
+- name: Copy SSL key
+  copy: src='../../secret_files/{{nginx_key_file}}' dest=/etc/ssl/certs/
+
+- name: Copy gzip.conf configuration
+  copy: src=gzip.conf dest=/etc/nginx/gzip.conf
+
+- name: Copy uwsgi_params configuration
+  copy: src=uwsgi_params dest=/etc/nginx/uwsgi_params
+  notify:
+    - restart nginx
+
+- name: chown /var/lib/nginx to portal users
+  command: 'chown -R {{nginx_user}}:{{nginx_user}} /var/lib/nginx'
+
+- name: Create dhparam.pem
+  command: openssl dhparam -out /etc/ssl/dhparam.pem 2048 creates=/etc/ssl/dhparam.pem
+
+- name: Copy error pages
+  copy: src=error dest=/usr/share/nginx/html
+  notify:
+    - restart nginx
+
+- name: Enable nginx service
+  command: systemctl enable nginx
+
+- name: Start nginx service
+  command: systemctl start nginx
+
+- name: Restart nginx service
+  command: systemctl restart nginx

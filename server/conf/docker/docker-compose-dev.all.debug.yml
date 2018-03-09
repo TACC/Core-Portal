@@ -4,8 +4,6 @@ version: "3"
 services:
   redis:
     image: redis:4.0
-    volumes:
-      - ../redis.conf:/usr/local/etc/redis/redis.conf
     ports:
       - 6379:6379
     container_name: cep_redis
@@ -15,7 +13,6 @@ services:
     image: rabbitmq:3.6.10-management
     volumes:
       - cep_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
-      # - ../rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     env_file: ../env_files/rabbitmq.env
     ports:
       - 5672:5672
@@ -37,8 +34,6 @@ services:
     environment:
       - ES_HEAP_SIZE:2g
     volumes:
-      - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
       - cep_es_data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
@@ -47,8 +42,6 @@ services:
 
   mysql:
     image: mysql:5.6
-    volumes:
-      - ../mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     env_file: ../env_files/mysql.env
     ports:
       - 3306:3306
@@ -74,10 +67,7 @@ services:
 
   django:
     image: cep-portal/portal:local
-    env_file: ../env_files/portal.env
-    # build:
-    #   context: ../../.
-    #   dockerfile: conf/docker/Dockerfile
+    # env_file: ../env_files/portal.env
     links:
       - memcached:memcached
       - mysql:mysql
@@ -102,10 +92,7 @@ services:
 
   workers:
     image: cep-portal/portal:local
-    env_file: ../env_files/portal.env
-    # build:
-    #   context: ../../.
-    #   dockerfile: conf/docker/Dockerfile
+    # env_file: ../env_files/portal.env
     links:
       - memcached:memcached
       - mysql:mysql

@@ -1,0 +1,11 @@
+[webservers]
+sd2e05.tacc.utexas.edu
+
+[workers]
+sd2e07.tacc.utexas.edu
+
+[dbservers]
+sd2e07.tacc.utexas.edu
+
+[staging]
+sd2e06.tacc.utexas.edu

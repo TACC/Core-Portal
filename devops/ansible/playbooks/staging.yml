@@ -1,0 +1,18 @@
+---
+# This playbook deploys the whole application stack in this site.
+
+# Apply common configuration to all hosts
+- hosts: staging
+  roles:
+    - common
+    - users
+    - elasticsearch
+    - rabbitmq
+    - redis
+    - git
+    - {role: newrelic, tags: ['deploy']}
+    - {role: nginx, tags: ['deploy']}
+    - {role: git, tags: ['deploy']}
+    - {role: uwsgi, tags: ['deploy']}
+    - {role: project_setup, tags: ['deploy']}
+    - {role: celeryd, tags: ['deploy']}
