@@ -1,5 +1,5 @@
 ---
-__mysql_daemon: mysql
+__mysql_daemon: mysqld
 __mysql_packages:
   - mysql
   - mysql-community-server

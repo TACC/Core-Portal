@@ -45,6 +45,14 @@
     mode:  0755
     setype: mysqld_db_t
 
+- name: Create log dir if it does not exist
+  file:
+    path: /var/log/mysql/
+    state: directory
+    owner: mysql
+    group: mysql
+    mode:  0755
+
 - name: Set ownership on slow query log file (if configured).
   file:
     path: "{{ mysql_slow_query_log_file }}"
