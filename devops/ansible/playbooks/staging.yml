@@ -10,7 +10,7 @@
     - rabbitmq
     - redis
     - git
-    - {role: newrelic, tags: ['mysql']}
+    - {role: mysql, tags: ['mysql']}
     - {role: newrelic, tags: ['deploy']}
     - {role: nginx, tags: ['deploy']}
     - {role: git, tags: ['deploy']}
