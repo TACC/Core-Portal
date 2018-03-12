@@ -13,12 +13,12 @@ _SECRET_KEY = 'CHANGE ME !'
 ########################
 
 # Database.
-_DJANGO_DB_ENGINE= 'django.db.backends.mysql'
+_DJANGO_DB_ENGINE= 'django.db.backends.postgresql'
 _DJANGO_DB_NAME= 'dev'
 _DJANGO_DB_USER= 'dev'
 _DJANGO_DB_PASSWORD= 'dev'
-_DJANGO_DB_HOST= 'mysql'
-_DJANGO_DB_PORT= '3306'
+_DJANGO_DB_HOST= 'postgres'
+_DJANGO_DB_PORT= '5432'
 
 # TAS Authentication.
 _TAS_URL='https://tas.tacc.utexas.edu/api'
