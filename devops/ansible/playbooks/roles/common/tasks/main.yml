@@ -66,3 +66,6 @@
 
 - name: Install MySQL 5.7 repo
   yum: name=http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm state=present
+
+- name: Install Postgres 10 repo
+  yum: name=https://yum.postgresql.org/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm state=present
