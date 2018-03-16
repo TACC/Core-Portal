@@ -1,22 +1,24 @@
 html {
+  box-sizing: border-box;
   height: 100%;
   position: relative;
-  box-sizing: border-box;
 }
+
 body {
+  font-family: 'Roboto', sans-serif;
   min-height: 100%;
   position: relative;
-  font-family: 'Roboto', sans-serif;
 }
 
 .content {
   min-height: calc(100vh - 40px);
 }
+
 footer {
-  width: 100%;
-  height: 40px;
   background-color: #292929;
   background-size: 100%;
+  height: 40px;
+  width: 100%;
 }
 
 .navbar-default .navbar-nav>.open>a,
@@ -31,16 +33,14 @@ footer {
 .navbar-default .navbar-nav>.active>a,
 .navbar-default .navbar-nav>.active>a:hover,
 .navbar-default .navbar-nav>.active>a:focus {
-    background-color: transparent;
-    font-size: 1.25em;
-    font-weight: 700;
+  background-color: transparent;
+  font-size: 1.25em;
+  font-weight: 700;
 }
 
-.navbar-ds {
+.navbar-portal {
   background-image: url('/static/img/network-Header.jpg');
-  /* margin-bottom: 0; */
-  /* Adding this causes the workbench-nav to shift right. Weird. */
-  /* Can't determine how to remove tiny space between navbar and page-content... yet! */
+  /* background-image: url('/static/img/cep-bg.jpg'); */
 }
 
 .navbar.navbar-default {
@@ -53,6 +53,7 @@ footer {
   height: 3em;
   line-height: 3em;
 }
+
 .dd-file-selected {
   background-color: #d2d2d2 !important;
 }
@@ -61,39 +62,47 @@ footer {
   height: 45px;
   padding-right: 15px;
 }
-.right-nav-links > a:nth-child(1) {
+
+.right-nav-links>a:nth-child(1) {
   margin-top: 0;
-  padding-top: 12px;
   padding-bottom: 12px;
+  padding-top: 12px;
 }
+
 .navbar-nav {
   height: 45px;
 }
+
 .nav-icon {
   margin-right: 5px;
 }
+
 .jupyter {
   height: 20px;
   margin-left: -5px;
 }
-.right-nav-links > a {
+
+.right-nav-links>a {
   font-size: 1.3rem;
   font-weight: 300;
 }
-.hidden-xs > li:nth-child(1) > a:nth-child(1),
+
+.hidden-xs>li:nth-child(1)>a:nth-child(1),
 a.btn-link-alt {
   color: #FFFFFF;
 }
-.open > ul > li > a:hover,
+
+.open>ul>li>a:hover,
 a.btn-link-alt:hover,
-.nav > li > a:nth-child(1):hover,
-.open > ul > li > a:hover {
+.nav>li>a:nth-child(1):hover,
+.open>ul>li>a:hover {
   color: #4dc3ff;
 }
+
 .ext-link {
   margin-left: 5px;
 }
 
-dl > dt {
+dl>dt {
   margin-top: 12px;
 }
