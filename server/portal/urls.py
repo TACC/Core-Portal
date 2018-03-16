@@ -32,12 +32,12 @@ urlpatterns = [
         {'next_page': '/auth/logged-out/'}, name='logout'),
 
     # apps.
-    url(r'^data-depot/', include('portal.apps.data_depot.urls',
-                                 namespace='data_depot')),
+    # url(r'^data-depot/', include('portal.apps.data_depot.urls',
+    #                              namespace='data_depot')),
     url(r'^api/data-depot/', include('portal.apps.data_depot.api.urls',
                                      namespace='data_depot_api')),
-    url(r'^workspace/', include('portal.apps.workspace.urls',
-                                namespace='workspace')),
+    # url(r'^workspace/', include('portal.apps.workspace.urls',
+    #                             namespace='workspace')),
     url(r'^api/workspace/', include('portal.apps.workspace.api.urls',
                                     namespace='workspace_api')),
     url(r'^workshops/', include('portal.apps.workshops.urls',
@@ -48,7 +48,6 @@ urlpatterns = [
                               namespace='search')),
     url(r'^workbench/', include('portal.apps.workbench.urls',
                                namespace='workbench')),
-
 
     # version check.
     url(r'^version/', des_version),
