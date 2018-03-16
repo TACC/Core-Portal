@@ -8,7 +8,7 @@ export default function DataDepotNavCtrl($scope, $rootScope, $state, Django, Sys
       {
         name: 'My Data',
         collapsible: false,
-        state: 'db.myData({systemId:"' + my_data.systemId +'", filePath:""})',
+        state: 'wb.data_depot.db.myData({systemId:"' + my_data.systemId +'", filePath:""})',
         description: 'Private directory for your data',
         icon: 'fa-user'
       }
@@ -17,7 +17,7 @@ export default function DataDepotNavCtrl($scope, $rootScope, $state, Django, Sys
         {
           name: 'My Projects',
           collapsible: false,
-          state: 'db.projects.list',
+          state: 'wb.data_depot.db.projects.list',
           description: 'Group access to shared directories',
           icon: 'fa-briefcase'
         }
@@ -26,7 +26,7 @@ export default function DataDepotNavCtrl($scope, $rootScope, $state, Django, Sys
         {
           name: 'Community Data',
           collapsible: false,
-          state: 'db.communityData({systemId:"' + com_data.systemId + '", filePath:"/"})',
+          state: 'wb.data_depot.db.communityData({systemId:"' + com_data.systemId + '", filePath:"/"})',
           description: 'Non-curated user-contributed data',
           icon: 'fa-users'
         }
