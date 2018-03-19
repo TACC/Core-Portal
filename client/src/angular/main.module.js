@@ -55,7 +55,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     }
   })
   .state('wb.search', {
-    'url': '/help',
+    'url': '/search',
     'templateUrl': '/static/src/angular/workbench/templates/search.html',
     'resolve': {
       'test': function () {console.log("search resolve");}

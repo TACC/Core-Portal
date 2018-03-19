@@ -385,6 +385,12 @@ PORTAL_DATA_DEPOT_MANAGERS = {
 }
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
+PORTAL_WORKSPACE_MANAGERS = {
+    'private': 'portal.apps.workspace.managers.private.FileManager',
+    'shared': 'portal.apps.workspace.managers.shared.FileManager',
+}
+PORTAL_WORKSPACE_PAGE_SIZE = 100
+
 TOOLBAR_OPTIONS = {
     'trash_enabled': True,
     'share_enabled': True,
@@ -408,13 +414,3 @@ ES_PUBLIC_INDEX_ALIAS = "public"
 ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
 ES_METADATA_DOC_TYPE = "metadata"
-
-"""
-SETTINGS: DATA DEPOT
-"""
-
-PORTAL_WORKSPACE_MANAGERS = {
-    'private': 'portal.apps.workspace.managers.private.FileManager',
-    'shared': 'portal.apps.workspace.managers.shared.FileManager',
-}
-PORTAL_WORKSPACE_PAGE_SIZE = 100

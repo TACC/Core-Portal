@@ -14,7 +14,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
   $stateProvider
     /* Private */
     .state(
-      'db', {
+      'wb.data_depot.db', {
         url: '/data-depot',
         abstract: true,
         template: '<ui-view/>',
@@ -25,26 +25,26 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
         }
       }
     )
-    .state('db.myData', {
+    .state('wb.data_depot.db.myData', {
       url: '/agave/{systemId}/{filePath:any}/',
       controller: 'MyDataCtrl',
       templateUrl: '/static/src/angular/data_depot/templates/agave-data-listing.html',
     })
-    .state('db.projects', {
+    .state('wb.data_depot.db.projects', {
       url: '/projects/',
       abstract: true,
     })
-    .state('db.projects.list', {
+    .state('wb.data_depot.db.projects.list', {
       url: '',
       controller: 'ProjectListCtrl',
       templateUrl: '/static/src/angular/data_depot/templates/project-list.html',
     })
-    .state('db.projects.listing', {
+    .state('wb.data_depot.db.projects.listing', {
       url: '{systemId}/{filePath:any}',
       controller: 'ProjectListingCtrl',
       templateUrl: '/static/src/angular/data_depot/templates/agave-data-listing.html',
     })
-    .state('db.communityData', {
+    .state('wb.data_depot.db.communityData', {
       url: '/public/{systemId}/{filePath:any}',
       controller: 'CommunityDataCtrl',
       templateUrl: '/static/src/angular/data_depot/templates/agave-data-listing.html',
@@ -52,7 +52,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
         filePath: '/'
       },
     })
-    .state('sharedData', {
+    .state('wb.data_depot.sharedData', {
       url: '/shared/{systemId}/{filePath:any}/',
       controller: 'SharedDataCtrl',
       templateUrl: '/static/src/angular/data-depot/templates/agave-shared-data-listing.html',
@@ -82,7 +82,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
         }
       }
     })
-    .state('dropboxData', {
+    .state('wb.data_depot.dropboxData', {
       url: '/dropbox/{filePath:any}',
       controller: 'ExternalDataCtrl',
       templateUrl: '/static/scripts/data-depot/templates/dropbox-data-listing.html',

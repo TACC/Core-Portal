@@ -40,13 +40,16 @@ services:
     container_name: cep_elasticsearch
     hostname: cep_elasticsearch
 
-  mysql:
-    image: mysql:5.6
-    env_file: ../env_files/mysql.env
+  postgres:
+    image: postgres
     ports:
-      - 3306:3306
-    container_name: cep_mysql
-    hostname: cep_mysql
+      - 5432:5432
+    container_name: cep_postgres
+    hostname: cep_postgres
+    environment:
+      - POSTGRES_PASSWORD=dev
+      - POSTGRES_USER=dev
+      - POSTGRES_DB=dev
 
   nginx:
     image: nginx
@@ -70,7 +73,7 @@ services:
     # env_file: ../env_files/portal.env
     links:
       - memcached:memcached
-      - mysql:mysql
+      - postgres:postgres
       - rabbitmq:rabbitmq
       - redis:redis
       - elasticsearch:elasticsearch
@@ -95,7 +98,7 @@ services:
     # env_file: ../env_files/portal.env
     links:
       - memcached:memcached
-      - mysql:mysql
+      - postgres:postgres
       - rabbitmq:rabbitmq
       - redis:redis
       - elasticsearch:elasticsearch
@@ -112,6 +115,5 @@ services:
 
 volumes:
   cep_redis_data:
-  cep_mysql_data:
   cep_es_data:
   cep_rabbitmq_data:

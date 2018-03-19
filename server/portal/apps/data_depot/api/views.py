@@ -44,7 +44,7 @@ class SystemListingView(BaseApiView):
         ac = request.user.agave_oauth.client
         listing = ac.systems.list(type="STORAGE")
         community_data_system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
-        mydata_system = "data-tacc-work-{uname}".format(uname=request.user.username)
+        mydata_system = settings.AGAVE_STORAGE_SYSTEM.format(username=request.user.username)
         listing = [
             {
                 "systemId": community_data_system,

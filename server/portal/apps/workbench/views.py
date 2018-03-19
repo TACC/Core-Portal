@@ -7,7 +7,8 @@ from django.utils.decorators import method_decorator
 
 @method_decorator(login_required, name='dispatch')
 class IndexView(TemplateView):
-    """Main accounts view.
+    """
+    Main accounts view.
     """
     template_name = 'portal/apps/workbench/index.html'
 
