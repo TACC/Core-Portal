@@ -19,19 +19,9 @@ RUN pip install uwsgi
 
 RUN pip install --upgrade pip && pip install uwsgitop
 
-#RUN mkdir -p /opt/uwsgi && \
-#    curl -SLk -o /opt/uwsgi/uwsgi-2.0.15.tar.gz https://projects.unbit.it/downloads/uwsgi-2.0.15.tar.gz && \
-#    tar -xvzf /opt/uwsgi/uwsgi-2.0.15.tar.gz -C /opt/uwsgi && \
-#    uwsgi --build-plugin /opt/uwsgi/uwsgi-2.0.15/plugins/zabbix && \
-#    mkdir -p /usr/lib/uwsgi/plugins && \
-#    mv zabbix_plugin.so /usr/lib/uwsgi/plugins/.
-
 COPY requirements.txt /tmp/requirements.txt
 
 RUN pip install -r /tmp/requirements.txt
-
-#RUN groupadd --gid 816877 G-816877 && \
-#    useradd --uid 458981 --gid G-816877 --groups staff -m --shell /bin/bash tg458981
 
 COPY . /srv/www/portal
 #RUN mkdir -p /srv/www/project
@@ -40,6 +30,6 @@ COPY bin/* /usr/local/bin/
 
 WORKDIR /srv/www/portal
 
-RUN npm install
+#RUN npm install
 
 # RUN python manage.py collectstatic -c --traceback --noinput
