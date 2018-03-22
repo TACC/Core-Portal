@@ -6,19 +6,17 @@ from django.conf.urls.static import static
 from django.contrib import admin
 #
 from django.views.generic import RedirectView
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth.views import logout as des_logout
+from portal.apps.auth.views import agave_oauth as login
 from portal.views.views import project_version as des_version
 #
-from views import views
 
 urlpatterns = [
     # admin.
     url(r'^admin/', admin.site.urls),
 
-     # terms-and-conditions
+    # terms-and-conditions
     url(r'^terms/', include('termsandconditions.urls')),
 
     # auth.
@@ -30,6 +28,7 @@ urlpatterns = [
                            namespace='portal_auth')),
     url(r'^logout/$', des_logout,
         {'next_page': '/auth/logged-out/'}, name='logout'),
+    url(r'^login/$', login),
 
     # apps.
     # url(r'^data-depot/', include('portal.apps.data_depot.urls',
@@ -41,13 +40,13 @@ urlpatterns = [
     url(r'^api/workspace/', include('portal.apps.workspace.api.urls',
                                     namespace='workspace_api')),
     url(r'^workshops/', include('portal.apps.workshops.urls',
-                               namespace='workshops')),
+                                namespace='workshops')),
     url(r'^search/', include('portal.apps.search.urls',
-                              namespace='search')),
+                             namespace='search')),
     url(r'^api/search/', include('portal.apps.search.api.urls',
-                              namespace='search')),
+                                 namespace='search')),
     url(r'^workbench/', include('portal.apps.workbench.urls',
-                               namespace='workbench')),
+                                namespace='workbench')),
 
     # version check.
     url(r'^version/', des_version),

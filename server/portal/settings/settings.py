@@ -400,6 +400,8 @@ TOOLBAR_OPTIONS = {
     'tag_enabled': True,
 }
 
+PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home'
+
 """
 SETTINGS: ELASTICSEARCH
 """
