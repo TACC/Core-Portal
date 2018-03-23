@@ -21,7 +21,7 @@ RUN pip install --upgrade pip && pip install uwsgitop
 
 COPY requirements.txt /tmp/requirements.txt
 
-RUN pip install -r /tmp/requirements.txt
+RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
 
 COPY . /srv/www/portal
 #RUN mkdir -p /srv/www/project
