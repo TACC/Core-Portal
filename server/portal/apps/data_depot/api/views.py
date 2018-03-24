@@ -11,6 +11,7 @@ from django.conf import settings
 from portal.apps.data_depot.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
+from portal.apps.accounts.managers.user_home_system import get_system_id
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -38,10 +39,8 @@ class SystemListingView(BaseApiView):
     """System Listing View"""
 
     def get(self, request):
-        ac = request.user.agave_oauth.client
-        listing = ac.systems.list(type="STORAGE")
         community_data_system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
-        mydata_system = settings.AGAVE_STORAGE_SYSTEM.format(username=request.user.username)
+        mydata_system = get_system_id(request.user)
         listing = [
             {
                 "systemId": community_data_system,
