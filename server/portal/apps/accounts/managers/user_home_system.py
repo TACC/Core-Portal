@@ -19,17 +19,28 @@ def _create_private_key():
     return RSA.generate(2048)
 
 def _create_public_key(priv_key):
-    return priv_key.publickKey()
+    return priv_key.publickey()
 
-def path(username):
+def get_home_dir_abs_path(user):
     """path"""
-    return os.path.join('home', username)
+    return os.path.join(
+        settings.PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH,
+        user.username
+    )
 
-def system_id(username):
+def get_system_id(user):
     """system_id"""
     return '.'.join([
         settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX,
-        username])
+        user.username])
+
+def get_storage_host(user):
+    """storage host"""
+    return settings.PORTAL_DATA_DEPOT_STORAGE_HOST
+
+def get_storage_username(user):
+    """storage username"""
+    return user.username
 
 def create(user):
     """Create user's home directory
@@ -45,12 +56,11 @@ def create(user):
     agc = service_account()
     username = user.username
     system_body = {
-        'id': system_id(username),
+        'id': get_system_id(user),
         'site': 'portal.dev',
-        'default': False,
-        'status': 'UP',
+        'default': False, 'status': 'UP',
         'description': 'Home system for user: {username}'.format(username=username),
-        'name': system_id(username),
+        'name': get_system_id(user),
         'globalDefault': False,
         'availbale': True,
         'public': False,
@@ -58,14 +68,14 @@ def create(user):
         'storage': {
             'mirror': False,
             'port': 22,
-            'homeDir': path(username),
-            'rootDir': '/',
+            'homeDir': '/',
+            'rootDir': get_home_dir_abs_path(user),
             'protocol': 'SFTP',
-            'host': settings.PORTAL_DATA_DEPOT_STORAGE_HOST,
+            'host': get_storage_host(user),
             'publicAppsDir': None,
             'proxy': None,
             'auth': {
-                'username': settings.PORTAL_ADMIN_USERNAME,
+                'username': get_storage_username(user),
                 'type': 'SSHKEYS',
                 'publicKey': publ_key_str,
                 'privateKey': priv_key_str
@@ -74,6 +84,12 @@ def create(user):
     }
     home_sys = agc.systems.add(
         body=system_body)
+    agc.systems.updateRole(
+        systemId=system_body['id'],
+        body={
+            'role': 'USER',
+            'username': user.username
+        })
     SSHKeys.objects.save_keys(
         user,
         system_id=system_body['id'],
@@ -89,8 +105,7 @@ def get(user):
     :returns: Agave response for the folder
     """
     agc = service_account()
-    username = user.username
-    home_sys = agc.systems.get(system_id(username))
+    home_sys = agc.systems.get(systemId=get_system_id(user))
     return home_sys
 
 def get_or_create(user):

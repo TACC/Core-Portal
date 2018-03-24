@@ -147,5 +147,4 @@ def service_account():
     """Returns an agave instance with the admin account"""
     return Agave(
         api_server=settings.AGAVE_TENANT_BASEURL,
-        token=settings.AGAVE_SUPER_TOKEN,
-        resource=settings.AGAVE_RESOURCES)
+        token=settings.AGAVE_SUPER_TOKEN)

@@ -62,4 +62,5 @@ elasticsearch==5.4.0
 elasticsearch-dsl==5.3.0
 sphinx_rtd_theme==0.2.4
 pycrypto==2.6.1
+setuptools==39.0.1
 newrelic

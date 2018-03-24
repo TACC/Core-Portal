@@ -21,9 +21,14 @@ def create(user):
     """
     agc = service_account()
     username = user.username
-    home_dir = agc.files.mkdir(
+    body = {
+        'action': 'mkdir',
+        'path': username
+    }
+    home_dir = agc.files.manage(
         systemId=settings.AGAVE_STORAGE_SYSTEM,
-        filePath=username)
+        filePath=settings.PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH,
+        body=body)
     return home_dir
 
 def get(user):

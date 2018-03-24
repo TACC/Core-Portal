@@ -96,20 +96,19 @@ class SSHKeysManager(models.Manager):
         :raises: ValueError if key set already exists for user and system
 
         .. note::
-            The keys need to be given as clear text strings and will be
+            The priv key need to be given as clear text strings and will be
              encrypted using AES
         """
         try:
             _sk = Keys.objects.get(ssh_keys__user=user,
                                    system=system_id)
         except ObjectDoesNotExist:
-            ssh_keys = self.objects.create(user=user)
+            ssh_keys = super(SSHKeysManager, self).create(user=user)
             Keys.objects.create(
+                ssh_keys=ssh_keys,
                 system=system_id,
-                defaults={
-                    'private': priv_key,
-                    'public': pub_key
-                }
+                private=priv_key,
+                public=pub_key
             )
             return ssh_keys
         raise ValueError(
@@ -163,7 +162,7 @@ class SSHKeys(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         related_name='ssh_keys')
-    ojbects = SSHKeysManager()
+    objects = SSHKeysManager()
 
     def for_system(self, system_id):
         """Returns set of keys for a specific system
@@ -188,7 +187,7 @@ class SSHKeys(models.Model):
               See Example
 
         """
-        keys = Keys.objects.filter(ssh_keys=self, system=system_id)
+        keys = Keys.objects.get(ssh_keys=self, system=system_id)
         return keys
 
     def __unicode__(self):
@@ -222,7 +221,8 @@ class Keys(models.Model):
             The keys need to be given as clear text strings and will be
              encrypted using AES
         """
-        if self.private != self._private:
+        if (self.private != self._private or
+                self.pk is None):
             self.private = _encrypt(self.private)
         super(Keys, self).save(*args, **kwargs)
         self._private = self.private
@@ -254,7 +254,7 @@ def _encrypt(raw):
     source += chr(padding) * padding
     # Python 3.x: source += bytes([padding]) * padding
     # store the IV at the beginning and encrypt
-    data = IV + encryptor.encrypt(raw)
+    data = IV + encryptor.encrypt(source)
     return base64.b64encode(data).decode("utf-8")
 
 def _decrypt(raw):

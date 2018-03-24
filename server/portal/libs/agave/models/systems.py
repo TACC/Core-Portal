@@ -8,6 +8,7 @@ import logging
 import urlparse
 import urllib
 from collections import namedtuple
+import requests
 from requests.exceptions import HTTPError
 from cached_property import cached_property
 from django.conf import settings
@@ -22,8 +23,10 @@ METRICS = logging.getLogger('metrics.{}'.format(__name__))
 class BaseSystem(BaseAgaveResource):
     """Agave System representation
 
-    ..note::
+    .. note::
         Schema: https://agavepy.readthedocs.io/en/latest/agavepy.systems.html
+    .. todo::
+        This class should create a better API
     """
 
     EXECUTION_TYPES = namedtuple(
@@ -33,9 +36,28 @@ class BaseSystem(BaseAgaveResource):
     def __init__(self, client, id=id, **kwargs):
         super(BaseSystem, self).__init__(
             client, id=id, **kwargs)
-        self.id = id
-        self.description = getattr(self, 'description', '')
-        self.environment = getattr(self, 'environment', None)
-        self.execution_type = getattr(self, 'execution_type',
-                                      self.EXECUTION_TYPES.HPC)
-        self.login = getattr(self, 'login', {})
+
+    @classmethod
+    def create(cls, client, body):
+        """Create a system
+
+        :param dict body: System definition
+        """
+        resp = client.add(body=body)
+        return cls(client, **resp)
+
+    @classmethod
+    def search(cls, client, query):
+        if client.token:
+            token = client.token.token_info['access_token']
+        else:
+            token = client._token
+
+        headers = {'Authorization': 'Bearer {token}'.format(token=token)}
+        resp = requests.get(
+            '{baseurl}/systems/v2'.format(
+                baseurl=settings.AGAVE_TENANT_BASEURL),
+            headers=headers,
+            params=query
+        )
+        return resp
