@@ -5,10 +5,11 @@
 from __future__ import unicode_literals, absolute_import
 import os
 import logging
+from Crypto.PublicKey import RSA
 from django.conf import settings
 from requests.exceptions import HTTPError
 from portal.libs.agave.utils import service_account
-from Crypto.PublicKey import RSA
+from portal.apps.accounts.models import SSHKeys
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -73,6 +74,11 @@ def create(user):
     }
     home_sys = agc.systems.add(
         body=system_body)
+    SSHKeys.objects.save_keys(
+        user,
+        system_id=system_body['id'],
+        priv_key=priv_key_str,
+        pub_key=publ_key_str)
     return home_sys
 
 def get(user):

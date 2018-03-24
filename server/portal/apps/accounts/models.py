@@ -113,7 +113,11 @@ class SSHKeysManager(models.Manager):
             )
             return ssh_keys
         raise ValueError(
-            "A set of keys for this system and user already exists")
+            """A set of keys for system: '{system}' and username: '{username}'
+               already exists""".format(
+                   system=system_id,
+                   username=user.username)
+        )
 
     def update_keys(self, user, system_id, priv_key, pub_key):
         """Update set of keys for a specific user and system
@@ -172,10 +176,15 @@ class SSHKeys(models.Model):
         :Example:
         Retreive set of keys for system
         >>> ssh_keys = SSHkeys.objects.get(user=user)
-        >>> private = ssh_keys.for_system('cep.home.username').private
+        >>> private = ssh_keys.for_system('cep.home.username').private_key()
+        >>> #or directly from the user object
+        >>> django.contrib.auth import get_user
+        >>> user = get_user(request)
+        >>> user.ssh_keys.for_system('cep.home.username').private_key()
 
         .. note::
             This query is purposley here to have two step retreival of keys.
+            As well as having a more explicit syntax.
               See Example
 
         """
