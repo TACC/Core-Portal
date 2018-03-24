@@ -8,16 +8,17 @@ import logging
 from django.conf import settings
 from requests.exceptions import HTTPError
 from portal.libs.agave.utils import service_account
+from Crypto.PublicKey import RSA
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
 def _create_private_key():
-    return 'private_key'
+    return RSA.generate(2048)
 
-def _create_public_key():
-    return 'public_key'
+def _create_public_key(priv_key):
+    return priv_key.publickKey()
 
 def path(username):
     """path"""
@@ -37,7 +38,9 @@ def create(user):
     :returns: Agave response for the folder created
     """
     private_key = _create_private_key()
-    public_key = _create_public_key()
+    priv_key_str = private_key.exportKey('PEM')
+    public_key = _create_public_key(private_key)
+    publ_key_str = public_key.exportKey('OpenSSH')
     agc = service_account()
     username = user.username
     system_body = {
@@ -52,13 +55,25 @@ def create(user):
         'public': False,
         'type': 'STORAGE',
         'storage': {
+            'mirror': False,
+            'port': 22,
             'homeDir': path(username),
-            'rootDir': '/'
+            'rootDir': '/',
+            'protocol': 'SFTP',
+            'host': settings.PORTAL_DATA_DEPOT_STORAGE_HOST,
+            'publicAppsDir': None,
+            'proxy': None,
+            'auth': {
+                'username': settings.PORTAL_ADMIN_USERNAME,
+                'type': 'SSHKEYS',
+                'publicKey': publ_key_str,
+                'privateKey': priv_key_str
+            }
         }
     }
-    home_dir = agc.systems.add(
+    home_sys = agc.systems.add(
         body=system_body)
-    return private_key, public_key, home_dir
+    return home_sys
 
 def get(user):
     """Gets user's home directory
@@ -69,9 +84,7 @@ def get(user):
     """
     agc = service_account()
     username = user.username
-    home_sys = agc.files.list(
-        systemId=settings.AGAVE_STORAGE_SYSTEM,
-        filePath=username)
+    home_sys = agc.systems.get(system_id(username))
     return home_sys
 
 def get_or_create(user):
@@ -83,8 +96,8 @@ def get_or_create(user):
     """
     try:
         home_sys = get(user)
-        return None, None, home_sys
+        return home_sys
     except HTTPError as exc:
         if exc.response.status_code == 404:
-            private_key, public_key, home_sys = create(user)
-            return private_key, public_key, home_sys
+            home_sys = create(user)
+            return home_sys
