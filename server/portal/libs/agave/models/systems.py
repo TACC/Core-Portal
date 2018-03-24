@@ -60,4 +60,6 @@ class BaseSystem(BaseAgaveResource):
             headers=headers,
             params=query
         )
-        return resp
+        resp.raise_for_status()
+        systems = resp.json()['response']
+        return systems

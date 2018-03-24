@@ -380,6 +380,7 @@ SETTINGS: DATA DEPOT
 PORTAL_DATA_DEPOT_MANAGERS = {
     'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
     'shared': 'portal.apps.data_depot.managers.shared.FileManager',
+    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
@@ -408,6 +409,8 @@ PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = settings_secret.\
     _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH
 PORTAL_DATA_DEPOT_STORAGE_HOST = settings_secret.\
     _PORTAL_DATA_DEPOT_STORAGE_HOST
+PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = settings_secret.\
+    _PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX
 """
 SETTINGS: ELASTICSEARCH
 """

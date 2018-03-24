@@ -8,7 +8,6 @@ import json
 import os
 from django.http import JsonResponse
 from django.conf import settings
-from django.utils.decorators import method_decorator
 from portal.apps.data_depot.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
@@ -29,10 +28,8 @@ def get_manager(request, file_mgr_name):
 class ProjectListingView(BaseApiView):
     """ Projects listing view"""
     def get(self, request):
-
-        ac = request.user.agave_oauth.client
-        listing  = ac.systems.list(type="STORAGE")
-        projects = [s for s in listing if '-projects-' in s.id]
+        fmgr = get_manager(request, 'projects')
+        projects = fmgr.projects_systems()
         return JsonResponse({'response': projects})
 
 
