@@ -9,6 +9,7 @@ from Crypto.PublicKey import RSA
 from django.conf import settings
 from requests.exceptions import HTTPError
 from portal.libs.agave.utils import service_account
+from portal.libs.agave.models.systems import BaseSystem
 from portal.apps.accounts.models import SSHKeys
 
 #pylint: disable=invalid-name
@@ -20,6 +21,19 @@ def _create_private_key():
 
 def _create_public_key(priv_key):
     return priv_key.publickey()
+
+def _save_user_keys(user, system_id, priv_key, pub_key):
+    """Saves a user's ssh keys for a specific system
+
+    :param user: Django user instance
+    :param str priv_key: Private Key
+    :param str pub_key: Public Key
+    """
+    SSHKeys.objects.save_keys(
+        user,
+        system_id=system_id,
+        priv_key=priv_key,
+        pub_key=pub_key)
 
 def get_home_dir_abs_path(user):
     """path"""
@@ -87,14 +101,15 @@ def create(user):
     agc.systems.updateRole(
         systemId=system_body['id'],
         body={
-            'role': 'USER',
+            'role': 'OWNER',
             'username': user.username
         })
-    SSHKeys.objects.save_keys(
+    _save_user_keys(
         user,
-        system_id=system_body['id'],
-        priv_key=priv_key_str,
-        pub_key=publ_key_str)
+        system_body['id'],
+        priv_key_str,
+        publ_key_str
+    )
     return home_sys
 
 def get(user):
@@ -122,3 +137,32 @@ def get_or_create(user):
         if exc.response.status_code == 404:
             home_sys = create(user)
             return home_sys
+
+def reset_home_system_keys(user):
+    """Resets home system SSH Keys
+
+    :param user: User instance
+
+    :returns: Agave System response
+    """
+    home_sys = BaseSystem(
+        client=user.agave_oauth.client,
+        id=get_system_id(user)
+    )
+
+    private_key = _create_private_key()
+    priv_key_str = private_key.exportKey('PEM')
+    public_key = _create_public_key(private_key)
+    publ_key_str = public_key.exportKey('OpenSSH')
+
+    home_sys.set_storage_keys(
+        user.username,
+        priv_key_str,
+        publ_key_str
+    )
+    _save_user_keys(
+        user,
+        home_sys.id,
+        priv_key_str,
+        publ_key_str
+    )

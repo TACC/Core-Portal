@@ -33,3 +33,8 @@ def setup(username):
     home_dir = user_home.get_or_create(user)
     home_sys = user_home_system.get_or_create(user)
     return home_dir, home_sys
+
+def reset_home_system_keys(username):
+    """Resets Home System SSH Keys"""
+    user = check_user(username)
+    user_home_system.reset_home_system_keys(user)

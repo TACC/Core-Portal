@@ -49,10 +49,25 @@ class BaseAgaveResource(object): #pylint: disable=too-few-public-methods
 
         val = _wrapped.get(camel_name)
         if isinstance(val, dict):
+            try:
+                internal = object.__getattribute__(
+                    self,
+                    '__{name}'.format(name=name),
+                )
+                return internal
+            except AttributeError:
+                pass
+
             if 'self' in val:
                 _self = val.pop('self')
                 val['_self'] = copy.deepcopy(_self)
-            return BaseAgaveResource(client=self._ac, **val)
+            internal = BaseAgaveResource(client=self._ac, **val)
+            object.__setattr__(
+                self,
+                '__{name}'.format(name=name),
+                internal
+            )
+            return internal
 
         return val
 
@@ -63,7 +78,7 @@ class BaseAgaveResource(object): #pylint: disable=too-few-public-methods
                 self._wrapped[camel_name] = value
                 return
 
-        super(BaseAgaveResource, self).__setattr__(name, value)
+        object.__setattr__(self, name, value)
 
     def to_dict(self):
         try:

@@ -27,7 +27,6 @@ djangocms-file==2.0.2
 djangocms-picture==2.0.5
 djangocms-cascade==0.14.2
 django-bootstrap3==8.1.0
-django-websocket-redis==0.5.1
 easy-thumbnails==2.3
 futures==3.0.5
 ipdb==0.10.1
@@ -42,7 +41,6 @@ ptyprocess==0.5.1
 py==1.4.31
 Pygments==2.2.0
 pytest==2.8.3
--e git+https://bitbucket.org/taccaci/pytas.git@19dd9e7006f7f8332a1575d64a20031b6f5161fb#egg=pytas
 python-dateutil==2.4.2
 requests==2.8.1
 responses==0.5.0
