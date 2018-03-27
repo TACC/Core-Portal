@@ -173,6 +173,7 @@ class SSHKeys(models.Model):
         :rtype: :class:`~Keys`
 
         :Example:
+
         Retreive set of keys for system
         >>> ssh_keys = SSHkeys.objects.get(user=user)
         >>> private = ssh_keys.for_system('cep.home.username').private_key()

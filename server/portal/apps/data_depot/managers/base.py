@@ -265,7 +265,8 @@ class AgaveFileManager(AbstractFileManager):
         :returns: A file object.
         :rtype: obj
 
-        .. todo: Correct validation for :param:`file_id_dest`.
+        .. todo::
+            Correct validation for :param:`file_id_dest`.
         """
         _file_src = self.get_file(file_id_src)
         _file_dest = self.get_file(file_id_dest)
@@ -298,7 +299,8 @@ class AgaveFileManager(AbstractFileManager):
         :returns: Downloaded file stream.
         :rtype: byte[]
 
-        .. todo:: Implement folder download.
+        .. todo::
+            Implement folder download.
         """
         _file = self.get_file(file_id)
         if _file.type == 'dir':

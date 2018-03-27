@@ -21,7 +21,7 @@ _DJANGO_DB_HOST= 'postgres'
 _DJANGO_DB_PORT= '5432'
 
 # TAS Authentication.
-_TAS_URL='https://tas.tacc.utexas.edu/api'
+_TAS_URL='https://tas-dev.tacc.utexas.edu/api'
 _TAS_CLIENT_KEY='key'
 _TAS_CLIENT_SECRET='secret'
 
