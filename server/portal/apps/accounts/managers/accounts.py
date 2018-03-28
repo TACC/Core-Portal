@@ -45,12 +45,23 @@ def _lookup_user_home_manager(user):
     mgr_str = getattr(
         settings,
         'PORTAL_USER_HOME_MANAGER',
-        'portal.apps.accounts.managers.user_home.UserHomeManager'
     )
     module_str, cls_str = mgr_str.rsplit('.', 1)
     module = import_module(module_str)
     cls = getattr(module, cls_str)
     return cls(user)
+
+def get_user_home_system_id(user):
+    """Gets user home system id
+
+    Shortcut method to return the user's home system id
+
+    :param user: Django user instance
+    :return: System id
+    :rtype: str
+    """
+    mgr = _lookup_user_home_manager(user)
+    return mgr.get_system_id()
 
 def setup(username):
     """Fires necessary steps for setup
@@ -80,6 +91,7 @@ def setup(username):
     """
     user = check_user(username)
     mgr = _lookup_user_home_manager(user)
+    logger.debug('User Home Manager class: %s', mgr.__class__)
     home_dir = mgr.get_or_create_dir(user)
     home_sys = mgr.get_or_create_system(user)
     extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])

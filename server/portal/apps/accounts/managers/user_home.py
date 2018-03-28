@@ -5,6 +5,7 @@
 from __future__ import unicode_literals, absolute_import
 import os
 import logging
+import json
 from abc import ABCMeta, abstractmethod
 from six import add_metaclass
 from requests.exceptions import HTTPError
@@ -125,6 +126,15 @@ class AbstractUserHomeManager:
         return NotImplemented
 
     @abstractmethod
+    def get_system_definition(self, publ_key_str, priv_key_str, *args, **kwargs):
+        """Returns Agave system definition
+
+        :returns: Agave system definition
+        :rtype: dict
+        """
+        return NotImplemented
+
+    @abstractmethod
     def create_home_system(self, *args, **kwargs):
         """Creates Agave System for a user's home directory
 
@@ -151,8 +161,8 @@ class UserHomeManager(AbstractUserHomeManager):
     """User Home Manager
 
     Any functionality needed to manage a user's home directory and system
-     is implemented here. This is mainly used when setting up a new account
-     or to renew keys.
+    is implemented here. This is mainly used when setting up a new account
+    or to renew keys.
 
     .. note::
         If a special case needs to be implemented first see if it can be done
@@ -191,6 +201,7 @@ class UserHomeManager(AbstractUserHomeManager):
         home_dir = agc.files.list(
             systemId=settings.AGAVE_STORAGE_SYSTEM,
             filePath=username)
+        logger.debug('home_dir: %s', json.dumps(dict(home_dir), indent=2))
         return home_dir
 
     def get_or_create_dir(self, *args, **kwargs):#pylint: disable=unused-argument
@@ -227,7 +238,7 @@ class UserHomeManager(AbstractUserHomeManager):
             priv_key=priv_key,
             pub_key=pub_key)
 
-    def get_home_dir_abs_path(self):
+    def get_home_dir_abs_path(self, *args, **kwargs):
         """Returns home directory absolute path
 
         *Home directory* refers to the directory where every user's
@@ -243,7 +254,7 @@ class UserHomeManager(AbstractUserHomeManager):
             self.user.username
         )
 
-    def get_system_id(self):
+    def get_system_id(self, *args, **kwargs):
         """Returns system Id
 
         *System Id* is a string, unique id for each system.
@@ -256,43 +267,12 @@ class UserHomeManager(AbstractUserHomeManager):
             settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX,
             self.user.username])
 
-    def get_storage_host(self):#pylint:disable=no-self-use
-        """Returns storage host
+    def get_system_definition(self, publ_key_str, priv_key_str):
+        """Returns Agave system definition
 
-        Every Agave System definition has a *Storage Host* to which it connects
-         to.
-
-        :returns: Storage Host to connect to
-        :rtype: str
+        :returns: Agave system definition
+        :rtype: dict
         """
-        return settings.PORTAL_DATA_DEPOT_STORAGE_HOST
-
-    def get_storage_username(self):
-        """Returns storage username
-
-        Every Agave System definition uses a username and ssh keys (or password)
-         to authenticate to the storage system. This function returns that username
-
-        :returns: Storage username
-        :rtype: str
-        """
-        return self.user.username
-
-    def create_home_system(self):
-        """Create user's home directory
-
-        :param user: User instance
-
-        :returns: Agave response for the folder created
-
-        .. todo::
-            This method should return a :clas:`BaseSystem` instance
-        """
-        private_key = self._create_private_key()
-        priv_key_str = private_key.exportKey('PEM')
-        public_key = self._create_public_key(private_key)
-        publ_key_str = public_key.exportKey('OpenSSH')
-        agc = service_account()
         username = self.user.username
         system_body = {
             'id': self.get_system_id(self.user),
@@ -321,6 +301,46 @@ class UserHomeManager(AbstractUserHomeManager):
                 }
             }
         }
+        return system_body
+
+    def get_storage_host(self, *args, **kwargs):#pylint:disable=no-self-use
+        """Returns storage host
+
+        Every Agave System definition has a *Storage Host* to which it connects
+         to.
+
+        :returns: Storage Host to connect to
+        :rtype: str
+        """
+        return settings.PORTAL_DATA_DEPOT_STORAGE_HOST
+
+    def get_storage_username(self, *args, **kwargs):#pylint:disable=unused-argument
+        """Returns storage username
+
+        Every Agave System definition uses a username and ssh keys (or password)
+         to authenticate to the storage system. This function returns that username
+
+        :returns: Storage username
+        :rtype: str
+        """
+        return self.user.username
+
+    def create_home_system(self, *args, **kwargs):
+        """Create user's home directory
+
+        :param user: User instance
+
+        :returns: Agave response for the folder created
+
+        .. todo::
+            This method should return a :clas:`BaseSystem` instance
+        """
+        private_key = self._create_private_key()
+        priv_key_str = private_key.exportKey('PEM')
+        public_key = self._create_public_key(private_key)
+        publ_key_str = public_key.exportKey('OpenSSH')
+        system_body = self.get_system_definition(publ_key_str, priv_key_str)
+        agc = service_account()
         home_sys = agc.systems.add(
             body=system_body)
         agc.systems.updateRole(
@@ -337,7 +357,7 @@ class UserHomeManager(AbstractUserHomeManager):
         )
         return home_sys
 
-    def get_system(self):
+    def get_system(self, *args, **kwargs):
         """Gets user's home directory
 
         :param user: User instance
@@ -352,7 +372,7 @@ class UserHomeManager(AbstractUserHomeManager):
         )
         return home_sys
 
-    def get_or_create_system(self):
+    def get_or_create_system(self, *args, **kwargs):
         """Gets or creates user's home directory
 
         :param user: User instance
@@ -367,7 +387,7 @@ class UserHomeManager(AbstractUserHomeManager):
                 home_sys = self.create_home_system(self.user)
                 return home_sys
 
-    def reset_system_keys(self):
+    def reset_system_keys(self, *args, **kwargs):
         """Resets home system SSH Keys
 
         :param user: User instance

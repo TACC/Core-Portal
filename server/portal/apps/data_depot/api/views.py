@@ -11,7 +11,7 @@ from django.conf import settings
 from portal.apps.data_depot.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
-from portal.apps.accounts.managers.user_home_system import get_system_id
+from portal.apps.accounts.managers.accounts import get_user_home_system_id
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ class SystemListingView(BaseApiView):
 
     def get(self, request):
         community_data_system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
-        mydata_system = get_system_id(request.user)
+        mydata_system = get_user_home_system_id(request.user)
         listing = [
             {
                 "systemId": community_data_system,
