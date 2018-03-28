@@ -4,6 +4,8 @@ Utilities to help on agave/models implementations.
 from __future__ import unicode_literals, absolute_import
 import os
 import urllib
+from django.conf import settings
+from agavepy.agave import Agave
 
 def to_camel_case(input_str):
     """Convert from snake_case to lowerCamelCase.
@@ -140,3 +142,9 @@ def walk_levels(client, system, path, bottom_up=False):
 
     if bottom_up:
         yield (path, folders, files)
+
+def service_account():
+    """Returns an agave instance with the admin account"""
+    return Agave(
+        api_server=settings.AGAVE_TENANT_BASEURL,
+        token=settings.AGAVE_SUPER_TOKEN)
