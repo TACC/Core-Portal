@@ -365,15 +365,16 @@ CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
 CELERY_QUEUES = (
     Queue('default', Exchange('default'), routing_key='default'),
     #Use to queue indexing tasks
-    Queue('indexing', Exchange('io'), routing_key='io.indexing'),
+    Queue('indexing', Exchange('indexing'), routing_key='indexing'),
     #Use to queue tasks which handle files
-    Queue('files', Exchange('io'), routing_key='io.files'),
+    Queue('files', Exchange('files'), routing_key='files'),
     #Use to queue tasks which mainly call external APIs
-    Queue('api', Exchange('api'), routing_key='api.agave'),
+    Queue('api', Exchange('api'), routing_key='api'),
     )
-CELERY_DEFAULT_QUEUE = 'default'
-CELERY_DEFAULT_EXCHANGE = 'default'
-CELERY_DEFAULT_ROUTING_KEY = 'default'
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_DEFAULT_EXCHANGE = 'default'
+CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
+
 
 """
 SETTINGS: DATA DEPOT

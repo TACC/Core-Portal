@@ -4,6 +4,7 @@
 """
 from __future__ import unicode_literals, absolute_import
 import logging
+import json
 from requests.exceptions import ConnectionError, HTTPError
 from django.views.generic import View
 from django.http import JsonResponse
@@ -27,6 +28,7 @@ class BaseApiView(View):
         try:
             return super(BaseApiView, self).dispatch(request, *args, **kwargs)
         except ApiException as err:
+
             status = err.response.status_code
             message = err.response.reason
             extra = err.extra
@@ -37,7 +39,8 @@ class BaseApiView(View):
             return JsonResponse({'message':message}, status=400)
         except (ConnectionError, HTTPError) as err:
             status = err.response.status_code
-            message = err.response.reason
+            content = json.loads(err.response._content)
+            message = content.get("message", "Unknown Error")
             if status in [404, 403]:
                 logger.warning('%s: %s', message, err.response.text, exc_info=True,
                                extra={'username': request.user.username,
