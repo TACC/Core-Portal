@@ -15,9 +15,10 @@ from portal.libs.agave.utils import service_account
 from portal.libs.agave.models.systems import BaseSystem
 from portal.apps.accounts.models import SSHKeys
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 @add_metaclass(ABCMeta)
 class AbstractUserHomeManager:
@@ -38,7 +39,11 @@ class AbstractUserHomeManager:
          or overriding some methods on :class:`UserHomeManager`
     """
 
-    def __init__(self, user, *args, **kwargs):#pylint: disable=unused-argument
+    def __init__(
+            self,
+            user,
+            *args,
+            **kwargs):  # pylint: disable=unused-argument
         """Initialize Manager
 
         :param user: Django user instance
@@ -46,7 +51,7 @@ class AbstractUserHomeManager:
         self.user = user
 
     @abstractmethod
-    def mkdir(self, *args, **kwargs):#pylint: disable=unused-argument
+    def mkdir(self, *args, **kwargs):  # pylint: disable=unused-argument
         """Create user's home directory
 
         :param user: User instance
@@ -56,7 +61,7 @@ class AbstractUserHomeManager:
         return NotImplemented
 
     @abstractmethod
-    def get_dir(self, *args, **kwargs):#pylint: disable=unused-argument
+    def get_dir(self, *args, **kwargs):  # pylint: disable=unused-argument
         """Gets user's home directory
 
         :param user: User instance
@@ -66,7 +71,10 @@ class AbstractUserHomeManager:
         return NotImplemented
 
     @abstractmethod
-    def get_or_create_dir(self, *args, **kwargs):#pylint: disable=unused-argument
+    def get_or_create_dir(
+            self,
+            *args,
+            **kwargs):  # pylint: disable=unused-argument
         """Gets or creates user's home directory
 
         :param user: User instance
@@ -117,8 +125,9 @@ class AbstractUserHomeManager:
     def get_storage_username(self, *args, **kwagrs):
         """Returns storage username
 
-        Every Agave System definition uses a username and ssh keys (or password)
-         to authenticate to the storage system. This function returns that username
+        Every Agave System definition uses a username and ssh
+        keys (or password) to authenticate to the storage system.
+        This function returns that username
 
         :returns: Storage username
         :rtype: str
@@ -126,7 +135,13 @@ class AbstractUserHomeManager:
         return NotImplemented
 
     @abstractmethod
-    def get_system_definition(self, publ_key_str, priv_key_str, *args, **kwargs):
+    def get_system_definition(
+            self,
+            publ_key_str,
+            priv_key_str,
+            *args,
+            **kwargs
+    ):
         """Returns Agave system definition
 
         :returns: Agave system definition
@@ -157,6 +172,7 @@ class AbstractUserHomeManager:
         """Resets home system keys"""
         return NotImplemented
 
+
 class UserHomeManager(AbstractUserHomeManager):
     """User Home Manager
 
@@ -170,7 +186,7 @@ class UserHomeManager(AbstractUserHomeManager):
         If not, be careful when overriding methods in this class.
     """
 
-    def mkdir(self, *args, **kwargs):#pylint: disable=unused-argument
+    def mkdir(self, *args, **kwargs):  # pylint: disable=unused-argument
         """Create user's home directory
 
         :param user: User instance
@@ -189,7 +205,7 @@ class UserHomeManager(AbstractUserHomeManager):
             body=body)
         return home_dir
 
-    def get_dir(self, *args, **kwargs):#pylint: disable=unused-argument
+    def get_dir(self, *args, **kwargs):  # pylint: disable=unused-argument
         """Gets user's home directory
 
         :param user: User instance
@@ -204,7 +220,11 @@ class UserHomeManager(AbstractUserHomeManager):
         logger.debug('home_dir: %s', json.dumps(dict(home_dir), indent=2))
         return home_dir
 
-    def get_or_create_dir(self, *args, **kwargs):#pylint: disable=unused-argument
+    def get_or_create_dir(
+            self,
+            *args,
+            **kwargs
+    ):  # pylint: disable=unused-argument
         """Gets or creates user's home directory
 
         :param user: User instance
@@ -219,13 +239,19 @@ class UserHomeManager(AbstractUserHomeManager):
                 home_dir = self.mkdir(self.user)
                 return home_dir
 
-    def _create_private_key(self):#pylint:disable=no-self-use
+    def _create_private_key(self):  # pylint:disable=no-self-use
         return RSA.generate(2048)
 
-    def _create_public_key(self, priv_key):#pylint:disable=no-self-use
+    def _create_public_key(self, priv_key):  # pylint:disable=no-self-use
         return priv_key.publickey()
 
-    def _save_user_keys(self, user, system_id, priv_key, pub_key):#pylint:disable=no-self-use
+    def _save_user_keys(
+            self,
+            user,
+            system_id,
+            priv_key,
+            pub_key
+    ):  # pylint:disable=no-self-use
         """Saves a user's ssh keys for a specific system
 
         :param user: Django user instance
@@ -278,7 +304,9 @@ class UserHomeManager(AbstractUserHomeManager):
             'id': self.get_system_id(self.user),
             'site': 'portal.dev',
             'default': False, 'status': 'UP',
-            'description': 'Home system for user: {username}'.format(username=username),
+            'description': 'Home system for user: {username}'.format(
+                username=username
+            ),
             'name': self.get_system_id(self.user),
             'globalDefault': False,
             'availbale': True,
@@ -303,7 +331,7 @@ class UserHomeManager(AbstractUserHomeManager):
         }
         return system_body
 
-    def get_storage_host(self, *args, **kwargs):#pylint:disable=no-self-use
+    def get_storage_host(self, *args, **kwargs):  # pylint:disable=no-self-use
         """Returns storage host
 
         Every Agave System definition has a *Storage Host* to which it connects
@@ -314,11 +342,17 @@ class UserHomeManager(AbstractUserHomeManager):
         """
         return settings.PORTAL_DATA_DEPOT_STORAGE_HOST
 
-    def get_storage_username(self, *args, **kwargs):#pylint:disable=unused-argument
+    def get_storage_username(
+            self,
+            *args,
+            **kwargs
+    ):  # pylint:disable=unused-argument
         """Returns storage username
 
-        Every Agave System definition uses a username and ssh keys (or password)
-         to authenticate to the storage system. This function returns that username
+        Every Agave System definition uses a username
+        and ssh keys (or password) to authenticate to
+        the storage system.
+        This function returns that username
 
         :returns: Storage username
         :rtype: str
