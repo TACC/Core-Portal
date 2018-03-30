@@ -21,14 +21,12 @@ After you clone the repository locally, there are several configuration steps re
 _server/conf_
 
     cd core-exp-portal/server/conf
-    cp mysql.sample.cnf mysql.cnf
     cp rabbitmq.sample.conf rabbitmq.conf
     cp redis.sample.conf redis.conf
 
 _server/conf/env_files_
 
     cd core-exp-portal/server/conf/env_files
-    cp mysql.sample.env mysql.env
     cp portal.sample.env portal.env
     cp rabbitmq.sample.env rabbitmq.env
 
@@ -53,12 +51,6 @@ _server/portal/settings_
     # server/conf/redis.conf
     # No edits required.
 
-    # server/conf/env_files/mysql.env
-    MYSQL_ROOT_PASSWORD=dev
-    MYSQL_DATABASE=dev
-    MYSQL_USER=dev
-    MYSQL_PASSWORD=dev
-
     # server/conf/env_files/portal.env
     # No edits required.
 
@@ -75,6 +67,8 @@ _server/portal/settings_
 
     # server/portal/settings/settings_secret.py
     # These values will be secured in UT Stache under `CEP_portal_secrets`
+    # Do NOT copy the database settings from Stache. Use what was in settings_secret.example.py
+    # Make sure you keep the DJANGO APP: DATA DEPOT information from settings_secret.example.py
 
 
 - _Note: Those files that do not require edits may still need to be customized to fit the neeeds of the project. Edit them as necessary._
@@ -112,12 +106,14 @@ _server/portal/settings_
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.dev`
 
     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_agave.py` for `AGAVE_TENANT_ID`._
+    
+    _Note: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
 
   2. Direct your browser to `https://cep.dev` or `http://cep.dev:8000`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/accounts/login`.
 
     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.dev/accounts/login`). After succesful login, you can use the debug server at `http://cep.dev:8000`._
 
-    _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox Developer Edition deny access to the local portal for this reason. The standard Firefox browser still allows users to create an exception for a self-signed cert. A cert solution needs to be established in alignment with current TACC policies to resolve this._
+    _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
 
 
 ### TBD
