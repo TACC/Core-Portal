@@ -41,7 +41,7 @@ SESSION_COOKIE_AGE= 24*60*60*7 # the number of seconds for only 7 for example
 #whether a user's session cookie expires when the web browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE=False
 #whether the session cookie should be secure (https:// only)
-SESSION_COOKIE_SECURE=False
+SESSION_COOKIE_SECURE=True
 
 ALLOWED_HOSTS = ['*']
 
