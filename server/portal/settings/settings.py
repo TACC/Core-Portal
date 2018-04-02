@@ -188,7 +188,7 @@ SETTINGS: LOCAL
 """
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEBUG = True
+DEBUG = settings_secret._DEBUG
 SITE_ID = 1
 
 # database
