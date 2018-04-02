@@ -9,6 +9,9 @@
     - uwsgi
     - uwsgi/vassals
 
+- name: Make sure uwsgi log directories exists
+  file: path=/var/log/uwsgi state=directory owner=portal group=portal
+
 - name: Write emperor ini
   template: src=emperor.ini.j2 dest=/etc/uwsgi/emperor.ini owner=root group=root
 
