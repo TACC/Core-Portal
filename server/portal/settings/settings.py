@@ -133,7 +133,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'portal.wsgi.application'
+WSGI_APPLICATION = settings_secret._WSGI_APPLICATION
 
 AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
                            'django.contrib.auth.backends.ModelBackend']
@@ -213,7 +213,6 @@ WS4REDIS_CONNECTION = {
     'host': 'redis',
 }
 WEBSOCKET_URL = '/ws/'
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
 
 # TAS Authentication.
 TAS_URL = settings_secret._TAS_URL
@@ -426,7 +425,7 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
 SETTINGS: ELASTICSEARCH
 """
 
-ES_HOSTS = ["elasticsearch"]
+ES_HOSTS = settings_secret._ES_HOSTS
 ES_DEFAULT_INDEX = "files"
 ES_DEFAULT_INDEX_ALIAS = "default"
 ES_PUBLIC_INDEX = "publications"

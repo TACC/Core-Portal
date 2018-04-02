@@ -40,34 +40,10 @@
     group: portal
     recurse: yes
 
-- name: Create settings_local.py
-  template:
-    src: settings_local.j2
-    dest: "{{project_home_dir}}/{{project_name}}/portal/settings/settings_local.py"
-  become_user: portal
-
 - name: Create settings_secret.py
   template:
     src: settings_secret.j2
     dest: "{{project_home_dir}}/{{project_name}}/portal/settings/settings_secret.py"
-  become_user: portal
-
-- name: Create settings_agave.py
-  template:
-    src: settings_agave.j2
-    dest: "{{project_home_dir}}/{{project_name}}/portal/settings/settings_agave.py"
-  become_user: portal
-
-- name: Create settings_celery.py
-  template:
-    src: settings_celery.j2
-    dest: "{{project_home_dir}}/{{project_name}}/portal/settings/settings_celery.py"
-  become_user: portal
-
-- name: Create eleasticsearch.py
-  template:
-    src: elasticsearch.j2
-    dest: "{{project_home_dir}}/{{project_name}}/portal/settings/elasticsearch.py"
   become_user: portal
 
 - name: Install NPM pacakges
