@@ -7,9 +7,6 @@
 - name: Write configuration
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
 
-- name: Copy TLS certs
-  copy: src='{{ nginx_tls_certs_path }}' dest=/etc/ssl
-
 - name: Copy SSL cert
   copy: src='../../secret_files/{{nginx_cert_file}}' dest=/etc/ssl/certs/
 
