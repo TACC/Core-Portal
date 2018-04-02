@@ -158,3 +158,6 @@ target/
 playbooks/hosts
 !playbooks/group_vars/*.example.yml
 !playbooks/roles/secret_files/.gitkeep
+
+#vscode
+.vscode/
