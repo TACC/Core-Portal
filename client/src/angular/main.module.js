@@ -4,6 +4,7 @@ import {mod as ng_modernizer} from './ng-modernizr';
 import {mod as workspace} from './workspace';
 import {mod as data_depot} from './data_depot';
 import {mod as search} from './search';
+import {mod as dashboard} from './dashboard';
 
 function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProvider) {
  'ngInject';
@@ -29,6 +30,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   .state('wb.dashboard', {
     'url': '/dashboard',
     'templateUrl': '/static/src/angular/workbench/templates/dashboard.html',
+    'controller': 'DashboardCtrl',
     'resolve': {
       'test': function () {console.log("dashboard resolve");}
     }
@@ -81,6 +83,7 @@ let mod = angular.module('portal', [
   'portal.workspace',
   'portal.data_depot',
   'portal.search',
+  'portal.dashboard'
 ]).config(config);
 
 export default mod;

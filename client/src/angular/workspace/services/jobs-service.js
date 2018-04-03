@@ -28,6 +28,21 @@ function Jobs($http) {
     return $http.post('/api/workspace/jobs/', data);
   };
 
+  service.jobsByDate = function (jobs) {
+    var nested = d3.nest()
+      .key(function (d) {
+        var ct = d.created;
+        ct.setHours(0, 0, 0);
+        return ct;
+      })
+      .entries(jobs);
+    nested.forEach(function (d) {
+      d.key = new Date(d.key);
+    });
+    nested = nested.sort(function (a, b) { return a.key - b.key;});
+    return nested;
+  };
+
   return service;
 }
 
