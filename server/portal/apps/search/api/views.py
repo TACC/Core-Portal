@@ -15,7 +15,7 @@ from elasticsearch import TransportError, ConnectionTimeout
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
-#pylint: enable=invalid-nam
+#pylint: enable=invalid-name
 connections.configure(default={'hosts': ['elasticsearch']})
 
 class SearchApiView(BaseApiView):
@@ -76,6 +76,7 @@ class SearchApiView(BaseApiView):
 
     def search_cms_content(self, q, offset, limit):
         """search cms content """
+
         search = Search(index="cms").query(
             "query_string",
             query=q,
@@ -91,6 +92,8 @@ class SearchApiView(BaseApiView):
         return search
 
     def search_public_files(self, q, offset, limit):
+        """search public files"""
+
         filters = Q('term', system="nees.public") | \
                   Q('term', system="designsafe.storage.published") | \
                   Q('term', system="designsafe.storage.community")
@@ -104,6 +107,8 @@ class SearchApiView(BaseApiView):
 
 
     def search_published(self, q, offset, limit):
+        """ search published content """
+
         query = Q('bool', must=[Q('simple_query_string', query=q)])
 
         search = Search(index="des-publications_legacy,des-publications")\

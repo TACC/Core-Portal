@@ -47,16 +47,18 @@ export default class SearchViewCtrl {
       if (reset) {
         $scope.page_num = 0;
       }
-      $scope.offset = $scope.page_num * $scope.limit
-      $scope.SearchService.search($scope.data.text, $scope.limit, $scope.offset, $scope.data.type_filter).then( (resp) => {
-        $scope.data.search_results = resp.response
-        //this.hits = resp.hits;
-        console.log('in search callback.')
-        console.log(resp);
-        //$scope.data.hits = resp.hits;
-        $scope.total_hits = $scope.data.search_results.total_hits
-        $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit)
-      });
+      if ($scope.data.text) {
+        $scope.offset = $scope.page_num * $scope.limit
+        $scope.SearchService.search($scope.data.text, $scope.limit, $scope.offset, $scope.data.type_filter).then( (resp) => {
+          $scope.data.search_results = resp.response
+          //this.hits = resp.hits;
+          console.log('in search callback.')
+          console.log(resp);
+          //$scope.data.hits = resp.hits;
+          $scope.total_hits = $scope.data.search_results.total_hits
+          $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit)
+        }); 
+      } else { $scope.data.search_results = {} }
     };
   
     $scope.makeUrl = function(listing) {
