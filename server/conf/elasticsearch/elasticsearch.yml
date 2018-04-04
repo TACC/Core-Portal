@@ -18,3 +18,6 @@ bootstrap.memory_lock: true
 
 # Silence the complaints about commercial plugins.
 xpack.security.enabled: false
+
+reindex.remote.whitelist: designsafe-es01.tacc.utexas.edu:*, designsafe-es02.tacc.utexas.edu:*
+path.repo: ["/usr/share/elasticsearch/backups/my_backup"]

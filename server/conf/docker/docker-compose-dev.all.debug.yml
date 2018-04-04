@@ -34,6 +34,7 @@ services:
     environment:
       - ES_HEAP_SIZE:2g
     volumes:
+      - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - cep_es_data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
