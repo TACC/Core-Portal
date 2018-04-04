@@ -1,9 +1,8 @@
 <div class="container-fluid" role="main" id="search">
-  <h1>Search</h1>
   <div class="container-fluid" ng-controller="SearchViewCtrl">
       <div class="row">
         <div class="col-md-6 col-md-offset-3">
-    
+
           <div class="input-group">
             <input type="text" class="form-control input-lg" ng-model="data.text" placeholder="Search for..." ng-change="search(true)" ng-model-options='{debounce: 500}'>
             <span class="input-group-btn">
@@ -14,7 +13,7 @@
           </div><!-- /input-group -->
         </div>
       </div>
-    
+
 
         <div class="col-md-3">
           <h2>Refine By:</h2>
@@ -22,7 +21,7 @@
             <a class="list-group-item" ng-class='{"active": data.type_filter == "published"}' ng-click='filter("published")'>Published Projects
                 <span class="badge" ng-show='data.search_results.published_total'> {{ data.search_results.published_total }}</span>
             </a>
-            
+
             <a class="list-group-item" ng-class='{"active": data.type_filter == "public_files"}' ng-click='filter("public_files")'>Public Files
                 <span class="badge" ng-show='data.search_results.public_files_total'> {{ data.search_results.public_files_total }}</span>
             </a>
@@ -39,7 +38,7 @@
                   no results in {{prettyFilterName[data.type_filter]}}
               </h3>
             </div></div>
-            
+
           <search-result make-url='makeUrl(data)' data=data ng-repeat="data in data.search_results.hits"></search-result>
         </div>
         <div class="row" ng-if="data.search_results.total_hits > limit">
