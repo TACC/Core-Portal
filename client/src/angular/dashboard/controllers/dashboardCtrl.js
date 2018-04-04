@@ -1,11 +1,12 @@
 import DS_TSBarChart from '../charts/DS_TSBarChart';
 
-export default function DashboardCtrl ($scope, Jobs) {
+export default function DashboardCtrl ($scope, Jobs, Apps) {
   'ngInject';
   $scope.display_job_details = false;
-  $scope.loading_tickets = true;
+  $scope.loading_tickets = false;
   $scope.loading_jobs = true;
   $scope.today = new Date();
+  $scope.usage = {total_storage_bytes: 0};
   $scope.first_jobs_date = new Date($scope.today.getTime() - (14 * 24 * 60 * 60 * 1000 ));
   $scope.first_jobs_date = new Date($scope.first_jobs_date.setHours(0,0,0,0));
   $scope.chart = new DS_TSBarChart('#ds_jobs_chart')
@@ -37,17 +38,17 @@ export default function DashboardCtrl ($scope, Jobs) {
     $scope.loading_jobs = false;
   });
 
-  AgaveService.appsListing({limit:99999}).then(function (resp) {
+  Apps.list({limit:99999}).then(function (resp) {
     var tmp = _.groupBy(resp, function (d) {return d.label;});
     $scope.apps = Object.keys(tmp);
   });
 
-  TicketsService.get().then(function (resp) {
-    $scope.my_tickets = resp;
-    $scope.loading_tickets = false;
-  }, function (err) {
-    $scope.loading_tickets = false;
-  });
+  // TicketsService.get().then(function (resp) {
+  //   $scope.my_tickets = resp;
+  //   $scope.loading_tickets = false;
+  // }, function (err) {
+  //   $scope.loading_tickets = false;
+  // });
 
 
 
