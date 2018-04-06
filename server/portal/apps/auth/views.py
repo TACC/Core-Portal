@@ -13,6 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from portal.apps.auth.models import AgaveOAuthToken
+from portal.apps.auth.tasks import setup_user
 
 
 #pylint: disable=invalid-name
@@ -105,6 +106,7 @@ def agave_oauth_callback(request):
             msg_tmpl = 'Login successful. Welcome back, %s %s!'
             msg_tmpl = getattr(settings, 'LOGIN_SUCCESS_MSG', msg_tmpl)
             messages.success(request, msg_tmpl % (user.first_name, user.last_name))
+            setup_user.apply_async(args=[user.username])
         else:
             messages.error(
                 request,

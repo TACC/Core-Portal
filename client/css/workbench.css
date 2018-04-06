@@ -5,6 +5,7 @@
 }
 
 .workbench-nav {
+  margin-top: -1px;
   background: #d3d3d3;
   min-width: 7rem;
   width: 7rem;

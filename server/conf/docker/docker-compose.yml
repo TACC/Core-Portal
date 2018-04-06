@@ -7,6 +7,5 @@ services:
         context: ../../.
         dockerfile: conf/docker/Dockerfile
       image: cep-portal/portal:local
-      env_file: ../env_files/portal.env
       command: /bin/bash
       container_name: cep_django

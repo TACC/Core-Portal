@@ -6,12 +6,17 @@ export default class SearchService {
     this.$http = $http;
   }
 
-  search(text) {
-    return this.$http.get('/api/search/', {q: text}).then( (resp)=>{
-      resp.data.response.forEach((d) => {
+  search(text, limit, offset, type_filter) {
+    return this.$http.get('/api/search', 
+    {params: 
+      {'q': text, 'limit': limit, 'offset': offset, 'type_filter': type_filter}
+    }).then( (resp)=>{
+    
+      resp.data.response.hits.forEach((d) => {
         d.lastModified = new Date(d.lastModified);
       });
-      return resp.data.response;
+
+      return resp.data;
     });
   }
 

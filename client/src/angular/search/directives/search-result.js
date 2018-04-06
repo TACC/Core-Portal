@@ -6,7 +6,8 @@ export default function searchResult() {
         click: '&click',
         makeUrl: '&makeUrl'
       },
-      templateUrl: '/static/portal/scripts/angular/search/templates/search-result.html',
+      templateUrl: '/static/src/angular/search/templates/search-result.html',
+      //templateUrl: '/static/src/angular/search/templates/search.html',
       link: function ($scope, elem, attrs) {
         $scope.onClick = function (listing) {
           $scope.click(listing);

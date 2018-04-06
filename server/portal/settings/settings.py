@@ -18,6 +18,7 @@ from kombu import Exchange, Queue
 
 
 logger = logging.getLogger(__file__)
+
 #pylint: disable=invalid-name
 gettext = lambda s: s
 #pylint: enable=invalid-name
@@ -132,7 +133,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'portal.wsgi.application'
+WSGI_APPLICATION = settings_secret._WSGI_APPLICATION
 
 AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
                            'django.contrib.auth.backends.ModelBackend']
@@ -173,7 +174,6 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, '../../','client'),
     ('vendor', os.path.join(BASE_DIR, '../../client/node_modules')),
 ]
@@ -188,7 +188,7 @@ SETTINGS: LOCAL
 """
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEBUG = True
+DEBUG = settings_secret._DEBUG
 SITE_ID = 1
 
 # database
@@ -212,7 +212,6 @@ WS4REDIS_CONNECTION = {
     'host': 'redis',
 }
 WEBSOCKET_URL = '/ws/'
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
 
 # TAS Authentication.
 TAS_URL = settings_secret._TAS_URL
@@ -329,7 +328,6 @@ SETTINGS: CELERY
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#BROKER_URL = 'amqp://designsafe:pwd@rabbitmq:5672//'
 _BROKER_URL_PROTOCOL = 'amqp://'
 _BROKER_URL_USERNAME = settings_secret._BROKER_URL_USERNAME
 _BROKER_URL_PWD = settings_secret._BROKER_URL_PWD
@@ -341,7 +339,6 @@ CELERY_BROKER_URL = ''.join([_BROKER_URL_PROTOCOL,_BROKER_URL_USERNAME, ':',
                       _BROKER_URL_PWD, '@', _BROKER_URL_HOST, ':',
                       _BROKER_URL_PORT, '/',_BROKER_URL_VHOST])
 
-#BROKER_URL = 'redis://redis:6379/0'
 _RESULT_BACKEND_PROTOCOL = 'redis://'
 _RESULT_BACKEND_USERNAME = settings_secret._RESULT_BACKEND_USERNAME
 _RESULT_BACKEND_PWD = settings_secret._RESULT_BACKEND_PWD
@@ -359,21 +356,21 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERYD_HIJACK_ROOT_LOGGER = False
 CELERYD_LOG_FORMAT = '[DJANGO] $(processName)s %(levelname)s %(asctime)s %(module)s '\
                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
-
 #CELERY_ANOTATIONS = {'designsafe.apps.api.tasks.reindex_agave': {'time_limit': 60 * 15}}
 CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
 CELERY_QUEUES = (
     Queue('default', Exchange('default'), routing_key='default'),
     #Use to queue indexing tasks
-    Queue('indexing', Exchange('io'), routing_key='io.indexing'),
+    Queue('indexing', Exchange('indexing'), routing_key='indexing'),
     #Use to queue tasks which handle files
-    Queue('files', Exchange('io'), routing_key='io.files'),
+    Queue('files', Exchange('files'), routing_key='files'),
     #Use to queue tasks which mainly call external APIs
-    Queue('api', Exchange('api'), routing_key='api.agave'),
+    Queue('api', Exchange('api'), routing_key='api'),
     )
-CELERY_DEFAULT_QUEUE = 'default'
-CELERY_DEFAULT_EXCHANGE = 'default'
-CELERY_DEFAULT_ROUTING_KEY = 'default'
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_DEFAULT_EXCHANGE = 'default'
+CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
+
 
 """
 SETTINGS: DATA DEPOT
@@ -382,6 +379,7 @@ SETTINGS: DATA DEPOT
 PORTAL_DATA_DEPOT_MANAGERS = {
     'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
     'shared': 'portal.apps.data_depot.managers.shared.FileManager',
+    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
@@ -402,11 +400,31 @@ TOOLBAR_OPTIONS = {
     'tag_enabled': True,
 }
 
+PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = settings_secret.\
+    _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
+
+PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = settings_secret.\
+    _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH
+
+PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = settings_secret.\
+    _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH
+
+PORTAL_DATA_DEPOT_STORAGE_HOST = settings_secret.\
+    _PORTAL_DATA_DEPOT_STORAGE_HOST
+
+PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = settings_secret.\
+    _PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX
+
+PORTAL_USER_HOME_MANAGER = settings_secret.\
+    _PORTAL_USER_HOME_MANAGER
+
+PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
+    _PORTAL_USER_ACCOUNT_SETUP_STEPS
 """
 SETTINGS: ELASTICSEARCH
 """
 
-ES_HOSTS = ["elasticsearch"]
+ES_HOSTS = settings_secret._ES_HOSTS
 ES_DEFAULT_INDEX = "files"
 ES_DEFAULT_INDEX_ALIAS = "default"
 ES_PUBLIC_INDEX = "publications"

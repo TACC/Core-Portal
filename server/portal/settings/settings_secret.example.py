@@ -7,6 +7,9 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 ########################
 
 _SECRET_KEY = 'CHANGE ME !'
+_DEBUG = True
+_WSGI_APPLICATION = 'ws4redis.django_runserver.application'
+# _WSGI_APPLICATION = 'portal.wsgi.application'
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -14,14 +17,14 @@ _SECRET_KEY = 'CHANGE ME !'
 
 # Database.
 _DJANGO_DB_ENGINE= 'django.db.backends.postgresql'
+_DJANGO_DB_HOST= 'cep_postgres'
+_DJANGO_DB_PORT= '5432'
 _DJANGO_DB_NAME= 'dev'
 _DJANGO_DB_USER= 'dev'
 _DJANGO_DB_PASSWORD= 'dev'
-_DJANGO_DB_HOST= 'postgres'
-_DJANGO_DB_PORT= '5432'
 
 # TAS Authentication.
-_TAS_URL='https://tas.tacc.utexas.edu/api'
+_TAS_URL='https://tas-dev.tacc.utexas.edu/api'
 _TAS_CLIENT_KEY='key'
 _TAS_CLIENT_SECRET='secret'
 
@@ -93,7 +96,25 @@ _RESULT_BACKEND_DB = '0'
 ########################
 # DJANGO APP: DATA DEPOT
 ########################
+# Absolute path where home directories should be created.
+#Absolute with respect to the host
+# Use only if all home directories are under one parent directory.
+_PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/path/to/home_dirs'
+# Relative path from the default sotrage system where home directories
+# should be created.
+# Use only if all home directories are under one parent directory.
+_PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
+_PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home'
+_PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 
+_PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'
+
+_PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
+_PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    'portal.apps.accounts.steps.step_one',
+    'portal.apps.accounts.steps.step_two',
+    'portal.apps.accounts.steps.StepThree',
+]
 # TBD
 
 ########################

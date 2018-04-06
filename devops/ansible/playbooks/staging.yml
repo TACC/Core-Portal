@@ -14,6 +14,6 @@
     - {role: newrelic, tags: ['deploy']}
     - {role: nginx, tags: ['deploy']}
     - {role: git, tags: ['deploy']}
-    - {role: uwsgi, tags: ['deploy']}
     - {role: project_setup, tags: ['deploy']}
     - {role: celeryd, tags: ['deploy']}
+    - {role: uwsgi, tags: ['deploy']}

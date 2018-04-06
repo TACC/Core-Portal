@@ -1,13 +1,41 @@
-<div class="search-result clearfix">
-  <div class="col-md-6">
-    <i ng-if="listing.mimeType == 'text/directory'" class="fa fa-folder fa-lg"> </i>
-    <i ng-if="listing.mimeType != 'text/directory'" class="fa fa-file-o fa-lg"> </i>
-    <a ng-href="{{ url(listing) }}"> {{listing.name}} </a>
+<div ng-if='listing.doc_type === "file" || listing.doc_type === "object"'>
+  <div class="search-result clearfix">
+    <div class="col-md-6">
+      <i ng-if="listing.mimeType == 'text/directory'" class="fa fa-folder fa-lg"> </i>
+      <i ng-if="listing.mimeType != 'text/directory'" class="fa fa-file-o fa-lg"> </i>
+      <a ng-href="{{ url(listing) }}"> {{listing.name}} </a>
+    </div>
+    <div class="col-md-3">
+      <span> {{ listing.lastModified | date:'medium' }} </span>
+    </div>
+    <div class="col-md-3">
+      <span> {{ listing.length | bytes }} </span>
+    </div>
   </div>
-  <div class="col-md-3">
-    <span> {{ listing.lastModified | date:'medium' }} </span>
+</div>
+
+<div ng-if = 'listing.doc_type === "publication"'>
+  <div ng-if="listing.projectId">
+    <h4><a href="">{{listing.project.value.title}}</a> </h4>
+    <strong>Project Type:</strong> {{listing.project.value.projectType}}
+    <p>{{listing.project.value.description}}</p>
+    <span class="label label-primary">Created: {{listing.created | date:'short'}}</span>
   </div>
-  <div class="col-md-3">
-    <span> {{ listing.length | bytes }} </span>
+  <div ng-if="!listing.projectId">
+    <h4><a href="">{{listing.title}}</a></h4>
+    <p>{{listing.description}}</p>
+    <span class="label label-primary">Created: {{listing.startDate | date:'short'}}</span>
   </div>
+  <hr>
+</div>
+
+<div ng-if='listing.doc_type === "modelresult" && listing.highlight'>
+    <span class="label label-default"> Web Content </span>
+    <p>
+      <h4><a ng-href="{{listing.url || '/'}}" target="_self"> {{listing.title}} </a></h4>
+    </p>
+    <div ng-repeat = "hit in listing.highlight.body">
+      <p ng-bind-html = "hit"> </p>
+    </div>
+    <hr>
 </div>

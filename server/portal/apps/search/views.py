@@ -22,4 +22,5 @@ class SearchIndexView(TemplateView):
     @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
         """Overwrite dispatch to ensure csrf cookie"""
+        logger.debug('dispatch method called in search.')
         return super(SearchIndexView, self).dispatch(request, *args, **kwargs)
