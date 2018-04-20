@@ -18,11 +18,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
         url: '/data-depot',
         abstract: true,
         template: '<ui-view/>',
-        resolve: {
-          'systems': ['SystemsService', function(SystemsService) {
-            return SystemsService.listing();
-          }]
-        }
+        redirectTo: 'wb.data_depot.db.myData',
       }
     )
     .state('wb.data_depot.db.myData', {
