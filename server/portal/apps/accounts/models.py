@@ -17,9 +17,9 @@ from django.core.exceptions import ObjectDoesNotExist
 # Create your models here.
 
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
 
 class PortalProfile(models.Model):
@@ -27,7 +27,10 @@ class PortalProfile(models.Model):
 
     Extending the user model to store extra data
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name='profile'
+    )
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)
 
@@ -80,9 +83,16 @@ class PortalProfileResearchActivities(models.Model):
     def __unicode__(self):
         return self.description
 
+
 class SSHKeysManager(models.Manager):
     """SSHKeys Manager"""
-    def save_keys(self, user, system_id, priv_key, pub_key):
+    def save_keys(
+            self,
+            user,
+            system_id,
+            priv_key,
+            pub_key,
+    ):
         """Saves a new set of keys for a specific system and user obj
 
         :param user: Django user object
@@ -100,8 +110,10 @@ class SSHKeysManager(models.Manager):
              encrypted using AES
         """
         try:
-            _sk = Keys.objects.get(ssh_keys__user=user,
-                                   system=system_id)
+            Keys.objects.get(
+                ssh_keys__user=user,
+                system=system_id
+            )
         except ObjectDoesNotExist:
             ssh_keys = super(SSHKeysManager, self).create(user=user)
             Keys.objects.create(
@@ -144,6 +156,7 @@ class SSHKeysManager(models.Manager):
         return super(SSHKeysManager, self).get_query_set().\
             get(ssh_keys__user=user,
                 system=system_id)
+
 
 class SSHKeys(models.Model):
     """SSHKeys
@@ -194,6 +207,7 @@ class SSHKeys(models.Model):
     def __unicode__(self):
         return unicode(self.user)
 
+
 class Keys(models.Model):
     """Keys
 
@@ -215,7 +229,7 @@ class Keys(models.Model):
         """Returns decrypted private key"""
         return _decrypt(self.private)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         """Saves a set of keys
 
         .. note::
@@ -231,7 +245,8 @@ class Keys(models.Model):
     def __unicode__(self):
         return '{username}: {system}'.format(
             username=self.ssh_keys.user.username,
-            system=self.system)
+            system=self.system
+        )
 
 
 def _encrypt(raw):
@@ -244,11 +259,11 @@ def _encrypt(raw):
         https://stackoverflow.com/questions/42568262/how-to-encrypt-text-with-a-password-in-python/44212550#44212550
     """
     source = raw.encode('utf-8')
-    #Use hash to make sure size is appropiate
+    # Use hash to make sure size is appropiate
     key = SHA256.new(settings.SECRET_KEY).digest()
-    #pylint: disable=invalid-name
+    # pylint: disable=invalid-name
     IV = Random.new().read(AES.block_size)
-    #pylint: enable=invalid-name
+    # pylint: enable=invalid-name
     encryptor = AES.new(key, AES.MODE_CBC, IV)
     # calculate needed padding
     padding = AES.block_size - len(source) % AES.block_size
@@ -257,6 +272,7 @@ def _encrypt(raw):
     # store the IV at the beginning and encrypt
     data = IV + encryptor.encrypt(source)
     return base64.b64encode(data).decode("utf-8")
+
 
 def _decrypt(raw):
     """Decrypts a base64 encoded string
@@ -267,9 +283,9 @@ def _decrypt(raw):
     # use SHA-256 over our key to get a proper-sized AES key
     key = SHA256.new(settings.SECRET_KEY).digest()
     # extract the IV from the beginning
-    #pylint: disable=invalid-name
+    # pylint: disable=invalid-name
     IV = source[:AES.block_size]
-    #pylint: enable=invalid-name
+    # pylint: enable=invalid-name
     decryptor = AES.new(key, AES.MODE_CBC, IV)
     # decrypt
     data = decryptor.decrypt(source[AES.block_size:])

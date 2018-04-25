@@ -5,20 +5,16 @@
 from __future__ import unicode_literals, absolute_import
 from collections import namedtuple
 import logging
-import json
-#import urlparse
-#import urllib
 from future.utils import python_2_unicode_compatible
 import requests
-#from requests.exceptions import HTTPError
-#from cached_property import cached_property
 from django.conf import settings
 from .base import BaseAgaveResource
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 @python_2_unicode_compatible
 class BaseSystem(BaseAgaveResource):
@@ -37,7 +33,8 @@ class BaseSystem(BaseAgaveResource):
         'SystemTypes', ['STORAGE', 'EXECUTION'])(
             STORAGE='STORAGE', EXECUTION='EXECUTION')
 
-    def __init__(self, client, id=id, **kwargs): #pylint: disable=redefined-builtin
+    # pylint:disable=redefined-builtin
+    def __init__(self, client, id='', **kwargs):
         super(BaseSystem, self).__init__(
             client,
             id=id,
@@ -83,7 +80,7 @@ class BaseSystem(BaseAgaveResource):
         if client.token:
             token = client.token.token_info['access_token']
         else:
-            token = client._token #pylint: disable=protected-access
+            token = client._token  # pylint: disable=protected-access
 
         headers = {'Authorization': 'Bearer {token}'.format(token=token)}
         resp = requests.get(
@@ -99,10 +96,12 @@ class BaseSystem(BaseAgaveResource):
     def _populate_obj(self):
         """Fully populates object.
 
-        This is used because we do not fully populate a system object when instantiating, this is
-         to save calls to Agave. Since some actions only require ``id`` then
-         we do not have to waste time in fully populating the object.
-        We check if the object is populated by the presence of the `_links` value.
+        This is used because we do not fully populate
+        a system object when instantiating, this is
+        to save calls to Agave. Since some actions only
+        require ``id`` then we do not have to waste time
+        in fully populating the object. We check if the
+        object is populated by the presence of the `_links` value.
 
         :return: Self for chainability
         :rtype: :class:`BaseSystem`
@@ -134,9 +133,11 @@ class BaseSystem(BaseAgaveResource):
     def set_storage_keys(self, username, priv_key, pub_key):
         """Set SSH keys for storage login in a system"""
         self._populate_obj()
-        self.storage.auth._wrapped['username'] = username #pylint: disable=protected-access
-        self.storage.auth._wrapped['privateKey'] = priv_key #pylint: disable=protected-access
-        self.storage.auth._wrapped['publicKey'] = pub_key #pylint: disable=protected-access
+        # pylint: disable=protected-access
+        self.storage.auth._wrapped['username'] = username
+        self.storage.auth._wrapped['privateKey'] = priv_key
+        self.storage.auth._wrapped['publicKey'] = pub_key
+        # pylint: enable=protected-access
         self.storage.auth.type = 'SSHKEYS'
         self._update()
         self.storage.auth.private_key = ''

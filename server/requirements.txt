@@ -1,5 +1,5 @@
 future==0.16.0
-agavepy==0.4.0
+agavepy==0.7.0
 -e git+https://bitbucket.org/taccaci/pytas.git@master#egg=pytas
 appnope==0.1.0
 cmsplugin-filer==1.1.3

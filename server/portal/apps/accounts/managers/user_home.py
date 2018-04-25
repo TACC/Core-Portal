@@ -262,7 +262,8 @@ class UserHomeManager(AbstractUserHomeManager):
             user,
             system_id=system_id,
             priv_key=priv_key,
-            pub_key=pub_key)
+            pub_key=pub_key
+        )
 
     def get_home_dir_abs_path(self, *args, **kwargs):
         """Returns home directory absolute path
@@ -293,7 +294,11 @@ class UserHomeManager(AbstractUserHomeManager):
             settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX,
             self.user.username])
 
-    def get_system_definition(self, publ_key_str, priv_key_str):
+    def get_system_definition(
+            self,
+            publ_key_str,
+            priv_key_str
+    ):  # pylint:disable=arguments-differ
         """Returns Agave system definition
 
         :returns: Agave system definition
@@ -447,5 +452,5 @@ class UserHomeManager(AbstractUserHomeManager):
             self.user,
             home_sys.id,
             priv_key_str,
-            publ_key_str
+            publ_key_str,
         )

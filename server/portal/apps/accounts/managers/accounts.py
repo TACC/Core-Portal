@@ -9,9 +9,10 @@ from importlib import import_module
 from django.contrib.auth import get_user_model
 from django.conf import settings
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 def check_user(username):
     """Verifies username
@@ -32,6 +33,7 @@ def check_user(username):
         )
     return users[0]
 
+
 def _lookup_user_home_manager(user):
     """Lookup User Home Manager
 
@@ -39,7 +41,8 @@ def _lookup_user_home_manager(user):
     to handle any special cases for setup.
 
     .. seealso::
-        :class:`~portal.apps.accounts.managers.user_home.AbstractUserHomeManager` and
+        :class:`~portal.apps.accounts.managers.
+        user_home.AbstractUserHomeManager` and
         :class:`~portal.apps.accounts.managers.user_home.UserHomeManager`
     """
     mgr_str = getattr(
@@ -50,6 +53,7 @@ def _lookup_user_home_manager(user):
     module = import_module(module_str)
     cls = getattr(module, cls_str)
     return cls(user)
+
 
 def get_user_home_system_id(user):
     """Gets user home system id
@@ -63,12 +67,14 @@ def get_user_home_system_id(user):
     mgr = _lookup_user_home_manager(user)
     return mgr.get_system_id()
 
+
 def setup(username):
     """Fires necessary steps for setup
 
-    As of 03/2018 a new account setup means creating a home directory (optional),
-    creating an Agave system for that home directory and saving the newly created
-    keys in the database. The private key will be encrypted using AES.
+    As of 03/2018 a new account setup means creating a home directory
+    (optional), creating an Agave system for that home directory
+    and saving the newly created keys in the database.
+    The private key will be encrypted using AES.
 
     :param str username: Account's username to setup
 
@@ -78,16 +84,18 @@ def setup(username):
         The django setting `PORTAL_USER_ACCOUNT_SETUP_STEPS` can be used to
         add any additional steps after the default setup.
 
-        `PORTAL_USER_ACCOUNT_SETUP_STEPS` is a list of strings. The dot notation
-        of any custom class or callable. Any class listed should implement a `step()`
+        `PORTAL_USER_ACCOUNT_SETUP_STEPS` is a list of strings.
+        The dot notation of any custom class or callable.
+        Any class listed should implement a `step()`
         method, which will be called.
 
-        Classes will be instantiated with `user`, `home_dir`, `home_sys` in that order
-        and then the `step()` method will be called with the last step's return value.
-        If there are no previous step `None` will be passsed.
+        Classes will be instantiated with `user`, `home_dir`, `home_sys`
+        in that order and then the `step()` method will be called with the
+        last step's return value. If there are no previous step `None`
+        will be passsed.
 
-        Callables will be called with 'res', `user`, `home_dir` and `home_sys` in that order.
-        `res` is the last step's return value.
+        Callables will be called with 'res', `user`, `home_dir` and `home_sys`
+        in that order. `res` is the last step's return value.
     """
     user = check_user(username)
     mgr = _lookup_user_home_manager(user)
@@ -112,7 +120,8 @@ def setup(username):
             )
     return home_dir, home_sys
 
-def reset_home_system_keys(username):
+
+def reset_home_system_keys(username, force=False):
     """Reset home system Keys
 
     Creates a new set of keys, saves the set of keys to the DB
@@ -120,10 +129,11 @@ def reset_home_system_keys(username):
 
     .. note::
         If this functionality needs to be overridden it must be done
-        in a :class:`~portal.apps.accounts.managers.user_home.UserHomeManager` or
-        :class:`~portal.apps.accounts.managers.user_home.AbstractUserHomeManager` subclass
+        in a :class:`~portal.apps.accounts.managers.
+        user_home.UserHomeManager` or :class:`~portal.apps.accounts.
+        managers.user_home.AbstractUserHomeManager` subclass
         and overwrite the `reset_system_keys` method.
     """
     user = check_user(username)
     mgr = _lookup_user_home_manager(user)
-    mgr.reset_system_keys(user)
+    mgr.reset_system_keys(user, force=force)
