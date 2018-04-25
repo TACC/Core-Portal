@@ -11,19 +11,28 @@ let mod = angular.module('portal.data_depot', [
 function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django) {
   'ngInject';
   $qProvider.errorOnUnhandledRejections(false);
-  $stateProvider
+  $stateProvider  
     /* Private */
+    //.state(selection)
     .state(
+      // the state names are 
       'wb.data_depot.db', {
-        url: '/data-depot',
-        abstract: true,
-        template: '<ui-view/>',
-        redirectTo: 'wb.data_depot.db.myData',
+        url: '/{directory}/{systemId}/{filePath:any}', // this used to have /data-depot/ at the start
+        templateUrl: '/static/src/angular/data_depot/templates/agave-data-listing.html',
+        controller: 'DataBrowserCtrl',
+        // abstract: true,          // not sure what this does
+        // template: '<ui-view/>',
+        params: {
+          name: {value:'My Data', squash: true},
+          directory: {value:'agave'}
+        }
       }
     )
-    .state('wb.data_depot.db.myData', {
+    // each state for data depot lives here...
+    // we will remove all of these and combine them into one megacontroller
+    .state('wb.data_depot.db.myData', {           //combined
       url: '/agave/{systemId}/{filePath:any}/',
-      controller: 'MyDataCtrl',
+      controller: 'MyDataCtrl',              //used to be MyDataCtrl
       templateUrl: '/static/src/angular/data_depot/templates/agave-data-listing.html',
     })
     .state('wb.data_depot.db.projects', {
@@ -40,9 +49,9 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
       controller: 'ProjectListingCtrl',
       templateUrl: '/static/src/angular/data_depot/templates/agave-data-listing.html',
     })
-    .state('wb.data_depot.db.communityData', {
+    .state('wb.data_depot.db.communityData', {    //combined
       url: '/public/{systemId}/{filePath:any}',
-      controller: 'CommunityDataCtrl',
+      controller: 'CommunityDataCtrl',              //used to be CommunityDataCtrl
       templateUrl: '/static/src/angular/data_depot/templates/agave-data-listing.html',
       params: {
         filePath: '/'
@@ -51,7 +60,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
     .state('wb.data_depot.sharedData', {
       url: '/shared/{systemId}/{filePath:any}/',
       controller: 'SharedDataCtrl',
-      templateUrl: '/static/src/angular/data-depot/templates/agave-shared-data-listing.html',
+      templateUrl: '/static/src/angular/data-depot/templates/agave-shared-data-listing.html', // is this supposed to be "data-depot"?
       params: {
         systemId: 'utportal.storage.default',
         filePath: '$SHARE'
@@ -78,53 +87,11 @@ function config($httpProvider, $locationProvider, $stateProvider, $qProvider, $u
         }
       }
     })
-    .state('wb.data_depot.dropboxData', {
-      url: '/dropbox/{filePath:any}',
-      controller: 'ExternalDataCtrl',
-      templateUrl: '/static/scripts/data-depot/templates/dropbox-data-listing.html',
-      params: {
-        filePath: '',
-        name: 'Dropbox',
-        customRootFilePath: 'dropbox/'
-      },
-      resolve: {
-        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-          var filePath = $stateParams.filePath || '/';
-          DataBrowserService.apiParams.fileMgr = 'dropbox';
-          DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
-          DataBrowserService.apiParams.searchState = undefined;
-          return DataBrowserService.browse({path: filePath});
-        }],
-        'auth': function($q) {
-          if (Django.context.authenticated) {
-            return true;
-          } else {
-            return $q.reject({
-              type: 'authn',
-              context: Django.context
-            });
-          }
-        }
-      }
-    });
 
 }
 
 mod.config(config)
   .run(['$rootScope', '$location', '$state', 'Django', '$trace', function($rootScope, $location, $state, Django, $trace) {
-
-    // $rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
-    //   if (toState.name === 'myData' || toState.name === 'sharedData') {
-    //     var ownerPath = new RegExp('^/?' + Django.user).test(toParams.filePath);
-    //     if (toState.name === 'myData' && !ownerPath) {
-    //       event.preventDefault();
-    //       $state.go('sharedData', toParams);
-    //     } else if (toState.name === 'sharedData' && ownerPath) {
-    //       event.preventDefault();
-    //       $state.go('myData', toParams);
-    //     }
-    //   }
-    // });
 
     $rootScope.$on("$stateChangeError", function(event, toState, toParams, fromState, fromParams, error) {
       if (error.type === 'authn') {

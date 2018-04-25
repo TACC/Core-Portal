@@ -23,15 +23,6 @@ export default function MyDataCtrl($scope, $state, $stateParams, Django, DataBro
     $scope.searchState = DataBrowserService.apiParams.searchState;
 
   });
-  // if (! $scope.browser.error) {
-  //   $scope.browser.listing.href = $state.href('db.myData', {
-  //     system: $scope.browser.listing.system,
-  //     filePath: $scope.browser.listing.path
-  //   });
-  //   _.each($scope.browser.listing.children, function (child) {
-  //     child.href = $state.href('db.myData', {system: child.system, filePath: child.path});
-  //   });
-  // }
 
 
 

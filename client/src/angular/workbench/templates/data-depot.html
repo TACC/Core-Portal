@@ -134,23 +134,33 @@
               </div>
           </div>
         </div>
-        <div ng-controller="DataDepotNavCtrl">
+        <!-- don't use [ng-controller="DataBrowserCtrl"] twice it's alreayd set up -->
+        <!-- this area will have the buttons for the different directories and their views -->
+        <div>
+            <a ui-sref="wb.data_depot.db({systemId: sysMyData.systemId, filePath:'', name: sysMyData.name, directory: 'agave'})">
+                <button>My Data</button>
+            </a>
+            <a ui-sref="wb.data_depot.db({systemId: sysCommunityData.systemId, filePath:'', name: sysCommunityData.name, directory: 'public'})">
+                <button>Community Data</button>
+            </a>
+        </div>
+
+        <!-- <div ng-controller="DataDepotNavCtrl">
           <div class="list-group list-group-root well">
 
               <div class="list-group collapse"
                    ng-class="{'in': !routerItem.collapse}"
                    ng-repeat="childItem in routerItems">
-
                   <a tooltip="{{ childItem.description }}" class="list-group-item"
-                     ui-sref="{{ childItem.state }}"
+                     ui-sref="{{ childItem.state }}" 
                      ui-sref-active="active">
                      <i class="fa fa-fw" ng-class="childItem.icon"> </i>
                       {{ childItem.name }}
                   </a>
               </div>
           </div>
+        </div> -->
 
-        </div>
       </div>
       <div class="col-sm-9 col-md-10">
         <ui-view>

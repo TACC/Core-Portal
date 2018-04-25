@@ -27,18 +27,6 @@ export default function CommunityDataCtrl($scope, $state, $stateParams, Django, 
         page : 0
       };
 
-  // if (! $scope.browser.error){
-  //   $scope.browser.listing.href = $state.href('communityData', {
-  //     system: $scope.browser.listing.system,
-  //     filePath: $scope.browser.listing.path
-  //   });
-  //   _.each($scope.browser.listing.children, function (child) {
-  //     child.href = $state.href('communityData', {system: child.system, filePath: child.path});
-  //   });
-  // }
-
-
-
   $scope.resolveBreadcrumbHref = function(trailItem) {
     return $state.href('db.communityData', {systemId: $scope.browser.listing.system, filePath: trailItem.path});
   };

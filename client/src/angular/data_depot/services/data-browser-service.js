@@ -178,6 +178,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       currentBrowseRequest = null;
       // $timeout.cancel(currentBrowseRequest);
     }
+
     currentState.busy = true;
     currentState.busyListing = true;
     currentState.error = null;
@@ -186,9 +187,15 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     currentState.busyListingPage = false;
     currentState.page = 0;
     currentBrowseRequest =  FileListing.get(options, apiParams);
+    console.log('options DBS-------------------------------->');
+    console.log(options);
+    console.log('apiParams DBS-------------------------------->');
+    console.log(apiParams);
 
     currentBrowseRequest.then(function (listing) {
       select([], true);
+      console.log('listing DBS-------------------------------->');
+      console.log(listing);
       currentState.busy = false;
       currentState.busyListing = false;
       currentState.loadingMore = false;
