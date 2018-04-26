@@ -425,7 +425,6 @@ SETTINGS: ELASTICSEARCH
 """
 
 ES_HOSTS = settings_secret._ES_HOSTS
-ES_ENVIRONMENT = settings_secret._ES_ENVIRONMENT
 ES_DEFAULT_INDEX = "des-files"
 ES_DEFAULT_INDEX_ALIAS = "default"
 ES_PUBLIC_INDEX = "des-publications"

@@ -10,7 +10,9 @@ class SearchConfig(AppConfig):
         from elasticsearch_dsl.connections import connections
         from django.conf import settings
 
-        connections.configure(default=settings.ES_HOSTS[settings.ES_ENVIRONMENT],
+        HOSTS = settings.ES_HOSTS
+
+        connections.configure(default={"hosts": HOSTS},
                               request_timeout=60,
                               sniff_on_start=True,
                               sniffer_timeout=60,
