@@ -43,7 +43,10 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     'templateUrl': '/static/src/angular/workbench/templates/data-depot.html',
     'controller': 'DataBrowserCtrl',
     'resolve': {
-      'test': function () {console.log("data-depot resolve");}
+      'test': function () {console.log("data-depot resolve");},
+      'systems': ['SystemsService', function(SystemsService) {
+        return SystemsService.listing();
+      }]
     }
   })
   .state('wb.workspace', {
