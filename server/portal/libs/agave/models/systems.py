@@ -8,7 +8,7 @@ import logging
 from future.utils import python_2_unicode_compatible
 import requests
 from django.conf import settings
-from .base import BaseAgaveResource
+from portal.libs.agave.models.base import BaseAgaveResource
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -27,13 +27,21 @@ class BaseSystem(BaseAgaveResource):
     """
 
     EXECUTION_TYPES = namedtuple(
-        'ExecutionTypes', ['HPC', 'CONDOR', 'CLI'])(
-            HPC='HPC', CONDOR='CONDOR', CLI='CLI')
+        'ExecutionTypes',
+        ['HPC', 'CONDOR', 'CLI']
+    )(
+        HPC='HPC',
+        CONDOR='CONDOR',
+        CLI='CLI'
+    )
     TYPES = namedtuple(
-        'SystemTypes', ['STORAGE', 'EXECUTION'])(
-            STORAGE='STORAGE', EXECUTION='EXECUTION')
+        'SystemTypes',
+        ['STORAGE', 'EXECUTION']
+    )(
+        STORAGE='STORAGE',
+        EXECUTION='EXECUTION'
+    )
 
-    # pylint:disable=redefined-builtin
     def __init__(self, client, id='', **kwargs):
         super(BaseSystem, self).__init__(
             client,
