@@ -16,7 +16,7 @@ from elasticsearch import TransportError, ConnectionTimeout
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
 #pylint: enable=invalid-name
-connections.configure(default={'hosts': ['elasticsearch']})
+#connections.configure(default={'hosts': ['designsafe-es01.tacc.utexas.edu']})
 
 class SearchApiView(BaseApiView):
     """ Projects listing view"""
@@ -63,7 +63,8 @@ class SearchApiView(BaseApiView):
         out['public_files_total'] = self.search_public_files(q, offset, limit).count()
         out['published_total'] = self.search_published(q, offset, limit).count()
         out['cms_total'] = self.search_cms_content(q, offset, limit).count()
-        out['private_files_total'] = 0
+        out['private_files_total'] = self.search_my_data(self.request.user.username, q, offset, limit).count()
+        logger.debug("private_files_total: " + str(out['private_files_total']))
         # if request.user.is_authenticated:
 
         # s = Search(index="des-files").query("query_string", query="*"+q+"*", default_operator="and").extra(from_=offset, size=limit)
