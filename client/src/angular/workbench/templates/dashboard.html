@@ -36,11 +36,10 @@
     </div>
     <div class="col-sm-3">
       <div><span>Quick Links</span></div>
-      <div><a href="#">Manage Account</a></div>
-      <div><a href="#">Data Depot</a></div>
-      <div><a href="#">Workspace</a></div>
-      <div><a href="#">Recon Portal</a></div>
-      <div><a href="#">Training</a></div>
+      <div><a href="/accounts/profile">Manage Account</a></div>
+      <div><a href="/workbench/data-depot ">Data Depot</a></div>
+      <div><a href="/workbench/workspace">Workspace</a></div>
+      <div><a href="/workbench/help">Training</a></div>
     </div>
 
   </div>
@@ -127,7 +126,7 @@
         </div>
         <ul class="list-group">
           <li class="list-group-item" ng-repeat="app in recent_apps">
-            <a href="/rw/workspace/#/{{app}}"> {{app}} </a>
+            <a href="/workbench/workspace/#/{{app}}"> {{app}} </a>
           </li>
           <li class="list-group-item" ng-show="!recent_apps.length">
             Wow, no recent apps! You can submit jobs in the
