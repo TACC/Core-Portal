@@ -10,13 +10,45 @@
       </a>
       <!-- Normal Navbar -->
       <ul class="nav navbar-nav hidden-xs">
+        <!-- when user is logged in, show these nav items -->
         {% if user.is_authenticated %}
-        <li class="{% active 'workbench' %}">
-          <a href="{% url 'workbench:index' %}">
+        <li class="dropdown">
+          <a class="dropdown-toggle"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Workbench
+            <span class="caret"></span>
           </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a href="/workbench/data-depot">Data Depot</a>
+            </li>
+            <li>
+              <a href="/workbench/workspace">Workspace</a>
+            </li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a class="dropdown-toggle"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Learning Center
+          <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a>
+                Training
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a href="/workbench/help">Help</a>
+        </li>
+        <li>
+          <a href="{% url 'search:search_index' %}">Search</a>
         </li>
         {% endif %}
+        <!-- end of user authed nav items-->
       </ul>
       {% if section_root %}
         <a class="navbar-brand">{{section_root.title}}</a>
@@ -61,6 +93,11 @@
             <span class="sr-only">Toggle Dropdown</span>
           </a>
           <ul class="dropdown-menu">
+            <li >
+              <a href="{% url 'workbench:index' %}">
+                <i class="fa fa-dashboard nav-icon"></i> Dasboard
+              </a>
+            </li>
 
             <li {% if request.get_full_path == '/accounts/profile/' %} class="active" {% endif %}>
               <a href="{% url 'portal_accounts:manage_profile' %}">
@@ -77,11 +114,11 @@
               <i class="fa fa-user-secret nav-icon"></i>
               <a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a>
             </li>
-            {% endif %}
+            {% endif %} <!-- end of impersonate -->
           </ul>
         </div>
         </li>
-        {% else %}
+        {% else %} <!-- if user is not logged in -->
 
         <li class="right-nav-links {% if request.get_full_path == '/about/' %} active {% endif %}">
           <a href="/accounts/request-access/" class="btn btn-link-alt">
@@ -102,6 +139,7 @@
         </li>
         -->
         {% endif %}
+        <!-- end of user logged in/not logged in if -->
       </ul>
     </div><!-- /.navbar-collapse -->
 </nav>
