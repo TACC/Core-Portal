@@ -23,7 +23,7 @@ export default function DataBrowserCtrl($scope, $state, $stateParams, Django, Da
             directory: 'agave'
         });
     }
-    
+
 
 
     if ($stateParams.name == 'My Data') {
