@@ -15,6 +15,7 @@ export default function DataDepotCtrl($scope, $state, $stateParams, Django, Data
         directory: ($stateParams.directory)
     };
 
+    
 
     if ($stateParams.name == 'My Data') {
 
