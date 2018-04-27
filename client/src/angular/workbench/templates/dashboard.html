@@ -56,7 +56,7 @@
         <div ng-show="!jobs.length" class="panel-body">
           <h3 ng-show="!loading_jobs">
             No recent jobs! You can submit jobs in the
-            <a href="/rw/workspace"> Workspace </a>
+            <a ui-sref="wb.workspace"> Workspace </a>
           </h3>
           <div class="text-center" ng-show="loading_jobs">
             <i class="fa fa-spinner fa-pulse fa-2x fa-fw" ></i>
@@ -131,7 +131,7 @@
           </li>
           <li class="list-group-item" ng-show="!recent_apps.length">
             Wow, no recent apps! You can submit jobs in the
-            <a href="/rw/workspace"> Workspace </a>
+            <a ui-sref="wb.workspace"> Workspace </a>
           </li>
         </ul>
       </div>
