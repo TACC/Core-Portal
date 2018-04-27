@@ -134,7 +134,7 @@
               </div>
           </div>
         </div>
-        <!-- don't use [ng-controller="DataBrowserCtrl"] twice it's alreayd set up -->
+        <!-- don't use [ng-controller="DataDepotCtrl"] twice it's alreayd set up -->
         <!-- Nav -->
         <div class="list-group list-group-root well">
             <div>
@@ -174,22 +174,6 @@
                 </a>
             </div>
         </div>
-
-        <!-- OLD SIDE NAV -->
-        <!-- <div ng-controller="DataDepotNavCtrl">
-          <div class="list-group list-group-root well">
-              <div class="list-group collapse"
-                   ng-class="{'in': !routerItem.collapse}"
-                   ng-repeat="childItem in routerItems">
-                  <a tooltip="{{ childItem.description }}" class="list-group-item"
-                     ui-sref="{{ childItem.state }}" 
-                     ui-sref-active="active">
-                     <i class="fa fa-fw" ng-class="childItem.icon"> </i>
-                      {{ childItem.name }}
-                  </a>
-              </div>
-          </div>
-        </div> -->
       </div>
       <div class="col-sm-9 col-md-10">
         <ui-view>

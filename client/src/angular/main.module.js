@@ -23,6 +23,8 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   .state('wb', {
     url: '/workbench',
     templateUrl: '/static/src/angular/workbench/templates/home.html',
+    controller: 'WorkbenchCtrl',
+    controllerAs: 'vm',
     abstract: true,
     resolve: {
       'systems': ['SystemsService', function(SystemsService) {
@@ -41,12 +43,12 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   .state('wb.data_depot', {
     'url': '/data-depot',
     'templateUrl': '/static/src/angular/workbench/templates/data-depot.html',
-    'controller': 'DataBrowserCtrl',
+    'controller': 'DataDepotCtrl',
     'resolve': {
       'test': function () {console.log("data-depot resolve");},
-      'systems': ['SystemsService', function(SystemsService) {
-        return SystemsService.listing();
-      }]
+      // 'systems': ['SystemsService', function(SystemsService) {
+      //   return SystemsService.listing();
+      // }]
     }
   })
   .state('wb.workspace', {

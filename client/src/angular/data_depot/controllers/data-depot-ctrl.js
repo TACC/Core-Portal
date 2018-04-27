@@ -1,9 +1,9 @@
-export default function DataBrowserCtrl($scope, $state, $stateParams, Django, DataBrowserService, SystemsService, ProjectService) {
+export default function DataDepotCtrl($scope, $state, $stateParams, Django, DataBrowserService, SystemsService, ProjectService, systems) {
     'ngInject';
 
-    // get user data from SystemsService
-    $scope.sysCommunityData = _.find(SystemsService.systems, { name: 'Community Data' });
-    $scope.sysMyData = _.find(SystemsService.systems, { name: "My Data" });
+    // get user data from service
+    $scope.sysCommunityData = _.find(systems, { name: 'Community Data' });
+    $scope.sysMyData = _.find(systems, { name: "My Data" });
 
     //  $stateParams is pulling info from the html section of the data-depot
     //  and we will swap the data based on the systemID variables we place there
@@ -15,21 +15,9 @@ export default function DataBrowserCtrl($scope, $state, $stateParams, Django, Da
         directory: ($stateParams.directory)
     };
 
-    // display "My Data" for first visit or refresh...
-    if (options.name == undefined || options.name == '') {
-        $state.go('wb.data_depot.db', {
-            systemId: $scope.sysMyData.systemId,
-            name: $scope.sysMyData.name,
-            directory: 'agave'
-        });
-    }
-
-
 
     if ($stateParams.name == 'My Data') {
-        console.log('Directory for My Data...');
 
-        // this should change based on variables in options
         $scope.data = {
             user: Django.user,
             customRoot: {
@@ -42,31 +30,25 @@ export default function DataBrowserCtrl($scope, $state, $stateParams, Django, Da
             }
         };
 
-        // TODO: This needs to change base on the "options" supplied
         DataBrowserService.apiParams.fileMgr = 'my-data';
         DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
         DataBrowserService.apiParams.searchState = 'dataSearch';
 
 
-        // same
         $scope.browser = DataBrowserService.state();
         DataBrowserService.browse(options).then(function (resp) {
             $scope.browser = DataBrowserService.state();
-            //this line below is new...
             $scope.searchState = DataBrowserService.apiParams.searchState;
         });
 
-        // missing $scope.state object - community
-
-        // same
         $scope.scrollToTop = function () {
             return;
         };
-        // same
+
         $scope.scrollToBottom = function () {
             DataBrowserService.scrollToBottom();
         };
-        // check - community
+
         $scope.onBrowse = function ($event, file) {
             $event.preventDefault();
             $event.stopPropagation();
@@ -75,7 +57,6 @@ export default function DataBrowserCtrl($scope, $state, $stateParams, Django, Da
             }
         };
 
-        // same
         $scope.onSelect = function ($event, file) {
             $event.stopPropagation();
             if ($event.ctrlKey || $event.metaKey) {
@@ -99,10 +80,7 @@ export default function DataBrowserCtrl($scope, $state, $stateParams, Django, Da
                 DataBrowserService.select([file], true);
             }
         };
-        // missing showFullPath function - community
-        // missing renderName function - community
 
-        // same
         $scope.onDetail = function ($event, file) {
             $event.stopPropagation();
             DataBrowserService.preview(file, $scope.browser.listing);
@@ -110,7 +88,6 @@ export default function DataBrowserCtrl($scope, $state, $stateParams, Django, Da
 
 
     } else if ($stateParams.name == 'My Projects') {
-        console.log('Directory for My Projects...');
 
         $scope.ui = {};
 
@@ -128,7 +105,6 @@ export default function DataBrowserCtrl($scope, $state, $stateParams, Django, Da
         $scope.ui.busy = true;
         $scope.data.projects = [];
         ProjectService.list().then(function (projects) {
-            console.log(projects);
             $scope.ui.busy = false;
             $scope.data.projects = projects;
         });
@@ -144,9 +120,7 @@ export default function DataBrowserCtrl($scope, $state, $stateParams, Django, Da
 
     
     } else if ($stateParams.name == 'Community Data') {
-        console.log('Directory for Community Data...');
 
-        // this should change based on variables in options
         $scope.data = {
             customRoot: {
                 name: $stateParams.name,
