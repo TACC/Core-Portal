@@ -431,5 +431,9 @@ ES_PUBLIC_INDEX = "des-publications"
 ES_PUBLIC_INDEX_ALIAS = "public"
 ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
+ES_PUBLICATIONS_INDEX = "des-publications_legacy,des-publications"
 ES_METADATA_DOC_TYPE = "metadata"
 ES_CMS_INDEX = "cms"
+
+ES_PUBLIC_SYSTEMS = ["nees.public", "designsafe.storage.published", "designsafe.storage.community"]
+ES_PRIVATE_SYSTEMS = ["designsafe.storage.default"]

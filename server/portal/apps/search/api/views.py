@@ -12,6 +12,7 @@ import random
 from elasticsearch_dsl import Q, Search
 from elasticsearch_dsl.connections import connections
 from elasticsearch import TransportError, ConnectionTimeout
+from operator import ior
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -81,10 +82,10 @@ class SearchController(object):
     @staticmethod
     def search_public_files(q, offset, limit):
         """search public files"""
-
-        filters = Q('term', system="nees.public") | \
-                  Q('term', system="designsafe.storage.published") | \
-                  Q('term', system="designsafe.storage.community")
+        systems = settings.ES_PUBLIC_SYSTEMS
+        system_queries = [Q('term', system=system) for system in systems]
+        filters = reduce(ior, system_queries)
+        
         search = Search(index=settings.ES_DEFAULT_INDEX)\
             .query("query_string", query="*"+q+"*", default_operator="and")\
             .filter(filters)\
@@ -99,18 +100,22 @@ class SearchController(object):
 
         query = Q('bool', must=[Q('simple_query_string', query=q)])
 
-        search = Search(index="des-publications_legacy,des-publications")\
+        search = Search(index=settings.ES_PUBLICATIONS_INDEX)\
             .query(query)\
             .extra(from_=offset, size=limit)
         return search
 
     @staticmethod
     def search_my_data(username, q, offset, limit):
+        systems = settings.ES_PRIVATE_SYSTEMS
+        system_queries = [Q('term', system=system) for system in systems]
+        system_filters = reduce(ior, system_queries)
+
         search = Search(index=settings.ES_DEFAULT_INDEX)
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
         search = search.query("simple_query_string", query=q, fields=["name", "name._exact", "keywords"])
         search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
-        search = search.filter("term", system='designsafe.storage.default')
+        search = search.filter(system_filters)
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         logger.info(search.to_dict())
         return search
