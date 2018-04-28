@@ -21,7 +21,7 @@ def check_user(username):
     with the same username
     """
     users = get_user_model().objects.filter(username=username)
-    if not len(users):
+    if not users:
         raise ValueError(
             'No user with the username: {username} exists'.format(
                 username=username)
@@ -99,7 +99,7 @@ def setup(username):
     """
     user = check_user(username)
     mgr = _lookup_user_home_manager(user)
-    logger.debug('User Home Manager class: %s', mgr.__class__)
+    # logger.debug('User Home Manager class: %s', mgr.__class__)
     home_dir = mgr.get_or_create_dir(user)
     home_sys = mgr.get_or_create_system(user)
     extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])

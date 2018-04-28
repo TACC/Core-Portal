@@ -12,7 +12,7 @@ from requests.exceptions import HTTPError
 from Crypto.PublicKey import RSA
 from django.conf import settings
 from portal.libs.agave.utils import service_account
-from portal.libs.agave.models.systems import BaseSystem
+from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.apps.accounts.models import SSHKeys
 
 # pylint: disable=invalid-name
@@ -305,36 +305,25 @@ class UserHomeManager(AbstractUserHomeManager):
         :rtype: dict
         """
         username = self.user.username
-        system_body = {
-            'id': self.get_system_id(self.user),
-            'site': 'portal.dev',
-            'default': False, 'status': 'UP',
-            'description': 'Home system for user: {username}'.format(
-                username=username
-            ),
-            'name': self.get_system_id(self.user),
-            'globalDefault': False,
-            'availbale': True,
-            'public': False,
-            'type': 'STORAGE',
-            'storage': {
-                'mirror': False,
-                'port': 22,
-                'homeDir': '/',
-                'rootDir': self.get_home_dir_abs_path(self.user),
-                'protocol': 'SFTP',
-                'host': self.get_storage_host(self.user),
-                'publicAppsDir': None,
-                'proxy': None,
-                'auth': {
-                    'username': self.get_storage_username(self.user),
-                    'type': 'SSHKEYS',
-                    'publicKey': publ_key_str,
-                    'privateKey': priv_key_str
-                }
-            }
-        }
-        return system_body
+        system = StorageSystem(
+            service_account(),
+            self.get_system_id(self.user)
+        )
+        system.site = 'portal.dev'
+        system.description = 'Home system for user: {username}'.format(
+            username=username
+        )
+        system.name = self.get_system_id(self.user)
+        system.storage.port = 22
+        system.storage.home_dir = '/'
+        system.storage.root_dir = self.get_home_dir_abs_path(self.user)
+        system.storage.protocl = 'SFTP'
+        system.storage.host = self.get_storage_host(self.user)
+        system.auth.username = self.get_storage_username(self.user)
+        system.auth.type = system.AUTH_TYPES.SSHKEYS
+        system.auth.public_key = publ_key_str
+        system.auth.private_key = priv_key_str
+        return system
 
     def get_storage_host(self, *args, **kwargs):  # pylint:disable=no-self-use
         """Returns storage host
@@ -378,23 +367,19 @@ class UserHomeManager(AbstractUserHomeManager):
         priv_key_str = private_key.exportKey('PEM')
         public_key = self._create_public_key(private_key)
         publ_key_str = public_key.exportKey('OpenSSH')
-        system_body = self.get_system_definition(publ_key_str, priv_key_str)
-        agc = service_account()
-        home_sys = agc.systems.add(
-            body=system_body)
-        agc.systems.updateRole(
-            systemId=system_body['id'],
-            body={
-                'role': 'OWNER',
-                'username': self.user.username
-            })
+        system = self.get_system_definition(
+            publ_key_str,
+            priv_key_str
+        )
+        system.save()
+        system.update_role(self.user.username, 'OWNER')
         self._save_user_keys(
             self.user,
-            system_body['id'],
+            system.id,
             priv_key_str,
             publ_key_str
         )
-        return home_sys
+        return system
 
     def get_system(self, *args, **kwargs):
         """Gets user's home directory
@@ -433,7 +418,7 @@ class UserHomeManager(AbstractUserHomeManager):
 
         :returns: Agave System response
         """
-        home_sys = BaseSystem(
+        home_sys = StorageSystem(
             client=self.user.agave_oauth.client,
             id=self.get_system_id(self.user)
         )
@@ -448,6 +433,7 @@ class UserHomeManager(AbstractUserHomeManager):
             priv_key_str,
             publ_key_str
         )
+        home_sys.save()
         self._save_user_keys(
             self.user,
             home_sys.id,

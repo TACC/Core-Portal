@@ -237,6 +237,23 @@ class BaseSystem(BaseAgaveResource):
             if exc.response.status_code != 404:
                 raise
         self.update()
+        return self
+
+    def update_role(self, username, role):
+        """Update role for a system
+
+        shortcut method for agavepy.systems.updateRole
+
+        .. todo::
+            There should be a better API to update permissions
+        """
+        self._ac.systems.updateRole(
+            systemId=self.id,
+            body={
+                'role': role,
+                'username': username
+            }
+        )
 
 
 @python_2_unicode_compatible  # pylint: disable=too-few-public-methods
@@ -404,13 +421,6 @@ class BaseSystemStorage(BaseAgaveResource):
         if not self.port:
             raise ValidationError(
                 "'port' should not be empty"
-            )
-
-    def validate_public_apps_dir(self):
-        """Validate self.public_apps_dir"""
-        if not self.public_apps_dir:
-            raise ValidationError(
-                "'public_apps_dir' should not be empty"
             )
 
     def validate_host(self):
