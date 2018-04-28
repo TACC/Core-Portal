@@ -8,7 +8,7 @@ from __future__ import unicode_literals, absolute_import
 import logging
 import datetime
 import copy
-from portal.libs import utils as AgaveUtils
+from portal.libs.agave import utils as AgaveUtils
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -20,6 +20,7 @@ class BaseAgaveResource(object):  # pylint: disable=too-few-public-methods
 
     This class implements basic wrapping capabilities for Agave Resources
     """
+
     def __init__(self, client, **kwargs):
         """This class will allow easy access to a JSON object which has been
         converted into a dictionary.
@@ -111,19 +112,45 @@ class BaseAgaveResource(object):  # pylint: disable=too-few-public-methods
         object.__setattr__(self, name, value)
 
     def to_dict(self):
+        """To dict"""
         try:
-            pop = getattr(self, '_populate_obj')
-            pop()
+            populate = getattr(self, '_populate_obj')
+            populate()
         except AttributeError:
             pass
 
         dict_obj = {}
-        for key in list(self._wrapped):
+        keys = getattr(
+            self,
+            '_body_fields',
+            list(self._wrapped)
+        )
+        for key in keys:
             val = getattr(self, key)
             if isinstance(val, datetime.datetime):
                 val = val.isoformat()
             elif isinstance(val, BaseAgaveResource):
                 val = val.to_dict()
 
-            dict_obj[key] = val
+            camel_case_key = AgaveUtils.to_camel_case(key)
+            dict_obj[camel_case_key] = val
         return dict_obj
+
+    def validate(self):
+        """Validate object
+
+        Method to valide object is correct.
+        This should be used before creation/update to make sure
+        things will not break.
+        """
+        for fieldname in getattr(self, '_body_fields', []):
+            val_name = 'validate_{fieldname}'.format(fieldname=fieldname)
+            field = getattr(self, fieldname)
+            val = getattr(self, val_name, None)
+            if val is not None:
+                val()
+            elif isinstance(
+                    field,
+                    BaseAgaveResource
+            ):
+                field.validate()

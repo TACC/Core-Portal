@@ -1,6 +1,7 @@
 """
 .. module: libs.agave.serializers
-   :synopsis: Necessary classes to serialize a class which wrapps an agave object into a dict.
+   :synopsis: Necessary classes to serialize a class which
+    wrapps an agave object into a dict.
 """
 from __future__ import unicode_literals, absolute_import
 import logging
@@ -9,16 +10,17 @@ import datetime
 import six
 from .models.base import BaseAgaveResource
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
-class BaseAgaveSerializer(json.JSONEncoder):
+
+class BaseAgaveFileSerializer(json.JSONEncoder):
     """Class to serialize an Agave Resource object
     """
-    def default(self, obj):#pylint: disable=method-hidden
+    def default(self, obj):  # pylint: disable=method-hidden
         if isinstance(obj, BaseAgaveResource):
-            _wrapped = obj.to_dict()#pylint: disable=protected-access
+            _wrapped = obj.to_dict()  # pylint: disable=protected-access
             for key, val in six.iteritems(_wrapped):
                 if isinstance(val, datetime.datetime):
                     _wrapped[key] = val.isoformat()
@@ -46,6 +48,19 @@ class BaseAgaveSerializer(json.JSONEncoder):
                 # _wrapped["trail"] = obj.trail
             except AttributeError:
                 pass
+            return _wrapped
+
+        return json.JSONEncoder(self, obj)
+
+
+class BaseAgaveSystemSerializer(json.JSONEncoder):
+    """Class to serialize an Agave System object"""
+    def default(self, obj):  # pylint: disable=method-hidden
+        if isinstance(obj, BaseAgaveResource):
+            _wrapped = obj.to_dict()
+            for key, val in six.iteritems(_wrapped):
+                if isinstance(val, datetime.datetime):
+                    _wrapped[key] = val.isoformat()
             return _wrapped
 
         return json.JSONEncoder(self, obj)
