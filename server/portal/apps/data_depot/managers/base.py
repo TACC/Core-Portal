@@ -15,7 +15,7 @@ from django.urls import reverse
 #from django.contrib.auth import get_user_model
 from requests.exceptions import HTTPError
 from portal.libs.agave.models.files import BaseFile
-from portal.libs.agave.serializers import BaseAgaveSerializer
+from portal.libs.agave.serializers import BaseAgaveFileSerializer
 from portal.exceptions.api import ApiException
 
 #pylint: disable=invalid-name
@@ -190,7 +190,7 @@ class AgaveFileManager(AbstractFileManager):
         :param request: Django request object.
         """
         self._ac = client
-        self.serializer_cls = BaseAgaveSerializer
+        self.serializer_cls = BaseAgaveFileSerializer
 
     def _parse_file_id(self, file_id):
         """Parse a file id.
