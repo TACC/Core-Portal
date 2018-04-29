@@ -361,13 +361,41 @@ CELERYD_LOG_FORMAT = '[DJANGO] $(processName)s %(levelname)s %(asctime)s %(modul
 #CELERY_ANOTATIONS = {'designsafe.apps.api.tasks.reindex_agave': {'time_limit': 60 * 15}}
 CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
 CELERY_QUEUES = (
-    Queue('default', Exchange('default'), routing_key='default'),
-    #Use to queue indexing tasks
-    Queue('indexing', Exchange('indexing'), routing_key='indexing'),
-    #Use to queue tasks which handle files
-    Queue('files', Exchange('files'), routing_key='files'),
-    #Use to queue tasks which mainly call external APIs
-    Queue('api', Exchange('api'), routing_key='api'),
+    Queue(
+        'default',
+        Exchange('default'),
+        routing_key='default',
+        queue_arguments={
+            'x-max-priority': 10
+        }
+    ),
+    # Use to queue indexing tasks
+    Queue(
+        'indexing',
+        Exchange('indexing'),
+        routing_key='indexing',
+        queue_arguments={
+            'x-max-priority': 10
+        }
+    ),
+    # Use to queue tasks which handle files
+    Queue(
+        'files',
+        Exchange('files'),
+        routing_key='files',
+        queue_arguments={
+            'x-max-priority': 10
+        }
+    ),
+    # Use to queue tasks which mainly call external APIs
+    Queue(
+        'api',
+        Exchange('api'),
+        routing_key='api',
+        queue_arguments={
+            'x-max-priority': 10
+        }
+    ),
     )
 CELERY_TASK_DEFAULT_QUEUE = 'default'
 CELERY_TASK_DEFAULT_EXCHANGE = 'default'
@@ -420,6 +448,9 @@ PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = settings_secret.\
 
 PORTAL_USER_HOME_MANAGER = settings_secret.\
     _PORTAL_USER_HOME_MANAGER
+
+PORTAL_KEYS_MANAGER = settings_secret.\
+    _PORTAL_KEYS_MANAGER
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
     _PORTAL_USER_ACCOUNT_SETUP_STEPS
