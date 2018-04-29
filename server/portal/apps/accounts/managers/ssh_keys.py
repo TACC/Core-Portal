@@ -150,3 +150,4 @@ class KeysManager(AbstractKeysManager):
                 output_lines,
                 error_lines
             )
+        return output

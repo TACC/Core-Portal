@@ -169,6 +169,36 @@ def reset_home_system_keys(username, force=False):
     return pub_key
 
 
+def queue_pub_key_setup(
+        username,
+        password,
+        token,
+        system_id,
+        hostname,
+        port=22
+):  # pylint: disable=too-many-arguments
+    """Queue Public Key Setup
+
+    Convenient function to queue a specific celery task
+    """
+    from portal.apps.accounts.tasks import (
+        setup_pub_key,
+        monitor_setup_pub_key
+    )
+    res = setup_pub_key.apply_async(
+        kwargs={
+            'username': username,
+            'password': password,
+            'token': token,
+            'system_id': system_id,
+            'hostname': hostname,
+            'port': port
+        },
+        expires=60
+    )
+    monitor_setup_pub_key.delay(res.id)
+
+
 def add_pub_key_to_resource(
         username,
         password,
@@ -196,9 +226,10 @@ def add_pub_key_to_resource(
         token
     )
     pub_key = user.ssh_keys.for_system(system_id).public
-    mgr.add_public_key(
+    output = mgr.add_public_key(
         system_id,
         hostname,
         port,
         pub_key
     )
+    return output
