@@ -34,6 +34,37 @@ def check_user(username):
     return users[0]
 
 
+def _import_manager(mgr_str):
+    """Import Manager
+
+    Shortcut function to import a manager class referenced by a
+    dot notation string
+    """
+    module_str, cls_str = mgr_str.rsplit('.', 1)
+    module = import_module(module_str)
+    cls = getattr(module, cls_str)
+    return cls
+
+
+def _lookup_keys_manager(user, password, token):
+    """Lookup User Home Manager
+
+    This function allows to use a custom `UserHomeManager` class
+    to handle any special cases for setup.
+
+    .. seealso::
+        :class:`~portal.apps.accounts.managers.
+        abstract.AbstractUserHomeManager` and
+        :class:`~portal.apps.accounts.managers.user_home.UserHomeManager`
+    """
+    mgr_str = getattr(
+        settings,
+        'PORTAL_KEYS_MANAGER',
+    )
+    cls = _import_manager(mgr_str)
+    return cls(user.username, password, token)
+
+
 def _lookup_user_home_manager(user):
     """Lookup User Home Manager
 
@@ -42,16 +73,14 @@ def _lookup_user_home_manager(user):
 
     .. seealso::
         :class:`~portal.apps.accounts.managers.
-        user_home.AbstractUserHomeManager` and
+        abstract.AbstractUserHomeManager` and
         :class:`~portal.apps.accounts.managers.user_home.UserHomeManager`
     """
     mgr_str = getattr(
         settings,
         'PORTAL_USER_HOME_MANAGER',
     )
-    module_str, cls_str = mgr_str.rsplit('.', 1)
-    module = import_module(module_str)
-    cls = getattr(module, cls_str)
+    cls = _import_manager(mgr_str)
     return cls(user)
 
 
@@ -131,9 +160,45 @@ def reset_home_system_keys(username, force=False):
         If this functionality needs to be overridden it must be done
         in a :class:`~portal.apps.accounts.managers.
         user_home.UserHomeManager` or :class:`~portal.apps.accounts.
-        managers.user_home.AbstractUserHomeManager` subclass
+        managers.abstract.AbstractUserHomeManager` subclass
         and overwrite the `reset_system_keys` method.
     """
     user = check_user(username)
     mgr = _lookup_user_home_manager(user)
-    mgr.reset_system_keys(user, force=force)
+    pub_key = mgr.reset_system_keys(user, force=force)
+    return pub_key
+
+
+def add_pub_key_to_resource(
+        username,
+        password,
+        token,
+        system_id,
+        hostname,
+        port=22
+):  # pylint: disable=too-many-arguments
+    """Add Publike Key to Remote Resource
+
+    :param str username: Username
+    :param str password: Username's pasword to remote resource
+    :param str token: TACC's token
+    :param str system_id: Agave system's id
+    :param str hostname: Resource's hostname
+    :param int port: Port to use for ssh connection
+
+    :raises: :class:`~portal.apps.accounts.managers.
+
+    """
+    user = check_user(username)
+    mgr = _lookup_keys_manager(
+        user,
+        password,
+        token
+    )
+    pub_key = user.ssh_keys.for_system(system_id).public
+    mgr.add_public_key(
+        system_id,
+        hostname,
+        port,
+        pub_key
+    )
