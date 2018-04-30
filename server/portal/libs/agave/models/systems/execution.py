@@ -55,7 +55,7 @@ class ExecutionSystem(BaseSystem):
         super(ExecutionSystem, self).__init__(
             client,
             id=id,
-            type=BaseSystem.TYPES.STORAGE,
+            type=BaseSystem.TYPES.EXECUTION,
             **kwargs
         )
         self.uuid = getattr(self, 'uuid', None)
@@ -94,6 +94,9 @@ class ExecutionSystem(BaseSystem):
         self.public = getattr(self, 'public', False)
         self.global_default = getattr(self, 'globalDefault', False)
         self.last_modified = getattr(self, 'lastModified', None)
+        self.storage = getattr(self, 'storage', None)
+        self.login = getattr(self, 'login', None)
+        self.queues = getattr(self, 'queues', None)
 
     def validate_type(self):
         """Validate self.type"""

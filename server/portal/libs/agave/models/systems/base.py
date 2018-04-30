@@ -8,6 +8,7 @@ import logging
 from future.utils import python_2_unicode_compatible
 import requests
 from requests.exceptions import HTTPError
+from cached_property import cached_property
 from django.conf import settings
 from portal.libs.agave.exceptions import ValidationError
 from portal.libs.agave.models.base import BaseAgaveResource
@@ -108,26 +109,26 @@ class BaseSystem(BaseAgaveResource):
         'Schedulers',
         _SCHEDULERS
     )(
-         LSF='LSF',
-         LOADLEVELER='LOADLEVELER',
-         PBS='PBS',
-         SGE='SGE',
-         CONDOR='CONDOR',
-         COBALT='COBALT',
-         TORQUE='TORQUE',
-         MOAB='MOAB',
-         SLURM='SLURM',
-         CUSTOM_LSF='CUSTOM_LSF',
-         CUSTOM_LOADLEVELER='CUSTOM_LOADLEVELER',
-         CUSTOM_PBS='CUSTOM_PBS',
-         CUSTOM_SGE='CUSTOM_SGE',
-         CUSTOM_CONDOR='CUSTOM_CONDOR',
-         FORK='FORK',
-         CUSTOM_COBALT='CUSTOM_COBALT',
-         CUSTOM_TORQUE='CUSTOM_TORQUE',
-         CUSTOM_MOAB='CUSTOM_MOAB',
-         CUSTOM_SLURM='CUSTOM_SLURM',
-         UNKNOWN='UNKNOWN'
+        LSF='LSF',
+        LOADLEVELER='LOADLEVELER',
+        PBS='PBS',
+        SGE='SGE',
+        CONDOR='CONDOR',
+        COBALT='COBALT',
+        TORQUE='TORQUE',
+        MOAB='MOAB',
+        SLURM='SLURM',
+        CUSTOM_LSF='CUSTOM_LSF',
+        CUSTOM_LOADLEVELER='CUSTOM_LOADLEVELER',
+        CUSTOM_PBS='CUSTOM_PBS',
+        CUSTOM_SGE='CUSTOM_SGE',
+        CUSTOM_CONDOR='CUSTOM_CONDOR',
+        FORK='FORK',
+        CUSTOM_COBALT='CUSTOM_COBALT',
+        CUSTOM_TORQUE='CUSTOM_TORQUE',
+        CUSTOM_MOAB='CUSTOM_MOAB',
+        CUSTOM_SLURM='CUSTOM_SLURM',
+        UNKNOWN='UNKNOWN'
     )
 
     # pylint: disable=redefined-builtin
@@ -145,6 +146,7 @@ class BaseSystem(BaseAgaveResource):
         wrapped.update(**kwargs)
         storage = wrapped.pop('storage', {})
         login = wrapped.pop('login', {})
+        queues = wrapped.pop('queues', {})
         super(BaseSystem, self).__init__(
             client,
             **wrapped
@@ -152,6 +154,7 @@ class BaseSystem(BaseAgaveResource):
         self.storage = BaseSystemStorage(**storage)
         if wrapped['type'] == self.TYPES.EXECUTION:
             self.login = BaseSystemLogin(**login)
+            self.queues = BaseSystemQueues(client, queues)
     # pylint: enable=redefined-builtin
 
     @classmethod
@@ -448,6 +451,7 @@ class BaseSystemStorage(BaseAgaveResource):
 
     def validate_protocol(self):
         """Validate self.protocol"""
+        # pylint: disable=protected-access
         protocols = BaseSystem._STORAGE_PROTOCOLS
         if self.protocol not in protocols:
             raise ValidationError(
@@ -513,8 +517,8 @@ class BaseSystemLogin(BaseAgaveResource):
     ]
 
     def __init__(self, **kwargs):
-        auth = kwargs.pop('auth', {})
-        proxy = kwargs.pop('proxy', {})
+        auth = kwargs.pop('auth', {}) or {}
+        proxy = kwargs.pop('proxy', {}) or {}
         super(BaseSystemLogin, self).__init__(
             None,
             **kwargs
@@ -531,6 +535,7 @@ class BaseSystemLogin(BaseAgaveResource):
 
     def validate_protocol(self):
         """Validate self.protocol"""
+        # pylint: disable=protected-access
         protocols = BaseSystem._LOGIN_PROTOCOLS
         if self.protocol not in protocols:
             raise ValidationError(
@@ -552,3 +557,170 @@ class BaseSystemLogin(BaseAgaveResource):
             raise ValidationError(
                 "'host' should not be empty"
             )
+
+
+@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+class BaseSystemQueue(BaseAgaveResource):
+    """Base System Queue"""
+
+    _body_fields = [
+        'name',
+        'max_jobs',
+        'max_user_jobs',
+        'max_nodes',
+        'max_processors_per_node',
+        'max_memory_per_node',
+        'custom_directives',
+        'default'
+    ]
+
+    def __init__(self, client, **kwargs):
+        super(BaseSystemQueue, self).__init__(client, **kwargs)
+        self.name = kwargs.get('name', '')
+        self.max_jobs = kwargs.get('max_jobs', 10)
+        self.max_user_jobs = kwargs.get('max_user_jobs', 10)
+        self.max_nodes = kwargs.get('max_nodes', None)
+        self.max_processors_per_node = kwargs.get(
+            'max_processors_per_node',
+            None
+        )
+        self.max_memory_per_node = kwargs.get(
+            'max_memory_per_node',
+            None
+        )
+        self.max_requested_time = kwargs.get(
+            'max_requested_time',
+            None
+        )
+        self.custom_directives = kwargs.get(
+            'custom_directives',
+            None
+        )
+        self.default = kwargs.get('default', False)
+
+    def populate_obj(self):
+        """Overriding """
+        pass
+
+    def validate_name(self):
+        """Validate self.name"""
+        if not self.name:
+            raise ValidationError(
+                "'name' should not be empty"
+            )
+
+    def validate_max_jobs(self):
+        """Validate self.max_jobs"""
+        if not isinstance(self.max_jobs, int) or self.max_jobs < -1:
+            raise ValidationError(
+                "'max_jobs' should be an integer greater or equal to '-1'"
+            )
+
+    def validate_max_user_jobs(self):
+        """Validate self.max_user_jobs"""
+        if (not isinstance(self.mx_user_jobs, int) or
+                self.max_user_jobs < -1):
+            raise ValidationError(
+                "'max_user_jobs' should be an integer greater or equal to '-1'"
+            )
+
+    def validate_max_nodes(self):
+        """Validate self.max_nodes"""
+        if (not isinstance(self.max_nodes, int) or
+                self.max_nodes < -1):
+            raise ValidationError(
+                "'max_nodes' should be an integer greater or equal to '-1'"
+            )
+
+    def validate_max_processors_per_node(self):  # pylint: disable=invalid-name
+        """Validate self.max_processors_per_node"""
+        if (not isinstance(self.validate_max_processors_per_node, int) or
+                self.max_processors_per_node < -1):
+            raise ValidationError(
+                "'max_processors_per_node' should be an integer "
+                "greater or equal to '-1'"
+            )
+
+    def validate_max_memory_per_node(self):
+        """Validate self.max_memory_per_node"""
+        if not self.max_memory_per_node:
+            raise ValidationError(
+                "'max_memory_per_node' should not be empty"
+            )
+
+    def validate_max_requested_time(self):
+        """Validate self.max_requested_time"""
+        if not self.max_requested_time:
+            raise ValidationError(
+                "'max_requested_time' should not be empty"
+            )
+
+    def validate_custom_directives(self):
+        """Validate self.custom_directives"""
+        if not self.custom_directives:
+            raise ValidationError(
+                "'custom_directives' should not be empty"
+            )
+
+    def validate_default(self):
+        """Validate self.default"""
+        if not isinstance(self.default, bool):
+            raise ValidationError(
+                "'default' should be of type 'bool'"
+            )
+
+
+@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+class BaseSystemQueues(object):
+    """Base System Queues
+
+    Class to hold queues for an exec system
+    """
+
+    def __init__(self, client, queues):
+        self._ac = client
+        self.queues = [
+            BaseSystemQueue(client, **queue) for queue in queues
+        ]
+
+    def all(self):
+        """Return all queues"""
+        return self.queues
+
+    @cached_property
+    def names(self):
+        """Return all queues' names"""
+        return [
+            queue.name for queue in self.queues
+        ]
+
+    def add(
+            self,
+            name,
+            max_jobs,
+            max_user_jobs,
+            max_nodes,
+            max_processors_per_node,
+            max_memory_per_node,
+            custom_directives,
+            default
+    ):  # pylint: disable=too-many-arguments
+        """Add a queue to an exec system"""
+        queue = BaseSystemQueue(
+            self._ac,
+            name=name,
+            max_jobs=max_jobs,
+            max_user_jobs=max_user_jobs,
+            max_nodes=max_nodes,
+            max_processors_per_node=max_processors_per_node,
+            max_memory_per_node=max_memory_per_node,
+            custom_directives=custom_directives,
+            default=default
+        )
+        self.queues.append(queue)
+
+    def to_dict(self):
+        """To dict conversion"""
+        return [
+            queue.to_dict() for queue in self.queues
+        ]

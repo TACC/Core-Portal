@@ -129,7 +129,8 @@ class BaseAgaveResource(object):  # pylint: disable=too-few-public-methods
             val = getattr(self, key)
             if isinstance(val, datetime.datetime):
                 val = val.isoformat()
-            elif isinstance(val, BaseAgaveResource):
+            elif (isinstance(val, BaseAgaveResource) or
+                  hasattr(val, 'to_dict')):
                 val = val.to_dict()
 
             camel_case_key = AgaveUtils.to_camel_case(key)

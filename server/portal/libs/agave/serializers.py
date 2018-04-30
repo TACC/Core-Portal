@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class BaseAgaveFileSerializer(json.JSONEncoder):
     """Class to serialize an Agave Resource object
     """
-    def default(self, obj):  # pylint: disable=method-hidden
+    def default(self, obj):  # pylint: disable=method-hidden, arguments-differ
         if isinstance(obj, BaseAgaveResource):
             _wrapped = obj.to_dict()  # pylint: disable=protected-access
             for key, val in six.iteritems(_wrapped):
@@ -26,7 +26,7 @@ class BaseAgaveFileSerializer(json.JSONEncoder):
                     _wrapped[key] = val.isoformat()
 
             try:
-                if obj._children:
+                if obj._children:  # pylint: disable=protected-access
                     kids = []
                     for child in obj.children():
                         tmp = child.to_dict()
@@ -55,9 +55,13 @@ class BaseAgaveFileSerializer(json.JSONEncoder):
 
 class BaseAgaveSystemSerializer(json.JSONEncoder):
     """Class to serialize an Agave System object"""
-    def default(self, obj):  # pylint: disable=method-hidden
-        if isinstance(obj, BaseAgaveResource):
+    def default(self, obj):  # pylint: disable=method-hidden, arguments-differ
+        if (isinstance(obj, BaseAgaveResource) or
+                hasattr(obj, 'to_dict')):
             _wrapped = obj.to_dict()
+            if isinstance(_wrapped, list):
+                return _wrapped
+
             for key, val in six.iteritems(_wrapped):
                 if isinstance(val, datetime.datetime):
                     _wrapped[key] = val.isoformat()
