@@ -27,46 +27,52 @@ class BaseSystem(BaseAgaveResource):
     .. todo::
         This class should create a better API
     """
-
+    _EXECUTION_TYPES = ['HPC', 'CONDOR', 'CLI']
     EXECUTION_TYPES = namedtuple(
         'ExecutionTypes',
-        ['HPC', 'CONDOR', 'CLI']
+        _EXECUTION_TYPES
     )(
         HPC='HPC',
         CONDOR='CONDOR',
         CLI='CLI'
     )
+    _TYPES = ['STORAGE', 'EXECUTION']
     TYPES = namedtuple(
         'SystemTypes',
-        ['STORAGE', 'EXECUTION']
+        _TYPES
     )(
         STORAGE='STORAGE',
         EXECUTION='EXECUTION'
     )
+    _AUTH_TYPES = ['SSHKEYS', 'PASSWORD']
     AUTH_TYPES = namedtuple(
         'AuthTypes',
-        ['SSHKEYS', 'PASSWORD']
+        _AUTH_TYPES
     )(
         SSHKEYS='SSHKEYS',
         PASSWORD='PASSWORD'
     )
+    _LOGIN_PROTOCOLS = ['SSH', 'GSISSH', 'LOCAL']
     LOGIN_PROTOCLS = namedtuple(
         'LoginProtocols',
-        ['SSH', 'GSISSH', 'LOCAL']
+        _LOGIN_PROTOCOLS
     )(
         SSH='SSH',
         GSISSH='GSISSH',
         LOCAL='LOCAL'
     )
+    _STORAGE_PROTOCOLS = [
+        'FTP',
+        'GRIDFTP',
+        'IRODS',
+        'IRODS4',
+        'LOCAL',
+        'S3',
+        'SFTP'
+    ]
     STORAGE_PROTOCLS = namedtuple(
         'StorageProtocols',
-        ['FTP',
-         'GRIDFTP',
-         'IRODS',
-         'IRODS4',
-         'LOCAL',
-         'S3',
-         'SFTP']
+        _STORAGE_PROTOCOLS
     )(
         FTP='FTP',
         GRIDFTP='GRIDFTP',
@@ -75,6 +81,53 @@ class BaseSystem(BaseAgaveResource):
         LOCAL='LOCAL',
         S3='S3',
         SFTP='SFTP'
+    )
+    _SCHEDULERS = [
+        'LSF',
+        'LOADLEVELER',
+        'PBS',
+        'SGE',
+        'CONDOR',
+        'COBALT',
+        'TORQUE',
+        'MOAB',
+        'SLURM',
+        'CUSTOM_LSF',
+        'CUSTOM_LOADLEVELER',
+        'CUSTOM_PBS',
+        'CUSTOM_SGE',
+        'CUSTOM_CONDOR',
+        'FORK',
+        'CUSTOM_COBALT',
+        'CUSTOM_TORQUE',
+        'CUSTOM_MOAB',
+        'CUSTOM_SLURM',
+        'UNKNOWN'
+    ]
+    SCHEDULERS = namedtuple(
+        'Schedulers',
+        _SCHEDULERS
+    )(
+         LSF='LSF',
+         LOADLEVELER='LOADLEVELER',
+         PBS='PBS',
+         SGE='SGE',
+         CONDOR='CONDOR',
+         COBALT='COBALT',
+         TORQUE='TORQUE',
+         MOAB='MOAB',
+         SLURM='SLURM',
+         CUSTOM_LSF='CUSTOM_LSF',
+         CUSTOM_LOADLEVELER='CUSTOM_LOADLEVELER',
+         CUSTOM_PBS='CUSTOM_PBS',
+         CUSTOM_SGE='CUSTOM_SGE',
+         CUSTOM_CONDOR='CUSTOM_CONDOR',
+         FORK='FORK',
+         CUSTOM_COBALT='CUSTOM_COBALT',
+         CUSTOM_TORQUE='CUSTOM_TORQUE',
+         CUSTOM_MOAB='CUSTOM_MOAB',
+         CUSTOM_SLURM='CUSTOM_SLURM',
+         UNKNOWN='UNKNOWN'
     )
 
     # pylint: disable=redefined-builtin
@@ -115,24 +168,24 @@ class BaseSystem(BaseAgaveResource):
             cls,
             client,
             type=None,  # pylint: disable=redefined-builtin
-            default=None,
+            default=False,
             limit=100,
             offset=0,
-            public=None
+            public=False
     ):  # pylint: disable=too-many-arguments
         """List systems belonging to a specific user
 
         :param str type: Type of systems. One of :attr:`BaseSystem.TYPES`
         :param client: Agave client to use
-        :param bool default: Only default systems
-        :param bool public: Only public systems
+        :param bool default: Only list default systems
+        :param bool public: Only list public systems
         :param int limit: Page limit
         :param int offset: Page offset
 
         :return: Generator with systems
         :rtype: generator
         """
-        systems = client.system.list(
+        systems = client.systems.list(
             type=type,
             default=default,
             limit=limit,
@@ -140,7 +193,7 @@ class BaseSystem(BaseAgaveResource):
             public=public
         )
         for system in systems:
-            yield cls(client, **system)
+            yield cls(client, id=system.id)
 
     @classmethod
     def search(cls, client, query):
@@ -373,8 +426,8 @@ class BaseSystemStorage(BaseAgaveResource):
     ]
 
     def __init__(self, **kwargs):
-        auth = kwargs.pop('auth', {})
-        proxy = kwargs.pop('proxy', {})
+        auth = kwargs.pop('auth', {}) or {}
+        proxy = kwargs.pop('proxy', {}) or {}
         super(BaseSystemStorage, self).__init__(
             None,
             **kwargs
@@ -395,15 +448,7 @@ class BaseSystemStorage(BaseAgaveResource):
 
     def validate_protocol(self):
         """Validate self.protocol"""
-        protocols = [
-            BaseSystem.STORAGE_PROTOCLS.FTP,
-            BaseSystem.STORAGE_PROTOCLS.GRIDFTP,
-            BaseSystem.STORAGE_PROTOCLS.IRODS,
-            BaseSystem.STORAGE_PROTOCLS.IRODS4,
-            BaseSystem.STORAGE_PROTOCLS.LOCAL,
-            BaseSystem.STORAGE_PROTOCLS.S3,
-            BaseSystem.STORAGE_PROTOCLS.SFTP
-        ]
+        protocols = BaseSystem._STORAGE_PROTOCOLS
         if self.protocol not in protocols:
             raise ValidationError(
                 "'protocol' should be one of {protocols}".format(
@@ -486,11 +531,7 @@ class BaseSystemLogin(BaseAgaveResource):
 
     def validate_protocol(self):
         """Validate self.protocol"""
-        protocols = [
-            BaseSystem.LOGIN_PROTOCLS.SSH,
-            BaseSystem.LOGIN_PROTOCLS.GSISSH,
-            BaseSystem.LOGIN_PROTOCLS.LOCAL
-        ]
+        protocols = BaseSystem._LOGIN_PROTOCOLS
         if self.protocol not in protocols:
             raise ValidationError(
                 "'protocol' should be one of: {protocols}".format(

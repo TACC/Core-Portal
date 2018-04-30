@@ -8,7 +8,9 @@ import logging
 from importlib import import_module
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from portal.libs.agave.models.systems.base import BaseSystem
+from portal.libs.agave.models.systems.storage import StorageSystem
+from portal.libs.agave.models.systems.execution import ExecutionSystem
+from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -241,8 +243,19 @@ def add_pub_key_to_resource(
 
 
 def storage_systems(user):
-    systems = BaseSystem.list(
+    systems = StorageSystem.list(
         user.agave_oauth.client,
-        type='STORAGE'
+        type=StorageSystem.TYPES.STORAGE
     )
     return systems
+
+
+def execution_systems(user):
+    systems = ExecutionSystem.list(
+        user.agave_oauth.client,
+        type=ExecutionSystem.TYPES.EXECUTION
+    )
+    return systems
+
+
+agave_system_serializer_cls = BaseAgaveSystemSerializer
