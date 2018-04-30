@@ -242,20 +242,32 @@ def add_pub_key_to_resource(
     return output
 
 
-def storage_systems(user):
+def storage_systems(user, offset=0, limit=100):
+    """Returns all storage systems for a user
+
+    :param user: Django user's instance
+    """
     systems = StorageSystem.list(
         user.agave_oauth.client,
-        type=StorageSystem.TYPES.STORAGE
+        type=StorageSystem.TYPES.STORAGE,
+        offset=offset,
+        limit=limit
     )
-    return systems
+    return [sys for sys in systems]
 
 
-def execution_systems(user):
+def execution_systems(user, offset=0, limit=100):
+    """Returns all execution systems for a user
+
+    :param user: Django user's instance
+    """
     systems = ExecutionSystem.list(
         user.agave_oauth.client,
-        type=ExecutionSystem.TYPES.EXECUTION
+        type=ExecutionSystem.TYPES.EXECUTION,
+        offset=offset,
+        limit=limit
     )
-    return systems
+    return [sys for sys in systems]
 
 
-agave_system_serializer_cls = BaseAgaveSystemSerializer
+agave_system_serializer_cls = BaseAgaveSystemSerializer  # pylint:disable=C0103
