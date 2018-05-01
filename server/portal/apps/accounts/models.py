@@ -3,17 +3,13 @@
    :synopsis: Account's models
 """
 from __future__ import unicode_literals
-
 import logging
-import base64
-from Crypto.Cipher import AES
-from Crypto.Hash import SHA256
-from Crypto import Random
 from django.core.mail import send_mail
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
+from portal.utils import encryption as EncryptionUtil
 # Create your models here.
 
 
@@ -148,14 +144,31 @@ class SSHKeysManager(models.Manager):
             The keys need to be given as clear text strings and will be
              encrypted using AES
         """
-        keys = Keys.objects.get(ssh_keys__user=user,
-                                system=system_id)
+        try:
+            keys = Keys.objects.get(
+                ssh_keys__user=user,
+                system=system_id
+            )
+        except ObjectDoesNotExist:
+            try:
+                ssh_keys = super(
+                    SSHKeysManager,
+                    self
+                ).get_queryset().get(user=user)
+            except ObjectDoesNotExist:
+                ssh_keys = super(
+                    SSHKeysManager,
+                    self
+                ).create(user=user)
+            keys = Keys.objects.create(ssh_keys=ssh_keys, system=system_id)
+
         keys.public = pub_key
         keys.private = priv_key
         keys.save()
-        return super(SSHKeysManager, self).get_query_set().\
-            get(ssh_keys__user=user,
-                system=system_id)
+        return super(
+            SSHKeysManager,
+            self
+        ).get_queryset().get(user=user)
 
 
 class SSHKeys(models.Model):
@@ -217,7 +230,7 @@ class Keys(models.Model):
          before saving it into the DB.
     """
     ssh_keys = models.ForeignKey(SSHKeys, related_name='+')
-    system = models.TextField()
+    system = models.TextField(unique=True)
     private = models.TextField()
     public = models.TextField()
 
@@ -227,7 +240,7 @@ class Keys(models.Model):
 
     def private_key(self):
         """Returns decrypted private key"""
-        return _decrypt(self.private)
+        return EncryptionUtil.decrypt(self.private)
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         """Saves a set of keys
@@ -238,7 +251,7 @@ class Keys(models.Model):
         """
         if (self.private != self._private or
                 self.pk is None):
-            self.private = _encrypt(self.private)
+            self.private = EncryptionUtil.encrypt(self.private)
         super(Keys, self).save(*args, **kwargs)
         self._private = self.private
 
@@ -247,53 +260,3 @@ class Keys(models.Model):
             username=self.ssh_keys.user.username,
             system=self.system
         )
-
-
-def _encrypt(raw):
-    """Encrypts string using AES
-
-    :param str raw: raw string to encrypt
-
-    .. note::
-        Shamelessly copied from:
-        https://stackoverflow.com/questions/42568262/how-to-encrypt-text-with-a-password-in-python/44212550#44212550
-    """
-    source = raw.encode('utf-8')
-    # Use hash to make sure size is appropiate
-    key = SHA256.new(settings.SECRET_KEY).digest()
-    # pylint: disable=invalid-name
-    IV = Random.new().read(AES.block_size)
-    # pylint: enable=invalid-name
-    encryptor = AES.new(key, AES.MODE_CBC, IV)
-    # calculate needed padding
-    padding = AES.block_size - len(source) % AES.block_size
-    source += chr(padding) * padding
-    # Python 3.x: source += bytes([padding]) * padding
-    # store the IV at the beginning and encrypt
-    data = IV + encryptor.encrypt(source)
-    return base64.b64encode(data).decode("utf-8")
-
-
-def _decrypt(raw):
-    """Decrypts a base64 encoded string
-
-    :param source: base64 encoded string
-    """
-    source = base64.b64decode(raw.encode("utf-8"))
-    # use SHA-256 over our key to get a proper-sized AES key
-    key = SHA256.new(settings.SECRET_KEY).digest()
-    # extract the IV from the beginning
-    # pylint: disable=invalid-name
-    IV = source[:AES.block_size]
-    # pylint: enable=invalid-name
-    decryptor = AES.new(key, AES.MODE_CBC, IV)
-    # decrypt
-    data = decryptor.decrypt(source[AES.block_size:])
-    # pick the padding value from the end;
-    padding = ord(data[-1])
-    # Python 3.x: padding = data[-1]
-    # Python 3.x: if data[-padding:] != bytes([padding]) * padding:
-    if data[-padding:] != chr(padding) * padding:
-        raise ValueError("Invalid padding...")
-    # remove the padding
-    return data[:-padding]

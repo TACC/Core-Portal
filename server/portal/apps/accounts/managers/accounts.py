@@ -8,9 +8,11 @@ import logging
 from importlib import import_module
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from portal.utils import encryption as EncryptionUtil
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
+from portal.apps.accounts.models import SSHKeys, Keys
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -172,6 +174,55 @@ def reset_home_system_keys(username, force=False):
     return pub_key
 
 
+def reset_system_keys(username, system_id):
+    """Reset system's Keys
+
+    Creates a new set of keys, saves the set of key to the DB
+    and updates the Agave System.
+
+    :param str username: Username
+
+    .. note::
+        If :param:`system_id` is a home system then the Home Manager
+        class will be used to reset the keys.
+        This because there might be some specific actions to do
+        when managing home directories
+    """
+    user = check_user(username)
+    home_sys_id = get_user_home_system_id(user)
+    if system_id == home_sys_id:
+        reset_home_system_keys(username)
+
+    sys_dict = user.agave_oauth.client.systems.get(systemId=system_id)
+    if sys_dict['type'] == StorageSystem.TYPES.STORAGE:
+        sys = StorageSystem.from_dict(user.agave_oauth.client, sys_dict)
+    elif sys_dict['type'] == ExecutionSystem.TYPES.EXECUTION:
+        sys = ExecutionSystem.from_dict(user.agave_oauth.client, sys_dict)
+
+    private_key = EncryptionUtil.create_private_key()
+    priv_key_str = EncryptionUtil.export_key('PEM')
+    public_key = EncryptionUtil.create_public_key(private_key)
+    publ_key_str = EncryptionUtil.export_key(public_key)
+
+    sys.set_storage_keys(
+        username,
+        priv_key_str,
+        publ_key_str
+    )
+    SSHKeys.objects.update_keys(
+        user,
+        system_id=system_id,
+        priv_key=priv_key_str,
+        pub_key=publ_key_str
+    )
+    if sys.type == ExecutionSystem.TYPES.EXECUTION:
+        sys.set_login_keys(
+            username,
+            priv_key_str,
+            publ_key_str
+        )
+
+
 def queue_pub_key_setup(
         username,
         password,
@@ -268,6 +319,36 @@ def execution_systems(user, offset=0, limit=100):
         limit=limit
     )
     return [sys for sys in systems]
+
+
+def public_key_for_systems(system_ids):
+    """Returns public key for one or more systems
+
+    :param user: Django user's instance
+    :param list(str) system_ids: List of strings with system ids
+
+    :returns: Dictionary with a key for each system id.
+        Each nested dict will have a `public_key` and `owner` value.
+    :rtype: dict
+
+    .. todo::
+        Need to check permissions to systems. Although we are
+        only returning the public key we should make sure
+        the user has access to the system
+    """
+    resp_dict = {}
+    for system_id in system_ids:
+        keys = {}
+        try:
+            keys_obj = Keys.objects.get(system=system_id)
+            keys['public_key'] = keys_obj.public
+            keys['owner'] = keys_obj.ssh_keys.user.username
+        except Keys.DoesNotExist:
+            keys['public_key'] = None
+            keys['owner'] = None
+        resp_dict[system_id] = keys
+
+    return resp_dict
 
 
 agave_system_serializer_cls = BaseAgaveSystemSerializer  # pylint:disable=C0103

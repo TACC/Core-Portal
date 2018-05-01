@@ -132,10 +132,10 @@ class BaseSystem(BaseAgaveResource):
     )
 
     # pylint: disable=redefined-builtin
-    def __init__(self, client, **kwargs):
+    def __init__(self, client, load=True, **kwargs):
         wrapped = {}
         sys_id = kwargs.get('id')
-        if sys_id is not None:
+        if sys_id is not None and load:
             try:
                 wrapped = client.systems.get(
                     systemId=sys_id
@@ -156,6 +156,15 @@ class BaseSystem(BaseAgaveResource):
             self.login = BaseSystemLogin(**login)
             self.queues = BaseSystemQueues(client, queues)
     # pylint: enable=redefined-builtin
+
+    @classmethod
+    def from_dict(cls, client, sys_dict):
+        """Initializes system from a dictionary
+
+        :param client: Agavepy client
+        :param dict sys_dict: Dictionary
+        """
+        return cls(client, load=False, **sys_dict)
 
     @classmethod
     def create(cls, client, body):
@@ -251,6 +260,8 @@ class BaseSystem(BaseAgaveResource):
     def update(self):
         """Updates a system"""
         self.validate()
+        import json
+        logger.debug(json.dumps(self.to_dict(), indent=2))
         self._ac.systems.update(
             systemId=self.id,
             body=self.to_dict()
@@ -268,9 +279,8 @@ class BaseSystem(BaseAgaveResource):
         """Set SSH keys for storage login in a system"""
         self.storage.auth.username = username
         self.storage.auth.private_key = priv_key
-        self.stroage.auth.public_key = pub_key
+        self.storage.auth.public_key = pub_key
         self.update()
-        self.storage.auth.private_key = ''
         return self
 
     def save(self):
@@ -284,8 +294,7 @@ class BaseSystem(BaseAgaveResource):
             res = self._ac.systems.get(
                 systemId=self.id
             )
-            if (res.status_code >= 200 and
-                    res.status_code <= 299):
+            if res:
                 raise ValueError(
                     'Agave System Id already exists'
                 )

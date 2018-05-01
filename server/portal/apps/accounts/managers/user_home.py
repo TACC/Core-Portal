@@ -7,8 +7,8 @@ import os
 import logging
 # import json
 from requests.exceptions import HTTPError
-from Crypto.PublicKey import RSA
 from django.conf import settings
+from portal.utils import encryption as EncryptionUtil
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.apps.accounts.managers.abstract import AbstractUserHomeManager
@@ -84,12 +84,6 @@ class UserHomeManager(AbstractUserHomeManager):
             if exc.response.status_code == 404:
                 home_dir = self.mkdir(self.user)
                 return home_dir
-
-    def _create_private_key(self):  # pylint:disable=no-self-use
-        return RSA.generate(2048)
-
-    def _create_public_key(self, priv_key):  # pylint:disable=no-self-use
-        return priv_key.publickey()
 
     def _save_user_keys(
             self,
@@ -237,10 +231,10 @@ class UserHomeManager(AbstractUserHomeManager):
         .. todo::
             This method should return a :clas:`BaseSystem` instance
         """
-        private_key = self._create_private_key()
-        priv_key_str = private_key.exportKey('PEM')
-        public_key = self._create_public_key(private_key)
-        publ_key_str = public_key.exportKey('OpenSSH')
+        private_key = EncryptionUtil.create_private_key()
+        priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
+        public_key = EncryptionUtil.create_public_key(private_key)
+        publ_key_str = EncryptionUtil.export_key(public_key, 'OpenSSH')
         system = self.get_system_definition(
             publ_key_str,
             priv_key_str
@@ -299,17 +293,16 @@ class UserHomeManager(AbstractUserHomeManager):
             id=self.get_system_id(self.user)
         )
 
-        private_key = self._create_private_key()
-        priv_key_str = private_key.exportKey('PEM')
-        public_key = self._create_public_key(private_key)
-        publ_key_str = public_key.exportKey('OpenSSH')
+        private_key = EncryptionUtil.create_private_key()
+        priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
+        public_key = EncryptionUtil.create_public_key(private_key)
+        publ_key_str = EncryptionUtil.export_key(public_key, 'OpenSSH')
 
         home_sys.set_storage_keys(
             self.user.username,
             priv_key_str,
             publ_key_str
         )
-        home_sys.save()
         self._update_user_keys(
             self.user,
             home_sys.id,

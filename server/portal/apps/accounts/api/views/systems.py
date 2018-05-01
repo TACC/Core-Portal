@@ -26,22 +26,29 @@ class SystemsListView(BaseApiView):
         """ GET """
         offset = request.GET.get('offset', 0)
         limit = request.GET.get('limit', 100)
+        public_keys = request.GET.get('publicKeys', None)
+        response = {}
         storage_systems = AccountsManager.storage_systems(
             request.user,
             offset=offset,
             limit=limit
         )
+        response['storage'] = storage_systems
         exec_systems = AccountsManager.execution_systems(
             request.user,
             offset=offset,
             limit=limit
         )
+        response['execution'] = exec_systems
+        if public_keys is not None:
+            pub_keys = AccountsManager.public_key_for_systems(
+                [sys.id for sys in storage_systems + exec_systems]
+            )
+            response['publicKeys'] = pub_keys
+        logger.debug(response)
         return JsonResponse(
             {
-                'response': {
-                    'storage_systems': storage_systems,
-                    'execution_systems': exec_systems
-                },
+                'response': response,
                 'status': 200
             },
             encoder=AccountsManager.agave_system_serializer_cls
