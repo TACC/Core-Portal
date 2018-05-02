@@ -43,10 +43,10 @@ class StorageSystem(BaseSystem):
 
     # pylint: disable=redefined-builtin
     def __init__(self, client, id, **kwargs):
+        kwargs['type'] = BaseSystem.TYPES.STORAGE
         super(StorageSystem, self).__init__(
             client,
             id=id,
-            type=BaseSystem.TYPES.STORAGE,
             **kwargs
         )
         self.owner = getattr(self, 'owner', None)

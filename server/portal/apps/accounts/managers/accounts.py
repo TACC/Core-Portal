@@ -192,6 +192,7 @@ def reset_system_keys(username, system_id):
     home_sys_id = get_user_home_system_id(user)
     if system_id == home_sys_id:
         reset_home_system_keys(username)
+        return
 
     sys_dict = user.agave_oauth.client.systems.get(systemId=system_id)
     if sys_dict['type'] == StorageSystem.TYPES.STORAGE:
@@ -200,9 +201,9 @@ def reset_system_keys(username, system_id):
         sys = ExecutionSystem.from_dict(user.agave_oauth.client, sys_dict)
 
     private_key = EncryptionUtil.create_private_key()
-    priv_key_str = EncryptionUtil.export_key('PEM')
+    priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
     public_key = EncryptionUtil.create_public_key(private_key)
-    publ_key_str = EncryptionUtil.export_key(public_key)
+    publ_key_str = EncryptionUtil.export_key(public_key, 'OpenSSH')
 
     sys.set_storage_keys(
         username,
@@ -346,7 +347,7 @@ def public_key_for_systems(system_ids):
         except Keys.DoesNotExist:
             keys['public_key'] = None
             keys['owner'] = None
-        resp_dict[system_id] = keys
+        resp_dict[system_id] = keys.copy()
 
     return resp_dict
 

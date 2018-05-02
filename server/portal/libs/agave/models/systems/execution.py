@@ -52,10 +52,10 @@ class ExecutionSystem(BaseSystem):
 
     # pylint: disable=redefined-builtin
     def __init__(self, client, id, **kwargs):
+        kwargs['type'] = BaseSystem.TYPES.EXECUTION
         super(ExecutionSystem, self).__init__(
             client,
             id=id,
-            type=BaseSystem.TYPES.EXECUTION,
             **kwargs
         )
         self.uuid = getattr(self, 'uuid', None)

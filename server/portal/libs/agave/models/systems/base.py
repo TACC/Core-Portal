@@ -260,8 +260,6 @@ class BaseSystem(BaseAgaveResource):
     def update(self):
         """Updates a system"""
         self.validate()
-        import json
-        logger.debug(json.dumps(self.to_dict(), indent=2))
         self._ac.systems.update(
             systemId=self.id,
             body=self.to_dict()
