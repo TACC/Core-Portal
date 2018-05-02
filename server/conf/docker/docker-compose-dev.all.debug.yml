@@ -42,7 +42,9 @@ services:
     hostname: cep_elasticsearch
 
   postgres:
-    image: postgres
+    image: postgres:10.3
+    volumes:
+      - cep_postgres_data:/var/lib/postgresql/data/portal
     ports:
       - 5432:5432
     container_name: cep_postgres
@@ -51,6 +53,7 @@ services:
       - POSTGRES_PASSWORD=dev
       - POSTGRES_USER=dev
       - POSTGRES_DB=dev
+      - PGDATA=/var/lib/postgresql/data/portal
 
   nginx:
     image: nginx
@@ -60,7 +63,7 @@ services:
       - ../nginx/certificates/cep.dev.crt:/etc/ssl/cep.dev.crt
       - ../nginx/certificates/cep.dev.key:/etc/ssl/cep.dev.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
-      - ../../.:/srv/www/portal
+      - ../../../.:/srv/www/portal
     links:
       - django:django
     ports:
@@ -79,10 +82,9 @@ services:
       - redis:redis
       - elasticsearch:elasticsearch
     volumes:
-      - ../../.:/srv/www/portal
-      - ../../../client:/srv/www/client
-      - ../../data/static:/var/www/portal/static
-      - ../../data/media:/var/www/portal/media
+      - ../../../.:/srv/www/portal
+      - ../../data/static:/var/www/portal/server/static
+      - ../../data/media:/var/www/portal/server/media
     ports:
       - 8000:8000
       - 5555:5555
@@ -90,6 +92,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
+    #command: nohup npm --prefix=/srv/www/portal/client run-script dev 2>&1 & ./manage.py runserver 0.0.0.0:8000
     command: ./manage.py runserver 0.0.0.0:8000
     container_name: cep_django
     hostname: cep_django
@@ -104,13 +107,13 @@ services:
       - redis:redis
       - elasticsearch:elasticsearch
     volumes:
-      - ../../.:/srv/www/portal
-      - ../../data/static:/var/www/portal/static
-      - ../../data/media:/var/www/portal/media
+      - ../../../.:/srv/www/portal
+      - ../../data/static:/var/www/portal/server/static
+      - ../../data/media:/var/www/portal/server/media
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: "celery -A portal worker --concurrency=2 -l debug"
+    command: "celery -A portal worker --concurrency=2"
     container_name: cep_workers
     hostname: cep_workers
 
@@ -118,3 +121,4 @@ volumes:
   cep_redis_data:
   cep_es_data:
   cep_rabbitmq_data:
+  cep_postgres_data:
