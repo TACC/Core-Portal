@@ -93,7 +93,8 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     #command: nohup npm --prefix=/srv/www/portal/client run-script dev 2>&1 & ./manage.py runserver 0.0.0.0:8000
-    command: ./manage.py runserver 0.0.0.0:8000
+    #command: ./manage.py runserver 0.0.0.0:8000
+    command: /srv/www/portal/server/bin/run-dev-server.sh
     container_name: cep_django
     hostname: cep_django
 
