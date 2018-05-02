@@ -284,12 +284,14 @@ def add_pub_key_to_resource(
         password,
         token
     )
+    transport = mgr.get_transport(hostname, port)
     pub_key = user.ssh_keys.for_system(system_id).public
     output = mgr.add_public_key(
         system_id,
         hostname,
-        port,
-        pub_key
+        pub_key,
+        port=port,
+        transport=transport
     )
     return output
 

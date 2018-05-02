@@ -71,7 +71,7 @@ class KeysManager(AbstractKeysManager):
             resp.append(answers[prmpt_str])
         return resp
 
-    def _get_transport(self, hostname, port):
+    def get_transport(self, hostname, port):
         """Gets authenticated transport"""
         if hostname.endswith('.tacc.utexas.edu'):
             handler = self._tacc_prompt_handler
@@ -118,11 +118,22 @@ class KeysManager(AbstractKeysManager):
             self,
             system_id,
             hostname,
-            port,
-            public_key
+            public_key,
+            port=22,
+            transport=None
     ):
-        """Adds public key to `authorized_keys`"""
-        trans = self._get_transport(hostname, port)
+        """Adds public key to `authorized_keys`
+
+        :param str sytem_id: System Id
+        :param str hostname: Hostname
+        :param str public_key: Public Key
+        :param int port: Port (optional)
+        :param transport: Transport object (optional)
+        """
+        if transport is None:
+            trans = self.get_transport(hostname, port)
+        else:
+            trans = transport
         channel = trans.open_session()
         command = self._get_add_pub_key_command(system_id, public_key)
         channel.exec_command(command)
@@ -151,4 +162,5 @@ class KeysManager(AbstractKeysManager):
                 output_lines,
                 error_lines
             )
+        trans.close()
         return output_lines
