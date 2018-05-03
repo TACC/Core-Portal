@@ -12,20 +12,10 @@
       <ul class="nav navbar-nav hidden-xs">
         <!-- when user is logged in, show these nav items -->
         {% if user.is_authenticated %}
-        <li class="dropdown">
-          <a class="dropdown-toggle"
-              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <li class="{% active 'workbench' %}">
+          <a href="{% url 'workbench:index' %}">
             Workbench
-            <span class="caret"></span>
           </a>
-          <ul class="dropdown-menu">
-            <li>
-              <a href="/workbench/data-depot">Data Depot</a>
-            </li>
-            <li>
-              <a href="/workbench/workspace">Workspace</a>
-            </li>
-          </ul>
         </li>
         <li class="dropdown">
           <a class="dropdown-toggle"
@@ -45,7 +35,7 @@
           <a href="/workbench/help">Help</a>
         </li>
         <li>
-          <a href="{% url 'search:search_index' %}">Search</a>
+          <a href="/workbench/search">Search</a>
         </li>
         {% endif %}
         <!-- end of user authed nav items-->
@@ -93,12 +83,6 @@
             <span class="sr-only">Toggle Dropdown</span>
           </a>
           <ul class="dropdown-menu">
-            <li >
-              <a href="{% url 'workbench:index' %}">
-                <i class="fa fa-dashboard nav-icon"></i> Dasboard
-              </a>
-            </li>
-
             <li {% if request.get_full_path == '/accounts/profile/' %} class="active" {% endif %}>
               <a href="{% url 'portal_accounts:manage_profile' %}">
                 <i class="fa fa-user-circle-o nav-icon"></i> My account
