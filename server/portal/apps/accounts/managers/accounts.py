@@ -191,8 +191,7 @@ def reset_system_keys(username, system_id):
     user = check_user(username)
     home_sys_id = get_user_home_system_id(user)
     if system_id == home_sys_id:
-        reset_home_system_keys(username)
-        return
+        return reset_home_system_keys(username)
 
     sys_dict = user.agave_oauth.client.systems.get(systemId=system_id)
     if sys_dict['type'] == StorageSystem.TYPES.STORAGE:
@@ -222,6 +221,8 @@ def reset_system_keys(username, system_id):
             priv_key_str,
             publ_key_str
         )
+
+    return publ_key_str
 
 
 def queue_pub_key_setup(
@@ -352,6 +353,39 @@ def public_key_for_systems(system_ids):
         resp_dict[system_id] = keys.copy()
 
     return resp_dict
+
+
+def get_system(user, system_id):
+    """Returns system
+
+    :param user: Django's user object
+    :param str system_id: System id
+    :returns: System object
+    :rtype: :class:`StorageSystem` or :class:`ExecutionSystem`
+    """
+    system = user.agave_oauth.client.systems.get(systemId=system_id)
+    if system.type == StorageSystem.TYPES.STORAGE:
+        sys = StorageSystem.from_dict(user.agave_oauth.client, system)
+    elif system.type == ExecutionSystem.TYPES.EXECUTION:
+        sys = ExecutionSystem.from_dict(user.agave_oauth.client, system)
+
+    return sys
+
+
+def test_system(user, system_id):
+    """Test system
+
+    :param user: Django's user object
+    :param str system_id: System id
+    :returns: message
+    :rtype: str
+    """
+    system = get_system(user, system_id)
+    result = system.test()
+    return {
+        'message': result,
+        'systemId': system_id
+    }
 
 
 agave_system_serializer_cls = BaseAgaveSystemSerializer  # pylint:disable=C0103

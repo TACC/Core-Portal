@@ -320,6 +320,29 @@ class BaseSystem(BaseAgaveResource):
             }
         )
 
+    def test(self):
+        """Test system
+
+        .. todo::
+            As of 05/2018 this only tests storage systems
+            by doing a `files-listing` on it.
+            What is a good way to test exec systems?
+        """
+        result = 'FAIL'
+        if self.type == self.TYPES.STORAGE:
+            try:
+                self._ac.files.list(
+                    systemId=self.id,
+                    filePath=''
+                )
+                result = 'SUCCESS'
+            except HTTPError:
+                pass
+        elif self.type == self.TYPES.STORAGE:
+            result = 'SUCCESS'
+
+        return result
+
 
 @python_2_unicode_compatible  # pylint: disable=too-few-public-methods
 class BaseSystemProxy(BaseAgaveResource):

@@ -41,6 +41,7 @@ class ExecutionSystem(BaseSystem):
         'scratch_dir',
         'startup_script',
         'status',
+        'login',
         'queues',
         'storage',
         'work_dir',
