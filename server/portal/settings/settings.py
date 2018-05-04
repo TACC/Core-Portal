@@ -402,7 +402,7 @@ TOOLBAR_OPTIONS = {
     'tag_enabled': True,
 }
 
-"""""
+
 PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = settings_secret.\
     _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
 
@@ -423,9 +423,6 @@ PORTAL_USER_HOME_MANAGER = settings_secret.\
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
     _PORTAL_USER_ACCOUNT_SETUP_STEPS
-
-"""
-
 
 # SETTINGS: ELASTICSEARCH
 
