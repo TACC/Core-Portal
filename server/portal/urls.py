@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 #
 from django.views.generic import RedirectView
+from django.views.generic import TemplateView
 
 from django.contrib.auth.views import logout as des_logout
 from portal.apps.auth.views import agave_oauth as login
@@ -22,6 +23,8 @@ urlpatterns = [
     # auth.
     url(r'^accounts/', include('portal.apps.accounts.urls',
                                namespace='portal_accounts')),
+    # auth.
+    url(r'^landing-page/', TemplateView.as_view(template_name="landingpage/landing_page.html")),
     url(r'^register/$', RedirectView.as_view(
         pattern_name='portal_accounts:register', permanent=True), name='register'),
     url(r'^auth/', include('portal.apps.auth.urls',
