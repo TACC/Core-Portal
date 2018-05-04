@@ -70,11 +70,12 @@ INSTALLED_APPS = [
     'filer',
     'easy_thumbnails',
     'mptt',
+    #django recaptcha.
+    'snowpenguin.django.recaptcha2',
     # Vendor apps.
     'bootstrap3',
     'termsandconditions',
     'impersonate',
-    'captcha',
     'ws4redis',
     # Custom apps.
     'portal.apps.accounts',
