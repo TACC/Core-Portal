@@ -18,6 +18,9 @@
         <div class="col-md-3">
           <h2>Refine By:</h2>
           <div class=list-group>
+            <a class="list-group-item" ng-class='{"active": data.type_filter == "private_files"}' ng-click='filter("private_files")'>My Data
+                <span class="badge" ng-show='data.search_results.private_files_total'> {{ data.search_results.private_files_total }}</span>
+            </a>
             <a class="list-group-item" ng-class='{"active": data.type_filter == "published"}' ng-click='filter("published")'>Published Projects
                 <span class="badge" ng-show='data.search_results.published_total'> {{ data.search_results.published_total }}</span>
             </a>

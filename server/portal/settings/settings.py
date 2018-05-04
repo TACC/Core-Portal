@@ -423,13 +423,12 @@ PORTAL_USER_HOME_MANAGER = settings_secret.\
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
     _PORTAL_USER_ACCOUNT_SETUP_STEPS
-    
-"""
 
 """
-SETTINGS: ELASTICSEARCH
-"""
-"""""
+
+
+# SETTINGS: ELASTICSEARCH
+
 ES_HOSTS = settings_secret._ES_HOSTS
 ES_DEFAULT_INDEX = "files"
 ES_DEFAULT_INDEX_ALIAS = "default"
@@ -437,5 +436,5 @@ ES_PUBLIC_INDEX = "publications"
 ES_PUBLIC_INDEX_ALIAS = "public"
 ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
+ES_PUBLICATIONS_INDEX = "publications"
 ES_METADATA_DOC_TYPE = "metadata"
-"""
