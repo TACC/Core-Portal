@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import logging
-from portal.settings import settings_secret
+import settings_secret
 from kombu import Exchange, Queue
 
 
@@ -84,7 +84,8 @@ INSTALLED_APPS = [
     'portal.apps.signals',
     'portal.apps.workshops',
     'portal.apps.search',
-    'portal.apps.workbench'
+    'portal.apps.workbench',
+    'portal.apps.djangoRT',
 ]
 
 MIDDLEWARE = [
@@ -219,7 +220,7 @@ TAS_CLIENT_KEY = settings_secret._TAS_CLIENT_KEY
 TAS_CLIENT_SECRET = settings_secret._TAS_CLIENT_SECRET
 
 # Redmine Tracker Authentication.
-RT_URL = settings_secret._RT_URL
+RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
 RT_PW = settings_secret._RT_PW
 
@@ -400,6 +401,7 @@ TOOLBAR_OPTIONS = {
     'tag_enabled': True,
 }
 
+"""""
 PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = settings_secret.\
     _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
 
@@ -420,10 +422,13 @@ PORTAL_USER_HOME_MANAGER = settings_secret.\
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
     _PORTAL_USER_ACCOUNT_SETUP_STEPS
+    
+"""
+
 """
 SETTINGS: ELASTICSEARCH
 """
-
+"""""
 ES_HOSTS = settings_secret._ES_HOSTS
 ES_DEFAULT_INDEX = "files"
 ES_DEFAULT_INDEX_ALIAS = "default"
@@ -432,3 +437,4 @@ ES_PUBLIC_INDEX_ALIAS = "public"
 ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
 ES_METADATA_DOC_TYPE = "metadata"
+"""
