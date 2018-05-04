@@ -5,6 +5,7 @@ import {mod as workspace} from './workspace';
 import {mod as data_depot} from './data_depot';
 import {mod as search} from './search';
 import {mod as dashboard} from './dashboard';
+import {mod as workbench} from './workbench';
 
 function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProvider) {
  'ngInject';
@@ -22,9 +23,13 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   .state('wb', {
     url: '/workbench',
     templateUrl: '/static/src/angular/workbench/templates/home.html',
+    controller: 'WorkbenchCtrl',
+    controllerAs: 'vm',
     abstract: true,
     resolve: {
-      'test': function () {console.log("home resolve");}
+      'systems': ['SystemsService', function(SystemsService) {
+        return SystemsService.listing();
+      }]
     }
   })
   .state('wb.dashboard', {
@@ -38,8 +43,12 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   .state('wb.data_depot', {
     'url': '/data-depot',
     'templateUrl': '/static/src/angular/workbench/templates/data-depot.html',
+    'controller': 'DataDepotCtrl',
     'resolve': {
-      'test': function () {console.log("data-depot resolve");}
+      'test': function () {console.log("data-depot resolve");},
+      // 'systems': ['SystemsService', function(SystemsService) {
+      //   return SystemsService.listing();
+      // }]
     }
   })
   .state('wb.workspace', {
@@ -83,7 +92,8 @@ let mod = angular.module('portal', [
   'portal.workspace',
   'portal.data_depot',
   'portal.search',
-  'portal.dashboard'
+  'portal.dashboard',
+  'portal.workbench'
 ]).config(config);
 
 export default mod;

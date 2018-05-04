@@ -178,6 +178,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       currentBrowseRequest = null;
       // $timeout.cancel(currentBrowseRequest);
     }
+
     currentState.busy = true;
     currentState.busyListing = true;
     currentState.error = null;
@@ -431,7 +432,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       resolve: {
         data: {
           files: function () {
-            console.log(files);
             return files;
           },
         // initialDestination: function () { return initialDestination; }

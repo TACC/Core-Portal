@@ -83,9 +83,9 @@ def request_access(request):
                     user = tas.get_user(username=username)
                     tracker = rt.Rt(settings.RT_URL, settings.RT_UN, settings.RT_PW, basic_auth=(settings.RT_UN, settings.RT_PW))
                     if (tracker.login()):
-                        tracker.create_ticket(Queue='SD2E',
+                        tracker.create_ticket(Queue='Web & Mobile Apps',
                             Subject='New User Access Request',
-                            Text='User ' + username + ' is requesting access to SD2E.',
+                            Text='User ' + username + ' is requesting access to Portal.',
                             Requestors=user['email'])
                         tracker.logout()
                         messages.success(request, "Your request has been submitted. An admin will be in contact with you as soon as possible.")

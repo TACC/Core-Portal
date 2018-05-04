@@ -3,7 +3,8 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.conf import settings
-from captcha.fields import ReCaptchaField
+from snowpenguin.django.recaptcha2.fields import ReCaptchaField
+from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from .models import (PortalProfile, NotificationPreferences,
     PortalProfileNHInterests, PortalProfileResearchActivities)
@@ -288,7 +289,7 @@ class TasUserProfileAdminForm(forms.Form):
 class RequestAccessForm(forms.Form):
     username = forms.CharField(label='TACC Username', required=True)
     password = forms.CharField(label='TACC Password', widget=forms.PasswordInput, required=True)
-    captcha = ReCaptchaField()
+    captcha = ReCaptchaField(widget=ReCaptchaWidget)
 
 class UserRegistrationForm(forms.Form):
     """
@@ -338,7 +339,7 @@ class UserRegistrationForm(forms.Form):
         label='I Agree to the <a href="/terms/" target="_blank">Terms of Use</a>',
         error_messages={'required': 'Please Accept the Portal Terms of Use.'})
 
-    captcha = ReCaptchaField()
+    captcha = ReCaptchaField(widget=ReCaptchaWidget)
 
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)

@@ -48,7 +48,7 @@
         <div ng-show="!jobs.length" class="panel-body">
           <h3 ng-show="!loading_jobs">
             No recent jobs! You can submit jobs in the
-            <a href="/rw/workspace"> Workspace </a>
+            <a ui-sref="wb.workspace"> Workspace </a>
           </h3>
           <div class="text-center" ng-show="loading_jobs">
             <i class="fa fa-spinner fa-pulse fa-2x fa-fw" ></i>
@@ -100,7 +100,8 @@
       <div class="panel panel-default">
         <div class="panel-heading clearfix dashboard">
           <h3 class="panel-title pull-left">My Tickets</h3>
-          <a class="button btn-xs btn-primary pull-right" href="/help/tickets"> Create New </a>
+          <!-- <a class="button btn-xs btn-primary pull-right" href="/help/tickets"> Create New </a> -->
+          <a class="button btn-xs btn-primary pull-right" href="https://consult.tacc.utexas.edu/Ticket/Create.html?Queue=21"> Create New </a>
         </div>
           <ul class="list-group">
             <li class="list-group-item" ng-repeat="ticket in my_tickets">
@@ -123,7 +124,7 @@
           </li>
           <li class="list-group-item" ng-show="!recent_apps.length">
             Wow, no recent apps! You can submit jobs in the
-            <a href="/rw/workspace"> Workspace </a>
+            <a ui-sref="wb.workspace"> Workspace </a>
           </li>
         </ul>
       </div>
