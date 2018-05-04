@@ -47,6 +47,8 @@ urlpatterns = [
                                  namespace='search')),
     url(r'^workbench/', include('portal.apps.workbench.urls',
                                 namespace='workbench')),
+    url(r'^tickets/', include('portal.apps.djangoRT.urls',
+                              namespace='tickets')),
 
     # version check.
     url(r'^version/', des_version),

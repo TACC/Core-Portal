@@ -1,16 +1,20 @@
 <div class="workbench">
-  {{systems}}
   <div class="workbench-nav">
-    <div class="side-nav-button" ui-sref="wb.dashboard"  ui-sref-active="active"><i class="fa fa-dashboard"></i></div>
-    <div class="side-nav-button" ui-sref-active="active" ui-sref="wb.data_depot.db({
-                                                                      systemId: vm.mydata_system.systemId,
-                                                                      filePath:'',
-                                                                      name: vm.mydata_system.name,
-                                                                      directory: 'agave'})">
-      <i class="fa fa-database"></i>
-    </div><div class="side-nav-button" ui-sref="wb.workspace" ui-sref-active="active"><i class="fa fa-rocket"></i></div>
-    <div class="side-nav-button" ui-sref="wb.help" ui-sref-active="active"><i class="fa fa-question"></i></div>
-    <div class="side-nav-button" ui-sref="wb.search" ui-sref-active="active"><i class="fa fa-search"></i></div>
+    <div class="side-nav-button" ui-sref="wb.dashboard"  ui-sref-active="active">
+      <i class="fa fa-dashboard" title="Workbench"></i>
+    </div>
+    <div class="side-nav-button" ui-sref="wb.data_depot.db.myData({'systemId':vm.mydata_system.systemId, 'path': '/'})" ui-sref-active="active">
+      <i class="fa fa-database" title="Data Depot"></i>
+    </div>
+    <div class="side-nav-button" ui-sref="wb.workspace" ui-sref-active="active">
+      <i class="fa fa-rocket" title="Workspace"></i>
+    </div>
+    <div class="side-nav-button" ui-sref="wb.help" ui-sref-active="active">
+      <i class="fa fa-question" title="Help"></i>
+    </div>
+    <div class="side-nav-button" ui-sref="wb.search" ui-sref-active="active">
+      <i class="fa fa-search" title="Search"></i>
+    </div>
   </div>
   <div class="workbench-content">
     <ui-view></ui-view>
