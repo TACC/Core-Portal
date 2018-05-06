@@ -5,7 +5,7 @@
 from __future__ import unicode_literals, absolute_import
 import os
 import logging
-import json
+# import json
 from requests.exceptions import HTTPError
 from Crypto.PublicKey import RSA
 from django.conf import settings
@@ -63,7 +63,7 @@ class UserHomeManager(AbstractUserHomeManager):
         home_dir = agc.files.list(
             systemId=settings.AGAVE_STORAGE_SYSTEM,
             filePath=username)
-        logger.debug('home_dir: %s', json.dumps(dict(home_dir), indent=2))
+        # logger.debug('home_dir: %s', json.dumps(dict(home_dir), indent=2))
         return home_dir
 
     def get_or_create_dir(
@@ -191,12 +191,12 @@ class UserHomeManager(AbstractUserHomeManager):
         system.storage.port = 22
         system.storage.home_dir = '/'
         system.storage.root_dir = self.get_home_dir_abs_path(self.user)
-        system.storage.protocl = 'SFTP'
+        system.storage.protocol = 'SFTP'
         system.storage.host = self.get_storage_host(self.user)
-        system.auth.username = self.get_storage_username(self.user)
-        system.auth.type = system.AUTH_TYPES.SSHKEYS
-        system.auth.public_key = publ_key_str
-        system.auth.private_key = priv_key_str
+        system.storage.auth.username = self.get_storage_username(self.user)
+        system.storage.auth.type = system.AUTH_TYPES.SSHKEYS
+        system.storage.auth.public_key = publ_key_str
+        system.storage.auth.private_key = priv_key_str
         return system
 
     def get_storage_host(self, *args, **kwargs):  # pylint:disable=no-self-use
@@ -245,6 +245,7 @@ class UserHomeManager(AbstractUserHomeManager):
             publ_key_str,
             priv_key_str
         )
+        system.validate()
         system.save()
         system.update_role(self.user.username, 'OWNER')
         self._save_user_keys(

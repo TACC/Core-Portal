@@ -236,7 +236,9 @@ class BaseSystem(BaseAgaveResource):
         except HTTPError as exc:
             if exc.response.status_code != 404:
                 raise
-        self.update()
+        self._ac.systems.add(
+            body=self.to_dict()
+        )
         return self
 
     def update_role(self, username, role):

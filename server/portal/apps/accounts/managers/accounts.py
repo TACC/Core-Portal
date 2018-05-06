@@ -8,6 +8,7 @@ import logging
 from importlib import import_module
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from portal.libs.agave.models.systems.base import BaseSystem
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -128,7 +129,7 @@ def setup(username):
     """
     user = check_user(username)
     mgr = _lookup_user_home_manager(user)
-    # logger.debug('User Home Manager class: %s', mgr.__class__)
+    logger.debug('User Home Manager class: %s', mgr.__class__)
     home_dir = mgr.get_or_create_dir(user)
     home_sys = mgr.get_or_create_system(user)
     extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
@@ -194,9 +195,13 @@ def queue_pub_key_setup(
             'hostname': hostname,
             'port': port
         },
-        expires=60
+        expires=60,
+        routing_key='onboard'
     )
-    monitor_setup_pub_key.delay(res.id)
+    monitor_setup_pub_key.apply_async(
+        args=(res.id, ),
+        routing_key='onboard'
+    )
 
 
 def add_pub_key_to_resource(
@@ -233,3 +238,11 @@ def add_pub_key_to_resource(
         pub_key
     )
     return output
+
+
+def storage_systems(user):
+    systems = BaseSystem.list(
+        user.agave_oauth.client,
+        type='STORAGE'
+    )
+    return systems

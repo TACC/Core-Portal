@@ -108,7 +108,8 @@ class KeysManager(AbstractKeysManager):
         """
         comment = self._get_pub_key_comment(system_id)
         string = ' '.join([public_key, comment])
-        command = 'echo "{string}" >> ~/.ssh/authorized_keys'.format(
+        command = ('grep -q -F "{string}" ~/.ssh/authorized_keys || '
+                   'echo "{string}" >> ~/.ssh/authorized_keys').format(
             string=string
         )
         return command
@@ -150,4 +151,4 @@ class KeysManager(AbstractKeysManager):
                 output_lines,
                 error_lines
             )
-        return output
+        return output_lines

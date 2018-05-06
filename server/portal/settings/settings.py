@@ -13,15 +13,15 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import logging
-import settings_secret
+# import settings_secret
 from kombu import Exchange, Queue
+from portal.settings import settings_secret
 
-
+# pylint: disable=protected-access
+# pylint: disable=invalid-name
 logger = logging.getLogger(__file__)
-
-#pylint: disable=invalid-name
-gettext = lambda s: s
-#pylint: enable=invalid-name
+gettext = lambda s: s  # noqa:E731
+# pylint: enable=invalid-name
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -32,16 +32,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = settings_secret._SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
-#Cookie name. this can be whatever you want
-SESSION_COOKIE_NAME='sessionid'  # use the sessionid in your views code
-#the module to store sessions data
-SESSION_ENGINE='django.contrib.sessions.backends.db'
-#age of cookie in seconds (default: 2 weeks)
-SESSION_COOKIE_AGE= 24*60*60*7 # the number of seconds for only 7 for example
-#whether a user's session cookie expires when the web browser is closed
-SESSION_EXPIRE_AT_BROWSER_CLOSE=False
-#whether the session cookie should be secure (https:// only)
-SESSION_COOKIE_SECURE=False
+# Cookie name. this can be whatever you want
+SESSION_COOKIE_NAME = 'sessionid'  # use the sessionid in your views code
+# the module to store sessions data
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+# age of cookie in seconds (default: 2 weeks)
+SESSION_COOKIE_AGE = 24*60*60*7  # the number of seconds for only 7 for example
+# whether a user's session cookie expires when the web browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+# whether the session cookie should be secure (https:// only)
+SESSION_COOKIE_SECURE = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -70,7 +70,7 @@ INSTALLED_APPS = [
     'filer',
     'easy_thumbnails',
     'mptt',
-    #django recaptcha.
+    # django recaptcha.
     'snowpenguin.django.recaptcha2',
     # Vendor apps.
     'bootstrap3',
@@ -145,16 +145,20 @@ AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'UserAttributeSimilarityValidator'),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'MinimumLengthValidator'),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'CommonPasswordValidator'),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': ('django.contrib.auth.password_validation.'
+                 'NumericPasswordValidator'),
     },
 ]
 
@@ -176,7 +180,7 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../../','client'),
+    os.path.join(BASE_DIR, '../../', 'client'),
     ('vendor', os.path.join(BASE_DIR, '../../client/node_modules')),
 ]
 
@@ -247,9 +251,10 @@ LOGGING = {
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
-                      ' %(message)s user=%(user)s sessionId=%(sessionId)s op=%(operation)s'
-                      ' info=%(info)s'
+            'format': '[METRICS] %(levelname)s %(module)s %(name)s.'
+                      '%(funcName)s:%(lineno)s: %(message)s '
+                      'user=%(user)s sessionId=%(sessionId)s '
+                      'op=%(operation)s info=%(info)s'
         },
     },
     'handlers': {
@@ -260,11 +265,11 @@ LOGGING = {
         },
         'file': {
             'level': 'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
             'filename': '/var/log/portal.log',
-            'maxBytes': 1024*1024*5, # 5 MB
+            'maxBytes': 1024*1024*5,  # 5 MB
             'backupCount': 5,
-            'formatter':'default',
+            'formatter': 'default',
         },
         'metrics_console': {
             'level': 'INFO',
@@ -273,11 +278,11 @@ LOGGING = {
         },
         'metrics_file': {
             'level': 'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
             'filename': '/var/log/portal.log',
-            'maxBytes': 1024*1024*5, # 5 MB
+            'maxBytes': 1024*1024*5,  # 5 MB
             'backupCount': 5,
-            'formatter':'metrics',
+            'formatter': 'metrics',
         },
     },
     'loggers': {
@@ -294,6 +299,10 @@ LOGGING = {
             'handlers': ['metrics_console', 'metrics_file'],
             'level': 'INFO',
         },
+        'paramiko': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
+        }
     },
 }
 
@@ -337,9 +346,13 @@ _BROKER_URL_HOST = settings_secret._BROKER_URL_HOST
 _BROKER_URL_PORT = settings_secret._BROKER_URL_PORT
 _BROKER_URL_VHOST = settings_secret._BROKER_URL_VHOST
 
-CELERY_BROKER_URL = ''.join([_BROKER_URL_PROTOCOL,_BROKER_URL_USERNAME, ':',
-                      _BROKER_URL_PWD, '@', _BROKER_URL_HOST, ':',
-                      _BROKER_URL_PORT, '/',_BROKER_URL_VHOST])
+CELERY_BROKER_URL = ''.join(
+    [
+        _BROKER_URL_PROTOCOL, _BROKER_URL_USERNAME, ':',
+        _BROKER_URL_PWD, '@', _BROKER_URL_HOST, ':',
+        _BROKER_URL_PORT, '/', _BROKER_URL_VHOST
+    ]
+)
 
 _RESULT_BACKEND_PROTOCOL = 'redis://'
 _RESULT_BACKEND_USERNAME = settings_secret._RESULT_BACKEND_USERNAME
@@ -348,17 +361,22 @@ _RESULT_BACKEND_HOST = settings_secret._RESULT_BACKEND_HOST
 _RESULT_BACKEND_PORT = settings_secret._RESULT_BACKEND_PORT
 _RESULT_BACKEND_DB = settings_secret._RESULT_BACKEND_DB
 
-CELERY_RESULT_BACKEND = ''.join([_RESULT_BACKEND_PROTOCOL,
-                                 _RESULT_BACKEND_HOST, ':', _RESULT_BACKEND_PORT,
-                                 '/', _RESULT_BACKEND_DB])
+CELERY_RESULT_BACKEND = ''.join(
+    [
+        _RESULT_BACKEND_PROTOCOL,
+        _RESULT_BACKEND_HOST, ':', _RESULT_BACKEND_PORT,
+        '/', _RESULT_BACKEND_DB
+    ]
+)
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERYD_HIJACK_ROOT_LOGGER = False
-CELERYD_LOG_FORMAT = '[DJANGO] $(processName)s %(levelname)s %(asctime)s %(module)s '\
-                     '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
-#CELERY_ANOTATIONS = {'designsafe.apps.api.tasks.reindex_agave': {'time_limit': 60 * 15}}
+CELERYD_LOG_FORMAT = ('[DJANGO] $(processName)s %(levelname)s %(asctime)s '
+                      '%(module)s %(name)s.%(funcName)s:%(lineno)s: '
+                      '%(message)s')
+
 CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
 CELERY_QUEUES = (
     Queue(
@@ -392,6 +410,15 @@ CELERY_QUEUES = (
         'api',
         Exchange('api'),
         routing_key='api',
+        queue_arguments={
+            'x-max-priority': 10
+        }
+    ),
+    # Use to queue tasks handling onboarding
+    Queue(
+        'onboard',
+        Exchange('onboard'),
+        routing_key='onboard',
         queue_arguments={
             'x-max-priority': 10
         }
