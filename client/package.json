@@ -47,6 +47,7 @@
     "filesaver": "0.0.13",
     "font-awesome": "^4.7.0",
     "fsevents": "^1.2.3",
+    "html-loader": "^0.5.5",
     "jasmine-core": "^2.5.2",
     "jquery": "^3.1.1",
     "karma": "^1.4.0",
