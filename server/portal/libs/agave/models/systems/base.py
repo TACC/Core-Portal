@@ -329,6 +329,7 @@ class BaseSystem(BaseAgaveResource):
             What is a good way to test exec systems?
         """
         result = 'FAIL'
+        success = True
         if self.type == self.TYPES.STORAGE:
             try:
                 self._ac.files.list(
@@ -336,12 +337,13 @@ class BaseSystem(BaseAgaveResource):
                     filePath=''
                 )
                 result = 'SUCCESS'
-            except HTTPError:
-                pass
+            except HTTPError as err:
+                success = False
+                result = err.response.json()
         elif self.type == self.TYPES.STORAGE:
             result = 'SUCCESS'
 
-        return result
+        return success, result
 
 
 @python_2_unicode_compatible  # pylint: disable=too-few-public-methods

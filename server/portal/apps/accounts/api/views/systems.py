@@ -88,12 +88,23 @@ class SystemTestView(BaseApiView):
 
     def put(self, request, system_id):  # pylint: disable=no-self-use
         """PUT"""
-        result = AccountsManager.test_system(request.user, system_id)
+        success, result = AccountsManager.test_system(
+            request.user, system_id
+        )
+        if success:
+            return JsonResponse(
+                {
+                    'response': result,
+                    'status': 200
+                }
+            )
+
         return JsonResponse(
             {
                 'response': result,
-                'status': 200
-            }
+                'status': 500
+            },
+            status=500
         )
 
 
@@ -114,13 +125,7 @@ class SystemKeysView(BaseApiView):
         body = json.loads(request.body)
         action = body['action']
         op = getattr(self, action)  # pylint: disable=invalid-name
-        result = op(request, system_id, body)
-        return JsonResponse(
-            {
-                'response': result,
-                'status': 200
-            }
-        )
+        return op(request, system_id, body)
 
     # pylint: disable=no-self-use, unused-argument
     def reset(self, request, system_id, body):
@@ -133,10 +138,10 @@ class SystemKeysView(BaseApiView):
             request.user.username,
             system_id
         )
-        return {
+        return JsonResponse({
             'systemId': system_id,
             'publicKey': pub_key
-        }
+        })
 
     def push(self, request, system_id, body):
         """Pushed public key to a system's host
@@ -144,14 +149,23 @@ class SystemKeysView(BaseApiView):
         :param request: Django's request object
         :param str system_id: System id
         """
-        AccountsManager.add_pub_key_to_resource(
+        success, result = AccountsManager.add_pub_key_to_resource(
             request.user.username,
             password=body['form']['password'],
             token=body['form']['token'],
             system_id=system_id,
             hostname=body['form']['hostname']
         )
-        return {
-            'system_id': system_id,
-            'message': 'OK'
-        }
+        if success:
+            return JsonResponse({
+                'systemId': system_id,
+                'message': 'OK'
+            })
+
+        return JsonResponse(
+            {
+                'systemId': system_id,
+                'message': result
+            },
+            status=500
+        )

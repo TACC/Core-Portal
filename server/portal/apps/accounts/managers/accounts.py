@@ -8,6 +8,11 @@ import logging
 from importlib import import_module
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from paramiko.ssh_exception import (
+    AuthenticationException,
+    ChannelException,
+    SSHException
+)
 from portal.utils import encryption as EncryptionUtil
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.agave.models.systems.execution import ExecutionSystem
@@ -279,22 +284,32 @@ def add_pub_key_to_resource(
     :raises: :class:`~portal.apps.accounts.managers.
 
     """
+    success = True
     user = check_user(username)
     mgr = _lookup_keys_manager(
         user,
         password,
         token
     )
-    transport = mgr.get_transport(hostname, port)
-    pub_key = user.ssh_keys.for_system(system_id).public
-    output = mgr.add_public_key(
-        system_id,
-        hostname,
-        pub_key,
-        port=port,
-        transport=transport
-    )
-    return output
+    try:
+        transport = mgr.get_transport(hostname, port)
+        pub_key = user.ssh_keys.for_system(system_id).public
+        message = mgr.add_public_key(
+            system_id,
+            hostname,
+            pub_key,
+            port=port,
+            transport=transport
+        )
+    except (
+            AuthenticationException,
+            ChannelException,
+            SSHException
+    ) as exc:
+        logger.error(exc, exc_info=True)
+        success = False
+        message = str(exc)
+    return success, message
 
 
 def storage_systems(user, offset=0, limit=100):
@@ -369,6 +384,7 @@ def get_system(user, system_id):
     elif system.type == ExecutionSystem.TYPES.EXECUTION:
         sys = ExecutionSystem.from_dict(user.agave_oauth.client, system)
 
+    sys.test()
     return sys
 
 
@@ -381,8 +397,8 @@ def test_system(user, system_id):
     :rtype: str
     """
     system = get_system(user, system_id)
-    result = system.test()
-    return {
+    success, result = system.test()
+    return success, {
         'message': result,
         'systemId': system_id
     }

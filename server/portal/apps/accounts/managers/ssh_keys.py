@@ -108,10 +108,11 @@ class KeysManager(AbstractKeysManager):
         """
         comment = self._get_pub_key_comment(system_id)
         string = ' '.join([public_key, comment])
-        command = ('grep -q -F "{string}" ~/.ssh/authorized_keys || '
-                   'echo "{string}" >> ~/.ssh/authorized_keys').format(
-            string=string
-        )
+        command = (
+            'grep -q -F "{string}" ~/.ssh/authorized_keys || '
+            'echo "{string}" >> ~/.ssh/authorized_keys').format(
+                string=string
+            )
         return command
 
     def add_public_key(
@@ -121,7 +122,7 @@ class KeysManager(AbstractKeysManager):
             public_key,
             port=22,
             transport=None
-    ):
+    ):  # pylint: disable=too-many-arguments, arguments-differ
         """Adds public key to `authorized_keys`
 
         :param str sytem_id: System Id
