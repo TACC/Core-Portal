@@ -38,7 +38,12 @@ module.exports = {
             fallback:'style-loader',
             use:['css-loader'],
         })
-			},
+      },
+      {
+        test: /\.html$/,
+        exclude: /node_modules/,
+        loader: 'html-loader'
+      },
     ]
   },
   plugins: [
