@@ -110,7 +110,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: "celery -A portal worker -l debug"
+    command: "celery -A portal worker --concurrency=2 -l debug"
     container_name: cep_workers
     hostname: cep_workers
 
