@@ -1,44 +1,42 @@
 """
 Accounts views.
 """
-from django.contrib.auth import logout   #, get_user_model  # Used in mailing_list_subscription.
-from django.contrib import messages
-from django.views.generic.base import TemplateView, View
-from django.shortcuts import redirect, render, render_to_response
-from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib.auth.decorators import login_required   #, permission_required  # Used in mailing_list_subscription.
-from django.utils.decorators import method_decorator
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from django.db.models import Q
-# from django.utils.translation import ugettext_lazy as _
-
-from pytas.http import TASClient
-from pytas.models import User as TASUser
-
-from portal.apps.accounts import forms, integrations
-from portal.apps.accounts.models import (PortalProfile,
-                                             NotificationPreferences)
-
-# from portal.apps.auth.tasks import check_or_create_agave_home_dir
-
+import re
 import logging
 import json
 import rt
+from django.contrib.auth import logout
+from django.contrib import messages
+from django.views.generic.base import TemplateView, View
+from django.shortcuts import render, render_to_response
+from django.conf import settings
+from django.http import HttpResponseRedirect, HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
+from pytas.http import TASClient
+# from pytas.models import User as TASUser
+
+from portal.apps.accounts import forms, integrations
+from portal.apps.accounts.models import (PortalProfile,
+                                         NotificationPreferences)
+
+# from portal.apps.auth.tasks import check_or_create_agave_home_dir
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
+# pylint: enable=invalid-name
 
 # Create your views here.
+
 
 @method_decorator(login_required, name='dispatch')
 class IndexView(TemplateView):
     """Main accounts view.
     """
     template_name = 'portal/apps/accounts/index.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        return super(IndexView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
@@ -59,11 +57,13 @@ class LogoutView(View):
     """Logout view
     """
     def get(self, request):
+        """GET"""
         logout(request)
         return HttpResponseRedirect(settings.LOGIN_URL)
 
 
 def request_access(request):
+    """ Request Access """
     if request.user.is_authenticated():
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('index')
@@ -76,29 +76,59 @@ def request_access(request):
             username = data['username']
             password = data['password']
 
-            tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+            tas = TASClient(
+                baseURL=settings.TAS_URL,
+                credentials={
+                    'username': settings.TAS_CLIENT_KEY,
+                    'password': settings.TAS_CLIENT_SECRET
+                }
+            )
             try:
                 auth = tas.authenticate(username, password)
                 if (username and password and auth):
                     user = tas.get_user(username=username)
-                    tracker = rt.Rt(settings.RT_URL, settings.RT_UN, settings.RT_PW, basic_auth=(settings.RT_UN, settings.RT_PW))
-                    if (tracker.login()):
-                        tracker.create_ticket(Queue='Web & Mobile Apps',
+                    tracker = rt.Rt(
+                        settings.RT_URL,
+                        settings.RT_UN,
+                        settings.RT_PW,
+                        basic_auth=(
+                            settings.RT_UN,
+                            settings.RT_PW
+                        )
+                    )
+                    if tracker.login():
+                        tracker.create_ticket(
+                            Queue='Web & Mobile Apps',
                             Subject='New User Access Request',
-                            Text='User ' + username + ' is requesting access to Portal.',
-                            Requestors=user['email'])
+                            Text=('User {username} is requesting '
+                                  'access to Portal.').format(
+                                      username=username
+                                  ),
+                            Requestors=user['email']
+                        )
                         tracker.logout()
-                        messages.success(request, "Your request has been submitted. An admin will be in contact with you as soon as possible.")
-            except Exception as e:
-                messages.warning(request, "We were unable to fulfill your request. Please try again and contact helpdesk if the problem persists.")
-
+                        messages.success(
+                            request,
+                            "Your request has been submitted. "
+                            "An admin will be in contact with you "
+                            "as soon as possible.")
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.error(exc, exc_info=True)
+                messages.warning(
+                    request,
+                    "We were unable to fulfill your request. "
+                    "Please try again and contact helpdesk if "
+                    "the problem persists.")
 
         else:
-            messages.warning(request, "We were unable to fulfill your request. Please try again and contact helpdesk if the problem persists.")
+            messages.warning(
+                request,
+                "We were unable to fulfill your request. "
+                "Please try again and contact helpdesk "
+                "if the problem persists.")
 
     else:
         access_form = forms.RequestAccessForm()
-
 
     context = {
         'access_form': access_form
@@ -111,9 +141,11 @@ class RegisterView(TemplateView):
     """
     template_name = 'portal/apps/accounts/register_tup_only.html'
 
+
 # TODO currently unused as everyone needs to go through TUP right now
 def register(request):
     return render(request, 'portal/apps/accounts/register_tup_only.html')
+
 
 def register_new(request):
     if request.user.is_authenticated():
@@ -134,35 +166,48 @@ def register_new(request):
 
                 if 'DuplicateLoginException' in error_type:
                     err_msg = (
-                        'The username you chose has already been taken. Please '
-                        'choose another. If you already have an account with TACC, '
-                        'please log in using those credentials.')
+                        'The username you chose has already been taken. '
+                        'Please choose another. If you already have an '
+                        'account with TACC, please log in using those '
+                        'credentials.')
                     account_form._errors.setdefault('username', [err_msg])
                 elif 'DuplicateEmailException' in error_type:
                     err_msg = (
-                        'This email is already registered. If you already have an '
-                        'account with TACC, please log in using those credentials.')
+                        'This email is already registered. '
+                        'If you already have an account with TACC, '
+                        'please log in using those credentials.')
                     account_form._errors.setdefault('email', [err_msg])
-                    err_msg = '%s <a href="%s">Did you forget your password?</a>' % (
-                        err_msg,
-                        reverse('portal_version_accounts:password_reset'))
+                    err_msg = '{msg} <a href="{url}">Did you forget your '\
+                              'password?</a>'.format(
+                                  msg=err_msg,
+                                  url=reverse(
+                                      'portal_version_account:password_reset'
+                                  )
+                              )
                 elif 'PasswordInvalidException' in error_type:
                     err_msg = (
-                        'The password you provided did not meet the complexity '
-                        'requirements.')
+                        'The password you provided did not meet '
+                        'the complexity requirements.'
+                    )
                     account_form._errors.setdefault('password', [err_msg])
                 else:
 
                     safe_data = account_form.cleaned_data.copy()
-                    safe_data['password'] = safe_data['confirmPassword'] = '********'
-                    logger.exception('User Registration Error!', extra=safe_data)
+                    safe_data['confirmPassword'] = '********'
+                    safe_data['password'] = safe_data['confirmPassword']
+                    logger.exception(
+                        'User Registration Error!',
+                        extra=safe_data
+                    )
                     err_msg = (
-                        'An unexpected error occurred. If this problem persists '
-                        'please create a support ticket.')
+                        'An unexpected error occurred. If this problem '
+                        'persists please create a support ticket.')
                 messages.error(request, err_msg)
         else:
-            messages.error(request, 'There were errors processing your registration. '
-                                    'Please see below for details.')
+            messages.error(
+                request,
+                'There were errors processing your registration. '
+                'Please see below for details.')
     else:
         account_form = forms.UserRegistrationForm()
 
@@ -173,7 +218,9 @@ def register_new(request):
 
 
 def registration_successful(request):
-    return render_to_response('portal_version/apps/accounts/registration_successful.html')
+    return render_to_response(
+        'portal_version/apps/accounts/registration_successful.html'
+    )
 
 
 # @login_required
@@ -209,7 +256,13 @@ def manage_profile(request):
     authentication, notifications, identities, and applications.
     """
     django_user = request.user
-    tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+    tas = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            'username': settings.TAS_CLIENT_KEY,
+            'password': settings.TAS_CLIENT_SECRET
+        }
+    )
     user_profile = tas.get_user(username=request.user.username)
 
     try:
@@ -239,7 +292,11 @@ def manage_pro_profile(request):
         'user': user,
         'profile': portal_profile
     }
-    return render(request, 'portal/apps/accounts/professional_profile.html', context)
+    return render(
+        request,
+        'portal/apps/accounts/professional_profile.html',
+        context
+    )
 
 
 @login_required
@@ -247,23 +304,38 @@ def pro_profile_edit(request):
     context = {}
     user = request.user
     portal_profile = PortalProfile.objects.get(user_id=user.id)
-    form = forms.ProfessionalProfileForm(request.POST or None, instance=portal_profile)
+    form = forms.ProfessionalProfileForm(
+        request.POST or None,
+        instance=portal_profile
+    )
     if request.method == 'POST':
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('portal_accounts:manage_pro_profile'))
+            return HttpResponseRedirect(
+                reverse('portal_accounts:manage_pro_profile')
+            )
     context["form"] = form
-    return render(request, 'portal/apps/accounts/professional_profile_edit.html', context)
+    return render(
+        request,
+        'portal/apps/accounts/professional_profile_edit.html',
+        context
+    )
 
 
 @login_required
 def manage_authentication(request):
     print(request.method)
     if request.method == 'POST':
-        form = forms.ChangePasswordForm(request.POST, username=request.user.username)
+        form = forms.ChangePasswordForm(
+            request.POST,
+            username=request.user.username
+        )
         if form.is_valid():
             form.save()
-            messages.success(request, 'Your TACC Password has been successfully changed!')
+            messages.success(
+                request,
+                'Your TACC Password has been successfully changed!'
+            )
     else:
         form = forms.ChangePasswordForm(username=request.user.username)
 
@@ -279,7 +351,11 @@ def manage_identities(request):
     context = {
         'title': 'Manage Identities',
     }
-    return render(request, 'portal/apps/accounts/manage_identities.html', context)
+    return render(
+        request,
+        'portal/apps/accounts/manage_identities.html',
+        context
+    )
 
 
 @login_required
@@ -292,7 +368,10 @@ def manage_notifications(request):
     if request.method == 'POST':
         form = forms.NotificationPreferencesForm(request.POST, instance=prefs)
         form.save()
-        messages.success(request, _('Your Notification Preferences have been updated!'))
+        messages.success(
+            request,
+            _('Your Notification Preferences have been updated!')
+        )
     else:
         form = forms.NotificationPreferencesForm(instance=prefs)
 
@@ -301,7 +380,11 @@ def manage_notifications(request):
         'form': form,
     }
 
-    return render(request, 'portal/apps/accounts/manage_notifications.html', context)
+    return render(
+        request,
+        'portal/apps/accounts/manage_notifications.html',
+        context
+    )
 
 
 @login_required
@@ -317,7 +400,11 @@ def manage_licenses(request):
         'title': 'Manage Software Licenses',
         'licenses': licenses
     }
-    return render(request, 'portal/apps/accounts/manage_licenses.html', context)
+    return render(
+        request,
+        'portal/apps/accounts/manage_licenses.html',
+        context
+    )
 
 
 @login_required
@@ -326,12 +413,22 @@ def manage_applications(request):
         'title': 'Manage Applications',
         'integrations': integrations.get_integrations()
     }
-    return render(request, 'portal/apps/accounts/manage_applications.html', context)
+    return render(
+        request,
+        'portal/apps/accounts/manage_applications.html',
+        context
+    )
 
 
 @login_required
 def profile_edit(request):
-    tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+    tas = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            'username': settings.TAS_CLIENT_KEY,
+            'password': settings.TAS_CLIENT_SECRET
+        }
+    )
     user = request.user
     tas_user = tas.get_user(username=user.username)
 
@@ -354,15 +451,22 @@ def profile_edit(request):
                 # portal_profile.gender = data['gender']
                 portal_profile.save()
             except ObjectDoesNotExist as e:
-                logger.info('exception e: {} {}'.format(type(e), e ))
+                logger.info(
+                    'exception e: {} {}'.format(
+                        type(e),
+                        e
+                    )
+                )
                 portal_profile = PortalProfile(
-                    user=user  #,
+                    user=user
                     # ethnicity=data['ethnicity'],
                     # gender=data['gender']
                     )
                 portal_profile.save()
 
-            return HttpResponseRedirect(reverse('portal_accounts:manage_profile'))
+            return HttpResponseRedirect(
+                reverse('portal_accounts:manage_profile')
+            )
     else:
         # try:
         #     tas_user['ethnicity'] = user.profile.ethnicity
@@ -385,15 +489,21 @@ def password_reset(request, code=None):
 
     if code is not None:
         # confirming password reset
-        message = 'Confirm your password reset using the form below. Enter your TACC ' \
-                  'username and new password to complete the password reset process.'
+        message = ('Confirm your password reset using the form below. '
+                   'Enter your TACC username and new password to '
+                   'complete the password reset process.')
 
         if request.method == 'POST':
             form = forms.PasswordResetConfirmForm(request.POST)
             if _process_password_reset_confirm(request, form):
-                messages.success(request, 'Your password has been reset! You can now log '
-                                          'in using your new password')
-                return HttpResponseRedirect(reverse('portal_accounts:manage_profile'))
+                messages.success(
+                    request,
+                    'Your password has been reset! You can now log '
+                    'in using your new password'
+                )
+                return HttpResponseRedirect(
+                    reverse('portal_accounts:manage_profile')
+                )
             else:
                 messages.error(request, 'Password reset failed. '
                                         'Please see below for details.')
@@ -402,9 +512,10 @@ def password_reset(request, code=None):
 
     else:
         # requesting password reset
-        message = 'Enter your TACC username to request a password reset. If your ' \
-                  'account is found, you will receive an email at the registered email ' \
-                  'address with instructions to complete the password reset.'
+        message = ('Enter your TACC username to request a password reset. '
+                   'If your account is found, you will receive an email '
+                   'at the registered email address with instructions to '
+                   'complete the password reset.')
 
         if request.method == 'POST':
             form = forms.PasswordResetRequestForm(request.POST)
@@ -423,21 +534,37 @@ def password_reset(request, code=None):
 def _process_password_reset_request(request, form):
     if form.is_valid():
         # always show success to prevent data leaks
-        messages.success(request, 'Your request has been received. If an account '
-                                  'matching the username you provided is found, you will '
-                                  'receive an email with further instructions to '
-                                  'complete the password reset process.')
+        messages.success(
+            request,
+            'Your request has been received. If an account '
+            'matching the username you provided is found, you will '
+            'receive an email with further instructions to '
+            'complete the password reset process.'
+        )
 
         username = form.cleaned_data['username']
-        logger.info('Attempting password reset request for username: "%s"', username)
+        logger.info(
+            'Attempting password reset request for username: "%s"',
+            username
+        )
         try:
             tas = TASClient()
             user = tas.get_user(username=username)
-            logger.info('Processing password reset request for username: "%s"', username)
-            resp = tas.request_password_reset(user['username'], source='DesignSafe')
+            logger.info(
+                'Processing password reset request for username: "%s"',
+                username
+            )
+            resp = tas.request_password_reset(
+                user['username'],
+                source='DesignSafe'
+            )
             logger.debug(resp)
         except Exception as e:
-            logger.exception('Failed password reset request')
+            logger.exception(
+                'Failed password reset request: %s',
+                e,
+                exc_info=True
+            )
 
         return True
     else:
@@ -449,8 +576,12 @@ def _process_password_reset_confirm(request, form):
         data = form.cleaned_data
         try:
             tas = TASClient()
-            return tas.confirm_password_reset(data['username'], data['code'],
-                                              data['password'], source='Portal_SD2E')
+            return tas.confirm_password_reset(
+                data['username'],
+                data['code'],
+                data['password'],
+                source='Portal_SD2E'
+            )
         except Exception as e:
             if len(e.args) > 1:
                 if re.search('account does not match', e.args[1]):
@@ -485,26 +616,30 @@ def email_confirmation(request, code=None):
                 tas = TASClient()
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
-                    check_or_create_agave_home_dir.apply_async(args=(user["username"],))
-
-                    messages.success(request,
-                                     'Congratulations, your account has been activated! '
-                                     'You can now log in to DesignSafe.')
+                    # check_or_create_agave_home_dir.apply_async(args=(user["username"],))
+                    messages.success(
+                        request,
+                        'Congratulations, your account has been activated! '
+                        'You can now log in to DesignSafe.'
+                    )
                     return HttpResponseRedirect(
                         reverse('portal_accounts:manage_profile'))
                 else:
-                    messages.error(request,
-                                   'We were unable to activate your account. Please try '
-                                   'again. If this problem persists, please '
-                                   '<a href="/help">open a support ticket</a>.')
+                    messages.error(
+                        request,
+                        'We were unable to activate your account. Please try '
+                        'again. If this problem persists, please '
+                        '<a href="/help">open a support ticket</a>.')
                     form = forms.EmailConfirmationForm(
                         initial={'code': code, 'username': username})
-            except:
+            except Exception:
                 logger.exception('TAS Account activation failed')
-                form.add_error('__all__',
-                               'Account activation failed. Please confirm your '
-                               'activation code, username and password and try '
-                               'again.')
+                form.add_error(
+                    '__all__',
+                    'Account activation failed. Please confirm your '
+                    'activation code, username and password and try '
+                    'again.'
+                )
     else:
         if code is None:
             code = request.GET.get('code', '')
@@ -512,7 +647,11 @@ def email_confirmation(request, code=None):
 
     context['form'] = form
 
-    return render(request, 'portal/apps/accounts/email_confirmation.html', context)
+    return render(
+        request,
+        'portal/apps/accounts/email_confirmation.html',
+        context
+    )
 
 
 def departments_json(request):
@@ -522,19 +661,25 @@ def departments_json(request):
         departments = tas.get_departments(institution_id)
     else:
         departments = {}
-    return HttpResponse(json.dumps(departments), content_type='application/json')
+    return HttpResponse(
+        json.dumps(departments),
+        content_type='application/json'
+    )
 
 
 # Throws Bad Gateway 502 Error.
 #
-# @permission_required('portal_accounts.view_notification_subscribers', raise_exception=True)
+# @permission_required('portal_accounts.view_notification_subscribers',
+#                      raise_exception=True)
 # def mailing_list_subscription(request, list_name):
 #     subscribers = ['"Name","Email"']
 #     try:
 #         su = get_user_model().objects.filter(
 #             Q(notification_preferences__isnull=True) |
 #             Q(**{"notification_preferences__{}".format(list_name): True}))
-#         subscribers += list('"{0}","{1}"'.format(u.get_full_name().encode('utf-8'), u.email.encode('utf-8')) for u in su)
+#         subscribers += list('"{0}","{1}"'.format(
+#           u.get_full_name().encode('utf-8'),
+#           u.email.encode('utf-8')) for u in su)
 #     except TypeError as e:
 #         logger.warning('Invalid list name: {}'.format(list_name))
 #     return HttpResponse('\n'.join(subscribers), content_type='text/csv')
