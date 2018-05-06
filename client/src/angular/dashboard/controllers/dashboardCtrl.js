@@ -1,6 +1,13 @@
 import DS_TSBarChart from '../charts/DS_TSBarChart';
 
-export default function DashboardCtrl ($scope, Jobs, Apps, SystemsService) {
+export default function DashboardCtrl (
+  $uibModal,
+  $scope,
+  $q,
+  Jobs,
+  Apps,
+  SystemsService,
+) {
   'ngInject';
   $scope.data = {};
   $scope.ui = {};
@@ -9,8 +16,12 @@ export default function DashboardCtrl ($scope, Jobs, Apps, SystemsService) {
   $scope.loading_jobs = true;
   $scope.today = new Date();
   $scope.usage = {total_storage_bytes: 0};
-  $scope.first_jobs_date = new Date($scope.today.getTime() - (14 * 24 * 60 * 60 * 1000 ));
-  $scope.first_jobs_date = new Date($scope.first_jobs_date.setHours(0,0,0,0));
+  $scope.first_jobs_date = new Date(
+    $scope.today.getTime() - (14 * 24 * 60 * 60 * 1000 )
+  );
+  $scope.first_jobs_date = new Date(
+    $scope.first_jobs_date.setHours(0,0,0,0)
+  );
   $scope.chart = new DS_TSBarChart('#ds_jobs_chart')
     .height(250)
     .xSelector(function (d) { return d.key;})
@@ -22,9 +33,15 @@ export default function DashboardCtrl ($scope, Jobs, Apps, SystemsService) {
   $scope.data.strgSystems = [];
   $scope.ui.loadingSystems = true;
   $scope.ui.testSystems = {};
+  $scope.ui.pushSystems = {};
+  $scope.ui.resetSystems = {};
 
   $scope.chart.on('bar_click', function (ev, toggled) {
-    (toggled) ? $scope.display_job_details = true : $scope.display_job_details = false;
+    if (toggled){
+      $scope.display_job_details = true;
+    } else {
+      $scope.display_job_details = false;
+    }
     $scope.jobs_details = ev.values;
     $scope.$apply();
   });
@@ -34,7 +51,11 @@ export default function DashboardCtrl ($scope, Jobs, Apps, SystemsService) {
   //   $scope.notification_count = resp.total;
   // });
 
-  Jobs.list({'created.gt':moment($scope.first_jobs_date).format('Y-M-D')}).then(function (resp) {
+  Jobs.list(
+    {
+      'created.gt':moment($scope.first_jobs_date).format('Y-M-D')
+    }
+  ).then(function (resp) {
     $scope.jobs = resp;
     $scope.chart_data = Jobs.jobsByDate(resp);
 
@@ -53,7 +74,8 @@ export default function DashboardCtrl ($scope, Jobs, Apps, SystemsService) {
     _.each(resp.execution, function(exec){
       let pubKey = resp.publicKeys[exec.id];
       exec.keysTracked = false;
-      if (pubKey.public_key !== null && typeof pubKey.public_key !== 'undefined'){
+      if (pubKey.public_key !== null &&
+          typeof pubKey.public_key !== 'undefined'){
         exec.publicKey = pubKey;
         exec.keysTracked = true;
       }
@@ -62,7 +84,8 @@ export default function DashboardCtrl ($scope, Jobs, Apps, SystemsService) {
     _.each(resp.storage, function(strg){
       let pubKey = resp.publicKeys[strg.id];
       strg.keysTracked = false;
-      if (pubKey.public_key !== null && typeof pubKey.public_key !== 'undefined'){
+      if (pubKey.public_key !== null &&
+          typeof pubKey.public_key !== 'undefined'){
         strg.publicKey = pubKey;
         strg.keysTracked = true;
       }
@@ -99,10 +122,10 @@ export default function DashboardCtrl ($scope, Jobs, Apps, SystemsService) {
         'response': resp.response.message
       };
     }, function(err){
-      $scope.ui.testSystems[err.systemId] = {
+      $scope.ui.testSystems[err.data.response.systemId] = {
         'testing': false,
         'error': true,
-        'response': err.message
+        'response': err.data.response.message
       };
     });
   };
@@ -159,30 +182,28 @@ export default function DashboardCtrl ($scope, Jobs, Apps, SystemsService) {
   * Pushes a private key to the specified host
   * @function
   * @param {Object} sys - System object
-  * @param {Object} form - Form
-  * @param {string} form.hostname - Hostname
-  * @param {string} form.password - Password
-  * @param {string} form.token - Token
   */
-  $scope.pushKey = function _pushKeys(sys, form){
+  $scope.pushKey = function _pushKeys(sys){
     $scope.ui.pushSystems[sys.id] = {
       'pushing': true,
       'error': false,
       'response': null
     };
-    SystemsService.pushKeys(sys, form).
-      then(function(resp){
-        $scope.ui.pushSystems[resp.systemId] = {
+    let modal = $uibModal.open({
+      component: 'systemPushKeysModal',
+      resolve: {
+        sys: function(){
+          return sys;
+        }
+      }
+    });
+    modal.result.finally(
+      function(){
+        $scope.ui.pushSystems[sys.id] = {
           'resetting': false,
           'error': false,
-          'response': resp.message
+          'response': ''
         };
-      }, function(err){
-        $scope.ui.pushSystems[resp.systemId] = {
-          'resetting': false,
-          'error': false,
-          'response': resp.message
-        };
-      });
+      })
   };
 }

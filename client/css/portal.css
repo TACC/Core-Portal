@@ -106,3 +106,9 @@ a.btn-link-alt:hover,
 dl>dt {
   margin-top: 12px;
 }
+
+div.message {
+  padding:5px;
+  font-size:1.5em;
+  font-weight:bold;
+}

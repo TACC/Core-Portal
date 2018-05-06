@@ -194,8 +194,9 @@
               </button>
               <button type="button"
                       class="btn btn-success"
-                      data-ng-click="pushKeys(sys)"
-                      data-ng-disabled="ui.pushSystems[sys.id].pushing">
+                      data-ng-click="pushKey(sys)"
+                      data-ng-disabled="ui.pushSystems[sys.id].pushing
+                                        || !sys.keysTracked">
                 Push Public Key
                 <span data-ng-if="ui.pushSystems[sys.id].pushing"> Loading ...</span>
                 <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
@@ -276,8 +277,9 @@
               </button>
               <button type="button"
                       class="btn btn-success"
-                      data-ng-click="pushKeys(sys)"
-                      data-ng-disabled="ui.pushSystems[sys.id].pushing">
+                      data-ng-click="pushKey(sys)"
+                      data-ng-disabled="ui.pushSystems[sys.id].pushing ||
+                                        !sys.keysTracked">
                 Push Public Key
                 <span data-ng-if="ui.pushSystems[sys.id].pushing"> Loading ...</span>
                 <i class="fa fa-spinner fa-pulse fa-2x fa-fw"

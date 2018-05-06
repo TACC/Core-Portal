@@ -1,5 +1,3 @@
-
-
 function SystemsService($http, $q) {
   'ngInject';
   var self = this;
@@ -65,18 +63,24 @@ function SystemsService($http, $q) {
   /**
  * Pushed a system's public key to a host
  * @function
- * @param {Object} sys - System object
+ * @param {Object} sysId - System object
  * @param {Object} form - Form
  * @param {string} form.hostname - Hostname
  * @param {string} form.password - Password
  * @param {string} form.token - Token
  */
-  this.pushKeys = function _resetKeys(sys, form){
-    return $http.put('/api/accounts/systems/' + sys.id + '/keys',
-                     {action: 'push',
-                      form: form}).
+  this.pushKeys = function _resetKeys(sysId, form){
+    return $http.put(
+      '/api/accounts/systems/' + sysId + '/keys',
+      {
+        action: 'push',
+        form: form
+      }).
       then(function(resp){
         return resp.data;
+      },
+      function(err){
+        return $q.reject(err);
       });
   };
 }
