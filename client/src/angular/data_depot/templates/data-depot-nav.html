@@ -1,13 +1,13 @@
 <div class="list-group list-group-root well">
 
     <div class="list-group collapse"
-         ng-class="{'in': !routerItem.collapse}"
-         ng-repeat="childItem in routerItems">
+         data-ng-class="{'in': !routerItem.collapse}"
+         data-ng-repeat="childItem in routerItems">
 
-        <a tooltip="{{ childItem.description }}" class="list-group-item"
-           ui-sref="{{ childItem.state }}"
-           ui-sref-active="active">
-           <i class="fa fa-fw" ng-class="childItem.icon"> </i>
+        <a data-tooltip="{{ childItem.description }}" class="list-group-item"
+           data-ui-sref="{{ childItem.state }}"
+           data-ui-sref-active="active">
+           <i class="fa fa-fw" data-ng-class="childItem.icon">&nbsp;</i>
             {{ childItem.name }}
         </a>
     </div>

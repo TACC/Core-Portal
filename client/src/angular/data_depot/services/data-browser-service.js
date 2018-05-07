@@ -15,7 +15,9 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     page: 0,
     showMainListing: true,
     showPreviewListing: false,
-    ui: {}
+    ui: {
+        message: {}
+    }
   };
 
   var apiParams = {

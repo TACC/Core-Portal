@@ -1,24 +1,80 @@
-export default function DataDepotCtrl($scope, $state, $stateParams, Django, DataBrowserService, SystemsService, ProjectService, systems) {
+/**
+ * Data Depot Controller
+ * @function
+ * @param {Object} $scope - Angular scope object
+ * @param {Object} $state - UI-Router state object
+ * @param {Object} $stateParams - UI-Router state params object
+ * @param {Object} $uibModal - uib Modal service
+ * @param {Object} Django - Django service
+ * @param {Object} DataBrowserService - Data Browser Service
+ * @param {Object} SystemsService - System Service
+ * @param {Object} ProjectService - ProjectService
+ * @param {Object} systems - Array of systems
+ */
+export default function DataDepotCtrl(
+    $scope,
+    $state,
+    $stateParams,
+    $uibModal,
+    Django,
+    DataBrowserService,
+    SystemsService,
+    ProjectService,
+    systems
+) {
     'ngInject';
 
     // get user data from service
-    $scope.sysCommunityData = _.find(systems, { name: 'Community Data' });
-    $scope.sysMyData = _.find(systems, { name: "My Data" });
+    $scope.sysCommunityData = _.find(
+        systems,
+        {name: 'Community Data'}
+    );
+    $scope.sysMyData = _.find(
+        systems,
+        {name: 'My Data'}
+    );
 
     //  $stateParams is pulling info from the html section of the data-depot
     //  and we will swap the data based on the systemID variables we place there
-    //  'options' will contain the different variables required to change the display
-    var options = {
+    //  'options' will contain the different variables
+    //  required to change the display
+    const options = {
         system: ($stateParams.systemId),
         path: ($stateParams.filePath),
         name: ($stateParams.name),
-        directory: ($stateParams.directory)
+        directory: ($stateParams.directory),
     };
 
-    
+    $scope.browser = DataBrowserService.state();
+
+    $scope.openPushPublicKeyForm = ()=>{
+        $scope.browser.ui.pushKeyModalOpening = true;
+        SystemsService.get(options.system)
+            .then((sys)=>{
+                return $uibModal.open({
+                    component: 'SystemPushKeysModal',
+                    resolve: {
+                        sys: ()=>{
+                            return sys;
+                        },
+                    },
+                }).result;
+            }, (err)=>{
+                $scope.browser.error.message = err.data;
+                $scope.browser.error.status = err.status;
+            }).then(()=>{
+                $scope.browser = DataBrowserService.state();
+                $scope.browser.error = null;
+                $scope.browser.ui.message.class = 'alert-success';
+                $scope.browser.ui.message.show = true;
+                $scope.browser.ui.message.content = 'Public key pushed ' +
+                    'successfully. Please click on My Data again';
+            }).finally(()=>{
+                $scope.browser.ui.pushKeyModalOpening = false;
+            });
+    };
 
     if ($stateParams.name == 'My Data') {
-
         $scope.data = {
             user: Django.user,
             customRoot: {
@@ -26,9 +82,9 @@ export default function DataDepotCtrl($scope, $state, $stateParams, Django, Data
                 href: $state.href('db', {
                     systemId: $stateParams.systemId,
                     filePath: $stateParams.filePath,
-                    directory: $stateParams.directory
-                })
-            }
+                    directory: $stateParams.directory,
+                }),
+            },
         };
 
         DataBrowserService.apiParams.fileMgr = 'my-data';
@@ -36,21 +92,24 @@ export default function DataDepotCtrl($scope, $state, $stateParams, Django, Data
         DataBrowserService.apiParams.searchState = 'dataSearch';
 
 
-        $scope.browser = DataBrowserService.state();
-        DataBrowserService.browse(options).then(function (resp) {
-            $scope.browser = DataBrowserService.state();
-            $scope.searchState = DataBrowserService.apiParams.searchState;
-        });
+        DataBrowserService.browse(options)
+            .then((resp)=>{
+                $scope.searchState = DataBrowserService.apiParams.searchState;
+            }, (err)=>{
+                $scope.browser = DataBrowserService.state();
+                $scope.browser.error.message = err.data.message;
+                $scope.browser.error.status = err.status;
+            });
 
-        $scope.scrollToTop = function () {
+        $scope.scrollToTop = function() {
             return;
         };
 
-        $scope.scrollToBottom = function () {
+        $scope.scrollToBottom = function() {
             DataBrowserService.scrollToBottom();
         };
 
-        $scope.onBrowse = function ($event, file) {
+        $scope.onBrowse = function($event, file) {
             $event.preventDefault();
             $event.stopPropagation();
             if (file.type === 'file') {
@@ -58,22 +117,28 @@ export default function DataDepotCtrl($scope, $state, $stateParams, Django, Data
             }
         };
 
-        $scope.onSelect = function ($event, file) {
+        $scope.onSelect = function($event, file) {
             $event.stopPropagation();
             if ($event.ctrlKey || $event.metaKey) {
-                var selectedIndex = $scope.browser.selected.indexOf(file);
+                let selectedIndex = $scope.browser.selected.indexOf(file);
                 if (selectedIndex > -1) {
                     DataBrowserService.deselect([file]);
                 } else {
                     DataBrowserService.select([file]);
                 }
             } else if ($event.shiftKey && $scope.browser.selected.length > 0) {
-                var lastFile = $scope.browser.selected[$scope.browser.selected.length - 1];
-                var lastIndex = $scope.browser.listing.children.indexOf(lastFile);
-                var fileIndex = $scope.browser.listing.children.indexOf(file);
-                var min = Math.min(lastIndex, fileIndex);
-                var max = Math.max(lastIndex, fileIndex);
-                DataBrowserService.select($scope.browser.listing.children.slice(min, max + 1));
+                let lastFile = $scope.browser.selected[
+                    $scope.browser.selected.length - 1
+                ];
+                let lastIndex = $scope.browser.listing
+                    .children.indexOf(lastFile);
+                let fileIndex = $scope.browser.listing
+                    .children.indexOf(file);
+                let min = Math.min(lastIndex, fileIndex);
+                let max = Math.max(lastIndex, fileIndex);
+                DataBrowserService.select(
+                    $scope.browser.listing.children.slice(min, max + 1)
+                );
             } else if (typeof file._ui !== 'undefined' &&
                 file._ui.selected) {
                 DataBrowserService.deselect([file]);
@@ -82,14 +147,11 @@ export default function DataDepotCtrl($scope, $state, $stateParams, Django, Data
             }
         };
 
-        $scope.onDetail = function ($event, file) {
+        $scope.onDetail = function($event, file) {
             $event.stopPropagation();
             DataBrowserService.preview(file, $scope.browser.listing);
         };
-
-
     } else if ($stateParams.name == 'My Projects') {
-
         $scope.ui = {};
 
         $scope.data = {
@@ -98,14 +160,14 @@ export default function DataDepotCtrl($scope, $state, $stateParams, Django, Data
                 href: $state.href('db', {
                     systemId: $stateParams.systemId,
                     filePath: $stateParams.filePath,
-                    directory: $stateParams.directory
-                })
-            }
+                    directory: $stateParams.directory,
+                }),
+            },
         };
 
         $scope.ui.busy = true;
         $scope.data.projects = [];
-        ProjectService.list().then(function (projects) {
+        ProjectService.list().then(function(projects) {
             $scope.ui.busy = false;
             $scope.data.projects = projects;
         });
@@ -115,22 +177,19 @@ export default function DataDepotCtrl($scope, $state, $stateParams, Django, Data
             $state.go('db.projects.listing', {
                 systemId: project.id,
                 filePath: '/',
-                projectTitle: project.name
+                projectTitle: project.name,
             });
         };
-
-    
     } else if ($stateParams.name == 'Community Data') {
-
         $scope.data = {
             customRoot: {
                 name: $stateParams.name,
                 href: $state.href('db', {
                     systemId: $stateParams.systemId,
                     filePath: $stateParams.filePath,
-                    directory: $stateParams.directory
-                })
-            }
+                    directory: $stateParams.directory,
+                }),
+            },
         };
 
         DataBrowserService.apiParams.fileMgr = 'shared';
@@ -138,58 +197,57 @@ export default function DataDepotCtrl($scope, $state, $stateParams, Django, Data
         DataBrowserService.apiParams.searchState = 'dataSearch';
 
         $scope.browser = DataBrowserService.state();
-        DataBrowserService.browse(options).then(function (resp) {
+        DataBrowserService.browse(options).then(function(resp) {
             $scope.browser = DataBrowserService.state();
         });
 
         $scope.state = {
             loadingMore: false,
             reachedEnd: false,
-            page: 0
+            page: 0,
         };
 
-        $scope.scrollToTop = function () {
+        $scope.scrollToTop = function() {
             return;
         };
 
-        $scope.scrollToBottom = function () {
+        $scope.scrollToBottom = function() {
             DataBrowserService.scrollToBottom();
         };
 
-        $scope.onBrowse = function ($event, file) {
+        $scope.onBrowse = function($event, file) {
             $event.preventDefault();
             $event.stopPropagation();
 
-            var systemId = file.system || file.systemId;
-            var filePath;
-            if (file.path == '/') {
-                filePath = file.path + file.name;
-            } else {
-                filePath = file.path;
-            }
             if (file.type === 'file') {
                 DataBrowserService.preview(file, $scope.browser.listing);
             } else {
-                $state.go('db', { systemId: file.system, filePath: file.path });
+                $state.go('db', {systemId: file.system, filePath: file.path});
             }
         };
 
-        $scope.onSelect = function ($event, file) {
+        $scope.onSelect = function($event, file) {
             $event.stopPropagation();
             if ($event.ctrlKey || $event.metaKey) {
-                var selectedIndex = $scope.browser.selected.indexOf(file);
+                let selectedIndex = $scope.browser.selected.indexOf(file);
                 if (selectedIndex > -1) {
                     DataBrowserService.deselect([file]);
                 } else {
                     DataBrowserService.select([file]);
                 }
             } else if ($event.shiftKey && $scope.browser.selected.length > 0) {
-                var lastFile = $scope.browser.selected[$scope.browser.selected.length - 1];
-                var lastIndex = $scope.browser.listing.children.indexOf(lastFile);
-                var fileIndex = $scope.browser.listing.children.indexOf(file);
-                var min = Math.min(lastIndex, fileIndex);
-                var max = Math.max(lastIndex, fileIndex);
-                DataBrowserService.select($scope.browser.listing.children.slice(min, max + 1));
+                let lastFile = $scope.browser.selected[
+                    $scope.browser.selected.length - 1
+                ];
+                let lastIndex = $scope.browser.listing
+                    .children.indexOf(lastFile);
+                let fileIndex = $scope.browser.listing
+                    .children.indexOf(file);
+                let min = Math.min(lastIndex, fileIndex);
+                let max = Math.max(lastIndex, fileIndex);
+                DataBrowserService.select(
+                    $scope.browser.listing.children.slice(min, max + 1)
+                );
             } else if (typeof file._ui !== 'undefined' &&
                 file._ui.selected) {
                 DataBrowserService.deselect([file]);
@@ -198,39 +256,36 @@ export default function DataDepotCtrl($scope, $state, $stateParams, Django, Data
             }
         };
 
-        $scope.showFullPath = function (item) {
+        $scope.showFullPath = function(item) {
             if ($scope.browser.listing.path != '$PUBLIC' &&
                 item.parentPath() != $scope.browser.listing.path &&
                 item.parentPath() != '/') {
                 return true;
-            } else {
-                return false;
             }
+            return false;
         };
 
-        $scope.onDetail = function ($event, file) {
+        $scope.onDetail = function($event, file) {
             $event.stopPropagation();
             DataBrowserService.preview(file, $scope.browser.listing);
         };
 
-        $scope.renderName = function (file) {
+        $scope.renderName = function(file) {
             if (typeof file.metadata === 'undefined' ||
                 file.metadata === null ||
                 _.isEmpty(file.metadata)) {
                 return file.name;
             }
-            var pathComps = file.path.split('/');
-            var experiment_re = /^experiment/;
+            let pathComps = file.path.split('/');
+            let experimentRe = /^experiment/;
             if (file.path[0] === '/' && pathComps.length === 2) {
                 return file.metadata.project.title;
-            }
-            else if (file.path[0] !== '/' &&
+            } else if (file.path[0] !== '/' &&
                 pathComps.length === 2 &&
-                experiment_re.test(file.name.toLowerCase())) {
+                experimentRe.test(file.name.toLowerCase())) {
                 return file.metadata.experiments[0].title;
             }
             return file.name;
         };
-        
     }
 }
