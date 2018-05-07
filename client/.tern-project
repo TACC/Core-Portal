@@ -5,7 +5,7 @@
     "underscore"
   ],
   "loadEgerly": [
-    "./client/src/**/*.js"
+    "./src/**/*.js"
   ],
   "plugins": {
     "complete_string": {},
