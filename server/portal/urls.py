@@ -39,6 +39,8 @@ urlpatterns = [
     #                             namespace='workspace')),
     url(r'^api/workspace/', include('portal.apps.workspace.api.urls',
                                     namespace='workspace_api')),
+    url(r'^api/projects/', include('portal.apps.projects.urls',
+                                    namespace='projects_api')),
     url(r'^workshops/', include('portal.apps.workshops.urls',
                                 namespace='workshops')),
     url(r'^search/', include('portal.apps.search.urls',
