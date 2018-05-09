@@ -3,7 +3,7 @@
       restrict: 'EA',
       require: 'ngModel',
       replace: true,
-      templateUrl: '/static/portal/scripts/angular/workspace/templates/agave-file-picker.html',
+      templateUrl: '/static/src/angular/workspace/templates/agave-file-picker.html',
       link: function($scope, $element, attrs, $ngModel) {
         var formKey = $scope.form.key.join('.');
 
