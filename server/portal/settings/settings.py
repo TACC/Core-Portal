@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'portal.apps.workbench',
     'portal.apps.djangoRT',
     'portal.apps.projects',
+    'portal.apps.licenses',
 ]
 
 MIDDLEWARE = [
