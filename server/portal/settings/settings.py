@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'portal.apps.search',
     'portal.apps.workbench',
     'portal.apps.djangoRT',
+    'portal.apps.projects',
 ]
 
 MIDDLEWARE = [

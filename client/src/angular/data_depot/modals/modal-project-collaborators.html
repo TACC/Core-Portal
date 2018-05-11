@@ -1,0 +1,50 @@
+<div class="modal-header">
+    <h3 class="modal-title">Manage Collaborators for <em> {{vm.project.name}} </em> </h3>
+</div>
+
+<div class="modal-body">
+  <div class="input-group">
+    <input
+      type="text"
+      name="name"
+      class="form-control"
+      ng-model="vm.new_user"
+      placeholder="Search for a collaborator"
+      uib-typeahead="user.username for user in vm.search($viewValue)"
+      required>
+      <span class="input-group-btn">
+        <button class="btn btn-default"
+            type="button"
+            ng-disabled="!vm.new_user"
+            ng-click="vm.addCollaborator(vm.new_user)">
+          <i class="fa fa-plus"> </i> Add
+        </button>
+      </span>
+  </div>
+  <div ng-show="vm.collaborators.length">
+    <h4> Current Collaborators </h4>
+    <table class="table">
+      <tr ng-repeat="collab in vm.collaborators">
+        <td> {{collab.username}} </td>
+        <td>
+          <button class="btn btn-xs pull-right btn-danger"> <i class="fa fa-trash"> </i> Remove </button>
+
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div ng-show="!vm.collaborators.length">
+    <h3> No collaborators on this project, add some above! </h3>
+  </div>
+</div>
+
+<div class="modal-footer">
+    <div class="text-right">
+        <button
+          class="btn btn-primary"
+          type="button"
+          ng-click="vm.close()">
+            Close
+        </button>
+    </div>
+</div>

@@ -9,5 +9,5 @@ mod.service('SystemsService', SystemsService);
 mod.factory('FileListing', FileListing);
 mod.factory('DataBrowserService', DataBrowserService);
 mod.factory('ProjectService', ProjectService);
-console.log(mod)
+
 export default mod;
