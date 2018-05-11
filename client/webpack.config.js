@@ -1,19 +1,17 @@
 // webpack plugins
-const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
-const webpack = require('webpack');
-const path = require('path');
+// const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   devtool: 'eval-source-map',
   entry: './src/index.js',
   output: {
     publicPath: '/static/build/',
-    path: __dirname + "/build",
+    path: __dirname + '/build',
     filename: "bundle.[hash].js",
 
   },
