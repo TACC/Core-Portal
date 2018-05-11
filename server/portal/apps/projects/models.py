@@ -11,7 +11,6 @@ from portal import utils
 
 logger = logging.getLogger(__name__)
 
-
 class ProjectStorageSystem(object):
 
     def __init__(self, rootDir, name, host):
