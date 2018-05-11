@@ -3,10 +3,10 @@ import json
 import logging
 import uuid
 from django.conf import settings
-from portal.apps.data_depot.models.metadata import BaseMetadataResource
-from portal.apps.data_depot.models.metadata_pems import BaseMetadataPermissionResource
-from portal.apps.data_depot.models.systems import BaseSystemResource
-from portal.apps.data_depot.models import roles as system_roles
+from portal.libs.agave.models.metadata import BaseMetadataResource
+from portal.libs.agave.models.metadata_pems import BaseMetadataPermissionResource
+from portal.libs.agave.models.systems.storage import StorageSystem
+from portal.libs.agave.models import roles as system_roles
 from portal import utils
 
 logger = logging.getLogger(__name__)
