@@ -19,6 +19,7 @@ from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.signals.signals import portal_event
 from portal.apps.workspace.tasks import watch_job_status
+from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from agavepy.agave import Agave
 
 
@@ -36,13 +37,10 @@ def get_manager(request, file_mgr_name):
         raise ApiException("Login Required", status=403)
     return fmgr
 
-LICENSE_TYPES = (
-    ('MATLAB', 'MATLAB')
-)
 
 def _app_license_type(app_id):
-    app_lic_type = app_id.split('-')[0].upper()
-    lic_type = next((t[0] for t in LICENSE_TYPES if t[0] == app_lic_type), None)
+    app_lic_type = app_id.replace('-{}'.format(app_id.split('-')[-1]), '').upper()
+    lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
     return lic_type
 
 @method_decorator(login_required, name='dispatch')
@@ -58,7 +56,9 @@ class AppsView(BaseApiView):
                 'type': lic_type
             }
             if lic_type is not None:
-                lic = request.user.licenses.filter(license_type=lic_type).first()
+                _, license_models = get_license_info()
+                license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                lic = license_model.objects.filter(user=request.user).first()
                 data['license']['enabled'] = lic is not None
         else:
             METRICS.debug("User " + request.user.username + " is requesting all public apps")
@@ -93,7 +93,9 @@ class MetadataView(BaseApiView):
                 'type': lic_type
             }
             if lic_type is not None:
-                lic = request.user.licenses.filter(license_type=lic_type).first()
+                _, license_models = get_license_info()
+                license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                lic = license_model.objects.filter(user=request.user).first()
                 data['license']['enabled'] = lic is not None
 
         else:
@@ -182,7 +184,7 @@ class JobsView(BaseApiView):
                 if parsed.netloc:
                     job_post['archiveSystem'] = parsed.netloc
             else:
-                METRICS.debug("User " + request.user.username + " is deleting job id " + job_id)
+                # METRICS.debug("User " + request.user.username + " is deleting job id " + job_id)
                 job_post['archivePath'] = \
                     '{}/archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         request.user.username,
@@ -191,7 +193,9 @@ class JobsView(BaseApiView):
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])
             if lic_type is not None:
-                lic = request.user.licenses.filter(license_type=lic_type).first()
+                _, license_models = get_license_info()
+                license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                lic = license_model.objects.filter(user=request.user).first()
                 job_post['parameters']['_license'] = lic.license_as_str()
 
             # url encode inputs

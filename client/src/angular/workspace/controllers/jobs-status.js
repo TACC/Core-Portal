@@ -50,7 +50,7 @@
         }
 
         $uibModal.open({
-          templateUrl: '/static/portal/scripts/angular/workspace/templates/job-details-modal.html',
+          templateUrl: '/static/src/angular/workspace/templates/job-details-modal.html',
           controller: 'JobDetailsModalCtrl',
           scope: $scope,
           resolve: {

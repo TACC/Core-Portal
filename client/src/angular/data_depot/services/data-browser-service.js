@@ -257,7 +257,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     }
 
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-copy.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-copy.html',
       controller: 'ModalMoveCopy',
       resolve: {
         data: {
@@ -385,7 +385,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function mkdir () {
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-mkdir.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-mkdir.html',
       controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
         $scope.form = {
           folderName: 'Untitled_folder'
@@ -429,7 +429,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     }
 
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-move.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-move.html',
       controller: 'ModalMoveCopy',
       resolve: {
         data: {
@@ -470,7 +470,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function preview (file, listing) {
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-preview.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-preview.html',
       controller: 'ModalPreview',
       size: 'lg',
       resolve: {
@@ -490,7 +490,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
   function previewImages (folder) {
     var modal = $uibModal.open({
       windowClass: 'modal-full',
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-preview-images.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-preview-images.html',
       controller: ['$scope', '$uibModalInstance', '$sce', 'folder',function ($scope, $uibModalInstance, $sce, folder) {
         $scope.folder = folder;
         var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
@@ -542,7 +542,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function rename (file) {
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-rename.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-rename.html',
       controller: ['$scope', '$uibModalInstance', 'file', function ($scope, $uibModalInstance, file) {
         $scope.form = {
           targetName: file.name
@@ -594,7 +594,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     }
 
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/apps/data_depot/modals/data-browser-service-rm.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-rm.html',
       controller: ['$scope', '$uibModalInstance', 'files', function ($scope, $uibModalInstance, files) {
         $scope.files = files;
 
@@ -667,7 +667,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function share (file) {
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/apps/data_depot/modals/data-browser-service-share.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-share.html',
       controller: ['$scope', '$uibModalInstance', 'Django', 'file', function ($scope, $uibModalInstance, Django, file) {
         $scope.data = {
           busy: true,
@@ -836,7 +836,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function upload(directoryUpload, files) {
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/apps/data_depot/modals/data-browser-service-upload.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-upload.html',
       controller: 'ModalUpload',
       size: 'lg',
       resolve: {
@@ -852,7 +852,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * Open Preview Tree
    */
   function openPreviewTree(entityUuid){
-    var template = '/static/portal/apps/data_depot/modals/data-browser-preview-tree.html';
+    var template = '/static/src/angular/data_depot/modals/data-browser-preview-tree.html';
     var modal = $uibModal.open({
       templateUrl: template,
       controller:['$uibModalInstance', '$scope',
@@ -876,7 +876,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @return {HttpPromise}
    */
   function viewCategories (files, listing) {
-    var template = '/static/portal/apps/data_depot/modals/data-browser-service-categories.html';
+    var template = '/static/src/angular/data_depot/modals/data-browser-service-categories.html';
     var file = null;
     if (typeof files !== 'undefined'){
       file = files[0];
@@ -920,7 +920,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @return {HttpPromise}
    */
   function viewMetadata (files, listing) {
-    var template = '/static/portal/apps/data_depot/modals/data-browser-service-custom-tags.html';
+    var template = '/static/src/angular/data_depot/modals/data-browser-service-custom-tags.html';
     var file = null;
     if (typeof files !== 'undefined'){
       file = files[0];
@@ -928,7 +928,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     if (typeof file !== 'undefined' &&
        typeof file.metadata !== 'undefined' &&
        file.metadata.project !== 'undefined'){
-      template ='/static/portal/apps/data_depot/modals/data-browser-service-published-metadata.html';
+      template ='/static/src/angular/data_depot/modals/data-browser-service-published-metadata.html';
     }
     var modal = $uibModal.open({
       templateUrl: template,

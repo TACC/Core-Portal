@@ -47,11 +47,11 @@ angular.module('schemaForm').config(
     schemaFormDecoratorsProvider.addMapping(
       'bootstrapDecorator',
       'agaveFilePicker',
-      '/static/portal/scripts/angular/workspace/templates/asf-agave-file-picker.html'
+      '/static/src/angular/workspace/templates/asf-agave-file-picker.html'
     );
     schemaFormDecoratorsProvider.createDirective(
       'agaveFilePicker',
-      '/static/portal/scripts/angular/workspace/templates/asf-agave-file-picker.html'
+      '/static/src/angular/workspace/templates/asf-agave-file-picker.html'
     );
   }
 ]);

@@ -114,10 +114,9 @@
                  <h1>Select an app</h1>
                  <p>Select an application from the tray above.</p>
                  <p>
-                     The <em>Discovery Workspace</em> allows users to
-                     perform simulations and analyze data using popular open source simulation
-                     codes OpenSees, ADCIRC, and OpenFOAM, as well as commercial tools such as
-                     MATLAB (software license verification required).</p>
+                     The <em>Workspace</em> allows users to perform simulations and analyze data using popular simulation codes as well as data
+                    analysis and visualization tools including Jupyter, MATLAB, and QGIS.
+                </p>
              </div>
          </div>
          <div ng-if="data.type === 'html' && data.app">
@@ -129,7 +128,7 @@
                  <p>
                      The use of this application required that your have a {{data.app.license.type}}
                      license enabled for your account. Please visit the
-                     <a href="/account/licenses/" target="_blank">manage software licenses</a>
+                     <a href="/accounts/licenses/" target="_blank">manage software licenses</a>
                      section on the My Account page for details on how to enable this license.
                  </p>
              </div>
@@ -140,7 +139,7 @@
                  </div>
              </div>
              <h2>Run <em>{{data.app.label}}</em></h2>
-             <p>{{data.app.longDescription}}</p>
+             <p ng-bind-html="data.app.longDescription"></p>
              <p ng-if="data.app.helpURI">
                  <a href="{{data.app.helpURI}}" target="_blank">
                      <i class="fa fa-book"></i> <span><em>{{data.app.label}}</em> Documentation</span>
@@ -151,7 +150,7 @@
                    sf-form="form.form"
                    sf-model="form.model"
                    sf-options="{ supressPropertyTitles: true }"
-                   ng-submit="onSubmit(appForm)"></form>
+                   ng-submit="!data.submitting && onSubmit(appForm)"></form>
 
              <div ng-if="data.submitting">
                  <span class="label label-info">

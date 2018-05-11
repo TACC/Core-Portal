@@ -177,7 +177,7 @@ class SSHKeys(models.Model):
     Model to store set of keys for a specific user and system
 
     .. note::
-        This set of keys shoud **only** be used wen creating systems
+        This set of keys shoud **only** be used when creating systems
          and to show to the user for further remote config
     .. note::
         This model does not have a reverse lookup to the actual model
