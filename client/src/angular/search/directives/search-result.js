@@ -1,3 +1,5 @@
+import * as resultTempalte from '../templates/search-result.html';
+
 export default function searchResult() {
     return {
       restrict: 'E',
@@ -6,7 +8,7 @@ export default function searchResult() {
         click: '&click',
         makeUrl: '&makeUrl'
       },
-      templateUrl: '/static/src/angular/search/templates/search-result.html',
+      template: resultTempalte,
       //templateUrl: '/static/src/angular/search/templates/search.html',
       link: function ($scope, elem, attrs) {
         $scope.onClick = function (listing) {

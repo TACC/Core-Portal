@@ -1,4 +1,4 @@
-import template from './../../templates/components/push-keys.modal.html'
+import template from './../../templates/components/push-keys.modal.html';
 
 class SystemPushKeysController {
   constructor(SystemsService){
@@ -16,7 +16,7 @@ class SystemPushKeysController {
     then((resp)=>{
       this.ui.error = false;
       this.ui.message = "Public Key added successfully";
-      return 
+      return;
     }, (err)=>{
       this.ui.error = true;
       this.ui.message = err.data.message;
@@ -29,7 +29,7 @@ class SystemPushKeysController {
             sys: this.sys,
             form: this.form
           }
-        })
+        });
       }
     });
   }
@@ -44,7 +44,7 @@ class SystemPushKeysController {
       token: '',
       hostname: this.resolve.sys.storage.host,
       name: this.resolve.sys.name
-    }
+    };
   }
 }
 
@@ -62,4 +62,4 @@ const systemPushKeysModal = {
   controller: SystemPushKeysController,
 };
 
-export default systemPushKeysModal
+export default systemPushKeysModal;
