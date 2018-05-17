@@ -31,10 +31,10 @@ module.exports = {
         }
       },
       {
-				test: /\.css$/,
+        test: /\.css$/,
         use: ExtractTextPlugin.extract({
-            fallback:'style-loader',
-            use:['css-loader'],
+          fallback:'style-loader',
+          use:['css-loader'],
         })
       },
       {
@@ -50,14 +50,14 @@ module.exports = {
     new LiveReloadPlugin(),
     new HtmlWebpackPlugin(
       {
-       inject : false,
-       template : '../server/portal/templates/base.j2',
-       filename: '../../server/portal/templates/base.html',
-     }
-   ),
-   new ExtractTextPlugin({
-			filename: "bundle.[hash].css"
-		}),
+        inject : false,
+        template : '../server/portal/templates/base.j2',
+        filename: '../../server/portal/templates/base.html',
+      }
+    ),
+    new ExtractTextPlugin({
+		  filename: "bundle.[hash].css"
+    }),
   ],
 
   externals: {
