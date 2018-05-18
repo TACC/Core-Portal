@@ -227,6 +227,7 @@ TAS_CLIENT_KEY = settings_secret._TAS_CLIENT_KEY
 TAS_CLIENT_SECRET = settings_secret._TAS_CLIENT_SECRET
 
 # Redmine Tracker Authentication.
+# RT_URL = settings_secret._RT_HOST
 RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
 RT_PW = settings_secret._RT_PW

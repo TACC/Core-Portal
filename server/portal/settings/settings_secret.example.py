@@ -96,6 +96,7 @@ _RESULT_BACKEND_DB = '0'
 ########################
 # DJANGO APP: DATA DEPOT
 ########################
+
 # Absolute path where home directories should be created.
 #Absolute with respect to the host
 # Use only if all home directories are under one parent directory.
@@ -116,7 +117,6 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     'portal.apps.accounts.steps.step_two',
     'portal.apps.accounts.steps.StepThree',
 ]
-# TBD
 
 ########################
 # DJANGO CMS SETTINGS

@@ -88,7 +88,8 @@ def request_access(request):
                 if (username and password and auth):
                     user = tas.get_user(username=username)
                     tracker = rt.Rt(
-                        settings.RT_URL,
+                        # settings.RT_URL,
+                        settings.RT_HOST,
                         settings.RT_UN,
                         settings.RT_PW,
                         basic_auth=(
