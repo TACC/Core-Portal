@@ -29,7 +29,7 @@ _TAS_CLIENT_KEY='key'
 _TAS_CLIENT_SECRET='secret'
 
 # Redmine Tracker Authentication.
-_RT_URL='https://consult.tacc.utexas.edu/REST/1.0'
+_RT_HOST='https://consult.tacc.utexas.edu/REST/1.0'
 _RT_UN='username'
 _RT_PW='password'
 
