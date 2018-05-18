@@ -161,3 +161,6 @@ playbooks/hosts
 
 #vscode
 .vscode/
+
+#Gitcrypt key
+portal_crypt.key
