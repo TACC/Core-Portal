@@ -6,19 +6,38 @@
   project="data.project"
   item-href="resolveBreadcrumbHref">
 </dd-breadcrumb>
-<!--
-<dd-listing browser="browser"
-            on-browse="onBrowse"
-            on-select="onSelect"
-            on-detail="onDetail"
-            scroll-to-top="scrollToTop"
-            scroll-to-bottom="scrollToBottom">
-</dd-listing>
--->
 
 <div class="alert alert-info" ng-show="browser.busyListing">
   <p class="text-center">
       <i class="fa fa-spinner fa-spin"></i> Loading...
+  </p>
+</div>
+<div class="alert"
+     data-ng-class="browser.ui.message.class"
+     data-ng-show="browser.ui.message.show">
+  <p class="text-center">
+    {{browser.ui.message.content}}
+  </p>
+</div>
+<div class="alert alert-danger" data-ng-show="browser.error.message">
+  {{browser.error.message}}
+</div>
+<div class="push-keys-message" data-ng-if="browser.error.status == 502">
+  <p>
+    There seems to be a problem with your storage system. <br/>
+    You might be able to fix this problem by
+    <button type="button"
+            class="btn btn-link"
+            data-ng-click="openPushPublicKeyForm()">
+      <span data-ng-if="!browser.ui.pushKeyModalOpening">
+        pushing the public key to the storage system
+      </span>
+      <span data-ng-if="browser.ui.pushKeyModalOpening">
+        <i class="fa fa-spinner fa-spin">&nbsp;</i>Loading ...
+      </span>
+    </button>. <br/>
+    If the problem persis please submit a ticket and we will take care
+    of it as soon as possible.
   </p>
 </div>
 <div class="table-responsive dd-listing-wrapper"> <!-- START FILE LISTING TABLE WRAPPER -->

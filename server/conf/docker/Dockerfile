@@ -19,16 +19,14 @@ RUN pip install uwsgi
 
 RUN pip install --upgrade pip && pip install uwsgitop
 
-COPY requirements.txt /tmp/requirements.txt
+COPY server/requirements.txt /tmp/requirements.txt
 
 RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
 
 COPY . /srv/www/portal
 #RUN mkdir -p /srv/www/project
 
-COPY bin/* /usr/local/bin/
-
-WORKDIR /srv/www/portal
+WORKDIR /srv/www/portal/server
 
 #RUN npm install
 

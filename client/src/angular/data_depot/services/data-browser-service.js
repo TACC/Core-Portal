@@ -1,3 +1,10 @@
+import * as copyModalTemplate from '../modals/data-browser-service-copy.html';
+import * as moveModalTemplate from '../modals/data-browser-service-move.html';
+import * as mkdirModalTemplate from '../modals/data-browser-service-mkdir.html';
+import * as previewModalTemplate from '../modals/data-browser-service-preview.html';
+import * as renameModalTemplate from '../modals/data-browser-service-rename.html';
+import * as uploadModalTemplate from '../modals/data-browser-service-upload.html';
+
 function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, Django, FileListing) {
   'ngInject';
 
@@ -15,7 +22,9 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     page: 0,
     showMainListing: true,
     showPreviewListing: false,
-    ui: {}
+    ui: {
+        message: {}
+    }
   };
 
   var apiParams = {
@@ -178,6 +187,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       currentBrowseRequest = null;
       // $timeout.cancel(currentBrowseRequest);
     }
+
     currentState.busy = true;
     currentState.busyListing = true;
     currentState.error = null;
@@ -249,12 +259,12 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @return {*}
    */
   function copy (files) {
-    if (! Array.isArray(files)) {
+    if (!Array.isArray(files)) {
       files = [files];
     }
 
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-copy.html',
+      template: copyModalTemplate,
       controller: 'ModalMoveCopy',
       resolve: {
         data: {
@@ -382,7 +392,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function mkdir () {
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-mkdir.html',
+      template: mkdirModalTemplate,
       controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
         $scope.form = {
           folderName: 'Untitled_folder'
@@ -421,17 +431,16 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @returns {Promise}
    */
   function move (files, initialDestination) {
-    if (! Array.isArray(files)) {
+    if (!Array.isArray(files)) {
       files = [files];
     }
 
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-move.html',
+      template: moveModalTemplate,
       controller: 'ModalMoveCopy',
       resolve: {
         data: {
           files: function () {
-            console.log(files);
             return files;
           },
         // initialDestination: function () { return initialDestination; }
@@ -468,7 +477,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function preview (file, listing) {
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-preview.html',
+      template: previewModalTemplate,
       controller: 'ModalPreview',
       size: 'lg',
       resolve: {
@@ -482,65 +491,12 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
 
   /**
    *
-   * @param {FileListing} folder
-   * @return {Promise}
-   */
-  function previewImages (folder) {
-    var modal = $uibModal.open({
-      windowClass: 'modal-full',
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-preview-images.html',
-      controller: ['$scope', '$uibModalInstance', '$sce', 'folder',function ($scope, $uibModalInstance, $sce, folder) {
-        $scope.folder = folder;
-        var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
-        $scope.busy = true;
-        $scope.images = [];
-        $scope.hrefs = [];
-        $scope.carouselSettings = {
-          dots: true,
-          arrows: true,
-          lazyLoad: true,
-          event: {
-            beforeChange: function (ev, slick, currentSlide, nextSlide) {
-              $scope.images[nextSlide].href = $scope.hrefs[nextSlide].href;
-            }
-          }
-
-        };
-        $scope.folder.children.forEach(function (file) {
-          var ext = file.path.split('.').pop().toLowerCase();
-          if (img_extensions.indexOf(ext) !== -1) {
-              $scope.hrefs.push({href: file.agaveUrl(), file:file});
-              $scope.images.push({file:file});
-          }
-        });
-        $scope.images[0] = $scope.hrefs[0];
-
-        if ($scope.images.length > 10) {
-          $scope.carouselSettings.dots = false;
-        }
-
-        $scope.close = function () {
-          $uibModalInstance.dismiss();
-        };
-
-      }],
-      size: 'lg',
-      resolve: {
-        folder: function() { return folder; }
-      }
-    });
-
-    return modal.result;
-  }
-
-  /**
-   *
    * @param {FileListing} file
    * @return {Promise}
    */
   function rename (file) {
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/data-browser-service-rename.html',
+      template: renameModalTemplate,
       controller: ['$scope', '$uibModalInstance', 'file', function ($scope, $uibModalInstance, file) {
         $scope.form = {
           targetName: file.name
@@ -592,7 +548,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     }
 
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/apps/data_depot/modals/data-browser-service-rm.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-rm.html',
       controller: ['$scope', '$uibModalInstance', 'files', function ($scope, $uibModalInstance, files) {
         $scope.files = files;
 
@@ -665,7 +621,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function share (file) {
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/apps/data_depot/modals/data-browser-service-share.html',
+      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-share.html',
       controller: ['$scope', '$uibModalInstance', 'Django', 'file', function ($scope, $uibModalInstance, Django, file) {
         $scope.data = {
           busy: true,
@@ -834,7 +790,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function upload(directoryUpload, files) {
     var modal = $uibModal.open({
-      templateUrl: '/static/portal/apps/data_depot/modals/data-browser-service-upload.html',
+      template: uploadModalTemplate,
       controller: 'ModalUpload',
       size: 'lg',
       resolve: {
@@ -850,7 +806,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * Open Preview Tree
    */
   function openPreviewTree(entityUuid){
-    var template = '/static/portal/apps/data_depot/modals/data-browser-preview-tree.html';
+    var template = '/static/src/angular/data_depot/modals/data-browser-preview-tree.html';
     var modal = $uibModal.open({
       templateUrl: template,
       controller:['$uibModalInstance', '$scope',
@@ -866,100 +822,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       ]
     });
   }
-
-  /**
-   * TODO
-   *
-   * @param {FileListing} file The file to view metadata for
-   * @return {HttpPromise}
-   */
-  function viewCategories (files, listing) {
-    var template = '/static/portal/apps/data_depot/modals/data-browser-service-categories.html';
-    var file = null;
-    if (typeof files !== 'undefined'){
-      file = files[0];
-    }
-    var modal = $uibModal.open({
-      templateUrl: template,
-      controller: 'ModalViewCategories',
-      size: 'lg',
-      resolve: {
-        'file': function() { return file; },
-        'form': function() { return {metadataTags: ''}; },
-      }
-    });
-
-    return modal.result.then(function(data){
-      var file = data.file;
-      var form = data.form;
-      var metaObj = {
-        keywords: file.keywords || []
-      };
-      if (form.metadataTags) {
-        metaObj.keywords = metaObj.keywords.concat(form.metadataTags.split(','));
-      }
-      if (form.tagsToDelete.length){
-        metaObj.keywords = metaObj.keywords.filter(function(value){
-          return form.tagsToDelete.indexOf(value) < 0;
-        });
-      }
-      currentState.busy = true;
-      file.updateMeta({'metadata': metaObj}).then(function(file_resp){
-        //notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
-        currentState.busy = false;
-      });
-    });
-  }
-
-  /**
-   * TODO
-   *
-   * @param {FileListing} file The file to view metadata for
-   * @return {HttpPromise}
-   */
-  function viewMetadata (files, listing) {
-    var template = '/static/portal/apps/data_depot/modals/data-browser-service-custom-tags.html';
-    var file = null;
-    if (typeof files !== 'undefined'){
-      file = files[0];
-    }
-    if (typeof file !== 'undefined' &&
-       typeof file.metadata !== 'undefined' &&
-       file.metadata.project !== 'undefined'){
-      template ='/static/portal/apps/data_depot/modals/data-browser-service-published-metadata.html';
-    }
-    var modal = $uibModal.open({
-      templateUrl: template,
-      controller: 'ModalViewMetadata',
-      size: 'lg',
-      resolve: {
-        'file': function() { return file; },
-        'form': function() { return {metadataTags: ''}; },
-      }
-    });
-
-    return modal.result.then(function(data){
-      var file = data.file;
-      var form = data.form;
-      var metaObj = {
-        keywords: file.keywords || []
-      };
-      if (form.metadataTags) {
-        metaObj.keywords = metaObj.keywords.concat(form.metadataTags.split(','));
-      }
-      if (form.tagsToDelete.length){
-        metaObj.keywords = metaObj.keywords.filter(function(value){
-          return form.tagsToDelete.indexOf(value) < 0;
-        });
-      }
-      currentState.busy = true;
-      file.updateMeta({'metadata': metaObj}).then(function(file_resp){
-        //notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
-        currentState.busy = false;
-      });
-    });
-  }
-
 
   /**
    * @callback subscribeCallback
@@ -1044,7 +906,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     mkdir: mkdir,
     move: move,
     preview: preview,
-    previewImages: previewImages,
     rename: rename,
     rm: rm,
     search: search,
@@ -1052,8 +913,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     share: share,
     trash: trash,
     upload: upload,
-    viewMetadata: viewMetadata,
-    viewCategories: viewCategories,
+
 
     /* events */
     subscribe: subscribe,
@@ -1062,7 +922,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     toolbarOpts: toolbarOpts,
     showListing: showListing,
     showPreview: showPreview,
-    openPreviewTree: openPreviewTree
   };
 
 };

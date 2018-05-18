@@ -3,15 +3,14 @@ import ModalMoveCopy from './modal-move-copy';
 import DataDepotToolbarCtrl from './data-depot-toolbar';
 import DataDepotNewCtrl from './data-depot-new';
 import DataDepotNavCtrl from './data-depot-nav';
-import CommunityDataCtrl from './community';
 import ModalPreview from './modal-preview';
 import ModalUpload from './modal-upload';
-import MyDataCtrl from './my-data';
-import SharedDataCtrl from './shared-data';
+import DataDepotCtrl from './data-depot-ctrl';
 import ProjectListCtrl from './project-list';
 import ProjectListingCtrl from './project-listing';
-import ProjectViewCtrl from './project-view';
-import ProjectDataCtrl from './project-data';
+import ModalProjectCreate from './modal-project-create';
+import ModalProjectCollaborators from './modal-project-collaborators';
+import ModalProjectEdit from './modal-project-edit';
 
 let mod = angular.module('portal.data_depot.controllers', []);
 
@@ -20,12 +19,13 @@ mod.controller('ModalMoveCopy', ModalMoveCopy);
 mod.controller('DataDepotToolbarCtrl', DataDepotToolbarCtrl);
 mod.controller('DataDepotNewCtrl', DataDepotNewCtrl);
 mod.controller('DataDepotNavCtrl', DataDepotNavCtrl);
-mod.controller('CommunityDataCtrl', CommunityDataCtrl);
 mod.controller('ModalPreview', ModalPreview);
 mod.controller('ModalUpload', ModalUpload);
-mod.controller('MyDataCtrl', MyDataCtrl);
-mod.controller('SharedDataCtrl', SharedDataCtrl);
+mod.controller('DataDepotCtrl', DataDepotCtrl);
 mod.controller('ProjectListCtrl', ProjectListCtrl);
 mod.controller('ProjectListingCtrl', ProjectListingCtrl);
-mod.controller('ProjectDataCtrl', ProjectDataCtrl);
+mod.controller('ModalProjectCreate', ModalProjectCreate);
+mod.controller('ModalProjectCollaborators', ModalProjectCollaborators);
+mod.controller('ModalProjectEdit', ModalProjectEdit);
+
 export default mod;

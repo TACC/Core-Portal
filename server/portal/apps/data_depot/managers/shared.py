@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from portal.apps.data_depot.managers.base import AgaveFileManager
 # from portal.libs.elasticsearch.docs.files import BaseFile
 from portal.libs.agave.models.files import BaseFile
-from portal.libs.elasticsearch.serializers import BaseAgaveSerializer
+from portal.libs.elasticsearch.serializers import BaseAgaveFileSerializer
 from portal.utils.exceptions import ApiMethodNotAllowed
 
 #pylint: disable=invalid-name
@@ -37,7 +37,7 @@ class FileManager(AgaveFileManager):
                                        request.user.username)
             self.session_id = kwargs.get('session_id',
                                          request.session.session_key)
-            self.serializer_cls = BaseAgaveSerializer
+            self.serializer_cls = BaseAgaveFileSerializer
         except AttributeError:
             raise
             #community_user = settings.AGAVE_COMMUNITY_ACCOUNT

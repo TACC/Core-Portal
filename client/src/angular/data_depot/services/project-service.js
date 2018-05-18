@@ -1,22 +1,21 @@
-function ProjectService($interpolate, $q, $uibModal, $http) {
+function ProjectService($q, $http, $interpolate) {
   'ngInject';
+
   var service = {};
-
-  // var projectResource = httpi.resource('/api/data-depot/projects/:uuid/').setKeepTrailingSlash(true);
-  // var collabResource = httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
-  // var dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
- //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
- //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
-
 
   /**
    * Get a list of Projects for the current user
    * @returns {Project[]}
    */
   service.list = function() {
-    return $http.get('/api/data-depot/projects/').then(function(resp) {
-      return resp.data.response;
-    });
+    return $http({
+      url: '/api/projects/',
+      method: 'GET'
+    }).then(
+      function(response) {
+        return response.data;
+      }
+    );
   };
 
   /**
@@ -26,9 +25,15 @@ function ProjectService($interpolate, $q, $uibModal, $http) {
    * @returns {Promise}
    */
   service.get = function(options) {
-    return projectResource.get({params: options}).then(function(resp) {
-      return new ProjectModel(resp.data);
-    });
+    return $http({
+      url: $interpolate('/api/projects/{{uuid}}/')(options),
+      method: 'GET',
+      params: options
+    }).then(
+      function(response) {
+        return new ProjectModel(response.data);
+      }
+    );
   };
 
   /**
@@ -40,9 +45,32 @@ function ProjectService($interpolate, $q, $uibModal, $http) {
    * @param {string[]} [options.coPis] List of usernames for Project Co-PIs
    * @returns {Promise}
    */
-  service.save = function(options) {
-    return projectResource.post({data: options}).then(function (resp) {
-      return new ProjectModel(resp.data);
+  service.save = function (options) {
+    return $http({
+      url: $interpolate('/api/projects/{{uuid}}/')(options),
+      method: 'POST',
+      data: options
+    }).then(
+      function(response) {
+        return new ProjectModel(response.data);
+      }
+    );
+  };
+
+  /**
+   * Save or update a Project
+   * @param {Object} options
+   * @param {string} [options.uuid] The Project uuid, if updating existing record, otherwise null
+   * @param {string} options.title The Project title
+   * @param {string} [options.pi] The username for Project PI
+   * @param {string[]} [options.coPis] List of usernames for Project Co-PIs
+   * @returns {Promise}
+   */
+  service.update = function(project) {
+    return $http.put('/api/projects/'+project.uuid+'/', project).then((resp)=> {
+      return resp.data;
+    }, (err)=>{
+      return $q.reject(err);
     });
   };
 
@@ -53,7 +81,11 @@ function ProjectService($interpolate, $q, $uibModal, $http) {
    * @returns {Promise}
    */
   service.getCollaborators = function(options) {
-    return collabResource.get({params: options});
+    return $http({
+      url: $interpolate('/api/projects/{{uuid}}/collaborators/')(options),
+      method: 'GET',
+      params: options
+    });
   };
 
   /**
@@ -63,8 +95,12 @@ function ProjectService($interpolate, $q, $uibModal, $http) {
    * @param {string} options.username The username of the collaborator to add
    * @returns {Promise}
    */
-  service.addCollaborator = function(options) {
-    return collabResource.post({data: options});
+  service.addCollaborator = function (options) {
+    return $http({
+      url: $interpolate('/api/projects/{{uuid}}/collaborators/')(options),
+      method: 'POST',
+      data: options
+    });
   };
 
   /**
@@ -74,8 +110,12 @@ function ProjectService($interpolate, $q, $uibModal, $http) {
    * @param {string} options.username The username of the collaborator to add
    * @returns {Promise}
    */
-  service.removeCollaborator = function(options) {
-    return collabResource.delete({data: options});
+  service.removeCollaborator = function (options) {
+    return $http({
+      url: $interpolate('/api/projects/{{uuid}}/collaborators/')(options),
+      method: 'DELETE',
+      data: options
+    });
   };
 
   /**
@@ -85,12 +125,16 @@ function ProjectService($interpolate, $q, $uibModal, $http) {
    * @param {string} [options.fileId] the Project data file id to list
    * @returns {Promise}
    */
-  service.projectData = function(options) {
-    return dataResource.get({params: options});
+  service.projectData = function (options) {
+    return $http({
+      url: $interpolate('/api/projects/{{uuid}}/data/{{fileId}}')(options),
+      method: 'GET',
+      params: options
+    });
   };
 
   return service;
 
-};
+}
 
 export default ProjectService;

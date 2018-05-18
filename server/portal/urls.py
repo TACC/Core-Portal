@@ -1,4 +1,6 @@
-"""portal URL Configuration
+"""
+.. :module:: portal.urls
+    :synopsis: Main URLs
 """
 from django.conf import settings
 from django.conf.urls import include, url
@@ -22,8 +24,16 @@ urlpatterns = [
     # auth.
     url(r'^accounts/', include('portal.apps.accounts.urls',
                                namespace='portal_accounts')),
-    url(r'^register/$', RedirectView.as_view(
-        pattern_name='portal_accounts:register', permanent=True), name='register'),
+    url(r'^api/accounts/',
+        include(
+            'portal.apps.accounts.api.urls',
+            namespace='portal_accounts_api'
+        )),
+    url(r'^register/$',
+        RedirectView.as_view(
+            pattern_name='portal_accounts:register',
+            permanent=True),
+        name='register'),
     url(r'^auth/', include('portal.apps.auth.urls',
                            namespace='portal_auth')),
     url(r'^logout/$', des_logout,
@@ -39,6 +49,8 @@ urlpatterns = [
     #                             namespace='workspace')),
     url(r'^api/workspace/', include('portal.apps.workspace.api.urls',
                                     namespace='workspace_api')),
+    url(r'^api/projects/', include('portal.apps.projects.urls',
+                                    namespace='projects_api')),
     url(r'^workshops/', include('portal.apps.workshops.urls',
                                 namespace='workshops')),
     url(r'^search/', include('portal.apps.search.urls',
@@ -47,6 +59,8 @@ urlpatterns = [
                                  namespace='search')),
     url(r'^workbench/', include('portal.apps.workbench.urls',
                                 namespace='workbench')),
+    url(r'^tickets/', include('portal.apps.djangoRT.urls',
+                              namespace='tickets')),
 
     # version check.
     url(r'^version/', des_version),

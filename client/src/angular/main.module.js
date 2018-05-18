@@ -23,15 +23,14 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   .state('wb', {
     url: '/workbench',
     templateUrl: '/static/src/angular/workbench/templates/home.html',
+    controller: 'WorkbenchCtrl',
+    controllerAs: 'vm',
     abstract: true,
     resolve: {
-      'test': function () {console.log("home resolve");},
       'systems': ['SystemsService', function(SystemsService) {
         return SystemsService.listing();
       }]
-    },
-    controller: 'WorkbenchCtrl',
-    controllerAs: 'vm'
+    }
   })
   .state('wb.dashboard', {
     'url': '/dashboard',
@@ -44,8 +43,12 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   .state('wb.data_depot', {
     'url': '/data-depot',
     'templateUrl': '/static/src/angular/workbench/templates/data-depot.html',
+    'controller': 'DataDepotCtrl',
     'resolve': {
-      'test': function () {console.log("data-depot resolve");}
+      'test': function () {console.log("data-depot resolve");},
+      // 'systems': ['SystemsService', function(SystemsService) {
+      //   return SystemsService.listing();
+      // }]
     }
   })
   .state('wb.workspace', {

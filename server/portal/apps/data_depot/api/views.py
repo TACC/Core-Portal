@@ -1,5 +1,5 @@
 """
-.. :module:: apps.data_depot.api.views
+.. :module:: portal.apps.data_depot.api.views
    :synopsys: Views to handle Data Depot API
 """
 from __future__ import unicode_literals, absolute_import

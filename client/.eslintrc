@@ -5,10 +5,17 @@
     "es6": true,
   },
   "rules": {
-      "semi": 1
+      "semi"              : [1, "always"],
+      "consistent-return" : 2,
+      "no-else-return"    : 1,
+      "space-unary-ops"   : 2
   },
   "parserOptions": {
     "sourceType": "module",
+  },
+  "globals": {
+    "_": false,
+    "moment": false,
+    "angular": false
   }
-
 }

@@ -11,7 +11,7 @@ from portal.libs.elasticsearch.docs.base import BaseESResource
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
-class BaseAgaveSerializer(json.JSONEncoder):
+class BaseAgaveFileSerializer(json.JSONEncoder):
     """Class to serialize an elasticsearch wrapper classes
     """
     def default(self, obj):#pylint: disable=method-hidden

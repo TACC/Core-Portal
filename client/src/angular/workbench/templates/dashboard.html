@@ -4,7 +4,7 @@
     <div class="col-sm-3">
       <div class="dashboard-stat blue">
         <div class="visual">
-          <i class="fa fa-rocket"></i>
+          <i class="fa fa-rocket">&nbsp;</i>
         </div>
         <div class="details">
           <div class="number"> {{jobs.length}} </div>
@@ -15,7 +15,7 @@
     <div class="col-sm-3">
       <div class="dashboard-stat green">
         <div class="visual">
-          <i class="fa fa-cogs"></i>
+          <i class="fa fa-cogs">&nbsp;</i>
         </div>
         <div class="details">
           <div class="number"> {{apps.length}} </div>
@@ -26,7 +26,7 @@
     <div class="col-sm-3">
       <div class="dashboard-stat red">
         <div class="visual">
-          <i class="fa fa-database"></i>
+          <i class="fa fa-database">&nbsp;</i>
         </div>
         <div class="details">
           <div class="number"> {{usage.total_storage_bytes | bytes}} </div>
@@ -52,24 +52,24 @@
         <div class="panel-heading dashboard">
           <h3 class="panel-title">My Jobs</h3>
         </div>
-        <div ng-show="!jobs.length" class="panel-body">
-          <h3 ng-show="!loading_jobs">
+        <div data-ng-show="!jobs.length" class="panel-body">
+          <h3 data-ng-show="!loading_jobs">
             No recent jobs! You can submit jobs in the
-            <a href="/workbench/workspace"> Workspace </a>
+            <a data-ui-sref="wb.workspace"> Workspace </a>
           </h3>
-          <div class="text-center" ng-show="loading_jobs">
-            <i class="fa fa-spinner fa-pulse fa-2x fa-fw" ></i>
+          <div class="text-center" data-ng-show="loading_jobs">
+            <i class="fa fa-spinner fa-pulse fa-2x fa-fw" >&nbsp;</i>
           </div>
         </div>
-        <div id="ds_jobs_chart" class="ds-chart" ng-show="jobs.length"></div>
-        <ul class="list-group" ng-show="display_job_details">
-          <li class="list-group-item" ng-repeat="job in jobs_details">
+        <div id="ds_jobs_chart" class="ds-chart" data-ng-show="jobs.length"></div>
+        <ul class="list-group" data-ng-show="display_job_details">
+          <li class="list-group-item" data-ng-repeat="job in jobs_details">
             <div class="row">
               <div class="col-md-3">
                 <span class="label label-default"> {{job.appId}} </span>
               </div>
               <div class="col-md-6 text-center">
-                <a ng-href="{{ job._links.archiveData.href | agave2ds }}"> Link to output </a>
+                <a data-ng-href="{{ job._links.archiveData.href | agave2ds }}"> Link to output </a>
               </div>
               <div class="col-md-3 text-right">
                 <span class="label label-info"> {{ job.status }} </span>
@@ -88,10 +88,10 @@
 
         </div>
         <ul class="list-group">
-          <li class="list-group-item" ng-show="!notifications.length">
+          <li class="list-group-item" data-ng-show="!notifications.length">
             No new notifications!
           </li>
-          <li class="list-group-item" ng-repeat="note in notifications">
+          <li class="list-group-item" data-ng-repeat="note in notifications">
             <div class="row">
               <div class="col-md-4">
                 <span class="label label-default"> {{note.datetime | date}} </span>
@@ -107,16 +107,16 @@
       <div class="panel panel-default">
         <div class="panel-heading clearfix dashboard">
           <h3 class="panel-title pull-left">My Tickets</h3>
-          <a class="button btn-xs btn-primary pull-right" href="/help/tickets"> Create New </a>
+          <a class="button btn-xs btn-primary pull-right" href="/tickets/ticket/new/"> Create New </a>
         </div>
           <ul class="list-group">
-            <li class="list-group-item" ng-repeat="ticket in my_tickets">
-              <a ng-href="/help/tickets/{{ ticket.id }}"> {{ticket.id}} </a> {{ticket.Subject}}
+            <li class="list-group-item" data-ng-repeat="ticket in my_tickets">
+              <a data-ng-href="/help/tickets/{{ ticket.id }}"> {{ticket.id}} </a> {{ticket.Subject}}
             </li>
           </ul>
 
-          <div ng-show="loading_tickets" class="text-center">
-            <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
+          <div data-ng-show="loading_tickets" class="text-center">
+            <i class="fa fa-spinner fa-pulse fa-2x fa-fw">&nbsp;</i>
           </div>
       </div>
 
@@ -125,15 +125,183 @@
           <h3 class="panel-title">Recent Apps</h3>
         </div>
         <ul class="list-group">
-          <li class="list-group-item" ng-repeat="app in recent_apps">
-            <a href="/workbench/workspace/#/{{app}}"> {{app}} </a>
+          <li class="list-group-item" data-ng-repeat="app in recent_apps">
+            <a href="/rw/workspace/#/{{app}}"> {{app}} </a>
           </li>
-          <li class="list-group-item" ng-show="!recent_apps.length">
+          <li class="list-group-item" data-ng-show="!recent_apps.length">
             Wow, no recent apps! You can submit jobs in the
-            <a href="/workbench/workspace"> Workspace </a>
+            <a data-ui-sref="wb.workspace"> Workspace </a>
           </li>
         </ul>
       </div>
     </div>
   </div>
+
+  <div class="row dashboard-board"> <!-- SYSTEMS LISTING START -->
+    <div class="col-sm-6">
+      <div class="panel panel-default">
+        <div class="panel-heading dashboard">
+          <h3 class="panel-title">My Storage Systems</h3>
+        </div>
+        <div class="panel-body">
+          <div class="system-item"
+               data-ng-repeat="sys in data.strgSystems"
+               data-ng-if="!ui.loadingSystems">
+            <div class="col-sm-6">
+              <dl class="system-def-list">
+                <dt>Name</dt>
+                <dd>{{sys.name}}</dd>
+                <dt>Stroage Host</dt>
+                <dd>{{sys.storage.host}}</dd>
+                <dt>Keys Tracked</dt>
+                <dd data-ng-if="sys.keysTracked">
+                  <i class="fa fa-check text-success">&nbsp;</i>
+                  <span class="sr-only">True</span>
+                </dd>
+                <dd data-ng-if="!sys.keysTracked">
+                  <i class="fa fa-times text-danger">&nbsp;</i>
+                  <span class="sr-only">False</span>
+                </dd>
+              </dl>
+            </div>
+            <div class="col-sm-6 btn-group system-actions">
+              <button type="button"
+                      class="btn btn-info"
+                      data-ng-click="testSystem(sys)"
+                      data-ng-disabled="ui.testSystems[sys.id].testing">
+                Test <i class="fa fa-check text-success"
+                        data-ng-if="!ui.testSystems[sys.id].error &&
+                                    !ui.testSystems[sys.id].testing &&
+                                    ui.testSystems[sys.id].response">&nbsp;</i>
+                     <i class="fa fa-times text-error"
+                        data-ng-if="ui.testSystems[sys.id].error">&nbsp;</i>
+                     <span data-ng-if="ui.testSystems[sys.id].testing">
+                       {{ui.testSystems[sys.id].message}}
+                     </span>
+                <span data-ng-if="ui.testSystems[sys.id].testing" > Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
+                   data-ng-if="ui.testSystems[sys.id].testing">&nbsp;</i>
+              </button>
+              <br />
+              <button type="button"
+                      class="btn btn-default"
+                      data-ng-click="publicKey(sys)"
+                      data-ng-disabled="!sys.keysTracked">
+                Public Key
+              </button>
+              <br />
+              <button type="button"
+                      class="btn btn-warning"
+                      data-ng-click="resetKeys(sys)"
+                      data-ng-disabled="ui.resetSystems[sys.id].resetting">
+                Reset Keys
+                <span data-ng-if="ui.resetSystems[sys.id].resetting"> Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
+                   data-ng-if="ui.resetSystems[sys.id].resetting">&nbsp;</i>
+              </button>
+              <button type="button"
+                      class="btn btn-success"
+                      data-ng-click="pushKey(sys)"
+                      data-ng-disabled="ui.pushSystems[sys.id].pushing
+                                        || !sys.keysTracked">
+                Push Public Key
+                <span data-ng-if="ui.pushSystems[sys.id].pushing"> Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
+                   data-ng-if="ui.pushSystems[sys.id].pushing">&nbsp;</i>
+              </button>
+            </div>
+          </div>
+          <div class="loading-msg"
+               data-ng-if="ui.loadingSystems">
+            <i class="fa fa-spinner fa-pulse fa-2x fa-fw" >&nbsp;</i>
+            <span> Loading ...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="panel panel-default">
+        <div class="panel-heading dashboard">
+          <h3 class="panel-title">My Execution Systems</h3>
+        </div>
+        <div class="panel-body">
+          <div class="system-item"
+               data-ng-repeat="sys in data.execSystems"
+               data-ng-if="!ui.loadingSystems">
+            <div class="col-sm-6">
+              <dl class="system-def-list">
+                <dt>Name</dt>
+                <dd>{{sys.name}}</dd>
+                <dt>Stroage Host</dt>
+                <dd>{{sys.storage.host}}</dd>
+                <dt>Exec Host</dt>
+                <dd>{{sys.login.host}}</dd>
+                <dt>Keys Tracked</dt>
+                <dd data-ng-if="sys.keysTracked">
+                  <i class="fa fa-check text-success">&nbsp;</i>
+                  <span class="sr-only">True</span>
+                </dd>
+                <dd data-ng-if="!sys.keysTracked">
+                  <i class="fa fa-times text-danger">&nbsp;</i>
+                  <span class="sr-only">False</span>
+                </dd>
+              </dl>
+            </div>
+            <div class="col-sm-6 btn-group system-actions">
+              <button type="button"
+                      class="btn btn-info"
+                      data-ng-click="testSystem(sys)"
+                      data-ng-disabled="ui.testSystems[sys.id].testing">
+                Test <i class="fa fa-check text-success"
+                        data-ng-if="!ui.testSystems[sys.id].error &&
+                                    !ui.testSystems[sys.id].testing &&
+                                    ui.testSystems[sys.id].response">&nbsp;</i>
+                     <i class="fa fa-times text-error"
+                        data-ng-if="ui.testSystems[sys.id].error">&nbsp;</i>
+                     <span data-ng-if="ui.testSystems[sys.id].testing">
+                       {{ui.testSystems[sys.id].message}}
+                     </span>
+                <span data-ng-if="ui.testSystems[sys.id].testing" > Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
+                   data-ng-if="ui.testSystems[sys.id].testing">&nbsp;</i>
+              </button>
+              <br />
+              <button type="button"
+                      class="btn btn-default"
+                      data-ng-click="publicKey(sys)"
+                      data-ng-disabled="!sys.keysTracked">
+                Public Key
+              </button>
+              <br />
+              <button type="button"
+                      class="btn btn-warning"
+                      data-ng-click="resetKeys(sys)"
+                      data-ng-disabled="ui.resetSystems[sys.id].resetting">
+                Reset Keys
+                <span data-ng-if="ui.resetSystems[sys.id].resetting"> Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
+                   data-ng-if="ui.resetSystems[sys.id].resetting">&nbsp;</i>
+              </button>
+              <button type="button"
+                      class="btn btn-success"
+                      data-ng-click="pushKey(sys)"
+                      data-ng-disabled="ui.pushSystems[sys.id].pushing ||
+                                        !sys.keysTracked">
+                Push Public Key
+                <span data-ng-if="ui.pushSystems[sys.id].pushing"> Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
+                   data-ng-if="ui.pushSystems[sys.id].pushing">&nbsp;</i>
+              </button>
+            </div>
+          </div>
+          <div class="loading-msg"
+               data-ng-if="ui.loadingSystems">
+            <i class="fa fa-spinner fa-pulse fa-2x fa-fw" >&nbsp;</i>
+            <span> Loading ...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- SYSTEMS END -->
+
 </div>
