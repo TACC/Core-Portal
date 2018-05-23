@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    {% include 'includes/analytics.html' %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block title %}{% page_attribute "page_title" %}{% endblock %}</title>
@@ -23,8 +24,6 @@
     <link rel="stylesheet" href="{% static 'vendor/font-awesome/css/font-awesome.css' %}">
     <link rel="stylesheet" href="{% static 'vendor/angular-material/angular-material.css' %}">
     <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.chunks.main.css %>">
-
-
     {% block styles %}{% endblock %}
     {% render_block "css" %}
     {% recaptcha_init 'en' %}
@@ -39,7 +38,6 @@
       {% block content %}{% endblock %}
     </div>
     {% include 'includes/footer.html' %}
-
     <!-- scripts -->
     <!-- Vendor base JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
@@ -71,14 +69,13 @@
     <script src="{% static 'vendor/angular-drag-and-drop-lists/angular-drag-and-drop-lists.min.js' %}"></script>
     <script src="{% static 'vendor/angular-xeditable/dist/js/xeditable.min.js' %}"></script>
     <!-- Custom base js -->
-
     <script src="<%= htmlWebpackPlugin.files.chunks.main.entry %>"></script>
     <!--
     <script  src="{% static 'portal/scripts/angular/main.module.js' %}"></script>
     <script  src="{% static 'portal/scripts/angular/ng-modernizr.js' %}"></script>
     <script  src="{% static 'portal/scripts/angular/ng-designsafe-filters.js' %}"></script>
     <script  src="{% static 'portal/scripts/angular/ng-designsafe-directives.js' %}"></script>
-  -->
+    -->
     <!-- Extended templates JS -->
     {% block scripts %}{% endblock %}
     <!-- User Auth Check -->
@@ -94,6 +91,5 @@
       })(angular);
     </script>
     {% render_block "js" %}
-    {% include 'includes/analytics.html' %}
   </body>
 </html>
