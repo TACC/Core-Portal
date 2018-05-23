@@ -5,9 +5,10 @@ const LiveReloadPlugin = require('webpack-livereload-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
-  devtool: 'eval-source-map',
+  // devtool: 'eval-source-map',
   entry: './src/index.js',
   output: {
     publicPath: '/static/build/',
@@ -23,6 +24,10 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({use: 'css-loader'}),
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
@@ -30,18 +35,21 @@ module.exports = {
           presets: ['es2015']
         }
       },
-      {
-        test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback:'style-loader',
-          use:['css-loader'],
-        })
-      },
+
       {
         test: /\.html$/,
         exclude: /node_modules/,
         loader: 'html-loader'
       },
+      // {
+      //   test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      //   loader: "file-loader?limit=10000&mimetype=application/font-woff"
+      // },
+      // {
+      //   test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      //   loader: "file-loader"
+      // },
+
     ]
   },
   plugins: [
@@ -58,19 +66,24 @@ module.exports = {
     new ExtractTextPlugin({
 		  filename: "bundle.[hash].css"
     }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      filename: 'vendor.[hash].js',
+      minChunks (module) {
+        return module.context &&
+               module.context.indexOf('node_modules') >= 0;
+      }
+    }),
+    new webpack.ProvidePlugin({    // <added>
+       jQuery: 'jquery',
+       $: 'jquery',
+       jquery: 'jquery'   // </added>
+   })
   ],
 
   externals: {
-    jQuery: 'jQuery',
-    $: 'jQuery',
-    jquery: 'jQuery',
-    Modernizr: 'Modernizr',
-    angular: 'angular',
-    d3: 'd3',
-    moment: 'moment',
     _: '_',
     _: 'underscore',
-    L: 'L',
     window: 'window',
   }
 };

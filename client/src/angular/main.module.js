@@ -1,3 +1,20 @@
+
+
+import * as schemaForm from 'angular-schema-form';
+import * as ngMaterial from 'angular-material';
+import * as ngMessages from 'angular-messages';
+import * as ui_bootstrap from 'angular-ui-bootstrap';
+import * as ui_router from 'angular-ui-router';
+import * as ngWebSocket from 'angular-websocket';
+import * as ngSanitize from 'angular-sanitize';
+import * as ngStorage from 'ng-storage';
+import * as ngCookies from 'angular-cookies';
+import * as ngAria from 'angular-aria';
+import * as ngTranslate from 'angular-translate';
+import * as xeditable from 'angular-xeditable';
+import * as dndLists from 'angular-drag-and-drop-lists';
+import * as ngAnimate from 'angular-animate';
+
 import {mod as directives} from './ng-designsafe-directives';
 import {mod as filters} from './ng-designsafe-filters';
 import {mod as ng_modernizer} from './ng-modernizr';
@@ -6,6 +23,8 @@ import {mod as data_depot} from './data_depot';
 import {mod as search} from './search';
 import {mod as dashboard} from './dashboard';
 import {mod as workbench} from './workbench';
+
+
 
 function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProvider) {
  'ngInject';
@@ -17,7 +36,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
 
  $urlRouterProvider.otherwise('/workbench/dashboard');
 
-
+// TODO: replace all these templateUrls
 
  $stateProvider
   .state('wb', {
@@ -76,6 +95,8 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
 
 let mod = angular.module('portal', [
   'ngCookies',
+  'ngAria',
+  'ngAnimate',
   'ui.bootstrap',
   'ui.router',
   'schemaForm',
@@ -83,6 +104,7 @@ let mod = angular.module('portal', [
   'xeditable',
   'pascalprecht.translate',
   'ngStorage',
+  'ngSanitize',
   'ngWebSocket',
   'ngMaterial',
   'ng.modernizr',
@@ -93,7 +115,7 @@ let mod = angular.module('portal', [
   'portal.data_depot',
   'portal.search',
   'portal.dashboard',
-  'portal.workbench'
+  'portal.workbench',
 ]).config(config);
 
 export default mod;
