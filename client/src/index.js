@@ -1,9 +1,10 @@
 import $ from 'jquery';
 import 'bootstrap';
+import * as tv4 from 'tv4';
 window["$"] = $;
 window["jQuery"] = $;
 window["jquery"] = $;
-
+window["tv4"] = tv4;
 
 import 'bootstrap-datepicker/dist/css/bootstrap-datepicker.css';
 // import 'angular-material/angular-material.css';

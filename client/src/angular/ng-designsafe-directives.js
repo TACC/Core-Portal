@@ -1,3 +1,6 @@
+import angular from 'angular';
+import $ from 'jquery';
+
 let mod = angular.module('portal.directives', []);
 
 mod.directive('iframeOnload', [
@@ -311,9 +314,8 @@ mod.directive('yamzTerm', [
               return "right";
             } else if (pos.top < $el.height() + 10 && pos) {
               return "bottom";
-            } else {
-              return "top";
             }
+            return "top";
           }
         });
         element.on('mouseover', function(env) {

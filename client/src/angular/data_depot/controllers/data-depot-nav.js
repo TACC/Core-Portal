@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export default function DataDepotNavCtrl($scope, $rootScope, $state, Django, SystemsService) {
   'ngInject';
   $scope.routerItems = [];
@@ -18,7 +20,7 @@ export default function DataDepotNavCtrl($scope, $rootScope, $state, Django, Sys
       {
         name: 'My Projects',
         collapsible: false,
-        state: 'wb.data_depot.db({systemId:"' + my_projects.systemId + '", filePath: ""})',
+        state: 'wb.data_depot.db()',
         description: 'Group access to shared directories',
         icon: 'fa-briefcase'
       }

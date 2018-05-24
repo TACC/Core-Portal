@@ -1,3 +1,4 @@
+import angular from "angular";
 import agaveFilePicker from './agave-file-picker';
 
 let mod = angular.module('portal.workspace.directives', []);

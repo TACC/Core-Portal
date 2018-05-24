@@ -1,4 +1,4 @@
-
+import angular from 'angular';
 
 import * as schemaForm from 'angular-schema-form';
 import * as ngMaterial from 'angular-material';

@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 let mod = angular.module('portal.filters', []);
 
 mod.filter('bytes', function() {
@@ -40,9 +42,8 @@ mod.filter('length', function() {
     if (typeof obj === 'object') {
       if (obj instanceof Array) {
         return obj.length;
-      } else {
-        return Object.keys(obj).length;
       }
+      return Object.keys(obj).length;
     } else if (typeof obj === "string") {
       return obj.length;
     } else if (typeof obj === "number") {

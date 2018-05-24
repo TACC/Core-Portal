@@ -1,3 +1,4 @@
+import angular from 'angular';
 import MainCtrl from './main';
 import ModalMoveCopy from './modal-move-copy';
 import DataDepotToolbarCtrl from './data-depot-toolbar';

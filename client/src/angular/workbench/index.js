@@ -1,3 +1,4 @@
+import angular from "angular";
 import WorkbenchCtrl from './controllers/workbench';
 import {mod as components} from './components';
 

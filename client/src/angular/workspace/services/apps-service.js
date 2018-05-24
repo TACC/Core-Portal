@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 function Apps($http, $q, $translate) {
   'ngInject';
   var service = {};
@@ -53,7 +55,7 @@ function Apps($http, $q, $translate) {
         properties: {}
       };
       _.each(params, function(param) {
-        if (! param.value.visible) {
+        if (!param.value.visible) {
           return;
         }
         if (param.id.startsWith('_')) {
@@ -105,7 +107,7 @@ function Apps($http, $q, $translate) {
         properties: {}
       };
       _.each(inputs, function(input) {
-        if (! input.value.visible) {
+        if (!input.value.visible) {
           return;
         }
         if (input.id.startsWith('_')) {

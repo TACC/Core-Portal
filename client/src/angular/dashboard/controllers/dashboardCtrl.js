@@ -8,7 +8,7 @@ export default function DashboardCtrl (
   $q,
   Jobs,
   Apps,
-  SystemsService,
+  SystemsService
 ) {
   'ngInject';
   $scope.data = {};
@@ -206,6 +206,6 @@ export default function DashboardCtrl (
           'error': false,
           'response': ''
         };
-      })
+      });
   };
 }

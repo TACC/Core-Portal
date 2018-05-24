@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 /**
  * Data Depot Controller
  * @function
@@ -23,7 +25,6 @@ export default function DataDepotCtrl(
     systems
 ) {
     'ngInject';
-
     // get user data from service
     $scope.sysCommunityData = _.find(
         systems,

@@ -7,8 +7,9 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const webpack = require('webpack');
 
+
 module.exports = {
-  // devtool: 'eval-source-map',
+  devtool: 'cheap-module-eval-source-map',
   entry: './src/index.js',
   output: {
     publicPath: '/static/build/',
@@ -16,11 +17,6 @@ module.exports = {
     filename: "bundle.[hash].js",
 
   },
-  resolve: {
-    extensions: ['.js'],
-    modules: ['node_modules']
-  },
-
   module: {
     rules: [
       {
@@ -30,12 +26,15 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
-        options: {
-          presets: ['es2015']
-        }
-      },
-
+        use: [
+          {loader: 'babel-loader'},
+          {
+            loader: 'eslint-loader',
+            options: {
+             failonError: true 
+           }
+         }
+       ]},
       {
         test: /\.html$/,
         exclude: /node_modules/,
@@ -63,27 +62,25 @@ module.exports = {
         filename: '../../server/portal/templates/base.html',
       }
     ),
+
+
     new ExtractTextPlugin({
-		  filename: "bundle.[hash].css"
+		  filename: "bundle.[hash].css",
+      allChunks: true,
     }),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: 'vendor.[hash].js',
-      minChunks (module) {
-        return module.context &&
-               module.context.indexOf('node_modules') >= 0;
-      }
-    }),
-    new webpack.ProvidePlugin({    // <added>
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: 'vendor',
+    //   filename: 'vendor.[hash].js',
+    //   // minChunks: 2
+    //   minChunks (module) {
+    //     return module.context &&
+    //            module.context.indexOf('node_modules') >= 0;
+    //   }
+    // }),
+    new webpack.ProvidePlugin({
        jQuery: 'jquery',
        $: 'jquery',
-       jquery: 'jquery'   // </added>
+       jquery: 'jquery'
    })
-  ],
-
-  externals: {
-    _: '_',
-    _: 'underscore',
-    window: 'window',
-  }
+  ]
 };

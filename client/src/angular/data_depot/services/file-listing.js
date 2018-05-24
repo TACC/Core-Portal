@@ -1,4 +1,5 @@
-
+import angular from 'angular';
+import _ from 'underscore';
 
 function FileListing($http, $q) {
   'ngInject';
@@ -55,6 +56,7 @@ function FileListing($http, $q) {
           var comps = asc.href.split('project-' + projectId, 2);
           return self.path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
         }
+        return '';
       });
       if (myAsoc){
         var myUuid = myAsoc.rel;
@@ -100,9 +102,8 @@ function FileListing($http, $q) {
         this.apiParams !== null &&
         !_.isEmpty(this.apiParams)){
       return this.apiParams.fileMgr;
-    } else{
-      return 'my-data';
     }
+    return 'my-data';
   };
 
   FileListing.prototype._baseUrl = function(){
@@ -110,9 +111,8 @@ function FileListing($http, $q) {
         this.apiParams !== null &&
         !_.isEmpty(this.apiParams)){
       return this.apiParams.baseUrl;
-    } else{
-      return '/api/data-depot/files';
     }
+    return '/api/data-depot/files';
   };
 
   FileListing.prototype.listingUrl = function () {
@@ -405,15 +405,14 @@ function FileListing($http, $q) {
   FileListing.prototype.listPermissions = function() {
     if (this._permissions) {
       return $q.resolve(this._permissions);
-    } else {
-      var self = this;
-      return $http.get(this.pemsUrl()).then(function (resp) {
-        self._permissions = resp.data;
-        return self._permissions;
-      }, function (err) {
-        return $q.reject(err.data);
-      });
     }
+    var self = this;
+    return $http.get(this.pemsUrl()).then(function (resp) {
+      self._permissions = resp.data;
+      return self._permissions;
+    }, function (err) {
+      return $q.reject(err.data);
+    });
   };
 
   /**

@@ -1,3 +1,4 @@
+import angular from 'angular';
 import SystemsService from './systems-service';
 import FileListing from './file-listing';
 import DataBrowserService from './data-browser-service';

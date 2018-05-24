@@ -1,34 +1,7 @@
 
   function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, Jobs) {
     'ngInject';
-    // NotificationService.processors.vnc = {
-    //   'process': function notifyProcessor(msg){
-    //     if('event_type' in msg && msg.event_type === 'VNC') {
-    //       $uibModal.open({
-    //         templateUrl: 'local/vncjob-details-modal.html',
-    //         controller: 'VNCJobDetailsModalCtrl',
-    //         scope: $scope,
-    //         resolve: {
-    //           msg: msg
-    //         }
-    //       });
-    //     }
-    //     else {
-    //       for (var i=0; i < $scope.data.jobs.length; i++){
-    //           if ($scope.data.jobs[i]['id'] == msg.extra.id) {
-    //             $scope.data.jobs[i]['status'] = msg.extra.status;
-    //             $scope.$apply();
-    //             break;
-    //           }
-    //       }
-    //     }
-    //     return msg.extra;
-    //   },
-    //   // 'renderLink': function renderLink(msg){
-    //   //   logger.log('rendering link: ', msg);
-    //   //   return msg.extra['target_path'] // this will only be present when indexing is complete
-    //   // }
-    // };
+
     $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {
       hasMoreJobs: true,
@@ -117,33 +90,28 @@
 function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job) {
   'ngInject';
   $scope.job = job;
-  console.log(job)
 
   $scope.dismiss = function() {
     $uibModalInstance.dismiss('cancel');
   };
 
   $scope.deleteJob = function() {
-    logger.log('deleteJob button clicked with jobId=',job.id);
     $http.delete('/api/workspace/jobs/', {
       params: {'job_id': job.id}
     }).then(function(response){
       $uibModalInstance.dismiss('cancel');
       $scope.$parent.$broadcast('jobs-refresh');
     }, function(error) {
-      logger.log('nope!', error); //todo make error handling UI
     });
   };
 
   $scope.cancelJob = function() {
-    logger.log('cancelJob button clicked with jobId=',job.id);
     $http.post('/api/workspace/jobs/', {
       'job_id': job.id, params: {'job_id': job.id, 'action':'cancel', 'body':'{"action":"stop"}'},
     }).then(function(response){
       $uibModalInstance.dismiss('cancel');
       $scope.$parent.$broadcast('jobs-refresh');
     }, function(error) {
-      logger.log('nope!', error); //todo make error handling UI
     });
   };
 

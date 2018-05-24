@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 function MultipleList ($http, $q) {
   'ngInject';
   var MultipleList = function() {
