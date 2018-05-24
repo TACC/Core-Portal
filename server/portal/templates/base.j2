@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    {% include 'includes/analytics.html' %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% block title %}{% page_attribute "page_title" %}{% endblock %}</title>
@@ -33,7 +34,6 @@
       {% block content %}{% endblock %}
     </div>
     {% include 'includes/footer.html' %}
-
     <!-- scripts -->
     <!-- Vendor base JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
@@ -79,6 +79,5 @@
       })(angular);
     </script>
     {% render_block "js" %}
-    {% include 'includes/analytics.html' %}
   </body>
 </html>

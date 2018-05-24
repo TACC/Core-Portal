@@ -124,6 +124,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
                 'portal.utils.contextprocessors.analytics',
@@ -235,6 +236,10 @@ RT_PW = settings_secret._RT_PW
 RECAPTCHA_PUBLIC_KEY = settings_secret._RECAPTCHA_PUBLIC_KEY
 RECAPTCHA_PRIVATE_KEY = settings_secret._RECAPTCHA_PRIVATE_KEY
 RECAPTCHA_USE_SSL = settings_secret._RECAPTCHA_USE_SSL
+
+# Google Analytics.
+GOOGLE_ANALYTICS_PROPERTY_ID = settings_secret._GOOGLE_ANALYTICS_PROPERTY_ID
+GOOGLE_ANALYTICS_PRELOAD = settings_secret._GOOGLE_ANALYTICS_PRELOAD
 
 """
 SETTINGS: LOGGING
@@ -484,7 +489,9 @@ PORTAL_KEYS_MANAGER = settings_secret.\
 PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
     _PORTAL_USER_ACCOUNT_SETUP_STEPS
 
-# SETTINGS: ELASTICSEARCH
+"""
+SETTINGS: ELASTICSEARCH
+"""
 
 ES_HOSTS = settings_secret._ES_HOSTS
 ES_DEFAULT_INDEX = "files"
@@ -495,3 +502,13 @@ ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
 ES_PUBLICATIONS_INDEX = "publications"
 ES_METADATA_DOC_TYPE = "metadata"
+
+"""
+SETTINGS: EXPORTS
+"""
+
+SETTINGS_EXPORT = [
+    'DEBUG',
+    'GOOGLE_ANALYTICS_PRELOAD',
+    'GOOGLE_ANALYTICS_PROPERTY_ID',
+]
