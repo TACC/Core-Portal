@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import angular from 'angular';
 import * as copyModalTemplate from '../modals/data-browser-service-copy.html';
 import * as moveModalTemplate from '../modals/data-browser-service-move.html';
 import * as mkdirModalTemplate from '../modals/data-browser-service-mkdir.html';
@@ -143,7 +145,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @return {{canDownload: {boolean}, canPreview: {boolean}, canViewMetadata: {boolean}, canShare: {boolean}, canCopy: {boolean}, canMove: {boolean}, canRename: {boolean}, canTrash: {boolean}, canDelete: {boolean}}}
    */
   function allowedActions (files) {
-    if (! Array.isArray(files)) {
+    if (!Array.isArray(files)) {
       files = [files];
     }
     var tests = {};
@@ -158,7 +160,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     tests.canViewCategories = files.length >=1 && hasPermission('WRITE', files);
 
     var trashPath = _trashPath();
-    tests.canTrash = ($state.current.name === 'db.myData' || $state.current.name === 'db.projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && ! _.some(files, function(sel) { return isProtected(sel); });
+    tests.canTrash = ($state.current.name === 'db.myData' || $state.current.name === 'db.projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && !_.some(files, function(sel) { return isProtected(sel); });
     tests.canDelete = $state.current.name === 'db.myData' && files.length >= 1 && currentState.listing.path === trashPath;
 
     return tests;
@@ -308,7 +310,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @return {Promise}
    */
   function download (files) {
-    if (! Array.isArray(files)) {
+    if (!Array.isArray(files)) {
       files = [files];
     }
     var download_promises = _.map(files, function(file) {
@@ -345,7 +347,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @param {FileListing|FileListing[]} files
    */
   function containsFolder (files) {
-    if (! Array.isArray(files)) {
+    if (!Array.isArray(files)) {
       files = [files];
     }
 
@@ -358,7 +360,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @param {FileListing|FileListing[]} files
    */
   function hasPermission (permission, files) {
-    if (! Array.isArray(files)) {
+    if (!Array.isArray(files)) {
       files = [files];
     }
     return _.reduce(files, function(memo, file) {
@@ -543,7 +545,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @return {Promise}
    */
   function rm (files) {
-    if (! Array.isArray(files)) {
+    if (!Array.isArray(files)) {
       files = [files];
     }
 
@@ -680,6 +682,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
               ' ' + this.pem.username.last_name +
               ' (' + this.pem.username.username + ')';
           }
+          return '';
         };
 
         $scope.addNewPermission = function() {
@@ -745,7 +748,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * successfully Trashed.
    */
   function trash (files) {
-    if (! Array.isArray(files)) {
+    if (!Array.isArray(files)) {
       files = [files];
     }
 

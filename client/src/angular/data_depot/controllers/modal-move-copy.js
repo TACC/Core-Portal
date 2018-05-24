@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 function ModalMoveCopy($scope, $uibModalInstance, $state, FileListing, SystemsService, ProjectService, data) {
   'ngInject';
   $scope.data = data;

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 
 function MainCtrl($scope, DataBrowserService, SystemsService, $state, $stateParams, $timeout, $location) {
   'ngInject';

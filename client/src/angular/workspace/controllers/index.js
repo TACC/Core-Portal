@@ -1,3 +1,4 @@
+import angular from 'angular';
 import ApplicationFormCtrl from './application-form';
 import ApplicationTrayCtrl from './application-tray';
 import DataBrowserCtrl from './data-browser';

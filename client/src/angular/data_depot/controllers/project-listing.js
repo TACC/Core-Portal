@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export default function ProjectListingCtrl($scope, $state, $stateParams, Django, ProjectService, DataBrowserService){
   $scope.data = {
     customRoot: {

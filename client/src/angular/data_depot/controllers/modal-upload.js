@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import $ from 'jquery';
+
 export default function ModalUpload($scope, $q, $uibModalInstance, Modernizr, directoryUpload, destination, files, currentState) {
   'ngInject';
   $scope.data = {
@@ -27,23 +30,6 @@ export default function ModalUpload($scope, $q, $uibModalInstance, Modernizr, di
     $('#id-choose-files').val(null);
   });
 
-  $scope.tagFiles = function(){
-    $uibModalInstance.close();
-    var files = _.filter(currentState.listing.children, function(child){
-      if(_.find($scope.data.uploads, function(upload){
-        return upload.file.name === child.name;
-      })){
-          return true;
-      }else{
-          return false;
-      }
-    });
-    if (files.length){
-      viewCategories(files);
-    } else {
-      viewCategories();
-    }
-  };
 
   $scope.upload = function() {
     $scope.state.uploading = true;

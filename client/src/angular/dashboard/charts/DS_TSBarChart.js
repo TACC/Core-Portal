@@ -1,3 +1,5 @@
+import * as d3 from 'd3';
+import $ from 'jquery';
 
 export default function DS_TSBarChart (element_id) {
 
@@ -41,10 +43,9 @@ export default function DS_TSBarChart (element_id) {
               .tickSize(-width, 0, 0)
               .tickFormat(function(e){
                 if(Math.floor(e) != e) {
-                    return;
-                } else {
-                  return e;
+                    return null;
                 }
+                return e;
               });
 
     focus = svg.append("g")

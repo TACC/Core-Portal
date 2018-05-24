@@ -6,7 +6,7 @@ function WorkspacePanelCtrl($scope) {
   };
 
   $scope.togglePanel = function togglePanel() {
-    $scope.panel.collapsed = ! $scope.panel.collapsed;
+    $scope.panel.collapsed = !$scope.panel.collapsed;
   };
 
   $scope.openPanel = function openPanel() {
