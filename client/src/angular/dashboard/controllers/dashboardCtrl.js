@@ -1,4 +1,6 @@
 import DS_TSBarChart from '../charts/DS_TSBarChart';
+import moment from 'moment';
+import * as _ from 'underscore';
 
 export default function DashboardCtrl (
   $uibModal,
@@ -6,7 +8,7 @@ export default function DashboardCtrl (
   $q,
   Jobs,
   Apps,
-  SystemsService,
+  SystemsService
 ) {
   'ngInject';
   $scope.data = {};
@@ -27,7 +29,7 @@ export default function DashboardCtrl (
     .xSelector(function (d) { return d.key;})
     .ySelector(function (d) { return d.values.length;})
     .start_date($scope.first_jobs_date);
-  
+
   //Systems stuff
   $scope.data.execSystems = [];
   $scope.data.strgSystems = [];
@@ -103,7 +105,7 @@ export default function DashboardCtrl (
   // }, function (err) {
   //   $scope.loading_tickets = false;
   // });
-  
+
   /**
   * Test a system
   * @function
@@ -129,7 +131,7 @@ export default function DashboardCtrl (
       };
     });
   };
-  
+
   /**
   * Shows a system's public key
   * @function
@@ -204,6 +206,6 @@ export default function DashboardCtrl (
           'error': false,
           'response': ''
         };
-      })
+      });
   };
 }

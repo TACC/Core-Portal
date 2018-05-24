@@ -8,8 +8,7 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 
 _SECRET_KEY = 'CHANGE ME !'
 _DEBUG = True
-_WSGI_APPLICATION = 'ws4redis.django_runserver.application'
-# _WSGI_APPLICATION = 'portal.wsgi.application'
+_WSGI_APPLICATION = 'portal.wsgi.application'
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -29,7 +28,7 @@ _TAS_CLIENT_KEY='key'
 _TAS_CLIENT_SECRET='secret'
 
 # Redmine Tracker Authentication.
-_RT_URL='https://consult.tacc.utexas.edu/REST/1.0'
+_RT_HOST='https://consult.tacc.utexas.edu/REST/1.0'
 _RT_UN='username'
 _RT_PW='password'
 
@@ -73,7 +72,29 @@ _RESULT_BACKEND_DB = '0'
 # ELASTICSEARCH SETTINGS
 ########################
 
-# TBD.
+_ES_HOSTS = {
+    'default': {
+        'hosts': [
+            'PROJECTVM.tacc.utexas.edu',
+            'PROJECTVM.tacc.utexas.edu',
+        ],
+    },
+    'staging': { #dev/qa
+        'hosts':  [
+            'PROJECTVMSTAGING.tacc.utexas.edu',
+        ]
+    },
+    'dev': {
+        'hosts': [
+            'elasticsearch'
+        ]
+    },
+    'localhost': {
+        'hosts': [
+            'localhost'
+        ]
+    }
+}
 
 ########################
 # CELERY SETTINGS
@@ -96,19 +117,19 @@ _RESULT_BACKEND_DB = '0'
 ########################
 # DJANGO APP: DATA DEPOT
 ########################
+
 # Absolute path where home directories should be created.
-#Absolute with respect to the host
+# Absolute with respect to the host
 # Use only if all home directories are under one parent directory.
 _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/path/to/home_dirs'
 # Relative path from the default sotrage system where home directories
 # should be created.
 # Use only if all home directories are under one parent directory.
+# NOTE: Replace PORTAL_NAME with name of project (e.g. - cep).
 _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
-_PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home'
+_PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'PORTAL_NAME.home'
 _PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
-
-_PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'
-
+_PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'PORTAL_NAME.project'
 _PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
@@ -116,10 +137,20 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     'portal.apps.accounts.steps.step_two',
     'portal.apps.accounts.steps.StepThree',
 ]
-# TBD
 
 ########################
 # DJANGO CMS SETTINGS
 ########################
 
 # TBD.
+
+########################
+# GOOGLE ANALYTICS
+########################
+
+# Using test account under personal email.
+# To use during dev, Tracking Protection in browser needs to be turned OFF.
+# Need to setup an admin account to aggregate tracking properties for portals.
+# NOTE: Use the _AGAVE_TENANT_ID URL value when setting up the tracking property.
+_GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-XXXXX-Y'
+_GOOGLE_ANALYTICS_PRELOAD = True

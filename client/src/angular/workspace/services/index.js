@@ -1,3 +1,4 @@
+import angular from 'angular';
 import Apps from './apps-service';
 import Jobs from './jobs-service';
 import MultipleList from './multiple-list-service';

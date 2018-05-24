@@ -19,7 +19,7 @@ export default function ProjectListCtrl($scope, $state, currentUser, ProjectServ
       $scope.ui.busy = false;
       $scope.data.projects = projects;
     });
-  }
+  };
   $scope.loadProjects();
 
   $scope.onBrowse = function onBrowse($event, project) {

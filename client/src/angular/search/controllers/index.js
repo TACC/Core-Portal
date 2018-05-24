@@ -1,3 +1,4 @@
+import angular from 'angular';
 import NavSearchCtrl from './nav';
 import SearchViewCtrl from './search-view';
 let mod = angular.module('portal.search.controllers', []);

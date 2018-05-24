@@ -1,11 +1,9 @@
+import _ from 'underscore';
 
 function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBrowserService, ProjectService) {
   'ngInject';
   $controller('WorkspacePanelCtrl', {$scope: $scope});
 
-  if ($(window).width() < 992) {
-    $scope.panel.collapsed = true;
-  }
 
   $scope.data = {
     loading: false,
@@ -152,8 +150,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
         }
         $scope.data.loading = false;
       }, function(err){
-        logger.log(err);
-        $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
+        $scope.data.error = 'Unable to list the selected data source: ' + err.statusText;
         $scope.data.loading = false;
       });
   };

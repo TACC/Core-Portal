@@ -12,8 +12,8 @@ export default class ModalProjectCreate {
 
   save() {
     let data = {
-      title: projectForm.title.value,
-      description: projectForm.description.value
+      // title: projectForm.title.value,
+      // description: projectForm.description.value
     };
 
     this.ProjectService.save(data).then( (resp) =>{

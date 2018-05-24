@@ -159,5 +159,11 @@ playbooks/hosts
 !playbooks/group_vars/*.example.yml
 !playbooks/roles/secret_files/.gitkeep
 
-#vscode
+# vscode
 .vscode/
+
+# Gitcrypt key
+portal_crypt.key
+
+# docker-compose file with pgadmin.
+server/conf/docker/docker-compose-dev.all.debug.utils.yml

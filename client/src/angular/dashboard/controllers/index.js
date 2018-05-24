@@ -1,3 +1,4 @@
+import angular from 'angular';
 import DashboardCtrl from './dashboardCtrl';
 
 

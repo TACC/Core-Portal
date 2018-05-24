@@ -1,7 +1,7 @@
+
 import {mod as controllers} from './controllers';
 import {mod as directives} from './directives';
 import {mod as services} from './services';
-
 import angular from 'angular';
 
 function config($interpolateProvider, $httpProvider, $urlRouterProvider, $stateProvider, $translateProvider) {
@@ -39,6 +39,7 @@ angular.module('schemaForm').config(
         options.lookup[sfPathProvider.stringify(options.path)] = f;
         return f;
       }
+      return null;
     };
 
     schemaFormProvider.defaults.string.unshift(filePicker);

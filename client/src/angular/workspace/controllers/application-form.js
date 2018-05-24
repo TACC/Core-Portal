@@ -1,4 +1,5 @@
-
+import _ from 'underscore';
+import angular from 'angular';
 
 function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, SystemsService, Systems) {
   "ngInject";
@@ -90,7 +91,7 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
 
     /* buttons */
     items = [];
-    if (! $scope.data.needsLicense) {
+    if (!$scope.data.needsLicense) {
       items.push({type: 'submit', title: 'Run', style: 'btn-primary'});
     }
     items.push({type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()'});

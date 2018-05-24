@@ -31,7 +31,7 @@ function ProjectService($q, $http, $interpolate) {
       params: options
     }).then(
       function(response) {
-        return new ProjectModel(response.data);
+        return response.data;
       }
     );
   };
@@ -52,7 +52,7 @@ function ProjectService($q, $http, $interpolate) {
       data: options
     }).then(
       function(response) {
-        return new ProjectModel(response.data);
+        return response.data;
       }
     );
   };

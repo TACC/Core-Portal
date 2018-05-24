@@ -1,3 +1,6 @@
+import angular from 'angular';
+import toastr from 'angular-toastr';
+
  function ApplicationTrayCtrl($location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, Notifications) {
   'ngInject';
   $scope.tabs = [];
@@ -77,7 +80,7 @@
           function(response){
             toastr.warning($translate.instant('error_app_run'));
           }
-        )
+        );
     }
 
     $scope.addDefaultTabs({'name': $translate.instant('apps_metadata_name')})

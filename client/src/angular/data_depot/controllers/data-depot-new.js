@@ -1,4 +1,6 @@
-export default function DataDepotNewCtrl($scope, $state, Django, DataBrowserService) {
+import _ from 'underscore';
+
+export default function DataDepotNewCtrl($scope, $state, Django, DataBrowserService, ProjectService) {
   'ngInject';
   $scope.test = {
     enabled: Django.context.authenticated,
