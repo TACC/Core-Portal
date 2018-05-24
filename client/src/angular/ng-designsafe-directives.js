@@ -18,28 +18,6 @@ mod.directive('iframeOnload', [
   }
 ]);
 
-mod.directive('fileModel', [
-  '$parse',
-  function($parse) {
-    return {
-      restrict: 'A',
-      link: function(scope, element, attrs) {
-        var model = $parse(attrs.fileModel);
-        var modelSetter = model.assign;
-        element.bind('change', function() {
-          scope.$apply(function() {
-            if (attrs.multiple) {
-              modelSetter(scope, element[0].files);
-            } else {
-              modelSetter(scope, element[0].files[0]);
-            }
-          });
-        });
-      }
-    };
-  }
-]);
-
 mod.directive('spinnerOnLoad', function() {
   return {
     restrict: 'A',
