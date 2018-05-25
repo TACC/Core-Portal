@@ -24,6 +24,14 @@ import {mod as search} from './search';
 import {mod as dashboard} from './dashboard';
 import {mod as workbench} from './workbench';
 
+//templates
+import homeTemplate from './workbench/templates/home.html';
+import dashboardTemplate from './workbench/templates/dashboard.html';
+import dataDepotTemplate from './workbench/templates/data-depot.html';
+import workspaceTemplate from './workbench/templates/workspace.html';
+import searchTemplate from './workbench/templates/search.html';
+import helpTemplate from './workbench/templates/help.html';
+
 
 
 function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProvider) {
@@ -36,12 +44,10 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
 
  $urlRouterProvider.otherwise('/workbench/dashboard');
 
-// TODO: replace all these templateUrls
-
  $stateProvider
   .state('wb', {
     url: '/workbench',
-    templateUrl: '/static/src/angular/workbench/templates/home.html',
+    template: homeTemplate,
     controller: 'WorkbenchCtrl',
     controllerAs: 'vm',
     abstract: true,
@@ -53,7 +59,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   })
   .state('wb.dashboard', {
     'url': '/dashboard',
-    'templateUrl': '/static/src/angular/workbench/templates/dashboard.html',
+    'template': dashboardTemplate,
     'controller': 'DashboardCtrl',
     'resolve': {
       'test': function () {console.log("dashboard resolve");}
@@ -61,7 +67,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   })
   .state('wb.data_depot', {
     'url': '/data-depot',
-    'templateUrl': '/static/src/angular/workbench/templates/data-depot.html',
+    'template': dataDepotTemplate,
     'controller': 'DataDepotCtrl',
     'resolve': {
       'test': function () {console.log("data-depot resolve");},
@@ -72,21 +78,21 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   })
   .state('wb.workspace', {
     'url': '/workspace',
-    'templateUrl': '/static/src/angular/workbench/templates/workspace.html',
+    'template': workspaceTemplate,
     'resolve': {
       'test': function () {console.log("workspace resolve");}
     }
   })
   .state('wb.help', {
     'url': '/help',
-    'templateUrl': '/static/src/angular/workbench/templates/help.html',
+    'template': helpTemplate,
     'resolve': {
       'test': function () {console.log("help resolve");}
     }
   })
   .state('wb.search', {
     'url': '/search',
-    'templateUrl': '/static/src/angular/workbench/templates/search.html',
+    'template': searchTemplate,
     'resolve': {
       'test': function () {console.log("search resolve");}
     }

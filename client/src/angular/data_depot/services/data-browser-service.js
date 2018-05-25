@@ -540,58 +540,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
 
 
   /**
-   *
-   * @param {FileListing|FileListing[]} files
-   * @return {Promise}
-   */
-  function rm (files) {
-    if (!Array.isArray(files)) {
-      files = [files];
-    }
-
-    var modal = $uibModal.open({
-      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-rm.html',
-      controller: ['$scope', '$uibModalInstance', 'files', function ($scope, $uibModalInstance, files) {
-        $scope.files = files;
-
-        $scope.confirm = function() {
-          $uibModalInstance.close(files);
-        };
-
-        $scope.cancel = function() {
-          $uibModalInstance.dismiss();
-        };
-      }],
-      resolve: {
-        files: function() { return files; }
-      }
-    });
-
-    return modal.result.then(
-      function (files) {
-        currentState.busy = true;
-        var deletePromises = _.map(files, function (file) {
-          return file.rm().then(function (result) {
-            deselect([file]);
-            //notify(FileEvents.FILE_REMOVED, FileEventsMsg.FILE_REMOVED, file);
-            return result;
-          });
-        });
-        return $q.all(deletePromises).then(
-          function (result) {
-            currentState.busy = false;
-            return result;
-          },
-          function (err) {
-            currentState.busy = false;
-          }
-        );
-      }
-    );
-  }
-
-
-  /**
    * TODO
    *
    * @param options
@@ -613,133 +561,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       currentState.error = err.data;
     });
   }
-
-
-  /**
-   * Update sharing permissions on a file.
-   *
-   * @param {FileListing} file
-   * @return {*}
-   */
-  function share (file) {
-    var modal = $uibModal.open({
-      templateUrl: '/static/src/angular/data_depot/modals/data-browser-service-share.html',
-      controller: ['$scope', '$uibModalInstance', 'Django', 'file', function ($scope, $uibModalInstance, Django, file) {
-        $scope.data = {
-          busy: true,
-          file: file,
-          currentUser: Django.user,
-          permissionOptions: [
-            {permission: 'READ', label: 'Read Only'},
-            {permission: 'READ_WRITE', label: 'Read/Write'},
-            {permission: 'ALL', label: 'All'},
-            {permission: 'NONE', label: 'None (Revoke Permission)'}
-          ]
-        };
-
-        $scope.form = {
-          currentPermissions: [],
-          addPermissions: [{
-            username: null,
-            permission: $scope.data.permissionOptions[0]
-          }]
-        };
-
-        file.listPermissions().then(
-          function (result) {
-            $scope.form.currentPermissions = _.chain(result)
-              .reject(function (pem) { return pem.username === 'ds_admin' || pem.username === Django.user; })
-              .map(
-                function (pem) {
-                  if (pem.permission.read) {
-                    if (pem.permission.write) {
-                      if (pem.permission.execute) {
-                        pem.permission = $scope.data.permissionOptions[2];
-                      } else {
-                        pem.permission = $scope.data.permissionOptions[1];
-                      }
-                    } else {
-                      pem.permission = $scope.data.permissionOptions[0];
-                    }
-                  } else {
-                    pem.permission = $scope.data.permissionOptions[3];
-                  }
-                  return pem;
-                }
-              ).value();
-            $scope.form.initialPermissions = angular.copy($scope.form.currentPermissions);
-            $scope.data.busy = false;
-          },
-          function (errResp) {
-            $scope.data.busy = false;
-            $scope.data.errorMessage = errResp.data;
-          }
-        );
-
-        $scope.formatSelection = function() {
-          if (this.pem.username) {
-            return this.pem.username.first_name +
-              ' ' + this.pem.username.last_name +
-              ' (' + this.pem.username.username + ')';
-          }
-          return '';
-        };
-
-        $scope.addNewPermission = function() {
-          $scope.form.addPermissions.push({username: null, permission: $scope.data.permissionOptions[0]});
-        };
-
-        $scope.doShareFiles = function($event) {
-          $event.preventDefault();
-
-          var pemsToSave = [];
-
-          // Only save existing permissions if the permission changed
-          _.each($scope.form.currentPermissions, function (pem) {
-            var prev = _.findWhere($scope.form.initialPermissions, {username: pem.username});
-            if (prev.permission.permission !== pem.permission.permission) {
-              pemsToSave.push({username: pem.username, permission: pem.permission.permission});
-            }
-          });
-
-          // Format new permissions
-          var addPems = _.filter($scope.form.addPermissions, function (pem) {
-            return pem.username;
-          });
-          Array.prototype.push.apply(pemsToSave, _.map(addPems, function (pem) {
-            return {
-              username: pem.username.username,
-              permission: pem.permission.permission
-            };
-          }));
-
-          // Resolve modal with pems that need to be saved
-          $uibModalInstance.close(pemsToSave);
-        };
-
-        $scope.cancel = function () {
-          $uibModalInstance.dismiss('cancel');
-        };
-
-      }],
-      size: 'lg',
-      resolve: {
-        file: function () { return file; }
-      }
-    });
-
-    return modal.result.then(function (pemsToSave) {
-      currentState.busy = true;
-      var sharePromises = _.map(pemsToSave, function (pem) {
-        return file.share(pem);
-      });
-      return $q.all(sharePromises).then(function (results) {
-        currentState.busy = false;
-        return results;
-      });
-    });
-  }
-
 
   /**
    *
@@ -805,26 +626,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     });
   }
 
-  /**
-   * Open Preview Tree
-   */
-  function openPreviewTree(entityUuid){
-    var template = '/static/src/angular/data_depot/modals/data-browser-preview-tree.html';
-    var modal = $uibModal.open({
-      templateUrl: template,
-      controller:['$uibModalInstance', '$scope',
-                  function($uibModalInstance, $scope){
-        $scope.data = {};
-        $scope.data.entityUuid = entityUuid;
-        $scope.data.project = currentState.project;
-
-        $scope.cancel = function () {
-          $uibModalInstance.dismiss('cancel');
-        };
-                  }
-      ]
-    });
-  }
 
   /**
    * @callback subscribeCallback
@@ -910,10 +711,8 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     move: move,
     preview: preview,
     rename: rename,
-    rm: rm,
     search: search,
     select: select,
-    share: share,
     trash: trash,
     upload: upload,
 

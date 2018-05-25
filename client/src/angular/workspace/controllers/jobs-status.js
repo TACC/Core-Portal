@@ -1,3 +1,5 @@
+import jobDetailsModalTemplate from '../templates/job-details-modal.html';
+
 
 function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, Jobs) {
   'ngInject';
@@ -23,7 +25,7 @@ function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, Jobs) {
       }
 
       $uibModal.open({
-        templateUrl: '/static/src/angular/workspace/templates/job-details-modal.html',
+        template: jobDetailsModalTemplate,
         controller: 'JobDetailsModalCtrl',
         scope: $scope,
         resolve: {
