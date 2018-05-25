@@ -1,7 +1,9 @@
+import ddBreadcrumbTemplate from '../templates/dd-breadcrumb.html';
+
 export default function ddBreadcrumb() {
   return {
     restrict: 'E',
-    templateUrl: '/static/src/angular/data_depot/templates/dd-breadcrumb.html',
+    template: ddBreadcrumbTemplate,
     scope: {
       listing: '=',
       skipRoot: '=',

@@ -1,3 +1,5 @@
+import modalProjectCollaboratorsTemplate from '../modals/modal-project-collaborators.html';
+import modalProjectEditTemplate from '../modals/modal-project-edit.html';
 
 export default function ProjectListCtrl($scope, $state, currentUser, ProjectService, $uibModal) {
   'ngInject';
@@ -31,7 +33,7 @@ export default function ProjectListCtrl($scope, $state, currentUser, ProjectServ
 
   $scope.manageCollaborators = function (project) {
     let modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/modal-project-collaborators.html',
+      template: modalProjectCollaboratorsTemplate,
       controller: 'ModalProjectCollaborators',
       controllerAs: 'vm',
       resolve: {
@@ -42,7 +44,7 @@ export default function ProjectListCtrl($scope, $state, currentUser, ProjectServ
 
   $scope.editProject = function (project) {
     let modal = $uibModal.open({
-      templateUrl: '/static/portal/scripts/angular/data_depot/modals/modal-project-edit.html',
+      template: modalProjectEditTemplate,
       controller: 'ModalProjectEdit',
       controllerAs: 'vm',
       resolve: {

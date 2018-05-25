@@ -1,9 +1,11 @@
-  function agaveFilePicker() {
+import * as fpTemplate from '../templates/agave-file-picker.html';
+
+function agaveFilePicker() {
     return {
       restrict: 'EA',
       require: 'ngModel',
       replace: true,
-      templateUrl: '/static/src/angular/workspace/templates/agave-file-picker.html',
+      template: fpTemplate,
       link: function($scope, $element, attrs, $ngModel) {
         var formKey = $scope.form.key.join('.');
 

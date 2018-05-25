@@ -4,6 +4,9 @@ import './controllers';
 import './directives';
 import '../workbench/components';
 
+//templates
+import agaveDataListingTemplate from './templates/agave-data-listing.html';
+
 let mod = angular.module('portal.data_depot', [
     'portal.data_depot.services',
     'portal.data_depot.controllers',
@@ -35,8 +38,7 @@ function config(
     $stateProvider.state(
         'wb.data_depot.db', {
             url: '/{directory}/{systemId}/{filePath:any}',
-            templateUrl: '/static/src/angular/data_depot/' +
-                         'templates/agave-data-listing.html',
+            template: agaveDataListingTemplate,
             controller: 'DataDepotCtrl',
             params: {
                 systemId: {value: '', squash: true},
