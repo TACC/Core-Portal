@@ -9,6 +9,7 @@
 ### Requirements
 
 * Docker
+* Nodejs 8.x
 
 
 ### Code Configuration
@@ -90,7 +91,7 @@ _server/portal/settings_
     npm install
     npm run build
 
--  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time._
+-  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 8.x and not an earlier version_ 
 
 
 #### Initialize the application in the `cep_django` container:
@@ -106,7 +107,7 @@ _server/portal/settings_
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.dev`
 
     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_agave.py` for `AGAVE_TENANT_ID`._
-    
+
     _Note: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
 
   2. Direct your browser to `https://cep.dev` or `http://cep.dev:8000`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/accounts/login`.

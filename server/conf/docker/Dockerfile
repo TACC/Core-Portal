@@ -12,7 +12,8 @@ RUN yum install -y python-pip python-setuptools gcc python-devel unzip wget git 
 RUN yum groupinstall -y 'Development Tools'
 
 #install nodejs
-RUN rpm -ivh https://kojipkgs.fedoraproject.org//packages/http-parser/2.7.1/3.el7/x86_64/http-parser-2.7.1-3.el7.x86_64.rpm && yum -y install nodejs npm
+RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
+RUN yum -y install nodejs
 
 #install uwsgi
 RUN pip install uwsgi
