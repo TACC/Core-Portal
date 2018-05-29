@@ -24,11 +24,11 @@
 - name: Setup systemd unit service file for emperor
   template: src=systemd.service.j2 dest=/usr/lib/systemd/system/uwsgi.service mode=0644 owner=root group=root
 
-- name: Enable uwsgi service
-  command: systemctl enable uwsgi
-
-- name: Start uwsgi service
-  command: systemctl start uwsgi
+- name: Enable and start uwsgi service
+  service:
+    name: uwsgi.service
+    state: started
+    enabled: true
 
 - name: Restart uwsgi service
   command: systemctl restart uwsgi
