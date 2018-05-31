@@ -152,6 +152,24 @@ function Apps($http, $q, $translate) {
       type: 'string',
       required: true
     };
+
+    schema.properties.nodeCount = {
+      title: 'Node Count (optional)',
+      description: `Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.`,
+      type: 'integer',
+      enum: Array.from(Array(12).keys()).map(i => i + 1),
+      default: app.defaultNodeCount,
+      'x-schema-form': {
+        type: 'select',
+        titleMap: _.map(Array.from(Array(12).keys()).map(i => i + 1), function (val) {
+          return {
+            'value': val,
+            'name': val
+          };
+        })
+      }
+    };
+    
     schema.properties.archivePath = {
       title: 'Job output archive location (optional)',
       description: 'Specify a location where the job output should be archived. By default, job output will be archived at: <code>&lt;username&gt;/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.',

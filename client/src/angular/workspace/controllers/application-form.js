@@ -82,17 +82,26 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     });
 
     /* job details */
+    items = [];
+    if ($scope.data.app.tags.includes('Interactive')) {
+      items.push('name');
+    } else {
+      items.push('maxRunTime', 'name', 'archivePath');
+    }
+    if ($scope.data.app.parallelism == "PARALLEL") {
+      items.push('nodeCount');
+    }
     $scope.form.form.push({
       type: 'fieldset',
-      readonly: $scope.data.needsLicense,
+      readonly: ($scope.data.needsLicense || $scope.data.unavailable),
       title: 'Job details',
-      items: ['requestedTime','name', 'archivePath']
+      items: items
     });
 
     /* buttons */
     items = [];
     if (!$scope.data.needsLicense) {
-      items.push({type: 'submit', title: 'Run', style: 'btn-primary'});
+      items.push({ type: 'submit', title: ($scope.data.app.tags.includes('Interactive') ? 'Launch' : 'Run'), style: 'btn-primary' });
     }
     items.push({type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()'});
     $scope.form.form.push({
@@ -132,6 +141,11 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
           }
         }
       });
+
+      // Calculate processorsPerNode if nodeCount parameter submitted
+      if (_.has(jobData, 'nodeCount')) {
+        jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
+      }
 
       $scope.data.submitting = true;
       Jobs.submit(jobData).then(
