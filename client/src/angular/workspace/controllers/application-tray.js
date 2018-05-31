@@ -1,5 +1,4 @@
 import angular from 'angular';
-import toastr from 'angular-toastr';
 
  function ApplicationTrayCtrl($location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, Notifications) {
   'ngInject';
@@ -20,24 +19,6 @@ import toastr from 'angular-toastr';
         $scope.error = $translate.instant('error_tab_get') + response.data;
         deferred.reject(response);
       });
-    return deferred.promise;
-  };
-
-  $scope.addUserTabs = function(query, active){
-    $scope.error = '';
-    var self = this;
-    var deferred = $q.defer();
-    var query = {'name': $translate.instant('apps_metadata_list_name')};
-
-    $scope.simpleList.getUserLists(query)
-      .then(function(response){
-        deferred.resolve(response);
-      })
-      .catch(function(response){
-        $scope.error = $translate.instant('error_tab_get') + response.data;
-        deferred.reject(response);
-      });;
-
     return deferred.promise;
   };
 
@@ -83,14 +64,9 @@ import toastr from 'angular-toastr';
         );
     }
 
-    $scope.addDefaultTabs({'name': $translate.instant('apps_metadata_name')})
+    $scope.addDefaultTabs({ "$and": [{ "name": `${$translate.instant('apps_metadata_name')}` }, { "value.definition.available": true }] })
       .then(function(){
         var deferred = $q.defer();
-
-        $scope.addUserTabs({'name': $translate.instant('apps_metadata_list_name')})
-          .then(function(response){
-            deferred.resolve(response);
-          });
 
         return deferred.promise;
       })
