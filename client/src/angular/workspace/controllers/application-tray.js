@@ -52,14 +52,23 @@ import angular from 'angular';
               if (response.data[0].value.definition.available){
                 $scope.launchApp(response.data[0]);
               } else {
-                toastr.warning($translate.instant('error_app_disabled'));
+                $mdToast.show($mdToast.simple()
+                  .content($translate.instant('error_app_disabled'))
+                  .toastClass('warning')
+                  .parent($("#toast-container")));
               }
             } else {
-              toastr.warning($translate.instant('error_app_run'));
+              $mdToast.show($mdToast.simple()
+                .content($translate.instant('error_app_run'))
+                .toastClass('warning')
+                .parent($("#toast-container")));
             }
           },
           function(response){
-            toastr.warning($translate.instant('error_app_run'));
+            $mdToast.show($mdToast.simple()
+              .content($translate.instant('error_app_run'))
+              .toastClass('warning')
+              .parent($("#toast-container")));
           }
         );
     }

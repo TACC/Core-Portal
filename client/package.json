@@ -44,7 +44,6 @@
     "angular-messages": "^1.6.1",
     "angular-sanitize": "^1.6.10",
     "angular-schema-form": "^0.8.13",
-    "angular-toastr": "^2.1.1",
     "angular-translate": "^2.17.1",
     "angular-ui-bootstrap": "^2.5.0",
     "angular-ui-router": "^1.0.3",
