@@ -114,6 +114,7 @@ div.message {
 }
 
 a[ng-click]:hover {
+<<<<<<< Updated upstream
     cursor: pointer;
 }
 
@@ -152,3 +153,7 @@ md-toast.info .md-toast-content {
   /* background: #4caf50; */
   color: white;
 }
+=======
+  cursor: pointer;
+}
+>>>>>>> Stashed changes

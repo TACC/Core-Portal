@@ -4,7 +4,6 @@ export default class ModalProjectCreate {
 
   constructor($uibModalInstance, ProjectService) {
     'ngInject';
-    console.log("ModalProjectCreate");
     this.ProjectService = ProjectService;
     this.$uibModalInstance = $uibModalInstance;
   }
@@ -17,7 +16,7 @@ export default class ModalProjectCreate {
     };
 
     this.ProjectService.save(data).then( (resp) =>{
-      console.log(resp);
+      
     });
   }
 
