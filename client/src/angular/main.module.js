@@ -1,6 +1,7 @@
 import angular from 'angular';
 
 import * as schemaForm from 'angular-schema-form';
+import * as schemaFormBootstrap from 'angular-schema-form-bootstrap';
 import * as ngMaterial from 'angular-material';
 import * as ngMessages from 'angular-messages';
 import * as ui_bootstrap from 'angular-ui-bootstrap';

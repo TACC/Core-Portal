@@ -27,34 +27,44 @@ let mod = angular.module('portal.workspace', [
   editableOptions.theme = 'bs3';
 });
 
-angular.module('schemaForm').config(
-['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfPathProvider',
-  function(schemaFormProvider,  schemaFormDecoratorsProvider, sfPathProvider) {
+angular.module('schemaForm')
+  .run(['$templateCache', '$http', function ($templateCache, $http) {
+    $http.get('/static/src/angular/workspace/templates/asf-agave-file-picker.html').then(function (response) {
+      templateCache.put('/static/src/angular/workspace/templates/asf-agave-file-picker.html', response.data);
+    });
+  }])
+  .config(
+  ['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfPathProvider', 'sfBuilderProvider',
+    function (schemaFormProvider, schemaFormDecoratorsProvider, sfPathProvider, sfBuilderProvider) {
 
-    var filePicker = function(name, schema, options) {
-      if (schema.type === 'string' && schema.format === 'agaveFile') {
-        var f = schemaFormProvider.stdFormObj(name, schema, options);
-        f.key  = options.path;
-        f.type = 'agaveFilePicker';
-        options.lookup[sfPathProvider.stringify(options.path)] = f;
-        return f;
-      }
-      return null;
-    };
+      var filePicker = function(name, schema, options) {
+        if (schema.type === 'string' && schema.format === 'agaveFile') {
+          var f = schemaFormProvider.stdFormObj(name, schema, options);
+          f.key  = options.path;
+          f.type = 'agaveFilePicker';
+          options.lookup[sfPathProvider.stringify(options.path)] = f;
+          return f;
+        }
+      };
 
-    schemaFormProvider.defaults.string.unshift(filePicker);
+      schemaFormProvider.defaults.string.unshift(filePicker);
 
-    //Add to the bootstrap directive
-    schemaFormDecoratorsProvider.addMapping(
-      'bootstrapDecorator',
-      'agaveFilePicker',
-      '/static/src/angular/workspace/templates/asf-agave-file-picker.html'
-    );
-    schemaFormDecoratorsProvider.createDirective(
-      'agaveFilePicker',
-      '/static/src/angular/workspace/templates/asf-agave-file-picker.html'
-    );
-  }
-]);
+      //Add to the bootstrap directive
+      let sfField = sfBuilderProvider.builders.sfField;
+      let ngModel = sfBuilderProvider.builders.ngModel;
+      let defaults = [sfField, ngModel];
+
+      schemaFormDecoratorsProvider.defineAddOn(
+        'bootstrapDecorator',
+        'agaveFilePicker',
+        '/static/src/angular/workspace/templates/asf-agave-file-picker.html',
+        defaults
+      );
+      // schemaFormDecoratorsProvider.createDirective(
+      //   'agaveFilePicker',
+      //   '/static/src/angular/workspace/templates/asf-agave-file-picker.html'
+      // );
+    }
+  ]);
 
 export default mod;
