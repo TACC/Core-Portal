@@ -117,6 +117,9 @@ class FileMediaView(BaseApiView):
 
         .. todo:: Implement folder uploads.
         """
+        logger.info(file_id)
+        logger.info(request.FILES['file'])
+        
         fmgr = get_manager(request, file_mgr_name)
         resp = fmgr.upload(file_id, [request.FILES['file']])
         return JsonResponse({'response': resp},
