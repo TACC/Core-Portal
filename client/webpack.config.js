@@ -51,6 +51,10 @@ module.exports = function(env, argv){
           exclude: /node_modules/,
           loader: 'html-loader'
         },
+        {
+          test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
+          loader: 'file-loader'
+        }
         // {
         //   test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         //   loader: "file-loader?limit=10000&mimetype=application/font-woff"
