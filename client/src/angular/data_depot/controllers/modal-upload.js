@@ -41,7 +41,6 @@ export default function ModalUpload($scope, $q, $uibModalInstance, Modernizr, di
       if (upload.file.webkitRelativePath) {
         formData.append('relative_path', upload.file.webkitRelativePath);
       }
-      debugger;
       return currentState.listing.upload(formData).then(
         function (resp) {
           upload.state = 'success';
