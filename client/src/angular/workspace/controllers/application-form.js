@@ -93,7 +93,7 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     }
     $scope.form.form.push({
       type: 'fieldset',
-      readonly: ($scope.data.needsLicense || $scope.data.unavailable),
+      readonly: $scope.data.needsLicense,
       title: 'Job details',
       items: items
     });

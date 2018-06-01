@@ -122,6 +122,11 @@ let mod = angular.module('portal', [
   'portal.search',
   'portal.dashboard',
   'portal.workbench',
-]).config(config);
+])
+
+  .config(config)
+
+  .constant('appCategories', ['Simulation', 'Visualization', 'Data Processing', 'Utilities'])
+  .constant('appIcons', ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'visit', 'openfoam', 'opensees']);
 
 export default mod;

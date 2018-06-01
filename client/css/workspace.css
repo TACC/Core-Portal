@@ -1,3 +1,7 @@
+#workspace {
+    margin-top: 3px;
+}
+
 .workspace-panel-container {
     display: -webkit-box;
     display: -moz-box;
@@ -80,19 +84,19 @@
     display: block;
 }
 
+.files-listing caption {
+    white-space: normal !important;
+}
+
 .apps-tray {
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-flex-direction: row;
-    -moz-flex-direction: row;
-    -ms-flex-direction: row;
-    flex-direction: row;
-    align-items: center;
+    padding-top: 10px;
+    position: absolute;
+    background: #fff;
+    z-index: 3;
+    border: 1px solid rgba(8, 8, 8, 0.6);
+    border-top: none;
+    box-shadow: 0px 5px 3px -3px grey;
+    width: calc(100% - 50px);
 }
 
 .app-wrapper {
@@ -120,7 +124,8 @@
 }
 
 .app {
-  padding: 5px;
+  padding: 0px;
+  line-height: 1.2;
 }
 
 .app-version {
@@ -129,7 +134,11 @@
 
 .app-active {
   background-color: #337AB7;
-  color: #fff;
+  color: #fff !important;
+}
+
+.app-active .app-title {
+  color: #fff !important;
 }
 
 .app-form-wrapper {
@@ -171,10 +180,277 @@
     color: #fff;
 }
 
-.top-buffer {
- margin-top:10px;
-}
+.top-buffer { margin-top:10px; }
 
 .btn-tab {
   margin-top:3.4px;
+}
+
+li .popover.right {
+  width: 185px;
+}
+
+.workspace-tab-title {
+  margin-top: 12px;
+}
+
+.workspace-tab {
+  width: calc(100%/5);
+}
+
+#workspace-tabs a h3 {
+    color: #FFFFFF;
+    display: inline-block;
+    margin: auto auto auto -.7em;
+    vertical-align: middle;
+    line-height: normal;
+    font-size: 2vw;
+    font-weight: normal;
+}
+
+#workspace-tabs > .nav-tabs > li.active h3 {
+    color: #000000;
+}
+
+#workspace-tabs {
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#workspace-tabs li {
+  z-index: 1;
+}
+
+#workspace-tabs a {
+  background: #303030;
+  padding: 0 0 0 1em;
+  text-align: center;
+  border-radius: 5px 5px 0 0;
+  border: 1px solid rgba(8,8,8,0.6);
+  border-style: solid none none solid;
+  width: calc(100% - 1.1em);
+  height: 3em;
+  line-height: 2.5em;
+}
+
+#workspace-tabs a:hover,
+#workspace-tabs a:hover::after {
+  background: #525252;
+}
+
+#workspace-tabs > .nav-tabs > li.active > a,
+#workspace-tabs > .nav-tabs > li.active > a::after {
+  background: #fff;
+}
+
+#workspace-tabs a:focus {
+  outline: 0;
+}
+
+#workspace-tabs a::after {
+  content:'';
+  position:absolute;
+  z-index: 1;
+  top: -.1em;
+  right: -.5em;  
+  bottom: 0;
+  width: 3em;
+  background: #303030;
+  transform: skew(20deg);
+  border-radius: 0 5px 0 0;
+  border: 1px solid rgba(8,8,8,0.5);
+  border-style: solid solid none none;
+  z-index: -1;
+}
+
+#workspace-tabs .nav-tabs {
+  border-bottom: none;
+}
+
+
+.version-label {
+    text-transform: none;
+}
+
+md-grid-tile {
+    box-shadow: 1px 1px 0px rgba(8, 8, 8, 0.30);
+}
+
+md-grid-tile:hover {
+    cursor: pointer;
+    box-shadow: 0px 0px 10px 1px grey;
+    color: #337AB7; 
+}
+
+md-grid-tile:hover .app-title {
+    color: #337AB7;
+}
+
+md-grid-tile:active {
+    /* cursor: pointer; */
+    box-shadow: inset 0px 0px 10px 1px grey;
+    outline: 0;
+}
+
+.app-header {
+    background: none;
+    height: 5vw;
+}
+
+.app-header figcaption {
+    width: 100%;
+    height: 100%;
+}
+
+.app-title {
+    font-size: 1.3vw;
+    /* margin: -5px 3px 0 3px; */
+    margin-top: 5px;
+    color: #303030;
+}
+
+.app-icon {
+    margin-top: 1em;
+}
+
+@font-face {
+font-family: 'designsafe-workspace';
+    src: url('../src/angular/workspace/fonts/WorkSpaceIcons.ttf') format('truetype');        
+    font-weight: normal;
+    font-style: normal;
+}
+
+.icon-letter {
+    font-family: futura-pt, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 6vw;
+    line-height: 1.2;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+    font-family: 'designsafe-workspace';
+    font-style: normal;
+    font-size: 5vw;
+    speak: none;
+    font-weight: normal;
+    -webkit-font-smoothing: antialiased;
+            font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.icon-compress:before {
+    content: "\e909";
+}
+.icon-extract:before {
+    content: "\e90a";
+}
+.icon-matlab:before {
+    content: "\e90b";
+}
+.icon-paraview:before {
+    content: "\e903";
+}
+.icon-hazmapper:before {
+    content: "\e904";
+}
+.icon-jupyter:before {
+    content: "\e905";
+}
+.icon-adcirc:before {
+    content: "\e906";
+    font-size: 4vw;
+}
+.icon-qgis:before {
+    content: "\e907";
+}
+i[class^="icon-ls"][class$="dyna"]:before, i[class^="icon-ls-pre/post"]:before {
+    content: "\e908";
+}
+.icon-visit:before {
+    content: "\e902";
+}
+.icon-openfoam:before {
+    content: "\e900";
+}
+.icon-opensees:before {
+    content: "\e901";
+}
+
+@media (max-width: 992px) {
+    .app-version {
+        display: none;
+    }
+}
+
+@media (min-width: 768px) { 
+  .apps-tray {
+    width: 701px;
+  }
+  .app-title {
+      font-size: 10px;
+  }
+  #workspace-tabs a h3 {
+      font-size: 1em;
+  }
+  [class^="icon-"]:before,
+  [class*=" icon-"]:before {
+      font-size: 2.7em;
+  }
+  .icon-adcirc:before {
+    font-size: 2.3em;
+  }
+  .icon-opensees:before {
+    font-size: 2em;
+  }
+}
+@media (min-width: 992px) { 
+  .apps-tray {
+    width: 921px;
+  }
+  .app-title {
+      font-size: 14px;
+  }
+  #workspace-tabs a h3 {
+      font-size: 1.1em;
+  }
+  [class^="icon-"]:before,
+  [class*=" icon-"]:before {
+      font-size: 4em;
+  }
+  .icon-adcirc:before {
+    font-size: 3em;
+  }
+  .icon-opensees:before {
+    font-size: 3em;
+  }
+}
+@media (min-width: 1200px) {
+  .apps-tray {
+    width: 1121px;
+  }
+  .app-title {
+      font-size: 17px;
+  }
+  #workspace-tabs a h3 {
+      font-size: 19px;
+  }
+  [class^="icon-"]:before,
+  [class*=" icon-"]:before {
+      font-size: 5em;
+  }
+  .icon-adcirc:before {
+    font-size: 3.5em;
+  }
+  .fa-icon-letter {
+      font-size: 5em;
+  }
+  .icon-opensees:before {
+    font-size: 4em;
+  }
+  .app-header {
+    height: 4em;
+  }
 }

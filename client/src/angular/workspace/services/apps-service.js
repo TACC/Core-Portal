@@ -136,7 +136,7 @@ function Apps($http, $q, $translate) {
       });
     }
 
-    schema.properties.requestedTime = {
+    schema.properties.maxRunTime = {
       title: 'Maximum job runtime',
       description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is 48:00:00 (48 hours).',
       type: 'string',
@@ -169,7 +169,7 @@ function Apps($http, $q, $translate) {
         })
       }
     };
-    
+
     schema.properties.archivePath = {
       title: 'Job output archive location (optional)',
       description: 'Specify a location where the job output should be archived. By default, job output will be archived at: <code>&lt;username&gt;/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.',
