@@ -9,7 +9,7 @@ import urllib
 import six
 from urlparse import urlparse
 from datetime import datetime
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -107,12 +107,23 @@ class MetadataView(BaseApiView):
         agave = request.user.agave_oauth.client
         meta_post = json.loads(request.body)
         meta_uuid = meta_post.get('uuid')
-        if meta_uuid:
+        share_all = request.GET.get('share_all')
+        if share_all:
+            username = request.user.username
+            if username == 'wma_prtl':
+                return HttpResponse('User is admin', status=200)
+            query = request.GET.get('q')
+            meta_post['username'] = username
+            wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            apps = wma_prtl_client.meta.listMetadata(q=query)
+            for app_meta in apps:
+                data = wma_prtl_client.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
+        elif meta_uuid:
             del meta_post['uuid']
             data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
         else:
             data = agave.meta.addMetadata(body=meta_post)
-            return JsonResponse({'response': data})
+        return JsonResponse({'response': data})
 
     def delete(self, request, *args, **kwargs):
         agave = request.user.agave_oauth.client
