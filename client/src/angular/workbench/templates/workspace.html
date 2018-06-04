@@ -194,7 +194,8 @@
     </div>
     <div ng-controller="JobsStatusCtrl"
          class="workspace-panel workspace-panel-sidebar workspace-panel-sidebar-right"
-         ng-class="{'workspace-panel-collapsed': panel.collapsed}">
+         ng-class="{'workspace-panel-collapsed': panel.collapsed}"
+         ng-init="panel.collapsed = true">
          <span class="workspace-panel-title">Jobs Status</span>
          <div class="workspace-panel-content">
              <h2>
