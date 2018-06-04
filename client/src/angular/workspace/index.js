@@ -30,7 +30,7 @@ let mod = angular.module('portal.workspace', [
 angular.module('schemaForm')
   .run(['$templateCache', '$http', function ($templateCache, $http) {
     $http.get('/static/src/angular/workspace/templates/asf-agave-file-picker.html').then(function (response) {
-      templateCache.put('/static/src/angular/workspace/templates/asf-agave-file-picker.html', response.data);
+      $templateCache.put('/static/src/angular/workspace/templates/asf-agave-file-picker.html', response.data);
     });
   }])
   .config(
@@ -45,6 +45,7 @@ angular.module('schemaForm')
           options.lookup[sfPathProvider.stringify(options.path)] = f;
           return f;
         }
+        return null;
       };
 
       schemaFormProvider.defaults.string.unshift(filePicker);
