@@ -1,6 +1,7 @@
 <ul class="breadcrumb">
     <li ng-if="customRoot">
-        <a href="{{ customRoot.href }}">{{ customRoot.name }}</a>
+        <!-- <a href="{{ customRoot.href }}">{{ customRoot.name }}</a> -->
+        <span>{{ customRoot.name }}</span>
     </li>
     <li ng-if="project">
         <a href="{{ project.href }}">{{ project.name }}</a>

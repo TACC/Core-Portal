@@ -80,7 +80,7 @@ export default function DataDepotCtrl(
             user: Django.user,
             customRoot: {
                 name: $stateParams.name,
-                href: $state.href('db', {
+                href: $state.href('wb.data_depot.db', {
                     systemId: $stateParams.systemId,
                     filePath: $stateParams.filePath,
                     directory: $stateParams.directory,
@@ -115,6 +115,8 @@ export default function DataDepotCtrl(
             $event.stopPropagation();
             if (file.type === 'file') {
                 DataBrowserService.preview(file, $scope.browser.listing);
+            } else {
+                $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path}, {reload: true});
             }
         };
 
@@ -158,7 +160,7 @@ export default function DataDepotCtrl(
         $scope.data = {
             customRoot: {
                 name: $stateParams.name,
-                href: $state.href('db', {
+                href: $state.href('wb.data_depot.db', {
                     systemId: $stateParams.systemId,
                     filePath: $stateParams.filePath,
                     directory: $stateParams.directory,
@@ -185,7 +187,7 @@ export default function DataDepotCtrl(
         $scope.data = {
             customRoot: {
                 name: $stateParams.name,
-                href: $state.href('db', {
+                href: $state.href('wb.data_depot.db', {
                     systemId: $stateParams.systemId,
                     filePath: $stateParams.filePath,
                     directory: $stateParams.directory,

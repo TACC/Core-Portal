@@ -57,7 +57,7 @@
           data-ng-class="{'dd-file-selected':  file._ui.selected}">
           <td>
             <i class="fa {{ file.icon() }} fa-fw"></i>
-            <a data-ng-href="{{ file.href }}"
+            <a data-ng-href="{{ file._links._self.href }}"
                data-ng-click="onBrowse($event, file)">
                {{ file.name }}
             </a>

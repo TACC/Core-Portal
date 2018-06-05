@@ -71,9 +71,6 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     'controller': 'DataDepotCtrl',
     'resolve': {
       'test': function () {console.log("data-depot resolve");},
-      // 'systems': ['SystemsService', function(SystemsService) {
-      //   return SystemsService.listing();
-      // }]
     }
   })
   .state('wb.workspace', {
