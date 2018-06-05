@@ -478,18 +478,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @return {Promise}
    */
   function preview (file, listing) {
-    // var modal = $uibModal.open({
-    //   template: previewModalTemplate,
-    //   controller: 'ModalPreview',
-    //   size: 'lg',
-    //   resolve: {
-    //     file: function() { return file; }
-    //   }
-    // });
-
-
-    // return modal.result;
-
     var modal = $uibModal.open({
       template: previewModalTemplate,
       controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
@@ -616,38 +604,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         file: function() { return file; }
       }
     });
-
-    // modal.rendered.then(
-    //   function(){
-    //     if (file.name.split('.').pop() == 'ipynb'){
-    //       file.download().then(
-    //         function(data){
-    //           var postit = data.href;
-    //           var oReq = new XMLHttpRequest();
-
-    //           oReq.open("GET", postit, true);
-
-    //           oReq.onload = function(oEvent) {
-    //             var blob = new Blob([oReq.response], {type: "application/json"});
-    //             var reader = new FileReader();
-
-    //             reader.onload = function(e){
-    //               var content = JSON.parse(e.target.result)
-    //               var target = $('.nbv-preview')[0];
-    //               nbv.render(content, target);
-    //             }
-
-    //             reader.readAsText(blob)
-    //           };
-
-    //           oReq.send();
-    //         },
-    //         function (err) {
-    //           $scope.previewError = err.data;
-    //           $scope.busy = false;
-    //         }
-    //       );
-    // }})
 
     return modal.result;
   }
