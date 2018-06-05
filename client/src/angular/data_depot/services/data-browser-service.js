@@ -442,10 +442,8 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       controller: 'ModalMoveCopy',
       resolve: {
         data: {
-          files: function () {
-            return files;
-          },
-        // initialDestination: function () { return initialDestination; }
+          files: function () {return files;},
+          // initialDestination: function () { return initialDestination; }
         }
       }
     });
