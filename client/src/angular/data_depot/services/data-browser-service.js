@@ -641,11 +641,12 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         .then(
           function (result) {
             currentState.busy = false;
-            $rootScope.$broadcast('DataBrowserService::Refresh', {
-              type: 'rename',
-              context: result,
-              msg: result
-            });
+            // $rootScope.$broadcast('DataBrowserService::Refresh', {
+            //   type: 'rename',
+            //   context: result,
+            //   msg: result
+            // });
+            $state.reload();
           },
           function (err) {
             currentState.busy = false;
