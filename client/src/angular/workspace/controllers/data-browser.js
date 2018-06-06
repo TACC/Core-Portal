@@ -37,7 +37,10 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
   });
 
   $scope.dataSourceUpdated = function dataSourceUpdated() {
-    $scope.data.busy = true;
+    $scope.data.filesListing = null;
+    $scope.data.loading = true;
+    $scope.data.filePath = '';
+    $scope.data.dirPath = [];
     DataBrowserService.apiParams.fileMgr = $scope.data.cOption.apiParams.fileMgr;
     DataBrowserService.apiParams.baseUrl = $scope.data.cOption.apiParams.baseUrl;
     if ($scope.data.cOption.label !== 'My Projects'){
@@ -62,15 +65,6 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
          $scope.data.loading = false;
       });
     }
-
-
-    $scope.data.filesListing = null;
-    $scope.data.loading = true;
-    $scope.data.filePath = '';
-    $scope.data.dirPath = [];
-    // DataBrowserService.apiParams.fileMgr = $scope.data.system.fileMgr;
-    // DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
-
   };
 
   $scope.scrollToTop = function(){
