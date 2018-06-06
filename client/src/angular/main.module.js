@@ -16,8 +16,8 @@ import * as xeditable from 'angular-xeditable';
 import * as dndLists from 'angular-drag-and-drop-lists';
 import * as ngAnimate from 'angular-animate';
 
-import {mod as directives} from './ng-designsafe-directives';
-import {mod as filters} from './ng-designsafe-filters';
+import {mod as directives} from './ng-portal-directives';
+import {mod as filters} from './ng-portal-filters';
 import {mod as ng_modernizer} from './ng-modernizr';
 import {mod as workspace} from './workspace';
 import {mod as data_depot} from './data_depot';
