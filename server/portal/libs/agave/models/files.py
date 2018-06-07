@@ -360,13 +360,15 @@ class BaseFile(BaseAgaveResource):
         for path_comp in path_comps:
             logger.info(path_comps[:path_indx])
             try:
-                cls.listing(client, system,
+                ensured = cls.listing(client, system,
                             os.path.join(*path_comps[:path_indx]))
             except HTTPError as err:
                 if err.response.status_code in [400, 403, 404]:
                     ensured = parent.mkdir(path_comp)
                     parent = ensured
                     path_indx += 1
+                else:
+                    raise
 
         return ensured
 

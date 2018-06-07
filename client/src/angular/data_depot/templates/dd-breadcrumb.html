@@ -1,7 +1,7 @@
 <ul class="breadcrumb">
     <li ng-if="customRoot">
         <!-- <a href="{{ customRoot.href }}">{{ customRoot.name }}</a> -->
-        <span>{{ customRoot.name }}</span>
+        <a ui-sref="{{ customRoot.route }}" ui-sref-active="active"> {{ customRoot.name }}</a>
     </li>
     <li ng-if="project">
         <a href="{{ project.href }}">{{ project.name }}</a>

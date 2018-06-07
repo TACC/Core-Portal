@@ -80,11 +80,8 @@ export default function DataDepotCtrl(
             user: Django.user,
             customRoot: {
                 name: $stateParams.name,
-                href: $state.href('wb.data_depot.db', {
-                    systemId: $stateParams.systemId,
-                    filePath: $stateParams.filePath,
-                    directory: $stateParams.directory,
-                }),
+                path: $stateParams.filePath,
+                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
             },
         };
 
@@ -158,13 +155,11 @@ export default function DataDepotCtrl(
         $scope.ui = {};
 
         $scope.data = {
+            user: Django.user,
             customRoot: {
                 name: $stateParams.name,
-                href: $state.href('wb.data_depot.db', {
-                    systemId: $stateParams.systemId,
-                    filePath: $stateParams.filePath,
-                    directory: $stateParams.directory,
-                }),
+                path: $stateParams.filePath,
+                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
             },
         };
 
@@ -185,13 +180,11 @@ export default function DataDepotCtrl(
         };
     } else if ($stateParams.name == 'Community Data') {
         $scope.data = {
+            user: Django.user,
             customRoot: {
                 name: $stateParams.name,
-                href: $state.href('wb.data_depot.db', {
-                    systemId: $stateParams.systemId,
-                    filePath: $stateParams.filePath,
-                    directory: $stateParams.directory,
-                }),
+                path: $stateParams.filePath,
+                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
             },
         };
 

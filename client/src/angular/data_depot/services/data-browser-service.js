@@ -160,9 +160,9 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     tests.canViewCategories = files.length >=1 && hasPermission('WRITE', files);
 
     var trashPath = _trashPath();
-    tests.canTrash = ($state.current.name === 'db.myData' || $state.current.name === 'db.projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && !_.some(files, function(sel) { return isProtected(sel); });
-    tests.canDelete = $state.current.name === 'db.myData' && files.length >= 1 && currentState.listing.path === trashPath;
-
+    tests.canTrash = ($state.current.name === 'wb.data_depot.db' || $state.current.name === 'db.projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && !_.some(files, function(sel) { return isProtected(sel); });
+    tests.canDelete = $state.current.name === 'wb.data_depot.db' && files.length >= 1 && currentState.listing.path === trashPath;
+    
     return tests;
   }
 
@@ -677,7 +677,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       currentState.error = err.data;
     });
   }
-
+  // Trash files does not work
   /**
    *
    * @param {FileListing|FileListing[]} files The files to move to Trash
