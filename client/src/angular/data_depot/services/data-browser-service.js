@@ -8,6 +8,8 @@ import previewModalTemplate from '../modals/data-browser-service-preview.html';
 import renameModalTemplate from '../modals/data-browser-service-rename.html';
 import uploadModalTemplate from '../modals/data-browser-service-upload.html';
 
+var $ = require('jquery');
+
 function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, Django, FileListing) {
   'ngInject';
 
@@ -570,9 +572,9 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         $scope.download = function() {
           download(file);
         };
-        // $scope.share = function() {
-        //   share(file);
-        // };
+        $scope.share = function() {
+          // share(file);
+        };
         $scope.copy = function() {
           copy(file);
         };
@@ -582,16 +584,16 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         $scope.rename = function() {
           rename(file);
         };
-        // $scope.viewMetadata = function() {
-        //   $scope.close();
-        //   viewMetadata([file]);
-        // };
+        $scope.viewMetadata = function() {
+          $scope.close();
+          // viewMetadata([file]);
+        };
         $scope.trash = function() {
           trash(file);
         };
-        // $scope.rm = function() {
-        //   rm(file);
-        // };
+        $scope.rm = function() {
+          // rm(file);
+        };
 
         $scope.close = function () {
           $uibModalInstance.dismiss();
