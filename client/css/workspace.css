@@ -318,8 +318,8 @@ md-grid-tile:active {
 }
 
 @font-face {
-font-family: 'designsafe-workspace';
-    src: url('../src/angular/workspace/fonts/WorkSpaceIcons.ttf') format('truetype');        
+font-family: 'Portal-Workspace';
+    src: url('/static/src/angular/workspace/fonts/Portal-Icons-Workspace.ttf') format('truetype');        
     font-weight: normal;
     font-style: normal;
 }
@@ -332,7 +332,7 @@ font-family: 'designsafe-workspace';
 
 [class^="icon-"]:before,
 [class*=" icon-"]:before {
-    font-family: 'designsafe-workspace';
+    font-family: 'Portal-Workspace';
     font-style: normal;
     font-size: 5vw;
     speak: none;
