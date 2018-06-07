@@ -1,7 +1,7 @@
 import angular from 'angular';
-import toastr from 'angular-toastr';
+var $ = require('jquery');
 
- function ApplicationTrayCtrl($location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, Notifications) {
+ function ApplicationTrayCtrl($location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, Notifications, $mdToast) {
   'ngInject';
   $scope.tabs = [];
 
@@ -23,24 +23,6 @@ import toastr from 'angular-toastr';
     return deferred.promise;
   };
 
-  $scope.addUserTabs = function(query, active){
-    $scope.error = '';
-    var self = this;
-    var deferred = $q.defer();
-    var query = {'name': $translate.instant('apps_metadata_list_name')};
-
-    $scope.simpleList.getUserLists(query)
-      .then(function(response){
-        deferred.resolve(response);
-      })
-      .catch(function(response){
-        $scope.error = $translate.instant('error_tab_get') + response.data;
-        deferred.reject(response);
-      });;
-
-    return deferred.promise;
-  };
-
   $scope.data = {
     activeApp: null,
     publicOnly: false,
@@ -58,66 +40,53 @@ import toastr from 'angular-toastr';
     }
   });
 
-  $scope.refreshApps = function() {
+  $scope.refreshApps = function () {
     $scope.error = '';
     $scope.requesting = true;
     $scope.tabs = [];
 
-    if ($stateParams.appId){
+    if ($stateParams.appId) {
       Apps.getMeta($stateParams.appId)
         .then(
-          function(response){
-            if (response.data.length > 0){
-              if (response.data[0].value.definition.available){
-                $scope.launchApp(response.data[0]);
-              } else {
-                toastr.warning($translate.instant('error_app_disabled'));
-              }
+        function (response) {
+          if (response.data.length > 0) {
+            if (response.data[0].value.definition.available) {
+              $scope.launchApp(response.data[0]);
             } else {
-              toastr.warning($translate.instant('error_app_run'));
+              $mdToast.show($mdToast.simple()
+                .content($translate.instant('error_app_disabled'))
+                .toastClass('warning')
+                .parent($("#toast-container")));
             }
-          },
-          function(response){
-            toastr.warning($translate.instant('error_app_run'));
+          } else {
+            $mdToast.show($mdToast.simple()
+              .content($translate.instant('error_app_run'))
+              .toastClass('warning')
+              .parent($("#toast-container")));
           }
+        },
+        function (response) {
+          $mdToast.show($mdToast.simple()
+            .content($translate.instant('error_app_run'))
+            .toastClass('warning')
+            .parent($("#toast-container")));
+        }
         );
     }
 
-    $scope.addDefaultTabs({'name': $translate.instant('apps_metadata_name')})
-      .then(function(){
-        var deferred = $q.defer();
-
-        $scope.addUserTabs({'name': $translate.instant('apps_metadata_list_name')})
-          .then(function(response){
-            deferred.resolve(response);
-          });
-
-        return deferred.promise;
-      })
+    $scope.addDefaultTabs({"$and": [{"name": `${$translate.instant('apps_metadata_name')}`}, {"value.definition.available": true}]})
       .then(function(response){
-        $scope.tabs.push(
-          {
-            title: 'Private',
-            content: $scope.simpleList.lists['Private']
-          }
-        );
+        $scope.simpleList.tabs.forEach(function (element) {
+          $scope.tabs.push(
+            {
+              title: element,
+              content: $scope.simpleList.lists[element],
+              count: $scope.simpleList.lists[element].length
+            }
+          );
+        }, this);
 
-        $scope.tabs.push(
-          {
-            title: 'Public',
-            content: $scope.simpleList.lists['Public']
-          }
-        );
-
-        angular.forEach($scope.simpleList.lists, function(list, key){
-          if (key !== 'Public' && key !== 'Private') {
-            $scope.tabs.push({
-              title: key,
-              content: list
-            });
-          }
-        });
-
+        $scope.activeTab = null;
         $scope.requesting = false;
       });
   };
@@ -131,11 +100,38 @@ import toastr from 'angular-toastr';
       {notify: false}
     );
 
-    if (!$scope.data.activeApp || $scope.data.activeApp.value.definition.id !== app.value.definition.id) {
-      $scope.data.activeApp = app;
-      $rootScope.$broadcast('launch-app', app);
+    $scope.data.activeApp = app;
+    $rootScope.$broadcast('launch-app', app);
+
+    $scope.activeTab = null;
+  };
+
+  var outsideClick = false;
+  $scope.closeTab = function (event, tab) {
+    if (outsideClick) {
+      $scope.activeTab = null;
     }
   };
-};
+
+  $(document).mousedown(function (event) {
+    var element = $(event.target);
+    var workspaceTab = element.closest(".workspace-tab");
+    var appsTray = element.closest("div .apps-tray");
+
+    // Want all tabs to be inactive whenever user clicks outside the tab-tray.
+    if (!(appsTray.length > 0 || workspaceTab.length > 0) && $scope.activeTab != null) {
+      outsideClick = true;
+    } else {
+      outsideClick = false;
+
+      // If user clicks on same tab, close tab.
+      if (workspaceTab.length == 1 && $scope.activeTab != null && workspaceTab[0].innerText.includes($scope.tabs[$scope.activeTab].title)) {
+        if (workspaceTab.hasClass("active")) {
+          $scope.activeTab = null;
+        }
+      }
+    }    
+  });
+}
 
 export default ApplicationTrayCtrl;

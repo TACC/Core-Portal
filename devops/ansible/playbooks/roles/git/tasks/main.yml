@@ -1,13 +1,16 @@
 - name: Copy repo service account ssh key
   copy: src='../../secret_files/bitbucket' dest=/root/.ssh/bitbucket
+  when: git_copy_ssh_key
 
 - name: Set ssh key perms
   file:
     path: /root/.ssh/bitbucket
     mode: 0600
+  when: git_copy_ssh_key
 
 - name: Copy SSH config file
   copy: src="ssh_config" dest="/root/.ssh/config"
+  when: git_copy_ssh_key
 
 - name: Get git repo
   git:
