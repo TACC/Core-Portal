@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'termsandconditions',
     'impersonate',
     'ws4redis',
+    'haystack',
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
@@ -512,6 +513,12 @@ ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
 ES_PUBLICATIONS_INDEX = "publications"
 ES_METADATA_DOC_TYPE = "metadata"
+
+HAYSTACK_CONNECTIONS = settings_secret._HAYSTACK_CONNECTIONS
+
+HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
+ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
+ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
 """
 SETTINGS: EXPORTS
