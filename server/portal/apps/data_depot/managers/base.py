@@ -464,9 +464,8 @@ class AgaveFileManager(AbstractFileManager):
                 raise
 
         file_id_src = '{}/{}'.format(_file.system, _file.path)
-        file_id_dest = '{}/{}/{}'.format(_file.system, settings.AGAVE_DEFAULT_TRASH_NAME,
-                                         trash_name)
-        resp = _file.move(file_id_src, file_id_dest)
+
+        resp = _file.move(_file.system, settings.AGAVE_DEFAULT_TRASH_NAME, trash_name)
         return resp
 
     def update_pems(self, file_id, pems, **kwargs):
