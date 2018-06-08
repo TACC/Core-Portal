@@ -2,7 +2,7 @@
 .. module: portal.libs.agave.models.files
    :synopsis: Models to represent resources pertaining to Agave Files
 """
-from __future__ import unicode_literals, absolute_import
+from __future__ import  absolute_import
 import os
 import json
 import logging
@@ -360,13 +360,15 @@ class BaseFile(BaseAgaveResource):
         for path_comp in path_comps:
             logger.info(path_comps[:path_indx])
             try:
-                cls.listing(client, system,
+                ensured = cls.listing(client, system,
                             os.path.join(*path_comps[:path_indx]))
             except HTTPError as err:
                 if err.response.status_code in [400, 403, 404]:
                     ensured = parent.mkdir(path_comp)
                     parent = ensured
                     path_indx += 1
+                else:
+                    raise
 
         return ensured
 
@@ -548,8 +550,6 @@ class BaseFile(BaseAgaveResource):
         :return: The renamed file
         :rtype: :class:`BaseFile`
         """
-        logger.info(self.path)
-        logger.info(new_name)
         return self.move(self.system, os.path.dirname(self.path), new_name)
 
     def share(self, username, permission, recursive=True):
@@ -610,10 +610,9 @@ class BaseFile(BaseAgaveResource):
         else:
             upload_path = self.parent_path
             upload_name = self.name
-
         resp = self._ac.files.importData(systemId=self.system,
                                          filePath=urllib.quote(upload_path),
-                                         fileName=upload_name,
+                                         fileName=str(upload_name),
                                          fileToUpload=upload_file)
         return BaseFile(client=self._ac,
                         system=resp['systemId'],

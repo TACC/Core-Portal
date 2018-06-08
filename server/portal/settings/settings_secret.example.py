@@ -10,6 +10,9 @@ _SECRET_KEY = 'CHANGE ME !'
 _DEBUG = True
 _WSGI_APPLICATION = 'portal.wsgi.application'
 
+# Namespace for portal
+_PORTAL_NAMESPACE = 'CEP'
+
 ########################
 # DJANGO SETTINGS LOCAL
 ########################

@@ -1,6 +1,7 @@
 import angular from 'angular';
 
 import * as schemaForm from 'angular-schema-form';
+import 'angular-schema-form-bootstrap';
 import * as ngMaterial from 'angular-material';
 import * as ngMessages from 'angular-messages';
 import * as ui_bootstrap from 'angular-ui-bootstrap';
@@ -15,8 +16,8 @@ import * as xeditable from 'angular-xeditable';
 import * as dndLists from 'angular-drag-and-drop-lists';
 import * as ngAnimate from 'angular-animate';
 
-import {mod as directives} from './ng-designsafe-directives';
-import {mod as filters} from './ng-designsafe-filters';
+import {mod as directives} from './ng-portal-directives';
+import {mod as filters} from './ng-portal-filters';
 import {mod as ng_modernizer} from './ng-modernizr';
 import {mod as workspace} from './workspace';
 import {mod as data_depot} from './data_depot';
@@ -71,9 +72,6 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     'controller': 'DataDepotCtrl',
     'resolve': {
       'test': function () {console.log("data-depot resolve");},
-      // 'systems': ['SystemsService', function(SystemsService) {
-      //   return SystemsService.listing();
-      // }]
     }
   })
   .state('wb.workspace', {

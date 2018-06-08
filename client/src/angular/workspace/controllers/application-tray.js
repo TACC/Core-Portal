@@ -12,14 +12,19 @@ var $ = require('jquery');
     var self = this;
     var deferred = $q.defer();
 
-    $scope.simpleList.getDefaultLists(query)
-      .then(function(response){
-        deferred.resolve(response);
-      })
-      .catch(function(response){
-        $scope.error = $translate.instant('error_tab_get') + response.data;
-        deferred.reject(response);
-      });
+    var body = {};
+    body.permission = 'READ';
+
+    Apps.shareAppsWithUser(body, query).then(
+      $scope.simpleList.getDefaultLists(query)
+        .then(function(response){
+          deferred.resolve(response);
+        })
+        .catch(function(response){
+          $scope.error = $translate.instant('error_tab_get') + response.data;
+          deferred.reject(response);
+        })
+    );
     return deferred.promise;
   };
 
@@ -91,7 +96,8 @@ var $ = require('jquery');
       });
   };
 
-  $scope.refreshApps();
+    $scope.refreshApps();
+  
 
   $scope.launchApp = function(app) {
     $state.go(

@@ -96,7 +96,7 @@
     border: 1px solid rgba(8, 8, 8, 0.6);
     border-top: none;
     box-shadow: 0px 5px 3px -3px grey;
-    width: calc(100% - 50px);
+    width: 508px;
 }
 
 .app-wrapper {
@@ -222,6 +222,7 @@ li .popover.right {
 
 #workspace-tabs li {
   z-index: 1;
+  margin: 0;
 }
 
 #workspace-tabs a {
@@ -317,8 +318,8 @@ md-grid-tile:active {
 }
 
 @font-face {
-font-family: 'designsafe-workspace';
-    src: url('../src/angular/workspace/fonts/WorkSpaceIcons.ttf') format('truetype');        
+font-family: 'Portal-Workspace';
+    src: url('/static/src/angular/workspace/fonts/Portal-Icons-Workspace.ttf') format('truetype');        
     font-weight: normal;
     font-style: normal;
 }
@@ -331,7 +332,7 @@ font-family: 'designsafe-workspace';
 
 [class^="icon-"]:before,
 [class*=" icon-"]:before {
-    font-family: 'designsafe-workspace';
+    font-family: 'Portal-Workspace';
     font-style: normal;
     font-size: 5vw;
     speak: none;
@@ -366,7 +367,7 @@ font-family: 'designsafe-workspace';
 .icon-qgis:before {
     content: "\e907";
 }
-i[class^="icon-ls"][class$="dyna"]:before, i[class^="icon-ls-pre/post"]:before {
+.icon-ls-dyna:before {
     content: "\e908";
 }
 .icon-visit:before {
@@ -385,9 +386,9 @@ i[class^="icon-ls"][class$="dyna"]:before, i[class^="icon-ls-pre/post"]:before {
     }
 }
 
-@media (min-width: 768px) { 
+@media (min-width: 608px) { 
   .apps-tray {
-    width: 701px;
+    width: calc(100% - 100px);
   }
   .app-title {
       font-size: 10px;
@@ -407,9 +408,9 @@ i[class^="icon-ls"][class$="dyna"]:before, i[class^="icon-ls-pre/post"]:before {
   }
 }
 @media (min-width: 992px) { 
-  .apps-tray {
+  /* .apps-tray {
     width: 921px;
-  }
+  } */
   .app-title {
       font-size: 14px;
   }
@@ -428,9 +429,9 @@ i[class^="icon-ls"][class$="dyna"]:before, i[class^="icon-ls-pre/post"]:before {
   }
 }
 @media (min-width: 1200px) {
-  .apps-tray {
+  /* .apps-tray {
     width: 1121px;
-  }
+  } */
   .app-title {
       font-size: 17px;
   }

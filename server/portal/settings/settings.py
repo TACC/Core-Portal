@@ -273,7 +273,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/portal.log',
+            'filename': '/var/log/portal/portal.log',
             'maxBytes': 1024*1024*5,  # 5 MB
             'backupCount': 5,
             'formatter': 'default',
@@ -464,6 +464,7 @@ TOOLBAR_OPTIONS = {
     'tag_enabled': True,
 }
 
+AGAVE_DEFAULT_TRASH_NAME = '.Trash'
 
 PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = settings_secret.\
     _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
@@ -489,6 +490,8 @@ PORTAL_KEYS_MANAGER = settings_secret.\
 PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
     _PORTAL_USER_ACCOUNT_SETUP_STEPS
 
+PORTAL_NAMESPACE = settings_secret.\
+    _PORTAL_NAMESPACE
 """
 SETTINGS: ELASTICSEARCH
 """

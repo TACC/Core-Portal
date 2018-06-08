@@ -1,4 +1,4 @@
-import * as fpTemplate from '../templates/agave-file-picker.html';
+import fpTemplate from '../templates/agave-file-picker.html';
 
 function agaveFilePicker() {
     return {

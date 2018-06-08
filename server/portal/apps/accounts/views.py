@@ -621,7 +621,7 @@ def email_confirmation(request, code=None):
                     messages.success(
                         request,
                         'Congratulations, your account has been activated! '
-                        'You can now log in to DesignSafe.'
+                        'You can now log in to {}.'.format(settings.PORTAL_NAMESPACE)
                     )
                     return HttpResponseRedirect(
                         reverse('portal_accounts:manage_profile'))
