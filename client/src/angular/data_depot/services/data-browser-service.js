@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import angular from 'angular';
+import $ from 'jquery';
 import copyModalTemplate from '../modals/data-browser-service-copy.html';
 import moveModalTemplate from '../modals/data-browser-service-move.html';
 import mkdirModalTemplate from '../modals/data-browser-service-mkdir.html';
@@ -162,7 +163,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     var trashPath = _trashPath();
     tests.canTrash = ($state.current.name === 'wb.data_depot.db' || $state.current.name === 'db.projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && !_.some(files, function(sel) { return isProtected(sel); });
     tests.canDelete = $state.current.name === 'wb.data_depot.db' && files.length >= 1 && currentState.listing.path === trashPath;
-    
+
     return tests;
   }
 
@@ -548,7 +549,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
                       reader.onload = function(e){
                         var content = JSON.parse(e.target.result);
                         var target = $('.nbv-preview')[0];
-                        nbv.render(content, target);
+                        // nbv.render(content, target);
                       };
 
                       reader.readAsText(blob);
@@ -569,9 +570,9 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         $scope.download = function() {
           download(file);
         };
-        $scope.share = function() {
-          share(file);
-        };
+        // $scope.share = function() {
+        //   share(file);
+        // };
         $scope.copy = function() {
           copy(file);
         };
@@ -581,16 +582,16 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         $scope.rename = function() {
           rename(file);
         };
-        $scope.viewMetadata = function() {
-          $scope.close();
-          viewMetadata([file]);
-        };
+        // $scope.viewMetadata = function() {
+        //   $scope.close();
+        //   viewMetadata([file]);
+        // };
         $scope.trash = function() {
           trash(file);
         };
-        $scope.rm = function() {
-          rm(file);
-        };
+        // $scope.rm = function() {
+        //   rm(file);
+        // };
 
         $scope.close = function () {
           $uibModalInstance.dismiss();
