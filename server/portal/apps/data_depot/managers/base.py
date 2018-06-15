@@ -291,7 +291,7 @@ class AgaveFileManager(AbstractFileManager):
 
         return _file.delete()
 
-    def download(self, file_id, preview=True, **kwargs):
+    def download(self, file_id, preview=True, force=False, **kwargs):
         """Download a file.
 
         :param str file_id: Id representing a file/folder.
@@ -311,7 +311,7 @@ class AgaveFileManager(AbstractFileManager):
 
         # if force=True (which is default), agave will automatically
         # set the Content-Disposition for download
-        url = _file.postit(force=False)
+        url = _file.postit(force=force)
 
         if _file.ext in BaseFile.SUPPORTED_TEXT_PREVIEW_EXTS:
             file_type = 'text'

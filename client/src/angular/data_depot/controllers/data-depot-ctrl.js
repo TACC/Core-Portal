@@ -113,7 +113,7 @@ export default function DataDepotCtrl(
             if (file.type === 'file') {
                 DataBrowserService.preview(file, $scope.browser.listing);
             } else {
-                $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path}, {reload: true});
+                $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path}, {reload: false});
             }
         };
 
