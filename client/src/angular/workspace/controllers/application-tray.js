@@ -1,5 +1,5 @@
 import angular from 'angular';
-var $ = require('jquery');
+import $ from 'jquery';
 
  function ApplicationTrayCtrl($location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, Notifications, $mdToast) {
   'ngInject';
