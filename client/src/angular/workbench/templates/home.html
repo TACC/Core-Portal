@@ -3,7 +3,7 @@
     <div class="side-nav-button" ui-sref="wb.dashboard"  ui-sref-active="active">
       <i class="fa portal-icon-dashboard" title="Workbench"></i>
     </div>
-    <div class="side-nav-button" ui-sref="wb.data_depot({'systemId':vm.mydata_system.systemId, 'path': '/'})" ui-sref-active="active">
+    <div class="side-nav-button" ui-sref="wb.data_depot.db({'systemId': vm.mydata_system.systemId, 'path': '', name: vm.mydata_system.name, 'directory': 'agave'})" ui-sref-active="active">
       <i class="fa portal-icon-data" title="Data Depot"></i>
     </div>
     <div class="side-nav-button" ui-sref="wb.workspace" ui-sref-active="active">
