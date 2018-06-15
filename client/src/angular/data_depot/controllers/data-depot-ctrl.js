@@ -47,35 +47,35 @@ export default function DataDepotCtrl(
     };
 
     $scope.browser = DataBrowserService.state();
-
+    
     $scope.openPushPublicKeyForm = ()=>{
         $scope.browser.ui.pushKeyModalOpening = true;
         SystemsService.get(options.system)
-            .then((sys)=>{
-                return $uibModal.open({
-                    component: 'SystemPushKeysModal',
-                    resolve: {
-                        sys: ()=>{
-                            return sys;
-                        },
+        .then((sys)=>{
+            return $uibModal.open({
+                component: 'SystemPushKeysModal',
+                resolve: {
+                    sys: ()=>{
+                        return sys;
                     },
-                }).result;
-            }, (err)=>{
-                $scope.browser.error.message = err.data;
-                $scope.browser.error.status = err.status;
-            }).then(()=>{
-                $scope.browser = DataBrowserService.state();
-                $scope.browser.error = null;
-                $scope.browser.ui.message.class = 'alert-success';
-                $scope.browser.ui.message.show = true;
-                $scope.browser.ui.message.content = 'Public key pushed ' +
-                    'successfully. Please click on My Data again';
-            }).finally(()=>{
-                $scope.browser.ui.pushKeyModalOpening = false;
-            });
+                },
+            }).result;
+        }, (err)=>{
+            $scope.browser.error.message = err.data;
+            $scope.browser.error.status = err.status;
+        }).then(()=>{
+            $scope.browser = DataBrowserService.state();
+            $scope.browser.error = null;
+            $scope.browser.ui.message.class = 'alert-success';
+            $scope.browser.ui.message.show = true;
+            $scope.browser.ui.message.content = 'Public key pushed ' +
+            'successfully. Please click on My Data again';
+        }).finally(()=>{
+            $scope.browser.ui.pushKeyModalOpening = false;
+        });
     };
-
-    if ($stateParams.name == 'My Data') {
+    
+    if (options.name == 'My Data' || options.directory == 'agave') {
         $scope.data = {
             user: Django.user,
             customRoot: {
@@ -113,7 +113,7 @@ export default function DataDepotCtrl(
             if (file.type === 'file') {
                 DataBrowserService.preview(file, $scope.browser.listing);
             } else {
-                $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path}, {reload: true});
+                $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path}, {reload: false});
             }
         };
 
@@ -151,7 +151,7 @@ export default function DataDepotCtrl(
             $event.stopPropagation();
             DataBrowserService.preview(file, $scope.browser.listing);
         };
-    } else if ($stateParams.name == 'My Projects') {
+    } else if (options.name == 'My Projects' || options.directory == 'projects') {
         $scope.ui = {};
 
         $scope.data = {
@@ -178,7 +178,7 @@ export default function DataDepotCtrl(
                 projectTitle: project.name,
             });
         };
-    } else if ($stateParams.name == 'Community Data') {
+    } else if (options.name == 'Community Data' || options.directory == 'public') {
         $scope.data = {
             user: Django.user,
             customRoot: {
