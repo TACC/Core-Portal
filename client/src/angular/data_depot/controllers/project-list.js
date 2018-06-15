@@ -3,7 +3,7 @@ import modalProjectEditTemplate from '../modals/modal-project-edit.html';
 
 export default function ProjectListCtrl($scope, $state, currentUser, ProjectService, $uibModal) {
   'ngInject';
-  console.log(currentUser);
+  
   $scope.currentUser = currentUser;
   $scope.ui = {};
   $scope.data = {

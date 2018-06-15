@@ -52,7 +52,7 @@ class NotificationPreferences(models.Model):
                                 related_name='notification_preferences')
     announcements = models.BooleanField(
         default=True,
-        verbose_name=_('Receive occasional announcements from DesignSafe'))
+        verbose_name=_('Receive occasional announcements from {}'.format(settings.PORTAL_NAMESPACE)))
 
     class Meta:
         permissions = (

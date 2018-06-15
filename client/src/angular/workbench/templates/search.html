@@ -1,8 +1,7 @@
 <div class="container-fluid" role="main" id="search">
   <div class="container-fluid" ng-controller="SearchViewCtrl">
       <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-
+        <div class="col-md-6">
           <div class="input-group">
             <input type="text" class="form-control input-lg" ng-model="data.text" placeholder="Search for..." ng-change="search(true)" ng-model-options='{debounce: 500}'>
             <span class="input-group-btn">
@@ -13,15 +12,13 @@
           </div><!-- /input-group -->
         </div>
       </div>
-
-
-        <div class="col-md-3">
+        <!-- <div class="col-md-3">
           <h2>Refine By:</h2>
           <div class=list-group>
             <a class="list-group-item" ng-class='{"active": data.type_filter == "private_files"}' ng-click='filter("private_files")'>My Data
                 <span class="badge" ng-show='data.search_results.private_files_total'> {{ data.search_results.private_files_total }}</span>
             </a>
-            <!--
+            
             <a class="list-group-item" ng-class='{"active": data.type_filter == "published"}' ng-click='filter("published")'>Published Projects
                 <span class="badge" ng-show='data.search_results.published_total'> {{ data.search_results.published_total }}</span>
             </a>
@@ -29,12 +26,12 @@
             <a class="list-group-item" ng-class='{"active": data.type_filter == "public_files"}' ng-click='filter("public_files")'>Public Files
                 <span class="badge" ng-show='data.search_results.public_files_total'> {{ data.search_results.public_files_total }}</span>
             </a>
-            -->
+           
             <a class="list-group-item" ng-class='{"active": data.type_filter == "cms"}' ng-click='filter("cms")'>Web Content
                 <span class="badge" ng-show='data.search_results.cms_total'> {{ data.search_results.cms_total }}</span>
             </a>
           </div>
-        </div>
+        </div> -->
         <h1>Coming Soon</h1>
         <div class="col-md-9" ng-show="data.search_results">
           <h2> Search Results {{makeUrl(data)}} </h2>

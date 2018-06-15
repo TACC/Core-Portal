@@ -4,7 +4,7 @@
     <div class="col-sm-3">
       <div class="dashboard-stat blue">
         <div class="visual">
-          <i class="fa fa-rocket">&nbsp;</i>
+          <i class="fa portal-icon-workspace-notext">&nbsp;</i>
         </div>
         <div class="details">
           <div class="number"> {{jobs.length}} </div>
@@ -26,7 +26,7 @@
     <div class="col-sm-3">
       <div class="dashboard-stat red">
         <div class="visual">
-          <i class="fa fa-database">&nbsp;</i>
+          <i class="fa portal-icon-data-notext">&nbsp;</i>
         </div>
         <div class="details">
           <div class="number"> {{usage.total_storage_bytes | bytes}} </div>
@@ -39,7 +39,7 @@
       <div><a href="/accounts/profile">Manage Account</a></div>
       <div><a href="/workbench/data-depot ">Data Depot</a></div>
       <div><a href="/workbench/workspace">Workspace</a></div>
-      <div><a href="/workbench/help">Training</a></div>
+      <!-- <div><a href="/workbench/help">Training</a></div> -->
     </div>
 
   </div>
@@ -151,7 +151,7 @@
               <dl class="system-def-list">
                 <dt>Name</dt>
                 <dd>{{sys.name}}</dd>
-                <dt>Stroage Host</dt>
+                <dt>Storage Host</dt>
                 <dd>{{sys.storage.host}}</dd>
                 <dt>Keys Tracked</dt>
                 <dd data-ng-if="sys.keysTracked">
@@ -232,7 +232,7 @@
               <dl class="system-def-list">
                 <dt>Name</dt>
                 <dd>{{sys.name}}</dd>
-                <dt>Stroage Host</dt>
+                <dt>Storage Host</dt>
                 <dd>{{sys.storage.host}}</dd>
                 <dt>Exec Host</dt>
                 <dd>{{sys.login.host}}</dd>

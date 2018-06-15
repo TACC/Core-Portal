@@ -26,7 +26,7 @@ class BaseAgaveFileSerializer(json.JSONEncoder):
                     _wrapped[key] = val.isoformat()
 
             try:
-                if obj._children:  # pylint: disable=protected-access
+                if obj._children is not None:  # pylint: disable=protected-access
                     kids = []
                     for child in obj.children():
                         tmp = child.to_dict()

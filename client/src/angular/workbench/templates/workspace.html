@@ -67,7 +67,7 @@
                  <thead>
                   <th>Name</th>
                  </thead>
-                 <tbody ng-if="!sate.busy">
+                 <tbody ng-if="!state.busy">
                    <tr ng-repeat="item in data.projects">
                      <td>
                        <i class="fa fa-briefcase"></i>
@@ -194,7 +194,8 @@
     </div>
     <div ng-controller="JobsStatusCtrl"
          class="workspace-panel workspace-panel-sidebar workspace-panel-sidebar-right"
-         ng-class="{'workspace-panel-collapsed': panel.collapsed}">
+         ng-class="{'workspace-panel-collapsed': panel.collapsed}"
+         ng-init="panel.collapsed = true">
          <span class="workspace-panel-title">Jobs Status</span>
          <div class="workspace-panel-content">
              <h2>

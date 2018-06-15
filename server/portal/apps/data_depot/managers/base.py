@@ -385,12 +385,12 @@ class AgaveFileManager(AbstractFileManager):
         logger.info(file_id_src)
         _file_src = self.get_file(file_id_src)
         _file_dest = self.get_file(file_id_dest)
-        try:
-            BaseFile.listing(self._ac, system=_file_dest.system, path=_file_dest.path)
-            raise Exception('Destination already exists.')
-        except HTTPError as err:
-            if err.response.status_code != 404:
-                raise
+        # try:
+        #     BaseFile.listing(self._ac, system=_file_dest.system, path=_file_dest.path)
+        #     raise Exception('Destination already exists.')
+        # except HTTPError as err:
+        #     if err.response.status_code != 404:
+        #         raise
 
         if _file_src.system == _file_dest.system:
             _file_src.move(_file_dest.system, _file_dest.path)

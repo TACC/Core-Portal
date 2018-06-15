@@ -53,7 +53,6 @@ export default function ModalUpload($scope, $q, $uibModalInstance, Modernizr, di
         }
       );
     });
-
     $q.all(tasks).then(function (results) {
       $scope.state.uploading = false;
 

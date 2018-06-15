@@ -7,7 +7,7 @@ window["jquery"] = $;
 window["tv4"] = tv4;
 
 import 'bootstrap-datepicker/dist/css/bootstrap-datepicker.css';
-// import 'angular-material/angular-material.css';
+import 'angular-material/angular-material.css';
 // import 'font-awesome/css/font-awesome.css';
 import '../css/portal.css';
 import '../css/search.css';

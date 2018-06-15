@@ -7,7 +7,7 @@
                   function ($scope, $state, Django, DataBrowserService) {
   $scope.browser = DataBrowserService.state();
 
-  if (! $scope.browser.error){
+  if (!$scope.browser.error){
     $scope.browser.listing.href = $state.href($state.current.name, {
       filePath: $scope.browser.listing.id
     });
@@ -23,7 +23,7 @@
     }
   };
 
-   $scope.resolveBreadcrumbHref = function(trailItem) {
+    $scope.resolveBreadcrumbHref = function(trailItem) {
       return $state.href($state.current.name, {filePath: trailItem.path});
     };
 

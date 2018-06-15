@@ -35,7 +35,6 @@
                                         browser.project.publicationStatus === 'publishing'">
                       <i class="fa fa-binoculars"></i><span style="display:block;">Preview</span>
                   </button>
-
                   <!--
                   <button class="btn btn-sm btn-default" title="Preview Images" ng-click="ops.previewImages()">
                       <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
@@ -65,8 +64,11 @@
                            ng-if="!tests.canDelete">
                       <i class="fa fa-trash"></i><span style="display:block;">Move to Trash</span>
                   </button> -->
-                  <!--
-                   <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="ops.rm()" ng-disabled="!tests.canDelete" ng-if="tests.canDelete">
+                  <button class="btn btn-sm btn-default" title="Move to trash" ng-click="ops.trash()"
+                           ng-disabled="true">
+                      <i class="fa fa-trash"></i><span style="display:block;">Move to Trash</span>
+                  </button>
+                   <!-- <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="ops.rm()" ng-disabled="!tests.canDelete" ng-if="tests.canDelete">
                       <i class="fa fa-trash"></i><span style="display:block;">Delete selected files</span>
                   </button> -->
               </div>
@@ -94,7 +96,7 @@
                   </button>
                   <ul class="dropdown-menu">
                       <li ng-class="{'disabled': ! test.createFiles}">
-                          <a href="#" ng-click="createFolder($event)">
+                          <a ng-click="createFolder($event)">
                                   <span class="fa-stack fa-lg">
                                       <i class="fa fa-folder fa-stack-2x"></i>
                                       <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
@@ -113,7 +115,7 @@
                       </li> -->
                       <li role="separator" class="divider"></li>
                       <li ng-class="{'disabled': ! test.createFiles}">
-                          <a href="#" ng-click="uploadFiles($event)">
+                          <a ng-click="uploadFiles($event)">
                                   <span class="fa-stack fa-lg">
                                       <i class="fa fa-file-o fa-stack-2x"></i>
                                       <i class="fa fa-cloud-upload fa-stack-1x"></i>
@@ -122,7 +124,7 @@
                           </a>
                       </li>
                       <li ng-class="{'disabled': ! test.createFiles}">
-                          <a href="#" ng-click="uploadFolders($event)">
+                          <a ng-click="uploadFolders($event)">
                                   <span class="fa-stack fa-lg">
                                       <i class="fa fa-folder-o fa-stack-2x"></i>
                                       <i class="fa fa-cloud-upload fa-stack-1x"></i>
