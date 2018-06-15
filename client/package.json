@@ -6,7 +6,7 @@
   "scripts": {
     "test": "./portal/static/vendor/node_modules/.bin/karma start karma.conf.js --single-run",
     "dev": "webpack --env dev --progress --colors --watch --config webpack.config.js",
-    "build": "webpack --env prod --display-error-details --config webpack.config.js"
+    "build": "webpack -p --env prod --display-error-details --config webpack.config.js"
   },
   "repository": {
     "type": "git",
