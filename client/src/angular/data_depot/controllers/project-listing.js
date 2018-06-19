@@ -1,6 +1,7 @@
 import _ from 'underscore';
 
 export default function ProjectListingCtrl($scope, $state, $stateParams, Django, ProjectService, DataBrowserService){
+  'ngInject';
   $scope.data = {
     customRoot: {
       name: 'My Projects',

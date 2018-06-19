@@ -71,7 +71,7 @@ font-family: 'Portal-Workbench';
 [class*=" portal-icon-"]:before {
     font-family: 'Portal-Workbench';
     font-style: normal;
-    font-size: 5vw;
+    font-size: 58px;
     speak: none;
     font-weight: normal;
     -webkit-font-smoothing: antialiased;

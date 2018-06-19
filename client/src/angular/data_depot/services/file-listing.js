@@ -1,11 +1,11 @@
 import angular from 'angular';
 import _ from 'underscore';
 
+
 function FileListing($http, $q) {
   'ngInject';
-  //var logger = Logging.getLogger('ngDesignSafe.FileListing');
 
-  function FileListing(json, apiParams) {
+  function Listing(json, apiParams) {
     angular.extend(this, json);
 
     // wrap children as FileListing instances
@@ -29,7 +29,7 @@ function FileListing($http, $q) {
     }
   }
 
-  FileListing.prototype.setEntities = function(projectId, entities){
+  Listing.prototype.setEntities = function(projectId, entities){
     var self = this;
     var path = self.path;
     self._entities = [];
@@ -79,7 +79,7 @@ function FileListing($http, $q) {
     }
   };
 
-  FileListing.prototype.uuid = function(){
+  Listing.prototype.uuid = function(){
     try{
       var parser = document.createElement('a');
       parser.href = decodeURIComponent(this._links.metadata.href);
@@ -92,12 +92,12 @@ function FileListing($http, $q) {
     }
   };
 
-  FileListing.prototype.parentPath = function(){
+  Listing.prototype.parentPath = function(){
     var pathComps = this.path.split('/');
     return pathComps.slice(0, pathComps.length - 1).join('/');
   };
 
-  FileListing.prototype.fileMgr = function(){
+  Listing.prototype.fileMgr = function(){
     if (typeof this.apiParams !== 'undefined' &&
         this.apiParams !== null &&
         !_.isEmpty(this.apiParams)){
@@ -106,7 +106,7 @@ function FileListing($http, $q) {
     return 'my-data';
   };
 
-  FileListing.prototype._baseUrl = function(){
+  Listing.prototype._baseUrl = function(){
     if (typeof this.apiParams !== 'undefined' &&
         this.apiParams !== null &&
         !_.isEmpty(this.apiParams)){
@@ -115,7 +115,7 @@ function FileListing($http, $q) {
     return '/api/data-depot/files';
   };
 
-  FileListing.prototype.listingUrl = function () {
+  Listing.prototype.listingUrl = function () {
     var urlParts = [this._baseUrl(), 'listing', this.fileMgr()];
     if (this.system) {
       urlParts.push(this.system);
@@ -129,7 +129,7 @@ function FileListing($http, $q) {
     return urlParts.join('/');
   };
 
-  FileListing.prototype.mediaUrl = function () {
+  Listing.prototype.mediaUrl = function () {
     var urlParts = [this._baseUrl(), 'media', this.fileMgr()];
     if (this.system){
       urlParts.push(this.system);
@@ -143,7 +143,7 @@ function FileListing($http, $q) {
     return urlParts.join('/');
   };
 
-  FileListing.prototype.pemsUrl = function () {
+  Listing.prototype.pemsUrl = function () {
     var urlParts = [this._baseUrl(), 'pems', this.fileMgr()];
     if (this.system){
       urlParts.push(this.system);
@@ -157,7 +157,7 @@ function FileListing($http, $q) {
     return urlParts.join('/');
   };
 
-  FileListing.prototype.metaUrl = function () {
+  Listing.prototype.metaUrl = function () {
     var urlParts = [this._baseUrl(), 'meta', this.fileMgr()];
     if (this.system){
       urlParts.push(this.system);
@@ -171,7 +171,7 @@ function FileListing($http, $q) {
     return urlParts.join('/');
   };
 
-  FileListing.prototype.searchUrl = function () {
+  Listing.prototype.searchUrl = function () {
     var urlParts = [this._baseUrl(), 'search', this.fileMgr()];
     if (this.system){
       urlParts.push(this.system);
@@ -179,11 +179,11 @@ function FileListing($http, $q) {
     return urlParts.join('/');
   };
 
-  FileListing.prototype.agaveUri = function() {
+  Listing.prototype.agaveUri = function() {
     return 'agave://' + this.system + '/' + this.path;
   };
 
-  FileListing.prototype.agaveUrl = function () {
+  Listing.prototype.agaveUrl = function () {
     return 'https://agave.designsafe-ci.org/files/v2/media/system/' + this.system + '/' + this.path;
   };
 
@@ -195,7 +195,7 @@ function FileListing($http, $q) {
    * @param {string} [options.name] The new name for the copy
    * @returns {*}
    */
-  FileListing.prototype.copy = function (options) {
+  Listing.prototype.copy = function (options) {
     var body = {
       "action": "copy",
       "system": options.system,
@@ -208,7 +208,7 @@ function FileListing($http, $q) {
     });
   };
 
-  FileListing.prototype.download = function () {
+  Listing.prototype.download = function () {
     var body = {
       "action": "download"
     };
@@ -219,7 +219,7 @@ function FileListing($http, $q) {
     });
   };
 
-  FileListing.prototype.search = function(params) {
+  Listing.prototype.search = function(params) {
     var self = this;
     return $http.get(this.searchUrl(), {params: params}).then(function(res){
       angular.extend(self, res.data);
@@ -236,7 +236,7 @@ function FileListing($http, $q) {
     });
   };
 
-  FileListing.prototype.fetch = function (params) {
+  Listing.prototype.fetch = function (params) {
     var self = this;
 
     var stopper = $q.defer();
@@ -260,7 +260,7 @@ function FileListing($http, $q) {
     return req;
   };
 
-  FileListing.prototype.getMeta = function() {
+  Listing.prototype.getMeta = function() {
     var self = this;
     return $http.get(this.metaUrl()).then(function (resp){
       angular.extend(self, resp.data);
@@ -270,7 +270,7 @@ function FileListing($http, $q) {
     });
   };
 
-  FileListing.prototype.updateMeta = function(metaObj){
+  Listing.prototype.updateMeta = function(metaObj){
     var self = this;
     return $http.put(this.metaUrl(), metaObj).then(function (resp){
       angular.extend(self, resp.data);
@@ -280,7 +280,7 @@ function FileListing($http, $q) {
     });
   };
 
-  FileListing.prototype.icon = function() {
+  Listing.prototype.icon = function() {
     if (this.type === 'dir' || this.type === 'folder') {
       return 'fa-folder';
     }
@@ -347,7 +347,7 @@ function FileListing($http, $q) {
    * @param {object} options
    * @param {string} options.name The name for the new directory
    */
-  FileListing.prototype.mkdir = function (options) {
+  Listing.prototype.mkdir = function (options) {
     if (this.type !== 'dir') {
       throw new Error('FileListing.mkdir can only be called for "dir" type FileListings.');
     }
@@ -374,7 +374,7 @@ function FileListing($http, $q) {
    * @param {string} [options.name] An optional new name for the moved file
    * @returns {*}
    */
-  FileListing.prototype.move = function (options) {
+  Listing.prototype.move = function (options) {
     var self = this;
     var body = {
       "action": "move",
@@ -402,7 +402,7 @@ function FileListing($http, $q) {
    *
    * @return {Promise}
    */
-  FileListing.prototype.listPermissions = function() {
+  Listing.prototype.listPermissions = function() {
     if (this._permissions) {
       return $q.resolve(this._permissions);
     }
@@ -422,7 +422,7 @@ function FileListing($http, $q) {
    *
    * @return {Promise}
    */
-  FileListing.prototype.preview = function () {
+  Listing.prototype.preview = function () {
     var body = {
       "action": "preview"
     };
@@ -441,7 +441,7 @@ function FileListing($http, $q) {
    * @param {string} options.name The new name for this file.
    * @returns {Promise}
    */
-  FileListing.prototype.rename = function (options) {
+  Listing.prototype.rename = function (options) {
     var self = this;
     var body = {
       "action": "rename",
@@ -461,7 +461,7 @@ function FileListing($http, $q) {
    *
    * @return {Promise}
    */
-  FileListing.prototype.rm = function () {
+  Listing.prototype.rm = function () {
     var self = this;
     return $http.delete(this.mediaUrl()).then(function (resp) {
       /* remove from self._parent.children */
@@ -482,7 +482,7 @@ function FileListing($http, $q) {
    * @param {string} options.username The username of the user whose permissions to update
    * @param {string} options.permission The new permission value
    */
-  FileListing.prototype.share = function (options) {
+  Listing.prototype.share = function (options) {
     return $http.post(this.pemsUrl(), options).then(function (resp) {
       return resp.data;
     }, function (err) {
@@ -498,7 +498,7 @@ function FileListing($http, $q) {
    *
    * @returns {Promise}
    */
-  FileListing.prototype.trash = function () {
+  Listing.prototype.trash = function () {
     var self = this;
     var body = {
       "action": "trash"
@@ -525,7 +525,7 @@ function FileListing($http, $q) {
    * Upload as a new file
    * @param {FormData} data The Multipart FormData
    */
-  FileListing.prototype.upload = function (data) {
+  Listing.prototype.upload = function (data) {
     return $http.post(this.mediaUrl(), data, {headers: {'Content-Type': undefined}})
       .then(function (result) {
         return result.data;
@@ -569,7 +569,7 @@ function FileListing($http, $q) {
    */
   function get(options, apiParams, params) {
     var req;
-    var fl = new FileListing(options, apiParams);
+    var fl = new Listing(options, apiParams);
     if (params){
       req = fl.fetch(params) ;
     } else {
@@ -579,7 +579,7 @@ function FileListing($http, $q) {
   }
 
   function init(obj, apiParams){
-      return new FileListing(obj, apiParams);
+      return new Listing(obj, apiParams);
   }
 
   /**
@@ -590,7 +590,7 @@ function FileListing($http, $q) {
    * @param {int} options.limit
    */
   function search(options, apiParams){
-    var fl = new FileListing(options, apiParams);
+    var fl = new Listing(options, apiParams);
     return fl.search(options);
   }
 

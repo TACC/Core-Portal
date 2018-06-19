@@ -1,4 +1,5 @@
 function focusout($parse) {
+  'ngInject';
     return {
         compile: function ($element, attr) {
             var fn = $parse(attr.focusout);
