@@ -8,10 +8,10 @@ function FileListing($http, $q) {
   function Listing(json, apiParams) {
     angular.extend(this, json);
 
-    // wrap children as FileListing instances
+    // wrap children as Listing instances
     if (this.children && this.children instanceof Array) {
       this.children = _.map(this.children, function (child) {
-        var fl = new FileListing(child);
+        var fl = new Listing(child);
         fl._parent = this;
         return fl;
       }, this);
@@ -204,7 +204,7 @@ function FileListing($http, $q) {
       "resource": options.resource || ""
     };
     return $http.put(this.mediaUrl(), body).then(function (resp) {
-      return new FileListing(resp.data);
+      return new Listing(resp.data);
     });
   };
 
@@ -225,7 +225,7 @@ function FileListing($http, $q) {
       angular.extend(self, res.data);
       if (self.children && self.children instanceof Array) {
         self.children = _.map(self.children, function (child) {
-          var fl = new FileListing(child, self.apiParams);
+          var fl = new Listing(child, self.apiParams);
           fl._parent = self;
           return fl;
         }, self);
@@ -243,10 +243,10 @@ function FileListing($http, $q) {
     var req = $http.get(this.listingUrl(), {params: params, timeout:stopper.promise}).then(function (resp) {
       angular.extend(self, resp.data.response);
 
-      // wrap children as FileListing instances
+      // wrap children as Listing instances
       if (self.children && self.children instanceof Array) {
         self.children = _.map(self.children, function (child) {
-          var fl = new FileListing(child, self.apiParams);
+          var fl = new Listing(child, self.apiParams);
           fl._parent = self;
           return fl;
         }, self);
@@ -349,7 +349,7 @@ function FileListing($http, $q) {
    */
   Listing.prototype.mkdir = function (options) {
     if (this.type !== 'dir') {
-      throw new Error('FileListing.mkdir can only be called for "dir" type FileListings.');
+      throw new Error('Listing.mkdir can only be called for "dir" type Listings.');
     }
 
     var self = this;
@@ -358,7 +358,7 @@ function FileListing($http, $q) {
       "name": options.name
     };
     return $http.put(this.mediaUrl(), body).then(function (resp) {
-      var newDir = new FileListing(resp.data);
+      var newDir = new Listing(resp.data);
       self.children.push(newDir);
       return newDir;
     }, function (err) {
@@ -383,7 +383,7 @@ function FileListing($http, $q) {
       "name": options.name
     };
     return $http.put(this.mediaUrl(), body).then(function (resp) {
-      var newDir = new FileListing(resp.data);
+      var newDir = new Listing(resp.data);
       /* remove this file from previous parent's children */
       if (self._parent) {
         self._parent.children = _.reject(self._parent.children, function (child) {
@@ -398,7 +398,7 @@ function FileListing($http, $q) {
   };
 
   /**
-   * Get the permissions for this FileListing.
+   * Get the permissions for this Listing.
    *
    * @return {Promise}
    */
@@ -504,7 +504,7 @@ function FileListing($http, $q) {
       "action": "trash"
     };
     return $http.put(this.mediaUrl(), body).then(function (resp) {
-      var trashed = new FileListing(resp.data);
+      var trashed = new Listing(resp.data);
 
       /* remove this file from previous parent's children */
       if (self._parent) {
