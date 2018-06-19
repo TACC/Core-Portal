@@ -1,3 +1,4 @@
 
 [staging]
-cep-web-staging-01.tacc.utexas.edu
+# cep-web-staging-01.tacc.utexas.edu
+localhost ansible_connection=local

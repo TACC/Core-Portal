@@ -11,7 +11,7 @@
     - redis
     - git
     - {role: postgres, tags: ['postgres']}
-    - {role: newrelic, tags: ['deploy']}
+    # - {role: newrelic, tags: ['deploy']}
     - {role: nginx, tags: ['deploy']}
     - {role: git, tags: ['deploy']}
     - {role: project_setup, tags: ['deploy']}
