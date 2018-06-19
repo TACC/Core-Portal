@@ -61,10 +61,6 @@ angular.module('schemaForm')
         '/static/src/angular/workspace/templates/asf-agave-file-picker.html',
         defaults
       );
-      // schemaFormDecoratorsProvider.createDirective(
-      //   'agaveFilePicker',
-      //   '/static/src/angular/workspace/templates/asf-agave-file-picker.html'
-      // );
     }
   ]);
 
