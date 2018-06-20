@@ -92,9 +92,11 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
+    stdin_open: true
+    tty: true
     #command: nohup npm --prefix=/srv/www/portal/client run-script dev 2>&1 & ./manage.py runserver 0.0.0.0:8000
     #command: ./manage.py runserver 0.0.0.0:8000
-    command: "python manage.py runserver 0.0.0.0:8000"
+    command: ['python', '-m', 'ipdb', './manage.py', 'runserver', '0.0.0.0:8000']
     container_name: cep_django
     hostname: cep_django
 

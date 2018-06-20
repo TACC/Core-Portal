@@ -26,7 +26,8 @@ RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
 
 COPY . /srv/www/portal
 #RUN mkdir -p /srv/www/project
-RUN mkdir /var/log/portal
+
+RUN mkdir -p /var/log/portal
 
 WORKDIR /srv/www/portal/server
 
