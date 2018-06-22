@@ -83,7 +83,6 @@ INSTALLED_APPS = [
     'portal.apps.data_depot',
     'portal.apps.workspace',
     'portal.apps.signals',
-    'portal.apps.workshops',
     'portal.apps.search',
     'portal.apps.workbench',
     'portal.apps.djangoRT',

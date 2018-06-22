@@ -48,7 +48,6 @@ class TestAppsApiViews(TestCase):
             #the calling signature is something like client = Agave(**kwargs).apps.list()
             mock_client.return_value.apps.list.return_value = apps
             response = self.client.get('/api/workspace/apps/', follow=True)
-            print(response.json())
             data = response.json()
             # If the request is sent successfully, then I expect a response to be returned.
             self.assertEqual(response.status_code, 200)
