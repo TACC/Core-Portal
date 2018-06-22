@@ -8,7 +8,7 @@ import previewModalTemplate from '../modals/data-browser-service-preview.html';
 import renameModalTemplate from '../modals/data-browser-service-rename.html';
 import uploadModalTemplate from '../modals/data-browser-service-upload.html';
 
-var $ = require('jquery');
+// var $ = require('jquery');
 
 function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, Django, FileListing) {
   'ngInject';
