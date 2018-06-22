@@ -319,9 +319,9 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     var download_promises = _.map(files, function(file) {
       return file.download().then(function (resp) {
         var link = document.createElement('a');
-        link.style.display = 'none';
         link.setAttribute('href', resp.response.href);
-        link.setAttribute('download', "null");
+        link.setAttribute('download', "");
+
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

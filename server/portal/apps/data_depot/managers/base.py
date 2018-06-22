@@ -291,7 +291,7 @@ class AgaveFileManager(AbstractFileManager):
 
         return _file.delete()
 
-    def download(self, file_id, preview=True, **kwargs):
+    def download(self, file_id, preview=True, force=False, **kwargs):
         """Download a file.
 
         :param str file_id: Id representing a file/folder.
@@ -307,11 +307,13 @@ class AgaveFileManager(AbstractFileManager):
             raise ValueError('Cannot download a folder')
 
         if not preview:
+            url = _file.postit(force=True)
             return _file.download()
 
+        logger.info("preview is false")
         # if force=True (which is default), agave will automatically
         # set the Content-Disposition for download
-        url = _file.postit(force=False)
+        url = _file.postit(force=force)
 
         if _file.ext in BaseFile.SUPPORTED_TEXT_PREVIEW_EXTS:
             file_type = 'text'
@@ -328,7 +330,8 @@ class AgaveFileManager(AbstractFileManager):
             tmp = url.lstrip('https://')
             url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
         else:
-            raise ApiException('Cannot preview this item')
+            file_type = 'other'
+
         return {'href': url, 'fileType': file_type}
 
     def pems(self, file_id, username=None, **kwargs):
