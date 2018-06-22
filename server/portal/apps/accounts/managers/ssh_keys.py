@@ -109,6 +109,9 @@ class KeysManager(AbstractKeysManager):
         comment = self._get_pub_key_comment(system_id)
         string = ' '.join([public_key, comment])
         command = (
+            'if [ ! -f "~/.ssh/authorized_keys" ]; then '
+            'mkdir -p ~/.ssh/ && touch ~/.ssh/authorized_keys '
+            '&& chmod 0600 ~/.ssh/authorized_keys; fi && '
             'grep -q -F "{string}" ~/.ssh/authorized_keys || '
             'echo "{string}" >> ~/.ssh/authorized_keys').format(
                 string=string

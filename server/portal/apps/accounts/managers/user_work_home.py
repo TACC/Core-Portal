@@ -6,12 +6,14 @@ from __future__ import unicode_literals, absolute_import
 import os
 import logging
 from django.conf import settings
+from pytas.http import TASClient
 from pytas.models.users import User as TASUser
 from portal.apps.accounts.managers.user_home import UserHomeManager
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 class UserWORKHomeManager(UserHomeManager):
     """User $WORK Home Manager
@@ -20,7 +22,16 @@ class UserWORKHomeManager(UserHomeManager):
     """
     def __init__(self, *args, **kwargs):
         super(UserWORKHomeManager, self).__init__(*args, **kwargs)
-        self.tas_user = TASUser(username=self.user.username)
+        self.tas_client = TASClient(
+            baseURL=settings.TAS_URL,
+            credentials={
+                'username': settings.TAS_CLIENT_KEY,
+                'password': settings.TAS_CLIENT_SECRET
+            }
+        )
+        # self.tas_user = TASUser(username=self.user.username)
+        self.tas_user = self.tas_client.get_user(username=self.user.username)
+        logger.debug('tas user: %s', self.tas_user)
 
     def get_or_create_dir(self, *args, **kwargs):
         """Gets or creates user's home directory
@@ -30,12 +41,14 @@ class UserWORKHomeManager(UserHomeManager):
         :returns: Agave response for the folder
 
         .. note::
-            We do not need to create the directory instead we check we have a value in
+            We do not need to create the directory instead we check we
+            have a value in
             `homeDirectory` from `TAS`
         """
-        path = self.tas_user.homeDirectory#pylint: disable=no-member
+        path = self.tas_user['homeDirectory']
         assert self.tas_user
         assert self.user.username in path
+        return path
 
     def get_home_dir_abs_path(self, *args, **kwargs):
         """Returns home directory absolute path
@@ -49,12 +62,12 @@ class UserWORKHomeManager(UserHomeManager):
         :rtype: str
         """
         return os.path.join(
-            'work',
-            self.tas_user.homeDirectory,#pylint: disable=no-member
-            'stampede2'
+            settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS,
+            self.tas_user['homeDirectory'],  # pylint: disable=no-member
+            settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM
         )
 
-    def get_storage_host(self, *args, **kwargs):#pylint:disable=no-self-use
+    def get_storage_host(self, *args, **kwargs):  # pylint:disable=no-self-use
         """Returns storage host
 
         Every Agave System definition has a *Storage Host* to which it connects
@@ -68,8 +81,9 @@ class UserWORKHomeManager(UserHomeManager):
     def get_storage_username(self, *args, **kwargs):
         """Returns storage username
 
-        Every Agave System definition uses a username and ssh keys (or password)
-         to authenticate to the storage system. This function returns that username
+        Every Agave System definition uses a username and ssh keys
+        (or password) to authenticate to the storage system.
+        This function returns that username
 
         :returns: Storage username
         :rtype: str
