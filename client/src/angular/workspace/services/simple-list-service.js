@@ -31,6 +31,11 @@ function SimpleList($http, $q, appCategories) {
           }
           // Apply label for ordering
           appMeta.value.definition.orderBy = appMeta.value.definition.label;
+
+          // Parse app icon
+          if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
+            appMeta.value.definition.icon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+          }
           
           if (appMeta.value.definition.isPublic) {
             // If App has no category, place in Simulation tab

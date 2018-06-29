@@ -178,7 +178,7 @@ class FileMediaView(BaseApiView):
 
     def download(self, request, req_body, file_id, fmgr):
         """Download action"""
-        return fmgr.download(file_id)
+        return fmgr.download(file_id, force=True)
 
     def mkdir(self, request, req_body, file_id, fmgr):
         """Mkdir action"""

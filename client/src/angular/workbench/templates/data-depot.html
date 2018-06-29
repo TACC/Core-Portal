@@ -43,7 +43,7 @@
                </div>
                <div class="btn-group">
 
-                  <button class="btn btn-sm btn-default" title="Download" ng-click="ops.download()"
+                  <button class="btn btn-sm btn-default" title="Download" ng-click="ops.download(preview=False)"
                            ng-disabled="!tests.canDownload">
                       <i class="fa fa-cloud-download"></i><span style="display:block;">Download</span>
                   </button>
@@ -56,7 +56,6 @@
                       <i class="fa fa-send"></i><span style="display:block;">Share</span>
                   </button>
               </div> -->
-
               <div class="btn-group">
                   <!-- <button class="btn btn-sm btn-default" title="Move to trash" ng-click="ops.trash()"
                            ng-disabled="!tests.canTrash ||
@@ -136,7 +135,6 @@
               </div>
           </div>
         </div>
-        <!-- don't use [ng-controller="DataDepotCtrl"] twice it's alreayd set up -->
         <!-- Nav -->
         <div class="list-group list-group-root well">
             <div>
@@ -151,7 +149,7 @@
                     My Data
                 </a>
             </div>
-            <div>
+            <!--<div>
                 <a class="list-group-item"
                     ui-sref="wb.data_depot.db({
                                 systemId: null,
@@ -162,7 +160,7 @@
                     <i class="fa fa-briefcase">&ensp;</i>
                     My Projects
                 </a>
-            </div>
+            </div>-->
             <div>
                 <a class="list-group-item"
                     ui-sref="wb.data_depot.db({

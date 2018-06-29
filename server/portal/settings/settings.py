@@ -83,7 +83,6 @@ INSTALLED_APPS = [
     'portal.apps.data_depot',
     'portal.apps.workspace',
     'portal.apps.signals',
-    'portal.apps.workshops',
     'portal.apps.search',
     'portal.apps.workbench',
     'portal.apps.djangoRT',
@@ -493,6 +492,12 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
 
 PORTAL_NAMESPACE = settings_secret.\
     _PORTAL_NAMESPACE
+
+PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = settings_secret.\
+    _PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+
+PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
+    _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM
 """
 SETTINGS: ELASTICSEARCH
 """
