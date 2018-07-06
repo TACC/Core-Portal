@@ -37,69 +37,18 @@ class TestDataDepotApiViews(TestCase):
         token.save()
 
     def test_systems_list(self):
+        comm_data = settings.AGAVE_COMMUNITY_DATA_SYSTEM
+        user_data = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
         self.client.login(username='test', password='test')
-        self.assertTrue(True)
+        resp = self.client.get("/api/data-depot/systems/list/", follow=True)
+        data = resp.json()
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(comm_data in resp.content)
+        self.assertTrue(user_data in resp.content)
+        # should only return user data system and community
+        self.assertTrue("response" in data)
+        self.assertTrue(len(data["response"]) == 2)
 
     def test_projects_list(self):
         """https://agavepy.readthedocs.io/en/latest/agavepy.systems.html"""
-        
-        self.client.login(username='test', password='test')
-        systems = [
-            AttrDict({
-                "id": "123",
-                "name": "data-portal-community"
-            }),
-            AttrDict({
-                "id": "456",
-                "name": "data-tacc-work-test"
-            })
-        ]
-
-        #need to do a return_value on the mock_client because
-        #the calling signature is something like client = Agave(**kwargs).apps.list()
-        self.mock_client.systems.list.return_value = systems
-        response = self.client.get('/api/data-depot/projects/', follow=True)
-        data = response.json()
-        #make sure that the listing was actually called
-        self.assertTrue(self.mock_client.systems.list.called)
-        # If the request is sent successfully, then I expect a response to be returned.
-        self.assertEqual(response.status_code, 200)
-        # The format of the JSON responses from the data depot are something like
-        # {"response": PAYLOAD}
-        self.assertTrue("response" in data)
-
-        returned_systems = data["response"]
-
-        self.assertEqual(len(data["response"]), 0)
-
-    def test_projects_list_real(self):
-        """https://agavepy.readthedocs.io/en/latest/agavepy.systems.html"""
-
-        self.client.login(username='test', password='test')
-        systems = [
-            AttrDict({
-                "id": "data-projects-test",
-                "name": "test project 1"
-            }),
-            AttrDict({
-                "id": "data-work-test",
-                "name": "test project 2"
-            })
-        ]
-
-        #need to do a return_value on the mock_client because
-        #the calling signature is something like client = Agave(**kwargs).apps.list()
-        self.mock_client.systems.list.return_value = systems
-        response = self.client.get('/api/data-depot/projects/', follow=True)
-        data = response.json()
-        #make sure that the listing was actually called
-        self.assertTrue(self.mock_client.systems.list.called)
-        # If the request is sent successfully, then I expect a response to be returned.
-        self.assertEqual(response.status_code, 200)
-        # The format of the JSON responses from the data depot are something like
-        # {"response": PAYLOAD}
-        self.assertTrue("response" in data)
-
-        returned_systems = data["response"]
-
-        self.assertEqual(len(data["response"]), 1)
+        pass
