@@ -18,6 +18,7 @@ from portal.libs.agave.models.files import BaseFile
 from portal.libs.agave.serializers import BaseAgaveFileSerializer
 from portal.exceptions.api import ApiException
 
+from portal.apps.search.tasks import agave_indexer
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
@@ -272,8 +273,13 @@ class AgaveFileManager(AbstractFileManager):
         _file_dest = self.get_file(file_id_dest)
         if _file_src.system == _file_dest.system:
             resp = _file_src.copy(_file_dest.path)
+            agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
         else:
             resp = _file_dest.import_data(_file_src.system, _file_src.path)
+            agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
+            agave_indexer.apply_async(kwargs={'systemId': _file_dest.system}, routing_key='indexing')
+
+        
         return resp
 
     def delete(self, file_id, **kwargs):
@@ -373,7 +379,7 @@ class AgaveFileManager(AbstractFileManager):
                                             _file.path)
             else:
                 raise
-
+        agave_indexer.apply_async(kwargs={'systemId': _file.system}, routing_key='indexing')
         return resp
 
     def move(self, file_id_src, file_id_dest, **kwargs):
@@ -397,9 +403,13 @@ class AgaveFileManager(AbstractFileManager):
 
         if _file_src.system == _file_dest.system:
             _file_src.move(_file_dest.system, _file_dest.path)
+            agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
         else:
             _file_dest.importData(_file_src.system, _file_src.path)
             _file_src.delete()
+            agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
+            agave_indexer.apply_async(kwargs={'systemId': _file_dest.system}, routing_key='indexing')
+
         return _file_dest
 
     def rename(self, file_id_src, rename_to, **kwargs):
@@ -421,6 +431,7 @@ class AgaveFileManager(AbstractFileManager):
                 raise
 
         _file.rename(rename_to)
+        agave_indexer.apply_async(kwargs={'systemId': _file.system}, routing_key='indexing')
         return _file
 
     def share(self, file_id, **kwargs):
@@ -466,6 +477,7 @@ class AgaveFileManager(AbstractFileManager):
         file_id_src = '{}/{}'.format(_file.system, _file.path)
 
         resp = _file.move(_file.system, settings.AGAVE_DEFAULT_TRASH_NAME, trash_name)
+        agave_indexer.apply_async(kwargs={'systemId': _file.system}, routing_key='indexing')
         return resp
 
     def update_pems(self, file_id, pems, **kwargs):
@@ -484,7 +496,9 @@ class AgaveFileManager(AbstractFileManager):
         _file = self.get_file(file_id)
         for pem in pems:
             _file.share(pem['username'], pem['permission'])
-
+        agave_indexer.apply_async(kwargs={'systemId': _file.system, 
+                                          'filePath': _file.path,
+                                          'update_pems': True})
         return _file
 
     def upload(self, file_id_dest, uploaded_files, ensure_path=False,
@@ -512,4 +526,5 @@ class AgaveFileManager(AbstractFileManager):
         for uploaded_file in uploaded_files:
             _file.upload(uploaded_file)
 
+        agave_indexer.apply_async(kwargs={'systemId': system}, routing_key='indexing')
         return _file
