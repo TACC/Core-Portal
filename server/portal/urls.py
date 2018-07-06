@@ -60,10 +60,13 @@ urlpatterns = [
     url(r'^tickets/', include('portal.apps.djangoRT.urls',
                               namespace='tickets')),
 
+    # webhooks
+    url(r'^webhooks/', include('portal.webhooks', namespace='webhooks')),
+
     # version check.
     url(r'^version/', des_version),
 
     # cms handles everything else.
     url(r'^', include('cms.urls')),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+ ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
