@@ -214,6 +214,18 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     'portal.apps.accounts.steps.step_two',
     'portal.apps.accounts.steps.StepThree',
 ]
+PORTAL_DATA_DEPOT_MANAGERS = {
+    'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
+    'shared': 'portal.apps.data_depot.managers.shared.FileManager',
+    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
+}
+PORTAL_DATA_DEPOT_PAGE_SIZE = 100
+
+PORTAL_WORKSPACE_MANAGERS = {
+    'private': 'portal.apps.workspace.managers.private.FileManager',
+    'shared': 'portal.apps.workspace.managers.shared.FileManager',
+}
+PORTAL_WORKSPACE_PAGE_SIZE = 100
 # TAS Authentication.
 TAS_URL = 'test.com'
 TAS_CLIENT_KEY = 'test'
