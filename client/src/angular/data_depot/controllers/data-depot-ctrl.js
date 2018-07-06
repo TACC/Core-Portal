@@ -74,7 +74,7 @@ export default function DataDepotCtrl(
             $scope.browser.ui.pushKeyModalOpening = false;
         });
     };
-    
+    console.log($stateParams) 
     if (options.name == 'My Data' || options.directory == 'agave') {
         $scope.data = {
             user: Django.user,
