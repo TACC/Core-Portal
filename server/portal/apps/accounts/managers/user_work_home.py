@@ -64,7 +64,6 @@ class UserWORKHomeManager(UserHomeManager):
         return os.path.join(
             settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS,
             self.tas_user['homeDirectory'],  # pylint: disable=no-member
-            settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM
         )
 
     def get_storage_host(self, *args, **kwargs):  # pylint:disable=no-self-use

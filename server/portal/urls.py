@@ -51,8 +51,6 @@ urlpatterns = [
                                     namespace='workspace_api')),
     url(r'^api/projects/', include('portal.apps.projects.urls',
                                     namespace='projects_api')),
-    url(r'^workshops/', include('portal.apps.workshops.urls',
-                                namespace='workshops')),
     url(r'^search/', include('portal.apps.search.urls',
                              namespace='search')),
     url(r'^api/search/', include('portal.apps.search.api.urls',

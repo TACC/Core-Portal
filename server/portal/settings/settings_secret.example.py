@@ -141,6 +141,9 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     'portal.apps.accounts.steps.StepThree',
 ]
 
+_PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = 'work'
+_PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'stampede2'
+
 ########################
 # DJANGO CMS SETTINGS
 ########################
