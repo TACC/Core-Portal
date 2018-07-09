@@ -245,7 +245,7 @@ AGAVE_CLIENT_KEY = 'test'
 AGAVE_CLIENT_SECRET = 'test'
 AGAVE_SUPER_TOKEN = 'test'
 AGAVE_STORAGE_SYSTEM = 'test'
-AGAVE_COMMUNITY_DATA_SYSTEM = 'test'
+AGAVE_COMMUNITY_DATA_SYSTEM = 'test.storage'
 AGAVE_DEFAULT_TRASH_NAME = 'test'
 
 ES_HOSTS = ['test.com']
@@ -256,3 +256,6 @@ ES_PUBLIC_INDEX_ALIAS = "public"
 ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
 ES_METADATA_DOC_TYPE = "metadata"
+
+HAYSTACK_CONNECTIONS = "test"
+HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
