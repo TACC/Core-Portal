@@ -6,13 +6,11 @@
                     <!-- <div class="btn-group">
                 <i class="fa fa-spinner fa-spin fa-2x"> </i>
               </div> -->
-                    
-              <form class="navbar-form navbar-left" ng-submit="ops.search()" style="display:flex" 
-            ng-hide="['Dropbox', 'Box', 'Google Drive', 'Project View', 'Project Data View'].includes(placeholder())">
-            <input class="form-control" style="width:240px;" placeholder="Search" ng-model="search.queryString">
-            <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
-        </form>
-
+                    <form class="navbar-form navbar-left" ng-submit="ops.search()" style="display:flex" 
+                        ng-hide="['Dropbox', 'Box', 'Google Drive', 'Project View', 'Project Data View'].includes(placeholder())">
+                        <input class="form-control" style="width:240px;" placeholder="Search" ng-model="search.queryString">
+                        <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
+                    </form>
                     <div class="btn-group">
                         <button class="btn btn-sm btn-default" title="Rename" ng-click="ops.rename()" ng-disabled="!tests.canRename ||
                                         browser.project.publicationStatus === 'publishing'">
@@ -20,9 +18,6 @@
                             <span style="display:block;">Rename</span>
                         </button>
                     </div>
-
-
-
                     <div class="btn-group">
 
                         <button class="btn btn-sm btn-default" title="Move" ng-click="ops.move()" ng-disabled="!tests.canMove ||
