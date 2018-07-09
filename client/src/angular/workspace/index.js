@@ -17,7 +17,6 @@ function config($interpolateProvider, $httpProvider, $urlRouterProvider, $stateP
   $translateProvider.preferredLanguage('en');
 }
 
-
 let mod = angular.module('portal.workspace', [
   'portal.workspace.controllers',
   'portal.workspace.services',

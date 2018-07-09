@@ -24,6 +24,7 @@ let mod = angular.module('portal.data_depot', [
  * @param {Object} $urlMatcherFactoryProvider - Angular prov
  * @param {Object} Django - Django factory provider (custom)
  */
+
 function config(
     $httpProvider,
     $locationProvider,

@@ -34,7 +34,6 @@ import searchTemplate from './workbench/templates/search.html';
 import helpTemplate from './workbench/templates/help.html';
 
 
-
 function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProvider) {
  'ngInject';
  $locationProvider.html5Mode({ enabled: true, requireBase: true, rewriteLinks: false});
@@ -63,7 +62,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     'template': dashboardTemplate,
     'controller': 'DashboardCtrl',
     'resolve': {
-      'test': function () {console.log("dashboard resolve");}
+      // 'test': function () {console.log("dashboard resolve");}
     }
   })
   .state('wb.data_depot', {
@@ -71,28 +70,28 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     'template': dataDepotTemplate,
     'controller': 'DataDepotCtrl',
     'resolve': {
-      'test': function () {console.log("data-depot resolve");},
+      // 'test': function () {console.log("data-depot resolve");},
     }
   })
   .state('wb.workspace', {
     'url': '/workspace',
     'template': workspaceTemplate,
     'resolve': {
-      'test': function () {console.log("workspace resolve");}
+      // 'test': function () {console.log("workspace resolve");}
     }
   })
   .state('wb.help', {
     'url': '/help',
     'template': helpTemplate,
     'resolve': {
-      'test': function () {console.log("help resolve");}
+      // 'test': function () {console.log("help resolve");}
     }
   })
   .state('wb.search', {
     'url': '/search',
     'template': searchTemplate,
     'resolve': {
-      'test': function () {console.log("search resolve");}
+      // 'test': function () {console.log("search resolve");}
     }
   });
 }
