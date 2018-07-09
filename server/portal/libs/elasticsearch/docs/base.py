@@ -52,6 +52,15 @@ class IndexedFile(DocType):
             '_comps': Text(analyzer=path_analyzer),
             '_exact': Keyword()})
     lastUpdated = Date()
+    pems = Nested(properties={
+        'username': Keyword(),
+        'recursive': Boolean(),
+        'permission': Nested(properties={
+            'read': Boolean(),
+            'write': Boolean(),
+            'execute': Boolean()
+        })
+    })
    
     def save(self, **kwargs):
         self.lastUpdated = datetime.now()

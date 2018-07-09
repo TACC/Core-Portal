@@ -44,6 +44,7 @@ export default function DataDepotCtrl(
         path: ($stateParams.filePath),
         name: ($stateParams.name),
         directory: ($stateParams.directory),
+        queryString: ($stateParams.query_string),
     };
 
     $scope.browser = DataBrowserService.state();
@@ -74,7 +75,6 @@ export default function DataDepotCtrl(
             $scope.browser.ui.pushKeyModalOpening = false;
         });
     };
-    console.log($stateParams) 
     if (options.name == 'My Data' || options.directory == 'agave') {
         $scope.data = {
             user: Django.user,
@@ -87,7 +87,7 @@ export default function DataDepotCtrl(
 
         DataBrowserService.apiParams.fileMgr = 'my-data';
         DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
-        DataBrowserService.apiParams.searchState = 'dataSearch';
+        DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
 
 
         DataBrowserService.browse(options)
@@ -113,7 +113,7 @@ export default function DataDepotCtrl(
             if (file.type === 'file') {
                 DataBrowserService.preview(file, $scope.browser.listing);
             } else {
-                $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path}, {reload: false});
+                $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path, query_string: null}, {reload: false});
             }
         };
 

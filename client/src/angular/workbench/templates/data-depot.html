@@ -7,11 +7,11 @@
                 <i class="fa fa-spinner fa-spin fa-2x"> </i>
               </div> -->
                     
-              <form class="navbar-form navbar-left"  style="display:flex" >
-              <input class="form-control" style="width:240px;" placeholder="Find in {{ placeholder() }}" ng-model="search.queryString">
-              <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
-              </form>
-               
+              <form class="navbar-form navbar-left" ng-submit="ops.search()" style="display:flex" 
+            ng-hide="['Dropbox', 'Box', 'Google Drive', 'Project View', 'Project Data View'].includes(placeholder())">
+            <input class="form-control" style="width:240px;" placeholder="Search" ng-model="search.queryString">
+            <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
+        </form>
 
                     <div class="btn-group">
                         <button class="btn btn-sm btn-default" title="Rename" ng-click="ops.rename()" ng-disabled="!tests.canRename ||
@@ -144,6 +144,7 @@
                     ui-sref="wb.data_depot.db({
                                 systemId: sysMyData.systemId,
                                 filePath:'',
+                                query_string: null,
                                 name: sysMyData.name,
                                 directory: 'agave'})" ui-sref-active="active">
                             <i class="fa fa-user">&ensp;</i>
