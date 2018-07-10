@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'termsandconditions',
     'impersonate',
     'ws4redis',
+    'haystack',
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
@@ -330,6 +331,8 @@ AGAVE_SUPER_TOKEN = settings_secret._AGAVE_SUPER_TOKEN
 AGAVE_STORAGE_SYSTEM = settings_secret._AGAVE_STORAGE_SYSTEM
 AGAVE_COMMUNITY_DATA_SYSTEM = settings_secret._AGAVE_COMMUNITY_DATA_SYSTEM
 
+PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
+
 """
 SETTINGS: DJANGO CMS
 """
@@ -437,7 +440,6 @@ CELERY_TASK_DEFAULT_QUEUE = 'default'
 CELERY_TASK_DEFAULT_EXCHANGE = 'default'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
-
 """
 SETTINGS: DATA DEPOT
 """
@@ -500,6 +502,7 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = settings_secret.\
 
 PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
     _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM
+
 """
 SETTINGS: ELASTICSEARCH
 """
@@ -513,6 +516,12 @@ ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
 ES_PUBLICATIONS_INDEX = "publications"
 ES_METADATA_DOC_TYPE = "metadata"
+
+HAYSTACK_CONNECTIONS = settings_secret._HAYSTACK_CONNECTIONS
+HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
+
+ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
+ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
 """
 SETTINGS: EXPORTS

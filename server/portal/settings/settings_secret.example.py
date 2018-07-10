@@ -148,7 +148,13 @@ _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'stampede2'
 # DJANGO CMS SETTINGS
 ########################
 
-# TBD.
+_HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'cep_elasticsearch:9200/',
+        'INDEX_NAME': 'cms',
+    }
+}
 
 ########################
 # GOOGLE ANALYTICS
