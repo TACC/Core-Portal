@@ -60,6 +60,10 @@ urlpatterns = [
     url(r'^tickets/', include('portal.apps.djangoRT.urls',
                               namespace='tickets')),
 
+    # notifications
+    url(r'^notifications/', include('portal.apps.notifications.urls',
+                                    namespace='notifications')),
+
     # webhooks
     url(r'^webhooks/', include('portal.webhooks', namespace='webhooks')),
 
