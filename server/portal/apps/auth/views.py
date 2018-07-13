@@ -103,10 +103,10 @@ def agave_oauth_callback(request):
 
             login(request, user)
             METRICS.debug("Successful oauth login for user " + user.username)
-            msg_tmpl = 'Login successful. Welcome back, %s %s!'
-            msg_tmpl = getattr(settings, 'LOGIN_SUCCESS_MSG', msg_tmpl)
-            messages.success(request, msg_tmpl % (user.first_name, user.last_name))
-            setup_user.apply_async(args=[user.username])
+            # msg_tmpl = 'Login successful. Welcome back, %s %s!'
+            # msg_tmpl = getattr(settings, 'LOGIN_SUCCESS_MSG', msg_tmpl)
+            # messages.success(request, msg_tmpl % (user.first_name, user.last_name))
+            # setup_user.apply_async(args=[user.username])
         else:
             messages.error(
                 request,

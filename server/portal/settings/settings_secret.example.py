@@ -8,7 +8,8 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 
 _SECRET_KEY = 'CHANGE ME !'
 _DEBUG = True
-_WSGI_APPLICATION = 'portal.wsgi.application'
+#_WSGI_APPLICATION = 'portal.wsgi.application'   # PROD
+_WSGI_APPLICATION = 'ws4redis.django_runserver.application'   # DEV
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
@@ -148,7 +149,13 @@ _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'stampede2'
 # DJANGO CMS SETTINGS
 ########################
 
-# TBD.
+_HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'cep_elasticsearch:9200/',
+        'INDEX_NAME': 'cms',
+    }
+}
 
 ########################
 # GOOGLE ANALYTICS
