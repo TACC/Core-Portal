@@ -8,7 +8,8 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 
 _SECRET_KEY = 'CHANGE ME !'
 _DEBUG = True
-_WSGI_APPLICATION = 'portal.wsgi.application'
+#_WSGI_APPLICATION = 'portal.wsgi.application'   # PROD
+_WSGI_APPLICATION = 'ws4redis.django_runserver.application'   # DEV
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
