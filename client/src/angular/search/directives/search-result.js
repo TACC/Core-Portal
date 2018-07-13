@@ -1,4 +1,4 @@
-import resultTempalte from '../templates/search-result.html';
+import resultTemplate from '../templates/search-result.html';
 
 export default function searchResult() {
     return {
@@ -8,7 +8,7 @@ export default function searchResult() {
         click: '&click',
         makeUrl: '&makeUrl'
       },
-      template: resultTempalte,
+      template: resultTemplate,
       link: function ($scope, elem, attrs) {
         $scope.onClick = function (listing) {
           $scope.click(listing);

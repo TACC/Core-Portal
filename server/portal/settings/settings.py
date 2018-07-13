@@ -514,6 +514,7 @@ ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
 ES_PUBLICATIONS_INDEX = "publications"
 ES_METADATA_DOC_TYPE = "metadata"
+ES_CMS_INDEX = "cms"
 
 HAYSTACK_CONNECTIONS = settings_secret._HAYSTACK_CONNECTIONS
 

@@ -83,8 +83,10 @@ class FileListingView(BaseApiView):
         elif query_string is not None:
             search = SearchController.search_my_data(request.user.username, query_string, offset, limit)
             results = search.execute()
+            system = '.'.join([
+                settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, request.user.username])
             
-            listing = BaseFile(fmgr._ac, 'cep.home.jarosenb')
+            listing = BaseFile(fmgr._ac, system)
             children = [BaseFile(fmgr._ac, **result.to_dict()) for result in results]
             listing._children = children
 
