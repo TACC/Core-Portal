@@ -109,10 +109,9 @@ def generic_webhook_handler(request):
 @csrf_exempt
 def job_notification_handler(request):
     JOB_EVENT = 'job'
-    logger.debug('request body: {}'.format(request.body))
-
-    try:
-        notification = json.loads(request.body)
+    #logger.debug('request body: {}'.format(request.POST.json()))
+    if request.method == 'GET':
+        notification = request.GET.dict()
         logger.info('notification body: {}'.format(notification))
         logger.info('notification name: {}'.format(notification['name']))
         job_name = notification['name']
@@ -121,7 +120,7 @@ def job_notification_handler(request):
         job_id = request.GET.get('job_id')
         job_owner = notification['owner']
         archive_path = notification['archivePath']
-    except ValueError as e:  # for testing ->used when mocking agave notification
+    elif request.method == 'POST':
         job_name = request.POST.get('job_name')
         status = request.POST.get('status')
         event = request.POST.get('event')

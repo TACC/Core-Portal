@@ -32,6 +32,7 @@ class Notification(models.Model):
 
 @receiver(portal_event)
 def receive_notification(sender, **kwargs):
+    logger.debug("Received portal_event signal")
     event_type = kwargs.get('event_type')
     event_data = kwargs.get('event_data')
     event_users = kwargs.get('event_users')
