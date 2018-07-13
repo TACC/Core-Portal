@@ -10,7 +10,7 @@ import cgi
 
 logger = logging.getLogger(__name__)
 
-WEBSOCKETS_FACILITY = 'websockets'
+WEBSOCKETS_FACILITY = 'notifications'
 
 @receiver(post_save, sender=Notification, dispatch_uid='notification_msg')
 def send_notification_ws(sender, instance, created, **kwargs):
@@ -20,15 +20,16 @@ def send_notification_ws(sender, instance, created, **kwargs):
         return
     try:
         rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=[instance.user])
-        # logger.debug(instance.to_dict())
+#        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, broadcast=True)
+#        logger.debug(instance.to_dict())
         instance_dict = json.dumps(instance.to_dict())
         msg = RedisMessage(instance_dict)
         rp.publish_message(msg)
-        # logger.debug('WS socket msg sent: {}'.format(instance_dict))
+#        logger.debug('WS socket msg sent: {}'.format(instance_dict))
     except Exception as e:
-        # logger.debug('Exception sending websocket message',
-        #              exc_info=True,
-        #              extra = instance.to_dict())
+        logger.debug('Exception sending websocket message',
+                      exc_info=True,
+                      extra = instance.to_dict())
         logger.debug('Exception sending websocket message',
                      exc_info=True)
     return

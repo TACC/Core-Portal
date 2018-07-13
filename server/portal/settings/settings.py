@@ -133,6 +133,8 @@ TEMPLATES = [
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
                 'portal.utils.contextprocessors.messages',
+                'ws4redis.context_processors.default',
+                'django.template.context_processors.static',
             ],
             'libraries':{
                 'sd2e_nav_tags': 'portal.templatetags.sd2e_nav_tags',

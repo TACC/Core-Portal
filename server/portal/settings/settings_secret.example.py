@@ -12,7 +12,7 @@ _DEBUG = True
 #_WSGI_APPLICATION = 'portal.wsgi.application'
 
 # dev _WSGI_APPLICATION settings
-_WSGI_APPLICATION = 'ws4redis.django_runserver.application'
+_WSGI_APPLICATION = 'portal.wsgi.application'
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
