@@ -82,6 +82,8 @@ INSTALLED_APPS = [
     'portal.apps.djangoRT',
     'portal.apps.projects',
     'portal.apps.licenses',
+    'portal.apps.notifications',
+    'portal.apps.api.notifications',
 ]
 
 MIDDLEWARE = [
