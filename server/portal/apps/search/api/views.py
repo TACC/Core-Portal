@@ -117,7 +117,7 @@ class SearchController(object):
         
         q = " ".join(split_query)
         search = IndexedFile.search()
-        search = search.filter(Q({'term': {'pems.username': username}}))
+        search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
         search = search.query("query_string", query=q, fields=["name", "name._exact", "keywords"])
         search = search.filter(Q('term', system=system))
         # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
