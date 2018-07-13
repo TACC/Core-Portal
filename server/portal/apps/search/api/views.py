@@ -13,6 +13,7 @@ from elasticsearch_dsl import Q, Search
 from elasticsearch_dsl.connections import connections
 from elasticsearch import TransportError, ConnectionTimeout
 from operator import ior
+from portal.libs.elasticsearch.docs.base import IndexedFile
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -107,17 +108,19 @@ class SearchController(object):
 
     @staticmethod
     def search_my_data(username, q, offset, limit):
-        systems = settings.ES_PRIVATE_SYSTEMS
-        system_queries = [Q('term', system=system) for system in systems]
-        system_filters = reduce(ior, system_queries)
-
-        search = Search(index=settings.ES_DEFAULT_INDEX)
-        search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
-        search = search.query("simple_query_string", query=q, fields=["name", "name._exact", "keywords"])
-        search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
-        search = search.filter(system_filters)
-        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
-        logger.info(search.to_dict())
+        system = '.'.join([
+            settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, username])
+        split_query = q.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR", "NOT"]:
+                split_query[i] = "*" + c + "*"
+        
+        q = " ".join(split_query)
+        search = IndexedFile.search()
+        search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
+        search = search.query("query_string", query=q, fields=["name", "name._exact", "keywords"])
+        search = search.filter(Q('term', system=system))
+        # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         return search
 
 
