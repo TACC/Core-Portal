@@ -232,6 +232,7 @@ TAS_CLIENT_SECRET = settings_secret._TAS_CLIENT_SECRET
 RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
 RT_PW = settings_secret._RT_PW
+RT_QUEUE = settings_secret._RT_QUEUE
 
 # Recaptcha Authentication.
 RECAPTCHA_PUBLIC_KEY = settings_secret._RECAPTCHA_PUBLIC_KEY
