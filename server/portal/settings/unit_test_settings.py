@@ -235,6 +235,7 @@ RT_URL = 'test'
 RT_HOST= 'test'
 RT_UN = 'test'
 RT_PW = 'test'
+RT_QUEUE = 'test'
 
 # Agave Tenant.
 AGAVE_TENANT_ID = 'sd2e'
