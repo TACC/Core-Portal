@@ -28,9 +28,9 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
       {label: 'Community Data',
         conf: {system: comdata_system.systemId, path: ''},
         apiParams: {fileMgr: 'shared', baseUrl: '/api/data-depot/files'}},
-      {label: 'My Projects',
-       conf: {system: 'projects', path: ''},
-       apiParams: {fileMgr: 'shared', baseUrl: '/api/data-depot/files'}},
+      // {label: 'My Projects',
+      //  conf: {system: 'projects', path: ''},
+      //  apiParams: {fileMgr: 'shared', baseUrl: '/api/data-depot/files'}},
     ];
     $scope.data.cOption = $scope.data.options[0];
     $scope.dataSourceUpdated();

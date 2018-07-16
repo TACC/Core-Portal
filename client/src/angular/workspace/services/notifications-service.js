@@ -13,7 +13,7 @@ function Notifications($websocket, $location, $mdToast) {
             {{ vm.content }}\
         </md-toast>',
         controller: [function  () {
-            this.content = data.event_data.message;
+            this.content = data.message;
         }],
         controllerAs: 'vm',
         hideDelay: 3000

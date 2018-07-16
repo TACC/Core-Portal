@@ -79,7 +79,7 @@ export default function DataDepotCtrl(
         $scope.data = {
             user: Django.user,
             customRoot: {
-                name: $stateParams.name,
+                name: 'My Data',
                 path: $stateParams.filePath,
                 route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
             },
@@ -157,7 +157,7 @@ export default function DataDepotCtrl(
         $scope.data = {
             user: Django.user,
             customRoot: {
-                name: $stateParams.name,
+                name: 'My Projects',
                 path: $stateParams.filePath,
                 route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
             },
@@ -182,7 +182,7 @@ export default function DataDepotCtrl(
         $scope.data = {
             user: Django.user,
             customRoot: {
-                name: $stateParams.name,
+                name: 'Community Data',
                 path: $stateParams.filePath,
                 route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
             },

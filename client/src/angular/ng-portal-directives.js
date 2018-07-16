@@ -245,6 +245,4 @@ mod.directive('dsUser', [
   }
 ]);
 
-
-
 export default mod;

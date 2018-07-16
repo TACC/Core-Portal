@@ -82,6 +82,8 @@ INSTALLED_APPS = [
     'portal.apps.djangoRT',
     'portal.apps.projects',
     'portal.apps.licenses',
+    'portal.apps.notifications',
+    'portal.apps.api.notifications',
 ]
 
 MIDDLEWARE = [
@@ -235,6 +237,7 @@ RT_URL = 'test'
 RT_HOST= 'test'
 RT_UN = 'test'
 RT_PW = 'test'
+RT_QUEUE = 'test'
 
 # Agave Tenant.
 AGAVE_TENANT_ID = 'sd2e'
