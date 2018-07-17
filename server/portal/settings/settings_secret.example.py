@@ -78,29 +78,7 @@ _RESULT_BACKEND_DB = '0'
 # ELASTICSEARCH SETTINGS
 ########################
 
-_ES_HOSTS = {
-    'default': {
-        'hosts': [
-            'PROJECTVM.tacc.utexas.edu',
-            'PROJECTVM.tacc.utexas.edu',
-        ],
-    },
-    'staging': { #dev/qa
-        'hosts':  [
-            'PROJECTVMSTAGING.tacc.utexas.edu',
-        ]
-    },
-    'dev': {
-        'hosts': [
-            'elasticsearch'
-        ]
-    },
-    'localhost': {
-        'hosts': [
-            'localhost'
-        ]
-    }
-}
+_ES_HOSTS = ["elasticsearch"]
 
 ########################
 # CELERY SETTINGS
