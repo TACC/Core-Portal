@@ -200,7 +200,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     currentState.reachedEnd = false;
     currentState.busyListingPage = false;
     currentState.page = 0;
-    currentBrowseRequest =  FileListing.get(options, apiParams);
+    currentBrowseRequest =  FileListing.get(options, apiParams, {queryString: options.queryString});
 
     currentBrowseRequest.then(function (listing) {
       select([], true);

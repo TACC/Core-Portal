@@ -8,8 +8,9 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 
 _SECRET_KEY = 'CHANGE ME !'
 _DEBUG = True
-#_WSGI_APPLICATION = 'portal.wsgi.application'   # PROD
-_WSGI_APPLICATION = 'ws4redis.django_runserver.application'   # DEV
+
+#_WSGI_APPLICATION = 'ws4redis.django_runserver.application'  # DEV
+_WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
@@ -35,6 +36,7 @@ _TAS_CLIENT_SECRET='secret'
 _RT_HOST='https://consult.tacc.utexas.edu/REST/1.0'
 _RT_UN='username'
 _RT_PW='password'
+_RT_QUEUE = 'QUEUENAME'
 
 # Recaptcha Authentication.
 _RECAPTCHA_PUBLIC_KEY='public_key'
@@ -62,13 +64,13 @@ _AGAVE_COMMUNITY_DATA_SYSTEM = 'storage_system'
 
 _BROKER_URL_USERNAME = 'dev'
 _BROKER_URL_PWD = 'dev'
-_BROKER_URL_HOST = 'dev'
+_BROKER_URL_HOST = 'cep_rabbitmq'
 _BROKER_URL_PORT = '5672'
 _BROKER_URL_VHOST = 'dev'
 
-_RESULT_BACKEND_USERNAME = 'username'
-_RESULT_BACKEND_PWD = 'pwd'
-_RESULT_BACKEND_HOST = 'localhost'
+_RESULT_BACKEND_USERNAME = 'dev'
+_RESULT_BACKEND_PWD = 'dev'
+_RESULT_BACKEND_HOST = 'cep_redis'
 _RESULT_BACKEND_PORT = '6379'
 _RESULT_BACKEND_DB = '0'
 
@@ -125,15 +127,16 @@ _ES_HOSTS = {
 # Absolute path where home directories should be created.
 # Absolute with respect to the host
 # Use only if all home directories are under one parent directory.
-_PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/path/to/home_dirs'
+_PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/home/wma_portal/cep/home_dirs/'
 # Relative path from the default sotrage system where home directories
 # should be created.
 # Use only if all home directories are under one parent directory.
 # NOTE: Replace PORTAL_NAME with name of project (e.g. - cep).
+_PORTAL_ADMIN_USERNAME = 'wma_prtl'
 _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
-_PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'PORTAL_NAME.home'
+_PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home'
 _PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
-_PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'PORTAL_NAME.project'
+_PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'
 _PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [

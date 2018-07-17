@@ -9,10 +9,12 @@ from django.utils.decorators import method_decorator
 from django.conf import settings
 from portal.views.base import BaseApiView
 import random
+from elasticsearch import TransportError
 from elasticsearch_dsl import Q, Search
 from elasticsearch_dsl.connections import connections
 from elasticsearch import TransportError, ConnectionTimeout
 from operator import ior
+from portal.libs.elasticsearch.docs.base import IndexedFile
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -24,8 +26,10 @@ class SearchController(object):
     @staticmethod
     def execute_search(request, type_filter, q, offset, limit):
         if type_filter == 'public_files':
+            return None
             es_query = SearchController.search_public_files(q, offset, limit)
         elif type_filter == 'published':
+            return None
             es_query = SearchController.search_published(q, offset, limit)
         elif type_filter == 'cms':
             es_query = SearchController.search_cms_content(q, offset, limit)
@@ -54,8 +58,8 @@ class SearchController(object):
 
         out['total_hits'] = res.hits.total
         out['hits'] = hits
-        out['public_files_total'] = SearchController.search_public_files(q, offset, limit).count()
-        out['published_total'] = SearchController.search_published(q, offset, limit).count()
+        out['public_files_total'] = 0 # SearchController.search_public_files(q, offset, limit).count()
+        out['published_total'] = 0 # SearchController.search_published(q, offset, limit).count()
         out['cms_total'] = SearchController.search_cms_content(q, offset, limit).count()
         out['private_files_total'] = SearchController.search_my_data(request.user.username, q, offset, limit).count()
 
@@ -82,7 +86,7 @@ class SearchController(object):
     @staticmethod
     def search_public_files(q, offset, limit):
         """search public files"""
-        systems = settings.ES_PUBLIC_SYSTEMS
+        systems = [settings.ES_PUBLIC_INDEX]
         system_queries = [Q('term', system=system) for system in systems]
         filters = reduce(ior, system_queries)
         
@@ -107,17 +111,19 @@ class SearchController(object):
 
     @staticmethod
     def search_my_data(username, q, offset, limit):
-        systems = settings.ES_PRIVATE_SYSTEMS
-        system_queries = [Q('term', system=system) for system in systems]
-        system_filters = reduce(ior, system_queries)
-
-        search = Search(index=settings.ES_DEFAULT_INDEX)
-        search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
-        search = search.query("simple_query_string", query=q, fields=["name", "name._exact", "keywords"])
-        search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
-        search = search.filter(system_filters)
-        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
-        logger.info(search.to_dict())
+        system = '.'.join([
+            settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, username])
+        split_query = q.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR", "NOT"]:
+                split_query[i] = "*" + c + "*"
+        
+        q = " ".join(split_query)
+        search = IndexedFile.search()
+        search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
+        search = search.query("query_string", query=q, fields=["name", "name._exact", "keywords"])
+        search = search.filter(Q('term', system=system))
+        # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         return search
 
 

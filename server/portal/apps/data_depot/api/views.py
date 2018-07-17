@@ -12,6 +12,9 @@ from portal.apps.data_depot.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.accounts.managers.accounts import get_user_home_system_id
+from portal.libs.agave.models.files import BaseFile
+
+from portal.apps.search.api.views import SearchController
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -73,7 +76,20 @@ class FileListingView(BaseApiView):
         fmgr = get_manager(request, file_mgr_name)
         offset = kwargs.get('offset', 0)
         limit = kwargs.get('limit', 100)
-        listing = fmgr.listing(file_id, offset=offset, limit=limit)
+        query_string = request.GET.get('queryString')
+        if query_string is None:
+            listing = fmgr.listing(file_id, offset=offset, limit=limit)
+
+        elif query_string is not None:
+            search = SearchController.search_my_data(request.user.username, query_string, offset, limit)
+            results = search.execute()
+            system = '.'.join([
+                settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, request.user.username])
+            
+            listing = BaseFile(fmgr._ac, system)
+            children = [BaseFile(fmgr._ac, **result.to_dict()) for result in results]
+            listing._children = children
+
         return JsonResponse({'response': listing},
                             encoder=fmgr.encoder_cls)
 

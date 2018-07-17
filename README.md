@@ -43,11 +43,7 @@ _server/portal/settings_
     # No edits required.
 
     # server/conf/rabbitmq.conf
-    ...
-    { default_pass, <<"dev">> },
-    { default_user, <<"dev">> },
-    { default_vhost, <<"dev">> },
-    ...
+    # No edits required.
 
     # server/conf/redis.conf
     # No edits required.
@@ -56,15 +52,10 @@ _server/portal/settings_
     # No edits required.
 
     # server/conf/env_files/rabbitmq.env
-    RABBITMQ_DEFAULT_USER=dev
-    RABBITMQ_DEFAULT_PASS=dev
-    RABBITMQ_DEFAULT_VHOST=dev
+    # No edits required
 
     # server/conf/nginx/nginx.conf
-    # line 33:
-    server_name  cep.dev;
-    # line 39:
-    server_name  cep.dev;
+    # No edits required
 
     # server/portal/settings/settings_secret.py
     # These values will be secured in UT Stache under `CEP_portal_secrets`
@@ -115,6 +106,56 @@ _server/portal/settings_
     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.dev/accounts/login`). After succesful login, you can use the debug server at `http://cep.dev:8000`._
 
     _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
+
+### Installing local CA
+
+For your browser to open your local development environment, you need to configure your computer to accept the development environment's self-signed certificates.
+Every file needed is in `conf/nginx/certs`.
+
+#### OSX
+
+1. Open mac's Keychain Access
+2. File > Import Items
+3. Navigate to `./server/conf/nginx/certificates`
+4. Select `ca.pem`
+5. Search for CEP and double click on the certificate
+6. In the Trust section, find the "When using this certificate" dropdown and select "Always Trust"
+7. Close the window to save.
+
+#### Linux
+
+1. `$ cd ./server/conf/nginx/certificates`
+2. `$ sudo mkdir /usr/local/share/ca-certificates/extra`
+3. `$ sudo cp ca.pem /usr/local/share/ca-certificates/extra/designsafeCA.pem`
+4. `$ sudo update-ca-certificates`
+
+#### Firefox UI
+
+1. Go to preferences
+3. Search for Authorities
+4. Click on "View Certificates" under "Certificates"
+5. On the Certificate Manager go to the "Authorities" tab
+6. Click on "Import..."
+7. Browse to `./server/conf/nginx/certificates`
+8. Select `ca.pem`
+
+#### Firefox CLI (not tested)
+
+1. `sudo apt-get install libnss3-tools` (or proper package manager)
+2. `certutil -A -n "designsafeCA" -t "TCu,Cu,Tu" -i ca.pem -d ${DBDIR}`
+3. `$DBDIR` differs from browser to browser for more info:
+    Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
+    Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
+
+### Creating Local CA and signed cert
+
+1. Generate RSA-2048 key for CA: `openssl genrsa -des3 -out ca.key 2048` (This file should already be in the repo)
+2. Generate root CA certificate: `openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.pem` (Root CA cert is valid for 365 days. Keep any form values to "Designsafe CA")
+3. Generate RSA-2048 key for local dev site: `openssl genrsa out designsafe.dev.key 2048` (This file should already be in the repo)
+4. Generate Cert Request (CSR): `openssql req -new -key -designsafe.dev.key -out designsafe.dev.csr` (Keep any form values to "Designsafe CA")
+5. Make sure `designsafe.dev.ext` is correct
+6. Generate Cert: `openssl x509 -req -in designsafe.dev.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out designsafe.dev.crt -days 365 -sha256 -extfile designsafe.dev.ext` (Cert is valid for 365 days. Keep default form values defined in .conf file)
+7. Files created: `designsafe.dev.key` (site private key), `designsafe.dev.csr` (site certificate signing request), `designsafe.dev.crt` (actual site certificate), `ca.key` (CA private key) and `ca.pem` (CA certificate).
 
 
 ### TBD

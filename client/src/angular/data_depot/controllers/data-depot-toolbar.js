@@ -70,7 +70,8 @@ export default function DataDepotToolbarCtrl($scope, $state, $uibModal, Django, 
       var state = $scope.apiParams.searchState;
       $state.go(state, {'query_string': $scope.search.queryString,
                  'systemId': $scope.browser.listing.system,
-                 'filePath': '$SEARCH'});
+                 'filePath': ''
+                });
     }
   };
 };

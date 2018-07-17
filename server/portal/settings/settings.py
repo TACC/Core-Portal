@@ -89,6 +89,8 @@ INSTALLED_APPS = [
     'portal.apps.djangoRT',
     'portal.apps.projects',
     'portal.apps.licenses',
+    'portal.apps.notifications',
+    'portal.apps.api.notifications',
 ]
 
 MIDDLEWARE = [
@@ -131,6 +133,8 @@ TEMPLATES = [
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
                 'portal.utils.contextprocessors.messages',
+                'ws4redis.context_processors.default',
+                'django.template.context_processors.static',
             ],
             'libraries':{
                 'sd2e_nav_tags': 'portal.templatetags.sd2e_nav_tags',
@@ -232,6 +236,7 @@ TAS_CLIENT_SECRET = settings_secret._TAS_CLIENT_SECRET
 RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
 RT_PW = settings_secret._RT_PW
+RT_QUEUE = settings_secret._RT_QUEUE
 
 # Recaptcha Authentication.
 RECAPTCHA_PUBLIC_KEY = settings_secret._RECAPTCHA_PUBLIC_KEY
@@ -514,6 +519,7 @@ ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
 ES_PUBLICATIONS_INDEX = "publications"
 ES_METADATA_DOC_TYPE = "metadata"
+ES_CMS_INDEX = "cms"
 
 HAYSTACK_CONNECTIONS = settings_secret._HAYSTACK_CONNECTIONS
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
