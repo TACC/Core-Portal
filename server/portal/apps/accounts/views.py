@@ -98,7 +98,8 @@ def request_access(request):
                     )
                     if tracker.login():
                         tracker.create_ticket(
-                            Queue='Web & Mobile Apps',
+                            #Queue='Web & Mobile Apps',
+                            Queue=settings.RT_QUEUE,
                             Subject='New User Access Request',
                             Text=('User {username} is requesting '
                                   'access to Portal.').format(
@@ -131,7 +132,8 @@ def request_access(request):
         access_form = forms.RequestAccessForm()
 
     context = {
-        'access_form': access_form
+        'access_form': access_form,
+        'rt_qn': settings.RT_QN,
     }
     return render(request, 'portal/apps/accounts/request_access.html', context)
 
