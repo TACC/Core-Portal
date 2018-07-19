@@ -237,6 +237,7 @@ RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
 RT_PW = settings_secret._RT_PW
 RT_QUEUE = settings_secret._RT_QUEUE
+RT_QN = settings_secret._RT_QN
 
 # Recaptcha Authentication.
 RECAPTCHA_PUBLIC_KEY = settings_secret._RECAPTCHA_PUBLIC_KEY
