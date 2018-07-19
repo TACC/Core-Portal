@@ -358,7 +358,7 @@ function FileListing($http, $q) {
       "name": options.name
     };
     return $http.put(this.mediaUrl(), body).then(function (resp) {
-      var newDir = new Listing(resp.data);
+      var newDir = new Listing(resp.data.response);
       self.children.push(newDir);
       return newDir;
     }, function (err) {
@@ -449,7 +449,8 @@ function FileListing($http, $q) {
     };
     return $http.put(this.mediaUrl(), body).then(function (resp) {
       /* update self */
-      angular.extend(self, resp.data);
+      angular.extend(self, resp.data.response);
+      return self;
     }, function (err) {
       return $q.reject(err.data);
     });
