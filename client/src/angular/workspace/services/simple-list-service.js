@@ -23,6 +23,8 @@ function SimpleList($http, $q, appCategories) {
           self.lists[tab] = [];
         });
 
+        const AGAVE_TENANT_BASEURL = (new URL(response.data.response[0]._links.owner.href)).hostname;
+
         angular.forEach(response.data.response, function (appMeta) {
 
           // If label is undefined, set as id
@@ -35,6 +37,13 @@ function SimpleList($http, $q, appCategories) {
           // Parse app icon
           if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
             appMeta.value.definition.icon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+          }
+
+          // Is Public? NOTE: Only needed for tacc.prod tenant
+          if (AGAVE_TENANT_BASEURL == "api.tacc.utexas.edu") {
+            if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('isPublic')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('isPublic')).length != 0) {
+              appMeta.value.definition.isPublic = (appMeta.value.definition.tags.filter(s => s.includes('isPublic'))[0].split(':')[1] == 'true');
+            }
           }
           
           if (appMeta.value.definition.isPublic) {
