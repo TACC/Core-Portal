@@ -286,6 +286,8 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
           return f.copy({system: result.system, path: result.path, resource: result.resource}).then(function (result) {
             //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
             return result;
+          }, function (err) {
+            currentState.busy = false;
           });
         });
         return $q.all(copyPromises).then(function (results) {
@@ -453,6 +455,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
 
     return modal.result.then(
       function (result) {
+        console.log('busy');
         currentState.busy = true;
         //if (result.system !== files[0].system){
         //  return $q.when(files);
@@ -461,7 +464,10 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
           return f.move({system: result.system, path: result.path}).then(function (result) {
             deselect([f]);
             //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
+            currentState.busy = false;
             return result;
+          }, function (err) {
+            currentState.busy = false;
           });
         });
         return $q.all(movePromises).then(function (results) {
@@ -628,7 +634,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
           $event.preventDefault();
           $uibModalInstance.close({file: file, renameTo: $scope.form.targetName});
         };
-
+        
         $scope.cancel = function () {
           $uibModalInstance.dismiss('cancel');
         };
@@ -649,7 +655,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
             //   context: result,
             //   msg: result
             // });
-            $state.reload();
           },
           function (err) {
             currentState.busy = false;
@@ -680,7 +685,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       currentState.error = err.data;
     });
   }
-  // Trash files does not work
+  
   /**
    *
    * @param {FileListing|FileListing[]} files The files to move to Trash

@@ -24,7 +24,7 @@ def delete_recursive(object_to_delete):
 
 # Crawl and index agave files
 @shared_task(bind=True)
-def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, update_pems = False):
+def agave_indexer(self, systemId, username=None, filePath='', recurse=True, update_pems = False):
     try:
         # Get a listing and index the results.
         if username != None:
