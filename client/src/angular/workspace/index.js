@@ -10,7 +10,18 @@ function config($interpolateProvider, $httpProvider, $urlRouterProvider, $stateP
   $translateProvider.translations('en', {
       error_system_monitor: "The execution system for this app is currently unavailable. Your job submission may fail.",
       error_app_run: "Could not find appId provided",
-      error_app_disabled: "The app you're trying to run is currently disabled. Please enable the app and try again",
+      error_app_disabled: "The app you're trying to run is currently disabled. Please enable the app and try again.",
+      error_rename_file: "There was an error renaming your file.",
+      error_move_file: "There was an error moving your file.",
+      error_copy_file: "There was an error copying your file.",
+      error_download_file: "There was an error downloading your file.",
+      error_trash_file: "There was an error when sending your file to the trash.",
+      success_rename_file: "File/folder has been renamed.",
+      success_move_file: "File/folder has been moved.",
+      success_copy_file: "File/folder has been copied.",
+      success_trash_file: "File/folder has been moved to trash.",
+      error_mkdir: "There was an error creating the file.",
+      success_mkdir: "Directory created.",
       apps_metadata_name: "portal_apps",
       apps_metadata_list_name: "portal_apps_list"
   });
