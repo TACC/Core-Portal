@@ -107,8 +107,10 @@ class MetadataView(BaseApiView):
         agave = request.user.agave_oauth.client
         meta_post = json.loads(request.body)
         meta_uuid = meta_post.get('uuid')
+
+        # NOTE: Only needed for tacc.prod tenant
         share_all = request.GET.get('share_all')
-        if share_all:
+        if share_all and settings.AGAVE_TENANT_BASEURL=='https://api.tacc.utexas.edu':
             username = request.user.username
             if username == 'wma_prtl':
                 return HttpResponse('User is admin', status=200)
@@ -222,3 +224,53 @@ class JobsView(BaseApiView):
             response = agave.jobs.submit(body=job_post)
             watch_job_status.apply_async(args=[request.user.username, response['id']], countdown=10)
             return JsonResponse({"response": response})
+
+
+@method_decorator(login_required, name='dispatch')
+class SystemsView(BaseApiView):
+
+    def get(self, request, *args, **kwargs):
+
+        roles = request.GET.get('roles')
+        user_role = request.GET.get('user_role')
+        system_id = request.GET.get('system_id')
+        if roles:
+            METRICS.info('agave.systems.listRoles', extra={
+                'operation': 'agave.systems.listRoles',
+                'user': request.user.username,
+                'info': {
+                    'system_id': system_id
+                }
+            })
+            wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            data = wma_prtl_client.systems.listRoles(systemId=system_id)
+        elif user_role:
+            METRICS.info('agave.systems.getRoleForUser', extra={
+                'operation': 'agave.systems.getRoleForUser',
+                'user': request.user.username,
+                'info': {
+                    'system_id': system_id
+                }
+            })
+            wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            data = wma_prtl_client.systems.getRoleForUser(systemId=system_id, username=request.user.username)
+        return JsonResponse({"response": data})
+    
+    def post(self, request, *args, **kwargs):
+        body = json.loads(request.body)
+        role = body['role']
+        system_id = body['system_id']
+        METRICS.info('agave.systems.updateRole', extra={
+            'operation': 'agave.systems.updateRole',
+            'user': request.user.username,
+            'info': {
+                'system_id': system_id
+            }
+        })
+        role_body = {
+            'username': request.user.username,
+            'role': role
+        }
+        wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+        data = wma_prtl_client.systems.updateRole(systemId=system_id, body=role_body)
+        return JsonResponse({"response": data})

@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import angular from 'angular';
 
-function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, SystemsService, Systems) {
+function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, SystemsService, Systems, Django) {
   "ngInject";
   $localStorage.systemChecks = {};
 
@@ -24,6 +24,22 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
       $scope.data.type = app.value.type;
       Apps.get(app.value.definition.id).then(
         function(resp) {
+          // Check if user has access to execSystem -- only necessary on tacc.prod tenant
+          if ((new URL(response.data.response._links.owner.href)).hostname == "api.tacc.utexas.edu") {
+            Systems.getSystemRoles(resp.data.response.executionSystem)
+              .then(function (response) {
+                var userHasAccess = false;
+                _.each(response.data.response, function (role) {
+                  if (role.username === Django.user) {
+                    userHasAccess = true;
+                  }
+                });
+
+                if (!userHasAccess) {
+                  Systems.updateRole(resp.data.response.executionSystem, 'USER');
+                }
+              });
+          }
         // check app execution system
         // Systems.getMonitor(resp.data.response.executionSystem)
         //   .then(
@@ -185,6 +201,6 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     $rootScope.$broadcast('close-app', $scope.data.app.id);
     closeApp();
   };
-};
+}
 
 export default ApplicationFormCtrl;
