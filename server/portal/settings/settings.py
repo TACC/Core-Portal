@@ -65,10 +65,12 @@ INSTALLED_APPS = [
     'djangocms_text_ckeditor',
     'djangocms_file',
     'djangocms_picture',
+    'djangocms_style',
+    'djangocms_forms',
     'cmsplugin_cascade',
     'cmsplugin_cascade.extra_fields',
-    'filer',
     'easy_thumbnails',
+    'filer',
     'mptt',
     # django recaptcha.
     'snowpenguin.django.recaptcha2',
@@ -222,6 +224,17 @@ DATABASES = {
 STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
+
+DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
+CMSPLUGIN_CASCADE = {
+    'alien_plugins': (
+        'TextPlugin',
+        'StylePlugin',
+        'FilerImagePlugin',
+        'FormPlugin',
+    )
+}
+
 WS4REDIS_CONNECTION = {
     'host': 'redis',
 }

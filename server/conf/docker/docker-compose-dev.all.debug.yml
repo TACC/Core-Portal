@@ -8,6 +8,8 @@ services:
       - 6379:6379
     container_name: cep_redis
     hostname: cep_redis
+    networks:
+      - cep_net
 
   rabbitmq:
     image: rabbitmq:3.6.10-management
@@ -21,11 +23,15 @@ services:
       - 15672:15672
     container_name: cep_rabbitmq
     hostname: cep_rabbitmq
+    networks:
+      - cep_net
 
   memcached:
     image: memcached:latest
     container_name: cep_memcached
     hostname: cep_memcached
+    networks:
+      - cep_net
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
@@ -40,6 +46,8 @@ services:
       - 9200:9200
     container_name: cep_elasticsearch
     hostname: cep_elasticsearch
+    networks:
+      - cep_net
 
   postgres:
     image: postgres:10.3
@@ -49,6 +57,8 @@ services:
       - 5432:5432
     container_name: cep_postgres
     hostname: cep_postgres
+    networks:
+      - cep_net
     environment:
       - POSTGRES_PASSWORD=dev
       - POSTGRES_USER=dev
@@ -71,6 +81,8 @@ services:
       - 443:443
     container_name: cep_nginx
     hostname: cep_nginx
+    networks:
+      - cep_net
 
   django:
     image: cep-portal/portal:local
@@ -99,6 +111,8 @@ services:
     command: ['python', './manage.py', 'runserver', '0.0.0.0:8000']
     container_name: cep_django
     hostname: cep_django
+    networks:
+      - cep_net
 
   workers:
     image: cep-portal/portal:local
@@ -119,9 +133,15 @@ services:
     command: "celery -A portal worker --concurrency=2"
     container_name: cep_workers
     hostname: cep_workers
+    networks:
+      - cep_net
 
 volumes:
   cep_redis_data:
   cep_es_data:
   cep_rabbitmq_data:
   cep_postgres_data:
+
+networks:
+  cep_net:
+    driver: bridge
