@@ -120,6 +120,8 @@ class MetadataView(BaseApiView):
             apps = wma_prtl_client.meta.listMetadata(q=query)
             for app_meta in apps:
                 data = wma_prtl_client.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
+                if app_meta.value['type'] == 'agave':
+                    data = wma_prtl_client.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
         elif meta_uuid:
             del meta_post['uuid']
             data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
