@@ -25,7 +25,7 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
       Apps.get(app.value.definition.id).then(
         function(resp) {
           // Check if user has access to execSystem -- only necessary on tacc.prod tenant
-          if ((new URL(response.data.response._links.owner.href)).hostname == "api.tacc.utexas.edu") {
+          if ((new URL(resp.data.response._links.owner.href)).hostname == "api.tacc.utexas.edu") {
             Systems.getSystemRoles(resp.data.response.executionSystem)
               .then(function (response) {
                 var userHasAccess = false;
