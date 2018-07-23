@@ -16,7 +16,8 @@ export default class SearchViewCtrl {
     $scope.limit = 10;
     $scope.total_hits = 0;
     $scope.hits = {};
-    $scope.data.type_filter = 'cms';
+    $scope.data.type_filter = $state.params.type_filter;
+    $scope.data.text = $state.params.query_string
     $scope.prettyFilterName = {
       'cms': 'Web Content',
       'private_files': 'My Data' ,
@@ -24,7 +25,6 @@ export default class SearchViewCtrl {
       'public_files': 'Public Files'
     };
 
-    if ($scope.text) $scope.SearchService.search($scope.text);
 
     $scope.next = function () {
       $scope.page_num = $scope.page_num + 1;
@@ -40,8 +40,12 @@ export default class SearchViewCtrl {
     $scope.filter = function(ftype) {
       $scope.data.type_filter = ftype;
       $scope.page_num = 0;
-      $scope.search();
+      $scope.search_browse();
     };
+
+    $scope.search_browse = function() {
+      $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': $scope.data.type_filter})
+    }
 
     $scope.search = function(reset) {
       if (reset) {
@@ -64,9 +68,12 @@ export default class SearchViewCtrl {
       return url;
     };
 
+    if ($scope.data.text) {
+      $scope.search(true)
+    } 
 
   }
 
-
+  
 
 }

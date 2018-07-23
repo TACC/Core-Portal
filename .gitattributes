@@ -1,3 +1,13 @@
+# Git-Crypt all the things.
+
+secretfile filter=git-crypt diff=git-crypt
+*.key filter=git-crypt diff=git-crypt
+*.password filter=git-crypt diff=git-crypt
+*.env filter=git-crypt diff=git-crypt
+*.env.json filter=git-crypt diff=git-crypt
+*.yaml filter=git-crypt diff=git-crypt
+*.yml filter=git-crypt diff=git-crypt
+
 devops/ansible/playbooks/group_vars/all.yml filter=git-crypt diff=git-crypt
 devops/ansible/playbooks/group_vars/staging.yml filter=git-crypt diff=git-crypt
 devops/ansible/playbooks/roles/secret_files/* filter=git-crypt diff=git-crypt

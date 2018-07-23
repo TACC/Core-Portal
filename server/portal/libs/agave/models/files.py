@@ -68,7 +68,7 @@ class BaseFile(BaseAgaveResource):
     def __init__(self, client, system=settings.AGAVE_STORAGE_SYSTEM, path='/', **kwargs):
         """Agave File representation
 
-        By default this class does not retrieves the file object from Agave. This is to save
+        By default this class does not retrieve the file object from Agave. This is to save
         lower latency. The file object is retrieved only when applying an action to it.
 
         .. note:: The attributes set here are used for readability. When ever an attribute
@@ -108,7 +108,7 @@ class BaseFile(BaseAgaveResource):
         return u'agave://{}/{}'.format(self.system, self.path)
 
     def children(self, offset=0, limit=100):
-        """List of childrens
+        """List of children
 
         :returns: :class:`BaseFile` list
         :rtype: list
@@ -257,6 +257,7 @@ class BaseFile(BaseAgaveResource):
         if self._links is None:
             res = self._ac.files.list(systemId=self.system,
                                       filePath=urllib.quote(self.path))
+            res[0]['name'] = os.path.basename(res[0].path)
             self._wrapped = res[0]
         return self
 
@@ -425,7 +426,7 @@ class BaseFile(BaseAgaveResource):
             listing.name = os.path.basename(listing.path)
             listing.children = [cls(client=client, **f)
                                 for f in list_result[lower:]]
-
+        
         return listing
     #pylint: enable=too-many-arguments
     def pems_list(self):

@@ -88,8 +88,12 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     }
   })
   .state('wb.search', {
-    'url': '/search',
+    'url': '/search?query_string&type_filter',
     'template': searchTemplate,
+    'params': {
+      query_string: null,
+      type_filter: 'cms'
+    },
     'resolve': {
       // 'test': function () {console.log("search resolve");}
     }
