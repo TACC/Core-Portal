@@ -3,7 +3,7 @@
     <div class="col-md-6">
       <i ng-if="listing.mimeType == 'text/directory'" class="fa fa-folder fa-lg"> </i>
       <i ng-if="listing.mimeType != 'text/directory'" class="fa fa-file-o fa-lg"> </i>
-      <a ng-href="{{ url(listing) }}"> {{listing.name}} </a>
+      <a ng-href="/workbench/data-depot/agave/{{listing.system}}/{{listing.basePath}}"> {{listing.name}} </a>
     </div>
     <div class="col-md-3">
       <span> {{ listing.lastModified | date:'medium' }} </span>
@@ -29,7 +29,7 @@
   <hr>
 </div>
 
-<div ng-if='listing.doc_type === "modelresult" && listing.highlight'>
+<div ng-if='listing.doc_type === "modelresult"'>
     <span class="label label-default"> Web Content </span>
     <p>
       <h4><a ng-href="{{listing.url || '/'}}" target="_self"> {{listing.title}} </a></h4>

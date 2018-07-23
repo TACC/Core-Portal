@@ -10,7 +10,7 @@ import uploadModalTemplate from '../modals/data-browser-service-upload.html';
 
 // var $ = require('jquery');
 
-function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, Django, FileListing) {
+function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, $translate, $mdToast, Django, FileListing) {
   'ngInject';
 
   /**
@@ -153,7 +153,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     }
     var tests = {};
     tests.canDownload = files.length >= 1 && hasPermission('READ', files) && !containsFolder(files);
-    tests.canPreview = files.length === 1 && hasPermission('READ', files);
+    tests.canPreview = files.length === 1 && hasPermission('READ', files) && !containsFolder(files);
     tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files);
     tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files);
     tests.canShare = files.length === 1 && $state.current.name === 'myData';
@@ -285,7 +285,18 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
           var system = result.system || f.system;
           return f.copy({system: result.system, path: result.path, resource: result.resource}).then(function (result) {
             //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
+            $mdToast.show($mdToast.simple()
+            .content($translate.instant('success_copy_file'))
+            .toastClass('success')
+            .parent($("#toast-container")));
             return result;
+          }, function (err) {
+            currentState.busy = false;
+            $mdToast.show($mdToast.simple()
+            .content($translate.instant('error_copy_file'))
+            .toastClass('error')
+            .parent($("#toast-container")));
+            return $q.reject(err.data);
           });
         });
         return $q.all(copyPromises).then(function (results) {
@@ -327,6 +338,12 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         document.body.removeChild(link);
 
         return resp;
+      }, function (err) {
+        $mdToast.show($mdToast.simple()
+        .content($translate.instant('error_download_file'))
+        .toastClass('error')
+        .parent($("#toast-container")));
+        return $q.reject(err.data);
       });
     });
     return $q.all(download_promises);
@@ -421,9 +438,18 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       }).then(function(newDir) {
         currentState.busy = false;
         //notify(FileEvents.FILE_ADDED, FileEventsMsg.FILE_ADDED, newDir);
+        $mdToast.show($mdToast.simple()
+        .content($translate.instant('success_mkdir'))
+        .toastClass('success')
+        .parent($("#toast-container")));
       }, function(err) {
         // TODO better error handling
         currentState.busy = false;
+        $mdToast.show($mdToast.simple()
+        .content($translate.instant('error_mkdir'))
+        .toastClass('error')
+        .parent($("#toast-container")));
+        return $q.reject(err.data);
       });
     });
   }
@@ -453,6 +479,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
 
     return modal.result.then(
       function (result) {
+        console.log('busy');
         currentState.busy = true;
         //if (result.system !== files[0].system){
         //  return $q.when(files);
@@ -461,7 +488,19 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
           return f.move({system: result.system, path: result.path}).then(function (result) {
             deselect([f]);
             //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
+            $mdToast.show($mdToast.simple()
+            .content($translate.instant('success_move_file'))
+            .toastClass('success')
+            .parent($("#toast-container")));
+            currentState.busy = false;
             return result;
+          }, function (err) {
+            currentState.busy = false;
+            $mdToast.show($mdToast.simple()
+            .content($translate.instant('error_move_file'))
+            .toastClass('error')
+            .parent($("#toast-container")));
+            return $q.reject(err.data);
           });
         });
         return $q.all(movePromises).then(function (results) {
@@ -628,7 +667,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
           $event.preventDefault();
           $uibModalInstance.close({file: file, renameTo: $scope.form.targetName});
         };
-
+        
         $scope.cancel = function () {
           $uibModalInstance.dismiss('cancel');
         };
@@ -649,10 +688,18 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
             //   context: result,
             //   msg: result
             // });
-            $state.reload();
+            $mdToast.show($mdToast.simple()
+            .content($translate.instant('success_rename_file'))
+            .toastClass('success')
+            .parent($("#toast-container")));
           },
           function (err) {
             currentState.busy = false;
+            $mdToast.show($mdToast.simple()
+            .content($translate.instant('error_rename_file'))
+            .toastClass('error')
+            .parent($("#toast-container")));
+            return $q.reject(err.data);
           });
     });
   }
@@ -680,7 +727,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       currentState.error = err.data;
     });
   }
-  // Trash files does not work
+  
   /**
    *
    * @param {FileListing|FileListing[]} files The files to move to Trash
@@ -702,9 +749,19 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     return $q.all(trashPromises).then(function(val) {
       currentState.busy = false;
       browse(currentState.listing, apiParams);
+
+      $mdToast.show($mdToast.simple()
+      .content($translate.instant('success_trash_file'))
+      .toastClass('success')
+      .parent($("#toast-container")));
       return val;
     }, function(err) {
       currentState.busy = false;
+      $mdToast.show($mdToast.simple()
+      .content($translate.instant('error_trash_file'))
+      .toastClass('error')
+      .parent($("#toast-container")));
+      return $q.reject(err.data);
     });
   }
 
