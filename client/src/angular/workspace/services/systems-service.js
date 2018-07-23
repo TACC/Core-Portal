@@ -14,6 +14,29 @@ function Systems($q, $http) {
       });
     };
 
+    this.getSystemRoles = function (system_id) {
+      return $http({
+        url: 'api/workspace/systems',
+        method: 'GET',
+        params: { 'system_id': system_id, 'roles': true }
+      });
+    };
+
+    this.getRoleForUser = function (system_id) {
+      return $http({
+        url: 'api/workspace/systems',
+        method: 'GET',
+        params: { 'system_id': system_id, 'user_role': true }
+      });
+    };
+
+    this.updateRole = function (system_id, role) {
+      return $http({
+        url: 'api/workspace/systems',
+        method: 'POST',
+        data: { 'system_id': system_id, 'role': role }
+      });
+    };
 
 }
 

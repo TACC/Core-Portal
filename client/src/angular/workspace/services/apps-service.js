@@ -191,6 +191,6 @@ function Apps($http, $q, $translate) {
   };
 
   return service;
-};
+}
 
 export default Apps;
