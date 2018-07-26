@@ -205,7 +205,6 @@ SETTINGS: LOCAL
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = settings_secret._DEBUG
-SITE_ID = 1
 
 # database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
@@ -343,6 +342,7 @@ PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 SETTINGS: DJANGO CMS
 """
 
+SITE_ID = settings_secret._SITE_ID
 DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
 CMS_PERMISSION = True
 CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
