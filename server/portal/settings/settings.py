@@ -344,8 +344,9 @@ SETTINGS: DJANGO CMS
 """
 
 DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
-
+CMS_PERMISSION = True
 CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
+
 CMSPLUGIN_CASCADE = {
     'alien_plugins': (
         'TextPlugin',
