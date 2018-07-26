@@ -223,17 +223,6 @@ DATABASES = {
 
 STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
-CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
-
-DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
-CMSPLUGIN_CASCADE = {
-    'alien_plugins': (
-        'TextPlugin',
-        'StylePlugin',
-        'FilerImagePlugin',
-        'FormPlugin',
-    )
-}
 
 WS4REDIS_CONNECTION = {
     'host': 'redis',
@@ -353,6 +342,18 @@ PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 """
 SETTINGS: DJANGO CMS
 """
+
+DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
+
+CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
+CMSPLUGIN_CASCADE = {
+    'alien_plugins': (
+        'TextPlugin',
+        'StylePlugin',
+        'FilerImagePlugin',
+        'FormPlugin',
+    )
+}
 
 CMS_TEMPLATES = (
     ('cms_page.html', 'Main Site Page'),
