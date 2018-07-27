@@ -70,7 +70,7 @@ class IndexedFile(DocType):
     def from_path(cls, username, system, path):
         search = cls.search()
         search = search.query('term', **{'path._exact': path})
-        search = search.filter('term', **{'pems.username': username})
+        search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
         search = search.filter('term', **{'system': system})
         try:
             res = search.execute()
@@ -92,7 +92,7 @@ class IndexedFile(DocType):
     def children(cls, username, system, path):
         search = cls.search()
         search = search.query('term', **{'basePath._exact': path})
-        search = search.filter('term', **{'pems.username': username})
+        search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
         search = search.filter('term', **{'system': system})
         search = search.sort('path._exact')
         try:
