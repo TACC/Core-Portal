@@ -1,3 +1,6 @@
 {% extends "base.html" %}
 {% load cms_tags staticfiles sekizai_tags menu_tags %}
-{% block content %}{% placeholder "content" %}{% endblock content %}
+{% block content %}
+  {# Creates CMS Sections to Edit in UI Plugin #}
+  {% placeholder "content" %}
+{% endblock content %}

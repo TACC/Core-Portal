@@ -56,30 +56,47 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    # django-cms apps.
+    'django.contrib.sitemaps',
+    'django.contrib.sessions.middleware',  # TEST
+
+    # Django CMS.
+    'djangocms_admin_style',
+    'djangocms_text_ckeditor',
+    'cmsplugin_cascade',
+    'cmsplugin_cascade.extra_fields',
     'cms',
     'treebeard',
     'menus',
     'sekizai',
-    'djangocms_admin_style',
-    'djangocms_text_ckeditor',
     'djangocms_file',
     'djangocms_picture',
     'djangocms_style',
     'djangocms_forms',
-    'cmsplugin_cascade',
-    'cmsplugin_cascade.extra_fields',
+    'cmsplugin_filer_file',
+    'cmsplugin_filer_folder',
+    'cmsplugin_filer_link',
+    'cmsplugin_filer_image',
+    'cmsplugin_filer_teaser',
+    'cmsplugin_filer_video',
+
+    # Django recaptcha.
+    'snowpenguin.django.recaptcha2',
+
+    # Pipeline.
     'easy_thumbnails',
     'filer',
     'mptt',
-    # django recaptcha.
-    'snowpenguin.django.recaptcha2',
-    # Vendor apps.
+    # 'reversion',
     'bootstrap3',
     'termsandconditions',
     'impersonate',
+
+    # Websockets.
     'ws4redis',
+
+    # Haystack integration.
     'haystack',
+
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
@@ -124,19 +141,21 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.template.context_processors.i18n',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django_settings_export.settings_export',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
+                'ws4redis.context_processors.default',
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
                 'portal.utils.contextprocessors.messages',
-                'ws4redis.context_processors.default',
-                'django.template.context_processors.static',
             ],
             'libraries':{
                 'sd2e_nav_tags': 'portal.templatetags.sd2e_nav_tags',
@@ -172,6 +191,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+IMPERSONATE_REQUIRE_SUPERUSER = True
+
 LOGIN_REDIRECT_URL = '/index/'
 
 # Internationalization
@@ -183,11 +204,18 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+LANGUAGES = [
+    ('en-us', 'US English')
+]
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, '../static')
+MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '../../', 'client'),
@@ -219,9 +247,6 @@ DATABASES = {
         'PORT': settings_secret._DJANGO_DB_PORT
     }
 }
-
-STATIC_ROOT = os.path.join(BASE_DIR, '../static')
-MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 
 WS4REDIS_CONNECTION = {
     'host': 'redis',
@@ -345,7 +370,16 @@ SETTINGS: DJANGO CMS
 SITE_ID = settings_secret._SITE_ID
 DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
 CMS_PERMISSION = True
-CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
+
+CMS_TEMPLATES = (
+    ('cms_page.html', 'Main Site Page'),
+)
+
+# CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
+CMSPLUGIN_CASCADE_PLUGINS = (
+    'cmsplugin_cascade.bootstrap3',
+    'cmsplugin_cascade.link',
+)
 
 CMSPLUGIN_CASCADE = {
     'alien_plugins': (
@@ -356,13 +390,56 @@ CMSPLUGIN_CASCADE = {
     )
 }
 
-CMS_TEMPLATES = (
-    ('cms_page.html', 'Main Site Page'),
+CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
+    'TextPlugin',
+    'StylePlugin',
+    'FilerImagePlugin',
+    'FormPlugin',
+    'MeetingFormPlugin',
+    'ResponsiveEmbedPlugin',
 )
 
-LANGUAGES = [
-    ('en-us', 'US English')
-]
+THUMBNAIL_PROCESSORS = (
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    #'easy_thumbnails.processors.scale_and_crop',
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+    'easy_thumbnails.processors.filters',
+)
+
+CKEDITOR_SETTINGS = {
+    'allowedContent': True
+}
+
+TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
+
+# DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
+# DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
+# DJANGOCMS_FORMS_TEMPLATES = (
+#     ('djangocms_forms/form_template/default.html', 'Default'),
+# )
+# DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
+# DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
+#     'text': ('form-control', ),
+#     'textarea': ('form-control', ),
+#     'email': ('form-control', ),
+#     'number': ('form-control', ),
+#     'phone': ('form-control', ),
+#     'url': ('form-control', ),
+#     'select': ('form-control', ),
+#     'file': ('form-control', ),
+#     'date': ('form-control', ),
+#     'time': ('form-control', ),
+#     'password': ('form-control', ),
+# }
+# DJANGOCMS_FORMS_DATETIME_FORMAT = '%d-%b-%Y %H:%M'
+
+# BOOTSTRAP3 = {
+#     'required_css_class': 'required',
+# }
+
+FILER_DEBUG = True
+FILER_ENABLE_LOGGING = True
 
 """
 SETTINGS: CELERY
