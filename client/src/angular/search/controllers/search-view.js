@@ -17,7 +17,7 @@ export default class SearchViewCtrl {
     $scope.total_hits = 0;
     $scope.hits = {};
     $scope.data.type_filter = $state.params.type_filter;
-    $scope.data.text = $state.params.query_string
+    $scope.data.text = $state.params.query_string;
     $scope.prettyFilterName = {
       'cms': 'Web Content',
       'private_files': 'My Data' ,
@@ -44,8 +44,8 @@ export default class SearchViewCtrl {
     };
 
     $scope.search_browse = function() {
-      $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': $scope.data.type_filter})
-    }
+      $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': $scope.data.type_filter});
+    };
 
     $scope.search = function(reset) {
       if (reset) {
@@ -59,7 +59,7 @@ export default class SearchViewCtrl {
           $scope.total_hits = $scope.data.search_results.total_hits;
           $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit);
         });
-      } else { $scope.data.search_results = {}; };
+      } else { $scope.data.search_results = {}; }
     };
 
     $scope.makeUrl = function(listing) {
@@ -69,7 +69,7 @@ export default class SearchViewCtrl {
     };
 
     if ($scope.data.text) {
-      $scope.search(true)
+      $scope.search(true);
     } 
 
   }

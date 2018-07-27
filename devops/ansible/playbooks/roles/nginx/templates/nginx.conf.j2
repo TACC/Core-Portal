@@ -58,7 +58,7 @@ http {
         {% if not server.livereload %}
 
         location /media  {
-            alias {{project_home_dir}}/{{project_name}}/media;
+            alias {{project_home_dir}}/{{project_name}}/server/media;
         }
 
         location /static {

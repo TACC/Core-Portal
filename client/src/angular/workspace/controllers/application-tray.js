@@ -15,6 +15,7 @@ import $ from 'jquery';
     var body = {};
     body.permission = 'READ';
 
+    // Only needed on tacc.prod tenant where we do not own the agave tenant admin
     Apps.shareAppsWithUser(body, query).then(
       $scope.simpleList.getDefaultLists(query)
         .then(function(response){
