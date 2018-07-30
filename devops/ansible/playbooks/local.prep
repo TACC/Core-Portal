@@ -1,0 +1,40 @@
+---
+- name: install everything you need to unlock repo and deploy
+  hosts: default
+  become: yes
+  user: vagrant
+
+  tasks:
+    - name: update all packages
+      yum:
+        name: "*"
+        state: latest
+
+    - name: install yum packages
+      yum:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - epel-release
+        - git
+        - python
+        - python-setuptools
+        - python-devel
+        - gcc-c++
+        - openssl-devel
+        # - python-pip
+
+    - name: clone git-crypt repo
+      git:
+        repo: "https://github.com/AGWA/git-crypt.git"
+        dest: "/tmp/git-crypt"
+        version: "master"
+        recursive: True
+
+    - name: install git-crypt
+      make:
+        chdir: "/tmp/git-crypt"
+        target: "install"
+        params:
+          PREFIX: "/usr/local"
+      become: yes
