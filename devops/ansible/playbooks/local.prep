@@ -37,11 +37,7 @@
         params:
           PREFIX: "/usr/local"
 
-    # - name: unlock repo
-    #   command: "chdir=/vagrant/ git-crypt unlock portal_crypt.key"
-
-    - name: wtf
-      shell: git_crypt > temp.txt
+    - name: unlock repo
+      shell: /usr/local/bin/git_crypt unlock /vagrant/portal_crypt.key
       args:
         chdir: /vagrant/
-        executable: /bin/bash
