@@ -38,6 +38,6 @@
           PREFIX: "/usr/local"
 
     - name: unlock repo
-      shell: /usr/local/bin/git-crypt status > temp.txt # unlock /vagrant/portal_crypt.key
+      shell: /usr/local/bin/git-crypt unlock /vagrant/portal_crypt.key
       args:
         chdir: /vagrant/
