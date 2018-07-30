@@ -48,7 +48,7 @@ export default function DataDepotCtrl(
     };
 
     $scope.browser = DataBrowserService.state();
-    
+
     $scope.openPushPublicKeyForm = ()=>{
         $scope.browser.ui.pushKeyModalOpening = true;
         SystemsService.get(options.system)
@@ -218,7 +218,7 @@ export default function DataDepotCtrl(
             if (file.type === 'file') {
                 DataBrowserService.preview(file, $scope.browser.listing);
             } else {
-                $state.go('db', {systemId: file.system, filePath: file.path});
+              $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path, query_string: null}, {reload: false});
             }
         };
 
