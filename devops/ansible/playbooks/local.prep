@@ -41,7 +41,7 @@
     #   command: "chdir=/vagrant/ git-crypt unlock portal_crypt.key"
 
     - name: wtf
-      shell: ls -lrt > temp.txt
+      shell: git_crypt > temp.txt
       args:
         chdir: /vagrant/
         executable: /bin/bash
