@@ -37,4 +37,8 @@
         target: "install"
         params:
           PREFIX: "/usr/local"
-      become: yes
+
+    - name: unlock repo
+      command: git-crypt unlock portal_crypt.key
+      args:
+        chdir: /vagrant/
