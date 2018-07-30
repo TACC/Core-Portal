@@ -39,6 +39,4 @@
           PREFIX: "/usr/local"
 
     - name: unlock repo
-      command: git-crypt unlock portal_crypt.key
-      args:
-        chdir: /vagrant/
+      command: chdir=/vagrant git-crypt unlock portal_crypt.key
