@@ -1,4 +1,10 @@
+[dev]
+localhost ansible_connection=local
 
 [staging]
 # cep-web-staging-01.tacc.utexas.edu
+localhost ansible_connection=local
+
+[prod]
+# cep-web-prod-01.tacc.utexas.edu
 localhost ansible_connection=local
