@@ -22,7 +22,6 @@
         - python-devel
         - gcc-c++
         - openssl-devel
-        # - python-pip
 
     - name: clone git-crypt repo
       git:
@@ -38,5 +37,11 @@
         params:
           PREFIX: "/usr/local"
 
-    - name: unlock repo
-      command: "chdir=/vagrant/ git-crypt unlock portal_crypt.key"
+    # - name: unlock repo
+    #   command: "chdir=/vagrant/ git-crypt unlock portal_crypt.key"
+
+    - name: wtf
+      shell: ls -lrt > temp.txt
+      args:
+        chdir: /vagrant/
+        executable: /bin/bash
