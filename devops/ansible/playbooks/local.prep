@@ -5,12 +5,6 @@
   user: vagrant
 
   tasks:
-    - name: test test test
-      shell: /usr/local/bin/git-crypt unlock /vagrant/portal_crypt.key
-      # shell: git-crypt unlock portal_crypt.key
-      args:
-        chdir: /vagrant/
-
     - name: update all packages
       yum:
         name: "*"
@@ -44,7 +38,7 @@
           PREFIX: "/usr/local"
 
     - name: unlock repo
-      shell: /usr/local/bin/git-crypt status >> temp.txt # unlock /vagrant/portal_crypt.key
+      shell: /usr/local/bin/git-crypt unlock /vagrant/portal_crypt.key
       args:
         chdir: /vagrant/
 
