@@ -48,6 +48,9 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    # Order-dependent requirement for CMS.
+    'djangocms_admin_style',  # Must precede 'django.contrib.admin'.
+
     # Core Django.
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,23 +58,29 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
+    'django.contrib.sites',                 # CMS
     'django.contrib.sitemaps',
-    'django.contrib.sessions.middleware',  # TEST
+    'django.contrib.sessions.middleware',
 
     # Django CMS.
-    'djangocms_admin_style',
-    'djangocms_text_ckeditor',
-    'cmsplugin_cascade',
-    'cmsplugin_cascade.extra_fields',
+    # - min reqs.
     'cms',
-    'treebeard',
     'menus',
+    'treebeard',
+    # - plugins
     'sekizai',
+    'djangocms_text_ckeditor',
+    'djangocms_forms',
+    'djangocms_link',
     'djangocms_file',
     'djangocms_picture',
+    'djangocms_video',
+    'djangocms_googlemap',
+    'djangocms_snippet',
     'djangocms_style',
-    'djangocms_forms',
+    'djangocms_column',
+    'cmsplugin_cascade',
+    'cmsplugin_cascade.extra_fields',
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
     'cmsplugin_filer_link',
@@ -83,8 +92,8 @@ INSTALLED_APPS = [
     'snowpenguin.django.recaptcha2',
 
     # Pipeline.
-    'easy_thumbnails',
     'filer',
+    'easy_thumbnails',
     'mptt',
     # 'reversion',
     'bootstrap3',
@@ -113,16 +122,20 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'cms.middleware.utils.ApphookReloadMiddleware',
+    'cms.middleware.utils.ApphookReloadMiddleware',    # Django CMS, must be at start of Middleware list.
+
+    # Default middleware.
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',
+    'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',   # Custom Portal Auth Check.
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+
+    # Django CMS.
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
@@ -150,8 +163,8 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
-                'sekizai.context_processors.sekizai',
-                'cms.context_processors.cms_settings',
+                'sekizai.context_processors.sekizai',       # Static Files.
+                'cms.context_processors.cms_settings',      # Django CMS.
                 'ws4redis.context_processors.default',
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
@@ -402,7 +415,6 @@ CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
-    #'easy_thumbnails.processors.scale_and_crop',
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
     'easy_thumbnails.processors.filters',
 )
