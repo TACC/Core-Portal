@@ -41,3 +41,11 @@
       shell: /usr/local/bin/git-crypt status >> temp.txt # unlock /vagrant/portal_crypt.key
       args:
         chdir: /vagrant/
+
+    - name: create root ssh directory
+      file:
+        path: "/root/.ssh"
+        state: directory
+        owner: root
+        group: root
+        mode: 0700
