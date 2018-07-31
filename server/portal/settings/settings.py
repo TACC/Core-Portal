@@ -16,6 +16,10 @@ import logging
 # import settings_secret
 from kombu import Exchange, Queue
 from portal.settings import settings_secret
+# CMS
+from django.core.urlresolvers import reverse_lazy
+from cmsplugin_cascade.utils import format_lazy
+
 
 # pylint: disable=protected-access
 # pylint: disable=invalid-name
@@ -63,11 +67,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions.middleware',
 
     # Django CMS.
-    # - min reqs.
+    # CMS plugins tha must be before 'cms'.
+    'cmsplugin_cascade',
+    'cmsplugin_cascade.clipboard',  # optional
+    'cmsplugin_cascade.extra_fields',  # optional
+    'cmsplugin_cascade.sharable',  # optional
+    'cmsplugin_cascade.segmentation',  # optional
+
+    # - CMS minimum requirements.
     'cms',
     'menus',
     'treebeard',
-    # - plugins
+
+    # - CMS remaining plugins.
     'sekizai',
     'djangocms_text_ckeditor',
     'djangocms_forms',
@@ -79,8 +91,6 @@ INSTALLED_APPS = [
     'djangocms_snippet',
     'djangocms_style',
     'djangocms_column',
-    'cmsplugin_cascade',
-    'cmsplugin_cascade.extra_fields',
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
     'cmsplugin_filer_link',
@@ -381,6 +391,8 @@ SETTINGS: DJANGO CMS
 """
 
 SITE_ID = settings_secret._SITE_ID
+FILER_DEBUG = True
+FILER_ENABLE_LOGGING = True
 DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
 CMS_PERMISSION = True
 
@@ -388,19 +400,23 @@ CMS_TEMPLATES = (
     ('cms_page.html', 'Main Site Page'),
 )
 
-# CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
-CMSPLUGIN_CASCADE_PLUGINS = (
-    'cmsplugin_cascade.bootstrap3',
-    'cmsplugin_cascade.link',
-)
+CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
+CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.link')
+CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.generic')
+CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.segmentation')
+CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.icon')
+# CMSPLUGIN_CASCADE_PLUGINS = (
+#     'cmsplugin_cascade.bootstrap3',
+#     'cmsplugin_cascade.link',
+# )
 
 CMSPLUGIN_CASCADE = {
-    'alien_plugins': (
+    'alien_plugins': [
         'TextPlugin',
         'StylePlugin',
         'FilerImagePlugin',
-        'FormPlugin',
-    )
+        'FormPlugin'
+    ]
 }
 
 CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
@@ -409,18 +425,22 @@ CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
     'FilerImagePlugin',
     'FormPlugin',
     'MeetingFormPlugin',
-    'ResponsiveEmbedPlugin',
+    'ResponsiveEmbedPlugin'
 )
 
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
-    'easy_thumbnails.processors.filters',
+    'easy_thumbnails.processors.filters'
 )
 
 CKEDITOR_SETTINGS = {
-    'allowedContent': True
+    'allowedContent': True,
+    'language': '{{ language }}',
+    'skin': 'moono-lisa',
+    'toolbar': 'CMS',
+    'stylesSet': format_lazy('default:{}', reverse_lazy('admin:cascade_texticon_wysiwig_config'))
 }
 
 TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
@@ -449,9 +469,6 @@ TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_ima
 # BOOTSTRAP3 = {
 #     'required_css_class': 'required',
 # }
-
-FILER_DEBUG = True
-FILER_ENABLE_LOGGING = True
 
 """
 SETTINGS: CELERY
