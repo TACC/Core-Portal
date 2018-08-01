@@ -96,6 +96,13 @@ INSTALLED_APPS = [
     'djangocms_video',
     'djangocms_forms',
 
+    'cmsplugin_filer_file',
+    'cmsplugin_filer_folder',
+    'cmsplugin_filer_link',
+    'cmsplugin_filer_image',
+    'cmsplugin_filer_teaser',
+    'cmsplugin_filer_video',
+
     # Django recaptcha.
     'snowpenguin.django.recaptcha2',
 
@@ -432,6 +439,13 @@ CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.link')
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.generic')
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.segmentation')
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.icon')
+
+CMSPLUGIN_FILER_IMAGE_STYLE_CHOICES = (
+    ('default', 'Default'),
+)
+CMSPLUGIN_FILER_IMAGE_DEFAULT_STYLE = 'default'
+
+TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
 
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
