@@ -1,2 +1,2 @@
 Host bitbucket.org
-    IdentityFile ~/.ssh/{{ rep_ssh_key_file }} # bitbucket
+    IdentityFile ~/.ssh/{{ rep_ssh_key_file }}
