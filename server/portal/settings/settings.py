@@ -96,14 +96,6 @@ INSTALLED_APPS = [
     'djangocms_video',
     'djangocms_forms',
 
-    # CK editor plugins.
-    # 'cmsplugin_filer_file',
-    # 'cmsplugin_filer_folder',
-    # 'cmsplugin_filer_link',
-    # 'cmsplugin_filer_image',
-    # 'cmsplugin_filer_teaser',
-    # 'cmsplugin_filer_video',
-
     # Django recaptcha.
     'snowpenguin.django.recaptcha2',
 
@@ -441,72 +433,12 @@ CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.generic')
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.segmentation')
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.icon')
 
-# CMSPLUGIN_CASCADE_PLUGINS = (
-#     'cmsplugin_cascade.bootstrap3',
-#     'cmsplugin_cascade.link',
-# )
-
-# CMSPLUGIN_CASCADE = {
-#     'alien_plugins': [
-#         'TextPlugin',
-#         'StylePlugin',
-#         'FilerImagePlugin',
-#         'FormPlugin'
-#     ]
-# }
-
-# CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
-#     'TextPlugin',
-#     'StylePlugin',
-#     'FilerImagePlugin',
-#     'FormPlugin',
-#     'MeetingFormPlugin',
-#     'ResponsiveEmbedPlugin'
-# )
-
-# CKEDITOR_SETTINGS = {
-#     'allowedContent': True,
-#     'language': '{{ language }}',
-#     'skin': 'moono-lisa',
-#     'toolbar': 'CMS',
-#     'stylesSet': format_lazy('default:{}', reverse_lazy('admin:cascade_texticon_wysiwig_config'))
-# }
-
-# TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
-
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
     'easy_thumbnails.processors.filters'
 )
-
-# UNUSED SETTINGS.
-#
-# DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
-# DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
-# DJANGOCMS_FORMS_TEMPLATES = (
-#     ('djangocms_forms/form_template/default.html', 'Default'),
-# )
-# DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
-# DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
-#     'text': ('form-control', ),
-#     'textarea': ('form-control', ),
-#     'email': ('form-control', ),
-#     'number': ('form-control', ),
-#     'phone': ('form-control', ),
-#     'url': ('form-control', ),
-#     'select': ('form-control', ),
-#     'file': ('form-control', ),
-#     'date': ('form-control', ),
-#     'time': ('form-control', ),
-#     'password': ('form-control', ),
-# }
-# DJANGOCMS_FORMS_DATETIME_FORMAT = '%d-%b-%Y %H:%M'
-
-# BOOTSTRAP3 = {
-#     'required_css_class': 'required',
-# }
 
 """
 SETTINGS: CELERY
