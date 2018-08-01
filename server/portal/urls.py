@@ -2,19 +2,29 @@
 .. :module:: portal.urls
     :synopsis: Main URLs
 """
+
+from cms.sitemaps import CMSSitemap
 from django.conf import settings
 from django.conf.urls import include, url
-from django.conf.urls.static import static
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
-#
+from django.contrib.sitemaps.views import sitemap
+from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
 from django.contrib.auth.views import logout as des_logout
 from portal.apps.auth.views import agave_oauth as login
 from portal.views.views import project_version as des_version
-#
+
+admin.autodiscover()
 
 urlpatterns = [
+    url(r'^sitemap\.xml$', sitemap,
+        {'sitemaps': {'cmspages': CMSSitemap}}),
+]
+
+urlpatterns += [
+
     # admin.
     url(r'^admin/', admin.site.urls),
 
@@ -73,4 +83,4 @@ urlpatterns = [
     # cms handles everything else.
     url(r'^', include('cms.urls')),
 
- ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

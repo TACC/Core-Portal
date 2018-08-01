@@ -51,20 +51,22 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
+ROOT_URLCONF = 'portal.urls'
+
 INSTALLED_APPS = [
     # Order-dependent requirement for CMS.
     'djangocms_admin_style',  # Must precede 'django.contrib.admin'.
 
     # Core Django.
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.sessions.middleware',
+    'django.contrib.admin',
     'django.contrib.sites',                 # CMS
     'django.contrib.sitemaps',
-    'django.contrib.sessions.middleware',
+    'django.contrib.staticfiles',
+    'django.contrib.messages',
 
     # Django CMS.
     # CMS plugins tha must be before 'cms'.
@@ -77,33 +79,35 @@ INSTALLED_APPS = [
     # - CMS minimum requirements.
     'cms',
     'menus',
+    'sekizai',
     'treebeard',
 
     # - CMS remaining plugins.
-    'sekizai',
     'djangocms_text_ckeditor',
-    'djangocms_forms',
-    'djangocms_link',
-    'djangocms_file',
-    'djangocms_picture',
-    'djangocms_video',
-    'djangocms_googlemap',
-    'djangocms_snippet',
-    'djangocms_style',
+    'filer',
+    'easy_thumbnails',
     'djangocms_column',
-    'cmsplugin_filer_file',
-    'cmsplugin_filer_folder',
-    'cmsplugin_filer_link',
-    'cmsplugin_filer_image',
-    'cmsplugin_filer_teaser',
-    'cmsplugin_filer_video',
+    'djangocms_file',
+    'djangocms_link',
+    'djangocms_picture',
+    'djangocms_style',
+    'djangocms_snippet',
+    'djangocms_googlemap',
+    'djangocms_video',
+    'djangocms_forms',
+
+    # CK editor plugins.
+    # 'cmsplugin_filer_file',
+    # 'cmsplugin_filer_folder',
+    # 'cmsplugin_filer_link',
+    # 'cmsplugin_filer_image',
+    # 'cmsplugin_filer_teaser',
+    # 'cmsplugin_filer_video',
 
     # Django recaptcha.
     'snowpenguin.django.recaptcha2',
 
     # Pipeline.
-    'filer',
-    'easy_thumbnails',
     'mptt',
     # 'reversion',
     'bootstrap3',
@@ -135,15 +139,15 @@ MIDDLEWARE = [
     'cms.middleware.utils.ApphookReloadMiddleware',    # Django CMS, must be at start of Middleware list.
 
     # Default middleware.
-    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',   # Custom Portal Auth Check.
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # Django CMS.
     'cms.middleware.user.CurrentUserMiddleware',
@@ -155,30 +159,34 @@ MIDDLEWARE = [
     # 'portal.middleware.PortalTermsMiddleware',
 ]
 
-ROOT_URLCONF = 'portal.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
+        # 'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django_settings_export.settings_export',
+                'django.template.context_processors.i18n',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
-                'django.template.context_processors.static',
+                'django.template.context_processors.csrf',   # Needed?
                 'django.template.context_processors.tz',
                 'sekizai.context_processors.sekizai',       # Static Files.
+                'django.template.context_processors.static',
                 'cms.context_processors.cms_settings',      # Django CMS.
+                'django_settings_export.settings_export',
                 'ws4redis.context_processors.default',
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
                 'portal.utils.contextprocessors.messages',
+            ],
+            'loaders': [  # New block
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+                'django.template.loaders.eggs.Loader'
             ],
             'libraries':{
                 'sd2e_nav_tags': 'portal.templatetags.sd2e_nav_tags',
@@ -221,15 +229,21 @@ LOGIN_REDIRECT_URL = '/index/'
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-LANGUAGES = [
-    ('en-us', 'US English')
-]
+# LANGUAGES = [
+#     ('en-us', 'US English')
+# ]
+
+LANGUAGES = (
+    ## Customize this
+    ('en', gettext('en')),
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
@@ -394,39 +408,71 @@ SITE_ID = settings_secret._SITE_ID
 FILER_DEBUG = True
 FILER_ENABLE_LOGGING = True
 DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
-CMS_PERMISSION = True
+
+CMS_LANGUAGES = {
+    ## Customize this
+    'default': {
+        'public': True,
+        'hide_untranslated': False,
+        'redirect_on_fallback': True,
+    },
+    1: [
+        {
+            'public': True,
+            'code': 'en',
+            'hide_untranslated': False,
+            'name': gettext('en-us'),  # 'en'
+            'redirect_on_fallback': True,
+        },
+    ],
+}
 
 CMS_TEMPLATES = (
     ('cms_page.html', 'Main Site Page'),
 )
+
+CMS_PERMISSION = True
+
+CMS_PLACEHOLDER_CONF = {}
 
 CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.link')
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.generic')
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.segmentation')
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.icon')
+
 # CMSPLUGIN_CASCADE_PLUGINS = (
 #     'cmsplugin_cascade.bootstrap3',
 #     'cmsplugin_cascade.link',
 # )
 
-CMSPLUGIN_CASCADE = {
-    'alien_plugins': [
-        'TextPlugin',
-        'StylePlugin',
-        'FilerImagePlugin',
-        'FormPlugin'
-    ]
-}
+# CMSPLUGIN_CASCADE = {
+#     'alien_plugins': [
+#         'TextPlugin',
+#         'StylePlugin',
+#         'FilerImagePlugin',
+#         'FormPlugin'
+#     ]
+# }
 
-CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
-    'TextPlugin',
-    'StylePlugin',
-    'FilerImagePlugin',
-    'FormPlugin',
-    'MeetingFormPlugin',
-    'ResponsiveEmbedPlugin'
-)
+# CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
+#     'TextPlugin',
+#     'StylePlugin',
+#     'FilerImagePlugin',
+#     'FormPlugin',
+#     'MeetingFormPlugin',
+#     'ResponsiveEmbedPlugin'
+# )
+
+# CKEDITOR_SETTINGS = {
+#     'allowedContent': True,
+#     'language': '{{ language }}',
+#     'skin': 'moono-lisa',
+#     'toolbar': 'CMS',
+#     'stylesSet': format_lazy('default:{}', reverse_lazy('admin:cascade_texticon_wysiwig_config'))
+# }
+
+# TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
 
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
@@ -435,16 +481,8 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters'
 )
 
-CKEDITOR_SETTINGS = {
-    'allowedContent': True,
-    'language': '{{ language }}',
-    'skin': 'moono-lisa',
-    'toolbar': 'CMS',
-    'stylesSet': format_lazy('default:{}', reverse_lazy('admin:cascade_texticon_wysiwig_config'))
-}
-
-TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
-
+# UNUSED SETTINGS.
+#
 # DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
 # DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
 # DJANGOCMS_FORMS_TEMPLATES = (
