@@ -31,7 +31,7 @@ http {
     server {
         listen  80 {% if server.default %}default_server{% endif %};
         server_name  {{ server.name }};
-        return 301  https://{{ server.name }}$request_uri;
+        return 301  https://{{ server.name }}{{ nginx_ssl_redirect_port }}$request_uri;
     }
 
     server {
