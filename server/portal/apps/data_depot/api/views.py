@@ -85,7 +85,7 @@ class FileListingView(BaseApiView):
             results = search.execute()
             system = '.'.join([
                 settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, request.user.username])
-            
+
             listing = BaseFile(fmgr._ac, system)
             children = [BaseFile(fmgr._ac, **result.to_dict()) for result in results]
             listing._children = children
@@ -135,7 +135,7 @@ class FileMediaView(BaseApiView):
         """
         logger.info(file_id)
         logger.info(request.FILES['file'])
-        
+
         fmgr = get_manager(request, file_mgr_name)
         resp = fmgr.upload(file_id, [request.FILES['file']])
         return JsonResponse({'response': resp},
