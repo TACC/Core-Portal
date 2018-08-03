@@ -71,40 +71,6 @@
 
 - name: Start Celery service
   command: systemctl start celeryd
-  
-- name: Start Celery Beat service
-  command: systemctl start celery_beat
-  
-- name: Restart Celery service
-  command: systemctl restart celeryd
-  template: 
-    src: "celeryd.service.j2"
-    dest: "/usr/lib/systemd/system/celeryd.service"
-    mode: 0644
-    owner: root
-    group: root
-    force: yes
-
-- name: Write Celery Beat systemd unit
-  template: 
-    src: "celery_beat.service.j2"
-    dest: "/usr/lib/systemd/system/celery_beat.service"
-    mode: 0644
-    owner: root
-    group: root
-    force: yes
-
-- name: Reload Daemon
-  command: systemctl daemon-reload
-
-- name: Enable Celery service
-  command: systemctl enable celeryd
-
-- name: Enable Celery Beat service
-  command: systemctl enable celery_beat
-
-- name: Start Celery service
-  command: systemctl start celeryd
 
 - name: Start Celery Beat service
   command: systemctl start celery_beat
