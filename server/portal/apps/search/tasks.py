@@ -61,10 +61,12 @@ def agave_indexer(self, systemId, username=None, filePath='', recurse=True, upda
                 except Exception as e:
                     logger.info(e)
 
-        q = Q({'term': {'basePath._exact': filePath}})
-        s = IndexedFile.search().query(q)
+        basePath_search = IndexedFile.search()\
+            .filter(Q({'term': {'system._exact': systemId}}))\
+            .query(Q({'term': {'basePath._exact': filePath}}))
+            
         listing_paths = [child['path'] for child in listing[1:]]
-        for result in s.execute():
+        for result in basePath_search.execute():
             if result.path not in listing_paths:
                 delete_recursive(result)
         
@@ -92,5 +94,5 @@ def index_my_data(self):
         # resp = s.delete()
         agave_indexer.apply_async(
             args=[systemId],
-            kwargs={'username': uname, 'filePath': '/'}
+            kwargs={'username': uname, 'filePath': ''}
         )
