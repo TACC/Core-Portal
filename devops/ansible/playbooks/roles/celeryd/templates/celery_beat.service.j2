@@ -22,7 +22,8 @@ ExecReload={{celeryd_venv_bin}} multi restart ${CELERY_NODES} \
     --pidfile=${CELERYBAT_PID_FILE} \
     --logfile=${CELERYBEAT_LOG_FILE} \
     --loglevel=${CELERYBEAT_LOG_LEVEL} \
-    ${CELERYBEAT_OPTS}
+    ${CELERYBEAT_OPTS} \
+    --beat
 Restart=on-failure
 RemainAfterExit=yes
 
