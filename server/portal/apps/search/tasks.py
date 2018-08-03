@@ -4,6 +4,7 @@ import urllib
 import os
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from celery import shared_task
 from agavepy.agave import Agave
 from elasticsearch_dsl import Q, Search
@@ -94,3 +95,9 @@ def index_my_data(self):
             args=[systemId],
             kwargs={'username': uname, 'filePath': '/'}
         )
+
+@shared_task(bind=True)
+def index_cms(self):
+    logger.info("Updating search index")
+    if not settings.DEBUG:
+        call_command("rebuild_index", interactive=False)

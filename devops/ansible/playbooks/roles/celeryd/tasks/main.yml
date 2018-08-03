@@ -15,6 +15,15 @@
     group: "{{celeryd_group}}"
     recurse: yes
 
+- name: Create Celery Beat pid directory
+  file: 
+    path: "/var/run/celery_beat"
+    state: "directory" 
+    mode: "0755"
+    owner: "{{celeryd_user}}" 
+    group: "{{celeryd_group}}"
+    recurse: yes
+
 - name: Create Celery log directory
   file:
     path: "/var/log/celery"
@@ -42,14 +51,66 @@
     group: root
     force: yes
 
+- name: Write Celery Beat systemd unit
+  template: 
+    src: "celery_beat.service.j2"
+    dest: "/usr/lib/systemd/system/celery_beat.service"
+    mode: 0644
+    owner: root
+    group: root
+    force: yes
+
 - name: Reload Daemon
   command: systemctl daemon-reload
 
 - name: Enable Celery service
   command: systemctl enable celeryd
 
+- name: Enable Celery Beat service
+  command: systemctl enable celery_beat
+
 - name: Start Celery service
   command: systemctl start celeryd
   
+- name: Start Celery Beat service
+  command: systemctl start celery_beat
+  
 - name: Restart Celery service
   command: systemctl restart celeryd
+  template: 
+    src: "celeryd.service.j2"
+    dest: "/usr/lib/systemd/system/celeryd.service"
+    mode: 0644
+    owner: root
+    group: root
+    force: yes
+
+- name: Write Celery Beat systemd unit
+  template: 
+    src: "celery_beat.service.j2"
+    dest: "/usr/lib/systemd/system/celery_beat.service"
+    mode: 0644
+    owner: root
+    group: root
+    force: yes
+
+- name: Reload Daemon
+  command: systemctl daemon-reload
+
+- name: Enable Celery service
+  command: systemctl enable celeryd
+
+- name: Enable Celery Beat service
+  command: systemctl enable celery_beat
+
+- name: Start Celery service
+  command: systemctl start celeryd
+
+- name: Start Celery Beat service
+  command: systemctl start celery_beat
+  
+- name: Restart Celery service
+  command: systemctl restart celeryd
+
+- name: Restart Celery Beat service
+  command: systemctl restart celery_beat
