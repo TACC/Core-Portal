@@ -16,7 +16,7 @@ ExecStart={{celeryd_venv_bin}} multi start ${CELERY_NODES} \
     ${CELERY_OPTS} \ 
     --beat
 ExecStop={{celeryd_venv_bin}} multi stopwait ${CELERY_NODES} \
-    --pidfile=${CELERY_PID_FILE}
+    --pidfile=${CELERYBEAT_PID_FILE}
 ExecReload={{celeryd_venv_bin}} multi restart ${CELERY_NODES} \
     -A ${CELERY_APP} \
     --pidfile=${CELERYBAT_PID_FILE} \
