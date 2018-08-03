@@ -1,0 +1,31 @@
+[Unit]
+Description=Celery Beat Daemon Service
+After=network.target
+
+[Service]
+Type=forking
+User={{celeryd_user}}
+Group={{celeryd_group}}
+EnvironmentFile=/etc/conf.d/celery
+WorkingDirectory={{ celeryd_working_dir }}
+ExecStart={{celeryd_venv_bin}} multi start ${CELERY_NODES} \
+    -A ${CELERY_APP} \
+    --pidfile=${CELERYBEAT_PID_FILE} \
+    --logfile=${CELERYBEAT_LOG_FILE} \
+    --loglevel=${CELERYBEAT_LOG_LEVEL} \
+    ${CELERY_OPTS} \ 
+    --beat
+ExecStop={{celeryd_venv_bin}} multi stopwait ${CELERY_NODES} \
+    --pidfile=${CELERYBEAT_PID_FILE}
+ExecReload={{celeryd_venv_bin}} multi restart ${CELERY_NODES} \
+    -A ${CELERY_APP} \
+    --pidfile=${CELERYBAT_PID_FILE} \
+    --logfile=${CELERYBEAT_LOG_FILE} \
+    --loglevel=${CELERYBEAT_LOG_LEVEL} \
+    ${CELERYBEAT_OPTS} \
+    --beat
+Restart=on-failure
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
