@@ -6,35 +6,35 @@ services:
   redis:
     image: redis:4.0
     volumes:
-      - cep_redis_data:/data
+      - cep_prtl_redis_data:/data
     ports:
       - 6379:6379
-    container_name: ${PORTAL_PREFIX}_redis
-    hostname: ${PORTAL_PREFIX}_redis
+    container_name: cep_prtl_redis
+    hostname: cep_prtl_redis
     networks:
-      - cep_net
+      - cep_prtl_net
 
   rabbitmq:
     image: rabbitmq:3.6.10-management
     volumes:
-      - cep_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
+      - cep_prtl_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
     env_file: ../env_files/rabbitmq.env
     ports:
       - 5672:5672
       - 5673:5673
       - 15673:15673
       - 15672:15672
-    container_name: ${PORTAL_PREFIX}_rabbitmq
-    hostname: ${PORTAL_PREFIX}_rabbitmq
+    container_name: cep_prtl_rabbitmq
+    hostname: cep_prtl_rabbitmq
     networks:
-      - cep_net
+      - cep_prtl_net
 
   memcached:
     image: memcached:latest
-    container_name: ${PORTAL_PREFIX}_memcached
-    hostname: ${PORTAL_PREFIX}_memcached
+    container_name: cep_prtl_memcached
+    hostname: cep_prtl_memcached
     networks:
-      - cep_net
+      - cep_prtl_net
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
@@ -44,24 +44,24 @@ services:
       - ES_HEAP_SIZE:2g
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - cep_es_data:/usr/share/elasticsearch/data
+      - cep_prtl_es_data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-    container_name: ${PORTAL_PREFIX}_elasticsearch
-    hostname: ${PORTAL_PREFIX}_elasticsearch
+    container_name: cep_prtl_elasticsearch
+    hostname: cep_prtl_elasticsearch
     networks:
-      - cep_net
+      - cep_prtl_net
 
   postgres:
     image: postgres:10.3
     volumes:
-      - cep_postgres_data:/var/lib/postgresql/data/portal
+      - cep_prtl_postgres_data:/var/lib/postgresql/data/portal
     ports:
       - 5432:5432
-    container_name: ${PORTAL_PREFIX}_postgres
-    hostname: ${PORTAL_PREFIX}_postgres
+    container_name: cep_prtl_postgres
+    hostname: cep_prtl_postgres
     networks:
-      - cep_net
+      - cep_prtl_net
     environment:
       - POSTGRES_PASSWORD=dev
       - POSTGRES_USER=dev
@@ -82,10 +82,10 @@ services:
     ports:
       - 80:80
       - 443:443
-    container_name: ${PORTAL_PREFIX}_nginx
-    hostname: ${PORTAL_PREFIX}_nginx
+    container_name: cep_prtl_nginx
+    hostname: cep_prtl_nginx
     networks:
-      - cep_net
+      - cep_prtl_net
 
   django:
     image: cep-portal/portal:local
@@ -111,10 +111,10 @@ services:
     #command: nohup npm --prefix=/srv/www/portal/client run-script dev 2>&1 & ./manage.py runserver 0.0.0.0:8000
     #command: ['python', '-m', 'ipdb', './manage.py', 'runserver', '0.0.0.0:8000']
     command: ['python', './manage.py', 'runserver', '0.0.0.0:8000']
-    container_name: ${PORTAL_PREFIX}_django
-    hostname: ${PORTAL_PREFIX}_django
+    container_name: cep_prtl_django
+    hostname: cep_prtl_django
     networks:
-      - cep_net
+      - cep_prtl_net
 
   workers:
     image: cep-portal/portal:local
@@ -132,17 +132,17 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     command: "celery -A portal worker --concurrency=2"
-    container_name: ${PORTAL_PREFIX}_workers
-    hostname: ${PORTAL_PREFIX}_workers
+    container_name: cep_prtl_workers
+    hostname: cep_prtl_workers
     networks:
-      - cep_net
+      - cep_prtl_net
 
 volumes:
-  cep_redis_data:
-  cep_es_data:
-  cep_rabbitmq_data:
-  cep_postgres_data:
+  cep_prtl_redis_data:
+  cep_prtl_es_data:
+  cep_prtl_rabbitmq_data:
+  cep_prtl_postgres_data:
 
 networks:
-  cep_net:
+  cep_prtl_net:
     driver: bridge
