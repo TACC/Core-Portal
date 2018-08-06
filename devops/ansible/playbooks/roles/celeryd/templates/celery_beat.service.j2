@@ -8,49 +8,41 @@ User={{celeryd_user}}
 Group={{celeryd_group}}
 EnvironmentFile=/etc/conf.d/celery
 WorkingDirectory={{ celeryd_working_dir }}
-# ExecStart={{celeryd_venv_bin}} multi start ${CELERY_NODES} \
-#     -A ${CELERY_APP} \
-#     --pidfile=${CELERYBEAT_PID_FILE} \
-#     --logfile=${CELERYBEAT_LOG_FILE} \
-#     --loglevel=${CELERYBEAT_LOG_LEVEL} \
-#     ${CELERYBEAT_OPTS} \
-#     --beat
-ExecStart=/srv/www/.envs/portal/bin/python2 -m celery worker \
-    --hostname=localhost@cep-web-staging-01.tacc.utexas.edu \
+ExecStart={{celeryd_venv_bin}} multi start ${CELERY_NODES} \
     -A ${CELERY_APP} \
     --pidfile=${CELERYBEAT_PID_FILE} \
     --logfile=${CELERYBEAT_LOG_FILE} \
     --loglevel=${CELERYBEAT_LOG_LEVEL} \
     ${CELERYBEAT_OPTS} \
     --beat
-# ExecStart=/srv/www/.envs/portal/bin/python2 -m celery worker \
-#     --hostname=localhost@cep-web-staging-01.tacc.utexas.edu \
-#     -A portal.celery_app:app \
-#     --pidfile=/var/run/celery_beat/localhost.pid \
-#     --logfile=/var/log/celery/celerybeat.log \
-#     --loglevel=error \
-#     --autoscale=20,5 \
-#     --beat
-# ExecStop={{celeryd_venv_bin}} multi stopwait ${CELERY_NODES} \
-#     --pidfile=${CELERYBEAT_PID_FILE}
-ExecStop=/srv/www/.envs/portal/bin/python2 -m celery worker \
-    --hostname=localhost@cep-web-staging-01.tacc.utexas.edu \
+ExecStop={{celeryd_venv_bin}} multi stopwait ${CELERY_NODES} \
     --pidfile=${CELERYBEAT_PID_FILE}
-# ExecReload={{celeryd_venv_bin}} multi restart ${CELERY_NODES} \
-#     -A ${CELERY_APP} \
-#     --pidfile=${CELERYBAT_PID_FILE} \
-#     --logfile=${CELERYBEAT_LOG_FILE} \
-#     --loglevel=${CELERYBEAT_LOG_LEVEL} \
-#     ${CELERYBEAT_OPTS} \
-#     --beat
-ExecReload=/srv/www/.envs/portal/bin/python2 -m celery worker \
-    --hostname=localhost@cep-web-staging-01.tacc.utexas.edu \
+ExecReload={{celeryd_venv_bin}} multi restart ${CELERY_NODES} \
     -A ${CELERY_APP} \
     --pidfile=${CELERYBAT_PID_FILE} \
     --logfile=${CELERYBEAT_LOG_FILE} \
     --loglevel=${CELERYBEAT_LOG_LEVEL} \
     ${CELERYBEAT_OPTS} \
     --beat
+# ExecStart=/srv/www/.envs/portal/bin/python2 -m celery worker \
+#     --hostname=localhost@cep-web-staging-01.tacc.utexas.edu \
+#     -A ${CELERY_APP} \
+#     --pidfile=${CELERYBEAT_PID_FILE} \
+#     --logfile=${CELERYBEAT_LOG_FILE} \
+#     --loglevel=${CELERYBEAT_LOG_LEVEL} \
+#     ${CELERYBEAT_OPTS} \
+#     --beat
+# ExecStop=/srv/www/.envs/portal/bin/python2 -m celery worker \
+#     --hostname=localhost@cep-web-staging-01.tacc.utexas.edu \
+#     --pidfile=${CELERYBEAT_PID_FILE}
+# ExecReload=/srv/www/.envs/portal/bin/python2 -m celery worker \
+#     --hostname=localhost@cep-web-staging-01.tacc.utexas.edu \
+#     -A ${CELERY_APP} \
+#     --pidfile=${CELERYBAT_PID_FILE} \
+#     --logfile=${CELERYBEAT_LOG_FILE} \
+#     --loglevel=${CELERYBEAT_LOG_LEVEL} \
+#     ${CELERYBEAT_OPTS} \
+#     --beat
 Restart=on-failure
 RemainAfterExit=yes
 

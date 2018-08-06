@@ -2,39 +2,39 @@
 # Django project should already been installed as well as Celery. This will only setup the daemon.
 
 - name: Create Celery conf directory
-  file: 
+  file:
     path: "/etc/conf.d"
-    state: "directory" 
+    state: "directory"
 
 - name: Create Celery pid directory
-  file: 
+  file:
     path: "/var/run/celery"
-    state: "directory" 
+    state: "directory"
     mode: "0755"
-    owner: "{{celeryd_user}}" 
+    owner: "{{celeryd_user}}"
     group: "{{celeryd_group}}"
     recurse: yes
 
 - name: Create Celery Beat pid directory
-  file: 
+  file:
     path: "/var/run/celery_beat"
-    state: "directory" 
+    state: "directory"
     mode: "0755"
-    owner: "{{celeryd_user}}" 
+    owner: "{{celeryd_user}}"
     group: "{{celeryd_group}}"
     recurse: yes
 
 - name: Create Celery log directory
   file:
     path: "/var/log/celery"
-    state: "directory" 
+    state: "directory"
     mode: "0755"
-    owner: "{{celeryd_user}}" 
+    owner: "{{celeryd_user}}"
     group: "{{celeryd_group}}"
     recurse: yes
 
-- name: Write Celery conf 
-  template: 
+- name: Write Celery conf
+  template:
     src: "celeryd.conf.j2"
     dest: "/etc/conf.d/celery"
     mode: 0644
@@ -43,7 +43,7 @@
     force: yes
 
 - name: Write Celery systemd unit
-  template: 
+  template:
     src: "celeryd.service.j2"
     dest: "/usr/lib/systemd/system/celeryd.service"
     mode: 0644
@@ -52,7 +52,7 @@
     force: yes
 
 - name: Write Celery Beat systemd unit
-  template: 
+  template:
     src: "celery_beat.service.j2"
     dest: "/usr/lib/systemd/system/celery_beat.service"
     mode: 0644
@@ -74,7 +74,7 @@
 
 - name: Start Celery Beat service
   command: systemctl start celery_beat
-  
+
 - name: Restart Celery service
   command: systemctl restart celeryd
 
