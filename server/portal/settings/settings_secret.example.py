@@ -113,7 +113,7 @@ _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/home/wma_portal/cep/home_dirs/'
 # NOTE: Replace PORTAL_NAME with name of project (e.g. - cep).
 _PORTAL_ADMIN_USERNAME = 'wma_prtl'
 _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
-_PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home'
+_PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home.{}'
 _PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 _PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'
 _PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'

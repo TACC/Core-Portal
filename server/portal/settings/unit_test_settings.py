@@ -205,7 +205,7 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'stampede2'
 # should be created.
 # Use only if all home directories are under one parent directory.
 PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
-PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home'
+PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home.{}'
 PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 
 PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'

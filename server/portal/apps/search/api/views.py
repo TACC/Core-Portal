@@ -89,7 +89,7 @@ class SearchController(object):
         systems = [settings.ES_PUBLIC_INDEX]
         system_queries = [Q('term', system=system) for system in systems]
         filters = reduce(ior, system_queries)
-        
+
         search = Search(index=settings.ES_DEFAULT_INDEX)\
             .query("query_string", query="*"+q+"*", default_operator="and")\
             .filter(filters)\
@@ -111,13 +111,12 @@ class SearchController(object):
 
     @staticmethod
     def search_my_data(username, q, offset, limit):
-        system = '.'.join([
-            settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, username])
+        system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
         split_query = q.split(" ")
         for i, c in enumerate(split_query):
             if c.upper() not in ["AND", "OR", "NOT"]:
                 split_query[i] = "*" + c + "*"
-        
+
         q = " ".join(split_query)
         search = IndexedFile.search()
         search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
