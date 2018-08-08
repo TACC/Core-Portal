@@ -454,6 +454,20 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters'
 )
 
+CKEDITOR_SETTINGS = {
+    'language': '{{ language }}',
+    'toolbar_CMS': [
+        ['Undo', 'Redo'],
+        ['cmsplugins', '-', 'ShowBlocks'],
+        ['Format', 'Styles'],
+    ],
+    'skin': 'moono-lisa',
+    'contentsCss': [
+        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
+        # '/css/mysitestyles.css',
+    ],
+}
+
 """
 SETTINGS: CELERY
 """

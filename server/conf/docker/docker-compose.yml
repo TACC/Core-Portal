@@ -8,4 +8,4 @@ services:
         dockerfile: server/conf/docker/Dockerfile
       image: cep-portal/portal:local
       command: /bin/bash
-      container_name: cep_django
+      container_name: cep_prtl_django

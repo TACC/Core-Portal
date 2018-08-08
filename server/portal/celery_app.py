@@ -26,6 +26,10 @@ app.conf.beat_schedule = {
     'index_my_data': {
         'task': 'portal.apps.search.tasks.index_my_data',
         'schedule': crontab(hour="3", minute=0),
+    },
+    'index_cms': {
+        'task': 'portal.apps.search.tasks.index_cms',
+        'schedule': crontab(hour="4", minute=0)
     }
 }
 
