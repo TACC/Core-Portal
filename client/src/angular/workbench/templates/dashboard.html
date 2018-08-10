@@ -79,27 +79,6 @@
 
 
     <div class="col-sm-3">
-      <div class="panel panel-default">
-        <div class="panel-heading dashboard">
-          <h3 class="panel-title">Notifications <span class="badge badge-danger"> {{notification_count}} </span></h3>
-
-        </div>
-        <ul class="list-group">
-          <li class="list-group-item" data-ng-show="!notifications.length">
-            No new notifications!
-          </li>
-          <li class="list-group-item" data-ng-repeat="note in notifications">
-            <div class="row">
-              <div class="col-md-4">
-                <span class="label label-default"> {{note.datetime | date}} </span>
-              </div>
-              <div class="col-md-8">
-                {{note.message}}
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
 
       <div class="panel panel-default">
         <div class="panel-heading clearfix dashboard">

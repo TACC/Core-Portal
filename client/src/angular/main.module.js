@@ -32,7 +32,7 @@ import dataDepotTemplate from './workbench/templates/data-depot.html';
 import workspaceTemplate from './workbench/templates/workspace.html';
 import searchTemplate from './workbench/templates/search.html';
 import helpTemplate from './workbench/templates/help.html';
-
+import notificationsTemplate from './workbench/templates/notifications.html';
 
 function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProvider) {
  'ngInject';
@@ -83,6 +83,13 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   .state('wb.help', {
     'url': '/help',
     'template': helpTemplate,
+    'resolve': {
+      // 'test': function () {console.log("help resolve");}
+    }
+  })
+  .state('wb.notifications', {
+    'url': '/notifications',
+    'template': notificationsTemplate,
     'resolve': {
       // 'test': function () {console.log("help resolve");}
     }

@@ -1,25 +1,84 @@
 from django.db import models
-from django.dispatch import receiver
-# Should this be portal_event from portal.apps.signal.signal?
-from portal.apps.signals.signals import portal_event
-from .apps import Event
+from django.core.serializers.json import DjangoJSONEncoder
 import datetime
+import logging
 import json
-import cgi
+import six
 
+logger = logging.getLogger(__name__)
 
-class Notification(models.Model):
-    # what are the agave length defaults?
+class BaseNotify(models.Model):
+    """Abstract base notification class.
+
+    These are the base fields that every notification should have.
+    """
     event_type = models.CharField(max_length=50)
-    user = models.CharField(max_length=20)
-    read = models.BooleanField(default=False)
-    deleted = models.BooleanField(default=False)
-    notification_time = models.DateTimeField(default=datetime.datetime.now, blank=True)
-    body = models.TextField()
+    datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    #Status should be SUCCESS, INFO, ERROR, WARNING,
+    status = models.CharField(max_length = 255)
+    jobId = models.CharField(max_length=255, blank=True)
+    operation = models.CharField(max_length = 255, default = '')
+    message = models.TextField(default='')
+    extra = models.TextField(default='')
+    action_link = models.TextField(default='')
+
+    SUCCESS = GREEN = 'SUCCESS'
+    INFO = BLUE = 'INFO'
+    ERROR = RED = 'ERROR'
+    WARNING = ORANGE = 'WARNING'
+    EVENT_TYPE = 'event_type'
+    JOB_ID = 'jobId'
+    STATUS = 'status'
+    USER = USERNAME = 'user'
+    EXTRA = CONTENT = 'extra'
+    MESSAGE = 'message'
+    OPERATION = 'operation'
+    ACTION_LINK = 'action_link'
+
+    def to_dict(self):
+        try:
+            extra = json.loads(self.extra)
+        except ValueError:
+            logger.debug('extra: %s, id: %s', self.extra, self.id)
+            extra = {}
+        d = {
+            'event_type': self.event_type,
+            'datetime': self.datetime.strftime('%s'),
+            'status': self.status,
+            'operation': self.operation,
+            'message': self.message,
+            'extra': extra,
+            'pk': self.pk,
+            'action_link': self.action_link
+        }
+        return d
+
+    def save(self, *args, **kwargs):
+        if isinstance(self.extra, dict):
+            try:
+                self.extra = json.dumps(self.extra, cls=DjangoJSONEncoder)
+            except TypeError:
+                for key in six.iterkeys(self.extra):
+                    try:
+                        json.dumps(self.extra[key])
+                    except TypeError:
+                        logger.debug('Keys with error: %s . Value: %s', key, self.extra[key])
+                        raise
+
+        super(BaseNotify, self).save(*args, **kwargs)
 
     @property
-    def content(self):
-        return json.loads(self.body)
+    def extra_content(self):
+        return json.loads(self.extra)
+
+    class Meta:
+        abstract = True
+
+class Notification(BaseNotify):
+    # what are the agave length defaults?
+    user = models.CharField(max_length=20, db_index=True)
+    read = models.BooleanField(default=False)
+    deleted = models.BooleanField(default=False)
 
     def mark_read(self):
         self.read = True
@@ -29,28 +88,21 @@ class Notification(models.Model):
         self.deleted = True
         self.save()
 
+    def to_dict(self):
+        event_data = super(Notification, self).to_dict()
+        event_data.update({
+            'user': self.user,
+            'read': self.read,
+            'deleted': self.deleted
+        })
+        return event_data
 
-@receiver(portal_event)
-def receive_notification(sender, **kwargs):
-    logger.debug("Received portal_event signal")
-    event_type = kwargs.get('event_type')
-    event_data = kwargs.get('event_data')
-    event_users = kwargs.get('event_users')
+class Broadcast(BaseNotify):
+    group = models.CharField(max_length=20)
 
-    d = []
-    if 'html' in event_data:
-        for item in event_data['html']:
-            for key, value in item.items():
-                if key != 'action_link':
-                    key= cgi.escape(key)
-                    value= cgi.escape(value)
-                    d.append({key:value})
-
-    event_data['html'] = d
-
-    for user in event_users:
-        notification = Notification(event_type=event_type, user=user,
-                                    body=json.dumps(event_data))
-        notification.save()
-
-    Event.send_event(event_type, event_users, event_data)
+    def to_dict(self):
+        event_data = super(Broadcast, self).to_dict()
+        event_data.update({
+            'group': self.group
+        })
+        return event_data
