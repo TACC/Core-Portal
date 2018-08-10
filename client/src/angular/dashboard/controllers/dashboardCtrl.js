@@ -29,7 +29,6 @@ export default function DashboardCtrl (
     .xSelector(function (d) { return d.key;})
     .ySelector(function (d) { return d.values.length;})
     .start_date($scope.first_jobs_date);
-
   //Systems stuff
   $scope.data.execSystems = [];
   $scope.data.strgSystems = [];
@@ -60,7 +59,6 @@ export default function DashboardCtrl (
   ).then(function (resp) {
     $scope.jobs = resp;
     $scope.chart_data = Jobs.jobsByDate(resp);
-
     $scope.chart.data($scope.chart_data);
     var tmp = _.groupBy($scope.jobs, function (d) {return d.appId;});
     $scope.recent_apps = Object.keys(tmp);
