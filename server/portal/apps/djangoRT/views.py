@@ -51,7 +51,7 @@ def ticketcreate(request):
 				data['cc'] = ticket.cc
 				form = forms.TicketForm(data)
 	else:
-		form = forms.TicketForm()
+		form = forms.TicketForm(initial=data)
 
 	context = {
 		'ticket_create' : form
