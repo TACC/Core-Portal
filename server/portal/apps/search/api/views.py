@@ -62,6 +62,7 @@ class SearchController(object):
         out['published_total'] = 0 # SearchController.search_published(q, offset, limit).count()
         out['cms_total'] = SearchController.search_cms_content(q, offset, limit).count()
         out['private_files_total'] = SearchController.search_my_data(request.user.username, q, offset, limit).count()
+        out['total_hits_cumulative'] = out['private_files_total'] + out['cms_total'] 
 
         return out
 

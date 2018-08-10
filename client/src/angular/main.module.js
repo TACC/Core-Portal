@@ -92,7 +92,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     'template': searchTemplate,
     'params': {
       query_string: null,
-      type_filter: 'cms'
+      type_filter: null
     },
     'resolve': {
       // 'test': function () {console.log("search resolve");}
