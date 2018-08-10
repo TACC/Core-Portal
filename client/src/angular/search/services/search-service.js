@@ -7,6 +7,9 @@ export default class SearchService {
   }
 
   search(text, limit, offset, type_filter) {
+    if (!type_filter) {
+      type_filter = 'cms'
+    }
     return this.$http.get('/api/search', 
     {params: 
       {'q': text, 'limit': limit, 'offset': offset, 'type_filter': type_filter}
