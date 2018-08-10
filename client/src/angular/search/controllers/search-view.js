@@ -29,9 +29,8 @@ export default class SearchViewCtrl {
       'private_files': 'private_files_total',
       'published': 'published_total',
       'public_files': 'public_files_total'
-    }
-    $scope.filter_priority = ['cms', 'private_files']
-
+    };
+    $scope.filter_priority = ['cms', 'private_files'];
 
     $scope.next = function () {
       $scope.page_num = $scope.page_num + 1;
@@ -56,24 +55,25 @@ export default class SearchViewCtrl {
       }
       else {
         //$scope.data.type_filter='cms'
-        let s = $scope.search(true)
+        let s = $scope.search(true);
         s.then(() => {
           if ($scope.data.search_results['total_hits_cumulative'] == 0) {
             $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': 'cms'});
           }
           else {
-            console.log($scope.filter_priority)
+            console.log($scope.filter_priority);
             $scope.filter_priority.some(filter => {
-              let hits_var = $scope.totalNames[filter]
+              let hits_var = $scope.totalNames[filter];
               if ($scope.data.search_results[hits_var] > 0) {
-              
                 $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': filter});
-                return true
+                return true;
               }
-              
-            })
+              else {
+                return false;
+              }
+            });
           }
-        })
+        });
       }
     };
 
@@ -83,13 +83,20 @@ export default class SearchViewCtrl {
       }
       if ($scope.data.text) {
         $scope.offset = $scope.page_num * $scope.limit;
-        return $scope.SearchService.search($scope.data.text, $scope.limit, $scope.offset, $scope.data.type_filter).then( (resp) => {
-          $scope.data.search_results = resp.response;
-          //$scope.data.hits = resp.hits;
-          $scope.total_hits = $scope.data.search_results.total_hits;
-          $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit);
-        })
-      } else { $scope.data.search_results = {}; }
+
+        return $scope.SearchService
+          .search($scope.data.text, $scope.limit, $scope.offset, $scope.data.type_filter)
+          .then( (resp) => {
+            $scope.data.search_results = resp.response;
+            //$scope.data.hits = resp.hits;
+            $scope.total_hits = $scope.data.search_results.total_hits;
+            $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit);
+          });
+      }
+      else {
+        $scope.data.search_results = {};
+      }
+      return $scope.data.search_results;
     };
 
     $scope.makeUrl = function(listing) {
@@ -97,13 +104,9 @@ export default class SearchViewCtrl {
       //url='hello'
       return url;
     };
-
     if ($scope.data.text) {
       $scope.search(true);
-    } 
+    }
 
-  }
-
-  
-
-}
+  }  // Close constructor.
+}  // Close class.
