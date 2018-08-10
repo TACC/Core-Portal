@@ -57,10 +57,8 @@ export default function DashboardCtrl (
       'created.gt':moment($scope.first_jobs_date).format('Y-M-D')
     }
   ).then(function (resp) {
-    console.log(resp);
     $scope.jobs = resp;
     $scope.chart_data = Jobs.jobsByDate(resp);
-    console.log($scope.chart_data);
     $scope.chart.data($scope.chart_data);
     var tmp = _.groupBy($scope.jobs, function (d) {return d.appId;});
     $scope.recent_apps = Object.keys(tmp);
