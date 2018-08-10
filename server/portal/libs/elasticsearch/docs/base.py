@@ -37,7 +37,8 @@ except AttributeError as exc:
 
 @python_2_unicode_compatible
 class IndexedFile(DocType):
-    name = Keyword()
+    name = Text(fields={
+        '_exact': Keyword()})
     path = Text(fields={
         '_comps': Text(analyzer=path_analyzer),
         '_exact': Keyword()})
