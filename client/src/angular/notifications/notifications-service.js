@@ -27,7 +27,7 @@ export default class Notifications {
   }
 
   list() {
-    this.$http.get('/api/notifications').then( (resp)=>{
+    return this.$http.get('/api/notifications').then( (resp)=>{
       return resp.data;
     }, (err)=>{
       return this.$q.reject(err);
@@ -39,7 +39,7 @@ export default class Notifications {
   }
 
   showToast() {
-    
+
   }
 
 }

@@ -24,6 +24,7 @@ import {mod as data_depot} from './data_depot';
 import {mod as search} from './search';
 import {mod as dashboard} from './dashboard';
 import {mod as workbench} from './workbench';
+import {mod as notifications} from './notifications';
 
 //templates
 import homeTemplate from './workbench/templates/home.html';
@@ -130,6 +131,7 @@ let mod = angular.module('portal', [
   'portal.search',
   'portal.dashboard',
   'portal.workbench',
+  'portal.notifications',
 ])
 
   .config(config)
