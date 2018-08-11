@@ -19,7 +19,7 @@ mod.component('notificationsList', {
 mod.component('notificationDetail', {
   template: notificationDetailTemplate,
   controller: NotificationDetailCtrl,
-  conttrollerAs: "vm",
+  controllerAs: "vm",
   bindings: {
     "note": '<',
     "delete": "&"

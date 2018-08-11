@@ -3,14 +3,15 @@ export default class NotificationsListCtrl {
 
   constructor(Notifications) {
     'ngInject';
-    this.Notifications = Notifications;
+    this.NotificationsService = Notifications;
     this.list();
   }
 
   list() {
     console.log("listing notifications");
-    this.Notifications.list().then( (resp)=>{
+    this.NotificationsService.list().then( (resp)=>{
       this.notes = resp.notifs;
+      console.log(this.notes)
       this.total = resp.total;
     });
   }

@@ -28,7 +28,13 @@ export default class Notifications {
 
   list() {
     return this.$http.get('/api/notifications').then( (resp)=>{
-      return resp.data;
+      let data = resp.data;
+      console.log(data)
+      data.notifs.forEach((d)=>{
+        d.datetime= new Date(d.datetime);
+      });
+      console.log(data)
+      return data;
     }, (err)=>{
       return this.$q.reject(err);
     });

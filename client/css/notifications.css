@@ -1,0 +1,19 @@
+.notification {
+  display: flex;
+  margin-top:0.25em;
+  flex-direction: row;
+  border: 1px solid #d3d3d3;
+  align-items: center;
+}
+
+.notification > div {
+  flex-grow: 1;
+}
+
+.notification .status {
+  font-size: 2em;
+  width: 10%;
+  color: #fff;
+  padding: 5px;
+  flex: 0 0 50px;
+}
