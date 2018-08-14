@@ -18,6 +18,10 @@ export default function DashboardCtrl (
   $scope.loading_jobs = true;
   $scope.today = new Date();
   $scope.usage = {total_storage_bytes: 0};
+  // UserService.usage().then(function (resp) {
+  //   $scope.usage = resp;
+  // });
+
   $scope.first_jobs_date = new Date(
     $scope.today.getTime() - (14 * 24 * 60 * 60 * 1000 )
   );
@@ -29,6 +33,7 @@ export default function DashboardCtrl (
     .xSelector(function (d) { return d.key;})
     .ySelector(function (d) { return d.values.length;})
     .start_date($scope.first_jobs_date);
+    
   //Systems stuff
   $scope.data.execSystems = [];
   $scope.data.strgSystems = [];
@@ -65,7 +70,7 @@ export default function DashboardCtrl (
     $scope.loading_jobs = false;
   });
 
-  Apps.list({limit:99999}).then(function (resp) {
+  Apps.list({"$and": [{"name": `${$translate.instant('apps_metadata_name')}`}, {"value.definition.available": true}]}).then(function(resp) {
     var tmp = _.groupBy(resp, function (d) {return d.label;});
     $scope.apps = Object.keys(tmp);
   });
