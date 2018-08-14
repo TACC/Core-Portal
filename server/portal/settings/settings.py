@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'cmsplugin_cascade.sharable',                   # optional
     'cmsplugin_cascade.segmentation',               # optional
     'cmsplugin_cascade.icon',                       # optional
+    # 'cmsplugin_socialsharekit'                      # testing
 
     # - CMS minimum requirements.
     'cms',
@@ -93,6 +94,18 @@ INSTALLED_APPS = [
 
     # 'forms_builder.forms',                          # django-forms-builder
     # 'cmsplugin_forms_builder',                      # django-forms-builder
+
+    # Aldryn Plugins.
+    'aldryn_apphooks_config',
+    'aldryn_boilerplates',   # test
+    'aldryn_categories',
+    'aldryn_common',
+    'aldryn_newsblog',
+    'aldryn_people',
+    'aldryn_translation_tools',
+    'parler',
+    'sortedm2m',
+    'taggit',
 
     'filer',
     'easy_thumbnails',
@@ -118,8 +131,9 @@ INSTALLED_APPS = [
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
-    # 'cmsplugin_socialsharekit',
-    # 'cmsplugin_socialbuttons',
+    'cmsplugin_socialsharekit',
+    'adminsortable2',
+    # 'rssplugin',
 
     # Django recaptcha.
     'snowpenguin.django.recaptcha2',
@@ -473,7 +487,8 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
-    'easy_thumbnails.processors.filters'
+    'easy_thumbnails.processors.filters',
+    'easy_thumbnails.processors.background'
 )
 
 # CKEDITOR_SETTINGS = {

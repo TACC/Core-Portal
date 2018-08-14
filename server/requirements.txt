@@ -1,5 +1,7 @@
 agavepy==0.7.0
 aldryn-forms==3.0.4
+aldryn-newsblog
+#-e git+https://github.com/aldryn/aldryn-newsblog.git#egg=aldryn-newsblog
 amqp==2.2.2
 appnope==0.1.0
 asn1crypto==0.24.0
@@ -12,8 +14,7 @@ celery==4.0.2
 cffi==1.11.5
 cmsplugin-filer==1.1.3
 cmsplugin-forms-builder==1.1.1
-#cmsplugin-socialsharekit
-#cmsplugin-socialbuttons
+-e git+https://github.com/matinfo/cmsplugin-socialsharekit.git#egg=cmsplugin_socialsharekit
 cookies==2.2.1
 coverage==4.5.1
 cryptography==2.2.2
@@ -31,6 +32,7 @@ django-mptt==0.8.7
 django-polymorphic==1.0.2
 django-recaptcha==1.3.1
 django-recaptcha2==1.0.3
+#django-rss-plugin
 django-sekizai>=0.9
 django-settings-export==1.2.1
 django-termsandconditions==1.1.2
