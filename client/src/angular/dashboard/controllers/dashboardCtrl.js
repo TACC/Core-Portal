@@ -6,6 +6,7 @@ export default function DashboardCtrl (
   $uibModal,
   $scope,
   $q,
+  $translate,
   Jobs,
   Apps,
   SystemsService
