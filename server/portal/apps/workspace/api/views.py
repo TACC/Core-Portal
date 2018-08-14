@@ -17,7 +17,6 @@ from django.core.urlresolvers import reverse
 from portal.apps.workspace.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
-from portal.apps.signals.signals import portal_event
 from portal.apps.workspace.tasks import watch_job_status
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from agavepy.agave import Agave
@@ -150,10 +149,9 @@ class JobsView(BaseApiView):
             job_meta = agave.meta.listMetadata(q=json.dumps(q))
             data['_embedded'] = {"metadata": job_meta}
 
-            archive_system_path = '{}/{}'.format(data['archiveSystem'],
-                                                 data['archivePath'])
-            data['archiveUrl'] = reverse(
-                'data_depot:data_depot')
+            #TODO: Decouple this from front end somehow!
+            archive_system_path = '{}/{}'.format(data['archiveSystem'], data['archivePath'])
+            data['archiveUrl'] = '/workbench/data-depot/'
             data['archiveUrl'] += 'agave/{}/'.format(archive_system_path)
 
         # list jobs
@@ -257,7 +255,7 @@ class SystemsView(BaseApiView):
             wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
             data = wma_prtl_client.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
-    
+
     def post(self, request, *args, **kwargs):
         body = json.loads(request.body)
         role = body['role']

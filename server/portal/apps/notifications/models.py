@@ -39,7 +39,6 @@ class BaseNotify(models.Model):
         try:
             extra = json.loads(self.extra)
         except ValueError:
-            logger.debug('extra: %s, id: %s', self.extra, self.id)
             extra = {}
         d = {
             'event_type': self.event_type,

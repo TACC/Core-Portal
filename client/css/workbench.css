@@ -12,6 +12,7 @@
   flex: 0 0 50px;
   display: flex;
   flex-direction: column;
+  margin-bottom: -1em;
 }
 
 .workbench-nav .side-nav-button {

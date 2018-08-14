@@ -21,7 +21,7 @@ _PORTAL_NAMESPACE = 'CEP'
 
 # Database.
 _DJANGO_DB_ENGINE= 'django.db.backends.postgresql'
-_DJANGO_DB_HOST= 'cep_postgres'
+_DJANGO_DB_HOST= 'cep_prtl_postgres'
 _DJANGO_DB_PORT= '5432'
 _DJANGO_DB_NAME= 'dev'
 _DJANGO_DB_USER= 'dev'
@@ -64,13 +64,13 @@ _AGAVE_COMMUNITY_DATA_SYSTEM = 'storage_system'
 
 _BROKER_URL_USERNAME = 'dev'
 _BROKER_URL_PWD = 'dev'
-_BROKER_URL_HOST = 'cep_rabbitmq'
+_BROKER_URL_HOST = 'cep_prtl_rabbitmq'
 _BROKER_URL_PORT = '5672'
 _BROKER_URL_VHOST = 'dev'
 
 _RESULT_BACKEND_USERNAME = 'dev'
 _RESULT_BACKEND_PWD = 'dev'
-_RESULT_BACKEND_HOST = 'cep_redis'
+_RESULT_BACKEND_HOST = 'cep_prtl_redis'
 _RESULT_BACKEND_PORT = '6379'
 _RESULT_BACKEND_DB = '0'
 
@@ -78,7 +78,7 @@ _RESULT_BACKEND_DB = '0'
 # ELASTICSEARCH SETTINGS
 ########################
 
-_ES_HOSTS = ["elasticsearch"]
+_ES_HOSTS = ["cep_prtl_elasticsearch"]
 
 ########################
 # CELERY SETTINGS
@@ -124,7 +124,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 ]
 
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = 'work'
-_PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'stampede2'
+_PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = '/'
 
 ########################
 # DJANGO CMS SETTINGS
@@ -133,7 +133,7 @@ _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'stampede2'
 _HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'cep_elasticsearch:9200/',
+        'URL': 'cep_prtl_elasticsearch:9200/',
         'INDEX_NAME': 'cms',
     }
 }

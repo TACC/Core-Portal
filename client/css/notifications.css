@@ -6,14 +6,38 @@
   align-items: center;
 }
 
-.notification > div {
-  flex-grow: 1;
-}
-
 .notification .status {
-  font-size: 2em;
+  font-size: 1.25em;
   width: 10%;
   color: #fff;
   padding: 5px;
-  flex: 0 0 50px;
+  flex: 0 0 40px;
+  text-align: center;
+}
+
+.notification .status.success {
+  background-color: #43ac6a;
+}
+
+.notification .status.danger {
+  background-color: #F04124;
+}
+
+.notification .status.info {
+  background-color: #41b0c9;
+}
+
+.notification .status.warning {
+  background-color: #E99002;
+}
+
+
+
+.notification .notification-message {
+  padding: 5px;
+}
+
+.notification .notification-time {
+  padding-right: 1em;
+  margin-left: auto;
 }

@@ -135,7 +135,9 @@ let mod = angular.module('portal', [
 ])
 
   .config(config)
-
+  .run(['Notifications', function(Notifications) {
+    Notifications.subscribe();
+  }])
   .constant('appCategories', ['Simulation', 'Visualization', 'Data Processing', 'Utilities'])
   .constant('appIcons', ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'visit', 'openfoam', 'opensees']);
 

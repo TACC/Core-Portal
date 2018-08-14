@@ -8,11 +8,15 @@ export default class Notifications {
     this.$mdToast = $mdToast;
     this.$http = $http;
     this.$q = $q;
-    var host = $location.host();
-    var wsurl = 'wss://' + host + '/ws/notifications?subscribe-broadcast&subscribe-user';
-    this.ws = $websocket(wsurl);
-    this.ws.onMessage(function (message) {
-      var data = JSON.parse(message.data);
+  }
+
+  subscribe() {
+    let host = this.$location.host();
+    let wsurl = 'wss://' + host + '/ws/notifications?subscribe-broadcast&subscribe-user';
+    this.ws = this.$websocket(wsurl);
+    this.ws.onMessage((message)=> {
+      console.log(message);
+      let data = JSON.parse(message.data);
       this.$mdToast.show({
           template: '<md-toast>\
               {{ vm.content }}\
@@ -20,6 +24,7 @@ export default class Notifications {
           controller: [function  () {
               this.content = data.message;
           }],
+          position: 'top-right',
           controllerAs: 'vm',
           hideDelay: 3000
       });
@@ -29,11 +34,9 @@ export default class Notifications {
   list() {
     return this.$http.get('/api/notifications').then( (resp)=>{
       let data = resp.data;
-      console.log(data)
       data.notifs.forEach((d)=>{
-        d.datetime= new Date(d.datetime);
+        d.datetime= new Date(d.datetime*1000);
       });
-      console.log(data)
       return data;
     }, (err)=>{
       return this.$q.reject(err);
