@@ -27,9 +27,7 @@
             ng-if="data.projects">
             <td ng-click="onBrowse($event, project)">
                 <i class="fa fa-briefcase"></i>
-                <a ng-href="{{ project.href }}">
-                    {{ project.name }}
-                </a>
+                <a ui-sref="wb.data_depot.projects.listing({systemId:project.id})"> {{project.name}}        </a>
             </td>
             <!-- <td>
                 <ds-user username="project.value.pi" format="name-username">

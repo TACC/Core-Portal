@@ -1,15 +1,14 @@
 import modalProjectCollaboratorsTemplate from '../modals/modal-project-collaborators.html';
 import modalProjectEditTemplate from '../modals/modal-project-edit.html';
 
-export default function ProjectListCtrl($scope, $state, currentUser, ProjectService, $uibModal) {
+export default function ProjectListCtrl($scope, $state, ProjectService, $uibModal) {
   'ngInject';
-  
-  $scope.currentUser = currentUser;
+
   $scope.ui = {};
   $scope.data = {
     customRoot: {
       name: 'My Projects',
-      href: $state.href('db.projects.list')
+      href: $state.href('wb.data_depot.projects.list')
     }
   };
 
@@ -26,7 +25,7 @@ export default function ProjectListCtrl($scope, $state, currentUser, ProjectServ
 
   $scope.onBrowse = function onBrowse($event, project) {
     $event.preventDefault();
-    $state.go('db.projects.listing', {systemId: project.id,
+    $state.go('wb.data_depot.projects.listing', {systemId: project.id,
                                      filePath: '/',
                                      projectTitle: project.name});
   };

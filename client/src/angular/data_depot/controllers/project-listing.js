@@ -5,7 +5,7 @@ export default function ProjectListingCtrl($scope, $state, $stateParams, Django,
   $scope.data = {
     customRoot: {
       name: 'My Projects',
-      href: $state.href('db.projects.list')
+      href: $state.href('wb.data_depot.projects.list')
     }
   };
   $scope.systemId = $stateParams.systemId;
@@ -64,7 +64,7 @@ export default function ProjectListingCtrl($scope, $state, $stateParams, Django,
     if (file.type === 'file') {
       DataBrowserService.preview(file, $scope.browser.listing);
     } else {
-      $state.go('db.projects.listing', {systemId: file.system, filePath: file.path});
+      $state.go('wb.data_depot.projects.listing', {systemId: file.system, filePath: file.path});
     }
   };
 }

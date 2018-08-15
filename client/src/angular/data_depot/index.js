@@ -6,6 +6,7 @@ import '../workbench/components';
 
 //templates
 import agaveDataListingTemplate from './templates/agave-data-listing.html';
+import projectListTemplate from './templates/project-list.html';
 
 let mod = angular.module('portal.data_depot', [
     'portal.data_depot.services',
@@ -48,7 +49,22 @@ function config(
                 query_string: null,
             },
         }
-    );
+    )
+
+    .state('wb.data_depot.projects', {
+      url: '/projects/',
+      abstract: true,
+    })
+    .state('wb.data_depot.projects.list', {
+      url: '',
+      template: projectListTemplate,
+      controller: 'ProjectListCtrl'
+    })
+    .state('wb.data_depot.projects.listing', {
+      url: '{systemId}/{filePath:any}',
+      controller: 'ProjectListingCtrl',
+      template: agaveDataListingTemplate,
+    });
 }
 
 mod.config(config)
