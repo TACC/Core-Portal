@@ -62,9 +62,19 @@ class SearchController(object):
         out['published_total'] = 0 # SearchController.search_published(q, offset, limit).count()
         out['cms_total'] = SearchController.search_cms_content(q, offset, limit).count()
         out['private_files_total'] = SearchController.search_my_data(request.user.username, q, offset, limit).count()
-        out['total_hits_cumulative'] = out['private_files_total'] + out['cms_total'] 
+        out['total_hits_cumulative'] = out['private_files_total'] + out['cms_total'] + out['public_files_total'] + out['published_total']
+        out['filter'] = type_filter
 
-        return out
+        type_filter_options = ['public_files', 'published', 'cms', 'private_files']
+        hits_array = [out['public_files_total'], out['published_total'], out['cms_total'], out['private_files_total']]
+
+        if out['total_hits'] == 0 and out['total_hits_cumulative'] > 0:
+            max_hits = max(hits_array)
+            max_filter = [filter for i, filter in enumerate(type_filter_options) if hits_array[i] == max_hits][0]
+            return SearchController.execute_search(request, max_filter, q, offset, limit)
+
+        else:
+            return out
 
     @staticmethod
     def search_cms_content(q, offset, limit):
