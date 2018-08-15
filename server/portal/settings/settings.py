@@ -49,6 +49,11 @@ SESSION_COOKIE_SECURE = False
 
 ALLOWED_HOSTS = ['*']
 
+# Custom Portal Template Assets
+PORTAL_ICON_FILENAME=settings_secret._PORTAL_ICON_FILENAME
+PORTAL_LOGO_FILENAME=settings_secret._PORTAL_LOGO_FILENAME
+PORTAL_NAVBAR_BACKGROUND_FILENAME=settings_secret._PORTAL_NAVBAR_BACKGROUND_FILENAME
+
 # Application definition
 
 ROOT_URLCONF = 'portal.urls'
@@ -75,7 +80,8 @@ INSTALLED_APPS = [
     'cmsplugin_cascade.sharable',                   # optional
     'cmsplugin_cascade.segmentation',               # optional
     'cmsplugin_cascade.icon',                       # optional
-    # 'cmsplugin_socialsharekit'                      # testing
+    # 'cmsplugin_socialsharekit'                    # testing
+    # 'cmsplugin_forms_builder',                      # django-forms-builder
 
     # - CMS minimum requirements.
     'cms',
@@ -86,14 +92,7 @@ INSTALLED_APPS = [
     # - CMS remaining plugins.
     'djangocms_text_ckeditor',
 
-    # 'absolute',                                     # Aldryn-forms
-    # 'aldryn_forms',                                 # Aldryn-forms
-    # 'aldryn_forms.contrib.email_notifications',     # Aldryn-forms
-    # 'captcha',                                      # Aldryn-forms
-    # 'emailit',                                      # Aldryn-forms
-
     # 'forms_builder.forms',                          # django-forms-builder
-    # 'cmsplugin_forms_builder',                      # django-forms-builder
 
     # Aldryn Plugins.
     'aldryn_apphooks_config',
@@ -103,14 +102,22 @@ INSTALLED_APPS = [
     'aldryn_newsblog',
     'aldryn_people',
     'aldryn_translation_tools',
+    'absolute',                                       # Aldryn-forms
+    # 'aldryn_forms',                                 # Aldryn-forms
+    # 'aldryn_forms.contrib.email_notifications',     # Aldryn-forms
+    'captcha',                                        # Aldryn-forms
+    'emailit',                                        # Aldryn-forms
     'parler',
     'sortedm2m',
     'taggit',
 
     'filer',
     'easy_thumbnails',
+    'light_gallery',
 
+    'djangocms_audio',
     'djangocms_link',
+    # 'djangocms_embed',                            # Requires embed.ly account.
     'djangocms_file',
     'djangocms_forms',
     'djangocms_picture',
@@ -119,11 +126,7 @@ INSTALLED_APPS = [
     'djangocms_snippet',
     'djangocms_style',
     'djangocms_column',
-
-    # 'djangocms_youtube',
-    # 'djangocms_oembed',
-    # 'djangocms_timer',
-    'djangocms_audio',
+    'djangocms_youtube',
 
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
@@ -132,8 +135,8 @@ INSTALLED_APPS = [
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
     'cmsplugin_socialsharekit',
+    # 'cmsplugin_soundcloud',
     'adminsortable2',
-    # 'rssplugin',
 
     # Django recaptcha.
     'snowpenguin.django.recaptcha2',
@@ -535,6 +538,8 @@ DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
 #     ('feature', _('Featured Version')),
 # ]
 
+#DJANGOCMS_EMBED_API_KEY = ""    # Requires an embed.ly account to use.
+
 DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
 # DJANGOCMS_VIDEO_TEMPLATES = [
 #     ('feature', _('Featured Version')),
@@ -727,8 +732,10 @@ SETTINGS: EXPORTS
 """
 
 SETTINGS_EXPORT = [
+    'PORTAL_ICON_FILENAME',
+    'PORTAL_LOGO_FILENAME',
+    'PORTAL_NAVBAR_BACKGROUND_FILENAME',
     'DEBUG',
     'GOOGLE_ANALYTICS_PRELOAD',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
 ]
-#

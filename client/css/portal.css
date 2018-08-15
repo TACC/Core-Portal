@@ -38,9 +38,13 @@ footer {
   font-weight: 700;
 }
 
-.navbar-portal {
-  background-image: url('/static/img/network-Header.jpg');
-  /* background-image: url('/static/img/cep-bg.jpg'); */
+.navbar-logo-text {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin: 0.5rem;
+}
+a.navbar-logo-text:hover {
+  text-decoration: none;
 }
 
 .navbar.navbar-default {
