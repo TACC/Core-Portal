@@ -196,6 +196,7 @@ function FileListing($http, $q) {
    * @returns {*}
    */
   Listing.prototype.copy = function (options) {
+    var self = this;
     var body = {
       "action": "copy",
       "system": options.system,
@@ -203,8 +204,20 @@ function FileListing($http, $q) {
       "name": options.name,
       "resource": options.resource || ""
     };
+
+    console.log("options");
+    console.log(options);
+    console.log("self");
+    console.log(self);
+
     return $http.put(this.mediaUrl(), body).then(function (resp) {
-      return new Listing(resp.data);
+      var newCopy = new Listing(resp.data.response);
+      if (options.path == self._parent.path) {
+        self._parent.children.push(newCopy);
+      }
+      return newCopy;
+    }, function (err) {
+      return $q.reject(err.data);
     });
   };
 
@@ -505,7 +518,7 @@ function FileListing($http, $q) {
       "action": "trash"
     };
     return $http.put(this.mediaUrl(), body).then(function (resp) {
-      var trashed = new Listing(resp.data);
+      var trashed = new Listing(resp.data.response);
 
       /* remove this file from previous parent's children */
       if (self._parent) {

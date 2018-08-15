@@ -282,7 +282,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       function (result) {
         currentState.busy = true;
         var copyPromises = _.map(files, function (f) {
-          var system = result.system || f.system;
+          
           return f.copy({system: result.system, path: result.path, resource: result.resource}).then(function (result) {
             //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
             $mdToast.show($mdToast.simple()
@@ -530,10 +530,15 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         }
         $scope.busy = true;
 
+        $scope.iframeLoadedCallback  = function () {
+          $scope.busy = false;
+          $scope.$apply();
+        };
+
         file.preview().then(
           function (data) {
             $scope.previewHref = $sce.trustAs('resourceUrl', data.href);
-            $scope.busy = false;
+            // $scope.busy = false;
           },
           function (err) {
             var fileExt = file.name.split('.').pop();
@@ -613,22 +618,27 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         };
         $scope.share = function() {
           // share(file);
+          $uibModalInstance.dismiss();
         };
         $scope.copy = function() {
           copy(file);
+          $uibModalInstance.dismiss();
         };
         $scope.move = function() {
           move(file, currentState.listing);
+          $uibModalInstance.dismiss();
         };
         $scope.rename = function() {
           rename(file);
+          $uibModalInstance.dismiss();
         };
-        $scope.viewMetadata = function() {
-          $scope.close();
-          // viewMetadata([file]);
-        };
+        // $scope.viewMetadata = function() {
+        //   $scope.close();
+        //   // viewMetadata([file]);
+        // };
         $scope.trash = function() {
           trash(file);
+          $uibModalInstance.dismiss();
         };
         $scope.rm = function() {
           // rm(file);
@@ -664,6 +674,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         $scope.file = file;
 
         $scope.doRenameFile = function($event) {
+          console.log('renaming...');
           $event.preventDefault();
           $uibModalInstance.close({file: file, renameTo: $scope.form.targetName});
         };

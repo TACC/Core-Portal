@@ -271,6 +271,16 @@ class AgaveFileManager(AbstractFileManager):
         """
         _file_src = self.get_file(file_id_src)
         _file_dest = self.get_file(file_id_dest)
+        _file_dest_children = _file_dest.children()
+        
+        for i in _file_dest_children:
+            if _file_src.name == i.name:
+                logger.info("name exists in destination...")
+                _ext = _file_src.ext
+                _name = os.path.splitext(_file_src.name)[0]
+                now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
+                _file_src.name = '{}_{}{}'.format(_name, now, _ext)
+
         if _file_src.system == _file_dest.system:
             resp = _file_src.copy(_file_dest.path)
             agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
@@ -468,8 +478,8 @@ class AgaveFileManager(AbstractFileManager):
             #Trash path exists, must make it unique.
             _ext = _file.ext
             _name = os.path.splitext(_file.name)[0]
-            now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-            trash_name = '{}_{}.{}'.format(_name, now, _ext)
+            now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
+            trash_name = '{}_{}{}'.format(_name, now, _ext)
         except HTTPError as err:
             if err.response.status_code != 404:
                 raise
