@@ -43,8 +43,8 @@ footer {
   font-weight: 900;
   margin: 0.5rem;
 }
-a.navbar-logo-text:hover {
-  text-decoration: none;
+.navbar-logo-text:hover {
+  text-decoration: none !important;
 }
 
 .navbar.navbar-default {
