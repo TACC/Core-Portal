@@ -24,13 +24,6 @@ export default class SearchViewCtrl {
       'published': 'Published Projects',
       'public_files': 'Public Files'
     };
-    $scope.totalNames = {
-      'cms': 'cms_total',
-      'private_files': 'private_files_total',
-      'published': 'published_total',
-      'public_files': 'public_files_total'
-    };
-    $scope.filter_priority = ['cms', 'private_files'];
 
     $scope.next = function () {
       $scope.page_num = $scope.page_num + 1;
@@ -50,31 +43,7 @@ export default class SearchViewCtrl {
     };
 
     $scope.search_browse = function() {
-      if ($scope.data.type_filter) {
-        $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': $scope.data.type_filter});
-      }
-      else {
-        //$scope.data.type_filter='cms'
-        let s = $scope.search(true);
-        s.then(() => {
-          if ($scope.data.search_results['total_hits_cumulative'] == 0) {
-            $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': 'cms'});
-          }
-          else {
-            console.log($scope.filter_priority);
-            $scope.filter_priority.some(filter => {
-              let hits_var = $scope.totalNames[filter];
-              if ($scope.data.search_results[hits_var] > 0) {
-                $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': filter});
-                return true;
-              }
-              else {
-                return false;
-              }
-            });
-          }
-        });
-      }
+      $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': $scope.data.type_filter});
     };
 
     $scope.search = function(reset) {
@@ -91,6 +60,10 @@ export default class SearchViewCtrl {
             //$scope.data.hits = resp.hits;
             $scope.total_hits = $scope.data.search_results.total_hits;
             $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit);
+            if ($scope.data.search_results.filter != $scope.data.type_filter) {
+              $scope.filter($scope.data.search_results.filter)
+            }
+
           });
       }
       else {

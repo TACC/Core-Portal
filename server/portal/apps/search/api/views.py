@@ -62,7 +62,18 @@ class SearchController(object):
         out['published_total'] = 0 # SearchController.search_published(q, offset, limit).count()
         out['cms_total'] = SearchController.search_cms_content(q, offset, limit).count()
         out['private_files_total'] = SearchController.search_my_data(request.user.username, q, offset, limit).count()
-        out['total_hits_cumulative'] = out['private_files_total'] + out['cms_total'] 
+        out['filter'] = type_filter
+
+        type_filter_options = ['public_files', 'published', 'cms', 'private_files']
+        hits_total_array = [out['public_files_total'], out['published_total'], out['cms_total'], out['private_files_total']]
+
+        out['total_hits_cumulative'] = sum(hits_total_array)
+
+        # If there are hits not in the current type filter, set the 'filter' output to the filter with the most hits.
+        if out['total_hits'] == 0 and out['total_hits_cumulative'] > 0:
+            max_hits_total = max(hits_total_array)
+            new_filter = [filter for i, filter in enumerate(type_filter_options) if hits_total_array[i] == max_hits_total][0]
+            out['filter'] = new_filter
 
         return out
 
