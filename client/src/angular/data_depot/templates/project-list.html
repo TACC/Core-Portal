@@ -8,12 +8,12 @@
   item-href="resolveBreadcrumbHref">
 </dd-breadcrumb>
 
-<div class="alert alert-info" ng-show="ui.busy">
+<div class="alert alert-info" ng-show="!ui.busy && !data.projects.length">
   <p class="text-center">
-      <i class="fa fa-spinner fa-spin"></i> Loading...
+      No Projects!
   </p>
 </div>
-<div class="table-responsive">
+<div class="table-responsive" ng-show="!ui.busy && data.projects.length">
   <div class="ds-table-display-wrapper">
     <table class="table table-bordered table-striped" style="background-color: #fff;">
         <thead>
