@@ -5,9 +5,10 @@ export default function ProjectListingCtrl($scope, $state, $stateParams, Django,
   $scope.data = {
     customRoot: {
       name: 'My Projects',
-      href: $state.href('wb.data_depot.projects.list')
+      route: 'wb.data_depot.projects.list'
     }
   };
+  console.log($state.href('wb.data_depot.projects.list'))
   $scope.systemId = $stateParams.systemId;
   var options = {
     system: $scope.systemId,
@@ -27,10 +28,6 @@ export default function ProjectListingCtrl($scope, $state, $stateParams, Django,
   $scope.searchState = DataBrowserService.apiParams.searchState;
   ProjectService.list().then(function (resp) {
     var prj = _.find(resp, {id: $scope.systemId});
-    prj.href = $state.href('db.projects.listing', {
-      systemId: prj.id,
-      filePath: '/',
-    });
     $scope.data.project = prj;
   });
 

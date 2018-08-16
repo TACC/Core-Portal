@@ -149,7 +149,7 @@
             <div>
                 <a class="list-group-item"
                     ui-sref="wb.data_depot.projects.list"
-                    ui-sref-active="active">
+                    ui-sref-active="{'active': 'wb.data_depot.projects.*'}">
                     <i class="fa fa-briefcase">&ensp;</i>
                     My Projects
                 </a>
@@ -159,7 +159,8 @@
                                 systemId: sysCommunityData.systemId,
                                 filePath:'',
                                 name: sysCommunityData.name,
-                                directory: 'public'})" ui-sref-active="active">
+                                directory: 'public'})"
+                                ui-sref-active="active">
                             <i class="fa fa-users">&ensp;</i>
                             Community Data
                         </a>

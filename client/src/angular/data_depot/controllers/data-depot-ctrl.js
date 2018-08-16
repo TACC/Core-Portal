@@ -151,33 +151,6 @@ export default function DataDepotCtrl(
             $event.stopPropagation();
             DataBrowserService.preview(file, $scope.browser.listing);
         };
-    } else if (options.name == 'My Projects' || options.directory == 'projects') {
-        $scope.ui = {};
-
-        $scope.data = {
-            user: Django.user,
-            customRoot: {
-                name: 'My Projects',
-                path: $stateParams.filePath,
-                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
-            },
-        };
-
-        $scope.ui.busy = true;
-        $scope.data.projects = [];
-        ProjectService.list().then(function(projects) {
-            $scope.ui.busy = false;
-            $scope.data.projects = projects;
-        });
-
-        $scope.onBrowse = function onBrowse($event, project) {
-            $event.preventDefault();
-            $state.go('db.projects.listing', {
-                systemId: project.id,
-                filePath: '/',
-                projectTitle: project.name,
-            });
-        };
     } else if (options.name == 'Community Data' || options.directory == 'public') {
         $scope.data = {
             user: Django.user,

@@ -8,7 +8,7 @@ export default function ProjectListCtrl($scope, $state, ProjectService, $uibModa
   $scope.data = {
     customRoot: {
       name: 'My Projects',
-      href: $state.href('wb.data_depot.projects.list')
+      route: 'wb.data_depot.projects.list'
     }
   };
 
