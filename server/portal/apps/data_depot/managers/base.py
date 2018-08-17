@@ -210,7 +210,7 @@ class AgaveFileManager(AbstractFileManager):
             file_path = os.path.join(*id_comps[1:])
         else:
             file_path = '/'
-
+            
         return (system, file_path)
 
     def get_file(self, file_id, **kwargs):
@@ -275,7 +275,6 @@ class AgaveFileManager(AbstractFileManager):
         
         for i in _file_dest_children:
             if _file_src.name == i.name:
-                logger.info("name exists in destination...")
                 _ext = _file_src.ext
                 _name = os.path.splitext(_file_src.name)[0]
                 now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')

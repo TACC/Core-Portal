@@ -205,11 +205,6 @@ function FileListing($http, $q) {
       "resource": options.resource || ""
     };
 
-    console.log("options");
-    console.log(options);
-    console.log("self");
-    console.log(self);
-
     return $http.put(this.mediaUrl(), body).then(function (resp) {
       var newCopy = new Listing(resp.data.response);
       if (options.path == self._parent.path) {

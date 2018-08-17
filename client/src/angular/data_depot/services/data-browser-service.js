@@ -324,28 +324,31 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @return {Promise}
    */
   function download (files) {
+    currentState.busy = true;
     if (!Array.isArray(files)) {
       files = [files];
     }
     var download_promises = _.map(files, function(file) {
       return file.download().then(function (resp) {
+        // TODO: This opens each download in a new tab
+        // and closes once the download is started. We
+        // need to zip these selected files and download
+        // them as one file...
         var link = document.createElement('a');
+        link.style.display = 'none';
         link.setAttribute('href', resp.response.href);
-        link.setAttribute('download', "");
-
+        link.setAttribute('type', resp.response.fileType);
+        link.setAttribute('target', "_blank");
+        link.setAttribute('download', 'null');
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
 
+        currentState.busy = false;
         return resp;
-      }, function (err) {
-        $mdToast.show($mdToast.simple()
-        .content($translate.instant('error_download_file'))
-        .toastClass('error')
-        .parent($("#toast-container")));
-        return $q.reject(err.data);
       });
     });
+
     return $q.all(download_promises);
   }
 
@@ -479,7 +482,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
 
     return modal.result.then(
       function (result) {
-        console.log('busy');
         currentState.busy = true;
         //if (result.system !== files[0].system){
         //  return $q.when(files);
@@ -674,7 +676,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         $scope.file = file;
 
         $scope.doRenameFile = function($event) {
-          console.log('renaming...');
           $event.preventDefault();
           $uibModalInstance.close({file: file, renameTo: $scope.form.targetName});
         };
