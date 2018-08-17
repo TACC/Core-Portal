@@ -53,6 +53,6 @@ function agaveFilePicker() {
         });
       }
     };
-  };
+  }
 
   export default agaveFilePicker;
