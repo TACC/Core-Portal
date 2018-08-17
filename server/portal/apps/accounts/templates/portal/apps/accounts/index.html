@@ -25,6 +25,9 @@
           {% url 'portal_accounts:manage_licenses' as item_url %}
           <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Licenses</a></li>
 
+          {% url 'tickets:mytickets' as item_url %}
+          <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">My Tickets</a></li>
+
           <!-- {% url 'portal_accounts:manage_notifications' as item_url %}
           <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Notification Settings</a></li> -->
 
