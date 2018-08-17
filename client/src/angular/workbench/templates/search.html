@@ -46,7 +46,7 @@
             </div></div>
 
           <search-result make-url='makeUrl(data)' data=data ng-repeat="data in data.search_results.hits"></search-result>
-        </div>
+        
         <div class="row" ng-if="data.search_results.total_hits > limit">
             <div class="col-md-3">
                 <button class="btn btn-default pull-left"
@@ -69,5 +69,6 @@
               </div>
         </div>
       </div>
+    </div>
     </div>
 </div>

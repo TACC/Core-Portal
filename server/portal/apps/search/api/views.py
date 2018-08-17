@@ -135,6 +135,7 @@ class SearchController(object):
         search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
         search = search.query("query_string", query=q, fields=["name", "name._exact", "keywords"])
         search = search.filter(Q('term', system=system))
+        search = search.extra(from_=offset, size=limit)
         # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         return search
 
