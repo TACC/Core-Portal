@@ -61,7 +61,7 @@ export default class SearchViewCtrl {
             $scope.total_hits = $scope.data.search_results.total_hits;
             $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit);
             if ($scope.data.search_results.filter != $scope.data.type_filter) {
-              $scope.filter($scope.data.search_results.filter)
+              $scope.filter($scope.data.search_results.filter);
             }
 
           });
