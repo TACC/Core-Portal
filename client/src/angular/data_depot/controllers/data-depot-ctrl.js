@@ -126,14 +126,6 @@ export default function DataDepotCtrl(
                 $scope.browser.error.status = err.status;
             });
 
-        $scope.scrollToTop = function() {
-            return;
-        };
-
-        $scope.scrollToBottom = function() {
-            DataBrowserService.scrollToBottom();
-        };
-
         $scope.listingToShow = function() {
             //console.log($scope.browser.listing.children)
             if ($scope.browser.listing) {
