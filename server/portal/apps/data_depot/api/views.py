@@ -29,14 +29,6 @@ def get_manager(request, file_mgr_name):
     return fmgr
 
 
-class ProjectListingView(BaseApiView):
-    """ Projects listing view"""
-    def get(self, request):
-        fmgr = get_manager(request, 'projects')
-        projects = fmgr.projects_systems()
-        return JsonResponse({'response': projects})
-
-
 #TODO: Make this general!
 class SystemListingView(BaseApiView):
     """System Listing View"""
