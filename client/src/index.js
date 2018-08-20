@@ -16,5 +16,4 @@ import '../css/workspace.css';
 import '../css/dashboard.css';
 import '../css/notifications.css';
 
-
 import mod from './angular/main.module.js';

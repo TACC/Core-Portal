@@ -1,10 +1,14 @@
 import angular from "angular";
-import NotificationsListCtrl from './notifications-list';
-import NotificationDetailCtrl from './notification-detail';
-import Notifications from './notifications-service';
+import NotificationsListCtrl from './controller/notifications-list';
+import NotificationDetailCtrl from './controller/notification-detail';
+import NotificationsBellCtrl from './controller/notifications-bell';
+import Notifications from './controller/notifications-service';
 
-import notificationDetailTemplate from './notification-detail.html';
-import notificationListTemplate from './notifications-list.html';
+import './css/animate.css';
+import './css/notifications-bell.css';
+import notificationDetailTemplate from './template/notification-detail.html';
+import notificationListTemplate from './template/notifications-list.html';
+import notificationsBellTemplate from './template/notifications-bell.html';
 
 let mod = angular.module('portal.notifications', []);
 
@@ -24,6 +28,12 @@ mod.component('notificationDetail', {
     "note": '<',
     "delete": "&"
   }
+});
+
+mod.component('notificationsBell', {
+  template: notificationsBellTemplate,
+  controller: NotificationsBellCtrl,
+  controllerAs: "vm"
 });
 
 export default mod;
