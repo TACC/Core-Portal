@@ -6,7 +6,7 @@
                     <!-- <div class="btn-group">
                 <i class="fa fa-spinner fa-spin fa-2x"> </i>
               </div> -->
-                    <form class="navbar-form navbar-left" ng-submit="ops.search()" style="display:flex" 
+                    <form class="navbar-form navbar-left" ng-submit="ops.search()" style="display:flex"
                         ng-hide="['Dropbox', 'Box', 'Google Drive', 'Project View', 'Project Data View'].includes(placeholder())">
                         <input class="form-control" style="width:240px;" placeholder="Search" ng-model="search.queryString">
                         <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
@@ -146,24 +146,21 @@
                             My Data
                         </a>
                     </div>
-                    <!--<div>
+            <div>
                 <a class="list-group-item"
-                    ui-sref="wb.data_depot.db({
-                                systemId: null,
-                                filePath: null,
-                                name: 'My Projects',
-                                directory: 'projects'})"
-                    ui-sref-active="active">
+                    ui-sref="wb.data_depot.projects.list"
+                    ui-sref-active="{'active': 'wb.data_depot.projects.*'}">
                     <i class="fa fa-briefcase">&ensp;</i>
                     My Projects
                 </a>
-            </div>-->
+            </div>
                     <div>
                         <a class="list-group-item" ui-sref="wb.data_depot.db({
                                 systemId: sysCommunityData.systemId,
                                 filePath:'',
                                 name: sysCommunityData.name,
-                                directory: 'public'})" ui-sref-active="active">
+                                directory: 'public'})"
+                                ui-sref-active="active">
                             <i class="fa fa-users">&ensp;</i>
                             Community Data
                         </a>

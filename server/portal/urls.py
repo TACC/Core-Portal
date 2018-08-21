@@ -78,6 +78,9 @@ urlpatterns += [
     # version check.
     url(r'^version/', des_version),
 
+    # cms forms.
+    url(r'^', include('djangocms_forms.urls')),
+
     # cms handles everything else.
     url(r'^', include('cms.urls')),
 

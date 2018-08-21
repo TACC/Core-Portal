@@ -8,19 +8,21 @@
     <title>{% block title %}{% page_attribute "page_title" %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="{{ site.description }}">
-    <link rel="icon" href="{% static 'img/favicon.png' %}">
+    {% if settings.PORTAL_ICON_FILENAME %}
+    <link rel="icon" href="{{ settings.PORTAL_ICON_FILENAME }}">
+    {% else %}
+    <link rel="icon" href="{% static 'img/favicon.ico' %}">
+    {% endif %}
     <link rel="canonical" href="{{request.get_full_path}}">
     <base href="/">
     {% block head_extra %}{% endblock %}
     <!-- styles -->
-
-    <!-- Vendor base css -->
+    <!-- Vendor CSS -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.css">
     <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.chunks.main.css %>">
-
     {% block styles %}{% endblock %}
     {% render_block "css" %}
     {% recaptcha_init 'en' %}
