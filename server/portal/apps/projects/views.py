@@ -9,6 +9,7 @@ from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.projects.models import Project
 from portal.libs.agave.models.files import BaseFile
+from portal.libs.agave.models.systems.storage import StorageSystem
 from portal import utils
 from portal.decorators.api_authentication import api_login_required
 
@@ -50,14 +51,21 @@ class ProjectView(BaseApiView):
 
     @method_decorator(cacher)
     def get(self, request):
-
+        #TODO: fix this to work with the full metadata definition
+        #of projects. For now, can just list the storage systems
         ac = request.user.agave_oauth.client
-        # listing  = ac.systems.list(type="STORAGE")
-        # projects = [s for s in listing if '-projects-' in s.id]
-        # return JsonResponse({'response': projects})
-        projects = Project.list_projects(agave_client=ac)
-        out = [p.to_dict() for p in projects]
-        return JsonResponse(out, safe=False)
+        systems = StorageSystem.search(
+            ac,
+            {
+                'type.eq': "STORAGE",
+                'id.like': '*-projects-*'
+            }
+        )
+        # projects = Project.list_projects(agave_client=ac)
+        # for p in projects:
+        #     logger.info(p.to_dict())
+        # out = [p.to_dict() for p in projects]
+        return JsonResponse(systems, safe=False)
 
     def post(self, request):
         """

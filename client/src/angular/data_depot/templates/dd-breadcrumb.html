@@ -4,7 +4,7 @@
         <a ui-sref="{{ customRoot.route }}" ui-sref-active="active"> {{ customRoot.name }}</a>
     </li>
     <li ng-if="project">
-        <a href="{{ project.href }}">{{ project.name }}</a>
+        <a ui-sref="wb.data_depot.projects.listing({systemId:project.id, filePath: '/'})">{{ project.name }}</a>
     </li>
     <li ng-repeat="item in listing.trail | limitTo: (offset - listing.trail.length)">
         <span ng-if="$last">{{ item.name }}</span>
