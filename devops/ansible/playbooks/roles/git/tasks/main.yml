@@ -1,3 +1,10 @@
+- name: Manually create .ssh directory
+  file:
+    path: "/root/.ssh"
+    state: "directory"
+    owner: portal
+    group: portal
+
 - name: Copy repo service account ssh key
   copy: src='../../secret_files/bitbucket' dest=/root/.ssh/bitbucket
   when: git_copy_ssh_key
@@ -20,3 +27,11 @@
     recursive: "{{git_recursive}}"
     accept_hostkey: yes
     ssh_opts: "-o StrictHostKeyChecking=no -o ForwardAgent=yes"
+
+- name: transfer portal ownership to portal
+  file:
+    path: "/srv/www/portal"
+    state: "directory"
+    owner: portal
+    group: portal
+    recurse: yes

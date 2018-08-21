@@ -12,3 +12,4 @@ node.name: es01
 discovery.zen.minimum_master_nodes: 1
 #More info about memory_lock: https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration-memory.html
 bootstrap.memory_lock: true
+xpack.security.enabled: false

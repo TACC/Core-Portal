@@ -247,7 +247,8 @@ class BaseSystem(BaseAgaveResource):
             params=query
         )
         resp.raise_for_status()
-        systems = resp.json()['response']
+        logger.info(resp.json())
+        systems = resp.json()['result']
         return systems
 
     def _populate_obj(self):
