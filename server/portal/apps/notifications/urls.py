@@ -1,26 +1,10 @@
 from django.conf.urls import include, url
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy as _
-from portal.apps.notifications import views
 
+from portal.apps.notifications.views import ManageNotificationsView, NotificationsBadgeView
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^notifications/$', views.notifications, name='notifications'),
-
-    # url(r'^apps-list/$', 'apps_list', name='apps_list'),
-    # url(r'^files-list/$', 'files_list', name='files_list'),
-    # url(r'^jobs-list/$', 'jobs_list', name='jobs_list'),
-    # url(r'^jobs-details/$', 'jobs_details', name='jobs_details'),
+    url(r'^$', ManageNotificationsView.as_view(), name='event_type_notifications'),
+    url(r'^badge/$', NotificationsBadgeView.as_view(), name='badge'),
+    url(r'^delete/(?P<pk>\w+)?$', ManageNotificationsView.as_view(),
+                                        name='delete_notification'),
 ]
-
-
-def menu_items(**kwargs):
-    if 'type' in kwargs and kwargs['type'] == 'account':
-        return [
-            {
-                'label': _('Notifications'),
-                'url': reverse('designsafe_notifications:index'),
-                'children': []
-            }
-        ]

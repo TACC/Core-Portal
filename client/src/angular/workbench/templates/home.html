@@ -1,15 +1,25 @@
 <div class="workbench">
   <div class="workbench-nav">
     <div class="side-nav-button" ui-sref="wb.dashboard"  ui-sref-active="active">
-      <i class="fa portal-icon-dashboard" title="Workbench"></i>
+      <i class="fa fa-dashboard" title="Workbench"></i>
+      <div class="side-nav-text"> Workbench </div>
     </div>
     <div  class="side-nav-button"
           ui-sref="wb.data_depot.db({'systemId': vm.mydata_system.systemId, 'path': '', 'name': vm.mydata_system.name, 'directory': 'agave'})"
+<<<<<<< HEAD
+          ui-sref-active="active">
+      <i class="fa fa-folder-open" title="Data Depot"></i>
+      <div class="side-nav-text"> Data Depot </div>
+
+=======
           ui-sref-active="{'active': 'wb.data_depot.**'}">
       <i class="fa portal-icon-data" title="Data Depot"></i>
+>>>>>>> master
     </div>
     <div class="side-nav-button" ui-sref="wb.workspace" ui-sref-active="active">
-      <i class="fa portal-icon-workspace" title="Workspace"></i>
+      <i class="fa fa-cubes" title="Workspace"></i>
+      <div class="side-nav-text"> Workspace </div>
+
     </div>
     <!-- General Help will live under CMS control. -->
     <!--
@@ -17,8 +27,13 @@
       <i class="fa portal-icon-help" title="Help"></i>
     </div>
     -->
+    <div class="side-nav-button" ui-sref="wb.notifications" ui-sref-active="active">
+      <i class="fa fa-envelope-o" title="Notifications"></i>
+      <div class="side-nav-text"> Notifications </div>
+    </div>
     <div class="side-nav-button" ui-sref="wb.search" ui-sref-active="active">
-      <i class="fa portal-icon-search" title="Search"></i>
+      <i class="fa fa-search" title="Search"></i>
+      <div class="side-nav-text"> Search </div>
     </div>
   </div>
   <div class="workbench-content">

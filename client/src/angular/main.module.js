@@ -24,6 +24,7 @@ import {mod as data_depot} from './data_depot';
 import {mod as search} from './search';
 import {mod as dashboard} from './dashboard';
 import {mod as workbench} from './workbench';
+import {mod as notifications} from './notifications';
 
 //templates
 import homeTemplate from './workbench/templates/home.html';
@@ -32,7 +33,7 @@ import dataDepotTemplate from './workbench/templates/data-depot.html';
 import workspaceTemplate from './workbench/templates/workspace.html';
 import searchTemplate from './workbench/templates/search.html';
 import helpTemplate from './workbench/templates/help.html';
-
+import notificationsTemplate from './workbench/templates/notifications.html';
 
 function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProvider) {
  'ngInject';
@@ -87,6 +88,13 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
       // 'test': function () {console.log("help resolve");}
     }
   })
+  .state('wb.notifications', {
+    'url': '/notifications',
+    'template': notificationsTemplate,
+    'resolve': {
+      // 'test': function () {console.log("help resolve");}
+    }
+  })
   .state('wb.search', {
     'url': '/search?query_string&type_filter',
     'template': searchTemplate,
@@ -123,10 +131,13 @@ let mod = angular.module('portal', [
   'portal.search',
   'portal.dashboard',
   'portal.workbench',
+  'portal.notifications',
 ])
 
   .config(config)
-
+  .run(['Notifications', function(Notifications) {
+    Notifications.subscribe();
+  }])
   .constant('appCategories', ['Simulation', 'Visualization', 'Data Processing', 'Utilities'])
   .constant('appIcons', ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'visit', 'openfoam', 'opensees']);
 

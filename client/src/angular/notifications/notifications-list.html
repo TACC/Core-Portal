@@ -1,0 +1,10 @@
+<div class="">
+  <div class="jumbotron" ng-show="vm.total===0">
+    <h2> Whew, no notifications! </h2>
+  </div>
+  <notification-detail
+    ng-repeat="note in vm.notes"
+    note="note"
+    delete="vm.delete(note)">
+  </notification-detail>
+</div>

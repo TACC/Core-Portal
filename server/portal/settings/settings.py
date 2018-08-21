@@ -166,7 +166,6 @@ INSTALLED_APPS = [
     'portal.apps.projects',
     'portal.apps.licenses',
     'portal.apps.notifications',
-    'portal.apps.api.notifications',
 ]
 
 MIDDLEWARE = [
@@ -321,7 +320,7 @@ DATABASES = {
 }
 
 WS4REDIS_CONNECTION = {
-    'host': 'redis',
+    'host': settings_secret._RESULT_BACKEND_HOST,
 }
 WEBSOCKET_URL = '/ws/'
 
