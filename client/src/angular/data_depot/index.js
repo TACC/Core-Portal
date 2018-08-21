@@ -39,7 +39,7 @@ function config(
     $qProvider.errorOnUnhandledRejections(false);
     $stateProvider.state(
         'wb.data_depot.db', {
-            url: '/{directory}/{systemId}{filePath:any}?query_string',
+            url: '/{directory}/{systemId}{filePath:any}?query_string&offset&limit',
             template: agaveDataListingTemplate,
             controller: 'DataDepotCtrl',
             params: {
@@ -47,6 +47,8 @@ function config(
                 name: {value: '', squash: true},
                 directory: {value: ''},
                 query_string: null,
+                offset: null,
+                limit: null
             },
         }
     )
