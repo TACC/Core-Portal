@@ -12,5 +12,4 @@ urlpatterns = [
         views.FilePemsView.as_view()),
     url(r'^toolbar/params', views.ToolbarOptionsView.as_view()),
     url(r'systems/list', views.SystemListingView.as_view()),
-    url(r'projects/', views.ProjectListingView.as_view())
 ]
