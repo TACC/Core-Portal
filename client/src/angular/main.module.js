@@ -6,7 +6,6 @@ import * as ngMaterial from 'angular-material';
 import * as ngMessages from 'angular-messages';
 import * as ui_bootstrap from 'angular-ui-bootstrap';
 import * as ui_router from 'angular-ui-router';
-import * as ngWebSocket from 'angular-websocket';
 import * as ngSanitize from 'angular-sanitize';
 import * as ngStorage from 'ng-storage';
 import * as ngCookies from 'angular-cookies';
@@ -121,7 +120,6 @@ let mod = angular.module('portal', [
   'pascalprecht.translate',
   'ngStorage',
   'ngSanitize',
-  'ngWebSocket',
   'ngMaterial',
   'ng.modernizr',
   'django.context',
@@ -136,9 +134,9 @@ let mod = angular.module('portal', [
 ])
 
   .config(config)
-  .run(['Notifications', function(Notifications) {
-    Notifications.subscribe();
-  }])
+//  .run(['Notifications', function(Notifications) {
+//    Notifications.connect();
+//  }])
   .constant('appCategories', ['Simulation', 'Visualization', 'Data Processing', 'Utilities'])
   .constant('appIcons', ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'visit', 'openfoam', 'opensees']);
 
