@@ -2,7 +2,7 @@ import angular from "angular";
 import NotificationsListCtrl from './controller/notifications-list';
 import NotificationDetailCtrl from './controller/notification-detail';
 import NotificationsBellCtrl from './controller/notifications-bell';
-import Notifications from './controller/notifications-service';
+import Notifications from './service/notifications-service';
 
 import './css/animate.css';
 import './css/notifications-bell.css';
