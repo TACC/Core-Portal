@@ -6,7 +6,6 @@ import * as ngMaterial from 'angular-material';
 import * as ngMessages from 'angular-messages';
 import * as ui_bootstrap from 'angular-ui-bootstrap';
 import * as ui_router from 'angular-ui-router';
-import * as ngWebSocket from 'angular-websocket';
 import * as ngSanitize from 'angular-sanitize';
 import * as ngStorage from 'ng-storage';
 import * as ngCookies from 'angular-cookies';
@@ -100,7 +99,8 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     'template': searchTemplate,
     'params': {
       query_string: null,
-      type_filter: 'cms'
+      type_filter: 'cms',
+      switch_filter: null
     },
     'resolve': {
       // 'test': function () {console.log("search resolve");}
@@ -120,7 +120,6 @@ let mod = angular.module('portal', [
   'pascalprecht.translate',
   'ngStorage',
   'ngSanitize',
-  'ngWebSocket',
   'ngMaterial',
   'ng.modernizr',
   'django.context',

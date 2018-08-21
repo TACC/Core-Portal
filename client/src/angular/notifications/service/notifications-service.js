@@ -3,9 +3,8 @@ import { WebSocketSubject } from 'rxjs/webSocket';
 
 export default class Notifications {
 
-  constructor($websocket, $location, $mdToast, $http, $q) {
+  constructor($location, $mdToast, $http, $q) {
     'ngInject';
-    this.$websocket = $websocket;
     this.$location = $location;
     this.$mdToast = $mdToast;
     this.$http = $http;
