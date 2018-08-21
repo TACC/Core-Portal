@@ -39,11 +39,11 @@ export default class SearchViewCtrl {
     $scope.filter = function(ftype) {
       $scope.data.type_filter = ftype;
       $scope.page_num = 0;
-      $scope.search_browse();
+      $scope.search_browse(false);
     };
 
-    $scope.search_browse = function() {
-      $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': $scope.data.type_filter});
+    $scope.search_browse = function(switch_filter) {
+      $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': $scope.data.type_filter, 'switch_filter': switch_filter});
     };
 
     $scope.search = function(reset) {
@@ -60,8 +60,9 @@ export default class SearchViewCtrl {
             //$scope.data.hits = resp.hits;
             $scope.total_hits = $scope.data.search_results.total_hits;
             $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit);
-            if ($scope.data.search_results.filter != $scope.data.type_filter) {
-              $scope.filter($scope.data.search_results.filter)
+            if ($scope.data.search_results.filter != $scope.data.type_filter && $state.params.switch_filter) {
+              $scope.data.type_filter = $scope.data.search_results.filter
+              $scope.search_browse(true)
             }
 
           });

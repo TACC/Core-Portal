@@ -3,11 +3,11 @@
       <div class="row justify-content-center" >
         <div class="col-md-3"></div>
         <div class="col-md-6">
-          <form ng-submit="search_browse()">
+          <form ng-submit="search_browse(true)">
           <div class="input-group">
             <input type="text" class="form-control input-lg" ng-model="data.text" placeholder="Search for...">
             <span class="input-group-btn">
-              <button class="btn btn-default btn-lg" type="button" ng-click="search_browse()">
+              <button class="btn btn-default btn-lg" type="button" ng-click="search_browse(true)">
                 <i class="fa fa-search"></i>
               </button>
             </span>
@@ -46,7 +46,7 @@
             </div></div>
 
           <search-result make-url='makeUrl(data)' data=data ng-repeat="data in data.search_results.hits"></search-result>
-        </div>
+        
         <div class="row" ng-if="data.search_results.total_hits > limit">
             <div class="col-md-3">
                 <button class="btn btn-default pull-left"
@@ -69,5 +69,6 @@
               </div>
         </div>
       </div>
+    </div>
     </div>
 </div>
