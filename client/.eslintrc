@@ -2,7 +2,8 @@
   "env": {
     "browser": true,
     "es6": true,
-    "node": true
+    "node": true,
+    "jasmine": true
   },
   "rules": {
       "semi"              : [1, "always"],
@@ -15,6 +16,7 @@
     "sourceType": "module",
   },
   "globals": {
-    "window": true
+    "window": true,
+    "angular": true
   }
 }
