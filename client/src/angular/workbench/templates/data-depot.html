@@ -14,7 +14,6 @@
                     </form>
                     <div class="btn-group">
                         <button class="btn btn-sm btn-default" title="Rename" ng-click="ops.rename()" ng-disabled="!tests.canRename ||
-                                                    browser.project.publicationStatus === 'publishing' ||
                                                     browser.busy ||
                                                     browser.busyListing">
                             <i class="fa fa-pencil"></i>
@@ -24,7 +23,6 @@
                     <div class="btn-group">
             
                         <button class="btn btn-sm btn-default" title="Move" ng-click="ops.move()" ng-disabled="!tests.canMove ||
-                                                    browser.project.publicationStatus === 'publishing' ||
                                                     browser.busy ||
                                                     browser.busyListing">
                             <i class="fa fa-arrows"></i>
@@ -32,7 +30,6 @@
                         </button>
             
                         <button class="btn btn-sm btn-default" title="Copy" ng-click="ops.copy()" ng-disabled="!tests.canCopy ||
-                                                    browser.project.publicationStatus === 'publishing' ||
                                                     browser.busy ||
                                                     browser.busyListing">
                             <i class="fa fa-copy"></i>
@@ -40,7 +37,6 @@
                         </button>
             
                         <button class="btn btn-sm btn-default" title="Preview" ng-click="ops.preview()" ng-disabled="!tests.canPreview ||
-                                                    browser.project.publicationStatus === 'publishing' ||
                                                     browser.busy ||
                                                     browser.busyListing">
                             <i class="fa fa-binoculars"></i>
@@ -71,8 +67,7 @@
                                 title="Move to trash"
                                 ng-click="ops.trash()"
                                 ng-if="!tests.canDelete"
-                                ng-disabled="!tests.canTrash || 
-                                            browser.project.publicationStatus === 'publishing' ||
+                                ng-disabled="!tests.canTrash ||
                                             browser.listing.path == '/.Trash' ||
                                             browser.busy ||
                                             browser.busyListing">
