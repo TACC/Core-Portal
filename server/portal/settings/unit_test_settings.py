@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'djangocms_text_ckeditor',
     'djangocms_file',
     'djangocms_picture',
+    'djangocms_forms',
     'cmsplugin_cascade',
     'cmsplugin_cascade.extra_fields',
     'filer',
@@ -83,7 +84,6 @@ INSTALLED_APPS = [
     'portal.apps.projects',
     'portal.apps.licenses',
     'portal.apps.notifications',
-    'portal.apps.api.notifications',
 ]
 
 MIDDLEWARE = [
