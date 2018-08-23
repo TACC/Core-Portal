@@ -75,11 +75,11 @@ export default function ModalPreview($scope, $uibModalInstance, $sce, file, list
               var blob = new Blob([oReq.response], { type: "application/json" });
               var reader = new FileReader();
 
-              reader.onload = function (e) {
-                var content = JSON.parse(e.target.result);
-                var target = $('.nbv-preview')[0];
-                // nbv.render(content, target);
-              };
+              // reader.onload = function (e) {
+              //   var content = JSON.parse(e.target.result);
+              //   var target = $('.nbv-preview')[0];
+              //   // nbv.render(content, target);
+              // };
 
               reader.readAsText(blob);
             };
