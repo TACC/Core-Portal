@@ -132,10 +132,18 @@
 <div class="modal-footer">
     <div class="text-right">
         <button class="btn btn-primary" type="button"
+                ng-show="listing.name"
                 ng-disabled="! validDestination(listing)"
                 ng-click="chooseDestination(listing)"
         >
             Move to {{ listing.name }}
+        </button>
+        <button class="btn btn-primary" type="button"
+                ng-show="!listing.name"
+                ng-disabled="! validDestination(listing)"
+                ng-click="chooseDestination(listing)"
+        >
+            Move to My Data
         </button>
         <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
     </div>
