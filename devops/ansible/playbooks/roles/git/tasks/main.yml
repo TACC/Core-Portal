@@ -2,8 +2,8 @@
   file:
     path: "/root/.ssh"
     state: "directory"
-    owner: portal
-    group: portal
+    owner: root
+    group: root
 
 - name: Copy repo service account ssh key
   copy: src='../../secret_files/bitbucket' dest=/root/.ssh/bitbucket
