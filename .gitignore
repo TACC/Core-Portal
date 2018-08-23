@@ -84,7 +84,6 @@ package-lock.json
 
 ###############################
 # Ansible .gitignores content.
-
 .vagrant/
 /static
 Vagrantfile.local

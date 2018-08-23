@@ -1,0 +1,34 @@
+---
+
+- name: Create java directory
+  file: state=directory path=/opt/java8
+
+- name: Download Java
+  command: "wget -v -O /opt/java8/jdk-8u131-linux-x64.rpm --no-cookies --no-check-certificate --header \"Cookie: oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm\" creates=/opt/java8/jdk-8u131-linux-x64.rpm"
+
+- name: Install java
+  yum:
+    name: /opt/java8/jdk-8u131-linux-x64.rpm
+
+- name: Importing Elasticsearch public GPG key
+  command: "rpm --import http://packages.elastic.co/GPG-KEY-elasticsearch"
+
+- name: Create Elasticsearch repo
+  copy: 
+    src: elasticsearch.repo
+    dest: /etc/yum.repos.d/elasticsearch.repo
+
+- name: Install Elasticsearch
+  yum:
+    name: elasticsearch
+
+- name: Write elasticsearch config
+  copy: 
+    src: elasticsearch.yml 
+    dest: /etc/elasticsearch/elasticsearch.yml
+
+- name: Enable Elasticsearch service
+  command: "systemctl enable elasticsearch"
+
+- name: Start Elasticsearch service
+  command: "systemctl start elasticsearch"

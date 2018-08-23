@@ -1,0 +1,13 @@
+<ul class="breadcrumb">
+    <li ng-if="customRoot">
+        <!-- <a href="{{ customRoot.href }}">{{ customRoot.name }}</a> -->
+        <a ui-sref="{{ customRoot.route }}" ui-sref-active="active"> {{ customRoot.name }}</a>
+    </li>
+    <li ng-if="project">
+        <a ui-sref="wb.data_depot.projects.listing({systemId:project.id, filePath: '/'})">{{ project.name }}</a>
+    </li>
+    <li ng-repeat="item in listing.trail | limitTo: (offset - listing.trail.length)">
+        <span ng-if="$last">{{ item.name }}</span>
+        <a href="{{ itemHref()(item) }}" ng-if="! $last" ng-click="onBrowse()($event, item)">{{ item.name }}</a>
+    </li>
+</ul>
