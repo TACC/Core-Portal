@@ -135,6 +135,18 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
       /* copy form model to disconnect from $scope */
       _.extend(jobData, angular.copy($scope.form.model));
 
+      /* move archivePath from inputs */
+      if (jobData.inputs.hasOwnProperty('archivePath')) {
+        jobData.archivePath = jobData.inputs.archivePath;
+        delete jobData.inputs.archivePath;
+
+      } else if (jobData.appId.includes('compress') || jobData.appId.includes('extract')) {
+        /* Set archivePath to inputPath for compress and zip apps */
+        var tmp_path = Object.values(jobData.inputs)[0].split('/');
+        tmp_path.pop();
+        jobData.archivePath = tmp_path.join('/');
+      }
+
       /* remove falsy input/parameter */
       _.each(jobData.inputs, function(v,k) {
         if (_.isArray(v)) {
