@@ -76,6 +76,14 @@ export default function DataDepotCtrl(
         }
     };
 
+    $scope.listingToShow = function() {
+        //console.log($scope.browser.listing.children)
+        if ($scope.browser.listing) {
+            return $scope.browser.listing.children.slice($scope.state.offset, $scope.state.offset + $scope.state.limit)
+        }
+        return null
+    }
+
     $scope.openPushPublicKeyForm = ()=>{
         $scope.browser.ui.pushKeyModalOpening = true;
         SystemsService.get(options.system)
@@ -125,14 +133,6 @@ export default function DataDepotCtrl(
                 $scope.browser.error.message = err.data.message;
                 $scope.browser.error.status = err.status;
             });
-
-        $scope.listingToShow = function() {
-            //console.log($scope.browser.listing.children)
-            if ($scope.browser.listing) {
-                return $scope.browser.listing.children.slice($scope.state.offset, $scope.state.offset + $scope.state.limit)
-            }
-            return null
-        }
 
         $scope.onSelect = function($event, file) {
             $event.stopPropagation();
@@ -185,6 +185,7 @@ export default function DataDepotCtrl(
         $scope.browser = DataBrowserService.state();
         DataBrowserService.browse(options).then(function(resp) {
             $scope.browser = DataBrowserService.state();
+            $scope.state.max_pages = Math.ceil($scope.browser.listing.children.length / $scope.state.limit)
         });
 
         $scope.onBrowse = function($event, file) {
