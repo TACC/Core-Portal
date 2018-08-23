@@ -279,7 +279,7 @@ class AgaveFileManager(AbstractFileManager):
             agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
             agave_indexer.apply_async(kwargs={'systemId': _file_dest.system}, routing_key='indexing')
 
-        
+
         return resp
 
     def delete(self, file_id, **kwargs):
@@ -297,7 +297,7 @@ class AgaveFileManager(AbstractFileManager):
 
         return _file.delete()
 
-    def download(self, file_id, preview=True, force=False, **kwargs):
+    def download(self, file_id, preview=True, **kwargs):
         """Download a file.
 
         :param str file_id: Id representing a file/folder.
@@ -312,14 +312,13 @@ class AgaveFileManager(AbstractFileManager):
         if _file.type == 'dir':
             raise ValueError('Cannot download a folder')
 
-        if not preview:
-            url = _file.postit(force=True)
-            return _file.download()
-
-        logger.info("preview is false")
         # if force=True (which is default), agave will automatically
         # set the Content-Disposition for download
-        url = _file.postit(force=force)
+        if not preview:
+            url = _file.postit(force=True)
+            return {'href': url, 'fileType': ''}
+        
+        url = _file.postit(force=False)
 
         if _file.ext in BaseFile.SUPPORTED_TEXT_PREVIEW_EXTS:
             file_type = 'text'
@@ -496,7 +495,7 @@ class AgaveFileManager(AbstractFileManager):
         _file = self.get_file(file_id)
         for pem in pems:
             _file.share(pem['username'], pem['permission'])
-        agave_indexer.apply_async(kwargs={'systemId': _file.system, 
+        agave_indexer.apply_async(kwargs={'systemId': _file.system,
                                           'filePath': _file.path,
                                           'update_pems': True})
         return _file
