@@ -51,7 +51,7 @@ export default function DataDepotCtrl(
 
     $scope.state = {
         offset: 0,
-        limit: 10,
+        limit: 3,
         page_num: 0,
         max_pages: 0
     }
@@ -65,16 +65,6 @@ export default function DataDepotCtrl(
         $scope.state.page_num--
         $scope.state.offset -= $scope.state.limit
     }
-
-    $scope.onBrowse = function($event, file) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        if (file.type === 'file') {
-            DataBrowserService.preview(file, $scope.browser.listing);
-        } else {
-            $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path, query_string: null}, {reload: false});
-        }
-    };
 
     $scope.listingToShow = function() {
         //console.log($scope.browser.listing.children)
@@ -133,6 +123,16 @@ export default function DataDepotCtrl(
                 $scope.browser.error.message = err.data.message;
                 $scope.browser.error.status = err.status;
             });
+
+        $scope.onBrowse = function($event, file) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            if (file.type === 'file') {
+                DataBrowserService.preview(file, $scope.browse r.listing);
+            } else {
+                $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path, query_string: null}, {reload: false});
+            }
+        };
 
         $scope.onSelect = function($event, file) {
             $event.stopPropagation();
