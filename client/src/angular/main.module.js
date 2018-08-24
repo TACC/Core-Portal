@@ -24,6 +24,7 @@ import {mod as search} from './search';
 import {mod as dashboard} from './dashboard';
 import {mod as workbench} from './workbench';
 import {mod as notifications} from './notifications';
+import {mod as common} from './common';
 
 //templates
 import homeTemplate from './workbench/templates/home.html';
@@ -131,6 +132,7 @@ let mod = angular.module('portal', [
   'portal.dashboard',
   'portal.workbench',
   'portal.notifications',
+  'portal.common'
 ])
 
   .config(config)
