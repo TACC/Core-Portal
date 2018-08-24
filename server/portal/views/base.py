@@ -71,8 +71,8 @@ class BaseApiView(View):
                 )
             return JsonResponse({'message': message}, status=status)
         except Exception as exc:  # pylint: disable=broad-except
-            logging.error(exc, exc_info=True)
+            logger.error(exc, exc_info=True)
             return JsonResponse(
-                {'message': "Soemthing went wrong here..."},
+                {'message': "Something went wrong here..."},
                 status=500
             )
