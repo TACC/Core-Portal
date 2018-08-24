@@ -97,12 +97,14 @@ INSTALLED_APPS = [
     # Aldryn Plugins.
     'aldryn_apphooks_config',
     'aldryn_boilerplates',   # test
+    'aldryn_bootstrap3',
     'aldryn_categories',
     'aldryn_common',
     'aldryn_newsblog',
     'aldryn_people',
     'aldryn_search',
     'aldryn_translation_tools',
+    'aldryn_video',
     'absolute',                                       # Aldryn-forms
     # 'aldryn_forms',                                 # Aldryn-forms
     # 'aldryn_forms.contrib.email_notifications',     # Aldryn-forms
@@ -117,17 +119,16 @@ INSTALLED_APPS = [
     'light_gallery',
 
     'djangocms_audio',
-    'djangocms_link',
-    # 'djangocms_embed',                            # Requires embed.ly account.
-    'djangocms_file',
+    'djangocms_column',
+    # 'djangocms_file',                         # Replaced by aldryn-bootstrap3
     'djangocms_forms',
-    'djangocms_picture',
-    'djangocms_video',
     'djangocms_googlemap',
+    # 'djangocms_link',                         # Replaced by aldryn-bootstrap3
+    # 'djangocms_picture',                      # Replaced by aldryn-bootstrap3
     'djangocms_snippet',
     'djangocms_style',
-    'djangocms_column',
     'djangocms_youtube',
+    'djangocms_video',
 
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
@@ -135,6 +136,7 @@ INSTALLED_APPS = [
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
+    'cmsplugin_iframe',  # edit template here: /usr/lib/python2.7/site-packages/cmsplugin_iframe/templates/cms/plugins
     'cmsplugin_socialsharekit',
     # 'cmsplugin_soundcloud',
     'adminsortable2',
@@ -144,7 +146,6 @@ INSTALLED_APPS = [
 
     # Pipeline.
     'mptt',
-    # 'reversion',
     'bootstrap3',
     'termsandconditions',
     'impersonate',
