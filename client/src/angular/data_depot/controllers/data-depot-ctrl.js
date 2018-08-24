@@ -57,7 +57,7 @@ export default function DataDepotCtrl(
     }
 
     $scope.nextPage = function() {
-        $scope.state.page_num++ 
+        $scope.state.page_num++
         $scope.state.offset += $scope.state.limit
     }
 
@@ -128,7 +128,7 @@ export default function DataDepotCtrl(
             $event.preventDefault();
             $event.stopPropagation();
             if (file.type === 'file') {
-                DataBrowserService.preview(file, $scope.browse r.listing);
+                DataBrowserService.preview(file, $scope.browser.listing);
             } else {
                 $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path, query_string: null}, {reload: false});
             }
