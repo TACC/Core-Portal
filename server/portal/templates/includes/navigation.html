@@ -10,7 +10,7 @@
         {% if settings.PORTAL_LOGO_FILENAME %}
         <img src="{{ settings.PORTAL_LOGO_FILENAME }}" class="portal-branding nav-icon" style="height:45px;">
         {% else %}
-        <div class="text-info navbar-logo-text">CEP</div>
+        <div class="text-info navbar-logo-text">{{ settings.PORTAL_NAMESPACE }}</div>
         {% endif %}
       </a>
       <!-- Normal Navbar -->
