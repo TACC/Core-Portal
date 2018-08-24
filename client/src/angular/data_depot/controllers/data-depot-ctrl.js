@@ -108,7 +108,7 @@ export default function DataDepotCtrl(
             customRoot: {
                 name: 'My Data',
                 path: $stateParams.filePath,
-                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
+                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", query_string: null, filePath: '', directory: "${$stateParams.directory}"})`,
             },
         };
 
@@ -174,7 +174,7 @@ export default function DataDepotCtrl(
             customRoot: {
                 name: 'Community Data',
                 path: $stateParams.filePath,
-                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
+                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", query_string: null, filePath: '', directory: "${$stateParams.directory}"})`,
             },
         };
 
