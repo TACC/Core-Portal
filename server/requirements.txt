@@ -6,6 +6,7 @@ aldryn-common
 aldryn-forms==3.0.4
 aldryn-newsblog
 aldryn-people
+aldryn-search
 aldryn-translation-tools
 amqp==2.2.2
 appnope==0.1.0
