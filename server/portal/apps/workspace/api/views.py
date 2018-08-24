@@ -159,6 +159,7 @@ class JobsView(BaseApiView):
             limit = request.GET.get('limit', 10)
             offset = request.GET.get('offset', 0)
             data = agave.jobs.list(limit=limit, offset=offset)
+
         return JsonResponse({"response": data})
 
     def delete(self, request, *args, **kwargs):
