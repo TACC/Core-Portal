@@ -102,6 +102,7 @@ INSTALLED_APPS = [
     'aldryn_common',
     'aldryn_newsblog',
     'aldryn_people',
+    'aldryn_search',
     'aldryn_translation_tools',
     'aldryn_video',
     'absolute',                                       # Aldryn-forms
@@ -738,4 +739,5 @@ SETTINGS_EXPORT = [
     'DEBUG',
     'GOOGLE_ANALYTICS_PRELOAD',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
+    'PORTAL_NAMESPACE'
 ]

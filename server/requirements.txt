@@ -7,6 +7,7 @@ aldryn-common
 aldryn-forms==3.0.4
 aldryn-newsblog
 aldryn-people
+aldryn-search
 aldryn-translation-tools
 aldryn-video
 amqp==2.2.2
