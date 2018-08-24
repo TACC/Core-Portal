@@ -1,0 +1,16 @@
+[uwsgi]
+home={{ uwsgi_home }}
+chdir={{ uwsgi_chdir }}
+logto=/var/log/uwsgi/{{ uwsgi_log_filename}}
+log-maxsize={{ uwsgi_log_maxsize }}
+module={{ uwsgi_ws_module }}
+env=DJANGO_SETTINGS_MODULE=portal.settings.settings
+gid={{ uwsgi_gid }}
+uid={{ uwsgi_uid }}
+vacuum=True
+processes=5
+gevent=1000
+http-websockets = true
+http-socket={{ uwsgi_ws_socket_path }}
+chown-socket={{ uwsgi_chown_socket }}
+chmod-socket={{ uwsgi_chmod_socket }}

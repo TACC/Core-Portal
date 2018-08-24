@@ -1,0 +1,61 @@
+<div class="modal-header">
+  <h3 class="modal-title">System Push Public Key</h3>
+  <p>
+    <strong>Note:</strong>
+    In order to push a public key your TACC token will be needed.<br />
+    In essence the public key will be placed in your
+    <code>authorized_keys</code> file for the specified hostname
+  </p>
+</div>
+<div class="modal-body">
+  <form action="#">
+    <div class="form-group">
+      <label>Name: </label>
+      <input type="text" disabled
+             data-ng-model="$ctrl.form.name"
+             class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Hostname: </label>
+      <input type="text" disabled
+             data-ng-model="$ctrl.form.hostname"
+             class="form-control">
+    </div>
+    <div class="form-group">
+      <label>password: </label>
+      <input type="password"
+             data-ng-model="$ctrl.form.password"
+             class="form-control">
+    </div>
+    <div class="form-group">
+      <label>TACC Token: </label>
+      <input type="text"
+             data-ng-model="$ctrl.form.token"
+             class="form-control">
+    </div>
+  </form>
+  <p>
+    Explain why we need password and tacc token.
+  </p>
+  <div class="loading"
+       data-ng-if="$ctrl.ui.loading">
+    <span> Loading ...</span>
+    <i class="fa fa-spinner fa-pulse fa-2x fa-fw">&nbsp;</i>
+  </div>
+  <div class="message"
+       data-ng-if="$ctrl.ui.message"
+       data-ng-class="{'bg-success': !$ctrl.ui.error,
+                       'bg-danger': $ctrl.ui.error}">
+    <p>{{$ctrl.ui.message}}</p>
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary"
+          type="button"
+          data-ng-disabled="$ctrl.ui.loading"
+          data-ng-click="$ctrl.ok()">Push</button>
+  <button class="btn btn-warning"
+          type="button"
+          data-ng-disabled="$ctrl.ui.loading"
+          data-ng-click="$ctrl.cancel()">Cancel</button>
+</div>

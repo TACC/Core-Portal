@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load sekizai_tags staticfiles %}
+{% block content %}
+<div class="container-fluid">
+    <ul class="nav nav-pills">
+        <li><a href="{% url 'tickets:create' %}"> Create a Ticket</a></li>
+    </ul>
+    <h2>Tickets</h2>
+    <div id="tickets">
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="open-header">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordian"
+                           href="#open" aria-expanded="true" aria-controls="open">Open ({{ open_tickets|length }})
+                        </a>
+                    </h4>
+                </div>
+                <div id="open" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="open-header">
+                    <div class="panel-body">
+                        {% if open_tickets|length == 0 %}
+                        You have no open tickets.
+                        {% else %}
+                        <table class="table">
+                            {% for ticket in open_tickets %}
+                            {% include "ticket.html" %}
+                            {% endfor %}
+                        </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="new-header">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordian"
+                           href="#new" aria-expanded="false" aria-controls="new">New ({{ new_tickets|length }})
+                        </a>
+                    </h4>
+                </div>
+                <div id="new" class="panel-collapse collapse" role="tabpanel" aria-labelledby="new-header">
+                    <div class="panel-body">
+                        {% if new_tickets|length == 0 %}
+                        You have no new tickets.
+                        {% else %}
+                        <table class="table">
+                            {% for ticket in new_tickets %}
+                            {% include "ticket.html" %}
+                            {% endfor %}
+                        </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="response-header">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordian"
+                           href="#response" aria-expanded="false" aria-controls="response">Response Required ({{ response_tickets|length }})
+                        </a>
+                    </h4>
+                </div>
+                <div id="response" class="panel-collapse collapse" role="tabpanel" aria-labelledby="response-header">
+                    <div class="panel-body">
+                        {% if response_tickets|length == 0 %}
+                        You have no tickets that require a response.
+                        {% else %}
+                        <table class="table">
+                            {% for ticket in response_tickets %}
+                            {% include "ticket.html" %}
+                            {% endfor %}
+                        </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="resolved-header">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordian"
+                           href="#resolved" aria-expanded="false" aria-controls="resolved">Resolved ({{ resolved_tickets|length }})
+                        </a>
+                    </h4>
+                </div>
+                <div id="resolved" class="panel-collapse collapse" role="tabpanel" aria-labelledby="resolved-header">
+                    <div class="panel-body">
+                        <table class="table">
+                            {% for ticket in resolved_tickets %}
+                            {% include "ticket.html" %}
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

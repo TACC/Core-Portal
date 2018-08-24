@@ -1,0 +1,297 @@
+<div class="container-fluid" role="main" id="workspace">
+  <div ng-controller="ApplicationTrayCtrl" class="workspace-panel-tabs">
+    <div>
+        <p ng-show="error" class="alert alert-danger">{{error}}</p>
+        <div class="app-wrapper" ng-if="requesting">
+            <div class="app text-center">
+                <div class="app-icon"><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
+                <div class="app-title">Loading...</div>
+                <div class="app-version">&nbsp;</div>
+            </div>
+        </div>
+        <uib-tabset id="workspace-tabs" ng-show="!requesting" active="activeTab">
+            <uib-tab class="workspace-tab" ng-repeat="tab in tabs" focusout="closeTab($event, tab)">
+                <uib-tab-heading>
+                    <h3 class="workspace-tab-title">{{tab.title}} [{{tab.count}}]</h3>
+                </uib-tab-heading>
+
+                <div ng-show="!tab.edit" class="apps-tray">
+                    <md-grid-list md-cols="6" md-row-height="3:2" md-gutter="0px">
+                        <md-grid-tile ng-repeat="app in tab.content | orderBy: 'value.definition.orderBy'" ng-click="launchApp(app)" ng-class="{'app-active': data.activeApp.value.definition.id==app.value.definition.id}">
+                            <div class="app text-center">
+                                <md-grid-tile-header class="app-header">
+                                    <h5 class="app-title">{{app.value.definition.label}}</h5>
+                                </md-grid-tile-header>
+                                <div class="app-icon">
+                                    <i ng-if="app.value.definition.icon" class="icon-{{app.value.definition.icon}}"></i>
+                                    <span ng-if="!app.value.definition.icon" class="icon-letter">{{app.value.definition.label[0].toUpperCase()}}</span>
+                                </div>
+                                <!-- <div class="app-version">{{app.value.definition.version}}</div> -->
+                            </div>
+                        </md-grid-tile>
+                    </md-grid-list>
+                </div>
+          </uib-tab>
+        </uib-tabset>
+    </div>
+  </div>
+
+  <div class="workspace-panel-container">
+    <div ng-controller="DataBrowserCtrl"
+         class="workspace-panel workspace-panel-sidebar workspace-panel-sidebar-left"
+         ng-class="{'workspace-panel-collapsed': panel.collapsed}">
+         <span class="workspace-panel-title">Data Depot Browser</span>
+         <div class="workspace-panel-content">
+             <h2>Data Depot Browser</h2>
+             <form>
+                 <div class="form-group">
+                     <label for="id_system_id">Select data source</label>
+                     <select id="id_system_id" name="system_id" class="form-control"
+                             ng-model="data.cOption"
+                             ng-disabled="data.loading"
+                             ng-options="s as s.label for s in data.options"
+                             ng-change="dataSourceUpdated()"
+                     ></select>
+                 </div>
+             </form>
+             <p ng-if="data.wants" class="alert alert-info">
+                 Select file for <em>{{ data.wants.title }}</em>.
+                 <a class="btn btn-link btn-xs"
+                    ng-if="data.wants.description"
+                    uib-tooltip="{{data.wants.description}}"
+                    tooltip-placement="right"
+                    tooltip-append-to-body="true"><i class="fa fa-info-circle"></i> More info</a>
+             </p>
+             <div class="table-responsive" ng-if="data.listingProjects">
+               <table class="table table-bordered tables-striped" style="background-color: #fff;">
+                 <thead>
+                  <th>Name</th>
+                 </thead>
+                 <tbody ng-if="!state.busy">
+                   <tr ng-repeat="item in data.projects">
+                     <td>
+                       <i class="fa fa-briefcase"></i>
+                       <a ng-href="" ng-click = "selectProject(item)">
+                         {{item.name}}
+                       </a>
+                     </td>
+                   </tr>
+                 </tbody>
+                 <caption class="text-center" ng-if="! state.busy && state.error">
+                     <p class="alert alert-danger">
+                         {{ state.error }}
+                     </p>
+                 </caption>
+               </table>
+             </div>
+             <div class="files-listing" ng-if="!data.listingProjects">
+                 <div class="table-responsive ds-table-display-wrapper"
+                      ds-infinite-scroll
+                      data-scroll-bottom="scrollToBottom()"
+                      data-scroll-top="scrollToTop()"
+                      data-bottom-height="0">
+                     <table class="table table-striped">
+                         <caption style="white-space:nowrap">
+                             <label>Browsing:</label><br>
+                             <span ng-if="data.project"> {{data.project.name}} </span>
+                             <span
+                               ng-repeat-start="dirElem in data.dirPath track by $index"
+                               class="text text-info">
+                                 <a href="#"
+                                    ng-click="browseTrail($event, $index)">{{dirElem}}</a>
+                              </span>
+                               <span ng-repeat-end
+                                     ng-if="!$last">/</span>
+                         </caption>
+                         <thead>
+                         <th>File name</th>
+                         <th>Size</th>
+                         </thead>
+                         <tbody>
+                         <tr ng-repeat="f in data.filesListing.children | orderBy : ['type', 'name']">
+                             <td>
+                                 <button ng-if="f.name !== '.' && data.wants"
+                                         type="button"
+                                         class="btn btn-xs btn-info"
+                                         ng-click="chooseFile(f)">Select</button>
+                                 <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="agave://{{f.system}}/{{f.path}}">
+                                     <i class="fa {{f.icon()}}"></i>
+                                     <span>{{f.name}}</span>
+                                 </a>
+                             </td>
+                             <td>{{f.length|bytes:0}}</td>
+                         </tr>
+                         <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
+                         </tbody>
+                     </table>
+                 </div>
+             </div>
+             <div ng-if="data.loading">
+               <p class="lead">
+                 <i class="fa fa-spin fa-circle-o-notch"></i> Loading files...
+               </p>
+             </div>
+
+         </div>
+         <button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="togglePanel()">
+             <i class="fa" ng-class="{'fa-caret-right': panel.collapsed, 'fa-caret-left':! panel.collapsed}"></i>
+             <span class="sr-only">Toggle panel</span>
+         </button>
+    </div>
+    <div ng-controller="ApplicationFormCtrl"
+         class="workspace-panel workspace-panel-main">
+         <div ng-if="!data.app">
+             <div class="jumbotron">
+                 <h1>Select an app</h1>
+                 <p>Select an application from the tray above.</p>
+                 <p>
+                     The <em>Workspace</em> allows users to perform simulations and analyze data using popular simulation codes as well as data
+                    analysis and visualization tools including Jupyter, MATLAB, and QGIS.
+                </p>
+             </div>
+         </div>
+         <div ng-if="data.type === 'html' && data.app">
+           <p ng-bind-html="data.app"></p>
+         </div>
+         <div ng-if="data.type === 'agave' && data.app" class="app-form-wrapper">
+             <div class="lead alert alert-warning" ng-if="data.needsLicense">
+                 <h2>Software License Required</h2>
+                 <p>
+                     The use of this application required that your have a {{data.app.license.type}}
+                     license enabled for your account. Please visit the
+                     <a href="/accounts/licenses/" target="_blank">manage software licenses</a>
+                     section on the My Account page for details on how to enable this license.
+                 </p>
+             </div>
+             <div class="messages">
+                 <div ng-repeat="message in data.messages" class="alert alert-{{message.type}}">
+                     <h4 ng-if="message.header" ng-bind-html="message.header"></h4>
+                     <p ng-bind-html="message.body"></p>
+                 </div>
+             </div>
+             <h2>Run <em>{{data.app.label}}</em></h2>
+             <p ng-bind-html="data.app.longDescription"></p>
+             <p ng-if="data.app.helpURI">
+                 <a href="{{data.app.helpURI}}" target="_blank">
+                     <i class="fa fa-book"></i> <span><em>{{data.app.label}}</em> Documentation</span>
+                 </a>
+             </p>
+             <form name="appForm"
+                   sf-schema="form.schema"
+                   sf-form="form.form"
+                   sf-model="form.model"
+                   sf-options="{ supressPropertyTitles: true }"
+                   ng-submit="!data.submitting && onSubmit(appForm)"></form>
+
+             <div ng-if="data.submitting">
+                 <span class="label label-info">
+                     <i class="fa fa-refresh fa-spin"></i>
+                     Submitting job...
+                 </span>
+             </div>
+         </div>
+
+    </div>
+    <div ng-controller="JobsStatusCtrl"
+         class="workspace-panel workspace-panel-sidebar workspace-panel-sidebar-right"
+         ng-class="{'workspace-panel-collapsed': panel.collapsed}"
+         ng-init="panel.collapsed = true">
+         <span class="workspace-panel-title">Jobs Status</span>
+         <div class="workspace-panel-content">
+             <h2>
+                 Jobs Status
+                 <button ng-click="refresh()" class="btn btn-sm btn-default pull-right">
+                     <i class="fa fa-refresh" ng-class="{'fa-spin': data.loading}"></i>
+                     <span class="sr-only">Refresh</span>
+                 </button>
+             </h2>
+             <div ng-if="!data.jobs" class="alert alert-info">
+                 No job history to display.
+             </div>
+             <div class="jobs-list-wrapper">
+                 <ul class="list-group">
+                     <li ng-repeat="job in data.jobs" class="list-group-item" ng-class="{'list-group-item-danger': job.status==='FAILED', 'list-group-item-success': job.status==='FINISHED'}">
+                         <h4>{{job.name}}</h4>
+                         <span>{{job.status}}</span>
+                         <button class="btn btn-sm btn-default" ng-click="jobDetails(job)"><i class="fa fa-info-circle"></i><span class="hidden-md"> More info</span></button>
+                     </li>
+                 </ul>
+                 <button class="btn btn-sm btn-block btn-default"
+                         ng-disabled="!data.hasMoreJobs"
+                         ng-click="loadMore()">
+                     <i class="fa fa-refresh" ng-class="{'fa-spin': data.loading}"></i>
+                     Load more jobs
+                 </button>
+             </div>
+         </div>
+         <button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="togglePanel()">
+             <i class="fa" ng-class="{'fa-caret-left': panel.collapsed, 'fa-caret-right':! panel.collapsed}"></i>
+             <span class="sr-only">Toggle panel</span>
+         </button>
+
+         <script type="text/ng-template" id="local/job-details-modal.html">
+             <div class="modal-header">
+                 <h3 class="modal-title">{{job.name}}</h3>
+             </div>
+             <div class="modal-body">
+                 <div ng-if="job.message" class="alert alert-warning">
+                     <h4>Job status: {{job.status}}</h4>
+                     <p>{{job.message}}</p>
+                 </div>
+                 <dl>
+                     <dt>Application</dt>
+                     <dd>{{job.appId}}</dd>
+
+                     <dt>Status</dt>
+                     <dd>{{job.status}}</dd>
+
+                     <dt>Submitted<dt>
+                     <dd>{{job.submitTime | date:'medium'}}</dd>
+
+                     <dt>Finished<dt>
+                     <dd>{{job.endTime | date:'medium'}}</dd>
+
+                     <dt>Output</dt>
+                     <dd ng-if="job.status === 'FINISHED'">
+                         <a href="{{job.archiveUrl}}" target="_blank" class="btn btn-primary" title="agave://{{job.archiveSystem}}/{{job.archivePath}}">View</a>
+
+                     </dd>
+                     <dd ng-if="job.status !== 'FINISHED'">
+                         <button class="btn btn-default disabled" type="button">Output pending</button>
+                     </dd>
+
+                     <dt>Actions</dt>
+                     <dd ng-if="job.status === 'FINISHED'">
+                         <button class="btn btn-danger" type="button" ng-click="deleteJob()">Delete</button>
+                     </dd>
+                     <dd ng-if="job.status !== 'FINISHED'">
+                         <a href="{{data.connection_address}}" ng-if="data.interactive" class="btn btn-primary" title="Connect to Interactive Session" target="_blank">Connect</a>
+                         <button class="btn btn-warning" type="button" ng-click="cancelJob()">Cancel</button>
+                         <button class="btn btn-danger" type="button" ng-click="deleteJob()">Delete</button>
+                     </dd>
+                 </dl>
+             </div>
+             <div class="modal-footer">
+                 <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
+             </div>
+         </script>
+
+         <script type="text/ng-template" id="local/vncjob-details-modal.html">
+             <div class="modal-header">
+                 <h3 class="modal-title">Your interactive session has started!</h3>
+             </div>
+             <div class="modal-body">
+                 <div class="alert">
+                     <p>To connect to your interactive session, click the button below.</p>
+                     <p>To end the job, quit the application (e.g. MATLAB) within the session.</p>
+                     <p>Your files may take some time to appear in your archive directory after the job has completed.</p>
+                 </div>
+             </div>
+             <div class="modal-footer">
+                 <a href="{{msg.extra.target_uri}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
+                 <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
+             </div>
+         </script>
+    </div>
+  </div>
+</div>

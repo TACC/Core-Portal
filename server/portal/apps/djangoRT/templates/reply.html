@@ -1,0 +1,7 @@
+<ul class="nav nav-pills">
+{% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}
+	<li><a href="{% url 'tickets:reply' ticket.id %}">Reopen this ticket</a></li>
+{% else %}
+	<li><a href="{% url 'tickets:reply' ticket.id %}">Reply to this ticket</a></li>
+{% endif %}
+</ul>

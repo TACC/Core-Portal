@@ -1,0 +1,14 @@
+<div class="list-group list-group-root well">
+
+    <div class="list-group collapse"
+         data-ng-class="{'in': !routerItem.collapse}"
+         data-ng-repeat="childItem in routerItems">
+
+        <a data-tooltip="{{ childItem.description }}" class="list-group-item"
+           data-ui-sref="{{ childItem.state }}"
+           data-ui-sref-active="active">
+           <i class="fa fa-fw" data-ng-class="childItem.icon">&nbsp;</i>
+            {{ childItem.name }}
+        </a>
+    </div>
+</div>

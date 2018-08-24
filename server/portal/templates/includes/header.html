@@ -1,0 +1,48 @@
+{% load staticfiles %}
+{% load static %}
+<header class="container-fluid site-banner">
+  <div class="pull-left">
+    <a class="logo" href="/">
+      <!--
+      <img alt="UT-PORTAL" src="{% static 'portal/img/SD2_branding.jpg' %}" height="40"/>
+      -->
+    </a>
+  </div>
+  <div class="site-banner-right">
+    <div class="user-menu">
+      {% if user.is_authenticated %}
+        <!--
+        <span>
+          Welcome, {{ user.first_name }}!
+          {% if not request.user.agave_oauth %}
+            &nbsp;
+            <a class="text-danger" title="API Session Not Available. Click for details." href="{% url 'portal_auth:agave_session_error' %}"><i class="fa fa-exclamation-triangle"></i><span class="sr-only">API Session Not Available. Click for details.</span></a>
+          {% endif %}
+        </span>
+        -->
+        <div class="btn-group pull-right">
+          <a href="{% url 'portal_accounts:index' %}" class="btn btn-link-alt">My account</a>
+          <button type="button" class="btn default dropdown-toggle"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu">
+            <!--
+            <li><a href="{% url 'portal_accounts:logout' %}">Log out</a></li>
+            -->
+            <li><a href="{% url 'portal_accounts:logout' %}">Log out</a></li>
+            {% if user.is_impersonate %}
+              <li><a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      {% else %}
+        <div class="btn-group">
+          <a href="{% url 'portal_accounts:login' %}" class="btn btn-link-alt">Log in</a>
+          <a href="{% url 'portal_accounts:register' %}" class="btn btn-link-alt">Register</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</header>

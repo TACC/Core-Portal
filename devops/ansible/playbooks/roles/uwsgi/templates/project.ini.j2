@@ -1,0 +1,23 @@
+[uwsgi]
+home={{ uwsgi_home }}
+chdir={{ uwsgi_chdir }}
+#wsgi-file={{ uwsgi_file }}
+#callable={{ uwsgi_callable }}
+logto=/var/log/uwsgi/{{ uwsgi_log_filename}}
+log-maxsize={{ uwsgi_log_maxsize }}
+module={{ uwsgi_module }}
+enable-threads = true
+single-interpreter = true
+gid={{ uwsgi_gid }}
+uid={{ uwsgi_uid }}
+pidfile={{ uwsgi_pid_file }}
+vacuum=true
+processes={{ uwsgi_processes_no }}
+harakiri={{ uwsgi_harakiri }}
+post-buffering={{ uwsgi_post_buffering }}
+max-requests={{ uwsgi_max_requests }}
+socket={{ uwsgi_socket_path }}
+chown-soscket={{ uwsgi_chown_socket }}
+chmod-socket={{ uwsgi_chmod_socket }}
+lazy-apps=true
+env=DJANGO_SETTINGS_MODULE=portal.settings.settings
