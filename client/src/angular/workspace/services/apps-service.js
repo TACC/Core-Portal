@@ -124,7 +124,8 @@ function Apps($http, $q, $translate) {
         }
         var field = {
           title: input.details.label,
-          description: input.details.description
+          description: input.details.description,
+          id: input.id
         };
         if (input.semantics.maxCardinality === 1) {
           field.type = 'string';
@@ -181,10 +182,11 @@ function Apps($http, $q, $translate) {
 
     schema.properties.archivePath = {
       title: 'Job output archive location (optional)',
-      description: 'Specify a location where the job output should be archived. By default, job output will be archived at: <code>&lt;username&gt;/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.',
+      description: 'Specify a location where the job output should be archived. By default, job output will be archived at: <code>archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.',
       type: 'string',
       format: 'agaveFile',
-      'x-schema-form': {placeholder: '<username>/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}'}
+      id: 'archivePath',
+      'x-schema-form': {placeholder: 'archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}'}
     };
 
     return schema;

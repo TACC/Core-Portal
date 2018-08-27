@@ -6,12 +6,10 @@ function Jobs($http) {
   var service = {};
 
   service.list = function(options) {
-    var params = {
-      limit: options.limit || 10,
-      offset: options.offset || 0
-    };
+    options.limit = options.limit || 10;
+    options.offest = options.offest || 0;
     return $http.get('/api/workspace/jobs/', {
-      params: params
+      params: options
     }).then(function (resp) {
       let data = resp.data.response;
       data.forEach( (d)=>{

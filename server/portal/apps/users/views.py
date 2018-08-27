@@ -8,27 +8,13 @@ from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.conf import settings
 from elasticsearch_dsl import Q
 from pytas.http import TASClient
 from portal.libs.elasticsearch.docs.base import IndexedFile
-from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
-
-@python_2_unicode_compatible
-@method_decorator(login_required, name='dispatch')
-class UsageView(BaseApiView):
-
-    def get(self, request):
-        current_user = request.user
-        q = IndexedFile.search()
-        q = q.query('bool', must=[Q("match", **{"path._path": current_user.username})])\
-                .extra(size=0)
-        q.aggs.metric('total_storage_bytes', 'sum', field="length")
-        result = q.execute()
-        agg = result.to_dict()["aggregations"]
-        out = {"total_storage_bytes": agg["total_storage_bytes"]["value"]}
-        return JsonResponse(out)
 
 class AuthenticatedView(BaseApiView):
 
@@ -50,6 +36,27 @@ class AuthenticatedView(BaseApiView):
 
             return JsonResponse(out)
         return HttpResponse('Unauthorized', status=401)
+
+
+@python_2_unicode_compatible
+@method_decorator(login_required, name='dispatch')
+class UsageView(BaseApiView):
+
+    def get(self, request):
+        username = request.user.username
+        system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
+        search = IndexedFile.search()
+        # search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
+        search = search.filter(Q('term', **{"system._exact":system}))
+        search = search.extra(size=0)
+        search.aggs.metric('total_storage_bytes', 'sum', field="length")
+        logger.info(search.to_dict())
+        resp = search.execute()
+        resp = resp.to_dict()
+        aggs = resp["aggregations"]["total_storage_bytes"]
+        out = {}
+        out["total_storage_bytes"] = aggs.get("value", 0.0)
+        return JsonResponse(out, safe=False)
 
 
 @python_2_unicode_compatible

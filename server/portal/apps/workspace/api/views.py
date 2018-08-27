@@ -159,11 +159,13 @@ class JobsView(BaseApiView):
             limit = request.GET.get('limit', 10)
             offset = request.GET.get('offset', 0)
             data = agave.jobs.list(limit=limit, offset=offset)
+
         return JsonResponse({"response": data})
 
     def delete(self, request, *args, **kwargs):
         agave = request.user.agave_oauth.client
         job_id = request.GET.get('job_id')
+        # METRICS.debug("User " + request.user.username + " is deleting job id " + job_id)
         data = agave.jobs.delete(jobId=job_id)
         return JsonResponse({"response": data})
 
@@ -182,26 +184,21 @@ class JobsView(BaseApiView):
             # cleaning archive path value
             if 'archivePath' in job_post:
                 parsed = urlparse(job_post['archivePath'])
-                if parsed.path.startswith('/'):
+                if parsed.path.startswith('/') and len(parsed.path) > 1:
                     # strip leading '/'
                     archive_path = parsed.path[1:]
                 else:
                     archive_path = parsed.path
-
-                if not archive_path.startswith(request.user.username):
-                    archive_path = '{}/{}'.format(
-                        request.user.username, archive_path)
 
                 job_post['archivePath'] = archive_path
 
                 if parsed.netloc:
                     job_post['archiveSystem'] = parsed.netloc
             else:
-                # METRICS.debug("User " + request.user.username + " is deleting job id " + job_id)
                 job_post['archivePath'] = \
-                    '{}/archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
-                        request.user.username,
+                    'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         datetime.now().strftime('%Y-%m-%d'))
+                job_post['archiveSystem'] = '.'.join([settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, request.user.username])
 
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])

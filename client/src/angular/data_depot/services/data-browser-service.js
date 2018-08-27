@@ -282,7 +282,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       function (result) {
         currentState.busy = true;
         var copyPromises = _.map(files, function (f) {
-          var system = result.system || f.system;
+          
           return f.copy({system: result.system, path: result.path, resource: result.resource}).then(function (result) {
             //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
             $mdToast.show($mdToast.simple()
@@ -324,28 +324,31 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @return {Promise}
    */
   function download (files) {
+    currentState.busy = true;
     if (!Array.isArray(files)) {
       files = [files];
     }
     var download_promises = _.map(files, function(file) {
       return file.download().then(function (resp) {
+        // TODO: This opens each download in a new tab
+        // and closes once the download is started. We
+        // need to zip these selected files and download
+        // them as one file...
         var link = document.createElement('a');
+        link.style.display = 'none';
         link.setAttribute('href', resp.response.href);
-        link.setAttribute('download', "");
-
+        link.setAttribute('type', resp.response.fileType);
+        link.setAttribute('target', "_blank");
+        link.setAttribute('download', 'null');
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
 
+        currentState.busy = false;
         return resp;
-      }, function (err) {
-        $mdToast.show($mdToast.simple()
-        .content($translate.instant('error_download_file'))
-        .toastClass('error')
-        .parent($("#toast-container")));
-        return $q.reject(err.data);
       });
     });
+
     return $q.all(download_promises);
   }
 
@@ -479,7 +482,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
 
     return modal.result.then(
       function (result) {
-        console.log('busy');
         currentState.busy = true;
         //if (result.system !== files[0].system){
         //  return $q.when(files);
@@ -517,135 +519,16 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @param {FileListing} file
    * @return {Promise}
    */
-  function preview (file, listing) {
+  function preview(file, listing) {
     var modal = $uibModal.open({
       template: previewModalTemplate,
-      controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
-        $scope.file = file;
-        if (typeof listing !== 'undefined' &&
-            typeof listing.metadata !== 'undefined' &&
-            !_.isEmpty(listing.metadata.project)){
-          var _listing = angular.copy(listing);
-          $scope.file.metadata = _listing.metadata;
-        }
-        $scope.busy = true;
-
-        file.preview().then(
-          function (data) {
-            $scope.previewHref = $sce.trustAs('resourceUrl', data.href);
-            $scope.busy = false;
-          },
-          function (err) {
-            var fileExt = file.name.split('.').pop();
-            var videoExt = ['webm', 'ogg', 'mp4'];
-
-            //check if preview is video
-            if (videoExt.includes(fileExt) ) {
-              $scope.prevVideo = true;
-              file.download().then(
-                function(data){
-                  var postit = data.href;
-                  var oReq = new XMLHttpRequest();
-                  oReq.open("GET", postit, true);
-                  oReq.responseType = 'blob';
-
-                  oReq.onload = function() {
-                    if (this.status === 200) {
-                      var videoBlob = this.response;
-                      var vid = URL.createObjectURL(videoBlob);
-
-                      // set video source and mimetype
-                      document.getElementById("videoPlayer").src=vid;
-                      document.getElementById("videoPlayer").setAttribute('type', `video/${fileExt}`);
-                    };
-                  };
-                  oReq.onerror = function() {
-                    $scope.previewError = err.data;
-                    $scope.busy = false;
-                  };
-                  oReq.send();
-                  $scope.busy = false;
-                },
-                function (err) {
-                  $scope.previewError = err.data;
-                  $scope.busy = false;
-                });
-            // if filetype is not video or ipynb
-            } else if (fileExt != 'ipynb') {
-              $scope.previewError = err.data;
-              $scope.busy = false;
-            // if filetype is ipynb
-            } else {
-                file.download().then(
-                  function(data){
-                    var postit = data.href;
-                    var oReq = new XMLHttpRequest();
-
-                    oReq.open("GET", postit, true);
-
-                    oReq.onload = function(oEvent) {
-                      var blob = new Blob([oReq.response], {type: "application/json"});
-                      var reader = new FileReader();
-
-                      reader.onload = function(e){
-                        var content = JSON.parse(e.target.result);
-                        var target = $('.nbv-preview')[0];
-                        // nbv.render(content, target);
-                      };
-
-                      reader.readAsText(blob);
-                    };
-
-                    oReq.send();
-                  },
-                  function (err) {
-                    $scope.previewError = err.data;
-                    $scope.busy = false;
-                  });
-            }
-          }
-        );
-
-        $scope.tests = allowedActions([file]);
-
-        $scope.download = function() {
-          download(file);
-        };
-        $scope.share = function() {
-          // share(file);
-        };
-        $scope.copy = function() {
-          copy(file);
-        };
-        $scope.move = function() {
-          move(file, currentState.listing);
-        };
-        $scope.rename = function() {
-          rename(file);
-        };
-        $scope.viewMetadata = function() {
-          $scope.close();
-          // viewMetadata([file]);
-        };
-        $scope.trash = function() {
-          trash(file);
-        };
-        $scope.rm = function() {
-          // rm(file);
-        };
-
-        $scope.close = function () {
-          $uibModalInstance.dismiss();
-        };
-
-      }],
+      controller: 'ModalPreview',
       size: 'lg',
       resolve: {
-        file: function() { return file; }
+        file: function() { return file; },
+        listing: function() { return currentState.listing; },
       }
     });
-
-    return modal.result;
   }
 
   /**

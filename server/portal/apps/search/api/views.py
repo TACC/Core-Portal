@@ -3,16 +3,16 @@
    :synopsys: Views to handle Search API
 """
 from __future__ import unicode_literals, absolute_import
+from future.utils import python_2_unicode_compatible
 import logging
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from portal.views.base import BaseApiView
-import random
 from elasticsearch import TransportError
 from elasticsearch_dsl import Q, Search
-from elasticsearch_dsl.connections import connections
-from elasticsearch import TransportError, ConnectionTimeout
+from elasticsearch import ConnectionTimeout
 from operator import ior
 from portal.libs.elasticsearch.docs.base import IndexedFile
 
@@ -101,7 +101,7 @@ class SearchController(object):
         systems = [settings.ES_PUBLIC_INDEX]
         system_queries = [Q('term', system=system) for system in systems]
         filters = reduce(ior, system_queries)
-        
+
         search = Search(index=settings.ES_DEFAULT_INDEX)\
             .query("query_string", query="*"+q+"*", default_operator="and")\
             .filter(filters)\
@@ -129,7 +129,7 @@ class SearchController(object):
         for i, c in enumerate(split_query):
             if c.upper() not in ["AND", "OR", "NOT"]:
                 split_query[i] = "*" + c + "*"
-        
+
         q = " ".join(split_query)
         search = IndexedFile.search()
         search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
@@ -139,16 +139,15 @@ class SearchController(object):
         # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         return search
 
-
+@python_2_unicode_compatible
+@method_decorator(login_required, name='dispatch')
 class SearchApiView(BaseApiView):
     """ Projects listing view"""
     def get(self, request):
-        logger.debug(request.GET.get('q'))
-        q = request.GET.get('q')
-        offset = request.GET.get('offset')
-        limit = request.GET.get('limit')
-        type_filter = request.GET.get('type_filter')
-        logger.debug(type_filter)
+        q = request.GET.get('q', '')
+        offset = request.GET.get('offset', 0)
+        limit = request.GET.get('limit', 100)
+        type_filter = request.GET.get('type_filter', 'cms')
 
         out = SearchController.execute_search(self.request, type_filter, q, offset, limit)
 
