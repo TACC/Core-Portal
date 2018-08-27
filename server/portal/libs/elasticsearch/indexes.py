@@ -8,7 +8,7 @@ from django.conf import settings
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections
 from portal.libs.elasticsearch.docs.base import IndexedFile
-from portal.libs.elasticsearch.analyzers import path_analyzer
+from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -37,14 +37,15 @@ def setup_indexes(name, force=False):
         pass
 
     index.analyzer(path_analyzer)
+    index.analyzer(file_analyzer)
 
     if force:
         index.delete(ignore=404)
     
-    index.create()
     return index
 
 def setup_files_index(force=False):
     index = setup_indexes('DEFAULT', force)
     index.doc_type(IndexedFile)
-    IndexedFile.init()
+    index.create()
+    # IndexedFile.init()

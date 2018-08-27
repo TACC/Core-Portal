@@ -51,13 +51,13 @@ export default function DataDepotCtrl(
 
     $scope.state = {
         offset: 0,
-        limit: 10,
+        limit: 3,
         page_num: 0,
         max_pages: 0
     }
 
     $scope.nextPage = function() {
-        $scope.state.page_num++ 
+        $scope.state.page_num++
         $scope.state.offset += $scope.state.limit
     }
 
@@ -66,15 +66,13 @@ export default function DataDepotCtrl(
         $scope.state.offset -= $scope.state.limit
     }
 
-    $scope.onBrowse = function($event, file) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        if (file.type === 'file') {
-            DataBrowserService.preview(file, $scope.browser.listing);
-        } else {
-            $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path, query_string: null}, {reload: false});
+    $scope.listingToShow = function() {
+        //console.log($scope.browser.listing.children)
+        if ($scope.browser.listing) {
+            return $scope.browser.listing.children.slice($scope.state.offset, $scope.state.offset + $scope.state.limit)
         }
-    };
+        return null
+    }
 
     $scope.openPushPublicKeyForm = ()=>{
         $scope.browser.ui.pushKeyModalOpening = true;
@@ -108,7 +106,7 @@ export default function DataDepotCtrl(
             customRoot: {
                 name: 'My Data',
                 path: $stateParams.filePath,
-                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
+                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", query_string: null, filePath: '', directory: "${$stateParams.directory}"})`,
             },
         };
 
@@ -126,13 +124,15 @@ export default function DataDepotCtrl(
                 $scope.browser.error.status = err.status;
             });
 
-        $scope.listingToShow = function() {
-            //console.log($scope.browser.listing.children)
-            if ($scope.browser.listing) {
-                return $scope.browser.listing.children.slice($scope.state.offset, $scope.state.offset + $scope.state.limit)
+        $scope.onBrowse = function($event, file) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            if (file.type === 'file') {
+                DataBrowserService.preview(file, $scope.browser.listing);
+            } else {
+                $state.go('wb.data_depot.db', {systemId: file.system, filePath: file.path, query_string: null}, {reload: false});
             }
-            return null
-        }
+        };
 
         $scope.onSelect = function($event, file) {
             $event.stopPropagation();
@@ -174,7 +174,7 @@ export default function DataDepotCtrl(
             customRoot: {
                 name: 'Community Data',
                 path: $stateParams.filePath,
-                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", filePath: '', directory: "${$stateParams.directory}"})`,
+                route: `wb.data_depot.db({systemId: "${$stateParams.systemId}", query_string: null, filePath: '', directory: "${$stateParams.directory}"})`,
             },
         };
 
@@ -185,6 +185,7 @@ export default function DataDepotCtrl(
         $scope.browser = DataBrowserService.state();
         DataBrowserService.browse(options).then(function(resp) {
             $scope.browser = DataBrowserService.state();
+            $scope.state.max_pages = Math.ceil($scope.browser.listing.children.length / $scope.state.limit)
         });
 
         $scope.onBrowse = function($event, file) {

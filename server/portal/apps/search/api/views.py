@@ -125,14 +125,8 @@ class SearchController(object):
     def search_my_data(username, q, offset, limit):
         system = '.'.join([
             settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, username])
-        split_query = q.split(" ")
-        for i, c in enumerate(split_query):
-            if c.upper() not in ["AND", "OR", "NOT"]:
-                split_query[i] = "*" + c + "*"
-
-        q = " ".join(split_query)
         search = IndexedFile.search()
-        search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
+        search = search.filter(Q({'term': {'pems.username': username }}))
         search = search.query("query_string", query=q, fields=["name", "name._exact", "keywords"])
         search = search.filter(Q('term', system=system))
         search = search.extra(from_=offset, size=limit)
