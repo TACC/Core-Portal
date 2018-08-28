@@ -3,13 +3,26 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: python:2.7
 
 pipelines:
   default:
     - step:
+        image: python:2.7
         caches:
           - pip
         script: # Modify the commands below to build your repository.
+          - cd server
           - pip install -r requirements.txt
-          - DJANGO_SETTINGS_MODULE=portal.settings.unit_test_settings python manage.py test --patter="unit_test.py"
+          - DJANGO_SETTINGS_MODULE=portal.settings.unit_test_settings
+            python manage.py test -v1 --pattern="unit_test.py"
+    - step:
+        image: timbru31/node-chrome
+        caches:
+          - node
+        script: # Modify the commands below to build your repository.
+          - cd client
+          - npm install
+          - npm run test
+definitions:
+  caches:
+    node: ./client/node_modules
