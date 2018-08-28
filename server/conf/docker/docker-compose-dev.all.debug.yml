@@ -88,7 +88,6 @@ services:
     networks:
       - cep_prtl_net
 
-
   websockets:
     image: cep-portal/portal:local
     links:
