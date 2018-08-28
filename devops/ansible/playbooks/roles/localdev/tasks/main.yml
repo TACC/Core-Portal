@@ -1,0 +1,19 @@
+- name: Create /srv/www directory
+  file:
+    path: /srv/www
+    group: portal
+    owner: portal
+    state: directory
+
+- name: Create symbolic link to vagrant sync folder
+  file:
+    src: /vagrant
+    dest: /srv/www/portal
+    group: portal
+    owner: portal
+    state: link
+
+- name: Add portal user to vagrant group
+  user:
+    name: portal
+    groups: vagrant
