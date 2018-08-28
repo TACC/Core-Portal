@@ -50,7 +50,6 @@ class UsageView(BaseApiView):
         search = search.filter(Q('term', **{"system._exact":system}))
         search = search.extra(size=0)
         search.aggs.metric('total_storage_bytes', 'sum', field="length")
-        logger.info(search.to_dict())
         resp = search.execute()
         resp = resp.to_dict()
         aggs = resp["aggregations"]["total_storage_bytes"]
