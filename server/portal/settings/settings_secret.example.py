@@ -15,6 +15,9 @@ _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
 
+# Admin account
+_PORTAL_ADMIN_USERNAME = 'portal_admin'
+
 ########################
 # DJANGO SETTINGS LOCAL
 ########################
@@ -42,6 +45,7 @@ _RT_QUEUE = 'QUEUENAME'
 _RECAPTCHA_PUBLIC_KEY='public_key'
 _RECAPTCHA_PRIVATE_KEY='private_key'
 _RECAPTCHA_USE_SSL='True'
+_NOCAPTCHA='True'
 
 ########################
 # AGAVE SETTINGS
@@ -57,6 +61,7 @@ _AGAVE_CLIENT_SECRET = 'TH1$_!$-My=S3cr3t!~'
 _AGAVE_SUPER_TOKEN = 'S0m3T0k3n_tHaT-N3v3r=3xp1R35'
 _AGAVE_STORAGE_SYSTEM = 'my.storage.default'
 _AGAVE_COMMUNITY_DATA_SYSTEM = 'storage_system'
+_AGAVE_DEFAULT_TRASH_NAME = 'Trash'
 
 ########################
 # RABBITMQ SETTINGS
@@ -78,7 +83,7 @@ _RESULT_BACKEND_DB = '0'
 # ELASTICSEARCH SETTINGS
 ########################
 
-_ES_HOSTS = ["cep_prtl_elasticsearch"]
+_ES_HOSTS = 'cep_prtl_elasticsearch'
 
 ########################
 # CELERY SETTINGS
@@ -110,7 +115,6 @@ _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/home/wma_portal/cep/home_dirs/'
 # should be created.
 # Use only if all home directories are under one parent directory.
 # NOTE: Replace PORTAL_NAME with name of project (e.g. - cep).
-_PORTAL_ADMIN_USERNAME = 'wma_prtl'
 _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
 _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home'
 _PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
@@ -122,13 +126,15 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     'portal.apps.accounts.steps.step_two',
     'portal.apps.accounts.steps.StepThree',
 ]
-
-_PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = 'work'
-_PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = '/'
+_PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
+_PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'EXECUTION_SYSTEM'
 
 ########################
 # DJANGO CMS SETTINGS
 ########################
+
+# CMS Site (allows for multiple sites on a single CMS)
+_SITE_ID=1
 
 _HAYSTACK_CONNECTIONS = {
     'default': {
@@ -137,6 +143,27 @@ _HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'cms',
     }
 }
+
+########################
+# Custom Portal Template Assets
+# Asset path root is static files output dir.
+# {% static %} won't work in conjunction with {{ VARIABLE }} so use full paths.
+########################
+
+# No Art.
+#_PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
+_PORTAL_LOGO_FILENAME=''                  # Empty string yields text 'CEP'.
+#_PORTAL_NAVBAR_BACKGROUND_FILENAME=''    # Empty string yields NO bg art.
+
+# Defaul Art.
+_PORTAL_ICON_FILENAME='/static/img/favicon.ico'
+#_PORTAL_LOGO_FILENAME='/static/img/TACC.A.png'
+_PORTAL_NAVBAR_BACKGROUND_FILENAME=''
+
+# Custom Art (example using old CEP art).
+#_PORTAL_ICON_FILENAME='/static/img/favicon.cep.png'
+#_PORTAL_LOGO_FILENAME='/static/img/logo.cep.png'
+#_PORTAL_NAVBAR_BACKGROUND_FILENAME='/static/img/network-Header.jpg'
 
 ########################
 # GOOGLE ANALYTICS
