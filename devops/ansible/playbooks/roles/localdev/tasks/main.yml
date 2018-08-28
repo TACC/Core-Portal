@@ -1,3 +1,6 @@
+- name: Install webpack
+  shell: npm install -g webpack
+
 - name: Create /srv/www directory
   file:
     path: /srv/www
@@ -13,7 +16,7 @@
     owner: portal
     state: link
 
-- name: Add portal user to vagrant group
+- name: Add vagrant user to portal group
   user:
-    name: portal
-    groups: vagrant
+    name: vagrant
+    groups: portal
