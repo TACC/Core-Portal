@@ -69,11 +69,17 @@ class FileListingView(BaseApiView):
         offset = kwargs.get('offset', 0)
         limit = kwargs.get('limit', 100)
         query_string = request.GET.get('queryString')
+        system = request.GET.get('system')
         if query_string is None:
             listing = fmgr.listing(file_id, offset=offset, limit=limit)
 
         elif query_string is not None:
-            search = SearchController.search_my_data(request.user.username, query_string, offset, limit)
+            
+            if system == settings.AGAVE_COMMUNITY_DATA_SYSTEM: 
+                search = SearchController.search_public_files(query_string, offset, limit)
+            else:
+                search = SearchController.search_my_data(request.user.username, query_string, offset, limit)
+
             results = search.execute()
             system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(request.user.username)
             listing = BaseFile(fmgr._ac, system)
