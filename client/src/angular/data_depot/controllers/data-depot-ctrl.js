@@ -180,10 +180,11 @@ export default function DataDepotCtrl(
 
         DataBrowserService.apiParams.fileMgr = 'shared';
         DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
-        DataBrowserService.apiParams.searchState = 'dataSearch';
+        DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
 
         $scope.browser = DataBrowserService.state();
         DataBrowserService.browse(options).then(function(resp) {
+            $scope.searchState = DataBrowserService.apiParams.searchState;
             $scope.browser = DataBrowserService.state();
             $scope.state.max_pages = Math.ceil($scope.browser.listing.children.length / $scope.state.limit)
         });

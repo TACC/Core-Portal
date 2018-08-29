@@ -26,7 +26,6 @@ class SearchController(object):
     @staticmethod
     def execute_search(request, type_filter, q, offset, limit):
         if type_filter == 'public_files':
-            return None
             es_query = SearchController.search_public_files(q, offset, limit)
         elif type_filter == 'published':
             return None
@@ -58,7 +57,7 @@ class SearchController(object):
 
         out['total_hits'] = res.hits.total
         out['hits'] = hits
-        out['public_files_total'] = 0 # SearchController.search_public_files(q, offset, limit).count()
+        out['public_files_total'] = SearchController.search_public_files(q, offset, limit).count()
         out['published_total'] = 0 # SearchController.search_published(q, offset, limit).count()
         out['cms_total'] = SearchController.search_cms_content(q, offset, limit).count()
         out['private_files_total'] = SearchController.search_my_data(request.user.username, q, offset, limit).count()
@@ -98,16 +97,14 @@ class SearchController(object):
     @staticmethod
     def search_public_files(q, offset, limit):
         """search public files"""
-        systems = [settings.ES_PUBLIC_INDEX]
-        system_queries = [Q('term', system=system) for system in systems]
-        filters = reduce(ior, system_queries)
-
-        search = Search(index=settings.ES_DEFAULT_INDEX)\
-            .query("query_string", query="*"+q+"*", default_operator="and")\
-            .filter(filters)\
-            .filter("term", type="file")\
-            .extra(from_=offset, size=limit)
-        logger.info(search.to_dict())
+        system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
+        search = IndexedFile.search()
+        # mq = Q({'query_string': {'query': q, 'fields': ["name"], "minimum_should_match": "80%"}})
+        search = search.query("query_string", query=q, fields=["name"], minimum_should_match="80%")
+        # search = search.query(mq)
+        search = search.filter(Q('term', system=system))
+        search = search.extra(from_=offset, size=limit)
+        # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         return search
 
     @staticmethod
@@ -126,8 +123,8 @@ class SearchController(object):
         system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
         search = IndexedFile.search()
         search = search.filter(Q({'term': {'pems.username': username }}))
-        search = search.query("query_string", query=q, fields=["name", "name._exact", "keywords"])
-        search = search.filter(Q( {'term': {'system._exact': system} } ))
+        search = search.query("query_string", query=q, fields=["name"], minimum_should_match="80%")
+        search = search.filter(Q('term', system=system))
         search = search.extra(from_=offset, size=limit)
         # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         return search
