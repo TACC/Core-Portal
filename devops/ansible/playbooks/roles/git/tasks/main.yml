@@ -26,6 +26,7 @@
     version: "{{ git_repo_version }}"
     recursive: "{{git_recursive}}"
     accept_hostkey: yes
+    force: yes
     ssh_opts: "-o StrictHostKeyChecking=no -o ForwardAgent=yes"
 
 - name: transfer portal ownership to portal
