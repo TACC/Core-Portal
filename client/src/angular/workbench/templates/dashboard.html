@@ -120,6 +120,9 @@
           <h3 class="panel-title">My Storage Systems</h3>
         </div>
         <div class="panel-body">
+          <div ng-if="data.strgSystems.length == 0">
+            No Storage Systems Available!
+          </div>
           <div class="system-item"
                data-ng-repeat="sys in data.strgSystems"
                data-ng-if="!ui.loadingSystems">
