@@ -66,8 +66,7 @@ export default function DashboardCtrl (
   });
 
   Apps.list({"$and": [{"name": `${$translate.instant('apps_metadata_name')}`}, {"value.definition.available": true}]}).then(function(resp) {
-    var tmp = _.groupBy(resp, function (d) {return d.label;});
-    $scope.apps = Object.keys(tmp);
+    $scope.apps = Object.keys(resp.data.response);
   });
 
   SystemsService.list().then(function(resp){
