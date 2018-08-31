@@ -9,7 +9,8 @@ export default function DashboardCtrl (
   $translate,
   Jobs,
   Apps,
-  SystemsService
+  SystemsService,
+  UserService
 ) {
   'ngInject';
   $scope.data = {};
@@ -19,9 +20,9 @@ export default function DashboardCtrl (
   $scope.loading_jobs = true;
   $scope.today = new Date();
   $scope.usage = {total_storage_bytes: 0};
-  // UserService.usage().then(function (resp) {
-  //   $scope.usage = resp;
-  // });
+  UserService.usage().then(function (resp) {
+    $scope.usage = resp;
+  });
 
   $scope.first_jobs_date = moment().subtract(14, 'days').startOf('day').toDate();
   let chart_start_date = moment($scope.first_jobs_date).subtract(1, 'days').toDate();
@@ -48,11 +49,6 @@ export default function DashboardCtrl (
     $scope.jobs_details = ev.values;
     $scope.$apply();
   });
-
-  // NotificationService.list({limit:5}).then(function (resp) {
-  //   $scope.notifications = resp.notifs;
-  //   $scope.notification_count = resp.total;
-  // });
 
   Jobs.list(
     {
