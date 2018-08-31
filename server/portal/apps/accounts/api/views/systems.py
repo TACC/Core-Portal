@@ -34,7 +34,7 @@ class SystemsListView(BaseApiView):
         public_keys = request.GET.get('publicKeys', None)
         response = {}
         thisPortal = request.GET.get('thisPortal', False)
-        pname = settings.PORTAL_NAMESPACE.lower()
+        pname = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.split('.')[0].lower()
 
         storage_systems = AccountsManager.storage_systems(
             request.user,
