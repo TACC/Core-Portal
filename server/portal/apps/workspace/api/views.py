@@ -100,6 +100,7 @@ class MetadataView(BaseApiView):
         else:
             query = request.GET.get('q')
             data = agave.meta.listMetadata(q=query)
+            data += agave.meta.listMetadata(q=query.replace('portal_apps', settings.PORTAL_APPS))
         return JsonResponse({'response': data})
 
     def post(self, request, *args, **kwargs):
