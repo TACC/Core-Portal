@@ -1,7 +1,7 @@
 <div id="notification-container" class="dropdown btn btn-link" uib-dropdown auto-close="outsideClick">
     <a id="dLabel" class="dropdown-toggle" role="button" uib-dropdown-toggle> 
         <i id="notification_bell" class="fa fa-bell fa-2x"></i>
-        <span id="notification-badge" title="Notifications">
+        <span id="notification-badge" title="Notifications" ng-if="vm.service.notes.total > 0">
             {{vm.service.notes.total}}
         </span>
     </a>
