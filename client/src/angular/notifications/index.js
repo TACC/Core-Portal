@@ -10,7 +10,7 @@ import notificationDetailTemplate from './template/notification-detail.html';
 import notificationListTemplate from './template/notifications-list.html';
 import notificationsBellTemplate from './template/notifications-bell.html';
 
-let mod = angular.module('portal.notifications', ['ngMaterial']);
+let mod = angular.module('portal.notifications', ['ngMaterial', 'ui.bootstrap']);
 
 mod.service('Notifications', Notifications);
 
