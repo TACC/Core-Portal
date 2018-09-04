@@ -29,14 +29,6 @@ def get_manager(request, file_mgr_name):
     return fmgr
 
 
-class ProjectListingView(BaseApiView):
-    """ Projects listing view"""
-    def get(self, request):
-        fmgr = get_manager(request, 'projects')
-        projects = fmgr.projects_systems()
-        return JsonResponse({'response': projects})
-
-
 #TODO: Make this general!
 class SystemListingView(BaseApiView):
     """System Listing View"""
@@ -131,8 +123,6 @@ class FileMediaView(BaseApiView):
 
         .. todo:: Implement folder uploads.
         """
-        logger.info(file_id)
-        logger.info(request.FILES['file'])
 
         fmgr = get_manager(request, file_mgr_name)
         resp = fmgr.upload(file_id, [request.FILES['file']])
@@ -192,7 +182,7 @@ class FileMediaView(BaseApiView):
 
     def download(self, request, req_body, file_id, fmgr):
         """Download action"""
-        return fmgr.download(file_id, force=True)
+        return fmgr.download(file_id, preview=False)
 
     def mkdir(self, request, req_body, file_id, fmgr):
         """Mkdir action"""

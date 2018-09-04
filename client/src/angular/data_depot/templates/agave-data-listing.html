@@ -40,6 +40,12 @@
     of it as soon as possible.
   </p>
 </div>
+<div class="push-keys-message" data-ng-if="browser.error.status == 404">
+  <p>
+    There seems to be a problem loading your storage system. <br />
+    You may be able to fix this problem by <a href="/accounts/logout">logging out</a> and logging in again.
+  </p>
+</div>
 <div class="table-responsive dd-listing-wrapper"> <!-- START FILE LISTING TABLE WRAPPER -->
   <table class="table table-bordered table-striped"><!-- START FILE LISTING TABLE -->
     <thead>
@@ -52,7 +58,7 @@
     </thead>
     <tbody>
       <tr data-ng-if="!browser.busyListing"
-          data-ng-repeat="file in browser.listing.children"
+          data-ng-repeat="file in listingToShow()"
           data-ng-click="onSelect($event, file)"
           data-ng-class="{'dd-file-selected':  file._ui.selected}">
           <td>
@@ -74,4 +80,25 @@
       </caption>
     </tbody>
   </table> <!-- ENDS FILE LISTING TABLE -->
+  </div>
+  <div class="row" ng-if="!browser.busyListing && browser.listing.children.length > state.limit">
+    <div class="col-md-3">
+        <button class="btn btn-default pull-left"
+          ng-click="prevPage()"
+          ng-disabled="state.page_num === 0">
+          <i class="fa fa-chevron-left"></i> Prev
+        </button>
+      </div>
+      <div class="col-md-6">
+        <div class="text-center">
+          <span class="badge"> {{state.page_num + 1}} / {{ state.max_pages }} </span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-default pull-right"
+          ng-click="nextPage()"
+          ng-disabled="state.page_num + 1 === state.max_pages">
+          <i class="fa fa-chevron-right"></i> More
+        </button>
+      </div>
 </div> <!-- END FILE LISTING TABLE WRAPPER -->

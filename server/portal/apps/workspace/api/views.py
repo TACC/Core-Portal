@@ -17,7 +17,6 @@ from django.core.urlresolvers import reverse
 from portal.apps.workspace.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
-from portal.apps.signals.signals import portal_event
 from portal.apps.workspace.tasks import watch_job_status
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from agavepy.agave import Agave
@@ -101,6 +100,7 @@ class MetadataView(BaseApiView):
         else:
             query = request.GET.get('q')
             data = agave.meta.listMetadata(q=query)
+            data += agave.meta.listMetadata(q=query.replace('portal_apps', settings.PORTAL_APPS))
         return JsonResponse({'response': data})
 
     def post(self, request, *args, **kwargs):
@@ -112,16 +112,16 @@ class MetadataView(BaseApiView):
         share_all = request.GET.get('share_all')
         if share_all and settings.AGAVE_TENANT_BASEURL=='https://api.tacc.utexas.edu':
             username = request.user.username
-            if username == 'wma_prtl':
+            if username == settings.PORTAL_ADMIN_USERNAME:
                 return HttpResponse('User is admin', status=200)
             query = request.GET.get('q')
             meta_post['username'] = username
-            wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            apps = wma_prtl_client.meta.listMetadata(q=query)
+            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            apps = prtl_admin_client.meta.listMetadata(q=query)
             for app_meta in apps:
-                data = wma_prtl_client.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
+                data = prtl_admin_client.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
                 if app_meta.value['type'] == 'agave':
-                    data = wma_prtl_client.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
+                    data = prtl_admin_client.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
         elif meta_uuid:
             del meta_post['uuid']
             data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
@@ -150,10 +150,9 @@ class JobsView(BaseApiView):
             job_meta = agave.meta.listMetadata(q=json.dumps(q))
             data['_embedded'] = {"metadata": job_meta}
 
-            archive_system_path = '{}/{}'.format(data['archiveSystem'],
-                                                 data['archivePath'])
-            data['archiveUrl'] = reverse(
-                'data_depot:data_depot')
+            #TODO: Decouple this from front end somehow!
+            archive_system_path = '{}/{}'.format(data['archiveSystem'], data['archivePath'])
+            data['archiveUrl'] = '/workbench/data-depot/'
             data['archiveUrl'] += 'agave/{}/'.format(archive_system_path)
 
         # list jobs
@@ -161,11 +160,13 @@ class JobsView(BaseApiView):
             limit = request.GET.get('limit', 10)
             offset = request.GET.get('offset', 0)
             data = agave.jobs.list(limit=limit, offset=offset)
+
         return JsonResponse({"response": data})
 
     def delete(self, request, *args, **kwargs):
         agave = request.user.agave_oauth.client
         job_id = request.GET.get('job_id')
+        # METRICS.debug("User " + request.user.username + " is deleting job id " + job_id)
         data = agave.jobs.delete(jobId=job_id)
         return JsonResponse({"response": data})
 
@@ -184,26 +185,22 @@ class JobsView(BaseApiView):
             # cleaning archive path value
             if 'archivePath' in job_post:
                 parsed = urlparse(job_post['archivePath'])
-                if parsed.path.startswith('/'):
+                if parsed.path.startswith('/') and len(parsed.path) > 1:
                     # strip leading '/'
                     archive_path = parsed.path[1:]
                 else:
                     archive_path = parsed.path
-
-                if not archive_path.startswith(request.user.username):
-                    archive_path = '{}/{}'.format(
-                        request.user.username, archive_path)
 
                 job_post['archivePath'] = archive_path
 
                 if parsed.netloc:
                     job_post['archiveSystem'] = parsed.netloc
             else:
-                # METRICS.debug("User " + request.user.username + " is deleting job id " + job_id)
                 job_post['archivePath'] = \
-                    '{}/archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
-                        request.user.username,
+                    'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         datetime.now().strftime('%Y-%m-%d'))
+                job_post['archiveSystem'] = \
+                    settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(request.user.username)
 
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])
@@ -244,8 +241,8 @@ class SystemsView(BaseApiView):
                     'system_id': system_id
                 }
             })
-            wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            data = wma_prtl_client.systems.listRoles(systemId=system_id)
+            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            data = prtl_admin_client.systems.listRoles(systemId=system_id)
         elif user_role:
             METRICS.info('agave.systems.getRoleForUser', extra={
                 'operation': 'agave.systems.getRoleForUser',
@@ -254,10 +251,10 @@ class SystemsView(BaseApiView):
                     'system_id': system_id
                 }
             })
-            wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            data = wma_prtl_client.systems.getRoleForUser(systemId=system_id, username=request.user.username)
+            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            data = prtl_admin_client.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
-    
+
     def post(self, request, *args, **kwargs):
         body = json.loads(request.body)
         role = body['role']
@@ -273,6 +270,6 @@ class SystemsView(BaseApiView):
             'username': request.user.username,
             'role': role
         }
-        wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-        data = wma_prtl_client.systems.updateRole(systemId=system_id, body=role_body)
+        prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+        data = prtl_admin_client.systems.updateRole(systemId=system_id, body=role_body)
         return JsonResponse({"response": data})

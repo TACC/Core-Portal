@@ -12,12 +12,14 @@
   flex: 0 0 50px;
   display: flex;
   flex-direction: column;
+  margin-bottom: -1em;
 }
 
 .workbench-nav .side-nav-button {
+  position: relative;
   cursor:pointer;
   font-size: 4rem;
-  padding-top: 1rem;
+  padding-top: 0.5rem;
   text-align: center;
   border: 0.1rem solid rgba(0,0,0,0);
   -webkit-transition: all 0.3s ease;
@@ -32,6 +34,11 @@
   -moz-transition: all 0.3s ease;
   -o-transition: all 0.3s ease;
   transition: all 0.3s ease;
+}
+
+.workbench-nav .side-nav-button .side-nav-text {
+  font-size: 0.25em;
+  color: #008cba;
 }
 
 .workbench-nav .side-nav-button:hover {
@@ -52,65 +59,22 @@
 }
 
 .workbench-nav .side-nav-button.active i {
+  position: relative;
   color: #FFFFFF;
+}
+
+.workbench-nav .side-nav-button.active .side-nav-text {
+  color: #FFFFFF;
+}
+
+.workbench-nav .side-nav-button .notify-badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background-color: #FF0000;
 }
 
 .workbench-content {
   flex: 1;
   padding-top: 1rem;
-}
-
-@font-face {
-font-family: 'Portal-Workbench';
-    src: url('/static/src/angular/workbench/fonts/Portal-Icons-Workbench.ttf') format('truetype');        
-    font-weight: normal;
-    font-style: normal;
-}
-
-[class^="portal-icon-"]:before,
-[class*=" portal-icon-"]:before {
-    font-family: 'Portal-Workbench';
-    font-style: normal;
-    font-size: 58px;
-    speak: none;
-    font-weight: normal;
-    -webkit-font-smoothing: antialiased;
-            font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-}
-
-.portal-icon-data:before {
-    content: "\e900";
-}
-
-.portal-icon-dashboard:before {
-    content: "\e901";
-}
-
-.portal-icon-help:before {
-    content: "\e902";
-}
-
-.portal-icon-search:before {
-    content: "\e903";
-}
-
-.portal-icon-workspace:before {
-    content: "\e904";
-}
-
-.portal-icon-data-notext:before {
-    content: "\e905";
-    left: 10px;
-    top: -7px;
-    font-size: 8vw;
-    position: relative;
-}
-
-.portal-icon-workspace-notext:before {
-    content: "\e906";
-    left: 10px;
-    top: -7px;
-    font-size: 8vw;
-    position: relative;
 }

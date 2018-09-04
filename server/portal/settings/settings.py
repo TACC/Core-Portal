@@ -49,13 +49,17 @@ SESSION_COOKIE_SECURE = False
 
 ALLOWED_HOSTS = ['*']
 
+# Custom Portal Template Assets
+PORTAL_ICON_FILENAME=settings_secret._PORTAL_ICON_FILENAME
+PORTAL_LOGO_FILENAME=settings_secret._PORTAL_LOGO_FILENAME
+PORTAL_NAVBAR_BACKGROUND_FILENAME=settings_secret._PORTAL_NAVBAR_BACKGROUND_FILENAME
+
 # Application definition
 
 ROOT_URLCONF = 'portal.urls'
 
 INSTALLED_APPS = [
-    # Order-dependent requirement for CMS.
-    'djangocms_admin_style',  # Must precede 'django.contrib.admin'.
+    'djangocms_admin_style',  # Order-dependent requirement for CMS. Must precede 'django.contrib.admin'.
 
     # Core Django.
     'django.contrib.auth',
@@ -63,18 +67,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.sessions.middleware',
     'django.contrib.admin',
-    'django.contrib.sites',                 # CMS
+    'django.contrib.sites',                         # CMS
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
     'django.contrib.messages',
 
     # Django CMS.
-    # CMS plugins tha must be before 'cms'.
+    # CMS plugins that must be before 'cms'.
     'cmsplugin_cascade',
-    'cmsplugin_cascade.clipboard',  # optional
-    'cmsplugin_cascade.extra_fields',  # optional
-    'cmsplugin_cascade.sharable',  # optional
-    'cmsplugin_cascade.segmentation',  # optional
+    'cmsplugin_cascade.clipboard',                  # optional
+    'cmsplugin_cascade.extra_fields',               # optional
+    'cmsplugin_cascade.sharable',                   # optional
+    'cmsplugin_cascade.segmentation',               # optional
+    'cmsplugin_cascade.icon',                       # optional
+    # 'cmsplugin_socialsharekit'                    # testing
+    # 'cmsplugin_forms_builder',                      # django-forms-builder
 
     # - CMS minimum requirements.
     'cms',
@@ -84,17 +91,43 @@ INSTALLED_APPS = [
 
     # - CMS remaining plugins.
     'djangocms_text_ckeditor',
+
+    # 'forms_builder.forms',                          # django-forms-builder
+
+    # Aldryn Plugins.
+    'aldryn_apphooks_config',
+    'aldryn_boilerplates',   # test
+    'aldryn_bootstrap3',
+    'aldryn_categories',
+    'aldryn_common',
+    'aldryn_newsblog',
+    'aldryn_people',
+    'aldryn_translation_tools',
+    'aldryn_video',
+    'absolute',                                       # Aldryn-forms
+    # 'aldryn_forms',                                 # Aldryn-forms
+    # 'aldryn_forms.contrib.email_notifications',     # Aldryn-forms
+    'captcha',                                        # Aldryn-forms
+    'emailit',                                        # Aldryn-forms
+    'parler',
+    'sortedm2m',
+    'taggit',
+
     'filer',
     'easy_thumbnails',
+    'light_gallery',
+
+    'djangocms_audio',
     'djangocms_column',
-    'djangocms_file',
-    'djangocms_link',
-    'djangocms_picture',
-    'djangocms_style',
-    'djangocms_snippet',
-    'djangocms_googlemap',
-    'djangocms_video',
+    # 'djangocms_file',                         # Replaced by aldryn-bootstrap3
     'djangocms_forms',
+    'djangocms_googlemap',
+    # 'djangocms_link',                         # Replaced by aldryn-bootstrap3
+    # 'djangocms_picture',                      # Replaced by aldryn-bootstrap3
+    'djangocms_snippet',
+    'djangocms_style',
+    'djangocms_youtube',
+    'djangocms_video',
 
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
@@ -102,13 +135,16 @@ INSTALLED_APPS = [
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
+    'cmsplugin_iframe',  # edit template here: /usr/lib/python2.7/site-packages/cmsplugin_iframe/templates/cms/plugins
+    'cmsplugin_socialsharekit',
+    # 'cmsplugin_soundcloud',
+    'adminsortable2',
 
     # Django recaptcha.
     'snowpenguin.django.recaptcha2',
 
     # Pipeline.
     'mptt',
-    # 'reversion',
     'bootstrap3',
     'termsandconditions',
     'impersonate',
@@ -131,7 +167,6 @@ INSTALLED_APPS = [
     'portal.apps.projects',
     'portal.apps.licenses',
     'portal.apps.notifications',
-    'portal.apps.api.notifications',
 ]
 
 MIDDLEWARE = [
@@ -153,6 +188,7 @@ MIDDLEWARE = [
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
+    'cms.middleware.utils.ApphookReloadMiddleware',
 
     # Throws an Error.
     # 'portal.middleware.PortalTermsMiddleware',
@@ -173,10 +209,10 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.csrf',   # Needed?
                 'django.template.context_processors.tz',
-                'sekizai.context_processors.sekizai',       # Static Files.
                 'django.template.context_processors.static',
-                'cms.context_processors.cms_settings',      # Django CMS.
                 'django_settings_export.settings_export',
+                'cms.context_processors.cms_settings',      # Django CMS.
+                'sekizai.context_processors.sekizai',       # CMS Static Files.
                 'ws4redis.context_processors.default',
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
@@ -285,7 +321,7 @@ DATABASES = {
 }
 
 WS4REDIS_CONNECTION = {
-    'host': 'redis',
+    'host': settings_secret._RESULT_BACKEND_HOST,
 }
 WEBSOCKET_URL = '/ws/'
 
@@ -299,7 +335,6 @@ RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
 RT_PW = settings_secret._RT_PW
 RT_QUEUE = settings_secret._RT_QUEUE
-RT_QN = settings_secret._RT_QN
 
 # Recaptcha Authentication.
 RECAPTCHA_PUBLIC_KEY = settings_secret._RECAPTCHA_PUBLIC_KEY
@@ -436,6 +471,8 @@ CMS_PLACEHOLDER_CONF = {}
 
 CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.link')
+SELECT2_CSS = 'node_modules/select2/dist/css/select2.min.css'  # PATH?
+SELECT2_JS = 'node_modules/select2/dist/js/select2.min.js'     # PATH?
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.generic')
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.segmentation')
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.icon')
@@ -447,26 +484,69 @@ CMSPLUGIN_FILER_IMAGE_DEFAULT_STYLE = 'default'
 
 TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
 
+THUMBNAIL_HIGH_RESOLUTION = True
+
 THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.colorspace',
     'easy_thumbnails.processors.autocrop',
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
-    'easy_thumbnails.processors.filters'
+    'easy_thumbnails.processors.filters',
+    'easy_thumbnails.processors.background'
 )
+
+# CKEDITOR_SETTINGS = {
+#     'language': '{{ language }}',
+#     'toolbar_CMS': [
+#         ['Undo', 'Redo'],
+#         ['cmsplugins', '-', 'ShowBlocks'],
+#         ['Format', 'Styles'],
+#     ],
+#     'skin': 'moono-lisa',
+#     'contentsCss': [
+#         'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
+#         # '/css/mysitestyles.css',
+#     ],
+# }
 
 CKEDITOR_SETTINGS = {
     'language': '{{ language }}',
-    'toolbar_CMS': [
-        ['Undo', 'Redo'],
-        ['cmsplugins', '-', 'ShowBlocks'],
-        ['Format', 'Styles'],
-    ],
     'skin': 'moono-lisa',
-    'contentsCss': [
-        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-        # '/css/mysitestyles.css',
-    ],
+    'toolbar': 'CMS',
+    'stylesSet': format_lazy('default:{}', reverse_lazy('admin:cascade_texticon_wysiwig_config')),
 }
+
+# CMS Forms.
+ALDRYN_BOILERPLATE_NAME='bootstrap3'
+
+DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = RECAPTCHA_PUBLIC_KEY
+DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = RECAPTCHA_PRIVATE_KEY
+# DJANGOCMS_FORMS_PLUGIN_MODULE = _('Generic')
+# DJANGOCMS_FORMS_PLUGIN_NAME = _('Form')
+# DJANGOCMS_FORMS_DEFAULT_TEMPLATE = 'djangocms_forms/form_template/default.html'  # Path?
+# DJANGOCMS_FORMS_TEMPLATES = (
+#     ('djangocms_forms/form_template/default.html', _('Default')),
+# )
+# DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
+# DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
+# DJANGOCMS_FORMS_REDIRECT_DELAY = 10000  # 10 seconds. Default is 1 second.
+# instance.redirect_delay > DJANGOCMS_FORMS_REDIRECT_DELAY > 1000 (default)  # per form delay.
+
+# Media Plugins.
+DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
+# DJANGOCMS_AUDIO_TEMPLATES = [
+#     # ('default', _('Default Version')),
+#     ('feature', _('Featured Version')),
+# ]
+
+#DJANGOCMS_EMBED_API_KEY = ""    # Requires an embed.ly account to use.
+
+DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
+# DJANGOCMS_VIDEO_TEMPLATES = [
+#     ('feature', _('Featured Version')),
+# ]
+# Requires registering portal app on youtube: https://developers.google.com/youtube/registering_an_application
+# DJANGOCMS_YOUTUBE_API_KEY = '<youtube_data_api_server_key>'
+
 
 """
 SETTINGS: CELERY
@@ -626,6 +706,8 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = settings_secret.\
 PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
     _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM
 
+PORTAL_APPS = settings_secret._PORTAL_APPS
+
 """
 SETTINGS: ELASTICSEARCH
 """
@@ -652,7 +734,12 @@ SETTINGS: EXPORTS
 """
 
 SETTINGS_EXPORT = [
+    'PORTAL_ICON_FILENAME',
+    'PORTAL_LOGO_FILENAME',
+    'PORTAL_NAVBAR_BACKGROUND_FILENAME',
     'DEBUG',
     'GOOGLE_ANALYTICS_PRELOAD',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
+    'PORTAL_NAMESPACE',
+    'PORTAL_APPS'
 ]

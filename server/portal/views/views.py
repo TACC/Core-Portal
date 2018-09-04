@@ -24,31 +24,3 @@ def project_version(request):
         version = 'UNKNOWN'
 
     return HttpResponse(version, content_type='text/plain')
-
-
-def index(request):
-    return render(request, 'index.html')
-
-
-def education_training(request):
-    return render(request, 'education_training.html')
-
-
-def getting_started(request):
-    return render(request, 'getting_started.html')
-
-
-def resources(request):
-    return render(request, 'resources.html')
-
-
-def help(request):
-    return render(request, 'help.html')
-
-
-def faq(request):
-    return render(request, 'faq.html')
-
-
-def about(request):
-    return render(request, 'about.html')

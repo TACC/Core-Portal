@@ -1,7 +1,7 @@
-from portal.apps.api.notifications.signals import ds_event
+from django.apps import AppConfig
 
 
-class Event(object):
-    @classmethod
-    def send_event(self, event_type, users, event_data):
-        ds_event.send(sender=self.__class__, event_type = event_type, users = users, **event_data);
+class NotificationsConfig(AppConfig):
+    name = 'portal.apps.notifications'
+    label = 'notifications'
+    verbose_name = 'Portal Notifications'

@@ -104,7 +104,7 @@ export default function DS_TSBarChart (element_id) {
     if (!(arguments.length)) return data;
     data = _data;
     draw();
-    return this;
+    return exports;
   };
 
   exports.xSelector = function (f) {

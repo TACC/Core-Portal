@@ -40,6 +40,13 @@
     group: portal
     recurse: yes
 
+- name: Manually create django metrics log file.
+  copy:
+    content: ""
+    dest: "/var/log/{{project_name}}.log"
+    owner: portal
+    group: portal
+
 - name: Create settings_secret.py
   template:
     src: settings_secret.j2

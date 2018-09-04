@@ -3,16 +3,16 @@
    :synopsys: Views to handle Search API
 """
 from __future__ import unicode_literals, absolute_import
+from future.utils import python_2_unicode_compatible
 import logging
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from portal.views.base import BaseApiView
-import random
 from elasticsearch import TransportError
 from elasticsearch_dsl import Q, Search
-from elasticsearch_dsl.connections import connections
-from elasticsearch import TransportError, ConnectionTimeout
+from elasticsearch import ConnectionTimeout
 from operator import ior
 from portal.libs.elasticsearch.docs.base import IndexedFile
 
@@ -62,6 +62,18 @@ class SearchController(object):
         out['published_total'] = 0 # SearchController.search_published(q, offset, limit).count()
         out['cms_total'] = SearchController.search_cms_content(q, offset, limit).count()
         out['private_files_total'] = SearchController.search_my_data(request.user.username, q, offset, limit).count()
+        out['filter'] = type_filter
+
+        type_filter_options = ['public_files', 'published', 'cms', 'private_files']
+        hits_total_array = [out['public_files_total'], out['published_total'], out['cms_total'], out['private_files_total']]
+
+        out['total_hits_cumulative'] = sum(hits_total_array)
+
+        # If there are hits not in the current type filter, set the 'filter' output to the filter with the most hits.
+        if out['total_hits'] == 0 and out['total_hits_cumulative'] > 0:
+            max_hits_total = max(hits_total_array)
+            new_filter = [filter for i, filter in enumerate(type_filter_options) if hits_total_array[i] == max_hits_total][0]
+            out['filter'] = new_filter
 
         return out
 
@@ -112,29 +124,23 @@ class SearchController(object):
     @staticmethod
     def search_my_data(username, q, offset, limit):
         system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
-        split_query = q.split(" ")
-        for i, c in enumerate(split_query):
-            if c.upper() not in ["AND", "OR", "NOT"]:
-                split_query[i] = "*" + c + "*"
-
-        q = " ".join(split_query)
         search = IndexedFile.search()
-        search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
+        search = search.filter(Q({'term': {'pems.username': username }}))
         search = search.query("query_string", query=q, fields=["name", "name._exact", "keywords"])
-        search = search.filter(Q('term', system=system))
+        search = search.filter(Q( {'term': {'system._exact': system} } ))
+        search = search.extra(from_=offset, size=limit)
         # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         return search
 
-
+@python_2_unicode_compatible
+@method_decorator(login_required, name='dispatch')
 class SearchApiView(BaseApiView):
     """ Projects listing view"""
     def get(self, request):
-        logger.debug(request.GET.get('q'))
-        q = request.GET.get('q')
-        offset = request.GET.get('offset')
-        limit = request.GET.get('limit')
-        type_filter = request.GET.get('type_filter')
-        logger.debug(type_filter)
+        q = request.GET.get('q', '')
+        offset = request.GET.get('offset', 0)
+        limit = request.GET.get('limit', 100)
+        type_filter = request.GET.get('type_filter', 'cms')
 
         out = SearchController.execute_search(self.request, type_filter, q, offset, limit)
 

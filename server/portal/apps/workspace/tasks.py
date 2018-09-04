@@ -6,6 +6,7 @@ from celery import shared_task
 from requests import ConnectionError, HTTPError
 import logging
 from portal.apps.signals.signals import portal_event
+from portal.apps.notifications.models import Notification
 
 logger = logging.getLogger(__name__)
 
@@ -103,22 +104,16 @@ def watch_job_status(self, username, job_id, current_status=None):
             # end state, no additional tasks; notify
             event_data["status"] = "error"
             event_data["message"] = 'Job "%s" Failed. Please try again...' % (job_name, )
-            _send_portal_event(event_data, username)
+            n = Notification.objects.create(**event_data)
+            n.save()
         elif job_status == 'FINISHED':
             # end state, start indexing outputs
             event_data["status"] = "success"
             event_data["extra"]['job_status'] = 'FINISHED'
             event_data["message"] = 'Job "%s" has finished!' % (job_name, )
             event_data["operation"] = 'job_finished'
-            _send_portal_event(event_data, username)
-            try:
-                #logger.debug('Preparing to Index Job Output job=%s', job)
-                #index_job_outputs(user, job)
-                #logger.debug('Finished Indexing Job Output job=%s', job)
-                pass
-            except Exception as e:
-                logger.exception('Error indexing job output; scheduling retry')
-                #raise self.retry(exc=e, countdown=60)
+            n = Notification.objects.create(**event_data)
+            n.save()
 
         elif current_status and current_status == job_status:
             # DO NOT notify, but still queue another watch task
@@ -129,7 +124,8 @@ def watch_job_status(self, username, job_id, current_status=None):
             event_data["status"] = "info"
             event_data["message"] = 'Job "%s" status has been updated to %s.' % (job_name, job_status)
             event_data["operation"] = 'job_status_update'
-            _send_portal_event(event_data, username)
+            n = Notification.objects.create(**event_data)
+            n.save()
             self.retry(countdown=10, kwargs={'current_status': job_status})
 
         # fire an event that will percolate up to the browser via webosckets

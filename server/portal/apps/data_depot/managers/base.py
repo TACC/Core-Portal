@@ -210,7 +210,7 @@ class AgaveFileManager(AbstractFileManager):
             file_path = os.path.join(*id_comps[1:])
         else:
             file_path = '/'
-
+            
         return (system, file_path)
 
     def get_file(self, file_id, **kwargs):
@@ -271,6 +271,15 @@ class AgaveFileManager(AbstractFileManager):
         """
         _file_src = self.get_file(file_id_src)
         _file_dest = self.get_file(file_id_dest)
+        _file_dest_children = _file_dest.children()
+        
+        for i in _file_dest_children:
+            if _file_src.name == i.name:
+                _ext = _file_src.ext
+                _name = os.path.splitext(_file_src.name)[0]
+                now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
+                _file_src.name = '{}_{}{}'.format(_name, now, _ext)
+
         if _file_src.system == _file_dest.system:
             resp = _file_src.copy(_file_dest.path)
             agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
@@ -279,7 +288,7 @@ class AgaveFileManager(AbstractFileManager):
             agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
             agave_indexer.apply_async(kwargs={'systemId': _file_dest.system}, routing_key='indexing')
 
-        
+
         return resp
 
     def delete(self, file_id, **kwargs):
@@ -297,7 +306,7 @@ class AgaveFileManager(AbstractFileManager):
 
         return _file.delete()
 
-    def download(self, file_id, preview=True, force=False, **kwargs):
+    def download(self, file_id, preview=True, **kwargs):
         """Download a file.
 
         :param str file_id: Id representing a file/folder.
@@ -312,14 +321,13 @@ class AgaveFileManager(AbstractFileManager):
         if _file.type == 'dir':
             raise ValueError('Cannot download a folder')
 
-        if not preview:
-            url = _file.postit(force=True)
-            return _file.download()
-
-        logger.info("preview is false")
         # if force=True (which is default), agave will automatically
         # set the Content-Disposition for download
-        url = _file.postit(force=force)
+        if not preview:
+            url = _file.postit(force=True)
+            return {'href': url, 'fileType': ''}
+        
+        url = _file.postit(force=False)
 
         if _file.ext in BaseFile.SUPPORTED_TEXT_PREVIEW_EXTS:
             file_type = 'text'
@@ -468,8 +476,8 @@ class AgaveFileManager(AbstractFileManager):
             #Trash path exists, must make it unique.
             _ext = _file.ext
             _name = os.path.splitext(_file.name)[0]
-            now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-            trash_name = '{}_{}.{}'.format(_name, now, _ext)
+            now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
+            trash_name = '{}_{}{}'.format(_name, now, _ext)
         except HTTPError as err:
             if err.response.status_code != 404:
                 raise
@@ -496,7 +504,7 @@ class AgaveFileManager(AbstractFileManager):
         _file = self.get_file(file_id)
         for pem in pems:
             _file.share(pem['username'], pem['permission'])
-        agave_indexer.apply_async(kwargs={'systemId': _file.system, 
+        agave_indexer.apply_async(kwargs={'systemId': _file.system,
                                           'filePath': _file.path,
                                           'update_pems': True})
         return _file

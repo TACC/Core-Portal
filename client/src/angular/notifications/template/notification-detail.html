@@ -1,0 +1,18 @@
+<div class="notification">
+  <div class="status"
+      ng-class="{'success':vm.note.status=='success',
+                 'danger': vm.note.status=='error',
+                 'info': vm.note.status=='info',
+                 'warning': vm.note.status=='warning'}">
+    <i class="fa fa-check-circle-o" ng-if="vm.note.status=='success'"></i>
+    <i class="fa fa-warning" ng-if="vm.note.status=='error'"></i>
+    <i class="fa fa-info" ng-if="vm.note.status=='info'"></i>
+    <i class="fa fa-question-circle-o" ng-if="vm.note.status=='warning'"></i>
+  </div>
+  <div class="notification-message">
+    <span> {{vm.note.message}} </span>
+  </div>
+  <div class="notification-time">
+    <span class="badge"> {{vm.note.datetime | date:'medium'}} </span>
+  </div>
+</div>

@@ -5,7 +5,7 @@
 
     <label class="control-label" ng-show="showTitle()">{{form.title}}</label>
 
-    <agave-file-picker ng-model="$$value$$" schema-validate="form"></agave-file-picker>
+    <agave-file-picker ng-model="model['inputs'][form.schema.id]" schema-validate="form"></agave-file-picker>
 
     <span ng-if="form.feedback !== false"
           class="form-control-feedback"

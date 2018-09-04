@@ -18,7 +18,7 @@ from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError
 from portal.libs.elasticsearch import utils as ESUtils
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
-from portal.libs.elasticsearch.analyzers import path_analyzer
+from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -37,7 +37,8 @@ except AttributeError as exc:
 
 @python_2_unicode_compatible
 class IndexedFile(DocType):
-    name = Keyword()
+    name = Text(analyzer=file_analyzer, fields={
+        '_exact': Keyword()})
     path = Text(fields={
         '_comps': Text(analyzer=path_analyzer),
         '_exact': Keyword()})
@@ -52,10 +53,10 @@ class IndexedFile(DocType):
             '_comps': Text(analyzer=path_analyzer),
             '_exact': Keyword()})
     lastUpdated = Date()
-    pems = Nested(properties={
+    pems = Object(properties={
         'username': Keyword(),
         'recursive': Boolean(),
-        'permission': Nested(properties={
+        'permission': Object(properties={
             'read': Boolean(),
             'write': Boolean(),
             'execute': Boolean()
@@ -70,7 +71,7 @@ class IndexedFile(DocType):
     def from_path(cls, username, system, path):
         search = cls.search()
         search = search.query('term', **{'path._exact': path})
-        search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
+        search = search.filter(Q({'term': {'pems.username': username} }))
         search = search.filter('term', **{'system': system})
         try:
             res = search.execute()
@@ -92,7 +93,7 @@ class IndexedFile(DocType):
     def children(cls, username, system, path):
         search = cls.search()
         search = search.query('term', **{'basePath._exact': path})
-        search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
+        search = search.filter(Q({'term': {'pems.username': username} }))
         search = search.filter('term', **{'system': system})
         search = search.sort('path._exact')
         try:

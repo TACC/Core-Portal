@@ -54,16 +54,7 @@ INSTALLED_APPS = [
     'cms',
     'treebeard',
     'menus',
-    'sekizai',
-    'djangocms_admin_style',
-    'djangocms_text_ckeditor',
-    'djangocms_file',
-    'djangocms_picture',
-    'cmsplugin_cascade',
-    'cmsplugin_cascade.extra_fields',
-    'filer',
-    'easy_thumbnails',
-    'mptt',
+    'djangocms_forms',
     # django recaptcha.
     'snowpenguin.django.recaptcha2',
     # Vendor apps.
@@ -83,7 +74,6 @@ INSTALLED_APPS = [
     'portal.apps.projects',
     'portal.apps.licenses',
     'portal.apps.notifications',
-    'portal.apps.api.notifications',
 ]
 
 MIDDLEWARE = [

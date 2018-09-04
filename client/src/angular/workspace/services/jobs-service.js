@@ -1,20 +1,21 @@
 import * as d3 from 'd3';
 
-
 function Jobs($http) {
   'ngInject';
 
   var service = {};
 
   service.list = function(options) {
-    var params = {
-      limit: options.limit || 10,
-      offset: options.offset || 0
-    };
+    options.limit = options.limit || 10;
+    options.offest = options.offest || 0;
     return $http.get('/api/workspace/jobs/', {
-      params: params
+      params: options
     }).then(function (resp) {
-      return resp.data.response;
+      let data = resp.data.response;
+      data.forEach( (d)=>{
+        d.created = new Date(d.created);
+      });
+      return data;
     });
   };
 
@@ -31,7 +32,7 @@ function Jobs($http) {
   };
 
   service.jobsByDate = function (jobs) {
-    var nested = d3.nest()
+    let nested = d3.nest()
       .key(function (d) {
         var ct = d.created;
         ct.setHours(0, 0, 0);
@@ -42,6 +43,7 @@ function Jobs($http) {
       d.key = new Date(d.key);
     });
     nested = nested.sort(function (a, b) { return a.key - b.key;});
+    console.log(nested);
     return nested;
   };
 

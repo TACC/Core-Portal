@@ -6,9 +6,11 @@ export default function DashboardCtrl (
   $uibModal,
   $scope,
   $q,
+  $translate,
   Jobs,
   Apps,
-  SystemsService
+  SystemsService,
+  UserService
 ) {
   'ngInject';
   $scope.data = {};
@@ -18,17 +20,17 @@ export default function DashboardCtrl (
   $scope.loading_jobs = true;
   $scope.today = new Date();
   $scope.usage = {total_storage_bytes: 0};
-  $scope.first_jobs_date = new Date(
-    $scope.today.getTime() - (14 * 24 * 60 * 60 * 1000 )
-  );
-  $scope.first_jobs_date = new Date(
-    $scope.first_jobs_date.setHours(0,0,0,0)
-  );
+  UserService.usage().then(function (resp) {
+    $scope.usage = resp;
+  });
+
+  $scope.first_jobs_date = moment().subtract(14, 'days').startOf('day').toDate();
+  let chart_start_date = moment($scope.first_jobs_date).subtract(1, 'days').toDate();
   $scope.chart = new DS_TSBarChart('#ds_jobs_chart')
     .height(250)
     .xSelector(function (d) { return d.key;})
     .ySelector(function (d) { return d.values.length;})
-    .start_date($scope.first_jobs_date);
+    .start_date(chart_start_date);
 
   //Systems stuff
   $scope.data.execSystems = [];
@@ -48,26 +50,22 @@ export default function DashboardCtrl (
     $scope.$apply();
   });
 
-  // NotificationService.list({limit:5}).then(function (resp) {
-  //   $scope.notifications = resp.notifs;
-  //   $scope.notification_count = resp.total;
-  // });
-
   Jobs.list(
     {
-      'created.gt':moment($scope.first_jobs_date).format('Y-M-D')
+      'limit': 100,
+      'offset':0
     }
   ).then(function (resp) {
     $scope.jobs = resp;
+    $scope.jobs = _.filter($scope.jobs, (d)=>{return moment(d.created).isAfter($scope.first_jobs_date);});
     $scope.chart_data = Jobs.jobsByDate(resp);
-
     $scope.chart.data($scope.chart_data);
     var tmp = _.groupBy($scope.jobs, function (d) {return d.appId;});
     $scope.recent_apps = Object.keys(tmp);
     $scope.loading_jobs = false;
   });
 
-  Apps.list({limit:99999}).then(function (resp) {
+  Apps.list({"$and": [{"name": `${$translate.instant('apps_metadata_name')}`}, {"value.definition.available": true}]}).then(function(resp) {
     var tmp = _.groupBy(resp, function (d) {return d.label;});
     $scope.apps = Object.keys(tmp);
   });

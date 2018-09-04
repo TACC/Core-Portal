@@ -1,0 +1,4 @@
+.notify-bouncing::before {
+    -webkit-animation: 2s bounce;
+    animation: 2s bounce;
+}

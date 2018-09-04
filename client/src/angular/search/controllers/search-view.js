@@ -25,7 +25,6 @@ export default class SearchViewCtrl {
       'public_files': 'Public Files'
     };
 
-
     $scope.next = function () {
       $scope.page_num = $scope.page_num + 1;
       $scope.search();
@@ -40,11 +39,11 @@ export default class SearchViewCtrl {
     $scope.filter = function(ftype) {
       $scope.data.type_filter = ftype;
       $scope.page_num = 0;
-      $scope.search_browse();
+      $scope.search_browse(false);
     };
 
-    $scope.search_browse = function() {
-      $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': $scope.data.type_filter});
+    $scope.search_browse = function(switch_filter) {
+      $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': $scope.data.type_filter, 'switch_filter': switch_filter});
     };
 
     $scope.search = function(reset) {
@@ -53,13 +52,25 @@ export default class SearchViewCtrl {
       }
       if ($scope.data.text) {
         $scope.offset = $scope.page_num * $scope.limit;
-        $scope.SearchService.search($scope.data.text, $scope.limit, $scope.offset, $scope.data.type_filter).then( (resp) => {
-          $scope.data.search_results = resp.response;
-          //$scope.data.hits = resp.hits;
-          $scope.total_hits = $scope.data.search_results.total_hits;
-          $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit);
-        });
-      } else { $scope.data.search_results = {}; }
+
+        return $scope.SearchService
+          .search($scope.data.text, $scope.limit, $scope.offset, $scope.data.type_filter)
+          .then( (resp) => {
+            $scope.data.search_results = resp.response;
+            //$scope.data.hits = resp.hits;
+            $scope.total_hits = $scope.data.search_results.total_hits;
+            $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit);
+            if ($scope.data.search_results.filter != $scope.data.type_filter && $state.params.switch_filter) {
+              $scope.data.type_filter = $scope.data.search_results.filter
+              $scope.search_browse(true)
+            }
+
+          });
+      }
+      else {
+        $scope.data.search_results = {};
+      }
+      return $scope.data.search_results;
     };
 
     $scope.makeUrl = function(listing) {
@@ -67,13 +78,9 @@ export default class SearchViewCtrl {
       //url='hello'
       return url;
     };
-
     if ($scope.data.text) {
       $scope.search(true);
-    } 
+    }
 
-  }
-
-  
-
-}
+  }  // Close constructor.
+}  // Close class.

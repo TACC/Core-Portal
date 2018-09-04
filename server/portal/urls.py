@@ -50,35 +50,31 @@ urlpatterns += [
         {'next_page': '/auth/logged-out/'}, name='logout'),
     url(r'^login/$', login),
 
-    # apps.
-    # url(r'^data-depot/', include('portal.apps.data_depot.urls',
-    #                              namespace='data_depot')),
     url(r'^api/data-depot/', include('portal.apps.data_depot.api.urls',
                                      namespace='data_depot_api')),
-    # url(r'^workspace/', include('portal.apps.workspace.urls',
-    #                             namespace='workspace')),
     url(r'^api/workspace/', include('portal.apps.workspace.api.urls',
                                     namespace='workspace_api')),
     url(r'^api/projects/', include('portal.apps.projects.urls',
                                     namespace='projects_api')),
-    url(r'^search/', include('portal.apps.search.urls',
-                             namespace='search')),
     url(r'^api/search/', include('portal.apps.search.api.urls',
                                  namespace='search')),
+    url(r'^api/users/', include('portal.apps.users.urls',
+                                 namespace='users')),
     url(r'^workbench/', include('portal.apps.workbench.urls',
                                 namespace='workbench')),
     url(r'^tickets/', include('portal.apps.djangoRT.urls',
                               namespace='tickets')),
 
     # notifications
-    url(r'^notifications/', include('portal.apps.notifications.urls',
+    url(r'^api/notifications/', include('portal.apps.notifications.urls',
                                     namespace='notifications')),
 
-    # webhooks
-    url(r'^webhooks/', include('portal.webhooks', namespace='webhooks')),
 
     # version check.
     url(r'^version/', des_version),
+
+    # cms forms.
+    url(r'^', include('djangocms_forms.urls')),
 
     # cms handles everything else.
     url(r'^', include('cms.urls')),
