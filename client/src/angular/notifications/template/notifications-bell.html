@@ -1,1 +1,22 @@
-<span class="notify-badge badge">{{vm.service.notes.total}}</span>
+<div id="notification-container" class="dropdown btn btn-link" uib-dropdown auto-close="outsideClick">
+    <a id="dLabel" class="dropdown-toggle" role="button" uib-dropdown-toggle> 
+        <i id="notification_bell" class="fa fa-bell fa-2x"></i>
+        <span id="notification-badge" title="Notifications">
+            {{vm.service.notes.total}}
+        </span>
+    </a>
+    <ul uib-dropdown-menu class="dropdown-menu notifications" aria-labelledby="dLabel"> 
+        <li>
+            <a>
+                Notifications
+                <span class="pull-right">
+                    View all
+                    <i class="fa fa-arrow-circle-right"></i>
+                </span>
+            </a>
+        </li>
+        <div class="notifications-wrapper">
+            <notification-detail ng-repeat="note in vm.service.notes.notifs" note="note"></notification-detail>
+        </div>
+   </ul>
+</div>

@@ -14,5 +14,9 @@ export default class NotificationsBellCtrl {
         }
       );
     }
+
+    list() {
+      console.log("list notifications plz");
+    }
   }
   
