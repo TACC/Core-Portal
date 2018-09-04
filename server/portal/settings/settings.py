@@ -75,13 +75,6 @@ INSTALLED_APPS = [
     # Django CMS.
     # CMS plugins that must be before 'cms'.
     'cmsplugin_cascade',
-    'cmsplugin_cascade.clipboard',                  # optional
-    'cmsplugin_cascade.extra_fields',               # optional
-    'cmsplugin_cascade.sharable',                   # optional
-    'cmsplugin_cascade.segmentation',               # optional
-    'cmsplugin_cascade.icon',                       # optional
-    # 'cmsplugin_socialsharekit'                    # testing
-    # 'cmsplugin_forms_builder',                      # django-forms-builder
 
     # - CMS minimum requirements.
     'cms',
@@ -94,36 +87,15 @@ INSTALLED_APPS = [
 
     # 'forms_builder.forms',                          # django-forms-builder
 
-    # Aldryn Plugins.
-    'aldryn_apphooks_config',
-    'aldryn_boilerplates',   # test
-    'aldryn_bootstrap3',
-    'aldryn_categories',
-    'aldryn_common',
-    'aldryn_newsblog',
-    'aldryn_people',
-    'aldryn_translation_tools',
-    'aldryn_video',
-    'absolute',                                       # Aldryn-forms
-    # 'aldryn_forms',                                 # Aldryn-forms
-    # 'aldryn_forms.contrib.email_notifications',     # Aldryn-forms
-    'captcha',                                        # Aldryn-forms
-    'emailit',                                        # Aldryn-forms
-    'parler',
-    'sortedm2m',
-    'taggit',
 
+    'aldryn_bootstrap3',
+    'captcha',                                        # Aldryn-forms
     'filer',
     'easy_thumbnails',
-    'light_gallery',
 
     'djangocms_audio',
-    'djangocms_column',
-    # 'djangocms_file',                         # Replaced by aldryn-bootstrap3
     'djangocms_forms',
     'djangocms_googlemap',
-    # 'djangocms_link',                         # Replaced by aldryn-bootstrap3
-    # 'djangocms_picture',                      # Replaced by aldryn-bootstrap3
     'djangocms_snippet',
     'djangocms_style',
     'djangocms_youtube',
@@ -137,8 +109,6 @@ INSTALLED_APPS = [
     'cmsplugin_filer_video',
     'cmsplugin_iframe',  # edit template here: /usr/lib/python2.7/site-packages/cmsplugin_iframe/templates/cms/plugins
     'cmsplugin_socialsharekit',
-    # 'cmsplugin_soundcloud',
-    'adminsortable2',
 
     # Django recaptcha.
     'snowpenguin.django.recaptcha2',
@@ -473,9 +443,7 @@ CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
 CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.link')
 SELECT2_CSS = 'node_modules/select2/dist/css/select2.min.css'  # PATH?
 SELECT2_JS = 'node_modules/select2/dist/js/select2.min.js'     # PATH?
-CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.generic')
-CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.segmentation')
-CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.icon')
+
 
 CMSPLUGIN_FILER_IMAGE_STYLE_CHOICES = (
     ('default', 'Default'),
