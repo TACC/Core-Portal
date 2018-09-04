@@ -15,4 +15,7 @@
   <div class="notification-time">
     <span class="badge"> {{vm.note.datetime | date:'medium'}} </span>
   </div>
+  <div class="notification-delete">
+    <i class="fa fa-remove" ng-click="vm.delete(note)"></i>
+  </div>
 </div>
