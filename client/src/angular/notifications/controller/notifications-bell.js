@@ -2,8 +2,13 @@ export default class NotificationsBellCtrl {
 
     constructor(Notifications) {
       'ngInject';
-      this.service = Notifications;
-      this.bouncing = false;
+      if (window.NotificationsSingleton) {
+        this.service = window.NotificationsSingleton;
+        console.log("Bell found singleton");
+      } else {
+
+        this.service = Notifications;
+      }
       this.subscription = this.service.subject.subscribe(
         (data) => { 
           // play animation here, somehow?
