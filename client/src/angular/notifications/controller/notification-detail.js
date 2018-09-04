@@ -1,13 +1,7 @@
 export default class NotificationDetailCtrl {
 
-  constructor($http) {
+  constructor($scope, $http) {
     'ngInject';
     this.$http = $http;
   }
-
-  delete() {
-
-  }
-
-
 }

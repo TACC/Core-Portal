@@ -4,9 +4,8 @@ export default class NotificationsBellCtrl {
       'ngInject';
       if (window.NotificationsSingleton) {
         this.service = window.NotificationsSingleton;
-        console.log("Bell found singleton");
+        console.log("Bell found singleton", this.service);
       } else {
-
         this.service = Notifications;
       }
       this.subscription = this.service.subject.subscribe(

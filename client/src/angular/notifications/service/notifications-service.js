@@ -55,7 +55,7 @@ export default class Notifications {
     );
   }
 
-  list() {
+ list() {
     return this.$http.get('/api/notifications').then( (resp)=>{
       let data = resp.data;
       data.notifs.forEach((d)=>{
@@ -68,8 +68,18 @@ export default class Notifications {
     });
   }
 
-  delete() {
-
+  delete(pk) {
+    // Not sure where this is getting messed up, but have to set xsrf settings manually
+    this.$http.defaults.xsrfCookieName = "csrftoken";
+    this.$http.defaults.xsrfHeaderName = "X-CSRFToken";
+    return this.$http.delete('/api/notifications/delete/' + pk).then(
+      (resp) => {
+        return this.list();
+      },
+      (error) => {
+        return this.$q.reject(error);
+      }
+    );
   }
 
   showToast() {
