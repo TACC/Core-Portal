@@ -12,6 +12,7 @@ export default class Notifications {
     let host = this.$location.host();
     let wsurl = 'wss://' + host + '/ws/notifications?subscribe-broadcast&subscribe-user';
     this.subject = new WebSocketSubject(wsurl);
+    this.toasting = false;
     this.subject.subscribe(
       (data) => {
         this.list();
@@ -24,9 +25,13 @@ export default class Notifications {
       }
     );
     this.list();
+    if (!window.NotificationsSingleton) {
+      window.NotificationsSingleton = this;
+    }
   }
 
   startToasts() {
+    this.toasting = true;
     this.subject.subscribe(
       (data) => {
         this.$mdToast.show({
