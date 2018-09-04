@@ -21,9 +21,7 @@ function config($interpolateProvider, $httpProvider, $urlRouterProvider, $stateP
       success_copy_file: "File/folder has been copied.",
       success_trash_file: "File/folder has been moved to trash.",
       error_mkdir: "There was an error creating the file.",
-      success_mkdir: "Directory created.",
-      apps_metadata_name: "portal_apps",
-      apps_metadata_list_name: "portal_apps_list"
+      success_mkdir: "Directory created."
   });
   $translateProvider.preferredLanguage('en');
 }

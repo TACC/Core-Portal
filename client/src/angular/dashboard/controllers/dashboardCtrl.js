@@ -65,8 +65,8 @@ export default function DashboardCtrl (
     $scope.loading_jobs = false;
   });
 
-  Apps.list({"$and": [{"name": `${$translate.instant('apps_metadata_name')}`}, {"value.definition.available": true}]}).then(function(resp) {
-    $scope.apps = Object.keys(resp.data.response);
+  Apps.list('{{"$and": [{{"name": "{apps_metadata_name}"}}, {{"value.definition.available": true}}]}}').then(function(resp) {
+    $scope.apps = resp.data.response;
   });
 
   SystemsService.list().then(function(resp){
