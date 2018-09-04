@@ -14,7 +14,21 @@ export default class Notifications {
     this.subject = new WebSocketSubject(wsurl);
     this.subject.subscribe(
       (data) => {
-        console.log("Notifications Websocket data", data);
+        this.list();
+      },
+      (error) => {
+
+      },
+      () => {
+
+      }
+    );
+    this.list();
+  }
+
+  startToasts() {
+    this.subject.subscribe(
+      (data) => {
         this.$mdToast.show({
             template: '<md-toast>\
                 {{ vm.content }}\
@@ -26,8 +40,6 @@ export default class Notifications {
             controllerAs: 'vm',
             hideDelay: 3000
         });
-        this.list();
-
       },
       (error) => {
         console.log("Notifications Websocket error", error);
@@ -36,7 +48,6 @@ export default class Notifications {
         console.log("Notifications websocket ended");
       }
     );
-    this.list();
   }
 
   list() {
