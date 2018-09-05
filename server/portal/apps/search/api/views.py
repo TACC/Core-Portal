@@ -16,32 +16,33 @@ from elasticsearch import ConnectionTimeout
 from operator import ior
 from portal.libs.elasticsearch.docs.base import IndexedFile
 
-#pylint: disable=invalid-name
+from portal.apps.search.api.lookups import search_lookup_manager
+from portal.apps.search.api.managers.shared_search import SharedSearchManager
+from portal.apps.search.api.managers.cms_search import CMSSearchManager
+from portal.apps.search.api.managers.private_data_search import PrivateDataSearchManager
+
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 class SearchController(object):
 
     @staticmethod
     def execute_search(request, type_filter, q, offset, limit):
-        if type_filter == 'public_files':
-            es_query = SearchController.search_public_files(q, offset, limit)
-        elif type_filter == 'published':
-            return None
-            es_query = SearchController.search_published(q, offset, limit)
-        elif type_filter == 'cms':
-            es_query = SearchController.search_cms_content(q, offset, limit)
-        elif type_filter == 'private_files':
-            es_query = SearchController.search_my_data(request.user.username, q, offset, limit)
 
-        try:
-            res = es_query.execute()
-        except (TransportError, ConnectionTimeout) as err:
-            if getattr(err, 'status_code', 500) == 404:
-                raise
-            res = es_query.execute()
+        lookup_keys = {
+            'private_files': 'my-data',
+            'public_files': 'shared',
+            'cms': 'cms'
+        }
 
+        searchmgr_cls = search_lookup_manager(lookup_keys[type_filter])
+        searchmgr = searchmgr_cls(request)
+        cls_search = searchmgr.search(offset, limit)
+
+        res = cls_search.execute()
         out = {}
         hits = []
         results = [r for r in res]
@@ -57,88 +58,48 @@ class SearchController(object):
 
         out['total_hits'] = res.hits.total
         out['hits'] = hits
-        out['public_files_total'] = SearchController.search_public_files(q, offset, limit).count()
-        out['published_total'] = 0 # SearchController.search_published(q, offset, limit).count()
-        out['cms_total'] = SearchController.search_cms_content(q, offset, limit).count()
-        out['private_files_total'] = SearchController.search_my_data(request.user.username, q, offset, limit).count()
+        out['public_files_total'] = SharedSearchManager(
+            request).search(offset, limit).count()
+        out['published_total'] = 0
+        out['cms_total'] = CMSSearchManager(
+            request).search(offset, limit).count()
+        out['private_files_total'] = PrivateDataSearchManager(
+            request).search(offset, limit).count()
         out['filter'] = type_filter
 
-        type_filter_options = ['public_files', 'published', 'cms', 'private_files']
-        hits_total_array = [out['public_files_total'], out['published_total'], out['cms_total'], out['private_files_total']]
+        type_filter_options = ['public_files',
+                               'published',
+                               'cms',
+                               'private_files']
+
+        hits_total_array = [out['public_files_total'],
+                            out['published_total'],
+                            out['cms_total'],
+                            out['private_files_total']]
 
         out['total_hits_cumulative'] = sum(hits_total_array)
 
         # If there are hits not in the current type filter, set the 'filter' output to the filter with the most hits.
         if out['total_hits'] == 0 and out['total_hits_cumulative'] > 0:
             max_hits_total = max(hits_total_array)
-            new_filter = [filter for i, filter in enumerate(type_filter_options) if hits_total_array[i] == max_hits_total][0]
+            new_filter = [filter for i, filter in enumerate(
+                type_filter_options) if hits_total_array[i] == max_hits_total][0]
             out['filter'] = new_filter
 
         return out
 
-    @staticmethod
-    def search_cms_content(q, offset, limit):
-        """search cms content """
-
-        search = Search(index=settings.ES_CMS_INDEX).query(
-            "query_string",
-            query=q,
-            default_operator="and",
-            fields=['title', 'body']).extra(
-                from_=offset,
-                size=limit).highlight(
-                    'body',
-                    fragment_size=100).highlight_options(
-                    pre_tags=["<b>"],
-                    post_tags=["</b>"],
-                    require_field_match=False)
-        return search
-
-    @staticmethod
-    def search_public_files(q, offset, limit):
-        """search public files"""
-        system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
-        search = IndexedFile.search()
-        # mq = Q({'query_string': {'query': q, 'fields': ["name"], "minimum_should_match": "80%"}})
-        search = search.query("query_string", query=q, fields=["name"], minimum_should_match="80%")
-        # search = search.query(mq)
-        search = search.filter(Q('term', system=system))
-        search = search.extra(from_=offset, size=limit)
-        # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
-        return search
-
-    @staticmethod
-    def search_published(q, offset, limit):
-        """ search published content """
-
-        query = Q('bool', must=[Q('simple_query_string', query=q)])
-
-        search = Search(index=settings.ES_PUBLICATIONS_INDEX)\
-            .query(query)\
-            .extra(from_=offset, size=limit)
-        return search
-
-    @staticmethod
-    def search_my_data(username, q, offset, limit):
-        system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
-        search = IndexedFile.search()
-        search = search.filter(Q({'term': {'pems.username': username }}))
-        search = search.query("query_string", query=q, fields=["name"], minimum_should_match="80%")
-        search = search.filter(Q('term', system=system))
-        search = search.extra(from_=offset, size=limit)
-        # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
-        return search
-
-@python_2_unicode_compatible
-@method_decorator(login_required, name='dispatch')
 class SearchApiView(BaseApiView):
     """ Projects listing view"""
-    def get(self, request):
-        q = request.GET.get('q', '')
-        offset = request.GET.get('offset', 0)
-        limit = request.GET.get('limit', 100)
-        type_filter = request.GET.get('type_filter', 'cms')
 
-        out = SearchController.execute_search(self.request, type_filter, q, offset, limit)
+    def get(self, request):
+        logger.debug(request.GET.get('queryString'))
+        q = request.GET.get('queryString')
+        offset = request.GET.get('offset')
+        limit = request.GET.get('limit')
+        type_filter = request.GET.get('typeFilter')
+        logger.debug(type_filter)
+
+        out = SearchController.execute_search(
+            self.request, type_filter, q, offset, limit)
 
         return JsonResponse({'response': out})

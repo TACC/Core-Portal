@@ -5,6 +5,7 @@ export default function searchResult() {
       restrict: 'E',
       scope: {
         listing: '=data',
+        route: '=',
         click: '&click',
         makeUrl: '&makeUrl'
       },

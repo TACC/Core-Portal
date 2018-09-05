@@ -10,6 +10,9 @@ from agavepy.agave import Agave
 from elasticsearch_dsl import Q, Search
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
+from portal.libs.elasticsearch.docs.files import BaseESFile
+from portal.libs.agave.models.files import BaseFile
+from portal.libs.agave.utils import service_account
 logger = logging.getLogger(__name__)
 
 def delete_recursive(object_to_delete):
@@ -34,26 +37,24 @@ def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, upd
             pems_username = username
             client = u.agave_oauth.client
         else:
-            client = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=settings.AGAVE_SUPER_TOKEN)
+            client = service_account()
             pems_username = settings.PORTAL_ADMIN_USERNAME
 
-        listing = client.files.list(systemId=systemId, filePath=filePath)
-        for child in listing[1:]:
-            child['basePath'] = os.path.dirname(child['path'])
-            try:
-                f = IndexedFile.from_path(pems_username, child['system'], child['path'])
-                if update_pems:
-                    pems = client.files.listPermissions(systemId=child['system'], filePath=urllib.quote(child['path']))
-                    child['pems'] = pems
-                f.update(**child)
-            except DocumentNotFound:
-                pems = client.files.listPermissions(systemId=child['system'], filePath=urllib.quote(child['path']))
-                child['pems'] = pems
-                f = IndexedFile(**child)
-                f.save()
+        file_root = BaseFile(client, systemId, filePath)
+
+        children = file_root.children()
+        for child in children:
+            child_dict = child.to_dict()
+       
+            f = BaseESFile(pems_username, **child_dict)
+            f_save = f.save()
+            logger.debug(f_save)
+            if f_save == True or update_pems:
+                pems = child.pems_list()
+                f._wrapped.update(**{'pems': pems})
 
             # Recurse on any dirs.
-            if recurse and child['mimeType'] == 'text/directory' and not child.name.startswith('.'):
+            if recurse and child.mimeType == 'text/directory' and not child.name.startswith('.'):
                 try:
                     agave_indexer.apply_async(
                         args=(systemId, ),
@@ -65,8 +66,8 @@ def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, upd
         basePath_search = IndexedFile.search()\
             .filter(Q({'term': {'system._exact': systemId}}))\
             .query(Q({'term': {'basePath._exact': filePath}}))
-
-        listing_paths = [child['path'] for child in listing[1:]]
+            
+        listing_paths = [child.path for child in children]
         for result in basePath_search.execute():
             if result.path not in listing_paths:
                 delete_recursive(result)

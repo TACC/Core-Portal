@@ -3,7 +3,7 @@
     <div class="col-md-6">
       <i ng-if="listing.mimeType == 'text/directory'" class="fa fa-folder fa-lg"> </i>
       <i ng-if="listing.mimeType != 'text/directory'" class="fa fa-file-o fa-lg"> </i>
-      <a ng-href="/workbench/data-depot/agave/{{listing.system}}/{{listing.basePath}}"> {{listing.name}} </a>
+      <a ng-href="/workbench/data-depot/{{route}}/{{listing.system}}/{{listing.basePath}}"> {{listing.name}} </a>
     </div>
     <div class="col-md-3">
       <span> {{ listing.lastModified | date:'medium' }} </span>
