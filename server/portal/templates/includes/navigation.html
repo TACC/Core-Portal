@@ -1,5 +1,4 @@
 {% load sd2e_nav_tags menu_tags cms_tags staticfiles %}
-{% load sekizai_tags %}
 {% if settings.PORTAL_NAVBAR_BACKGROUND_FILENAME %}
 <nav class="navbar navbar-default" style="background-image: url('{{ settings.PORTAL_NAVBAR_BACKGROUND_FILENAME }}');">
 {% else %}
@@ -48,13 +47,6 @@
       {% endif %}
       <ul class="nav navbar-nav navbar-right">
       {% if user.is_authenticated %}
-        {% addtoblock "js" %}
-          <script type="text/javascript">
-            document.addEventListener("DOMContentLoaded", function(event) {
-              angular.bootstrap(document.getElementById("notifications-bell-container"), ['portal.notifications']);
-            });
-          </script>
-        {% endaddtoblock %}
         <div id="notifications-bell-container">
           <notifications-bell></notifications-bell>
         </div>
