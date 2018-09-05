@@ -15,8 +15,16 @@
                 </span>
             </a>
         </li>
-        <div class="notifications-wrapper">
+        <div class="notifications-wrapper" ng-if="vm.service.notes.total > 0">
             <notification-detail ng-repeat="note in vm.service.notes.notifs" note="note"></notification-detail>
         </div>
+        <div class="notifications-none" ng-if="vm.service.notes.total == 0">
+            <div class="text-center">Whew, no notifications!</div>
+        </div>
+        <li ng-if="vm.service.notes.total > 0">
+            <a href class="text-center" ng-click="deleteAll();">
+                Clear all notifications
+            </a>
+        </li>
    </ul>
 </div>

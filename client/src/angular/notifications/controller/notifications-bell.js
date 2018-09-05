@@ -1,10 +1,9 @@
 export default class NotificationsBellCtrl {
 
-    constructor(Notifications) {
+    constructor($scope, Notifications) {
       'ngInject';
       if (window.NotificationsSingleton) {
         this.service = window.NotificationsSingleton;
-        console.log("Bell found singleton", this.service);
       } else {
         this.service = Notifications;
       }
@@ -17,10 +16,14 @@ export default class NotificationsBellCtrl {
         () => {
         }
       );
+      this.$scope = $scope;
+      this.$scope.deleteAll = () => {
+        this.service.delete("all");
+      }
     }
 
     list() {
-      console.log("list notifications plz");
     }
+
   }
   

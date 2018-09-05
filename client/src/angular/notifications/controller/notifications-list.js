@@ -5,7 +5,6 @@ export default class NotificationsListCtrl {
     'ngInject';
     if (window.NotificationsSingleton) {
       this.service = window.NotificationsSingleton;
-      console.log("found singleton", this.service);
     } else {
       this.service = Notifications;
     }
