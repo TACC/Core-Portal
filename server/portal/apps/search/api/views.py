@@ -123,8 +123,7 @@ class SearchController(object):
 
     @staticmethod
     def search_my_data(username, q, offset, limit):
-        system = '.'.join([
-            settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, username])
+        system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
         search = IndexedFile.search()
         search = search.filter(Q({'term': {'pems.username': username }}))
         search = search.query("query_string", query=q, fields=["name", "name._exact", "keywords"])

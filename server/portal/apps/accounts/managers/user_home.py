@@ -158,9 +158,7 @@ class UserHomeManager(AbstractUserHomeManager):
         :returns: System unique id
         :rtype: str
         """
-        return '.'.join([
-            settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX,
-            self.user.username])
+        return settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(self.user.username)
 
     def get_system_definition(
             self,

@@ -199,7 +199,8 @@ class JobsView(BaseApiView):
                 job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         datetime.now().strftime('%Y-%m-%d'))
-                job_post['archiveSystem'] = '.'.join([settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, request.user.username])
+                job_post['archiveSystem'] = \
+                    settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(request.user.username)
 
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])
