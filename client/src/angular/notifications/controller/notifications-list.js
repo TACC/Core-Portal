@@ -1,13 +1,9 @@
 
 export default class NotificationsListCtrl {
 
-  constructor(Notifications, $scope) {
+  constructor(Notifications, $scope, $window) {
     'ngInject';
-    if (window.NotificationsSingleton) {
-      this.service = window.NotificationsSingleton;
-    } else {
-      this.service = Notifications;
-    }
+    this.service = Notifications;
     this.$scope = $scope;
     this.service.startToasts();
   }
@@ -15,7 +11,7 @@ export default class NotificationsListCtrl {
   delete(note) {
     this.service.delete(note.pk).then(
       (data) => {
-        this.$scope.$apply();
+        this.service.list();
       },
       (error) => {
       }
