@@ -13,6 +13,7 @@ from portal.apps.data_depot.managers.base import AgaveFileManager
 from portal.libs.agave.models.files import BaseFile
 from portal.libs.elasticsearch.serializers import BaseAgaveFileSerializer
 from portal.utils.exceptions import ApiMethodNotAllowed
+from portal.libs.agave.utils import service_account
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -31,8 +32,10 @@ class FileManager(AgaveFileManager):
 
         """
         try:
-            client = kwargs.get('client',
-                                request.user.agave_oauth.client)
+            # client = kwargs.get('client',
+            #                     request.user.agave_oauth.client)
+            client = service_account()
+            
             self.username = kwargs.get('username',
                                        request.user.username)
             self.session_id = kwargs.get('session_id',
