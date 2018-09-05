@@ -3,13 +3,11 @@ import { WebSocketSubject } from 'rxjs/webSocket';
 
 export default class Notifications {
 
-  constructor($location, $mdToast, $http, $window) {
+  constructor($location, $mdToast, $http) {
     'ngInject';
-    this.$window = $window;
     this.$location = $location;
     this.$mdToast = $mdToast;
     this.$http = $http;
-    this.$window = $window;
     let host = this.$location.host();
     let wsurl = 'wss://' + host + '/ws/notifications?subscribe-broadcast&subscribe-user';
     this.subject = new WebSocketSubject(wsurl);
@@ -24,18 +22,7 @@ export default class Notifications {
       }
     );
     this.list();
-    // Make a single service instance accessible to the browser window
-    this.$window.portalNotificationsService = this;
-    // Signal that the service is ready
-    this.serviceEvent = new Event('portal.notifications.service.ready');
-    this.$window.dispatchEvent(this.serviceEvent);
-    // Respond to requests for the service that it is ready
-    this.$window.addEventListener('portal.notifications.service.request',
-      (e) => {
-        this.$window.dispatchEvent(this.serviceEvent);
-      }
-    );
- }
+  }
 
   startToasts() {
     this.toasting = true;
@@ -69,9 +56,6 @@ export default class Notifications {
         d.datetime= new Date(d.datetime*1000);
       });
       this.notes = data;
-      // Dispatch updated notifications data across the window
-      var dataEvent = new CustomEvent('portal.notifications.service.data', { detail: data });
-      this.$window.dispatchEvent(dataEvent);
       return data;
     }, (err)=>{
       return this.$q.reject(err);

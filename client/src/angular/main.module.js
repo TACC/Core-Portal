@@ -42,7 +42,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 
- $urlRouterProvider.otherwise('/workbench/dashboard');
+ $urlRouterProvider.when('/workbench/', '/workbench/dashboard');
 
  $stateProvider
   .state('wb', {
