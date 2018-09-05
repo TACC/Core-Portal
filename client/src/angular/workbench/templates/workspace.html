@@ -97,8 +97,11 @@
                              <span
                                ng-repeat-start="dirElem in data.dirPath track by $index"
                                class="text text-info">
-                                 <a href="#"
+                                <a href="#"
+                                    ng-if="dirElem != '/' "
                                     ng-click="browseTrail($event, $index)">{{dirElem}}</a>
+                                <a ng-if="dirElem == '/' || dirElem == '' "
+                                    ng-click="browseTrail($event, $index)">{{data.cOption.label}}</a>
                               </span>
                                <span ng-repeat-end
                                      ng-if="!$last">/</span>

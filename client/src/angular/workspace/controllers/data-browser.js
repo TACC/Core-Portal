@@ -48,7 +48,9 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
       $scope.data.project = null;
       DataBrowserService.browse($scope.data.cOption.conf).then(function(listing) {
         $scope.data.filesListing = listing;
-        if ($scope.data.filesListing.children.length > 0){
+        if ($scope.data.filesListing.path == '/') {
+          $scope.data.dirPath = ['/'];
+        } else {
           $scope.data.filePath = $scope.data.filesListing.path;
           $scope.data.dirPath = $scope.data.filePath.split('/');
         }
@@ -136,16 +138,19 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
     $scope.data.loading = true;
     DataBrowserService.browse(file)
       .then(function(listing) {
+        $scope.data.loading = false;
         $scope.data.filesListing = listing;
-        if ($scope.data.filesListing.children.length > 0){
+        if ($scope.data.filesListing.path == '/') {
+          $scope.data.dirPath = ['/'];
+          $scope.browser.listing = $scope.data.filesListing;
+        } else {
           $scope.data.filePath = $scope.data.filesListing.path;
           $scope.data.dirPath = $scope.data.filePath.split('/');
           $scope.browser.listing = $scope.data.filesListing;
         }
-        $scope.data.loading = false;
       }, function(err){
-        $scope.data.error = 'Unable to list the selected data source: ' + err.statusText;
         $scope.data.loading = false;
+        $scope.data.error = 'Unable to list the selected data source: ' + err.statusText;
       });
   };
 
