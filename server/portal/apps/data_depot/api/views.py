@@ -9,6 +9,7 @@ import os
 from django.http import JsonResponse
 from django.conf import settings
 from portal.apps.data_depot.api import lookups as LookupManager
+from portal.apps.search.api import lookups as SearchLookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.accounts.managers.accounts import get_user_home_system_id
@@ -28,6 +29,10 @@ def get_manager(request, file_mgr_name):
         raise ApiException("Login Required", status=403)
     return fmgr
 
+def get_search_manager(request, search_mgr_name):
+    searchmgr_cls = SearchLookupManager.search_lookup_manager(search_mgr_name)
+    searchmgr = searchmgr_cls(request)
+    return searchmgr
 
 #TODO: Make this general!
 class SystemListingView(BaseApiView):
@@ -69,23 +74,15 @@ class FileListingView(BaseApiView):
         offset = kwargs.get('offset', 0)
         limit = kwargs.get('limit', 100)
         query_string = request.GET.get('queryString')
-        system = request.GET.get('system')
+        
         if query_string is None:
             listing = fmgr.listing(file_id, offset=offset, limit=limit)
-
-        elif query_string is not None:
             
-            if system == settings.AGAVE_COMMUNITY_DATA_SYSTEM: 
-                search = SearchController.search_public_files(query_string, offset, limit)
-            else:
-                search = SearchController.search_my_data(request.user.username, query_string, offset, limit)
-
-            results = search.execute()
-            system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(request.user.username)
-            listing = BaseFile(fmgr._ac, system)
-            children = [BaseFile(fmgr._ac, **result.to_dict()) for result in results]
-            listing._children = children
-
+        elif query_string is not None:
+            searchmgr = get_search_manager(request, file_mgr_name)
+            searchmgr.search(offset, limit)
+            listing = searchmgr.listing(fmgr._ac)
+   
         return JsonResponse({'response': listing},
                             encoder=fmgr.encoder_cls)
 

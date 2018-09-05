@@ -73,6 +73,18 @@ export default class SearchViewCtrl {
       return $scope.data.search_results;
     };
 
+    $scope.ddRoute = function() {
+      switch($scope.data.type_filter) {
+        case 'private_files':
+          return 'agave';
+          break;
+        case 'public_files':
+          return 'public';
+          break;
+
+      }
+    }
+
     $scope.makeUrl = function(listing) {
       let url = $scope.$state.href('db.communityData', {systemId: listing.system, filePath:listing.path});
       //url='hello'
