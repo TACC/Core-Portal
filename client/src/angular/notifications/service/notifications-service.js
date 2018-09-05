@@ -8,6 +8,9 @@ export default class Notifications {
     this.$location = $location;
     this.$mdToast = $mdToast;
     this.$http = $http;
+    // angular.bootstrap loading bypasses main.module.js where these are set
+    this.$http.defaults.xsrfCookieName = "csrftoken";
+    this.$http.defaults.xsrfHeaderName = "X-CSRFToken";
     this.$q = $q;
     let host = this.$location.host();
     let wsurl = 'wss://' + host + '/ws/notifications?subscribe-broadcast&subscribe-user';
@@ -69,9 +72,6 @@ export default class Notifications {
   }
 
   delete(pk) {
-    // Not sure where this is getting messed up, but have to set xsrf settings manually
-    this.$http.defaults.xsrfCookieName = "csrftoken";
-    this.$http.defaults.xsrfHeaderName = "X-CSRFToken";
     return this.$http.delete('/api/notifications/delete/' + pk).then(
       (resp) => {
         return this.list();

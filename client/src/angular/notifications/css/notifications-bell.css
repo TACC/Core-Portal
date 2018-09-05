@@ -39,10 +39,32 @@
     background-color: black;
 }
 
+.notifications-none {
+    padding: 5px;
+    background-color: black;
+}
+
+.notifications-none div {
+    background-color: white;
+    color: black;
+    width: 100%;
+    padding: 5px 5px 5px 5px;
+    font-style: italic;
+}
+
 .notifications-wrapper .notification {
     background-color: white;
     color: black;
     margin-top: 0em;
+}
+
+.notification-delete {
+    color: #888888;
+    margin-right: 1em;
+}
+
+.dropdown-menu .notification-delete {
+    display: none;
 }
 
 .dropdown-menu .notification-time { 
