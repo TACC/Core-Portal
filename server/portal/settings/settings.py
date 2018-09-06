@@ -480,7 +480,6 @@ CKEDITOR_SETTINGS = {
     'language': '{{ language }}',
     'skin': 'moono-lisa',
     'toolbar': 'CMS',
-    'stylesSet': format_lazy('default:{}', reverse_lazy('admin:cascade_texticon_wysiwig_config')),
 }
 
 # CMS Forms.
