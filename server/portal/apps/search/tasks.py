@@ -94,7 +94,7 @@ def index_my_data(self):
         # resp = s.delete()
         agave_indexer.apply_async(
             args=[systemId],
-            kwargs={'username': uname, 'filePath': ''}
+            kwargs={'username': uname, 'filePath': '/'}
         )
 
 @shared_task(bind=True)
