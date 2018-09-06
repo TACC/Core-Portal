@@ -1,6 +1,13 @@
 import _ from 'underscore';
 
-export default function DataDepotNewCtrl($scope, $state, Django, DataBrowserService, ProjectService) {
+export default function DataDepotNewCtrl(
+    $scope,
+    $state,
+    $uibModal,
+    Django,
+    DataBrowserService,
+    ProjectService
+) {
   'ngInject';
   $scope.test = {
     enabled: Django.context.authenticated,
@@ -30,14 +37,26 @@ export default function DataDepotNewCtrl($scope, $state, Django, DataBrowserServ
   };
 
   $scope.createProject = function($event) {
-    if ($scope.test.createProject) {
-      ProjectService.editProject().then(function (project) {
-        $state.go('projects.view.data', {projectId: project.uuid, filePath: '/'});
-      });
-    } else {
       $event.preventDefault();
       $event.stopPropagation();
-    }
+      if (!$scope.test.createProject) {
+          return;
+      }
+      const modal = $uibModal.open({
+        component: 'newProjectModal'
+      });
+      modal.result.then(
+          (res)=>{
+              $state.go(
+                  'wb.data_depot.projects.listing',
+                  {
+                      systemId: res.project.id,
+                      filePath: '/',
+                      projectTitle: res.project.description,
+                  }
+              );
+          }
+      );
   };
 
   $scope.uploadFiles = function($event) {

@@ -25,9 +25,11 @@ export default function ProjectListCtrl($scope, $state, ProjectService, $uibModa
 
   $scope.onBrowse = function onBrowse($event, project) {
     $event.preventDefault();
-    $state.go('wb.data_depot.projects.listing', {systemId: project.id,
-                                     filePath: '/',
-                                     projectTitle: project.name});
+    $state.go('wb.data_depot.projects.listing', {
+        systemId: project.id,
+        filePath: '/',
+        projectId: project.name
+    });
   };
 
   $scope.manageCollaborators = function (project) {

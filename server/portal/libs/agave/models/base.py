@@ -74,7 +74,11 @@ class BaseAgaveResource(object):  # pylint: disable=too-few-public-methods
         """
 
         camel_name = AgaveUtils.to_camel_case(name)
-        _wrapped = object.__getattribute__(self, '_wrapped')
+        try:
+            _wrapped = object.__getattribute__(self, '_wrapped')
+        except AttributeError:
+            _wrapped = {}
+
         if camel_name not in _wrapped:
             return object.__getattribute__(self, name)
 

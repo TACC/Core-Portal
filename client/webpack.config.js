@@ -24,8 +24,19 @@ module.exports = function(env, argv){
     module: {
       rules: [
         {
-          test: /\.css$/,
-          use: ExtractTextPlugin.extract({use: 'css-loader'}),
+          test: /\.(s?)css$/,
+          use: ExtractTextPlugin.extract({
+              fallback: "style-loader",
+              use: [{
+                  loader: 'css-loader',
+              },
+              {
+                  loader: 'sass-loader',
+                  options: {
+                      sourceMap: true,
+                  }
+              }]
+          }),
         },
         {
           test: /\.js$/,
@@ -49,7 +60,10 @@ module.exports = function(env, argv){
         {
           test: /\.html$/,
           exclude: /node_modules/,
-          loader: 'html-loader'
+          loader: 'html-loader',
+          options: {
+              interpolate: 'require',
+          },
         },
         {
           test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,

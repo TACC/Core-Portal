@@ -18,10 +18,10 @@ class AbstractUserHomeManager:
      directory and system.
 
     This manager should have the necessary functionality to manage
-     any setup a user account would need for its home directory.
+    any setup a user account would need for its home directory.
 
     This abstract class exists because it will be assumed
-     most of the methods described here are existent.
+    most of the methods described here are existent.
     This will allow further customization for special cases
 
     .. note::

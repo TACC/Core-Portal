@@ -8,10 +8,11 @@ import logging
 from future.utils import python_2_unicode_compatible
 import requests
 from requests.exceptions import HTTPError
-from cached_property import cached_property
+from cached_property import cached_property, cached_property_with_ttl
 from django.conf import settings
 from portal.libs.agave.exceptions import ValidationError
 from portal.libs.agave.models.base import BaseAgaveResource
+from portal.libs.agave.models.systems.roles import Roles
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -71,7 +72,7 @@ class BaseSystem(BaseAgaveResource):
         'S3',
         'SFTP'
     ]
-    STORAGE_PROTOCLS = namedtuple(
+    STORAGE_PROTOCOLS = namedtuple(
         'StorageProtocols',
         _STORAGE_PROTOCOLS
     )(
@@ -132,7 +133,7 @@ class BaseSystem(BaseAgaveResource):
     )
 
     # pylint: disable=redefined-builtin
-    def __init__(self, client, load=True, **kwargs):
+    def __init__(self, client, load=True, ignore_error=404, **kwargs):
         wrapped = {}
         sys_id = kwargs.get('id')
         if sys_id is not None and load:
@@ -141,12 +142,12 @@ class BaseSystem(BaseAgaveResource):
                     systemId=sys_id
                 )
             except HTTPError as exc:
-                if exc.response.status_code != 404:
+                if exc.response.status_code != ignore_error:
                     raise
         wrapped.update(**kwargs)
-        storage = wrapped.pop('storage', {})
-        login = wrapped.pop('login', {})
-        queues = wrapped.pop('queues', {})
+        storage = wrapped.pop('storage', {}) or {}
+        login = wrapped.pop('login', {}) or {}
+        queues = wrapped.pop('queues', {}) or {}
         super(BaseSystem, self).__init__(
             client,
             **wrapped
@@ -155,11 +156,35 @@ class BaseSystem(BaseAgaveResource):
         if wrapped['type'] == self.TYPES.EXECUTION:
             self.login = BaseSystemLogin(**login)
             self.queues = BaseSystemQueues(client, queues)
+        self.uuid = getattr(self, 'uuid', None)
+        self.last_modified = getattr(
+            self,
+            'lastModified',
+            getattr(
+                self,
+                'lastUpdated',
+                None
+            )
+        )
     # pylint: enable=redefined-builtin
+
+    @cached_property_with_ttl(ttl=60*15)
+    def roles(self):
+        """System roles."""
+        roles = self._ac.systems.listRoles(
+            systemId=self.id
+        )
+        return Roles(self._ac, roles, self)
 
     @classmethod
     def from_dict(cls, client, sys_dict):
         """Initializes system from a dictionary
+
+        .. note:: The default :meth:`__init__` also initializes a system from
+        a dictionary. The difference with this method is that this method will
+        assume the dictionary has a valid system definition and will not do an
+        Agave call. The default :meth:`__init__` will do an Agave call if a
+        :param:`sys_id` is passed with the dictionary.
 
         :param client: Agavepy client
         :param dict sys_dict: Dictionary
@@ -205,7 +230,7 @@ class BaseSystem(BaseAgaveResource):
             public=public
         )
         for system in systems:
-            yield cls(client, id=system.id)
+            yield cls.from_dict(client, system)
 
     @classmethod
     def search(cls, client, query, offset=0, limit=100):
@@ -243,6 +268,8 @@ class BaseSystem(BaseAgaveResource):
             token = client._token  # pylint: disable=protected-access
 
         headers = {'Authorization': 'Bearer {token}'.format(token=token)}
+        query['offset'] = offset
+        query['limit'] = limit
         resp = requests.get(
             '{baseurl}/systems/v2'.format(
                 baseurl=settings.AGAVE_TENANT_BASEURL
@@ -253,7 +280,7 @@ class BaseSystem(BaseAgaveResource):
         resp.raise_for_status()
         systems = resp.json()['result']
         for system in systems:
-            yield cls(client, id=system['id'])
+            yield cls.from_dict(client, system)
 
     def _populate_obj(self):
         """Overriding
@@ -304,9 +331,12 @@ class BaseSystem(BaseAgaveResource):
         except HTTPError as exc:
             if exc.response.status_code != 404:
                 raise
-        self._ac.systems.add(
+        resp = self._ac.systems.add(
             body=self.to_dict()
         )
+        self.uuid = resp['uuid']
+        if resp.get('lastModified'):
+            self.last_modified = resp.get('lastModified')
         return self
 
     def update_role(self, username, role):

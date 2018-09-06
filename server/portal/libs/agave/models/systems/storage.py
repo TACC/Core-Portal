@@ -42,7 +42,7 @@ class StorageSystem(BaseSystem):
     ]
 
     # pylint: disable=redefined-builtin
-    def __init__(self, client, id, **kwargs):
+    def __init__(self, client, id=None, **kwargs):
         kwargs['type'] = BaseSystem.TYPES.STORAGE
         super(StorageSystem, self).__init__(
             client,
@@ -62,7 +62,6 @@ class StorageSystem(BaseSystem):
         self.global_default = getattr(self, 'globalDefault', False)
         self.name = getattr(self, 'name', None)
         self.id = id  # pylint: disable=invalid-name
-        self.last_modified = getattr(self, 'lastModified', None)
         self.status = getattr(self, 'status', 'UP')
         self.storage = getattr(self, 'storage', None)
 

@@ -373,24 +373,46 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(
+                BASE_DIR,
+                '..//log/portal/portal-test.log'
+            ),
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'default',
+        },
         'metrics_console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'metrics',
         },
+        'metrics_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(
+                BASE_DIR,
+                '..//log/portal/portal-test.log'
+            ),
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'metrics',
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': True,
         },
         'portal': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'DEBUG',
         },
         'metrics': {
-            'handlers': ['metrics_console'],
+            'handlers': ['metrics_console', 'metrics_file'],
             'level': 'INFO',
         },
         'paramiko': {

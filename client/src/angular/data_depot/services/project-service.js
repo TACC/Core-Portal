@@ -1,4 +1,4 @@
-function ProjectService($q, $http, $interpolate) {
+function ProjectService($q, $http, $interpolate, $httpParamSerializerJQLike) {
   'ngInject';
 
   var service = {};
@@ -13,6 +13,23 @@ function ProjectService($q, $http, $interpolate) {
       method: 'GET'
     }).then(
       function(response) {
+        return response.data.response;
+      }
+    );
+  };
+
+  /**
+   * Get a specific Project
+   * @param {Object} options
+   * @param {string} options.uuid The Project UUID
+   * @returns {Promise}
+   */
+  service.getByProjectId = function(options) {
+    return $http({
+      url: $interpolate('/api/projects/{{id}}/')(options),
+      method: 'GET',
+    }).then(
+      function(response) {
         return response.data;
       }
     );
@@ -24,20 +41,22 @@ function ProjectService($q, $http, $interpolate) {
    * @param {string} options.uuid The Project UUID
    * @returns {Promise}
    */
-  service.get = function(options) {
+  service.getBySystemId = function(options) {
     return $http({
-      url: $interpolate('/api/projects/{{uuid}}/')(options),
+      url: $interpolate('/api/projects/system/{{id}}/')(options),
       method: 'GET',
-      params: options
     }).then(
-      function(response) {
+      (response) => {
         return response.data;
+      },
+      (err) => {
+        return $q.reject(err.data);
       }
     );
   };
 
   /**
-   * Save or update a Project
+   * Create a new Project
    * @param {Object} options
    * @param {string} [options.uuid] The Project uuid, if updating existing record, otherwise null
    * @param {string} options.title The Project title
@@ -45,93 +64,91 @@ function ProjectService($q, $http, $interpolate) {
    * @param {string[]} [options.coPis] List of usernames for Project Co-PIs
    * @returns {Promise}
    */
-  service.save = function (options) {
-    return $http({
-      url: $interpolate('/api/projects/{{uuid}}/')(options),
-      method: 'POST',
-      data: options
-    }).then(
-      function(response) {
-        return response.data;
-      }
-    );
-  };
+    service.create = function (options) {
+        return $http({
+            url: '/api/projects/',
+            method: 'POST',
+            data: $httpParamSerializerJQLike(options),
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', },
+        }).then(
+            (response)=>{
+                return response.data;
+            }
+        );
+    };
 
-  /**
-   * Save or update a Project
-   * @param {Object} options
-   * @param {string} [options.uuid] The Project uuid, if updating existing record, otherwise null
-   * @param {string} options.title The Project title
-   * @param {string} [options.pi] The username for Project PI
-   * @param {string[]} [options.coPis] List of usernames for Project Co-PIs
-   * @returns {Promise}
-   */
-  service.update = function(project) {
-    return $http.put('/api/projects/'+project.uuid+'/', project).then((resp)=> {
-      return resp.data;
-    }, (err)=>{
-      return $q.reject(err);
-    });
-  };
+    /**
+     * Save or update a Project
+     * @param {Object} options
+     * @param {string} [options.uuid] The Project uuid, if updating existing record, otherwise null
+     * @param {string} options.title The Project title
+     * @param {string} [options.pi] The username for Project PI
+     * @param {string[]} [options.coPis] List of usernames for Project Co-PIs
+     * @returns {Promise}
+     */
+    service.update = function(options) {
+        return $http({
+            url: $interpolate('/api/projects/{{id}}/')(options),
+            method: 'PATCH',
+            data: options,
+        }).then(
+            (resp)=> {
+                return resp.data;
+            }, (err)=>{
+                return $q.reject(err.data);
+            }
+        );
+    };
 
-  /**
-   * Get a list of usernames for users that are collaborators on the Project
-   * @param {Object} options
-   * @param {string} options.uuid The Project uuid
-   * @returns {Promise}
-   */
-  service.getCollaborators = function(options) {
-    return $http({
-      url: $interpolate('/api/projects/{{uuid}}/collaborators/')(options),
-      method: 'GET',
-      params: options
-    });
-  };
+    /**
+     * Delete member from project.
+     * @param {String} projectId - Project Id.
+     * @param {String} memberType - Member Type [pi, co_pi, team_member].
+     * @param {String} username - Username.
+     * @return {Promise}
+     */
+    service.deleteMember = function(projectId, memberType, username) {
+        return $http({
+            url: $interpolate('/api/projects/{{projectId}}/members')({projectId:projectId}),
+            method: 'PATCH',
+            data: {
+                action: 'remove_member',
+                username: username,
+                memberType: memberType
+            }
+        }).then(
+            (resp) => {
+                return resp.data;
+            }, (err) => {
+                return $q.reject(err);
+            }
+        );
+    };
 
-  /**
-   *
-   * @param options
-   * @param {string} options.uuid The Project uuid
-   * @param {string} options.username The username of the collaborator to add
-   * @returns {Promise}
-   */
-  service.addCollaborator = function (options) {
-    return $http({
-      url: $interpolate('/api/projects/{{uuid}}/collaborators/')(options),
-      method: 'POST',
-      data: options
-    });
-  };
-
-  /**
-   *
-   * @param options
-   * @param {string} options.uuid The Project uuid
-   * @param {string} options.username The username of the collaborator to add
-   * @returns {Promise}
-   */
-  service.removeCollaborator = function (options) {
-    return $http({
-      url: $interpolate('/api/projects/{{uuid}}/collaborators/')(options),
-      method: 'DELETE',
-      data: options
-    });
-  };
-
-  /**
-   *
-   * @param options
-   * @param {string} options.uuid The Project uuid
-   * @param {string} [options.fileId] the Project data file id to list
-   * @returns {Promise}
-   */
-  service.projectData = function (options) {
-    return $http({
-      url: $interpolate('/api/projects/{{uuid}}/data/{{fileId}}')(options),
-      method: 'GET',
-      params: options
-    });
-  };
+    /**
+     * Add member to project.
+     * @param {String} projectId - Project Id.
+     * @param {String} memberType [pi, co_pi, team_member]
+     * @param {String} username - Username
+     * @return {Promise}
+     */
+    service.addMember = function(projectId, memberType, username) {
+        return $http({
+            url: $interpolate('/api/projects/{{projectId}}/members')({projectId:projectId}),
+            method: 'PATCH',
+            data: {
+                action: 'add_member',
+                username: username,
+                memberType: memberType,
+            }
+        }).then(
+            (resp) => {
+                return resp.data;
+            }, (err) => {
+                return $q.reject(err);
+            }
+        );
+    };
 
   return service;
 

@@ -1,5 +1,5 @@
 """
-.. module: portal.apps.data_depot.managers.projects
+.. module:: portal.apps.data_depot.managers.projects
    :synopsis: Manager handling projects from Agave Storage Systems.
 """
 from __future__ import unicode_literals, absolute_import
@@ -7,7 +7,7 @@ import logging
 from django.conf import settings
 from future.utils import python_2_unicode_compatible
 from portal.apps.data_depot.managers.base import AgaveFileManager
-from portal.libs.agave.models.systems import BaseSystem
+from portal.libs.agave.models.systems.base import BaseSystem
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
