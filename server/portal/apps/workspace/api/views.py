@@ -19,6 +19,7 @@ from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.workspace.tasks import watch_job_status
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
+from portal.libs.agave.utils import service_account
 from agavepy.agave import Agave
 
 
@@ -85,7 +86,18 @@ class MetadataView(BaseApiView):
         agave = request.user.agave_oauth.client
         app_id = request.GET.get('app_id')
         if app_id:
-            data = agave.meta.get(appId=app_id)
+            query = json.dumps({
+                '$and': [
+                    {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
+                    {'value.definition.available': True},
+                    {'value.definition.id': app_id}
+                ]
+            })
+
+            data = agave.meta.listMetadata(q=query)
+
+            assert len(data) == 1, "Expected single app response, got {}!".format(len(data))
+            data = data[0]
 
             lic_type = _app_license_type(app_id)
             data['license'] = {
@@ -96,10 +108,17 @@ class MetadataView(BaseApiView):
                 license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
                 lic = license_model.objects.filter(user=request.user).first()
                 data['license']['enabled'] = lic is not None
-
         else:
             query = request.GET.get('q')
-            data = agave.meta.listMetadata(q=query.format(portal_apps_metadata_names=settings.PORTAL_APPS_METADATA_NAMES))
+            if not query:
+                query = json.dumps({
+                    '$and': [
+                        {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
+                        {'value.definition.available': True}
+                    ]
+                })
+            logger.info(query)
+            data = agave.meta.listMetadata(q=query)
         return JsonResponse({'response': data})
 
     def post(self, request, *args, **kwargs):
@@ -110,17 +129,25 @@ class MetadataView(BaseApiView):
         # NOTE: Only needed for tacc.prod tenant
         share_all = request.GET.get('share_all')
         if share_all and settings.AGAVE_TENANT_BASEURL=='https://api.tacc.utexas.edu':
+            agc = service_account()
             username = request.user.username
             if username == settings.PORTAL_ADMIN_USERNAME:
                 return HttpResponse('User is admin', status=200)
             query = request.GET.get('q')
+            if not query:
+                query = json.dumps({
+                    '$and': [
+                        {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
+                        {'value.definition.available': True}
+                    ]
+                })
+            logger.info(query)
             meta_post['username'] = username
-            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            apps = prtl_admin_client.meta.listMetadata(q=query.format(portal_apps_metadata_names=settings.PORTAL_APPS_METADATA_NAMES))
+            apps = agc.meta.listMetadata(q=query)
             for app_meta in apps:
-                data = prtl_admin_client.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
+                data = agc.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
                 if app_meta.value['type'] == 'agave':
-                    data = prtl_admin_client.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
+                    data = agc.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
         elif meta_uuid:
             del meta_post['uuid']
             data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
@@ -240,8 +267,8 @@ class SystemsView(BaseApiView):
                     'system_id': system_id
                 }
             })
-            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            data = prtl_admin_client.systems.listRoles(systemId=system_id)
+            agc = service_account()
+            data = agc.systems.listRoles(systemId=system_id)
         elif user_role:
             METRICS.info('agave.systems.getRoleForUser', extra={
                 'operation': 'agave.systems.getRoleForUser',
@@ -250,8 +277,8 @@ class SystemsView(BaseApiView):
                     'system_id': system_id
                 }
             })
-            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            data = prtl_admin_client.systems.getRoleForUser(systemId=system_id, username=request.user.username)
+            agc = service_account()
+            data = agc.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
 
     def post(self, request, *args, **kwargs):
@@ -269,6 +296,6 @@ class SystemsView(BaseApiView):
             'username': request.user.username,
             'role': role
         }
-        prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-        data = prtl_admin_client.systems.updateRole(systemId=system_id, body=role_body)
+        agc = service_account()
+        data = agc.systems.updateRole(systemId=system_id, body=role_body)
         return JsonResponse({"response": data})
