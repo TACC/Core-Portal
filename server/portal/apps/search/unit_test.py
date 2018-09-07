@@ -32,7 +32,7 @@ class TestLookupManager(TestCase):
         lookup_cms = search_lookup_manager('cms')
         self.assertEqual(lookup_cms,CMSSearchManager)
 
-class TestSiteSearchView(TestCase):
+class TestDataDepotSearchView(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -84,48 +84,60 @@ class TestSiteSearchView(TestCase):
         self.assertFalse(self.mock_sharedSearch.called)
         resp = self.client.get('/api/data-depot/files/listing/shared/{}?queryString=tst'.format(shared_data), follow=True)
         self.assertTrue(self.mock_sharedSearch.called)
+    
+class TestSiteSearchView(TestCase):
+
+    def setUp(self):
+
+        self.mock_privateSearch_patcher = patch('portal.apps.search.api.views.PrivateDataSearchManager')
+        self.mock_privateSearch = self.mock_privateSearch_patcher.start()
+
+        self.mock_SharedSearch_patcher = patch('portal.apps.search.api.views.SharedSearchManager')
+        self.mock_SharedSearch = self.mock_SharedSearch_patcher.start()
+
+        self.mock_CMSSearch_patcher = patch('portal.apps.search.api.views.CMSSearchManager')
+        self.mock_CMSSearch = self.mock_CMSSearch_patcher.start()
+
+        self.mock_search_lookup_patcher = patch('portal.apps.search.api.views.search_lookup_manager')
+        self.mock_search_lookup = self.mock_search_lookup_patcher.start()
         
-class TestDataDepotSearchView(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-
-        cls.mock_search_lookup_patcher = patch('portal.apps.search.api.lookups.search_lookup_manager')
-        cls.mock_search_lookup = cls.mock_search_lookup_patcher.start()
-
+        self.mock_privateSearch.return_value.search.return_value.count.return_value = 0
+        self.mock_search_lookup.return_value.return_value.search.return_value.execute.return_value.hits.total = 0
+        self.mock_SharedSearch.return_value.search.return_value.count.return_value = 0
+        self.mock_CMSSearch.return_value.search.return_value.count.return_value = 0
         #cls.mock_jsonResponse_patcher = patch('django.http.JsonResponse')
         #cls.mock_jsonResponse = cls.mock_jsonResponse_patcher.start()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.mock_search_lookup_patcher.stop()
+    #def tearDown(self):
+    #   self.mock_search_lookup_patcher.stop() 
+
+    # def tearDown(self):
+    #     self.mock_search_lookup.reset_mock()
+
+    def tearDown(self):
+        self.mock_search_lookup_patcher.stop()
+        self.mock_privateSearch_patcher.stop()
+        self.mock_SharedSearch_patcher.stop()
+        self.mock_CMSSearch_patcher.stop()
        # cls.mock_jsonResponse_patcher.stop()
 
-    def setUp(self):
-        User = get_user_model()
-        user = User.objects.create_user('test', 'test@test.com', 'test')
-        token = AgaveOAuthToken(
-            token_type="bearer",
-            scope="default",
-            access_token="1234fsf",
-            refresh_token="123123123",
-            expires_in=14400,
-            created=1523633447)
-
-            
-        token.user = user
-        token.save()
-
-    def test_request_with_queryString_calls_search_lookup(self):
-        
+    def test_private_files_type_filter_looks_up_my_data_search(self):
+        #self.mock_search_lookup.reset_mock(
+ 
         resp = self.client.get("/api/search/?limit=10&offset=0&queryString=test&typeFilter=private_files", follow=True)
+
         self.mock_search_lookup.assert_called_once_with('my-data')
-        
-        self.mock_search_lookup.reset_mock()
+        self.assertTrue(resp.status_code == 200)
+
+
+    def test_public_files_type_filter_looks_up_shared_search(self):
+        #self.mock_search_lookup.reset_mock()
         resp = self.client.get("/api/search/?limit=10&offset=0&queryString=test&typeFilter=public_files", follow=True)
         self.mock_search_lookup.assert_called_once_with('shared')
+        self.assertTrue(resp.status_code == 200)
 
-        self.mock_search_lookup.reset_mock()
+    def test_cms_type_filter_looks_up_cms_search(self):
+        #self.mock_search_lookup.reset_mock()
         resp = self.client.get("/api/search/?limit=10&offset=0&queryString=test&typeFilter=cms", follow=True)
         self.mock_search_lookup.assert_called_once_with('cms')
-   
+        self.assertTrue(resp.status_code == 200)
