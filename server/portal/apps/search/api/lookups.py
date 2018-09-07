@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
 def search_lookup_manager(name):
-    """Lookup data depot manager class"""
+    """Lookup search manager class"""
 
     manager_names = list(settings.PORTAL_SEARCH_MANAGERS)
     if name not in manager_names:
