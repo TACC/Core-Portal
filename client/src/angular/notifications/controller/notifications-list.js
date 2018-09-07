@@ -1,10 +1,9 @@
 
 export default class NotificationsListCtrl {
 
-  constructor(Notifications, $scope, $window) {
+  constructor(Notifications) {
     'ngInject';
     this.service = Notifications;
-    this.$scope = $scope;
     this.service.startToasts();
   }
 
