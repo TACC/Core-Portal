@@ -154,13 +154,22 @@
              </div>
          </div>
          <div ng-if="data.type === 'html' && data.app">
+             <div class="lead alert alert-warning" ng-if="data.needsLicense">
+                 <h2>Software License Required</h2>
+                 <p>
+                     The use of this application required that you have a {{data.app.license.type}}
+                     license enabled for your account. Please visit the
+                     <a href="/accounts/licenses/" target="_blank">manage software licenses</a>
+                     section on the My Account page for details on how to enable this license.
+                 </p>
+             </div>
            <p ng-bind-html="data.app"></p>
          </div>
          <div ng-if="data.type === 'agave' && data.app" class="app-form-wrapper">
              <div class="lead alert alert-warning" ng-if="data.needsLicense">
                  <h2>Software License Required</h2>
                  <p>
-                     The use of this application required that your have a {{data.app.license.type}}
+                     The use of this application required that you have a {{data.app.license.type}}
                      license enabled for your account. Please visit the
                      <a href="/accounts/licenses/" target="_blank">manage software licenses</a>
                      section on the My Account page for details on how to enable this license.
