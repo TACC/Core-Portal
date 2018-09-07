@@ -44,7 +44,7 @@
                   no results in {{prettyFilterName[data.type_filter]}}
               </h3>
             </div></div>
-          <search-result make-url='makeUrl(hit)' route='ddRoute()' data='hit' ng-repeat="hit in data.search_results.hits"></search-result>
+          <search-result make-url='makeUrl(hit)' route='ddSystemRoute()' data='hit' ng-repeat="hit in data.search_results.hits"></search-result>
         
         <div class="row" ng-if="data.search_results.total_hits > limit">
             <div class="col-md-3">
