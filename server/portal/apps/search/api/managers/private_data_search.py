@@ -1,8 +1,10 @@
+import logging
 from portal.apps.search.api.managers.base import BaseSearchManager
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from elasticsearch_dsl import Q
 from django.conf import settings
 
+logger = logging.getLogger(__name__)
 
 class PrivateDataSearchManager(BaseSearchManager):
 
@@ -15,12 +17,10 @@ class PrivateDataSearchManager(BaseSearchManager):
                 'username', settings.PORTAL_ADMIN_USERNAME)
             self.query_string = kwargs.get('query_string')
 
-        self._system = '.'.join([
-            settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, self._username])
-
+        self._system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(self._username)
         super(PrivateDataSearchManager, self).__init__(
             IndexedFile, IndexedFile.search())
-
+ 
     def search(self, offset, limit):
         # Run search and return results as BaseESFile objects.
         self.filter(Q({'term': {'pems.username': self._username}}))
