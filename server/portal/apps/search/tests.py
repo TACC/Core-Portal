@@ -125,7 +125,7 @@ class TestDataDepotSearchView(TestCase):
         resp = self.client.get("/api/search/?limit=10&offset=0&queryString=test&typeFilter=public_files", follow=True)
         self.mock_search_lookup.assert_called_once_with('shared')
 
-        self.mock_search_lookup.reset_mock()
+        
         resp = self.client.get("/api/search/?limit=10&offset=0&queryString=test&typeFilter=cms", follow=True)
         self.mock_search_lookup.assert_called_once_with('cms')
    
