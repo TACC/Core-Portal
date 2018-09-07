@@ -51,6 +51,7 @@ class LoginView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(LoginView, self).get_context_data(**kwargs)
+        context['request_access'] = settings.REQUEST_ACCESS
         return context
 
 

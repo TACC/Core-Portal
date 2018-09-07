@@ -18,8 +18,10 @@
             Log in with TACC
           </a>
         </p>
+          {% if request_access == 'True' %}
         <h4> If you need to create an account to login, please request access by
          clicking the "Request Access" link above. </h4>
+          {% endif %}
        </div>
      </div>
    </div>

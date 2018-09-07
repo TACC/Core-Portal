@@ -95,11 +95,13 @@
         </div>
         </li>
         {% else %} <!-- if user is not logged in -->
+        {% if request_access == 'True' %}
         <li class="right-nav-links {% if request.get_full_path == '/about/' %} active {% endif %}">
           <a href="/accounts/request-access/" class="btn btn-link-alt">
             <i class="fa fa-group nav-icon"></i> Request Access
           </a>
         </li>
+        {% endif %}
         <li class="right-nav-links {% if request.get_full_path == '/accounts/login' %} active {% endif %}">
           <a href="{% url 'portal_accounts:login' %}" class="btn btn-link-alt">
             <i class="fa fa-sign-in nav-icon"></i> Log in
