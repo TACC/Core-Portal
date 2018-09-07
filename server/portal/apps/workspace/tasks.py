@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from agavepy.agave import AgaveException
@@ -7,6 +8,7 @@ from requests import ConnectionError, HTTPError
 import logging
 from portal.apps.signals.signals import portal_event
 from portal.apps.notifications.models import Notification
+from portal.apps.search.tasks import agave_indexer
 
 logger = logging.getLogger(__name__)
 
