@@ -99,9 +99,7 @@ class MetadataView(BaseApiView):
 
         else:
             query = request.GET.get('q')
-            data = agave.meta.listMetadata(q=query.format(apps_metadata_name=settings.CORE_APPS_METADATA_NAME))
-            if settings.PORTAL_APPS_METADATA_NAME:
-                data += agave.meta.listMetadata(q=query.format(apps_metadata_name=settings.PORTAL_APPS_METADATA_NAME))
+            data = agave.meta.listMetadata(q=query.format(portal_apps_metadata_names=settings.PORTAL_APPS_METADATA_NAMES))
         return JsonResponse({'response': data})
 
     def post(self, request, *args, **kwargs):
@@ -118,7 +116,7 @@ class MetadataView(BaseApiView):
             query = request.GET.get('q')
             meta_post['username'] = username
             prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            apps = prtl_admin_client.meta.listMetadata(q=query.format(apps_metadata_name=settings.CORE_APPS_METADATA_NAME))
+            apps = prtl_admin_client.meta.listMetadata(q=query.format(portal_apps_metadata_names=settings.PORTAL_APPS_METADATA_NAMES))
             for app_meta in apps:
                 data = prtl_admin_client.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
                 if app_meta.value['type'] == 'agave':

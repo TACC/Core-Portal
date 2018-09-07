@@ -63,9 +63,9 @@ export default function DashboardCtrl (
     var tmp = _.groupBy($scope.jobs, function (d) {return d.appId;});
     $scope.recent_apps = Object.keys(tmp);
     $scope.loading_jobs = false;
-  });
+  }); 
 
-  Apps.list('{{"$and": [{{"name": "{apps_metadata_name}"}}, {{"value.definition.available": true}}]}}').then(function(resp) {
+  Apps.list("{{'$and': [{{'name': {{'$in': {portal_apps_metadata_names} }}}}, {{'value.definition.available': true }}]}}").then(function(resp) {
     $scope.apps = resp.data.response;
   });
 
