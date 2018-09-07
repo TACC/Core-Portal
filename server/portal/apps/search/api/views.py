@@ -92,12 +92,10 @@ class SearchApiView(BaseApiView):
     """ Projects listing view"""
 
     def get(self, request):
-        logger.debug(request.GET.get('queryString'))
         q = request.GET.get('queryString')
         offset = request.GET.get('offset')
         limit = request.GET.get('limit')
         type_filter = request.GET.get('typeFilter')
-        logger.debug(type_filter)
 
         out = SearchController.execute_search(
             self.request, type_filter, q, offset, limit)
