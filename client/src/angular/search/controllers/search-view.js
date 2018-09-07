@@ -61,19 +61,19 @@ export default class SearchViewCtrl {
             $scope.total_hits = $scope.data.search_results.total_hits;
             $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit);
             if ($scope.data.search_results.filter != $scope.data.type_filter && $state.params.switch_filter) {
-              $scope.data.type_filter = $scope.data.search_results.filter
-              $scope.search_browse(true)
+              $scope.data.type_filter = $scope.data.search_results.filter;
+              $scope.search_browse(true);
             }
 
           });
       }
       else {
         $scope.data.search_results = {};
-      }
+      };
       return $scope.data.search_results;
     };
 
-    $scope.ddRoute = function() {
+    $scope.ddSystemRoute = function() {
       switch($scope.data.type_filter) {
         case 'private_files':
           return 'agave';
@@ -83,7 +83,8 @@ export default class SearchViewCtrl {
           break;
 
       }
-    }
+      return 0;
+    };
 
     $scope.makeUrl = function(listing) {
       let url = $scope.$state.href('db.communityData', {systemId: listing.system, filePath:listing.path});
