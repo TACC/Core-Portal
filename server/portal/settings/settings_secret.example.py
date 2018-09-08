@@ -14,6 +14,8 @@ _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
+_PORTAL_APPS_METADATA_NAME = ''  # Needed if portal has portal specific apps, in the format of cep_apps
+_CORE_APPS_METADATA_NAME = 'portal_apps'
 
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
@@ -116,7 +118,7 @@ _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/home/wma_portal/cep/home_dirs/'
 # Use only if all home directories are under one parent directory.
 # NOTE: Replace PORTAL_NAME with name of project (e.g. - cep).
 _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
-_PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home'
+_PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home.{}'
 _PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 _PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'
 _PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'

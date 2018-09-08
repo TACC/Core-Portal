@@ -51,7 +51,7 @@ export default function DataDepotCtrl(
 
     $scope.state = {
         offset: 0,
-        limit: 3,
+        limit: 100,
         page_num: 0,
         max_pages: 0
     }

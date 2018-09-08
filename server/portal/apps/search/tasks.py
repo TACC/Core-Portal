@@ -20,7 +20,7 @@ def delete_recursive(object_to_delete):
 
     for child in ES_children:
         delete_recursive(child)
-    
+
     object_to_delete.delete()
 
 # Crawl and index agave files
@@ -65,12 +65,12 @@ def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, upd
         basePath_search = IndexedFile.search()\
             .filter(Q({'term': {'system._exact': systemId}}))\
             .query(Q({'term': {'basePath._exact': filePath}}))
-            
+
         listing_paths = [child['path'] for child in listing[1:]]
         for result in basePath_search.execute():
             if result.path not in listing_paths:
                 delete_recursive(result)
-        
+
     except Exception as e:
         logger.info(e)
         logger.info("Error, could not index {system}:{path}".format(system=systemId, path=filePath))
@@ -88,14 +88,13 @@ def index_my_data(self):
     users = User.objects.all()
     for user in users:
         uname = user.username
-        systemId = '.'.join([
-            settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, uname])
+        systemId = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(uname)
         # s = IndexedFile.search()
         # s = s.query("match", **{"system._exact": systemId})
         # resp = s.delete()
         agave_indexer.apply_async(
             args=[systemId],
-            kwargs={'username': uname, 'filePath': ''}
+            kwargs={'username': uname, 'filePath': '/'}
         )
 
 @shared_task(bind=True)

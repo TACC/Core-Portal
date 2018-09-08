@@ -158,13 +158,13 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files);
     tests.canShare = files.length === 1 && $state.current.name === 'myData';
     tests.canCopy = files.length >= 1 && hasPermission('READ', files);
-    tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && ($state.current.name !== 'dropboxData' && $state.current.name !== 'boxData');
-    tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files));
+    tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && (apiParams.fileMgr !== 'shared');
+    tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && (apiParams.fileMgr !== 'shared');
     tests.canViewCategories = files.length >=1 && hasPermission('WRITE', files);
 
     var trashPath = _trashPath();
-    tests.canTrash = ($state.current.name === 'wb.data_depot.db' || $state.current.name === 'db.projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && !_.some(files, function(sel) { return isProtected(sel); });
-    tests.canDelete = $state.current.name === 'wb.data_depot.db' && files.length >= 1 && currentState.listing.path === trashPath;
+    tests.canTrash = ($state.current.name === 'wb.data_depot.db' || $state.current.name === 'db.projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && !_.some(files, function(sel) { return isProtected(sel); }) && (apiParams.fileMgr !== 'shared');
+    tests.canDelete = $state.current.name === 'wb.data_depot.db' && files.length >= 1 && currentState.listing.path === trashPath && (apiParams.fileMgr !== 'shared');
 
     return tests;
   }

@@ -18,7 +18,11 @@
         <!-- when user is logged in, show these nav items -->
         {% if user.is_authenticated %}
         <li class="{% active 'workbench' %}">
+          {% if settings.PORTAL_NAMESPACE|lower == "sd2e" %}
           <a href="{% url 'workbench:index' %}">Workbench</a>
+          {% else %}
+          <a href="{% url 'workbench:index' %}">Dashboard</a>
+          {% endif %}
         </li>
         {% endif %}
         <!-- end of user authed nav items-->

@@ -80,7 +80,7 @@ import $ from 'jquery';
         );
     }
 
-    $scope.addDefaultTabs({"$and": [{"name": `${$translate.instant('apps_metadata_name')}`}, {"value.definition.available": true}]})
+    $scope.addDefaultTabs("{{'$and': [{{'name': {{'$in': {portal_apps_metadata_names} }}}}, {{'value.definition.available': true }}]}}")
       .then(function(response){
         $scope.simpleList.tabs.forEach(function (element) {
           $scope.tabs.push(

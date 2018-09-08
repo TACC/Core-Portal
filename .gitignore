@@ -27,6 +27,9 @@ server/src
 #ignore portal.env
 portal.env
 
+#celery
+celerybeat-schedule
+
 # don't commit certs
 certs/
 
@@ -84,8 +87,7 @@ package-lock.json
 
 ###############################
 # Ansible .gitignores content.
-.vagrant
-/.vagrant
+.vagrant/
 /static
 Vagrantfile.local
 vagrantfile.local

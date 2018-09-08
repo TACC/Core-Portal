@@ -46,6 +46,7 @@ function SystemsService($http, $q) {
             publicKeys: publicKeys,
             limit: limit,
             offset: offset,
+            thisPortal: true,
         };
         return $http.get(
             '/api/accounts/systems/list?publicKey',

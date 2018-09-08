@@ -1,0 +1,22 @@
+- name: Install webpack
+  shell: npm install -g webpack
+
+- name: Create /srv/www directory
+  file:
+    path: /srv/www
+    group: portal
+    owner: portal
+    state: directory
+
+- name: Create symbolic link to vagrant sync folder
+  file:
+    src: /vagrant
+    dest: /srv/www/portal
+    group: portal
+    owner: portal
+    state: link
+
+- name: Add vagrant user to portal group
+  user:
+    name: vagrant
+    groups: portal

@@ -99,7 +99,7 @@ class MetadataView(BaseApiView):
 
         else:
             query = request.GET.get('q')
-            data = agave.meta.listMetadata(q=query)
+            data = agave.meta.listMetadata(q=query.format(portal_apps_metadata_names=settings.PORTAL_APPS_METADATA_NAMES))
         return JsonResponse({'response': data})
 
     def post(self, request, *args, **kwargs):
@@ -111,16 +111,16 @@ class MetadataView(BaseApiView):
         share_all = request.GET.get('share_all')
         if share_all and settings.AGAVE_TENANT_BASEURL=='https://api.tacc.utexas.edu':
             username = request.user.username
-            if username == 'wma_prtl':
+            if username == settings.PORTAL_ADMIN_USERNAME:
                 return HttpResponse('User is admin', status=200)
             query = request.GET.get('q')
             meta_post['username'] = username
-            wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            apps = wma_prtl_client.meta.listMetadata(q=query)
+            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            apps = prtl_admin_client.meta.listMetadata(q=query.format(portal_apps_metadata_names=settings.PORTAL_APPS_METADATA_NAMES))
             for app_meta in apps:
-                data = wma_prtl_client.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
+                data = prtl_admin_client.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
                 if app_meta.value['type'] == 'agave':
-                    data = wma_prtl_client.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
+                    data = prtl_admin_client.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
         elif meta_uuid:
             del meta_post['uuid']
             data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
@@ -198,7 +198,8 @@ class JobsView(BaseApiView):
                 job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         datetime.now().strftime('%Y-%m-%d'))
-                job_post['archiveSystem'] = '.'.join([settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX, request.user.username])
+                job_post['archiveSystem'] = \
+                    settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(request.user.username)
 
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])
@@ -239,8 +240,8 @@ class SystemsView(BaseApiView):
                     'system_id': system_id
                 }
             })
-            wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            data = wma_prtl_client.systems.listRoles(systemId=system_id)
+            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            data = prtl_admin_client.systems.listRoles(systemId=system_id)
         elif user_role:
             METRICS.info('agave.systems.getRoleForUser', extra={
                 'operation': 'agave.systems.getRoleForUser',
@@ -249,8 +250,8 @@ class SystemsView(BaseApiView):
                     'system_id': system_id
                 }
             })
-            wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            data = wma_prtl_client.systems.getRoleForUser(systemId=system_id, username=request.user.username)
+            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            data = prtl_admin_client.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
 
     def post(self, request, *args, **kwargs):
@@ -268,6 +269,6 @@ class SystemsView(BaseApiView):
             'username': request.user.username,
             'role': role
         }
-        wma_prtl_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-        data = wma_prtl_client.systems.updateRole(systemId=system_id, body=role_body)
+        prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+        data = prtl_admin_client.systems.updateRole(systemId=system_id, body=role_body)
         return JsonResponse({"response": data})

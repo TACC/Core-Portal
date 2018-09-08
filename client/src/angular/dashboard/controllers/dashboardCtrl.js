@@ -9,7 +9,8 @@ export default function DashboardCtrl (
   $translate,
   Jobs,
   Apps,
-  SystemsService
+  SystemsService,
+  UserService
 ) {
   'ngInject';
   $scope.data = {};
@@ -19,9 +20,9 @@ export default function DashboardCtrl (
   $scope.loading_jobs = true;
   $scope.today = new Date();
   $scope.usage = {total_storage_bytes: 0};
-  // UserService.usage().then(function (resp) {
-  //   $scope.usage = resp;
-  // });
+  UserService.usage().then(function (resp) {
+    $scope.usage = resp;
+  });
 
   $scope.first_jobs_date = moment().subtract(14, 'days').startOf('day').toDate();
   let chart_start_date = moment($scope.first_jobs_date).subtract(1, 'days').toDate();
@@ -49,11 +50,6 @@ export default function DashboardCtrl (
     $scope.$apply();
   });
 
-  // NotificationService.list({limit:5}).then(function (resp) {
-  //   $scope.notifications = resp.notifs;
-  //   $scope.notification_count = resp.total;
-  // });
-
   Jobs.list(
     {
       'limit': 100,
@@ -67,11 +63,10 @@ export default function DashboardCtrl (
     var tmp = _.groupBy($scope.jobs, function (d) {return d.appId;});
     $scope.recent_apps = Object.keys(tmp);
     $scope.loading_jobs = false;
-  });
+  }); 
 
-  Apps.list({"$and": [{"name": `${$translate.instant('apps_metadata_name')}`}, {"value.definition.available": true}]}).then(function(resp) {
-    var tmp = _.groupBy(resp, function (d) {return d.label;});
-    $scope.apps = Object.keys(tmp);
+  Apps.list("{{'$and': [{{'name': {{'$in': {portal_apps_metadata_names} }}}}, {{'value.definition.available': true }}]}}").then(function(resp) {
+    $scope.apps = resp.data.response;
   });
 
   SystemsService.list().then(function(resp){

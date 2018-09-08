@@ -72,7 +72,7 @@ class IndexedFile(DocType):
         search = cls.search()
         search = search.query('term', **{'path._exact': path})
         search = search.filter(Q({'term': {'pems.username': username} }))
-        search = search.filter('term', **{'system': system})
+        search = search.filter('term', **{'system._exact': system})
         try:
             res = search.execute()
         except TransportError as exc:
@@ -94,7 +94,7 @@ class IndexedFile(DocType):
         search = cls.search()
         search = search.query('term', **{'basePath._exact': path})
         search = search.filter(Q({'term': {'pems.username': username} }))
-        search = search.filter('term', **{'system': system})
+        search = search.filter('term', **{'system._exact': system})
         search = search.sort('path._exact')
         try:
             res = search.execute()

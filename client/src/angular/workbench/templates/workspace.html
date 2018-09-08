@@ -97,8 +97,11 @@
                              <span
                                ng-repeat-start="dirElem in data.dirPath track by $index"
                                class="text text-info">
-                                 <a href="#"
+                                <a href="#"
+                                    ng-if="dirElem != '/' "
                                     ng-click="browseTrail($event, $index)">{{dirElem}}</a>
+                                <a ng-if="dirElem == '/' || dirElem == '' "
+                                    ng-click="browseTrail($event, $index)">{{data.cOption.label}}</a>
                               </span>
                                <span ng-repeat-end
                                      ng-if="!$last">/</span>
@@ -145,7 +148,7 @@
                  <h1>Select an app</h1>
                  <p>Select an application from the tray above.</p>
                  <p>
-                     The <em>Workspace</em> allows users to perform simulations and analyze data using popular simulation codes as well as data
+                     The <em>Applications Workspace</em> allows users to perform simulations and analyze data using popular simulation codes as well as data
                     analysis and visualization tools including Jupyter, MATLAB, and QGIS.
                 </p>
              </div>

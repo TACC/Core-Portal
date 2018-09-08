@@ -38,7 +38,7 @@
       <div><span>Quick Links</span></div>
       <div><a href="/accounts/profile/">Manage Account</a></div>
       <div><a ui-sref="wb.data_depot.db({'systemId': vm.mydata_system.systemId, 'path': '', 'name': vm.mydata_system.name, 'directory': 'agave'})">Data Depot</a></div>
-      <div><a ui-sref="wb.workspace">Workspace</a></div>
+      <div><a ui-sref="wb.workspace">Applications</a></div>
       <!-- <div><a href="/workbench/help">Training</a></div> -->
     </div>
 
@@ -54,8 +54,8 @@
         </div>
         <div data-ng-show="!jobs.length" class="panel-body">
           <h3 data-ng-show="!loading_jobs">
-            No recent jobs! You can submit jobs in the
-            <a data-ui-sref="wb.workspace"> Workspace </a>
+            No recent jobs! You can submit jobs in
+            <a data-ui-sref="wb.workspace"> Applications </a>
           </h3>
           <div class="text-center" data-ng-show="loading_jobs">
             <i class="fa fa-spinner fa-pulse fa-2x fa-fw" >&nbsp;</i>
@@ -105,8 +105,8 @@
             <a ui-sref="wb.workspace"> {{app}} </a>
           </li>
           <li class="list-group-item" data-ng-show="!recent_apps.length">
-            Wow, no recent apps! You can submit jobs in the
-            <a data-ui-sref="wb.workspace"> Workspace </a>
+            Wow, no recent apps! You can submit jobs in
+            <a data-ui-sref="wb.workspace"> Applications </a>
           </li>
         </ul>
       </div>
@@ -120,6 +120,9 @@
           <h3 class="panel-title">My Storage Systems</h3>
         </div>
         <div class="panel-body">
+          <div ng-if="data.strgSystems.length == 0">
+            No Storage Systems Available!
+          </div>
           <div class="system-item"
                data-ng-repeat="sys in data.strgSystems"
                data-ng-if="!ui.loadingSystems">

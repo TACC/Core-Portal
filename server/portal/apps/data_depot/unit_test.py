@@ -38,7 +38,7 @@ class TestDataDepotApiViews(TestCase):
 
     def test_systems_list(self):
         comm_data = settings.AGAVE_COMMUNITY_DATA_SYSTEM
-        user_data = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
+        user_data = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format("test")
         self.client.login(username='test', password='test')
         resp = self.client.get("/api/data-depot/systems/list/", follow=True)
         data = resp.json()
