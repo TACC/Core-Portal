@@ -6,6 +6,7 @@ describe("NotificationsListCtrl", function() {
     angular.module('django.context', []).constant('Django', {user: 'test_user'});
     angular.mock.inject(function($rootScope, $componentController, _Notifications_) {
       Notifications = _Notifications_;
+      spyOn(Notifications, 'startToasts');
       controller = $componentController('notificationsList', {Notifications: Notifications});
     });
   });
@@ -22,6 +23,13 @@ describe("NotificationsListCtrl", function() {
 
   }));
 
+  it("should have a service attached to it", () => {
+    expect(controller.service).toBeDefined();
+  });
+
+  it("have called Notifications.startToasts()", angular.mock.inject( ($q) => {
+    expect(Notifications.startToasts).toHaveBeenCalled();
+  }));
 
 
 });
