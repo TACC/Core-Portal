@@ -47,7 +47,11 @@
       {% endif %}
       <ul class="nav navbar-nav navbar-right">
       {% if user.is_authenticated %}
-      <div class="nav navbar-nav navbar-right"  ng-controller="NavSearchCtrl as vm">
+        <div id="notifications-bell-container">
+          <notifications-bell></notifications-bell>
+        </div>
+
+     <div class="nav navbar-nav navbar-right">
         <!-- Unused Serach Bar -->
         <!--
         <form class="navbar-form navbar-left navbar-input-group">

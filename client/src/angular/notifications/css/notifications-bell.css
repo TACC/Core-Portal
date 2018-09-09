@@ -2,3 +2,75 @@
     -webkit-animation: 2s bounce;
     animation: 2s bounce;
 }
+
+.notification-message {
+    max-width: 70%;    
+}
+
+#notification-container .dropdown-toggle {
+    background-color: #00000000;
+}
+
+#notification-container .dropdown-menu {
+    min-width: 40em;
+}
+
+#notification-badge {
+    height: 1.7em;
+    width: 1.7em;
+    line-height: 1.5em;
+    font-size: 0.9em;
+    border-radius: 30%;
+    background-color: #008cba;
+    border: 2px solid white;
+    color: white;
+    top: 0px;
+    padding: 0;
+    right: 0.2em;
+    position: absolute;
+}
+
+#notifications-bell-container {
+    display: inline-block;
+}
+
+.notifications-wrapper {
+    padding: 5px;
+    background-color: black;
+}
+
+.notifications-none {
+    padding: 5px;
+    background-color: black;
+}
+
+.notifications-none div {
+    background-color: white;
+    color: black;
+    width: 100%;
+    padding: 5px 5px 5px 5px;
+    font-style: italic;
+}
+
+.notifications-wrapper .notification {
+    background-color: white;
+    color: black;
+    margin-top: 0em;
+}
+
+.notification-delete {
+    color: #888888;
+    margin-right: 1em;
+}
+
+.dropdown-menu .notification-delete {
+    display: none;
+}
+
+.dropdown-menu .notification-time { 
+    display: none;
+}
+
+.dropdown-menu .notification .notification-message {
+    padding: 5px;
+}
