@@ -117,7 +117,6 @@ class MetadataView(BaseApiView):
                         {'value.definition.available': True}
                     ]
                 })
-            logger.info(query)
             data = agave.meta.listMetadata(q=query)
         return JsonResponse({'response': data})
 
@@ -141,7 +140,6 @@ class MetadataView(BaseApiView):
                         {'value.definition.available': True}
                     ]
                 })
-            logger.info(query)
             meta_post['username'] = username
             apps = agc.meta.listMetadata(q=query)
             for app_meta in apps:

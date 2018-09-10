@@ -29,7 +29,7 @@ function Apps($http, $q, $translate) {
     return $http({
       url: '/api/workspace/meta',
       method: 'GET',
-      params: {app_id}
+      params: { 'app_id': app_id }
     });
   };
 
