@@ -13,9 +13,7 @@ from portal.apps.search.api import lookups as SearchLookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.accounts.managers.accounts import get_user_home_system_id
-from portal.libs.agave.models.files import BaseFile
 
-from portal.apps.search.api.views import SearchController
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -76,9 +74,11 @@ class FileListingView(BaseApiView):
         query_string = request.GET.get('queryString')
         
         if query_string is None:
+            # If there is no query string, perform a file listing using Agave.
             listing = fmgr.listing(file_id, offset=offset, limit=limit)
             
-        elif query_string is not None:
+        else:
+            # Perform a search and use the retrieved metadata to instantiate a BaseFile object.
             searchmgr = get_search_manager(request, file_mgr_name)
             searchmgr.search(offset, limit)
             listing = searchmgr.listing(fmgr._ac)
