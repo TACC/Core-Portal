@@ -312,32 +312,70 @@ def add_pub_key_to_resource(
     return success, message
 
 
-def storage_systems(user, offset=0, limit=100):
-    """Returns all storage systems for a user
+def storage_systems(user, offset=0, limit=100, filter_prefix=True):
+    """Return all storage systems for a user.
+
+    This function will do a filter using `settings.PORTAL_NAMESPACE`.
+    It will do a regular listing if there's no value for
+    `settings.PORTAL_NAMESPACE` or :param:`filter_prefix` is `False`.
 
     :param user: Django user's instance
+    :param int offset: Offset.
+    :param int limit: Limit.
+    :param bool filter_prefix: Whether or not to filter by prefix.
     """
-    systems = StorageSystem.list(
-        user.agave_oauth.client,
-        type=StorageSystem.TYPES.STORAGE,
-        offset=offset,
-        limit=limit
-    )
-    return [sys for sys in systems]
+    prefix = getattr(settings, 'PORTAL_NAMESPACE', '')
+    if not prefix or not filter_prefix:
+        systems = StorageSystem.list(
+            user.agave_oauth.client,
+            type=StorageSystem.TYPES.STORAGE,
+            offset=offset,
+            limit=limit
+        )
+    else:
+        systems = StorageSystem.search(
+            user.agave_oauth.client,
+            {
+                'type.eq': StorageSystem.TYPES.STORAGE,
+                'id.like': '{}*'.format(prefix.lower())
+            },
+            offset=offset,
+            limit=limit
+        )
+    return list(systems)
 
 
-def execution_systems(user, offset=0, limit=100):
-    """Returns all execution systems for a user
+def execution_systems(user, offset=0, limit=100, filter_prefix=True):
+    """Return all execution systems for a user.
+
+    This function will do a filter using `settings.PORTAL_NAMESPACE`.
+    It will do a regular listing if there's no value for
+    `settings.PORTAL_NAMESPACE` or :param:`filter_prefix` is `False`.
 
     :param user: Django user's instance
+    :param int offset: Offset.
+    :param int limit: Limit.
+    :param bool filter_prefix: Whether or not to filter by prefix.
     """
-    systems = ExecutionSystem.list(
-        user.agave_oauth.client,
-        type=ExecutionSystem.TYPES.EXECUTION,
-        offset=offset,
-        limit=limit
-    )
-    return [sys for sys in systems]
+    prefix = getattr(settings, 'PORTAL_NAMESPACE', '')
+    if not prefix or not filter_prefix:
+        systems = ExecutionSystem.list(
+            user.agave_oauth.client,
+            type=ExecutionSystem.TYPES.EXECUTION,
+            offset=offset,
+            limit=limit
+        )
+    else:
+        systems = ExecutionSystem.search(
+            user.agave_oauth.client,
+            {
+                'type.eq': ExecutionSystem.TYPES.EXECUTION,
+                'id.like': '{}*'.format(prefix.lower())
+            },
+            offset=offset,
+            limit=limit
+        )
+    return list(systems)
 
 
 def public_key_for_systems(system_ids):
