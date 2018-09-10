@@ -208,7 +208,7 @@ class BaseSystem(BaseAgaveResource):
             yield cls(client, id=system.id)
 
     @classmethod
-    def search(cls, client, query):
+    def search(cls, client, query, offset=0, limit=100):
         """Search systems
 
         This is using the Agave `systems.search` directly.
@@ -230,10 +230,14 @@ class BaseSystem(BaseAgaveResource):
         :param client: Agave client to use
         :param dict queyr: Query to use
 
-        :return list: A list of system objects
+        :return: Generator with systems.
+        :rtype: generator
 
         .. seealso:: `systems-search --help`
         """
+        query['limit'] = limit
+        query['offset'] = offset
+        logger.debug('query: %s', query)
         if client.token:
             token = client.token.token_info['access_token']
         else:
@@ -242,14 +246,15 @@ class BaseSystem(BaseAgaveResource):
         headers = {'Authorization': 'Bearer {token}'.format(token=token)}
         resp = requests.get(
             '{baseurl}/systems/v2'.format(
-                baseurl=settings.AGAVE_TENANT_BASEURL),
+                baseurl=settings.AGAVE_TENANT_BASEURL
+            ),
             headers=headers,
             params=query
         )
         resp.raise_for_status()
-        logger.info(resp.json())
         systems = resp.json()['result']
-        return systems
+        for system in systems:
+            yield cls(client, id=system['id'])
 
     def _populate_obj(self):
         """Overriding
@@ -345,6 +350,21 @@ class BaseSystem(BaseAgaveResource):
             result = 'SUCCESS'
 
         return success, result
+
+    def __str__(self):
+        """String -> self.id: self.type"""
+        return '{sys_id}: {sys_type}'.format(
+            sys_id=self.id,
+            sys_type=self.type
+        )
+
+    def __repr__(self):
+        """Repr -> BaseSystem(sys_id, sys_type)"""
+        return '{class_name}({sys_id}, {sys_type})'.format(
+            class_name=self.__class__.__name__,
+            sys_id=self.id,
+            sys_type=self.type
+        )
 
 
 @python_2_unicode_compatible  # pylint: disable=too-few-public-methods
