@@ -40,7 +40,6 @@ class BaseESFile(base.BaseESResource):
         else: 
             try:
                 wrapped_doc = base.IndexedFile.from_path(username, system, path)
-                logger.debug('doc found.')
                 super(BaseESFile, self).__init__(username, wrapped_doc, **kwargs)
             except DocumentNotFound:
                 wrapped_doc = base.IndexedFile(system=system,

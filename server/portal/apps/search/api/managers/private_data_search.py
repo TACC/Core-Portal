@@ -36,7 +36,7 @@ class PrivateDataSearchManager(BaseSearchManager):
 
         self.filter(Q({'term': {'pems.username': self._username}}))
         self.query("query_string", query=self._query_string,
-                   fields=["name"], minimum_should_match="80%")
+                   fields=["name", "name._exact"], minimum_should_match="80%")
         self.filter(Q({'term': {'system._exact': self._system}}))
         self.extra(from_=offset, size=limit)
         # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
