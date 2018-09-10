@@ -6,7 +6,6 @@ from __future__ import unicode_literals, absolute_import
 import logging
 import json
 from future.utils import python_2_unicode_compatible
-from django.conf import settings
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -29,28 +28,18 @@ class SystemsListView(BaseApiView):
 
     def get(self, request):
         """ GET """
-        offset = request.GET.get('offset', 0)
-        limit = request.GET.get('limit', 100)
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 100))
         public_keys = request.GET.get('publicKeys', None)
         response = {}
-        thisPortal = request.GET.get('thisPortal', False)
-        pname = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.split('.')[0].lower()
 
         storage_systems = AccountsManager.storage_systems(
             request.user,
             offset=offset,
             limit=limit
         )
-        if thisPortal:
-            filter_systems = []
-            for i in storage_systems:
-                sname = i.id.split('.')[0].lower()
-                if sname == pname:
-                    filter_systems.append(i)
-            response['storage'] = filter_systems
-        else:
-            response['storage'] = storage_systems
-        
+        response['storage'] = storage_systems
+
         exec_systems = AccountsManager.execution_systems(
             request.user,
             offset=offset,
@@ -58,8 +47,10 @@ class SystemsListView(BaseApiView):
         )
         response['execution'] = exec_systems
         if public_keys is not None:
+            sys_ids = [sys.id for sys in storage_systems]
+            sys_ids += [sys.id for sys in exec_systems]
             pub_keys = AccountsManager.public_key_for_systems(
-                [sys.id for sys in storage_systems + exec_systems]
+                sys_ids
             )
             response['publicKeys'] = pub_keys
         return JsonResponse(
