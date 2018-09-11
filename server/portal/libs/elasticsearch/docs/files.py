@@ -57,19 +57,13 @@ class BaseESFile(base.BaseESResource):
             res, search = base.IndexedFile.children(self._username,
                                                     self.system,
                                                     self.path)
-
-            for doc in search[offset:offset + limit]:
-                yield BaseESFile(self._username, doc.system, doc.path)
-
             if yield_all:
-                offset += limit
-                results_sum = sum([1 for doc in search[offset:offset + limit]])
-                while results_sum > 0:
-                    for doc in search[offset:offset + limit]:
-                        yield BaseESFile(self._username, doc.system, doc.path)
-                    offset += limit
-                    results_sum = sum([1 for doc in search[offset:offset + limit]])
-
+                limit = res.hits.total
+            else:
+                limit = offset+limit
+                
+            for doc in search[offset:limit]:
+                yield BaseESFile(self._username, doc.system, doc.path)
 
         except DocumentNotFound:
             pass
