@@ -27,7 +27,7 @@
                 <span class="badge" ng-show='data.search_results.published_total'> {{ data.search_results.published_total }}</span>
             </a>
 
-            <a class="list-group-item disabled" ng-class='{"active": data.type_filter == "public_files"}'>Public Files
+            <a class="list-group-item" ng-class='{"active": data.type_filter == "public_files"}' ng-click='filter("public_files")'>Public Files
                 <span class="badge" ng-show='data.search_results.public_files_total'> {{ data.search_results.public_files_total }}</span>
             </a>
            
@@ -44,8 +44,7 @@
                   no results in {{prettyFilterName[data.type_filter]}}
               </h3>
             </div></div>
-
-          <search-result make-url='makeUrl(data)' data=data ng-repeat="data in data.search_results.hits"></search-result>
+          <search-result make-url='makeUrl(hit)' route='ddSystemRoute()' data='hit' ng-repeat="hit in data.search_results.hits"></search-result>
         
         <div class="row" ng-if="data.search_results.total_hits > limit">
             <div class="col-md-3">

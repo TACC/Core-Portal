@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
 @python_2_unicode_compatible
-class BaseFile(base.BaseESResource):
+class BaseESFile(base.BaseESResource):
     """Wrapper class for Elastic Search indexed file.
 
     .. rubric:: Rationale
@@ -29,20 +29,23 @@ class BaseFile(base.BaseESResource):
 
     """
     def __init__(self, username, system=settings.AGAVE_STORAGE_SYSTEM,
-                 path='/', **kwargs):
+                 path='/', wrapped_doc=None, **kwargs):
         """Elastic Search File representation.
 
-        This class directly wrapps an Agave indexed file.
+        This class directly wraps an Agave indexed file.
 
         """
-        try:
-            wrapped_doc = base.IndexedFile.from_path(username, system, path.strip('/'))
-            super(BaseFile, self).__init__(username, wrapped_doc, **kwargs)
-        except DocumentNotFound:
-            wrapped_doc = base.IndexedFile(system=system,
-                                           path=path.strip('/'),
-                                           **kwargs)
-            super(BaseFile, self).__init__(username, wrapped_doc)
+        if wrapped_doc:
+            super(BaseESFile, self).__init__(username, wrapped_doc, **kwargs)
+        else: 
+            try:
+                wrapped_doc = base.IndexedFile.from_path(username, system, path)
+                super(BaseESFile, self).__init__(username, wrapped_doc, **kwargs)
+            except DocumentNotFound:
+                wrapped_doc = base.IndexedFile(system=system,
+                                            path=path,
+                                            **kwargs)
+                super(BaseESFile, self).__init__(username, wrapped_doc)
         if getattr(self, 'name', None) is None:
             self._wrapped.name = os.path.basename(self.path)
 
@@ -56,7 +59,7 @@ class BaseFile(base.BaseESResource):
                                                     self.path)
             limit = offset+limit
             for doc in search[offset:limit]:
-                yield BaseFile(self._username, **doc.to_dict())
+                yield BaseESFile(self._username, doc.system, doc.path)
 
         except DocumentNotFound:
             pass
@@ -69,7 +72,7 @@ class BaseFile(base.BaseESResource):
         #    cursor = offset + page_size
         #    while cursor <= res.hits.total and cursor <= limit:
         #        for doc in search[offset:cursor]:
-        #            yield BaseFile(self._username, **doc.to_dict())
+        #            yield BaseESFile(self._username, **doc.to_dict())
 
         #        cursor += page_size
         #        offset += page_size
@@ -80,17 +83,17 @@ class BaseFile(base.BaseESResource):
         #        offset -= page_size
         #        cursor += offset
         #        for doc in search[offset:cursor]:
-        #            yield BaseFile(self._username, **doc.to_dict())
+        #            yield BaseESFile(self._username, **doc.to_dict())
         #except DocumentNotFound:
         #    pass
 
     def save(self, using=None, index=None, validate=True, **kwargs):
-        """Save docment
+        """Save document
 
         """
         base_path = os.path.dirname(self.path)
-        self.base_path = base_path
-        self._wrapped.save()
+        self._wrapped.basePath = base_path
+        return self._wrapped.save()
 
     def delete(self, using=None, index=None, **kwargs):
         """Overwriting to implement delte recursively.

@@ -619,6 +619,14 @@ PORTAL_DATA_DEPOT_MANAGERS = {
     'shared': 'portal.apps.data_depot.managers.shared.FileManager',
     'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
+
+PORTAL_SEARCH_MANAGERS = {
+    'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
+    'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
+    'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager', 
+    # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
+}
+
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
 PORTAL_WORKSPACE_MANAGERS = {
