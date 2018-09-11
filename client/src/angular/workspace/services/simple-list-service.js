@@ -10,13 +10,12 @@ function SimpleList($http, $q, appCategories) {
     this.tabs = appCategories.concat(['My Apps']);
   };
 
-  SimpleList.prototype.getDefaultLists = function(query) {
+  SimpleList.prototype.getDefaultLists = function() {
     var self = this;
     var deferred = $q.defer();
     $http({
       url: "/api/workspace/meta",
-      method: 'GET',
-      params: {'q': query}
+      method: 'GET'
     }).then(
       function(response){
         angular.forEach(self.tabs, function (tab) {

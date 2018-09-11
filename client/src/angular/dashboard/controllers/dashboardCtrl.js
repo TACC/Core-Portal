@@ -65,7 +65,7 @@ export default function DashboardCtrl (
     $scope.loading_jobs = false;
   }); 
 
-  Apps.list("{{'$and': [{{'name': {{'$in': {portal_apps_metadata_names} }}}}, {{'value.definition.available': true }}]}}").then(function(resp) {
+  Apps.list().then(function(resp) {
     $scope.apps = resp.data.response;
   });
 

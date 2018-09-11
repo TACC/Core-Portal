@@ -29,7 +29,7 @@ function Apps($http, $q, $translate) {
     return $http({
       url: '/api/workspace/meta',
       method: 'GET',
-      params: {q: `{{'$and': [{{'name': {{'$in': ['{core_apps_metadata_name}', '{portal_apps_metadata_name}']}}}}, {{'value.definition.available': true }}, {{'value.definition.id': '${app_id}' }}]}}`}
+      params: { 'app_id': app_id }
     });
   };
 
