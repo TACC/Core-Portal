@@ -49,7 +49,7 @@ class BaseESFile(base.BaseESResource):
         if getattr(self, 'name', None) is None:
             self._wrapped.name = os.path.basename(self.path)
 
-    def children(self, offset=0, limit=100, yield_all=False):
+    def children(self, offset=0, limit=100):
         """Children list
 
         """
@@ -57,10 +57,8 @@ class BaseESFile(base.BaseESResource):
             res, search = base.IndexedFile.children(self._username,
                                                     self.system,
                                                     self.path)
-            if yield_all:
-                limit = res.hits.total
-            else:
-                limit = offset+limit
+    
+            limit = offset+limit
                 
             for doc in search[offset:limit]:
                 yield BaseESFile(self._username, doc.system, doc.path)

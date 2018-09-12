@@ -41,10 +41,18 @@ def index_agave(systemId, client, username, filePath='/', update_pems=False):
                 pems = obj.pems_list()
                 doc._wrapped.update(**{'pems': pems})
 
-        es_children = BaseESFile(username, systemId, root).children(yield_all=True)
+        offset = 0
+        limit = 100
+        es_root = BaseESFile(username, systemId, root)
+        page = [doc for doc in es_root.children(offset=offset, limit=limit)]
         children_paths = [_file.path for _file in folders + files]
-        to_delete = [doc for doc in es_children if
-                     doc is not None and
-                     doc.path not in children_paths]
-        for doc in to_delete:
-            doc.delete()
+
+        while len(page) > 0:
+            to_delete = [doc for doc in page if
+                        doc is not None and
+                        doc.path not in children_paths]
+            for doc in to_delete:
+                doc.delete()
+
+            offset += limit
+            page = [doc for doc in es_root.children(offset=offset, limit=limit)]
