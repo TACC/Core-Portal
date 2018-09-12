@@ -1,46 +1,22 @@
-from django.http.response import HttpResponseBadRequest
-from django.core.exceptions import ObjectDoesNotExist
+import json
+import logging
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.shortcuts import render
 from django.http import HttpResponse
-from django.contrib.sessions.models import Session
 from django.conf import settings
-
-from celery import shared_task
-from requests import ConnectionError, HTTPError
-from agavepy.agave import Agave, AgaveException
-
-from designsafe.apps.api.notifications.models import Notification
-
-from designsafe.apps.api.views import BaseApiView
-from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
-from designsafe.apps.api.exceptions import ApiException
-
-from designsafe.apps.workspace.tasks import handle_webhook_request
-
-import json
-import logging
-
-import copy
-import json
-import datetime
-from django.utils import timezone
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-
+from requests import HTTPError
+from agavepy.agave import Agave, AgaveException
 from portal.apps.notifications.models import Notification
-from portal.apps.signals.signals import portal_event
-
+from portal.views.base import BaseApiView
+from .tasks import process_job_status
 
 logger = logging.getLogger(__name__)
 
 
-# class JobsWebhookView(SecureMixin, JSONResponseMixin, BaseApiView):
-class JobsWebhookView(JSONResponseMixin, BaseApiView):
+class JobsWebhookView(BaseApiView):
     """
     Dispatches notifications when receiving a POST request from the Agave
     webhook service.
@@ -52,11 +28,11 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
         return super(JobsWebhookView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        return HttpResponse(settings.WEBHOOK_POST_URL + '/api/notifications/wh/jobs/')
+        return HttpResponse(settings.WEBHOOK_POST_URL + reverse('webhooks:jobs_wh_handler'))
 
     def post(self, request, *args, **kwargs):
         """
-        Calls handle_webhook_request on webhook JSON body
+        Calls process_job_status on webhook JSON body
         to notify the user of the progress of the job.
 
         """
@@ -64,7 +40,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
         job = json.loads(request.body)
         # logger.debug(job)
 
-        handle_webhook_request(job)
+        process_job_status(job)
         return HttpResponse('OK')
 
 
@@ -148,45 +124,3 @@ def generic_webhook_handler(request):
         return HttpResponse('OK')
     else:
         return HttpResponse('Unexpected', status=400)
-
-
-@require_POST
-@csrf_exempt
-def job_notification_handler(request):
-    JOB_EVENT = 'job'
-    logger.debug('request body: {}'.format(request.body))
-
-    try:
-        notification = json.loads(request.body)
-        logger.info('notification body: {}'.format(notification))
-        logger.info('notification name: {}'.format(notification['name']))
-        job_name = notification['name']
-        status = notification['status']
-        event = request.GET.get('event')
-        job_id = request.GET.get('job_id')
-        job_owner = notification['owner']
-        archive_path = notification['archivePath']
-    except ValueError as e:  # for testing ->used when mocking agave notification
-        job_name = request.POST.get('job_name')
-        status = request.POST.get('status')
-        event = request.POST.get('event')
-        job_id = request.POST.get('job_id')
-        job_owner = request.POST.get('job_owner')
-        archive_path = request.POST.get('archivePath')
-
-    logger.info('job_name: {}'.format(job_name))
-    logger.info('event: {}'.format(event))
-    logger.info('job_id: {}'.format(job_id))
-
-    body = {
-        'job_name': job_name,
-        'job_id': job_id,
-        'event': event,
-        'status': status,
-        'archive_path': archive_path,
-        'job_owner': job_owner,
-    }
-    portal_event.send_robust(None, event_type='job', event_data=body,
-                              event_users=[job_owner])
-
-    return HttpResponse('OK')

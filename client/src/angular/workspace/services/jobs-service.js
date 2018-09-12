@@ -47,6 +47,10 @@ function Jobs($http) {
     return nested;
   };
 
+  service.getWebhookUrl = function () {
+    return $http.get('/webhooks/jobs/');
+  };
+
   return service;
 }
 
