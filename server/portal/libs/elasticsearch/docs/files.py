@@ -57,9 +57,7 @@ class BaseESFile(base.BaseESResource):
             res, search = base.IndexedFile.children(self._username,
                                                     self.system,
                                                     self.path)
-    
             limit = offset+limit
-                
             for doc in search[offset:limit]:
                 yield BaseESFile(self._username, doc.system, doc.path)
 
