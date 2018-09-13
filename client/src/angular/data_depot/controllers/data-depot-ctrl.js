@@ -22,7 +22,8 @@ export default function DataDepotCtrl(
     DataBrowserService,
     SystemsService,
     ProjectService,
-    systems
+    systems,
+    FileListing
 ) {
     'ngInject';
     // get user data from service
@@ -45,7 +46,9 @@ export default function DataDepotCtrl(
         name: ($stateParams.name),
         directory: ($stateParams.directory),
         queryString: ($stateParams.query_string),
-    };
+        offset: 0,
+        limit: 100
+    }
 
     $scope.browser = DataBrowserService.state();
 
@@ -72,6 +75,11 @@ export default function DataDepotCtrl(
             return $scope.browser.listing.children.slice($scope.state.offset, $scope.state.offset + $scope.state.limit)
         }
         return null
+    }
+
+    $scope.loadMore = function() {
+        DataBrowserService.scrollToBottom(options)
+            
     }
 
     $scope.openPushPublicKeyForm = ()=>{
