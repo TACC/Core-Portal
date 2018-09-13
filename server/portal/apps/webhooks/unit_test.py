@@ -1,20 +1,20 @@
+import json
+import logging
+import os
 from mock import Mock, patch, MagicMock, PropertyMock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from portal.apps.auth.models import AgaveOAuthToken
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from portal.apps.notifications.models import Notification
+from urllib import urlencode
 
 
-class AttrDict(dict):
-
-    def __getattr__(self, key):
-        return self[key]
-
-    def __setattr__(self, key, value):
-        self[key] = value
+logger = logging.getLogger(__name__)
 
 
-class TestWebhooks(TestCase):
+class TestJobsWebhookView(TestCase):
     # @classmethod
     # def setUpClass(cls):
     #     super(TestAppsApiViews, cls).setUpClass()
@@ -32,27 +32,47 @@ class TestWebhooks(TestCase):
         token = AgaveOAuthToken(
             token_type="bearer",
             scope="default",
-            access_token="1234fsf",
-            refresh_token="123123123",
+            access_token="123zeb_4fsf",
+            refresh_token="1z23123_ec123",
             expires_in=14400,
             created=1523633447)
         token.user = user
         token.save()
 
-    def test_webhook_job_post(self):
+    def test_get_webhook_post_url(self):
+        response = self.client.get(reverse('webhooks:jobs_wh_handler'))
 
-        with patch('portal.apps.auth.models.AgaveOAuthToken.client', new_callable=PropertyMock) as mock_client:
-            self.client.login(username='test', password='test')
-            apps = [
-                {
-                    "id": "app-one",
-                    "executionSystem": "stampede2"
-                },
-                {
-                    "id": "app-two",
-                    "executionSystem": "stampede2"
-                }
-            ]
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.content, str)
+
+    def test_webhook_job_post(self):
+        response = self.client.get(reverse('webhooks:jobs_wh_handler'))
+        wh_post_url = response.content
+
+        job_event = json.dumps(json.load(open(os.path.join(os.path.dirname(__file__),
+                                                           'fixtures/job_staging.json'))))
+        logger.debug(job_event)
+        response = self.client.post(
+            wh_post_url, job_event, content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
 
     def test_webhook_vnc_post(self):
-        pass
+        self.client.login(username='test', password='test')
+        vnc_event = {
+            "event_type": "VNC",
+            "host": "vis.tacc.utexas.edu",
+            "port": "2234",
+            "address": "vis.tacc.utexas.edu:1234",
+            "password": "3373312947011719656-242ac11b-0001-007",
+            "owner": "test"
+        }
+
+        link_from_event = "https://vis.tacc.utexas.edu/no-vnc/vnc.html?hostname=vis.tacc.utexas.edu&port=2234&autoconnect=true&password=3373312947011719656-242ac11b-0001-007"
+
+        response = self.client.post(reverse('webhooks:generic_wh_handler'), urlencode(
+            vnc_event), content_type='application/x-www-form-urlencoded')
+
+        n = Notification.objects.last()
+        action_link = n.to_dict()['action_link']
+        self.assertEqual(action_link, link_from_event)
