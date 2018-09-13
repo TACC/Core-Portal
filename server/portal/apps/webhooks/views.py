@@ -28,7 +28,11 @@ class JobsWebhookView(BaseApiView):
         return super(JobsWebhookView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        return HttpResponse(settings.WEBHOOK_POST_URL + reverse('webhooks:jobs_wh_handler'))
+
+        if settings.WEBHOOK_POST_URL:
+            return HttpResponse(settings.WEBHOOK_POST_URL + reverse('webhooks:jobs_wh_handler'))
+        else:
+            return HttpResponse(request.build_absolute_uri(reverse('webhooks:jobs_wh_handler')))
 
     def post(self, request, *args, **kwargs):
         """
