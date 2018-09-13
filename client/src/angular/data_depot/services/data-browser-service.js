@@ -19,6 +19,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
   var currentState = {
     busy: false,
     busyListing: false,
+    loadingMore: false,
     error: null,
     listing: null,
     selected: [],
@@ -185,7 +186,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
   * @param options.system
   * @param options.path
   */
-  function browse (options) {
+  function browse (options, append) {
     // debugger
     if (currentBrowseRequest) {
       currentBrowseRequest.stopper.resolve();
@@ -196,17 +197,20 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     currentState.busy = true;
     currentState.busyListing = true;
     currentState.error = null;
-    currentState.loadingMore = true;
+    //currentState.loadingMore = true;
     currentState.reachedEnd = false;
     currentState.busyListingPage = false;
     currentState.page = 0;
-    currentBrowseRequest =  FileListing.get(options, apiParams, {queryString: options.queryString, system: options.system});
+    currentBrowseRequest =  FileListing.get(options, apiParams, {queryString: options.queryString, 
+                                                                 system: options.system, 
+                                                                 offset: options.offset, 
+                                                                 limit: options.limit});
 
     currentBrowseRequest.then(function (listing) {
       select([], true);
       currentState.busy = false;
       currentState.busyListing = false;
-      currentState.loadingMore = false;
+      //currentState.loadingMore = false;
       currentState.reachedEnd = false;
       currentState.listing = listing;
       return listing;
@@ -221,7 +225,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       }
       currentState.listing = null;
       currentState.error = err;
-      currentState.loadingMore = false;
+      //currentState.loadingMore = false;
       currentState.reachedEnd = false;
       return err;
     });
@@ -236,7 +240,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    * @param options.page
    */
   function browsePage (options) {
-    currentState.busy = true;
+    //currentState.busy = true;
     currentState.busyListingPage = true;
     currentState.error = null;
     var limit = 100;
@@ -244,16 +248,17 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     if (options.page){
       offset += limit * options.page;
     }
-    var params = {limit: limit, offset: offset};
+    var params = {limit: limit, offset: offset, queryString: options.queryString};
     return FileListing.get(options, apiParams, params).then(function (listing) {
       select([], true);
-      currentState.busy = false;
+      //currentState.busy = false;
       currentState.busyListingPage = false;
       currentState.listing.children = currentState.listing.children.concat(listing.children);
       return listing;
     }, function (err) {
-      currentState.busy = false;
+      //currentState.busy = false;
       currentState.busyListingPage = false;
+      return err
     });
   }
 
@@ -720,13 +725,12 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     return;
   }
 
-  function scrollToBottom(){
+  function scrollToBottom(options){
     if (currentState.loadingMore || currentState.reachedEnd){
       return;
     }
-    currentState.loadingMore = true;
     if (currentState.listing && currentState.listing.children &&
-        currentState.listing.children.length < 95){
+        currentState.listing.children.length < 100){
       currentState.reachedEnd = true;
       return;
     }
@@ -734,15 +738,20 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     currentState.loadingMore = true;
     browsePage({system: currentState.listing.system,
                 path: currentState.listing.path,
-                page: currentState.page})
+                page: currentState.page,
+                queryString: options.queryString})
     .then(function(listing){
+        console.log(listing)
         currentState.loadingMore = false;
-        if (listing.children.length < 95) {
+        if (listing.children.length < 100) {
           currentState.reachedEnd = true;
         }
       }, function (err){
+           console.log('err')
            currentState.loadingMore = false;
            currentState.reachedEnd = true;
+           currentState.error.message = err.data;
+           currentState.error.status = err.status;
       });
   }
 

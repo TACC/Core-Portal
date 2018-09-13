@@ -80,7 +80,22 @@
       </caption>
     </tbody>
   </table> <!-- ENDS FILE LISTING TABLE -->
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+  <button class="btn btn-default btn-block" 
+          ng-disabled="browser.reachedEnd || browser.busyListing || browser.busy" 
+          ng-click="loadMore()">
+            {{browser.reachedEnd? "No more files to show. ": "Show more files "}}
+            <i class="fa fa-spinner fa-spin" 
+               data-ng-if="browser.loadingMore">
+            </i>
+          </button>
+          </div>
+          <div class="col-md-3"></div>
   </div>
+  </div>
+  <!--
   <div class="row" ng-if="!browser.busyListing && browser.listing.children.length > state.limit">
     <div class="col-md-3">
         <button class="btn btn-default pull-left"
@@ -101,4 +116,6 @@
           <i class="fa fa-chevron-right"></i> More
         </button>
       </div>
-</div> <!-- END FILE LISTING TABLE WRAPPER -->
+</div> 
+-->
+<!-- END FILE LISTING TABLE WRAPPER -->
