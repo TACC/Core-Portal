@@ -3,8 +3,15 @@
     animation: 2s bounce;
 }
 
-.notification-message {
-    max-width: 70%;    
+.notification-message,
+.notification-message:hover {
+    width: 70%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.notification:hover {
+    background:#dedede;
 }
 
 #notification-container .dropdown-toggle {
