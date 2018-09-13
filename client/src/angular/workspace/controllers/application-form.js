@@ -138,20 +138,10 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
         parameters: {}
       };
 
-      /* Add any attribute that requires an API call for the job to be ready to $scope.jobReady, e.g. notifications or project listings for VNC apps */
+      /* Add any attribute that requires an API call for the job to be ready to $scope.jobReady, i.e. project listings for VNC apps */
       $scope.jobReady = {
-        notifications: false
+        ready: true
       };
-
-      Jobs.getWebhookUrl().then(function (resp) {
-        jobData.notifications = ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"].map(function (e) {
-          return {
-            url: resp.data,
-            event: e
-          };
-        });
-        $scope.jobReady.notifications = true;
-      });
 
       /* copy form model to disconnect from $scope */
       _.extend(jobData, angular.copy($scope.form.model));

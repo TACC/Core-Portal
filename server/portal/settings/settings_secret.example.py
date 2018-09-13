@@ -16,9 +16,6 @@ _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 _PORTAL_NAMESPACE = 'CEP'
 _PORTAL_APPS_METADATA_NAMES = ['portal_apps']
 
-# Local dev webhook POST url, e.g. https://12345.ngrock.io (see https://ngrok.com/). NOT needed for anything beyond local dev.
-_WEBHOOK_POST_URL = ""
-
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
 

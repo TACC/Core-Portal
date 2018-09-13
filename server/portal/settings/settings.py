@@ -295,8 +295,6 @@ WS4REDIS_CONNECTION = {
 }
 WEBSOCKET_URL = '/ws/'
 
-WEBHOOK_POST_URL = settings_secret._WEBHOOK_POST_URL
-
 # TAS Authentication.
 TAS_URL = settings_secret._TAS_URL
 TAS_CLIENT_KEY = settings_secret._TAS_CLIENT_KEY
