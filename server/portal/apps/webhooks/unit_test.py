@@ -46,14 +46,11 @@ class TestJobsWebhookView(TestCase):
         self.assertIsInstance(response.content, str)
 
     def test_webhook_job_post(self):
-        response = self.client.get(reverse('webhooks:jobs_wh_handler'))
-        wh_post_url = response.content
-
         job_event = json.dumps(json.load(open(os.path.join(os.path.dirname(__file__),
                                                            'fixtures/job_staging.json'))))
         logger.debug(job_event)
         response = self.client.post(
-            wh_post_url, job_event, content_type='application/json')
+            reverse('webhooks:jobs_wh_handler'), job_event, content_type='application/json')
 
         self.assertEqual(response.status_code, 200)
 
