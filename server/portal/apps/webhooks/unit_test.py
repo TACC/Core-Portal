@@ -39,20 +39,15 @@ class TestJobsWebhookView(TestCase):
         token.user = user
         token.save()
 
-    def test_get_webhook_post_url(self):
-        response = self.client.get(reverse('webhooks:jobs_wh_handler'))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.content, str)
-
     def test_webhook_job_post(self):
-        job_event = json.dumps(json.load(open(os.path.join(os.path.dirname(__file__),
-                                                           'fixtures/job_staging.json'))))
-        logger.debug(job_event)
-        response = self.client.post(
-            reverse('webhooks:jobs_wh_handler'), job_event, content_type='application/json')
+        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
 
+        response = self.client.post(reverse('webhooks:jobs_wh_handler'), json.dumps(job_event), content_type='application/json')
         self.assertEqual(response.status_code, 200)
+
+        n = Notification.objects.last()
+        n_status = n.to_dict()['extra']['status']
+        self.assertEqual(n_status, job_event['status'])
 
     def test_webhook_vnc_post(self):
         self.client.login(username='test', password='test')
@@ -67,7 +62,7 @@ class TestJobsWebhookView(TestCase):
 
         link_from_event = "https://vis.tacc.utexas.edu/no-vnc/vnc.html?hostname=vis.tacc.utexas.edu&port=2234&autoconnect=true&password=3373312947011719656-242ac11b-0001-007"
 
-        response = self.client.post(reverse('webhooks:generic_wh_handler'), urlencode(
+        response = self.client.post(reverse('webhooks:interactive_wh_handler'), urlencode(
             vnc_event), content_type='application/x-www-form-urlencoded')
 
         n = Notification.objects.last()
