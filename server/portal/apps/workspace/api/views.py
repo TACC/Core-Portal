@@ -17,7 +17,6 @@ from django.core.urlresolvers import reverse
 from portal.apps.workspace.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
-from portal.apps.workspace.tasks import watch_job_status
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from agavepy.agave import Agave
@@ -245,7 +244,6 @@ class JobsView(BaseApiView):
                         job_post['inputs'][key] = urllib.quote(parsed.path)
 
             response = agave.jobs.submit(body=job_post)
-            watch_job_status.apply_async(args=[request.user.username, response['id']], countdown=10)
             return JsonResponse({"response": response})
 
 
