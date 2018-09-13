@@ -9,7 +9,10 @@
     <i class="fa fa-info" ng-if="vm.note.status=='info'"></i>
     <i class="fa fa-question-circle-o" ng-if="vm.note.status=='warning'"></i>
   </div>
-  <a class="notification-message" href="{{vm.note.action_link}}">
+  <a ng-if="vm.note.action_link == ''" class="notification-message">
+    <span> {{vm.note.message}} </span>
+  </a>
+  <a ng-if="vm.note.action_link" class="notification-message" href="{{vm.note.action_link}}">
     <span> {{vm.note.message}} </span>
   </a>
   <div class="notification-time">
