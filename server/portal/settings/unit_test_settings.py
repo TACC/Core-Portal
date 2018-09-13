@@ -260,3 +260,5 @@ ES_METADATA_DOC_TYPE = "metadata"
 
 HAYSTACK_CONNECTIONS = "test"
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
+
+WEBHOOK_POST_URL = "test"
