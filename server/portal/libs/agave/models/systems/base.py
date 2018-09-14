@@ -237,7 +237,6 @@ class BaseSystem(BaseAgaveResource):
         """
         query['limit'] = limit
         query['offset'] = offset
-        logger.debug('query: %s', query)
         if client.token:
             token = client.token.token_info['access_token']
         else:
