@@ -324,7 +324,15 @@ def storage_systems(user, offset=0, limit=100, filter_prefix=True):
     :param int limit: Limit.
     :param bool filter_prefix: Whether or not to filter by prefix.
     """
-    prefix = getattr(settings, 'PORTAL_NAMESPACE', '')
+    prefix = getattr(
+        settings,
+        'PORTAL_STORAGE_SYSTEM_PREFIX',
+        getattr(
+            settings,
+            'PORTAL_NAMESPACE',
+            ''
+        )
+    )
     if not prefix or not filter_prefix:
         systems = StorageSystem.list(
             user.agave_oauth.client,
