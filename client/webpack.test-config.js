@@ -34,7 +34,7 @@ module.exports = {
         {
           test: /\.html$/,
           exclude: /node_modules/,
-          loader: 'ignore-loader'
+          loader: 'html-loader'
         },
         {
           test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
