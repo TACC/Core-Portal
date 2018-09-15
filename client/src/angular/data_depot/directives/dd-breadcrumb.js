@@ -13,6 +13,7 @@ export default function ddBreadcrumb() {
       itemHref: '&'
     },
     link: function(scope) {
+      console.log(scope.listing)
       scope.offset = 0;
       if (scope.skipRoot || scope.customRoot) {
         scope.offset = 1;
