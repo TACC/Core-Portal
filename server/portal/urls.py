@@ -72,8 +72,6 @@ urlpatterns += [
     # webhooks
     url(r'^webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
 
-    url(r'^data/', include('portal.apps.data_depot.urls', namespace='data')),
-
     # version check.
     url(r'^version/', des_version),
 
