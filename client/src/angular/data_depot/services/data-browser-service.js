@@ -282,7 +282,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       function (result) {
         currentState.busy = true;
         var copyPromises = _.map(files, function (f) {
-          
+
           return f.copy({system: result.system, path: result.path, resource: result.resource}).then(function (result) {
             //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
             $mdToast.show($mdToast.simple()
@@ -550,7 +550,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
           $event.preventDefault();
           $uibModalInstance.close({file: file, renameTo: $scope.form.targetName});
         };
-        
+
         $scope.cancel = function () {
           $uibModalInstance.dismiss('cancel');
         };
@@ -610,7 +610,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       currentState.error = err.data;
     });
   }
-  
+
   /**
    *
    * @param {FileListing|FileListing[]} files The files to move to Trash
