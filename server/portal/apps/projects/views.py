@@ -64,8 +64,8 @@ class ProjectView(BaseApiView):
         # projects = Project.list_projects(agave_client=ac)
         # for p in projects:
         #     logger.info(p.to_dict())
-        # out = [p.to_dict() for p in projects]
-        return JsonResponse(systems, safe=False)
+        out = [s.to_dict() for s in systems]
+        return JsonResponse(out, safe=False)
 
     def post(self, request):
         """
