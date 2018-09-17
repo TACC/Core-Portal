@@ -325,33 +325,32 @@ def storage_systems(user, offset=0, limit=100, filter_prefix=True):
     :param bool filter_prefix: Whether or not to filter by prefix.
     """
     prefix = getattr(
-        settings,
-        'PORTAL_STORAGE_SYSTEM_PREFIX',
-        getattr(
             settings,
             'PORTAL_NAMESPACE',
             ''
-        )
     )
-    if not prefix or not filter_prefix:
+
+    systems = StorageSystem.search(
+        user.agave_oauth.client,
+        {
+            'type.eq': StorageSystem.TYPES.STORAGE,
+            'id.like': '{}*'.format(prefix.lower())
+        },
+        offset=offset,
+        limit=limit
+    )
+    out = list(systems)
+    #if there aren't any storage systems that are namespaced
+    #by PORTAL_NAMESPACE, just send a list of all available storage systems
+    if not out:
         systems = StorageSystem.list(
             user.agave_oauth.client,
             type=StorageSystem.TYPES.STORAGE,
             offset=offset,
             limit=limit
         )
-    else:
-        systems = StorageSystem.search(
-            user.agave_oauth.client,
-            {
-                'type.eq': StorageSystem.TYPES.STORAGE,
-                'id.like': '{}*'.format(prefix.lower())
-            },
-            offset=offset,
-            limit=limit
-        )
-    return list(systems)
-
+        out = list(systems)
+    return out
 
 def execution_systems(user, offset=0, limit=100, filter_prefix=True):
     """Return all execution systems for a user.
