@@ -1,13 +1,13 @@
 <div class="notification">
   <div class="status"
-      ng-class="{'success':vm.note.status=='success',
-                 'danger': vm.note.status=='error',
-                 'info': vm.note.status=='info',
-                 'warning': vm.note.status=='warning'}">
-    <i class="fa fa-check-circle-o" ng-if="vm.note.status=='success'"></i>
-    <i class="fa fa-warning" ng-if="vm.note.status=='error'"></i>
-    <i class="fa fa-info" ng-if="vm.note.status=='info'"></i>
-    <i class="fa fa-question-circle-o" ng-if="vm.note.status=='warning'"></i>
+      ng-class="{'success':vm.note.status=='SUCCESS',
+                 'danger': vm.note.status=='ERROR',
+                 'info': vm.note.status=='INFO',
+                 'warning': vm.note.status=='WARNING'}">
+    <i class="fa fa-check-circle-o" ng-if="vm.note.status=='SUCCESS'"></i>
+    <i class="fa fa-warning" ng-if="vm.note.status=='ERROR'"></i>
+    <i class="fa fa-info" ng-if="vm.note.status=='INFO'"></i>
+    <i class="fa fa-question-circle-o" ng-if="vm.note.status=='WARNING'"></i>
   </div>
   <span ng-if="!vm.note.action_link" class="notification-message">
     {{vm.note.message}}
