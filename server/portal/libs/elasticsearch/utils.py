@@ -39,7 +39,7 @@ def index_agave(systemId, client, username, filePath='/', update_pems=False):
             obj_dict = obj.to_dict()
             doc = BaseESFile(username, **obj_dict)
             saved = doc.save()
-            if saved or update_pems:
+            if update_pems:
                 pems = obj.pems_list()
                 doc._wrapped.update(**{'pems': pems})
 
