@@ -71,7 +71,6 @@ class FileListingView(BaseApiView):
         fmgr = get_manager(request, file_mgr_name)
         offset = request.GET.get('offset', 0)
         limit = request.GET.get('limit', 100)
-        logger.debug(limit)
         query_string = request.GET.get('queryString')
         
         if query_string is None:

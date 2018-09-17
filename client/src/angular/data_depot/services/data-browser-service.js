@@ -186,7 +186,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
   * @param options.system
   * @param options.path
   */
-  function browse (options, append) {
+  function browse (options) {
     // debugger
     if (currentBrowseRequest) {
       currentBrowseRequest.stopper.resolve();
@@ -243,8 +243,8 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     //currentState.busy = true;
     currentState.busyListingPage = true;
     currentState.error = null;
-    var limit = 100;
-    var offset = 0;
+    var limit = options.limit;
+    var offset = options.offset;
     if (options.page){
       offset += limit * options.page;
     }
@@ -730,7 +730,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       return;
     }
     if (currentState.listing && currentState.listing.children &&
-        currentState.listing.children.length < 100){
+        currentState.listing.children.length < options.limit){
       currentState.reachedEnd = true;
       return;
     }
@@ -739,11 +739,12 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     browsePage({system: currentState.listing.system,
                 path: currentState.listing.path,
                 page: currentState.page,
-                queryString: options.queryString})
+                queryString: options.queryString,
+                offset: options.offset,
+                limit: options.limit})
     .then(function(listing){
-        console.log(listing)
         currentState.loadingMore = false;
-        if (listing.children.length < 100) {
+        if (listing.children.length < options.limit) {
           currentState.reachedEnd = true;
         }
       }, function (err){
