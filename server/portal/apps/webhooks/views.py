@@ -66,7 +66,6 @@ class JobsWebhookView(BaseApiView):
                 Notification.MESSAGE: '',
                 Notification.EXTRA: job
             }
-            archive_id = 'agave/{}/{}'.format(archiveSystem, archivePath.split('/'))
 
             if job_status == 'FAILED':
                 logger.debug('JOB FAILED: id={} status={}'.format(job_id, job_status))
@@ -94,13 +93,15 @@ class JobsWebhookView(BaseApiView):
                 logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
 
                 logger.debug('archivePath: {}'.format(archivePath))
-                target_path = reverse('data:data_depot')
-                os.path.join(target_path, 'agave', archive_id.strip('/'))
+                archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
+                target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
+                
                 event_data[Notification.STATUS] = Notification.SUCCESS
                 event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
                 event_data[Notification.EXTRA]['target_path'] = target_path
                 event_data[Notification.MESSAGE] = "Job '{}' finished!".format(job_name)
                 event_data[Notification.OPERATION] = 'job_finished'
+                event_data[Notification.ACTION_LINK] = target_path
 
                 with transaction.atomic():
                     last_notification = Notification.objects.filter(jobId=job_id).last()
@@ -167,6 +168,7 @@ class JobsWebhookView(BaseApiView):
             return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
 
         except Exception as e:
+            logger.exception(e)
             return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
 
 
@@ -227,8 +229,7 @@ class InteractiveWebhookView(BaseApiView):
                     'port': port,
                     'address': address,
                     'password': password,
-                    'associationIds': job_uuid,
-                    'target_uri': target_uri
+                    'associationIds': job_uuid
                 }
             }
             n = Notification.objects.create(**event_data)
