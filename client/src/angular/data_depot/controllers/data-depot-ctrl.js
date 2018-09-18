@@ -48,7 +48,7 @@ export default function DataDepotCtrl(
         queryString: ($stateParams.query_string),
         offset: 0,
         limit: 100
-    }
+    };
 
     $scope.browser = DataBrowserService.state();
 
