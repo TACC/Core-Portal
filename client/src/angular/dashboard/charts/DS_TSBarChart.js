@@ -34,8 +34,6 @@ export default function DS_TSBarChart (element_id) {
 
     xAxis = d3.axisBottom(x)
               .tickPadding(0)
-              // .tickSize(-height, 1, 0)
-              // .ticks(14)
               .tickFormat(d3.timeFormat("%m/%d"));
 
     yAxis = d3.axisLeft(y)

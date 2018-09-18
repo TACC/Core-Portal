@@ -58,12 +58,12 @@ export default function DashboardCtrl (
   ).then(function (resp) {
     $scope.jobs = resp;
     $scope.jobs = _.filter($scope.jobs, (d)=>{return moment(d.created).isAfter($scope.first_jobs_date);});
-    $scope.chart_data = Jobs.jobsByDate(resp);
+    $scope.chart_data = Jobs.jobsByDate($scope.jobs);
     $scope.chart.data($scope.chart_data);
     var tmp = _.groupBy($scope.jobs, function (d) {return d.appId;});
     $scope.recent_apps = Object.keys(tmp);
     $scope.loading_jobs = false;
-  }); 
+  });
 
   Apps.list().then(function(resp) {
     $scope.apps = resp.data.response;
