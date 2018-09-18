@@ -14,8 +14,7 @@ _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
-_PORTAL_APPS_METADATA_NAME = ''  # Needed if portal has portal specific apps, in the format of cep_apps
-_CORE_APPS_METADATA_NAME = 'portal_apps'
+_PORTAL_APPS_METADATA_NAMES = ['portal_apps']
 
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'

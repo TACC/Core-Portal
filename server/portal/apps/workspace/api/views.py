@@ -17,7 +17,6 @@ from django.core.urlresolvers import reverse
 from portal.apps.workspace.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
-from portal.apps.workspace.tasks import watch_job_status
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from agavepy.agave import Agave
@@ -244,8 +243,16 @@ class JobsView(BaseApiView):
                     else:
                         job_post['inputs'][key] = urllib.quote(parsed.path)
 
+            # Add notification webhooks. NOTE: set jobs_wh_url to ngrok redirect for local dev testing (i.e. jobs_wh_url = 'https://12345.ngrock.io/webhooks/jobs/' , see https://ngrok.com/)
+            jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+            job_post['notifications'] = [
+                {'url': jobs_wh_url,
+                'event': e}
+                for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
+
+            logger.debug(job_post)
+
             response = agave.jobs.submit(body=job_post)
-            watch_job_status.apply_async(args=[request.user.username, response['id']], countdown=10)
             return JsonResponse({"response": response})
 
 

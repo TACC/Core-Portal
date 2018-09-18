@@ -127,15 +127,20 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     });
   };
 
-  $scope.onSubmit = function(form) {
+  $scope.onSubmit = function(form) {    
     $scope.data.messages = [];
     $scope.$broadcast('schemaFormValidate');
     if (form.$valid) {
       var jobData = {
-          appId: $scope.data.app.id,
-          archive: true,
-          inputs: {},
-          parameters: {}
+        appId: $scope.data.app.id,
+        archive: true,
+        inputs: {},
+        parameters: {}
+      };
+
+      /* Add any attribute that requires an API call for the job to be ready to $scope.jobReady, i.e. project listings for VNC apps */
+      $scope.jobReady = {
+        ready: true
       };
 
       /* copy form model to disconnect from $scope */
@@ -176,30 +181,35 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
         jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
       }
 
-      $scope.data.submitting = true;
-      Jobs.submit(jobData).then(
-        function(resp) {
-          $scope.data.submitting = false;
-          $rootScope.$broadcast('job-submitted', resp.data.response);
-          $scope.data.messages.push({
-            type: 'success',
-            header: 'Job Submitted Successfully',
-            body: 'Your job <em>' + resp.data.name + '</em> has been submitted. Monitor its status on the right.'
-          });
-          $scope.resetForm();
-          refocus();
-        }, function(err) {
-          $scope.data.submitting = false;
-          $scope.data.messages.push({
-            type: 'danger',
-            header: 'Job Submit Failed',
-            body: 'Your job submission failed with the following message:<br>' +
+      var unregister = $scope.$watchCollection('jobReady', function (params) {
+        if (Object.values(params).every(Boolean)) {
+          $scope.data.submitting = true;
+          Jobs.submit(jobData).then(
+            function (resp) {
+              $scope.data.submitting = false;
+              $rootScope.$broadcast('job-submitted', resp.data);
+              $scope.data.messages.push({
+                type: 'success',
+                header: 'Job Submitted Successfully',
+                body: 'Your job <em>' + resp.data.name + '</em> has been submitted. Monitor its status on the right.'
+              });
+              $scope.resetForm();
+              refocus();
+            }, function (err) {
+              $scope.data.submitting = false;
+              $scope.data.messages.push({
+                type: 'danger',
+                header: 'Job Submit Failed',
+                body: 'Your job submission failed with the following message:<br>' +
                   '<em>' + (err.data.message || 'Unexpected error') + '</em><br>' +
                   'Please try again. If this problem persists, please ' +
                   '<a href="/help" target="_blank">submit a support ticket</a>.'
-          });
-          refocus();
-        });
+              });
+              refocus();
+            });
+          unregister();
+        }
+      });
     }
   };
 
