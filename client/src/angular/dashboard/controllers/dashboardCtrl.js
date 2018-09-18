@@ -5,8 +5,6 @@ import * as _ from 'underscore';
 export default function DashboardCtrl (
   $uibModal,
   $scope,
-  $q,
-  $translate,
   Jobs,
   Apps,
   SystemsService,
@@ -57,6 +55,7 @@ export default function DashboardCtrl (
     }
   ).then(function (resp) {
     $scope.jobs = resp;
+    console.log($scope.jobs)
     $scope.jobs = _.filter($scope.jobs, (d)=>{return moment(d.created).isAfter($scope.first_jobs_date);});
     $scope.chart_data = Jobs.jobsByDate($scope.jobs);
     $scope.chart.data($scope.chart_data);
