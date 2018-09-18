@@ -63,6 +63,7 @@ describe("DashboardCtrl", function() {
     //have to $apply to get promises to resolve
     $rootScope.$apply();
     expect(scope.jobs.length).toEqual(3);
+    //should be 2 jobs for one of the days
     expect(scope.chart_data.length).toEqual(2);
   });
 
