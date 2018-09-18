@@ -24,7 +24,13 @@ describe("DashboardCtrl", function() {
   });
   beforeEach( ()=> {
     scope = $rootScope.$new();
-    spyOn(Jobs, 'list').andReturn(fakePromise);
+    let jobs_data = [
+      {"jobId": 1, appId: 'test', created: new Date("2018-1-2")},
+      {"jobId": 2, appId: 'test', created: new Date("2018-1-3")},
+      {"jobId": 3, appId: 'test', created: new Date("2018-1-3")},
+
+    ];
+    spyOn(Jobs, 'list').andReturn($q.when(jobs_data));
     spyOn(Apps, 'list').andReturn(fakePromise);
     spyOn(SystemsService, 'list').andReturn(fakePromise);
     spyOn(UserService, 'usage').andReturn(fakePromise);
@@ -32,7 +38,7 @@ describe("DashboardCtrl", function() {
       $uibModal:$uibModal, Apps: Apps, $scope: scope,
       Jobs: Jobs, SystemsService:SystemsService, UserService:UserService
     });
-    console.info(controller);
+    scope.first_jobs_date = new Date("2018-1-1");
   });
 
   it("Should have the needed methods", function() {
@@ -54,15 +60,10 @@ describe("DashboardCtrl", function() {
   });
 
   it("Should bin the jobs by date", ()=>{
-    let data = [
-      {"jobId": 1, appId: 'test', created: "2018-01-01"},
-      {"jobId": 2, appId: 'test', created: "2018-01-02"},
-    ];
-    scope.first_jobs_date = new Date(2018, 1, 1);
-    $httpBackend.when(/api\/workspace\/jobs*/).respond(200, data);
-    $httpBackend.flush();
-    console.log(scope.jobs)
-    expect(scope.jobs.length).toEqual(2);
+    //have to $apply to get promises to resolve
+    $rootScope.$apply();
+    expect(scope.jobs.length).toEqual(3);
+    expect(scope.chart_data.length).toEqual(2);
   });
 
 });
