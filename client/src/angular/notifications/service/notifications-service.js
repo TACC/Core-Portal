@@ -50,7 +50,7 @@ export default class Notifications {
   }
 
  list() {
-    return this.$http.get('/api/notifications').then( (resp)=>{
+    return this.$http.get('/api/notifications/').then( (resp)=>{
       let data = resp.data;
       data.notifs.forEach((d)=>{
         d.datetime= new Date(d.datetime*1000);

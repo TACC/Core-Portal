@@ -243,10 +243,12 @@ class JobsView(BaseApiView):
                     else:
                         job_post['inputs'][key] = urllib.quote(parsed.path)
 
-            # Add notification webhooks. NOTE: set jobs_wh_url to ngrok redirect for local dev testing (i.e. jobs_wh_url = 'https://12345.ngrock.io/webhooks/jobs/' , see https://ngrok.com/)
-            jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+            # NOTE: set wh_base_url to ngrok redirect for local dev testing (i.e. wh_base_url = 'https://12345.ngrock.io/webhooks/', see https://ngrok.com/)
+            wh_base_url = request.build_absolute_uri('/webhooks/')
+
+            job_post['parameters']['_webhook_base_url'] = wh_base_url
             job_post['notifications'] = [
-                {'url': jobs_wh_url,
+                {'url': wh_base_url + 'jobs/',
                 'event': e}
                 for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
 
