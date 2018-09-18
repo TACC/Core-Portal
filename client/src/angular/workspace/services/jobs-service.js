@@ -43,7 +43,6 @@ function Jobs($http) {
       d.key = new Date(d.key);
     });
     nested = nested.sort(function (a, b) { return a.key - b.key;});
-    console.log(nested);
     return nested;
   };
 
