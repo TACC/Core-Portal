@@ -34,7 +34,6 @@ class PrivateDataSearchManager(BaseSearchManager):
     def search(self, offset, limit):
         """runs a search and returns an ES search object."""
 
-        self.filter(Q({'term': {'pems.username': self._username}}))
         self.query("query_string", query=self._query_string,
                    fields=["name", "name._exact"], minimum_should_match="80%")
         self.filter(Q({'term': {'system._exact': self._system}}))
