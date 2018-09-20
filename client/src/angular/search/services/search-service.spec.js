@@ -11,12 +11,6 @@ describe("SearchService", function() {
       SearchService = _SearchService_;
       $httpBackend = _$httpBackend_;
 
-      // This fixes some issues with angular requesting templates
-      // and promises in the route resolves
-      $httpBackend.whenGET(/.html*/).respond(200, '');
-      $httpBackend.whenGET(/api\/data-depot*/).respond(200, '');
-      $httpBackend.flush();
-
     });
   });
 

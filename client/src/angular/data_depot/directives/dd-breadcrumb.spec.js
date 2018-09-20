@@ -9,9 +9,6 @@ describe("FileListing", function() {
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
       FileListing = _FileListing_;
-      $httpBackend.whenGET(/.html*/).respond(200, '');
-      // $httpBackend.whenGET(/api\/data-depot*/).respond(200, '');
-      $httpBackend.flush();
     });
   });
 
