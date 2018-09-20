@@ -1,99 +1,101 @@
 
 export default class SearchViewCtrl {
 
-  constructor (SearchService, $scope, $window, $location, $state) {
+  constructor (SearchService, $window, $location, $state) {
     'ngInject';
-    $scope.SearchService = SearchService;
-    $scope.data = {};
-    $scope.$window = $window;
-    $scope.$state = $state;
-    $scope.$location = $location;
-    $scope.query = $scope.$location.search();
-    $scope.data.text = $scope.query.q;
-    $scope.page_num = 0;
-    $scope.max_pages = 1;
-    $scope.offset = 0;
-    $scope.limit = 10;
-    $scope.total_hits = 0;
-    $scope.hits = {};
-    $scope.data.type_filter = $state.params.type_filter;
-    $scope.data.text = $state.params.query_string;
-    $scope.prettyFilterName = {
+    this.SearchService = SearchService;
+    this.data = {};
+    this.$window = $window;
+    this.$state = $state;
+    this.$location = $location;
+  }
+
+  $onInit() {
+    this.query = this.$location.search();
+    this.data.text = this.query.q;
+    this.page_num = 0;
+    this.max_pages = 1;
+    this.offset = 0;
+    this.limit = 10;
+    this.total_hits = 0;
+    this.hits = {};
+    this.data.type_filter = this.$state.params.type_filter;
+    this.data.text = this.$state.params.query_string;
+    this.prettyFilterName = {
       'cms': 'Web Content',
       'private_files': 'My Data' ,
       'published': 'Published Projects',
       'public_files': 'Public Files'
     };
-
-    $scope.next = function () {
-      $scope.page_num = $scope.page_num + 1;
-      $scope.search();
-    };
-
-    $scope.prev = function () {
-      $scope.page_num--;
-      if ($scope.page_num < 0) $scope.page_num = 0;
-      $scope.search();
-    };
-
-    $scope.filter = function(ftype) {
-      $scope.data.type_filter = ftype;
-      $scope.page_num = 0;
-      $scope.search_browse(false);
-    };
-
-    $scope.search_browse = function(switch_filter) {
-      $state.go('wb.search', {'query_string': $scope.data.text, 'type_filter': $scope.data.type_filter, 'switch_filter': switch_filter});
-    };
-
-    $scope.search = function(reset) {
-      if (reset) {
-        $scope.page_num = 0;
-      }
-      if ($scope.data.text) {
-        $scope.offset = $scope.page_num * $scope.limit;
-
-        return $scope.SearchService
-          .search($scope.data.text, $scope.limit, $scope.offset, $scope.data.type_filter)
-          .then( (resp) => {
-            $scope.data.search_results = resp.response;
-            //$scope.data.hits = resp.hits;
-            $scope.total_hits = $scope.data.search_results.total_hits;
-            $scope.max_pages = Math.ceil($scope.data.search_results.total_hits / $scope.limit);
-            if ($scope.data.search_results.filter != $scope.data.type_filter && $state.params.switch_filter) {
-              $scope.data.type_filter = $scope.data.search_results.filter;
-              $scope.search_browse(true);
-            }
-
-          });
-      }
-      else {
-        $scope.data.search_results = {};
-      };
-      return $scope.data.search_results;
-    };
-
-    $scope.ddSystemRoute = function() {
-      switch($scope.data.type_filter) {
-        case 'private_files':
-          return 'agave';
-          break;
-        case 'public_files':
-          return 'public';
-          break;
-
-      }
-      return 0;
-    };
-
-    $scope.makeUrl = function(listing) {
-      let url = $scope.$state.href('db.communityData', {systemId: listing.system, filePath:listing.path});
-      //url='hello'
-      return url;
-    };
-    if ($scope.data.text) {
-      $scope.search(true);
+    if (this.data.text) {
+      this.search(true);
     }
+  }
 
-  }  // Close constructor.
+  next () {
+    this.page_num = this.page_num + 1;
+    this.search();
+  };
+
+  prev () {
+    this.page_num--;
+    if (this.page_num < 0) this.page_num = 0;
+    this.search();
+  };
+
+  filter(ftype) {
+    this.data.type_filter = ftype;
+    this.page_num = 0;
+    this.search_browse(false);
+  };
+
+  search_browse(switch_filter) {
+    this.$state.go('wb.search', {'query_string': this.data.text, 'type_filter': this.data.type_filter, 'switch_filter': switch_filter});
+  };
+
+  search(reset) {
+    if (reset) {
+      this.page_num = 0;
+    }
+    if (this.data.text) {
+      this.offset = this.page_num * this.limit;
+
+      return this.SearchService
+        .search(this.data.text, this.limit, this.offset, this.data.type_filter)
+        .then( (resp) => {
+          this.data.search_results = resp.response;
+          //this.data.hits = resp.hits;
+          this.total_hits = this.data.search_results.total_hits;
+          this.max_pages = Math.ceil(this.data.search_results.total_hits / this.limit);
+          if (this.data.search_results.filter != this.data.type_filter && this.$state.params.switch_filter) {
+            this.data.type_filter = this.data.search_results.filter;
+            this.search_browse(true);
+          }
+
+        });
+    }
+    this.data.search_results = {};
+    return this.data.search_results;
+  };
+
+  ddSystemRoute() {
+    switch(this.data.type_filter) {
+      case 'private_files':
+        return 'agave';
+        break;
+      case 'public_files':
+        return 'public';
+        break;
+
+    }
+    return 0;
+  };
+
+  makeUrl(listing) {
+    let url = this.$state.href('wb.data_depot.db', {systemId: listing.system, filePath:listing.path});
+    return url;
+  };
+
+
+
 }  // Close class.

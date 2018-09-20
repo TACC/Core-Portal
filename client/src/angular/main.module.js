@@ -98,6 +98,8 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   .state('wb.search', {
     'url': '/search?query_string&type_filter',
     'template': searchTemplate,
+    controller: 'SearchViewCtrl',
+    controllerAs: 'vm',
     'params': {
       query_string: null,
       type_filter: 'cms',
