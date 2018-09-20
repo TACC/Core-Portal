@@ -1,11 +1,10 @@
 
 export default class SearchViewCtrl {
 
-  constructor (SearchService, $window, $location, $state) {
+  constructor (SearchService, $location, $state) {
     'ngInject';
     this.SearchService = SearchService;
     this.data = {};
-    this.$window = $window;
     this.$state = $state;
     this.$location = $location;
   }
