@@ -22,7 +22,8 @@ export default function DataDepotCtrl(
     DataBrowserService,
     SystemsService,
     ProjectService,
-    systems
+    systems,
+    FileListing
 ) {
     'ngInject';
     // get user data from service
@@ -45,33 +46,15 @@ export default function DataDepotCtrl(
         name: ($stateParams.name),
         directory: ($stateParams.directory),
         queryString: ($stateParams.query_string),
+        offset: 0,
+        limit: 100
     };
 
     $scope.browser = DataBrowserService.state();
 
-    $scope.state = {
-        offset: 0,
-        limit: 100,
-        page_num: 0,
-        max_pages: 0
-    }
-
-    $scope.nextPage = function() {
-        $scope.state.page_num++
-        $scope.state.offset += $scope.state.limit
-    }
-
-    $scope.prevPage = function() {
-        $scope.state.page_num--
-        $scope.state.offset -= $scope.state.limit
-    }
-
-    $scope.listingToShow = function() {
-        //console.log($scope.browser.listing.children)
-        if ($scope.browser.listing) {
-            return $scope.browser.listing.children.slice($scope.state.offset, $scope.state.offset + $scope.state.limit)
-        }
-        return null
+    $scope.loadMore = function() {
+        DataBrowserService.scrollToBottom(options)
+            
     }
 
     $scope.openPushPublicKeyForm = ()=>{
@@ -117,7 +100,11 @@ export default function DataDepotCtrl(
         DataBrowserService.browse(options)
             .then((resp)=>{
                 $scope.searchState = DataBrowserService.apiParams.searchState;
-                $scope.state.max_pages = Math.ceil($scope.browser.listing.children.length / $scope.state.limit)
+                $scope.browser = DataBrowserService.state(); 
+                if ($scope.browser.listing.children.length < options.limit) {
+                    $scope.browser.reachedEnd = true
+                }
+
             }, (err)=>{
                 $scope.browser = DataBrowserService.state();
                 $scope.browser.error.message = err.data.message;
@@ -186,7 +173,10 @@ export default function DataDepotCtrl(
         DataBrowserService.browse(options).then(function(resp) {
             $scope.searchState = DataBrowserService.apiParams.searchState;
             $scope.browser = DataBrowserService.state();
-            $scope.state.max_pages = Math.ceil($scope.browser.listing.children.length / $scope.state.limit)
+
+            if ($scope.browser.listing.children.length < options.limit) {
+                $scope.browser.reachedEnd = true
+            }
         });
 
         $scope.onBrowse = function($event, file) {

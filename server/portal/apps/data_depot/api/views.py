@@ -69,8 +69,8 @@ class FileListingView(BaseApiView):
                             'sessionId': request.session.session_key,
                             'operation': 'File Listing', 'info': ''})
         fmgr = get_manager(request, file_mgr_name)
-        offset = kwargs.get('offset', 0)
-        limit = kwargs.get('limit', 100)
+        offset = request.GET.get('offset', 0)
+        limit = request.GET.get('limit', 100)
         query_string = request.GET.get('queryString')
         
         if query_string is None:

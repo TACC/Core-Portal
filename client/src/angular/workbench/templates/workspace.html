@@ -86,9 +86,6 @@
              </div>
              <div class="files-listing" ng-if="!data.listingProjects">
                  <div class="table-responsive ds-table-display-wrapper"
-                      ds-infinite-scroll
-                      data-scroll-bottom="scrollToBottom()"
-                      data-scroll-top="scrollToTop()"
                       data-bottom-height="0">
                      <table class="table table-striped">
                          <caption style="white-space:nowrap">
@@ -111,7 +108,7 @@
                          <th>Size</th>
                          </thead>
                          <tbody>
-                         <tr ng-repeat="f in data.filesListing.children | orderBy : ['type', 'name']">
+                         <tr ng-repeat="f in data.filesListing.children">
                              <td>
                                  <button ng-if="f.name !== '.' && data.wants"
                                          type="button"
@@ -129,11 +126,15 @@
                      </table>
                  </div>
              </div>
-             <div ng-if="data.loading">
+             <div ng-if="data.loading || data.loadingMore">
                <p class="lead">
                  <i class="fa fa-spin fa-circle-o-notch"></i> Loading files...
                </p>
              </div>
+             <button ng-if="!(data.loading || data.loadingMore)" 
+                     class="btn btn-default btn-block" 
+                     ng-disabled="data.reachedEnd"
+                     ng-click="scrollToBottom()">{{data.reachedEnd? "No more files to show. ": "Show more files "}}</button>
 
          </div>
          <button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="togglePanel()">
