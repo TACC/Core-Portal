@@ -8,12 +8,6 @@ describe("FileListing", function() {
       $httpBackend = _$httpBackend_;
       FileListing = _FileListing_;
       $q = _$q_;
-      // This fixes some issues with angular requesting templates
-      // and promises in the route resolves
-      $httpBackend.whenGET(/.html*/).respond(200, '');
-      // $httpBackend.whenGET(/api\/data-depot*/).respond(200, '');
-      $httpBackend.flush();
-
     });
   });
 
