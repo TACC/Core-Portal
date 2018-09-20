@@ -62,6 +62,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     'url': '/dashboard',
     'template': dashboardTemplate,
     'controller': 'DashboardCtrl',
+    controllerAs: 'vm',
     'resolve': {
       // 'test': function () {console.log("dashboard resolve");}
     }
