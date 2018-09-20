@@ -10,7 +10,8 @@ export default class DashboardCtrl {
     Apps,
     $scope,
     SystemsService,
-    UserService
+    UserService,
+    systems
   ) {
     'ngInject';
     this.$uibModal = $uibModal;
@@ -19,6 +20,8 @@ export default class DashboardCtrl {
     this.$scope = $scope;
     this.SystemsService = SystemsService;
     this.UserService = UserService;
+    this.systems = systems;
+    this.mydata_system = _.find(this.systems, (d)=> {return d.name === 'My Data';});
     this.data = {};
     this.ui = {};
     this.display_job_details = false;
@@ -197,7 +200,6 @@ export default class DashboardCtrl {
   * @param {Object} sys - System object
   */
   pushKey(sys){
-    console.log(sys)
     this.ui.pushSystems[sys.id] = {
       'pushing': true,
       'error': false,

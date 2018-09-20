@@ -4,7 +4,7 @@
     <div class="col-sm-3">
       <div class="dashboard-stat blue">
         <div class="visual">
-          <i class="fa portal-icon-workspace-notext">&nbsp;</i>
+          <i class="fa fa-rocket">&nbsp;</i>
         </div>
         <div class="details">
           <div class="number"> {{vm.jobs.length}} </div>
@@ -26,7 +26,7 @@
     <div class="col-sm-3">
       <div class="dashboard-stat red">
         <div class="visual">
-          <i class="fa portal-icon-data-notext">&nbsp;</i>
+          <i class="fa fa-folder-open">&nbsp;</i>
         </div>
         <div class="details">
           <div class="number"> {{vm.usage.total_storage_bytes | bytes}} </div>
@@ -57,7 +57,7 @@
             No recent jobs! You can submit jobs in
             <a data-ui-sref="wb.workspace"> Applications </a>
           </h3>
-          <div class="text-center" data-ng-show="loading_jobs">
+          <div class="text-center" data-ng-show="vm.loading_jobs">
             <i class="fa fa-spinner fa-pulse fa-2x fa-fw" >&nbsp;</i>
           </div>
         </div>
