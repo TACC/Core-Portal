@@ -78,20 +78,22 @@ module.exports = function(env, argv){
         }
       ),
 
+      
+       new webpack.optimize.CommonsChunkPlugin({
+         name: 'vendor',
+         filename: 'vendor.[hash].js',
+         //minChunks: 2,
+         minChunks (module) {
+           return module.context &&
+                  module.context.indexOf('node_modules') >= 0;
+         }
+       }),
 
-      new ExtractTextPlugin({
-  		  filename: "bundle.[hash].css",
+       
+       new ExtractTextPlugin({
+  		  filename: "[name].[hash].css",
         allChunks: true,
       }),
-      // new webpack.optimize.CommonsChunkPlugin({
-      //   name: 'vendor',
-      //   filename: 'vendor.[hash].js',
-      //   // minChunks: 2
-      //   minChunks (module) {
-      //     return module.context &&
-      //            module.context.indexOf('node_modules') >= 0;
-      //   }
-      // }),
       new webpack.ProvidePlugin({
          jQuery: 'jquery',
          $: 'jquery',

@@ -260,8 +260,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../../', 'client'),
-    ('vendor', os.path.join(BASE_DIR, '../../client/node_modules')),
+    # os.path.join(BASE_DIR, '../../', 'client'),
+    ('build', os.path.join(BASE_DIR, '../../client/build')),
+    ('css', os.path.join(BASE_DIR, '../../client/css')),
+    ('img', os.path.join(BASE_DIR, '../../client/img')),
+    ('src', os.path.join(BASE_DIR, '../../client/src')),
 ]
 
 STATICFILES_FINDERS = [
