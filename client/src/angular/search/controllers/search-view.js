@@ -91,11 +91,4 @@ export default class SearchViewCtrl {
     return 0;
   };
 
-  makeUrl(listing) {
-    let url = this.$state.href('wb.data_depot.db', {systemId: listing.system, filePath:listing.path});
-    return url;
-  };
-
-
-
 }  // Close class.
