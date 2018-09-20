@@ -1,20 +1,26 @@
+import * as _ from 'underscore';
+
 /**
  * Systems Service
  * @param {Object} $http - Angular HTTP service
  * @param {Object} $q - Angular Q service
  */
-function SystemsService($http, $q) {
-    'ngInject';
-    let self = this;
-    self.systems = null;
+ export default class SystemsService {
+
+    constructor($http, $q) {
+      'ngInject';
+      this.systems = null;
+      this.$http = $http;
+      this.$q = $q;
+    }
 
     /**
    * Returns a system's definition
    * @param {string} systemId - System Id
    * @return {Object} System
    */
-    this.get = (systemId)=>{
-        return $http.get('/api/accounts/systems/' + systemId)
+    get(systemId) {
+        return this.$http.get('/api/accounts/systems/' + systemId)
             .then((resp)=>{
                 return resp.data.response;
             });
@@ -25,10 +31,11 @@ function SystemsService($http, $q) {
    *
    * @return {Array} An array of systems
    */
-    this.listing = ()=>{
-        return $http.get('/api/data-depot/systems/list')
+    listing() {
+        return this.$http.get('/api/data-depot/systems/list')
             .then((resp)=>{
-                self.systems = resp.data.response;
+                this.systems = resp.data.response;
+                this.mydata_system = _.find(this.systems, (d)=>{return d.name === 'My Data';});
                 return resp.data.response;
             });
     };
@@ -41,14 +48,14 @@ function SystemsService($http, $q) {
    * @param {number} offset - Offset count
    * @return {Array} an array of systems
    */
-    this.list = function(publicKeys=true, limit=100, offset=0) {
+    list(publicKeys=true, limit=100, offset=0) {
         let params = {
             publicKeys: publicKeys,
             limit: limit,
             offset: offset,
             thisPortal: true,
         };
-        return $http.get(
+        return this.$http.get(
             '/api/accounts/systems/list?publicKey',
             {params: params}
         ).then((resp)=>{
@@ -62,8 +69,8 @@ function SystemsService($http, $q) {
    * @param {Object} sys - System object
    * @return {Object} test result
    */
-    this.test = (sys)=>{
-        return $http.put(
+    test(sys) {
+        return this.$http.put(
             '/api/accounts/systems/' + sys.id + '/test'
         ).then((resp)=>{
             return resp.data;
@@ -76,8 +83,8 @@ function SystemsService($http, $q) {
    * @param {Object} sys - System object
    * @return {Object} result
    */
-    this.resetKeys = (sys)=>{
-        return $http.put(
+    resetKeys(sys) {
+        return this.$http.put(
             '/api/accounts/systems/' + sys.id + '/keys',
             {action: 'reset'}
         ).then((resp)=>{
@@ -95,8 +102,8 @@ function SystemsService($http, $q) {
    * @param {string} form.token - Token
    * @return {Object} result
    */
-    this.pushKeys = (sysId, form)=>{
-        return $http.put(
+    pushKeys(sysId, form) {
+        return this.$http.put(
             '/api/accounts/systems/' + sysId + '/keys',
             {
                 action: 'push',
@@ -106,9 +113,7 @@ function SystemsService($http, $q) {
             return resp.data;
         },
         (err)=>{
-            return $q.reject(err);
+            return this.$q.reject(err);
         });
     };
 }
-
-export default SystemsService;

@@ -8,7 +8,6 @@ export default function ProjectListingCtrl($scope, $state, $stateParams, Django,
       route: 'wb.data_depot.projects.list'
     }
   };
-  console.log($state.href('wb.data_depot.projects.list'))
   $scope.systemId = $stateParams.systemId;
   var options = {
     system: $scope.systemId,

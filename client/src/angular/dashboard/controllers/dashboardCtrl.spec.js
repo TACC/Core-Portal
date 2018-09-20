@@ -3,10 +3,12 @@ describe("DashboardCtrl", function() {
   var Notifications, controller, $q,
       Jobs, Apps, SystemsService, UserService, scope,
       $uibModal, $rootScope, $controller, ctrl,
-      $httpBackend, fakePromise;
+      $httpBackend, fakePromise, systems;
   beforeEach(angular.mock.module("portal"));
   beforeEach( ()=> {
     angular.module('django.context', []).constant('Django', {user: 'test_user'});
+    //these get passed into controller via a resolve in ui-router
+    systems = [{systemId : 1, name: 'My Data'}];
     angular.mock.inject(function(_$rootScope_, _$controller_, _Jobs_, _Apps_,
         _$uibModal_, _SystemsService_, _UserService_, _$q_, _$httpBackend_) {
       $controller = _$controller_;
@@ -18,6 +20,7 @@ describe("DashboardCtrl", function() {
       $rootScope = _$rootScope_;
       $q = _$q_;
       $httpBackend = _$httpBackend_;
+      systems = systems;
       fakePromise = $q.when();
       $httpBackend.whenGET(/.html*/).respond(200, '');
     });
@@ -36,7 +39,8 @@ describe("DashboardCtrl", function() {
     spyOn(UserService, 'usage').andReturn(fakePromise);
     ctrl = $controller('DashboardCtrl', {
       $uibModal:$uibModal, Apps: Apps, $scope: scope,
-      Jobs: Jobs, SystemsService:SystemsService, UserService:UserService
+      Jobs: Jobs, SystemsService:SystemsService, UserService:UserService,
+      systems: systems
     });
     ctrl.first_jobs_date = new Date("2018-1-1");
     ctrl.$onInit();
