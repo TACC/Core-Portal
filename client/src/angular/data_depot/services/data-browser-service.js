@@ -87,7 +87,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
           return toolbarOpts;
         },
         function(error) {
-          console.log('$http.get Error', error);
+          return $q.reject(error);
         });
   }
 
