@@ -2,7 +2,7 @@
 describe("DashboardCtrl", function() {
   var Notifications, controller, $q,
       Jobs, Apps, SystemsService, UserService, scope,
-      $uibModal, $rootScope, $controller, controller,
+      $uibModal, $rootScope, $controller, ctrl,
       $httpBackend, fakePromise;
   beforeEach(angular.mock.module("portal"));
   beforeEach( ()=> {
@@ -34,18 +34,19 @@ describe("DashboardCtrl", function() {
     spyOn(Apps, 'list').andReturn(fakePromise);
     spyOn(SystemsService, 'list').andReturn(fakePromise);
     spyOn(UserService, 'usage').andReturn(fakePromise);
-    controller = $controller('DashboardCtrl', {
+    ctrl = $controller('DashboardCtrl', {
       $uibModal:$uibModal, Apps: Apps, $scope: scope,
       Jobs: Jobs, SystemsService:SystemsService, UserService:UserService
     });
-    scope.first_jobs_date = new Date("2018-1-1");
+    ctrl.first_jobs_date = new Date("2018-1-1");
+    ctrl.$onInit();
   });
 
   it("Should have the needed methods", function() {
-    expect(scope.testSystem).toBeDefined();
-    expect(scope.publicKey).toBeDefined();
-    expect(scope.resetKeys).toBeDefined();
-    expect(scope.pushKey).toBeDefined();
+    expect(ctrl.testSystem).toBeDefined();
+    expect(ctrl.publicKey).toBeDefined();
+    expect(ctrl.resetKeys).toBeDefined();
+    expect(ctrl.pushKey).toBeDefined();
   });
 
   it("Should call the apps, jobs and systems services", ()=> {
@@ -56,15 +57,38 @@ describe("DashboardCtrl", function() {
   });
 
   it("Should have a chart", ()=> {
-    expect(scope.chart).toBeDefined();
+    expect(ctrl.chart).toBeDefined();
   });
 
   it("Should bin the jobs by date", ()=>{
     //have to $apply to get promises to resolve
     $rootScope.$apply();
-    expect(scope.jobs.length).toEqual(3);
+    expect(ctrl.jobs.length).toEqual(3);
     //should be 2 jobs for one of the days
-    expect(scope.chart_data.length).toEqual(2);
+    expect(ctrl.chart_data.length).toEqual(2);
+  });
+
+  it("Should call SystemsService.resetKeys", ()=> {
+    spyOn(SystemsService, 'resetKeys').andReturn(fakePromise);
+    let sys = {id:1};
+    ctrl.resetKeys(sys);
+    expect(SystemsService.resetKeys).toHaveBeenCalledWith(sys);
+  });
+
+  it("Should open the push keys modal", ()=>{
+    let mockModal = {
+      result: fakePromise
+    };
+    spyOn($uibModal, 'open').andReturn(mockModal);
+    ctrl.pushKey({});
+    expect($uibModal.open).toHaveBeenCalled();
+  });
+
+  it("should test systems", ()=> {
+    let sys = {id:1};
+    spyOn(SystemsService, 'test').andReturn(fakePromise);
+    ctrl.testSystem(sys);
+    expect(SystemsService.test).toHaveBeenCalledWith(sys);
   });
 
 });
