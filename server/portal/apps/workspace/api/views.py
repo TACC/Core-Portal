@@ -247,7 +247,7 @@ class JobsView(BaseApiView):
                         job_post['inputs'][key] = urllib.quote(parsed.path)
 
             # NOTE: set wh_base_url to ngrok redirect for local dev testing (i.e. wh_base_url = 'https://12345.ngrock.io/webhooks/', see https://ngrok.com/)
-            wh_base_url = 'https://5f97a813.ngrok.io/webhooks/'  #request.build_absolute_uri('/webhooks/')
+            wh_base_url = request.build_absolute_uri('/webhooks/')
 
             job_post['parameters']['_webhook_base_url'] = wh_base_url
             job_post['notifications'] = [
