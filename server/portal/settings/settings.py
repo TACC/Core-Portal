@@ -686,6 +686,8 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
 
 PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
+WH_BASE_URL = getattr(settings_secret, '_WH_BASE_URL', '')
+
 """
 SETTINGS: ELASTICSEARCH
 """
