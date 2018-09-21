@@ -245,13 +245,17 @@ class JobsView(BaseApiView):
                             parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
                     else:
                         job_post['inputs'][key] = urllib.quote(parsed.path)
-
-            # NOTE: set wh_base_url to ngrok redirect for local dev testing (i.e. wh_base_url = 'https://12345.ngrock.io/webhooks/', see https://ngrok.com/)
-            wh_base_url = request.build_absolute_uri('/webhooks/')
+ 
+            if settings.DEBUG:
+                wh_base_url = settings.WH_BASE_URL + '/webhooks/'
+                jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+            else:
+                wh_base_url = request.build_absolute_uri('/webhooks/')
+                jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
             job_post['parameters']['_webhook_base_url'] = wh_base_url
             job_post['notifications'] = [
-                {'url': wh_base_url + 'jobs/',
+                {'url': jobs_wh_url,
                 'event': e}
                 for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
 
