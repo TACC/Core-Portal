@@ -131,10 +131,9 @@
                  <i class="fa fa-spin fa-circle-o-notch"></i> Loading files...
                </p>
              </div>
-             <button ng-if="!(data.loading || data.loadingMore)" 
+             <button ng-if="!(data.loading || data.loadingMore || data.reachedEnd)" 
                      class="btn btn-default btn-block" 
-                     ng-disabled="data.reachedEnd"
-                     ng-click="scrollToBottom()">{{data.reachedEnd? "No more files to show. ": "Show more files "}}</button>
+                     ng-click="scrollToBottom()">Show more files</button>
 
          </div>
          <button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="togglePanel()">
