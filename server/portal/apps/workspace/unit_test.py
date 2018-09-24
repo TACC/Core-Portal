@@ -1,55 +1,88 @@
-from mock import Mock, patch, MagicMock, PropertyMock
+import json
+import os
+from mock import patch
 from django.test import TestCase
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from portal.apps.auth.models import AgaveOAuthToken
+
+print settings.FIXTURE_DIRS
 
 class TestAppsApiViews(TestCase):
-    # @classmethod
-    # def setUpClass(cls):
-    #     super(TestAppsApiViews, cls).setUpClass()
-    #     cls.mock_agave_patcher = patch('portal.apps.auth.models.AgaveOAuthToken')
-    #     cls.mock_agave = cls.mock_agave_patcher.start()
-    #
-    # @classmethod
-    # def tearDownClass(cls):
-    #     cls.mock_agave_patcher.stop()
-    #     super(TestAppsApiViews, cls).tearDownClass()
+    fixtures = ['user-data', 'auth']
 
+    @classmethod
+    def setUpClass(cls):
+        super(TestAppsApiViews, cls).setUpClass()
+        cls.mock_client_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client')
+        cls.mock_client = cls.mock_client_patcher.start()
 
-    def setUp(self):
-        User = get_user_model()
-        user = User.objects.create_user('test', 'test@test.com', 'test')
-        token = AgaveOAuthToken(
-            token_type="bearer",
-            scope="default",
-            access_token="1234fsf",
-            refresh_token="123123123",
-            expires_in=14400,
-            created=1523633447)
-        token.user = user
-        token.save()
+    @classmethod
+    def tearDownClass(cls):
+        cls.mock_client_patcher.stop()
+        super(TestAppsApiViews, cls).tearDownClass()
 
     def test_apps_list(self):
+        user = get_user_model().objects.get(username="username")
+        self.client.force_login(user)
+        apps = [
+            {
+                "id": "app-one",
+                "executionSystem": "stampede2"
+            },
+            {
+                "id": "app-two",
+                "executionSystem": "stampede2"
+            }
+        ]
 
-        with patch('portal.apps.auth.models.AgaveOAuthToken.client', new_callable=PropertyMock) as mock_client:
-            self.client.login(username='test', password='test')
-            apps = [
-                {
-                    "id": "app-one",
-                    "executionSystem": "stampede2"
-                },
-                {
-                    "id": "app-two",
-                    "executionSystem": "stampede2"
-                }
-            ]
+        #need to do a return_value on the mock_client because
+        #the calling signature is something like client = Agave(**kwargs).apps.list()
+        self.mock_client.apps.list.return_value = apps
+        response = self.client.get('/api/workspace/apps/', follow=True)
+        data = response.json()
+        # If the request is sent successfully, then I expect a response to be returned.
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue("response" in data)
+        self.assertEqual(len(data["response"]), 2)
+        self.assertTrue(data["response"] == apps)
 
-            #need to do a return_value on the mock_client because
-            #the calling signature is something like client = Agave(**kwargs).apps.list()
-            mock_client.return_value.apps.list.return_value = apps
-            response = self.client.get('/api/workspace/apps/', follow=True)
-            data = response.json()
-            # If the request is sent successfully, then I expect a response to be returned.
-            self.assertEqual(response.status_code, 200)
-            self.assertTrue("response" in data)
-            self.assertEqual(len(data["response"]), 2)
+    def test_job_submit_notifications(self):
+        user = get_user_model().objects.get(username="username")
+        with open(os.path.join(settings.BASE_DIR, 'fixtures', 'job-submission.json')) as f:
+            job_data = json.load(f)
+        self.mock_client.jobs.submit.return_value = {"status": "ok"}
+        self.client.force_login(user)
+        response = self.client.post('/api/workspace/jobs/', json.dumps(job_data), content_type="application/json")
+        data = response.json()
+        self.assertTrue("response" in data)
+        self.assertTrue(self.mock_client.jobs.submit.called)
+        self.assertEqual(response.status_code, 200)
+        #make sure that the notifications get into the body of the job submission
+        args, kwargs = self.mock_client.jobs.submit.call_args
+        body = kwargs["body"]
+        self.assertTrue("notifications" in body)
+        notifications = body["notifications"]
+        pending = {'url': 'http://testserver/webhooks/jobs/', 'event': 'PENDING'}
+        finished = {'url': 'http://testserver/webhooks/jobs/', 'event': 'FINISHED'}
+        self.assertTrue(pending in notifications)
+        self.assertTrue(finished in notifications)
+
+    def test_job_submit_parse_urls(self):
+        user = get_user_model().objects.get(username="username")
+        with open(os.path.join(settings.BASE_DIR, 'fixtures', 'job-submission.json')) as f:
+            job_data = json.load(f)
+        # the spaces should get quoted out
+        job_data["inputs"]["workingDirectory"] = u"agave://test.system/name with spaces"
+        self.mock_client.jobs.submit.return_value = {"status": "ok"}
+        self.client.force_login(user)
+        response = self.client.post('/api/workspace/jobs/', json.dumps(job_data), content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        args, kwargs = self.mock_client.jobs.submit.call_args
+        body = kwargs["body"]
+        input = body["inputs"]["workingDirectory"]
+        #the spaces should have been quoted
+        self.assertTrue("%20" in input)
+
+    def test_licensed_apps(self):
+        # TODO: test to make sure the licensing stuff works
+        pass

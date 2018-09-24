@@ -126,25 +126,28 @@ class MetadataView(BaseApiView):
 
         # NOTE: Only needed for tacc.prod tenant
         share_all = request.GET.get('share_all')
-        if share_all and settings.AGAVE_TENANT_BASEURL=='https://api.tacc.utexas.edu':
-            agc = service_account()
-            username = request.user.username
-            if username == settings.PORTAL_ADMIN_USERNAME:
-                return HttpResponse('User is admin', status=200)
-            query = request.GET.get('q')
-            if not query:
-                query = json.dumps({
-                    '$and': [
-                        {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
-                        {'value.definition.available': True}
-                    ]
-                })
-            meta_post['username'] = username
-            apps = agc.meta.listMetadata(q=query)
-            for app_meta in apps:
-                data = agc.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
-                if app_meta.value['type'] == 'agave':
-                    data = agc.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
+        if share_all:
+            if settings.AGAVE_TENANT_BASEURL == 'https://api.tacc.utexas.edu':
+                agc = service_account()
+                username = request.user.username
+                if username == settings.PORTAL_ADMIN_USERNAME:
+                    return HttpResponse('User is admin', status=200)
+                query = request.GET.get('q')
+                if not query:
+                    query = json.dumps({
+                        '$and': [
+                            {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
+                            {'value.definition.available': True}
+                        ]
+                    })
+                meta_post['username'] = username
+                apps = agc.meta.listMetadata(q=query)
+                for app_meta in apps:
+                    data = agc.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
+                    if app_meta.value['type'] == 'agave':
+                        data = agc.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
+            else:
+                return HttpResponse('OK')
         elif meta_uuid:
             del meta_post['uuid']
             data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
@@ -242,15 +245,19 @@ class JobsView(BaseApiView):
                             parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
                     else:
                         job_post['inputs'][key] = urllib.quote(parsed.path)
+ 
+            if settings.DEBUG:
+                wh_base_url = settings.WH_BASE_URL + '/webhooks/'
+                jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+            else:
+                wh_base_url = request.build_absolute_uri('/webhooks/')
+                jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
 
-            # Add notification webhooks. NOTE: set jobs_wh_url to ngrok redirect for local dev testing (i.e. jobs_wh_url = 'https://12345.ngrock.io/webhooks/jobs/' , see https://ngrok.com/)
-            jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+            job_post['parameters']['_webhook_base_url'] = wh_base_url
             job_post['notifications'] = [
                 {'url': jobs_wh_url,
                 'event': e}
                 for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
-
-            logger.debug(job_post)
 
             response = agave.jobs.submit(body=job_post)
             return JsonResponse({"response": response})
