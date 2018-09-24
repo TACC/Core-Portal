@@ -39,29 +39,85 @@ SESSION_COOKIE_SECURE=False
 
 ALLOWED_HOSTS = ['*']
 
+# Custom Portal Template Assets
+PORTAL_ICON_FILENAME='path/to/icon.ico'
+PORTAL_LOGO_FILENAME='path/to/logo.png'
+PORTAL_NAVBAR_BACKGROUND_FILENAME='path/to/background.png'
+PORTAL_DOMAIN = 'test.portal'
+PORTAL_ADMIN_USERNAME = 'wma_prtl'
+
 # Application definition
 
+ROOT_URLCONF = 'portal.urls'
+
+
 INSTALLED_APPS = [
+    'djangocms_admin_style',  # Order-dependent requirement for CMS. Must precede 'django.contrib.admin'.
+
     # Core Django.
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
+    'django.contrib.sessions.middleware',
+    'django.contrib.admin',
+    'django.contrib.sites',                         # CMS
+    'django.contrib.sitemaps',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
-    # django-cms apps.
+    'django.contrib.messages',
+
+    # Django CMS.
+    # CMS plugins that must be before 'cms'.
+    'cmsplugin_cascade',
+
+    # - CMS minimum requirements.
     'cms',
-    'treebeard',
     'menus',
+    'sekizai',
+    'treebeard',
+
+    # - CMS remaining plugins.
+    'djangocms_text_ckeditor',
+
+    # 'forms_builder.forms',                          # django-forms-builder
+
+
+    'aldryn_bootstrap3',
+    'captcha',                                        # Aldryn-forms
+    'filer',
+    'easy_thumbnails',
+
+    'djangocms_audio',
     'djangocms_forms',
-    # django recaptcha.
+    'djangocms_googlemap',
+    'djangocms_snippet',
+    'djangocms_style',
+    'djangocms_youtube',
+    'djangocms_video',
+
+    'cmsplugin_filer_file',
+    'cmsplugin_filer_folder',
+    'cmsplugin_filer_link',
+    'cmsplugin_filer_image',
+    'cmsplugin_filer_teaser',
+    'cmsplugin_filer_video',
+    'cmsplugin_iframe',  # edit template here: /usr/lib/python2.7/site-packages/cmsplugin_iframe/templates/cms/plugins
+    'cmsplugin_socialsharekit',
+
+    # Django recaptcha.
     'snowpenguin.django.recaptcha2',
-    # Vendor apps.
+
+    # Pipeline.
+    'mptt',
     'bootstrap3',
     'termsandconditions',
     'impersonate',
+
+    # Websockets.
     'ws4redis',
+
+    # Haystack integration.
+    'haystack',
+
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
@@ -95,8 +151,6 @@ MIDDLEWARE = [
     # Throws an Error.
     # 'portal.middleware.PortalTermsMiddleware',
 ]
-
-ROOT_URLCONF = 'portal.urls'
 
 TEMPLATES = [
     {
@@ -145,6 +199,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+IMPERSONATE_REQUIRE_SUPERUSER = True
+
 LOGIN_REDIRECT_URL = '/index/'
 
 # Internationalization
@@ -174,6 +230,10 @@ STATICFILES_DIRS = [
     ('vendor', os.path.join(BASE_DIR, '../node_modules')),
 ]
 
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, 'fixtures'),
+]
+
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -201,6 +261,22 @@ PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'
 PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
+
+PORTAL_PROJECTS_NAME_PREFIX = 'cep.project'
+
+PORTAL_PROJECTS_ID_PREFIX = 'cep.project'
+
+PORTAL_PROJECTS_ROOT_DIR = '/path/to/root'
+
+PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'projects.system.name'
+
+PORTAL_PROJECTS_ROOT_HOST = 'host.for.projects'
+
+PORTAL_PROJECTS_PRIVATE_KEY = ('-----BEGIN RSA PRIVATE KEY-----'
+                               'change this'
+                               '-----END RSA PRIVATE KEY-----')
+PORTAL_PROJECTS_PUBLIC_KEY = 'ssh-rsa change this'
+
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     'portal.apps.accounts.steps.step_one',
     'portal.apps.accounts.steps.step_two',
@@ -215,7 +291,7 @@ PORTAL_DATA_DEPOT_MANAGERS = {
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
     'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
-    'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager', 
+    'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
@@ -238,8 +314,8 @@ RT_PW = 'test'
 RT_QUEUE = 'test'
 
 # Agave Tenant.
-AGAVE_TENANT_ID = 'sd2e'
-AGAVE_TENANT_BASEURL = 'https://api.sd2e.org'
+AGAVE_TENANT_ID = 'portal'
+AGAVE_TENANT_BASEURL = 'https://api.example.com'
 
 # Agave Client Configuration
 AGAVE_CLIENT_KEY = 'test'
@@ -258,5 +334,98 @@ ES_FILES_DOC_TYPE = "files"
 ES_PROJECTS_DOC_TYPE = "projects"
 ES_METADATA_DOC_TYPE = "metadata"
 
-HAYSTACK_CONNECTIONS = "test"
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': ('haystack.backends.elasticsearch_backend.'
+                   'ElasticsearchSearchEngine'),
+        'URL': 'test:9200/',
+        'INDEX_NAME': 'cms',
+    }
+}
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
+
+"""
+SETTINGS: LOGGING
+"""
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '[DJANGO-TEST] %(levelname)s %(asctime)s %(module)s '
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
+        },
+        'agave': {
+            'format': '[AGAVE-TEST] %(levelname)s %(asctime)s %(module)s '
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
+        },
+        'metrics': {
+            'format': '[METRICS-TEST] %(levelname)s %(module)s %(name)s.'
+                      '%(funcName)s:%(lineno)s: %(message)s '
+                      'user=%(user)s sessionId=%(sessionId)s '
+                      'op=%(operation)s info=%(info)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+        },
+        'metrics_console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'metrics',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'portal': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'metrics': {
+            'handlers': ['metrics_console'],
+            'level': 'INFO',
+        },
+        'paramiko': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
+        }
+    },
+}
+
+MIGRATION_MODULES = {
+    'auth': None,
+    'contenttypes': None,
+    'default': None,
+    'sessions': None,
+    'core': None,
+    'profiles': None,
+    'snippets': None,
+    'scaffold_templates': None,
+    'cms': None,
+    'filer': None,
+    'aldryn_bootstrap3': None,
+    'cmsplugin_cascade': None,
+    'cmsplugin_filer_file': None,
+    'cmsplugin_filer_image': None,
+    'cmsplugin_filer_video': None,
+    'cmsplugin_filer_teaser': None,
+    'cmsplugin_filer_link': None,
+    'cmsplugin_filer_folder': None,
+    'djangocms_audio': None,
+    'djangocms_googlemap': None,
+    'djangocms_snippet': None,
+    'djangocms_style': None,
+    'djangocms_text_ckeditor': None,
+    'djangocms_video': None,
+    'cmsplugin_socialsharekit': None,
+    'cmsplugin_iframe': None,
+    'djangocms_forms': None
+}

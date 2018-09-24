@@ -29,7 +29,9 @@ gettext = lambda s: s  # noqa:E731
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, 'fixtures'),
+]
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -629,7 +631,7 @@ PORTAL_DATA_DEPOT_MANAGERS = {
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
     'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
-    'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager', 
+    'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
