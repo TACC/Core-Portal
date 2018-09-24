@@ -105,9 +105,7 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     } else {
       items.push('maxRunTime', 'name', 'archivePath');
     }
-    if ($scope.data.app.parallelism == "PARALLEL") {
-      items.push('nodeCount');
-    }
+
     $scope.form.form.push({
       type: 'fieldset',
       readonly: $scope.data.needsLicense,
@@ -175,11 +173,6 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
           }
         }
       });
-
-      // Calculate processorsPerNode if nodeCount parameter submitted
-      if (_.has(jobData, 'nodeCount')) {
-        jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
-      }
 
       var unregister = $scope.$watchCollection('jobReady', function (params) {
         if (Object.values(params).every(Boolean)) {
