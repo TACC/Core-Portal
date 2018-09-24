@@ -57,6 +57,9 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
           $scope.data.dirPath = $scope.data.filePath.split('/');
         }
         $scope.data.loading = false;
+        if (listing.children.length < $scope.data.cOption.conf.limit) {
+          $scope.data.reachedEnd = true;
+        }
       }, function(err){
         $scope.data.error = 'Unable to list the selected data source: ' + err.statusText;
         $scope.data.loading = false;
