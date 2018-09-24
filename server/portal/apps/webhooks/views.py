@@ -95,7 +95,7 @@ class JobsWebhookView(BaseApiView):
                 logger.debug('archivePath: {}'.format(archivePath))
                 archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
                 target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
-                
+
                 event_data[Notification.STATUS] = Notification.SUCCESS
                 event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
                 event_data[Notification.EXTRA]['target_path'] = target_path
