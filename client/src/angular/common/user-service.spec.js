@@ -10,13 +10,6 @@ describe("UserService", function() {
     angular.mock.inject(function(_$httpBackend_, _UserService_) {
       UserService = _UserService_;
       $httpBackend = _$httpBackend_;
-
-      // This fixes some issues with angular requesting templates
-      // and promises in the route resolves
-      $httpBackend.whenGET(/.html*/).respond(200, '');
-      $httpBackend.whenGET(/api\/data-depot*/).respond(200, '');
-      $httpBackend.flush();
-
     });
   });
 
