@@ -265,6 +265,7 @@ STATICFILES_DIRS = [
     ('css', os.path.join(BASE_DIR, '../../client/css')),
     ('img', os.path.join(BASE_DIR, '../../client/img')),
     ('src', os.path.join(BASE_DIR, '../../client/src')),
+    ('node_modules/bootstrap', os.path.join(BASE_DIR, '../../client/node_modules/bootstrap')),
 ]
 
 STATICFILES_FINDERS = [
