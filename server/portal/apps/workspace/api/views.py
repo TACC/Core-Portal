@@ -250,8 +250,6 @@ class JobsView(BaseApiView):
                 'event': e}
                 for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
 
-            logger.debug(job_post)
-
             response = agave.jobs.submit(body=job_post)
             return JsonResponse({"response": response})
 
