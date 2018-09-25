@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from portal.views.base import BaseApiView
 from portal.apps.accounts.managers import accounts as AccountsManager
+from portal.apps.search.tasks import agave_indexer
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -161,6 +162,9 @@ class SystemKeysView(BaseApiView):
             hostname=body['form']['hostname']
         )
         if success:
+            # Index the user's home directory once keys are successfully pushed.
+            agave_indexer.apply_async(args=[system_id], 
+                                    kwargs={'username': request.user.username})
             return JsonResponse({
                 'systemId': system_id,
                 'message': 'OK'
