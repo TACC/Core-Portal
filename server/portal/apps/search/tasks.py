@@ -17,7 +17,7 @@ from portal.libs.agave.utils import service_account
 logger = logging.getLogger(__name__)
 
 # Crawl and index agave files
-@shared_task(bind=True, max_retries=3, retry_backoff=True)
+@shared_task(bind=True, max_retries=3, retry_backoff=True, rate_limit="1/s")
 def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, update_pems = False, ignore_hidden=True):
     from portal.libs.elasticsearch.utils import index_level
     from portal.libs.agave.utils import walk_levels
