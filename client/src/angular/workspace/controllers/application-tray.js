@@ -6,7 +6,7 @@ import $ from 'jquery';
   $scope.tabs = [];
 
   $scope.simpleList = new SimpleList();
-
+  $scope.simpleList.getPrivate();
   $scope.addDefaultTabs = function () {
     $scope.error = '';
     var self = this;
@@ -98,7 +98,7 @@ import $ from 'jquery';
   };
 
     $scope.refreshApps();
-  
+
 
   $scope.launchApp = function(app) {
     $state.go(
@@ -137,7 +137,7 @@ import $ from 'jquery';
           $scope.activeTab = null;
         }
       }
-    }    
+    }
   });
 }
 
