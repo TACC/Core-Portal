@@ -30,9 +30,10 @@ def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, upd
 
     try:
         filePath, folders, files = walk_levels(client, systemId, filePath).next()
-    except Exception as e:
-        logger.debug(e)
-        self.retry()
+    except Exception as exc:
+        logger.debug(exc)
+        self.retry(exc=exc)
+        raise
 
     index_level(filePath, folders, files, systemId, pems_username)
     for child in folders:
