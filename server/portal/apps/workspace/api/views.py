@@ -65,7 +65,7 @@ class AppsView(BaseApiView):
             if public_only == 'true':
                 data = agave.apps.list(publicOnly='true')
             else:
-                data = agave.apps.list()
+                data = agave.apps.list(privateOnly=True)
         return JsonResponse({"response": data})
 
 @method_decorator(login_required, name='dispatch')
@@ -245,7 +245,7 @@ class JobsView(BaseApiView):
                             parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
                     else:
                         job_post['inputs'][key] = urllib.quote(parsed.path)
- 
+
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'
                 jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
