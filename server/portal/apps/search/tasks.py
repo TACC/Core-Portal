@@ -16,81 +16,28 @@ from portal.libs.agave.models.files import BaseFile
 from portal.libs.agave.utils import service_account
 logger = logging.getLogger(__name__)
 
-def delete_recursive(object_to_delete):
-    ES_child_search = IndexedFile.search()\
-        .filter(Q({'term': {'system._exact': object_to_delete.system}}))\
-        .query(Q({'term': {'basePath._exact': object_to_delete.path}}))
-    ES_children = ES_child_search.execute()
-
-    for child in ES_children:
-        delete_recursive(child)
-
-    object_to_delete.delete()
-
 # Crawl and index agave files
-@shared_task(bind=True)
-def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, update_pems = False):
+@shared_task(bind=True, max_retries=3, retry_backoff=True, rate_limit="1/s")
+def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, update_pems = False, ignore_hidden=True):
+    from portal.libs.elasticsearch.utils import index_level
+    from portal.libs.agave.utils import walk_levels
 
     if username != None:
-        # get user object from agave.
-        u = User.objects.get(username=username)
         pems_username = username
-        client = u.agave_oauth.client
     else:
-        client = service_account()
         pems_username = settings.PORTAL_ADMIN_USERNAME
-
-    index_agave(systemId, client, pems_username, filePath, update_pems)
-
-    """
-    file_root = BaseFile(client, systemId, filePath)
-    children = file_root.children()
-    for child in children:
-        child_dict = child.to_dict()
-
-        f = BaseESFile(pems_username, **child_dict)
-        f_save = f.save()
-        # If f.save() returns true, a new file is being indexed and we have to index the permissions also.
-        if f_save == True or update_pems:
-            pems = child.pems_list()
-            f._wrapped.update(**{'pems': pems})
-
-        # Recurse on any dirs.
-        if recurse and child.mimeType == 'text/directory' and not child.name.startswith('.'):
-            try:
-                agave_indexer.apply_async(
-                    args=(systemId, ),
-                    kwargs={"filePath": child.path, "username": username}
-                )
-            except Exception as e:
-                logger.info(e)
-
-    listing_paths = [child.path for child in children]
+    client = service_account()
 
     try:
-        es_root = BaseESFile(pems_username, **file_root.to_dict())
-        es_root_children = es_root.children()
-        for child in es_root_children:
-            if child.path not in listing_paths:
-                child.delete()
-    except DocumentNotFound:
-        pass
+        filePath, folders, files = walk_levels(client, systemId, filePath).next()
+    except Exception as exc:
+        logger.debug(exc)
+        self.retry(exc=exc)
+        raise exc
 
-    basePath_search = IndexedFile.search()\
-        .filter(Q({'term': {'system._exact': systemId}}))\
-        .query(Q({'term': {'basePath._exact': filePath}}))
-    
-    
-    for result in basePath_search.execute():
-        if result.path not in listing_paths:
-            delete_recursive(result)
- 
-    
-    #except Exception as e:
-    #    logger.info(e)
-    #    logger.info("Error, could not index {system}:{path}".format(system=systemId, path=filePath))
-
-    """
+    index_level(filePath, folders, files, systemId, pems_username)
+    for child in folders:
+        self.delay(systemId, filePath=child.path)
 
 @shared_task(bind=True)
 def index_community_data(self):
