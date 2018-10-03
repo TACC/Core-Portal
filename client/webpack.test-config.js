@@ -36,7 +36,7 @@ module.exports = {
             loader: 'istanbul-instrumenter-loader',
             options: { esModules: true }
           },
-          enforce: 'post',
+          enforce: 'pre',
           exclude: /node_modules|\.spec\.js$/,
         },
         {
