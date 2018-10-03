@@ -36,6 +36,9 @@ certs/
 # no node modules
 node_modules/
 
+#no coverage
+client/coverage
+
 # no client build
 client/build/
 
