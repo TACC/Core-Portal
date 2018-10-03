@@ -31,6 +31,14 @@ module.exports = {
            }
          ]
         },
+        {test: /\.js$/,
+          use: {
+            loader: 'istanbul-instrumenter-loader',
+            options: { esModules: true }
+          },
+          enforce: 'post',
+          exclude: /node_modules|\.spec\.js$/,
+        },
         {
           test: /\.html$/,
           exclude: /node_modules/,
@@ -46,7 +54,8 @@ module.exports = {
       new webpack.ProvidePlugin({
          jQuery: 'jquery',
          $: 'jquery',
-         jquery: 'jquery'
+         jquery: 'jquery',
+         tv4: 'tv4'
      })
     ]
 };
