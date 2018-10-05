@@ -65,7 +65,158 @@ class AppsView(BaseApiView):
             if public_only == 'true':
                 data = agave.apps.list(publicOnly='true')
             else:
-                data = agave.apps.list(privateOnly=True)
+                # data = agave.apps.list(privateOnly=True)
+                data = [{
+                  "id": "jupyter-singularity-maverick-jmeiring-0.1.0",
+                  "name": "jupyter-singularity-maverick-jmeiring",
+                  "icon": None,
+                  "uuid": "7233103086709829145-242ac115-0001-005",
+                  "parallelism": "SERIAL",
+                  "defaultProcessorsPerNode": 1,
+                  "defaultMemoryPerNode": 1,
+                  "defaultNodeCount": 1,
+                  "defaultMaxRunTime": None,
+                  "defaultQueue": "gpgpu-k80",
+                  "version": "0.1.0",
+                  "revision": 1,
+                  "isPublic": False,
+                  "helpURI": "http://jupyter.org/",
+                  "label": "HPC Jupyter Notebook - Maverick",
+                  "owner": "sd2eadm",
+                  "shortDescription": "Creates an interactive jupyter notebook on the Maverick HPC system  and emails connection details.",
+                  "longDescription": "",
+                  "tags": [
+                    "python",
+                    "jupyter",
+                    "singularity",
+                    "interactive",
+                    "maverick"
+                  ],
+                  "ontology": [
+                    "http://sswapmeet.sswap.info/agave/apps/Application"
+                  ],
+                  "executionType": "HPC",
+                  "executionSystem": "hpc-tacc-maverick-jmeiring",
+                  "deploymentPath": "/apps/jupyter-singularity-maverick-user",
+                  "deploymentSystem": "data-sd2e-app-assets",
+                  "templatePath": "wrapper.sh",
+                  "testPath": "test/test.sh",
+                  "checkpointable": False,
+                  "lastModified": "2017-10-19T10:24:33.000-05:00",
+                  "modules": [
+                    "load tacc-singularity",
+                    "load python"
+                  ],
+                  "available": True,
+                  "inputs": [
+                    {
+                      "id": "inputFiles",
+                      "value": {
+                        "validator": "",
+                        "visible": True,
+                        "required": False,
+                        "order": 0,
+                        "enquote": False,
+                        "default": [
+                          ""
+                        ]
+                      },
+                      "details": {
+                        "label": "All files listed will be copied to the notebook's home directory",
+                        "description": "",
+                        "argument": None,
+                        "showArgument": False,
+                        "repeatArgument": False
+                      },
+                      "semantics": {
+                        "minCardinality": 1,
+                        "maxCardinality": -1,
+                        "ontology": [],
+                        "fileTypes": [
+                          "raw-0"
+                        ]
+                      }
+                    }
+                  ],
+                  "parameters": [
+                    {
+                      "id": "email",
+                      "value": {
+                        "visible": True,
+                        "required": True,
+                        "type": "string",
+                        "order": 0,
+                        "enquote": False,
+                        "default": "",
+                        "validator": ""
+                      },
+                      "details": {
+                        "label": "Once the notebook is ready, the password and connection instructions will be sent here.",
+                        "description": None,
+                        "argument": None,
+                        "showArgument": False,
+                        "repeatArgument": False
+                      },
+                      "semantics": {
+                        "minCardinality": 1,
+                        "maxCardinality": 1,
+                        "ontology": [
+                          "xs:string"
+                        ]
+                      }
+                    },
+                    {
+                      "id": "containerImage",
+                      "value": {
+                        "visible": False,
+                        "required": True,
+                        "type": "string",
+                        "order": 0,
+                        "enquote": False,
+                        "default": "/work/03076/gzynda/public/apps/singularity-sd2e/sd2e_jupyteruser-sd2e_devel.img",
+                        "validator": ""
+                      },
+                      "details": {
+                        "label": "Optional. Specifying a container image here will override the default Jupyter image.",
+                        "description": None,
+                        "argument": None,
+                        "showArgument": False,
+                        "repeatArgument": False
+                      },
+                      "semantics": {
+                        "minCardinality": 1,
+                        "maxCardinality": 1,
+                        "ontology": [
+                          "xs:string"
+                        ]
+                      }
+                    }
+                  ],
+                  "outputs": [],
+                  "_links": {
+                    "self": {
+                      "href": "https://api.sd2e.org/apps/v2/jupyter-singularity-maverick-jmeiring-0.1.0"
+                    },
+                    "executionSystem": {
+                      "href": "https://api.sd2e.org/systems/v2/hpc-tacc-maverick-jmeiring"
+                    },
+                    "storageSystem": {
+                      "href": "https://api.sd2e.org/systems/v2/data-sd2e-app-assets"
+                    },
+                    "history": {
+                      "href": "https://api.sd2e.org/apps/v2/jupyter-singularity-maverick-jmeiring-0.1.0/history"
+                    },
+                    "metadata": {
+                      "href": "https://api.sd2e.org/meta/v2/data/?q=%7B%22associationIds%22%3A%227233103086709829145-242ac115-0001-005%22%7D"
+                    },
+                    "owner": {
+                      "href": "https://api.sd2e.org/profiles/v2/sd2eadm"
+                    },
+                    "permissions": {
+                      "href": "https://api.sd2e.org/apps/v2/jupyter-singularity-maverick-jmeiring-0.1.0/pems"
+                    }
+                  }
+                }]
         return JsonResponse({"response": data})
 
 @method_decorator(login_required, name='dispatch')
