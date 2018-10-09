@@ -16,10 +16,6 @@ function agaveFilePicker() {
 
         if (formKey[formKey.length - 1] == '.' && $scope.$parent.$index >= 0 ) {
           formKey += $scope.$parent.$index;
-          /*
-          formKey = formKey.substring(0, formKey.length - 1);
-          formKey += "[" + $scope.$parent.$index + "]";
-          */
         }
 
         $scope.requesting = false;
