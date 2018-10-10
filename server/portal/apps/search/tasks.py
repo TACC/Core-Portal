@@ -28,16 +28,20 @@ def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, upd
         pems_username = settings.PORTAL_ADMIN_USERNAME
     client = service_account()
 
+    if filePath[0] != '/':
+        filePath = '/' + filePath 
+
     try:
-        filePath, folders, files = walk_levels(client, systemId, filePath).next()
+        filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).next()
+        logger.debug(filePath)
     except Exception as exc:
         logger.debug(exc)
-        self.retry(exc=exc)
-        raise exc
+        raise self.retry(exc=exc)
 
     index_level(filePath, folders, files, systemId, pems_username)
-    for child in folders:
-        self.delay(systemId, filePath=child.path)
+    if recurse:
+        for child in folders:
+            self.delay(systemId, filePath=child.path)
 
 @shared_task(bind=True)
 def index_community_data(self):
