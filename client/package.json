@@ -53,8 +53,13 @@
     "angular-material": "=1.1.9",
     "angular-messages": "=1.6.1",
     "angular-sanitize": "=1.6.9",
+<<<<<<< HEAD
     "angular-schema-form": "^1.0.0-alpha.4",
     "angular-schema-form-bootstrap": "^1.0.0-alpha.4",
+=======
+    "angular-schema-form": "=1.0.0-alpha.4",
+    "angular-schema-form-bootstrap": "=1.0.0-alpha.4",
+>>>>>>> Bourbon
     "angular-translate": "^2.17.1",
     "angular-ui-bootstrap": "^2.5.0",
     "angular-ui-router": "^1.0.3",
