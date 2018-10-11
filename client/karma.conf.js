@@ -29,15 +29,15 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test-context.js': ['webpack', 'coverage'],
-      'src/**/*.spec.js': ['webpack', 'coverage']
+      'test-context.js': ['webpack', 'sourcemap'],
+      'src/**/*.spec.js': ['webpack', 'sourcemap']
     },
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress', 'coverage-istanbul'],
+    reporters: ['spec', 'coverage-istanbul'],
     coverageReporter: {
       watermarks: {
         statements: [ 50, 75 ],
