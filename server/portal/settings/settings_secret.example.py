@@ -40,7 +40,8 @@ _TAS_CLIENT_SECRET='secret'
 _RT_HOST='https://consult.tacc.utexas.edu/REST/1.0'
 _RT_UN='username'
 _RT_PW='password'
-_RT_QUEUE = 'QUEUENAME'
+_RT_QUEUE = 'QUEUE'
+_RT_TAG = 'CEP_portal'
 
 # Recaptcha Authentication.
 _RECAPTCHA_PUBLIC_KEY='public_key'
