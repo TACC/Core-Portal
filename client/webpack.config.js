@@ -78,7 +78,7 @@ module.exports = function(env, argv){
         }
       ),
 
-      
+
        new webpack.optimize.CommonsChunkPlugin({
          name: 'vendor',
          filename: 'vendor.[hash].js',
@@ -89,7 +89,7 @@ module.exports = function(env, argv){
          }
        }),
 
-       
+
        new ExtractTextPlugin({
   		  filename: "[name].[hash].css",
         allChunks: true,
@@ -97,7 +97,8 @@ module.exports = function(env, argv){
       new webpack.ProvidePlugin({
          jQuery: 'jquery',
          $: 'jquery',
-         jquery: 'jquery'
+         jquery: 'jquery',
+         tv4: 'tv4'
      })
     ]
   };
