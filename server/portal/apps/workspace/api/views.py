@@ -243,7 +243,7 @@ class JobsView(BaseApiView):
             if job_post['inputs']:
                 for key, value in six.iteritems(job_post['inputs']):
                     # this could either be an array, or a string...
-                    if type(value) is str:
+                    if isinstance(value, basestring):
                         parsed = urlparse(value)
                         if parsed.scheme:
                             job_post['inputs'][key] = '{}://{}{}'.format(
