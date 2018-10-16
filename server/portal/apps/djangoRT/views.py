@@ -1,8 +1,12 @@
+import logging
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from portal.apps.djangoRT import rtUtil, forms, rtModels
 from django.contrib.auth.decorators import login_required
+import os
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def mytickets(request):
@@ -32,12 +36,26 @@ def ticketcreate(request):
 	if request.user.is_authenticated():
 		data = { 'email' : request.user.email, 'first_name' : request.user.first_name, 'last_name' : request.user.last_name}
 
+
+	subject = request.GET.get('subject', None)
+	if subject:
+		data['subject'] = subject
+	
+	info = request.GET.get('info', "None")
+	metadata = "*** Ticket Metadata ***" + os.linesep + os.linesep
+	metadata = metadata + "Client info:" + os.linesep + info + os.linesep + os.linesep
+
+	for meta in [ 'HTTP_REFERER', 'HTTP_USER_AGENT', 'HTTP_COOKIE', 'SERVER_NAME' ]:
+		metadata = metadata + meta + os.linesep + request.META.get(meta, "None") + os.linesep + os.linesep
+
+	data['metadata'] = metadata
+
 	if request.method == 'POST':
 		form = forms.TicketForm(request.POST)
-
 		if form.is_valid():
 			ticket = rtModels.Ticket(subject = form.cleaned_data['subject'],
-					problem_description = form.cleaned_data['problem_description'],
+					problem_description = form.cleaned_data['problem_description'] + \
+						os.linesep + os.linesep + form.cleaned_data['metadata'],
 					requestor = form.cleaned_data['email'],
 					cc = form.cleaned_data['cc'])
 			ticket_id = rt.createTicket(ticket)

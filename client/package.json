@@ -82,6 +82,7 @@
     "ng-storage": "^0.3.2",
     "objectpath": "^1.2.1",
     "picturefill": "^3.0.2",
+    "query-string": "^6.2.0",
     "rxjs": "^6.2.2",
     "select2": "^4.0",
     "style-loader": "^0.20.3",
