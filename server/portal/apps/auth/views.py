@@ -129,7 +129,10 @@ def agave_oauth_callback(request):
         next_uri = request.session.pop('next')
         return HttpResponseRedirect(next_uri)
     else:
-        return HttpResponseRedirect('/')
+        if settings.PORTAL_NAMESPACE == 'CEP':
+            return HttpResponseRedirect('/')   # Default Index.
+        if settings.PORTAL_NAMESPACE == 'PT2050':
+            return HttpResponseRedirect('/workbench/dashboard')   # Redirect to Dashboard.
 
 def agave_session_error(request):
     """Agave token error handler.
