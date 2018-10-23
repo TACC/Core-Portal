@@ -3,9 +3,22 @@
 <nav class="navbar navbar-default" style="background-image: url('{{ settings.PORTAL_NAVBAR_BACKGROUND_FILENAME }}');">
 {% else %}
 <nav class="navbar navbar-default">
-{% endif %}
+  {% endif %}
   <div class="container-fluid">
     <div class="navbar-header">
+      {% if settings.PORTAL_NAMESPACE|lower == "pt2050" %}
+      <div class="navbar-left">
+        {% if settings.PORTAL_NAMESPACE|lower == "pt2050" %}
+        <div class="text-info navbar-logo-text" style="cursor: default;">{{ settings.PORTAL_NAMESPACE }}</div>
+        {% else %}
+          {% if settings.PORTAL_LOGO_FILENAME %}
+          <img src="{{ settings.PORTAL_LOGO_FILENAME }}" class="portal-branding nav-icon" style="height:45px;">
+          {% else %}
+          <div class="text-info navbar-logo-text" style="cursor: default;">{{ settings.PORTAL_NAMESPACE }}</div>
+          {% endif %}
+        {% endif %}
+      </div>
+      {% else %}
       <a href="/" class="navbar-left">
         {% if settings.PORTAL_LOGO_FILENAME %}
         <img src="{{ settings.PORTAL_LOGO_FILENAME }}" class="portal-branding nav-icon" style="height:45px;">
@@ -13,15 +26,20 @@
         <div class="text-info navbar-logo-text">{{ settings.PORTAL_NAMESPACE }}</div>
         {% endif %}
       </a>
+      {% endif %}
       <!-- Normal Navbar -->
       <ul class="nav navbar-nav hidden-xs">
         <!-- when user is logged in, show these nav items -->
         {% if user.is_authenticated %}
         <li class="{% active 'workbench' %}">
-          {% if settings.PORTAL_NAMESPACE|lower == "sd2e" %}
-          <a href="{% url 'workbench:index' %}">Workbench</a>
+          {% if settings.PORTAL_NAMESPACE|lower == "pt2050" %}
+            <!-- No navigation elements for PT2050 -->
+          {% elif settings.PORTAL_NAMESPACE|lower == "sd2e" %}
+            <!-- SD2E uses custrom Workbench nav label. -->
+            <a href="{% url 'workbench:index' %}">Workbench</a>
           {% else %}
-          <a href="{% url 'workbench:index' %}">Dashboard</a>
+            <!-- All other portals use the Dashboard nav label. -->
+            <a href="{% url 'workbench:index' %}">Dashboard</a>
           {% endif %}
         </li>
         {% endif %}
@@ -41,59 +59,53 @@
     <!-- Collapsed Navbar -->
     <div class="collapse navbar-collapse" id="main-navigation">
       <ul class="nav navbar-nav">
-         {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
+        {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
-      {% if user.is_authenticated %}
+        {% if user.is_authenticated %}
         <div id="notifications-bell-container">
           <notifications-bell></notifications-bell>
         </div>
-
-     <div class="nav navbar-nav navbar-right">
-        <!-- Unused Serach Bar -->
-        <!--
-        <form class="navbar-form navbar-left navbar-input-group">
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Search" ng-model="vm.text"/>
-            <button
-              type="submit"
-              ng-click="vm.search(vm.text)"
-              class="btn btn-default">
-              <i class="fa fa-search"></i>
-            </button>
-          </div>
-        </form>
-        -->
-        <li class="dropdown right-nav-links">
-          <a class="dropdown-toggle"
-                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </a>
-          <ul class="dropdown-menu">
-            <li {% if request.get_full_path == '/accounts/profile/' %} class="active" {% endif %}>
-              <a href="{% url 'portal_accounts:manage_profile' %}">
-                <i class="fa fa-user-circle-o nav-icon"></i> My account
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'tickets:mytickets' %}">
-                <i class="fa fa-ticket nav-icon"></i> My tickets
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'portal_accounts:logout' %}">
-                <i class="fa fa-sign-out nav-icon"></i> Log out
-              </a>
-            </li>
-            {% if user.is_impersonate %}
-            <li>
-              <i class="fa fa-user-secret nav-icon"></i>
-              <a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a>
-            </li>
-            {% endif %} <!-- end of impersonate -->
-          </ul>
+        <div class="nav navbar-nav navbar-right">
+          <li class="dropdown right-nav-links">
+            <a class="dropdown-toggle" style="cursor: pointer;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{% url 'portal_accounts:manage_profile' %}">
+                  <i class="fa fa-user-circle-o nav-icon"></i> My account
+                </a>
+              </li>
+              <!-- Custom Navigation Element for the PT2050 Portal. -->
+              {% if settings.PORTAL_NAMESPACE|lower == "pt2050" %}
+              <li>
+                <a href="{% url 'workbench:index' %}">
+                  <i class="fa fa-desktop nav-icon"></i> My dashboard
+                </a>
+              </li>
+              {% endif %}
+              <li>
+                <a href="{% url 'tickets:mytickets' %}">
+                  <i class="fa fa-ticket nav-icon"></i> My tickets
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'portal_accounts:logout' %}">
+                  <i class="fa fa-sign-out nav-icon"></i> Log out
+                </a>
+              </li>
+              {% if user.is_impersonate %}
+              <li>
+                <i class="fa fa-user-secret nav-icon"></i>
+                <a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a>
+              </li>
+              {% endif %}
+              <!-- end of impersonate -->
+            </ul>
+          </li>
         </div>
         </li>
         {% else %} <!-- if user is not logged in -->
@@ -121,4 +133,5 @@
         <!-- end of user logged in/not logged in if -->
       </ul>
     </div><!-- /.navbar-collapse -->
+  </div>
 </nav>
