@@ -33,7 +33,6 @@ def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, upd
 
     try:
         filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).next()
-        logger.debug(filePath)
     except Exception as exc:
         logger.debug(exc)
         raise self.retry(exc=exc)
