@@ -6,6 +6,7 @@ const webpack = require('webpack');
 // console.log(ngAnnotatePlugin)
 
 module.exports = {
+    devtool: 'inline-source-map',
     module: {
       rules: [
         {
@@ -30,6 +31,14 @@ module.exports = {
              }
            }
          ]
+        },
+        {test: /\.js$/,
+          use: {
+            loader: 'istanbul-instrumenter-loader',
+            options: { esModules: true }
+          },
+          enforce: 'pre',
+          exclude: /node_modules|\.spec\.js$/,
         },
         {
           test: /\.html$/,
