@@ -52,7 +52,8 @@ class DjangoRt:
 				Subject=ticket.subject,
 				Text=ticket.problem_description,
 				Requestors=ticket.requestor,
-				Cc=",".join(ticket.cc))
+				Cc=",".join(ticket.cc),
+				CF_resource=settings.RT_TAG)
 
 	def replyToTicket(self, ticket_id, reply_text):
 		return self.tracker.reply(ticket_id, text=reply_text)
