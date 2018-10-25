@@ -154,7 +154,7 @@ class SystemKeysView(BaseApiView):
         :param request: Django's request object
         :param str system_id: System id
         """
-        success, result = AccountsManager.add_pub_key_to_resource(
+        success, result, http_status = AccountsManager.add_pub_key_to_resource(
             request.user.username,
             password=body['form']['password'],
             token=body['form']['token'],
@@ -175,5 +175,5 @@ class SystemKeysView(BaseApiView):
                 'systemId': system_id,
                 'message': result
             },
-            status=500
+            status=http_status
         )
