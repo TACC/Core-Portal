@@ -6,19 +6,6 @@
   {% endif %}
   <div class="container-fluid">
     <div class="navbar-header">
-      {% if settings.PORTAL_NAMESPACE|lower == "pt2050" %}
-      <div class="navbar-left">
-        {% if settings.PORTAL_NAMESPACE|lower == "pt2050" %}
-        <div class="text-info navbar-logo-text" style="cursor: default;">{{ settings.PORTAL_NAMESPACE }}</div>
-        {% else %}
-          {% if settings.PORTAL_LOGO_FILENAME %}
-          <img src="{{ settings.PORTAL_LOGO_FILENAME }}" class="portal-branding nav-icon" style="height:45px;">
-          {% else %}
-          <div class="text-info navbar-logo-text" style="cursor: default;">{{ settings.PORTAL_NAMESPACE }}</div>
-          {% endif %}
-        {% endif %}
-      </div>
-      {% else %}
       <a href="/" class="navbar-left">
         {% if settings.PORTAL_LOGO_FILENAME %}
         <img src="{{ settings.PORTAL_LOGO_FILENAME }}" class="portal-branding nav-icon" style="height:45px;">
@@ -26,24 +13,9 @@
         <div class="text-info navbar-logo-text">{{ settings.PORTAL_NAMESPACE }}</div>
         {% endif %}
       </a>
-      {% endif %}
       <!-- Normal Navbar -->
       <ul class="nav navbar-nav hidden-xs">
-        <!-- when user is logged in, show these nav items -->
-        {% if user.is_authenticated %}
-        <li class="{% active 'workbench' %}">
-          {% if settings.PORTAL_NAMESPACE|lower == "pt2050" %}
-            <!-- No navigation elements for PT2050 -->
-          {% elif settings.PORTAL_NAMESPACE|lower == "sd2e" %}
-            <!-- SD2E uses custrom Workbench nav label. -->
-            <a href="{% url 'workbench:index' %}">Workbench</a>
-          {% else %}
-            <!-- All other portals use the Dashboard nav label. -->
-            <a href="{% url 'workbench:index' %}">Dashboard</a>
-          {% endif %}
-        </li>
-        {% endif %}
-        <!-- end of user authed nav items-->
+        <!-- No navigation controlled by portal. All nav will be handled in the CMS. -->
       </ul>
       {% if section_root %}
       <a class="navbar-brand">{{section_root.title}}</a>
@@ -59,6 +31,7 @@
     <!-- Collapsed Navbar -->
     <div class="collapse navbar-collapse" id="main-navigation">
       <ul class="nav navbar-nav">
+        <!-- All top nav elements handled here. -->
         {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -76,25 +49,22 @@
             <ul class="dropdown-menu">
               <li>
                 <a href="{% url 'portal_accounts:manage_profile' %}">
-                  <i class="fa fa-user-circle-o nav-icon"></i> My account
+                  <i class="fa fa-user-circle-o nav-icon"></i> My Account
                 </a>
               </li>
-              <!-- Custom Navigation Element for the PT2050 Portal. -->
-              {% if settings.PORTAL_NAMESPACE|lower == "pt2050" %}
               <li>
                 <a href="{% url 'workbench:index' %}">
-                  <i class="fa fa-desktop nav-icon"></i> My dashboard
+                  <i class="fa fa-desktop nav-icon"></i> My Dashboard
                 </a>
               </li>
-              {% endif %}
               <li>
                 <a href="{% url 'tickets:mytickets' %}">
-                  <i class="fa fa-ticket nav-icon"></i> My tickets
+                  <i class="fa fa-ticket nav-icon"></i> My Tickets
                 </a>
               </li>
               <li>
                 <a href="{% url 'portal_accounts:logout' %}">
-                  <i class="fa fa-sign-out nav-icon"></i> Log out
+                  <i class="fa fa-sign-out nav-icon"></i> Log Out
                 </a>
               </li>
               {% if user.is_impersonate %}
