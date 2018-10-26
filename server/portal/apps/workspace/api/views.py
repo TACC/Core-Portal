@@ -126,31 +126,7 @@ class MetadataView(BaseApiView):
         meta_post = json.loads(request.body)
         meta_uuid = meta_post.get('uuid')
 
-        # NOTE: Only needed for tacc.prod tenant
-        share_all = request.GET.get('share_all')
-        if share_all:
-            if settings.AGAVE_TENANT_BASEURL == 'https://api.tacc.utexas.edu':
-                agc = service_account()
-                username = request.user.username
-                if username == settings.PORTAL_ADMIN_USERNAME:
-                    return HttpResponse('User is admin', status=200)
-                query = request.GET.get('q')
-                if not query:
-                    query = json.dumps({
-                        '$and': [
-                            {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
-                            {'value.definition.available': True}
-                        ]
-                    })
-                meta_post['username'] = username
-                apps = agc.meta.listMetadata(q=query)
-                for app_meta in apps:
-                    data = agc.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
-                    if app_meta.value['type'] == 'agave':
-                        data = agc.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
-            else:
-                return HttpResponse('OK')
-        elif meta_uuid:
+        if meta_uuid:
             del meta_post['uuid']
             data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
         else:

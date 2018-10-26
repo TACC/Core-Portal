@@ -15,17 +15,6 @@ import $ from 'jquery';
     var body = {};
     body.permission = 'READ';
 
-    // Only needed on tacc.prod tenant where we do not own the agave tenant admin
-    Apps.shareAppsWithUser(body).then(
-      $scope.simpleList.getDefaultLists()
-        .then(function(response){
-          deferred.resolve(response);
-        })
-        .catch(function(response){
-          $scope.error = $translate.instant('error_tab_get') + response.data;
-          deferred.reject(response);
-        })
-    );
     return deferred.promise;
   };
 
