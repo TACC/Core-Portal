@@ -79,7 +79,7 @@ def walk(client, system, path, bottom_up=False, yield_base=True):
         if bottom_up:
             yield _file
 
-def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
+def walk_levels(client, system, path, bottom_up=False, ignore_hidden=True):
     """ Walk a pth in an Agave storgae system.
 
     This generator will walk an agave storage system and return a tuple with

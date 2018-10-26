@@ -15,10 +15,12 @@ class SystemPushKeysController {
     ).
     then((resp)=>{
       this.ui.error = false;
+      this.ui.status = resp.status;
       this.ui.message = "Public Key added successfully";
       return;
     }, (err)=>{
       this.ui.error = true;
+      this.ui.status = err.status;
       this.ui.message = err.data.message;
     }).
     finally(()=>{
@@ -32,6 +34,26 @@ class SystemPushKeysController {
         });
       }
     });
+  }
+
+  resetKeys() {
+    this.ui.resetting_keys = true;
+    this.ui.reset_keys_finished = false;
+    this.SystemsService.resetKeys(
+      this.resolve.sys
+    ).
+    then((resp) => {
+      this.ui.reset_keys_success = true;
+    }, (err) => {
+      this.ui.reset_keys_success = false;
+      this.ui.reset_keys_status = err.status;
+      this.ui.reset_keys_message = err.data.message;
+    }).
+    finally(() => {
+      this.ui.resetting_keys = false;
+      this.ui.reset_keys_finished = true;
+    });
+
   }
 
   cancel(){
