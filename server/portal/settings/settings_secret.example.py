@@ -49,7 +49,7 @@ _RECAPTCHA_PRIVATE_KEY='private_key'
 _RECAPTCHA_USE_SSL='True'
 _NOCAPTCHA='True'
 
-_REQUEST_ACCESS='False'
+_REQUEST_ACCESS=False
 
 ########################
 # AGAVE SETTINGS
