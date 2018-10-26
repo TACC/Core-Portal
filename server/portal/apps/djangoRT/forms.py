@@ -21,13 +21,14 @@ class MultiEmailField(forms.Field):
             validate_email(email.strip())
 
 class TicketForm(forms.Form):
-	first_name = forms.CharField(label='First name')
-	last_name = forms.CharField(label='Last name')
-	email = forms.EmailField(label='Email')
-	cc = MultiEmailField(widget=forms.EmailInput(), required=False, help_text='Multiple emails should be comma-separated')
-	subject = forms.CharField(label='Subject')
-	problem_description = forms.CharField(widget=forms.Textarea())
+    first_name = forms.CharField(label='First name')
+    last_name = forms.CharField(label='Last name')
+    email = forms.EmailField(label='Email')
+    cc = MultiEmailField(widget=forms.EmailInput(), required=False, help_text='Multiple emails should be comma-separated')
+    subject = forms.CharField(label='Subject')
+    problem_description = forms.CharField(widget=forms.Textarea())
+    metadata = forms.CharField(widget=forms.HiddenInput())
 
 class ReplyForm(forms.Form):
-	reply = forms.CharField(widget=forms.Textarea(), label="")
+    reply = forms.CharField(widget=forms.Textarea(), label="")
 

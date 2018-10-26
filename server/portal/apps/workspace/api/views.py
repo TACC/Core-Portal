@@ -7,6 +7,7 @@ import logging
 import json
 import urllib
 import six
+import os
 from urlparse import urlparse
 from datetime import datetime
 from django.http import JsonResponse, HttpResponse
@@ -50,6 +51,7 @@ class AppsView(BaseApiView):
         if app_id:
             METRICS.debug("User " + request.user.username + " is requesting app id " + app_id)
             data = agave.apps.get(appId=app_id)
+
             lic_type = _app_license_type(app_id)
             data['license'] = {
                 'type': lic_type
@@ -237,14 +239,22 @@ class JobsView(BaseApiView):
                 job_post['parameters']['_license'] = lic.license_as_str()
 
             # url encode inputs
+            # TODO: PUll this out of here and make it a utility
             if job_post['inputs']:
                 for key, value in six.iteritems(job_post['inputs']):
-                    parsed = urlparse(value)
-                    if parsed.scheme:
-                        job_post['inputs'][key] = '{}://{}{}'.format(
-                            parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                    # this could either be an array, or a string...
+                    if isinstance(value, basestring):
+                        parsed = urlparse(value)
+                        if parsed.scheme:
+                            job_post['inputs'][key] = '{}://{}{}'.format(
+                                parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                        else:
+                            job_post['inputs'][key] = urllib.quote(parsed.path)
                     else:
-                        job_post['inputs'][key] = urllib.quote(parsed.path)
+                        for input in value:
+                            parsed = urlparse(input)
+                            input = '{}://{}{}'.format(
+                                parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
 
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'
