@@ -40,11 +40,9 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <!-- Collapsed Navbar -->
     <div class="collapse navbar-collapse" id="main-navigation">
-      {% if user.is_authenticated %}
       <ul class="nav navbar-nav">
          {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
       </ul>
-      {% endif %}
       <ul class="nav navbar-nav navbar-right">
       {% if user.is_authenticated %}
         <div id="notifications-bell-container">
