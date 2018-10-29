@@ -8,21 +8,43 @@ function SimpleList($http, $q, appCategories) {
     this.lists = {};
     this.map = {};
     this.tabs = appCategories.concat(['My Apps']);
+    angular.forEach(this.tabs, (tab)=> {
+      this.lists[tab] = [];
+    });
   };
 
-  SimpleList.prototype.getDefaultLists = function(query) {
+  SimpleList.prototype.getPrivate = function () {
+    var self=this;
+    return $http({
+      url: '/api/workspace/apps',
+      method: "GET",
+      params: {"private": "true"}
+    }).then( (resp)=> {
+      let apps = resp.data.response;
+      //this munges the standard agave apps list into
+      //something that looks like a metadata listing so that
+      //the UI can handle it the same way
+      let wrapped = apps.map((d)=> {
+        return {
+          value: {
+            type: "agave",
+            definition: d
+          }
+        };
+      });
+      self.lists['My Apps'] = wrapped;
+    });
+  };
+
+
+  SimpleList.prototype.getDefaultLists = function() {
     var self = this;
     var deferred = $q.defer();
     $http({
       url: "/api/workspace/meta",
-      method: 'GET',
-      params: {'q': query}
+      method: 'GET'
     }).then(
       function(response){
-        angular.forEach(self.tabs, function (tab) {
-          self.lists[tab] = [];
-        });
-
         const AGAVE_TENANT_BASEURL = (new URL(response.data.response[0]._links.owner.href)).hostname;
 
         angular.forEach(response.data.response, function (appMeta) {
@@ -45,7 +67,7 @@ function SimpleList($http, $q, appCategories) {
               appMeta.value.definition.isPublic = (appMeta.value.definition.tags.filter(s => s.includes('isPublic'))[0].split(':')[1] == 'true');
             }
           }
-          
+
           if (appMeta.value.definition.isPublic) {
             // If App has no category, place in Simulation tab
             // Check if category exists in a tag.

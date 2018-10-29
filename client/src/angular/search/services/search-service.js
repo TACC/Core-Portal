@@ -12,7 +12,7 @@ export default class SearchService {
     }
     return this.$http.get('/api/search',
     {params:
-      {'q': text, 'limit': limit, 'offset': offset, 'type_filter': type_filter}
+      {'queryString': text, 'limit': limit, 'offset': offset, 'typeFilter': type_filter}
     }).then( (resp)=>{
 
       resp.data.response.hits.forEach((d) => {

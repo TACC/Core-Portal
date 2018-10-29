@@ -1,10 +1,11 @@
 <div class="modal-header">
-  <h3 class="modal-title">System Push Public Key</h3>
+  <h3 class="modal-title">Authenticate with TACC Token</h3>
+  <br />
   <p>
-    <strong>Note:</strong>
-    In order to push a public key your TACC token will be needed.<br />
-    In essence the public key will be placed in your
-    <code>authorized_keys</code> file for the specified hostname
+    You must authenticate with a six-digit one time pass from the TACC Token mobile app at least once. 
+    A public key will be pushed to your <code>authorized_keys</code>
+    file on the system below. This will allow you to access your files 
+    through this portal.
   </p>
 </div>
 <div class="modal-body">
@@ -34,26 +35,59 @@
              class="form-control">
     </div>
   </form>
-  <p>
-    Explain why we need password and tacc token.
-  </p>
   <div class="loading"
        data-ng-if="$ctrl.ui.loading">
     <span> Loading ...</span>
     <i class="fa fa-spinner fa-pulse fa-2x fa-fw">&nbsp;</i>
   </div>
+  <div data-ng-if="$ctrl.ui.status == 200">
+    <p>Success!</p>
+  </div>
+  <div data-ng-if="$ctrl.ui.status == 403">
+    <p>Authorization failed. Make sure you are using the TACC Token app for your token. Please check your password and try again with a new token.</p>
+  </div>
+  <div data-ng-if="$ctrl.ui.status == 409 && !$ctrl.ui.reset_keys_finished">
+    <p>There was an error performing this task. Please click the <strong>Reset Keys</strong> button below.</p>
+    <button type="button" class="btn btn-warning" data-ng-click="$ctrl.resetKeys()" data-ng-disabled="$ctrl.ui.resetting_keys">
+      Reset Keys
+    </button>
+    <p>
+      <span data-ng-if="$ctrl.ui.resetting_keys"> Loading ... <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></span>
+    </p>
+  </div>
+  <div data-ng-if="$ctrl.ui.reset_keys_finished && $ctrl.ui.reset_keys_success && !$ctrl.ui.loading">
+    <p>Success! Please try to authorize again with a new TACC token.</p>
+  </div>
+  <div data-ng-if="$ctrl.ui.reset_keys_finished && !$ctrl.ui.reset_keys_success && !$ctrl.ui.loading">
+    <p>
+      Failure. Please <a href="/tickets/ticket/new">submit a ticket</a> with the following information:
+    </p>
+    <p>
+      <b>Status code: </b>{{$ctrl.ui.reset_keys_status}}<br />
+      <b>Message: </b>{{$ctrl.ui.reset_keys_message}}
+    </p>
+  </div>
+  <div data-ng-if="$ctrl.ui.status >= 500">
+    <p>An unexpected error occured. Please <a href="/tickets/ticket/new">submit a ticket</a> with the following information:</p>
+    <p>
+      <b>Status code: </b>{{$ctrl.ui.status}}<br />
+      <b>Message: </b>{{$ctrl.ui.message}}
+    </p>
+  </div>
+  <!--
   <div class="message"
        data-ng-if="$ctrl.ui.message"
        data-ng-class="{'bg-success': !$ctrl.ui.error,
                        'bg-danger': $ctrl.ui.error}">
     <p>{{$ctrl.ui.message}}</p>
   </div>
+-->
 </div>
 <div class="modal-footer">
   <button class="btn btn-primary"
           type="button"
           data-ng-disabled="$ctrl.ui.loading"
-          data-ng-click="$ctrl.ok()">Push</button>
+          data-ng-click="$ctrl.ok()">Authenticate</button>
   <button class="btn btn-warning"
           type="button"
           data-ng-disabled="$ctrl.ui.loading"

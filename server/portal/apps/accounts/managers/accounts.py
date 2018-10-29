@@ -8,6 +8,7 @@ import logging
 from importlib import import_module
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from paramiko.ssh_exception import (
     AuthenticationException,
     ChannelException,
@@ -18,6 +19,7 @@ from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.accounts.models import SSHKeys, Keys
+from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -291,6 +293,7 @@ def add_pub_key_to_resource(
         password,
         token
     )
+    message = "add_pub_key_to_resource"
     try:
         transport = mgr.get_transport(hostname, port)
         pub_key = user.ssh_keys.for_system(system_id).public
@@ -301,43 +304,107 @@ def add_pub_key_to_resource(
             port=port,
             transport=transport
         )
-    except (
-            AuthenticationException,
-            ChannelException,
-            SSHException
-    ) as exc:
-        logger.error(exc, exc_info=True)
+        status = 200
+    except Exception as exc:
+        # Catch all exceptions and set a status code for unknown exceptions
         success = False
         message = str(exc)
-    return success, message
+        logger.error(exc, exc_info=True)
+        try:
+            # "Re-throw" exception to get known exception type status codes
+            raise exc
+        except AuthenticationException as exc:
+            # Bad password/token
+            status = 403 # Forbidden
+        except ( ObjectDoesNotExist ) as exc:
+            # user.ssh_keys does not exist, suggest resetting keys
+            status = 409 # Conflict
+        except KeyCannotBeAdded:
+            # May occur when system is down
+            message = "KeyCannotBeAdded" # KeyCannnotBeAdded exception does not contain a message?
+            status = 503
+        except (
+            ChannelException,
+            SSHException
+        ) as exc:
+            # cannot ssh to system
+            message = str(type(exc)) # paramiko exceptions do not contain a string message?
+            status = 502 # Bad gateway
+
+    return success, message, status
 
 
-def storage_systems(user, offset=0, limit=100):
-    """Returns all storage systems for a user
+def storage_systems(user, offset=0, limit=100, filter_prefix=True):
+    """Return all storage systems for a user.
+
+    This function will do a filter using `settings.PORTAL_NAMESPACE`.
+    It will do a regular listing if there's no value for
+    `settings.PORTAL_NAMESPACE` or :param:`filter_prefix` is `False`.
 
     :param user: Django user's instance
+    :param int offset: Offset.
+    :param int limit: Limit.
+    :param bool filter_prefix: Whether or not to filter by prefix.
     """
-    systems = StorageSystem.list(
+    prefix = getattr(
+            settings,
+            'PORTAL_NAMESPACE',
+            ''
+    )
+
+    systems = StorageSystem.search(
         user.agave_oauth.client,
-        type=StorageSystem.TYPES.STORAGE,
+        {
+            'type.eq': StorageSystem.TYPES.STORAGE,
+            'id.like': '{}*'.format(prefix.lower())
+        },
         offset=offset,
         limit=limit
     )
-    return [sys for sys in systems]
+    out = list(systems)
+    #if there aren't any storage systems that are namespaced
+    #by PORTAL_NAMESPACE, just send a list of all available storage systems
+    if not out:
+        systems = StorageSystem.list(
+            user.agave_oauth.client,
+            type=StorageSystem.TYPES.STORAGE,
+            offset=offset,
+            limit=limit
+        )
+        out = list(systems)
+    return out
 
+def execution_systems(user, offset=0, limit=100, filter_prefix=True):
+    """Return all execution systems for a user.
 
-def execution_systems(user, offset=0, limit=100):
-    """Returns all execution systems for a user
+    This function will do a filter using `settings.PORTAL_NAMESPACE`.
+    It will do a regular listing if there's no value for
+    `settings.PORTAL_NAMESPACE` or :param:`filter_prefix` is `False`.
 
     :param user: Django user's instance
+    :param int offset: Offset.
+    :param int limit: Limit.
+    :param bool filter_prefix: Whether or not to filter by prefix.
     """
-    systems = ExecutionSystem.list(
-        user.agave_oauth.client,
-        type=ExecutionSystem.TYPES.EXECUTION,
-        offset=offset,
-        limit=limit
-    )
-    return [sys for sys in systems]
+    prefix = getattr(settings, 'PORTAL_NAMESPACE', '')
+    if not prefix or not filter_prefix:
+        systems = ExecutionSystem.list(
+            user.agave_oauth.client,
+            type=ExecutionSystem.TYPES.EXECUTION,
+            offset=offset,
+            limit=limit
+        )
+    else:
+        systems = ExecutionSystem.search(
+            user.agave_oauth.client,
+            {
+                'type.eq': ExecutionSystem.TYPES.EXECUTION,
+                'id.like': '{}*'.format(prefix.lower())
+            },
+            offset=offset,
+            limit=limit
+        )
+    return list(systems)
 
 
 def public_key_for_systems(system_ids):

@@ -29,35 +29,61 @@ def to_camel_case(input_str):
     camel_case = ''.join(['_' * left_cnt, comps[0], right_side, '_' * right_cnt])
     return camel_case
 
-def index_agave(client, username, system, path,
-                levels=0, index_pems=False):
-    from portal.libs.elasticsearch.docs.files import BaseFile
-    from portal.libs.agave.models.files import BaseFile as AgaveFile
-    for root, folders, files in walk_levels(client, system, path):
+def index_agave(systemId, client, username, filePath='/', update_pems=False):
+    from portal.libs.elasticsearch.docs.files import BaseESFile
+
+    for root, folders, files in walk_levels(client, systemId, filePath, ignore_hidden=True):
         for obj in folders + files:
             obj_dict = obj.to_dict()
-            obj_dict['pems'] = obj.pems_list()
-            doc = BaseFile(username, **obj_dict)
-            doc.save()
+            doc = BaseESFile(username, **obj_dict)
+            saved = doc.save()
+            if update_pems:
+                pems = obj.pems_list()
+                doc._wrapped.update(**{'pems': pems})
 
-        es_children = BaseFile(username, system, root).children()
-        children_paths = [_file.path.strip('/') for _file in folders + files]
-        to_delete = [doc for doc in es_children if
-                     doc is not None and
-                     doc.path not in children_paths]
+        offset = 0
+        limit = 100
+        es_root = BaseESFile(username, systemId, root)
+        page = [doc for doc in es_root.children(offset=offset, limit=limit)]
+        children_paths = [_file.path for _file in folders + files]
+
+        while len(page) > 0:
+            to_delete = [doc for doc in page if
+                        doc is not None and
+                        doc.path not in children_paths]
+            for doc in to_delete:
+                doc.delete()
+
+            offset += limit
+            page = [doc for doc in es_root.children(offset=offset, limit=limit)]
+
+def index_level(path, folders, files, systemId, username):
+    """
+    Index a set of folders and files corresponding to the output from one 
+    iteration of walk_levels
+    """
+    from portal.libs.elasticsearch.docs.files import BaseESFile
+    for obj in folders + files:
+            obj_dict = obj.to_dict()
+            doc = BaseESFile(username, **obj_dict)
+            saved = doc.save()
+
+            #if update_pems:
+            #    pems = obj.pems_list()
+            #    doc._wrapped.update(**{'pems': pems})
+
+    offset = 0
+    limit = 100
+    es_root = BaseESFile(username, systemId, path)
+    page = [doc for doc in es_root.children(offset=offset, limit=limit)]
+    children_paths = [_file.path for _file in folders + files]
+
+    while len(page) > 0:
+        to_delete = [doc for doc in page if
+                    doc is not None and
+                    doc.path not in children_paths]
         for doc in to_delete:
             doc.delete()
 
-        if levels and (len(root.strip('/').split('/')) -
-                       len(path.strip('/').split('/')) + 1) >= levels:
-            del folders[:]
-
-    path_comps = path.strip('/').split('/')
-    for i in range(len(path_comps)):
-        parent_path = os.path.join(*path_comps)
-        parent = AgaveFile(client, system, parent_path)
-        parent_dict = parent.to_dict()
-        if index_pems:
-            parent_dict['pems'] = parent.pems_list()
-        doc = BaseFile(username, **parent_dict)
-        doc.save()
+        offset += limit
+        page = [doc for doc in es_root.children(offset=offset, limit=limit)]

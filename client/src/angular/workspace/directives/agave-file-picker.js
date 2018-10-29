@@ -9,6 +9,15 @@ function agaveFilePicker() {
       link: function($scope, $element, attrs, $ngModel) {
         var formKey = $scope.form.key.join('.');
 
+        /*
+        formKey requires an index when it is an array. $scope.$parent.$index will be a value 0 or greater
+        if it's an array, so append it to the formKey
+        */
+
+        if (formKey[formKey.length - 1] == '.' && $scope.$parent.$index >= 0 ) {
+          formKey += $scope.$parent.$index;
+        }
+
         $scope.requesting = false;
 
         $scope.data = {

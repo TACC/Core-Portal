@@ -207,10 +207,10 @@ class AgaveFileManager(AbstractFileManager):
         id_comps = file_id.strip('/').split('/')
         system = id_comps[0]
         if len(id_comps[1:]):
-            file_path = os.path.join(*id_comps[1:])
+            file_path = '/' + os.path.join(*id_comps[1:])
         else:
             file_path = '/'
-            
+        
         return (system, file_path)
 
     def get_file(self, file_id, **kwargs):
@@ -282,12 +282,12 @@ class AgaveFileManager(AbstractFileManager):
 
         if _file_src.system == _file_dest.system:
             resp = _file_src.copy(_file_dest.path)
-            agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
         else:
             resp = _file_dest.import_data(_file_src.system, _file_src.path)
-            agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
-            agave_indexer.apply_async(kwargs={'systemId': _file_dest.system}, routing_key='indexing')
 
+        agave_indexer.apply_async(kwargs={'systemId': _file_dest.system, 'filePath': os.path.dirname(_file_dest.path), 'recurse': False}, routing_key='indexing')
+        if _file_dest.format == 'folder':
+            agave_indexer.apply_async(kwargs={'systemId': _file_dest.system, 'filePath': _file_dest.path, 'recurse': True}, routing_key='indexing')
 
         return resp
 
@@ -387,7 +387,7 @@ class AgaveFileManager(AbstractFileManager):
                                             _file.path)
             else:
                 raise
-        agave_indexer.apply_async(kwargs={'systemId': _file.system}, routing_key='indexing')
+        agave_indexer.apply_async(kwargs={'systemId': _file.system, 'filePath': os.path.dirname(_file.path), 'recurse': False}, routing_key='indexing')
         return resp
 
     def move(self, file_id_src, file_id_dest, **kwargs):
@@ -411,12 +411,15 @@ class AgaveFileManager(AbstractFileManager):
 
         if _file_src.system == _file_dest.system:
             _file_src.move(_file_dest.system, _file_dest.path)
-            agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
         else:
             _file_dest.importData(_file_src.system, _file_src.path)
             _file_src.delete()
-            agave_indexer.apply_async(kwargs={'systemId': _file_src.system}, routing_key='indexing')
-            agave_indexer.apply_async(kwargs={'systemId': _file_dest.system}, routing_key='indexing')
+
+        agave_indexer.apply_async(kwargs={'systemId': _file_src.system, 'filePath': os.path.dirname(_file_src.path), 'recurse': False}, routing_key='indexing')
+
+        agave_indexer.apply_async(kwargs={'systemId': _file_dest.system, 'filePath': os.path.dirname(_file_dest.path), 'recurse': False}, routing_key='indexing')
+        if _file_dest.format == 'folder':
+            agave_indexer.apply_async(kwargs={'systemId': _file_dest.system, 'filePath': _file_dest.path, 'recurse': True}, routing_key='indexing')
 
         return _file_dest
 
@@ -439,7 +442,9 @@ class AgaveFileManager(AbstractFileManager):
                 raise
 
         _file.rename(rename_to)
-        agave_indexer.apply_async(kwargs={'systemId': _file.system}, routing_key='indexing')
+        agave_indexer.apply_async(kwargs={'systemId': _file.system, 'filePath': os.path.dirname(_file.path), 'recurse': False}, routing_key='indexing')
+        if _file.format == 'folder':
+            agave_indexer.apply_async(kwargs={'systemId': _file.system, 'filePath': _file.path, 'recurse': True}, routing_key='indexing')
         return _file
 
     def share(self, file_id, **kwargs):
@@ -463,6 +468,8 @@ class AgaveFileManager(AbstractFileManager):
         :rtype: :class:`~libs.agave.models.file.BaseFile`
         """
         _file = self.get_file(file_id)
+        src_path = _file.path
+
         BaseFile.ensure_path(self._ac,
                              _file.system,
                              settings.AGAVE_DEFAULT_TRASH_NAME)
@@ -485,7 +492,10 @@ class AgaveFileManager(AbstractFileManager):
         file_id_src = '{}/{}'.format(_file.system, _file.path)
 
         resp = _file.move(_file.system, settings.AGAVE_DEFAULT_TRASH_NAME, trash_name)
-        agave_indexer.apply_async(kwargs={'systemId': _file.system}, routing_key='indexing')
+        agave_indexer.apply_async(kwargs={'systemId': _file.system, 'filePath': os.path.dirname(src_path), 'recurse': False}, routing_key='indexing')
+        if _file.format == 'folder':
+            agave_indexer.apply_async(kwargs={'systemId': _file.system, 'filePath': src_path, 'recurse': True}, routing_key='indexing')
+
         return resp
 
     def update_pems(self, file_id, pems, **kwargs):
@@ -534,5 +544,8 @@ class AgaveFileManager(AbstractFileManager):
         for uploaded_file in uploaded_files:
             _file.upload(uploaded_file)
 
-        agave_indexer.apply_async(kwargs={'systemId': system}, routing_key='indexing')
+        agave_indexer.apply_async(kwargs={'systemId': _file.system, 'filePath': os.path.dirname(_file.path), 'recurse': False}, routing_key='indexing')
+        if _file.format == 'folder':
+            # We'll have to set {'recurse': True} here if we ever upload folders with this function, but for files it's more efficient not to recurse.
+            agave_indexer.apply_async(kwargs={'systemId': _file.system, 'filePath': _file.path, 'recurse': False}, routing_key='indexing')
         return _file

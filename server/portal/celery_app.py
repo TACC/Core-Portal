@@ -19,14 +19,14 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    'index_community_data': {
-        'task': 'portal.apps.search.tasks.index_community_data',
-        'schedule': crontab(hour="2", minute=0),
-    },
-    'index_my_data': {
-        'task': 'portal.apps.search.tasks.index_my_data',
-        'schedule': crontab(hour="3", minute=0),
-    },
+    #'index_community_data': {
+    #    'task': 'portal.apps.search.tasks.index_community_data',
+    #    'schedule': crontab(hour="2", minute=0),
+    #},
+    #'index_my_data': {
+    #    'task': 'portal.apps.search.tasks.index_my_data',
+    #    'schedule': crontab(hour="3", minute=0),
+    #},
     'index_cms': {
         'task': 'portal.apps.search.tasks.index_cms',
         'schedule': crontab(hour="4", minute=0)

@@ -7,6 +7,7 @@ import logging
 import json
 import urllib
 import six
+import os
 from urlparse import urlparse
 from datetime import datetime
 from django.http import JsonResponse, HttpResponse
@@ -17,8 +18,8 @@ from django.core.urlresolvers import reverse
 from portal.apps.workspace.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
-from portal.apps.workspace.tasks import watch_job_status
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
+from portal.libs.agave.utils import service_account
 from agavepy.agave import Agave
 
 
@@ -50,6 +51,7 @@ class AppsView(BaseApiView):
         if app_id:
             METRICS.debug("User " + request.user.username + " is requesting app id " + app_id)
             data = agave.apps.get(appId=app_id)
+
             lic_type = _app_license_type(app_id)
             data['license'] = {
                 'type': lic_type
@@ -65,7 +67,7 @@ class AppsView(BaseApiView):
             if public_only == 'true':
                 data = agave.apps.list(publicOnly='true')
             else:
-                data = agave.apps.list()
+                data = agave.apps.list(privateOnly=True)
         return JsonResponse({"response": data})
 
 @method_decorator(login_required, name='dispatch')
@@ -85,7 +87,18 @@ class MetadataView(BaseApiView):
         agave = request.user.agave_oauth.client
         app_id = request.GET.get('app_id')
         if app_id:
-            data = agave.meta.get(appId=app_id)
+            query = json.dumps({
+                '$and': [
+                    {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
+                    {'value.definition.available': True},
+                    {'value.definition.id': app_id}
+                ]
+            })
+
+            data = agave.meta.listMetadata(q=query)
+
+            assert len(data) == 1, "Expected single app response, got {}!".format(len(data))
+            data = data[0]
 
             lic_type = _app_license_type(app_id)
             data['license'] = {
@@ -96,12 +109,16 @@ class MetadataView(BaseApiView):
                 license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
                 lic = license_model.objects.filter(user=request.user).first()
                 data['license']['enabled'] = lic is not None
-
         else:
             query = request.GET.get('q')
-            data = agave.meta.listMetadata(q=query.format(apps_metadata_name=settings.CORE_APPS_METADATA_NAME))
-            if settings.PORTAL_APPS_METADATA_NAME:
-                data += agave.meta.listMetadata(q=query.format(apps_metadata_name=settings.PORTAL_APPS_METADATA_NAME))
+            if not query:
+                query = json.dumps({
+                    '$and': [
+                        {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
+                        {'value.definition.available': True}
+                    ]
+                })
+            data = agave.meta.listMetadata(q=query)
         return JsonResponse({'response': data})
 
     def post(self, request, *args, **kwargs):
@@ -111,18 +128,28 @@ class MetadataView(BaseApiView):
 
         # NOTE: Only needed for tacc.prod tenant
         share_all = request.GET.get('share_all')
-        if share_all and settings.AGAVE_TENANT_BASEURL=='https://api.tacc.utexas.edu':
-            username = request.user.username
-            if username == settings.PORTAL_ADMIN_USERNAME:
-                return HttpResponse('User is admin', status=200)
-            query = request.GET.get('q')
-            meta_post['username'] = username
-            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            apps = prtl_admin_client.meta.listMetadata(q=query.format(apps_metadata_name=settings.CORE_APPS_METADATA_NAME))
-            for app_meta in apps:
-                data = prtl_admin_client.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
-                if app_meta.value['type'] == 'agave':
-                    data = prtl_admin_client.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
+        if share_all:
+            if settings.AGAVE_TENANT_BASEURL == 'https://api.tacc.utexas.edu':
+                agc = service_account()
+                username = request.user.username
+                if username == settings.PORTAL_ADMIN_USERNAME:
+                    return HttpResponse('User is admin', status=200)
+                query = request.GET.get('q')
+                if not query:
+                    query = json.dumps({
+                        '$and': [
+                            {'name': {'$in': settings.PORTAL_APPS_METADATA_NAMES}},
+                            {'value.definition.available': True}
+                        ]
+                    })
+                meta_post['username'] = username
+                apps = agc.meta.listMetadata(q=query)
+                for app_meta in apps:
+                    data = agc.meta.updateMetadataPermissionsForUser(body=meta_post, uuid=app_meta.uuid, username=username)
+                    if app_meta.value['type'] == 'agave':
+                        data = agc.apps.updateApplicationPermissions(body={'username': username, 'permission': 'READ_EXECUTE'}, appId=app_meta.value['definition']['id'])
+            else:
+                return HttpResponse('OK')
         elif meta_uuid:
             del meta_post['uuid']
             data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
@@ -212,17 +239,37 @@ class JobsView(BaseApiView):
                 job_post['parameters']['_license'] = lic.license_as_str()
 
             # url encode inputs
+            # TODO: PUll this out of here and make it a utility
             if job_post['inputs']:
                 for key, value in six.iteritems(job_post['inputs']):
-                    parsed = urlparse(value)
-                    if parsed.scheme:
-                        job_post['inputs'][key] = '{}://{}{}'.format(
-                            parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                    # this could either be an array, or a string...
+                    if isinstance(value, basestring):
+                        parsed = urlparse(value)
+                        if parsed.scheme:
+                            job_post['inputs'][key] = '{}://{}{}'.format(
+                                parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                        else:
+                            job_post['inputs'][key] = urllib.quote(parsed.path)
                     else:
-                        job_post['inputs'][key] = urllib.quote(parsed.path)
+                        for input in value:
+                            parsed = urlparse(input)
+                            input = '{}://{}{}'.format(
+                                parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+
+            if settings.DEBUG:
+                wh_base_url = settings.WH_BASE_URL + '/webhooks/'
+                jobs_wh_url = settings.WH_BASE_URL + reverse('webhooks:jobs_wh_handler')
+            else:
+                wh_base_url = request.build_absolute_uri('/webhooks/')
+                jobs_wh_url = request.build_absolute_uri(reverse('webhooks:jobs_wh_handler'))
+
+            job_post['parameters']['_webhook_base_url'] = wh_base_url
+            job_post['notifications'] = [
+                {'url': jobs_wh_url,
+                'event': e}
+                for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
 
             response = agave.jobs.submit(body=job_post)
-            watch_job_status.apply_async(args=[request.user.username, response['id']], countdown=10)
             return JsonResponse({"response": response})
 
 
@@ -242,8 +289,8 @@ class SystemsView(BaseApiView):
                     'system_id': system_id
                 }
             })
-            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            data = prtl_admin_client.systems.listRoles(systemId=system_id)
+            agc = service_account()
+            data = agc.systems.listRoles(systemId=system_id)
         elif user_role:
             METRICS.info('agave.systems.getRoleForUser', extra={
                 'operation': 'agave.systems.getRoleForUser',
@@ -252,8 +299,8 @@ class SystemsView(BaseApiView):
                     'system_id': system_id
                 }
             })
-            prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-            data = prtl_admin_client.systems.getRoleForUser(systemId=system_id, username=request.user.username)
+            agc = service_account()
+            data = agc.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
 
     def post(self, request, *args, **kwargs):
@@ -271,6 +318,6 @@ class SystemsView(BaseApiView):
             'username': request.user.username,
             'role': role
         }
-        prtl_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-        data = prtl_admin_client.systems.updateRole(systemId=system_id, body=role_body)
+        agc = service_account()
+        data = agc.systems.updateRole(systemId=system_id, body=role_body)
         return JsonResponse({"response": data})

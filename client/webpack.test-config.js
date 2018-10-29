@@ -6,6 +6,7 @@ const webpack = require('webpack');
 // console.log(ngAnnotatePlugin)
 
 module.exports = {
+    devtool: 'inline-source-map',
     module: {
       rules: [
         {
@@ -31,10 +32,18 @@ module.exports = {
            }
          ]
         },
+        {test: /\.js$/,
+          use: {
+            loader: 'istanbul-instrumenter-loader',
+            options: { esModules: true }
+          },
+          enforce: 'pre',
+          exclude: /node_modules|\.spec\.js$/,
+        },
         {
           test: /\.html$/,
           exclude: /node_modules/,
-          loader: 'ignore-loader'
+          loader: 'html-loader'
         },
         {
           test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
@@ -46,7 +55,8 @@ module.exports = {
       new webpack.ProvidePlugin({
          jQuery: 'jquery',
          $: 'jquery',
-         jquery: 'jquery'
+         jquery: 'jquery',
+         tv4: 'tv4'
      })
     ]
 };

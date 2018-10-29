@@ -20,8 +20,8 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
       $rootScope.$broadcast('close-app', $scope.data.app.id);
     }
 
+    $scope.data.type = app.value.type;
     if (app.value.type === 'agave'){
-      $scope.data.type = app.value.type;
       Apps.get(app.value.definition.id).then(
         function(resp) {
           // Check if user has access to execSystem -- only necessary on tacc.prod tenant
@@ -66,8 +66,14 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
         $scope.resetForm();
       });
     } else if (app.value.type === 'html'){
-      $scope.data.type = app.value.type;
       $scope.data.app = app.value.definition.html;
+      /* Can be enabled if non-agave, i.e. html apps, will use licensing */
+      // Apps.getMeta(app.value.definition.id).then(
+      //   function (resp) {
+      //     $scope.data.app = resp.data.response.value.definition.html;
+      //     $scope.data.needsLicense = resp.data.response.license.type && !resp.data.response.license.enabled;
+      //   }
+      // );
     }
   });
 
@@ -99,9 +105,7 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     } else {
       items.push('maxRunTime', 'name', 'archivePath');
     }
-    if ($scope.data.app.parallelism == "PARALLEL") {
-      items.push('nodeCount');
-    }
+
     $scope.form.form.push({
       type: 'fieldset',
       readonly: $scope.data.needsLicense,
@@ -121,15 +125,20 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     });
   };
 
-  $scope.onSubmit = function(form) {
+  $scope.onSubmit = function(form) {    
     $scope.data.messages = [];
     $scope.$broadcast('schemaFormValidate');
     if (form.$valid) {
       var jobData = {
-          appId: $scope.data.app.id,
-          archive: true,
-          inputs: {},
-          parameters: {}
+        appId: $scope.data.app.id,
+        archive: true,
+        inputs: {},
+        parameters: {}
+      };
+
+      /* Add any attribute that requires an API call for the job to be ready to $scope.jobReady, i.e. project listings for VNC apps */
+      $scope.jobReady = {
+        ready: true
       };
 
       /* copy form model to disconnect from $scope */
@@ -165,35 +174,35 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
         }
       });
 
-      // Calculate processorsPerNode if nodeCount parameter submitted
-      if (_.has(jobData, 'nodeCount')) {
-        jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
-      }
-
-      $scope.data.submitting = true;
-      Jobs.submit(jobData).then(
-        function(resp) {
-          $scope.data.submitting = false;
-          $rootScope.$broadcast('job-submitted', resp.data.response);
-          $scope.data.messages.push({
-            type: 'success',
-            header: 'Job Submitted Successfully',
-            body: 'Your job <em>' + resp.data.name + '</em> has been submitted. Monitor its status on the right.'
-          });
-          $scope.resetForm();
-          refocus();
-        }, function(err) {
-          $scope.data.submitting = false;
-          $scope.data.messages.push({
-            type: 'danger',
-            header: 'Job Submit Failed',
-            body: 'Your job submission failed with the following message:<br>' +
+      var unregister = $scope.$watchCollection('jobReady', function (params) {
+        if (Object.values(params).every(Boolean)) {
+          $scope.data.submitting = true;
+          Jobs.submit(jobData).then(
+            function (resp) {
+              $scope.data.submitting = false;
+              $rootScope.$broadcast('job-submitted', resp.data);
+              $scope.data.messages.push({
+                type: 'success',
+                header: 'Job Submitted Successfully',
+                body: 'Your job <em>' + resp.data.name + '</em> has been submitted. Monitor its status on the right.'
+              });
+              $scope.resetForm();
+              refocus();
+            }, function (err) {
+              $scope.data.submitting = false;
+              $scope.data.messages.push({
+                type: 'danger',
+                header: 'Job Submit Failed',
+                body: 'Your job submission failed with the following message:<br>' +
                   '<em>' + (err.data.message || 'Unexpected error') + '</em><br>' +
                   'Please try again. If this problem persists, please ' +
                   '<a href="/help" target="_blank">submit a support ticket</a>.'
-          });
-          refocus();
-        });
+              });
+              refocus();
+            });
+          unregister();
+        }
+      });
     }
   };
 

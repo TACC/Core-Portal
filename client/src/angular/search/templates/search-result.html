@@ -3,8 +3,13 @@
     <div class="col-md-6">
       <i ng-if="listing.mimeType == 'text/directory'" class="fa fa-folder fa-lg"> </i>
       <i ng-if="listing.mimeType != 'text/directory'" class="fa fa-file-o fa-lg"> </i>
-      <a ng-href="/workbench/data-depot/agave/{{listing.system}}/{{listing.basePath}}"> {{listing.name}} </a>
-    </div>
+      <a
+        ui-sref="wb.data_depot.db({
+                    systemId:listing.system,
+                    directory:route,
+                    filePath:listing.basePath})">
+         {{listing.name}}
+      </a>    </div>
     <div class="col-md-3">
       <span> {{ listing.lastModified | date:'medium' }} </span>
     </div>

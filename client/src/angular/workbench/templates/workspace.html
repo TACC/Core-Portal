@@ -86,9 +86,6 @@
              </div>
              <div class="files-listing" ng-if="!data.listingProjects">
                  <div class="table-responsive ds-table-display-wrapper"
-                      ds-infinite-scroll
-                      data-scroll-bottom="scrollToBottom()"
-                      data-scroll-top="scrollToTop()"
                       data-bottom-height="0">
                      <table class="table table-striped">
                          <caption style="white-space:nowrap">
@@ -111,7 +108,7 @@
                          <th>Size</th>
                          </thead>
                          <tbody>
-                         <tr ng-repeat="f in data.filesListing.children | orderBy : ['type', 'name']">
+                         <tr ng-repeat="f in data.filesListing.children">
                              <td>
                                  <button ng-if="f.name !== '.' && data.wants"
                                          type="button"
@@ -129,11 +126,14 @@
                      </table>
                  </div>
              </div>
-             <div ng-if="data.loading">
+             <div ng-if="data.loading || data.loadingMore">
                <p class="lead">
                  <i class="fa fa-spin fa-circle-o-notch"></i> Loading files...
                </p>
              </div>
+             <button ng-if="!(data.loading || data.loadingMore || data.reachedEnd)" 
+                     class="btn btn-default btn-block" 
+                     ng-click="scrollToBottom()">Show more files</button>
 
          </div>
          <button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="togglePanel()">
@@ -154,13 +154,22 @@
              </div>
          </div>
          <div ng-if="data.type === 'html' && data.app">
+             <div class="lead alert alert-warning" ng-if="data.needsLicense">
+                 <h2>Software License Required</h2>
+                 <p>
+                     The use of this application required that you have a {{data.app.license.type}}
+                     license enabled for your account. Please visit the
+                     <a href="/accounts/licenses/" target="_blank">manage software licenses</a>
+                     section on the My Account page for details on how to enable this license.
+                 </p>
+             </div>
            <p ng-bind-html="data.app"></p>
          </div>
          <div ng-if="data.type === 'agave' && data.app" class="app-form-wrapper">
              <div class="lead alert alert-warning" ng-if="data.needsLicense">
                  <h2>Software License Required</h2>
                  <p>
-                     The use of this application required that your have a {{data.app.license.type}}
+                     The use of this application required that you have a {{data.app.license.type}}
                      license enabled for your account. Please visit the
                      <a href="/accounts/licenses/" target="_blank">manage software licenses</a>
                      section on the My Account page for details on how to enable this license.
@@ -291,7 +300,7 @@
                  </div>
              </div>
              <div class="modal-footer">
-                 <a href="{{msg.extra.target_uri}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
+                 <a href="{{msg.action_link}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
                  <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
              </div>
          </script>

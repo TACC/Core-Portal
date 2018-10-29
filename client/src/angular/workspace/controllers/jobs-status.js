@@ -18,7 +18,7 @@ function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, Jobs) {
           if(resp._embedded.metadata[i].name === 'interactiveJobDetails') {
             var meta = resp._embedded.metadata[i];
             $scope.data.interactive = true;
-            $scope.data.connection_address = meta.value.extra.target_uri;
+            $scope.data.connection_address = meta.value.action_link;
             break;
           }
         }

@@ -23,10 +23,10 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
     var comdata_system = _.find(data, {name: 'Community Data'});
     $scope.data.options = [
       {label: 'My Data',
-       conf: {system: mydata_system.systemId, path: ''},
+       conf: {system: mydata_system.systemId, path: '', offset: 0, limit: 100},
        apiParams: {fileMgr: 'my-data', baseUrl: '/api/data-depot/files'}},
       {label: 'Community Data',
-        conf: {system: comdata_system.systemId, path: ''},
+        conf: {system: comdata_system.systemId, path: '', offset: 0, limit: 100},
         apiParams: {fileMgr: 'shared', baseUrl: '/api/data-depot/files'}},
       // {label: 'My Projects',
       //  conf: {system: 'projects', path: ''},
@@ -39,8 +39,10 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
   $scope.dataSourceUpdated = function dataSourceUpdated() {
     $scope.data.filesListing = null;
     $scope.data.loading = true;
+    $scope.data.reachedEnd = false;
     $scope.data.filePath = '';
     $scope.data.dirPath = [];
+    $scope.data.page = 0;
     DataBrowserService.apiParams.fileMgr = $scope.data.cOption.apiParams.fileMgr;
     DataBrowserService.apiParams.baseUrl = $scope.data.cOption.apiParams.baseUrl;
     if ($scope.data.cOption.label !== 'My Projects'){
@@ -55,6 +57,9 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
           $scope.data.dirPath = $scope.data.filePath.split('/');
         }
         $scope.data.loading = false;
+        if (listing.children.length < $scope.data.cOption.conf.limit) {
+          $scope.data.reachedEnd = true;
+        }
       }, function(err){
         $scope.data.error = 'Unable to list the selected data source: ' + err.statusText;
         $scope.data.loading = false;
@@ -79,7 +84,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
     }
     $scope.data.loadingMore = true;
     if ($scope.data.filesListing && $scope.data.filesListing.children &&
-        $scope.data.filesListing.children.length < 95){
+        $scope.data.filesListing.children.length < $scope.data.cOption.conf.limit){
       $scope.data.reachedEnd = true;
       return;
     }
@@ -88,13 +93,12 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
     DataBrowserService.browsePage(
                {system: $scope.data.filesListing.system,
                 path: $scope.data.filesListing.path,
-                page: $scope.data.page})
+                page: $scope.data.page,
+                offset: $scope.data.cOption.conf.offset,
+                limit: $scope.data.cOption.conf.limit})
     .then(function(listing){
-        $scope.data.filesListing = listing;
-        $scope.data.filePath = $scope.data.filesListing.path;
-        $scope.data.dirPath = $scope.data.filePath.split('/');
         $scope.data.loadingMore = false;
-        if (listing.children.length < 95) {
+        if (listing.children.length < $scope.data.cOption.conf.limit) {
           $scope.data.reachedEnd = true;
         }
         $scope.data.loading = false;

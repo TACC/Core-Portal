@@ -29,7 +29,7 @@ function Apps($http, $q, $translate) {
     return $http({
       url: '/api/workspace/meta',
       method: 'GET',
-      params: {q:{'name': $translate.instant('apps_metadata_name'),'value.definition.id': app_id}}
+      params: { 'app_id': app_id }
     });
   };
 
@@ -161,23 +161,6 @@ function Apps($http, $q, $translate) {
       description: 'A recognizable name for this job',
       type: 'string',
       required: true
-    };
-
-    schema.properties.nodeCount = {
-      title: 'Node Count (optional)',
-      description: `Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.`,
-      type: 'integer',
-      enum: Array.from(Array(12).keys()).map(i => i + 1),
-      default: app.defaultNodeCount,
-      'x-schema-form': {
-        type: 'select',
-        titleMap: _.map(Array.from(Array(12).keys()).map(i => i + 1), function (val) {
-          return {
-            'value': val,
-            'name': val
-          };
-        })
-      }
     };
 
     schema.properties.archivePath = {

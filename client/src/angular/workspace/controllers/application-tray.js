@@ -6,8 +6,8 @@ import $ from 'jquery';
   $scope.tabs = [];
 
   $scope.simpleList = new SimpleList();
-
-  $scope.addDefaultTabs = function (query) {
+  $scope.simpleList.getPrivate();
+  $scope.addDefaultTabs = function () {
     $scope.error = '';
     var self = this;
     var deferred = $q.defer();
@@ -16,8 +16,8 @@ import $ from 'jquery';
     body.permission = 'READ';
 
     // Only needed on tacc.prod tenant where we do not own the agave tenant admin
-    Apps.shareAppsWithUser(body, query).then(
-      $scope.simpleList.getDefaultLists(query)
+    Apps.shareAppsWithUser(body).then(
+      $scope.simpleList.getDefaultLists()
         .then(function(response){
           deferred.resolve(response);
         })
@@ -80,7 +80,7 @@ import $ from 'jquery';
         );
     }
 
-    $scope.addDefaultTabs('{{"$and": [{{"name": "{apps_metadata_name}"}}, {{"value.definition.available": true}}]}}')
+    $scope.addDefaultTabs()
       .then(function(response){
         $scope.simpleList.tabs.forEach(function (element) {
           $scope.tabs.push(
@@ -98,7 +98,7 @@ import $ from 'jquery';
   };
 
     $scope.refreshApps();
-  
+
 
   $scope.launchApp = function(app) {
     $state.go(
@@ -137,7 +137,7 @@ import $ from 'jquery';
           $scope.activeTab = null;
         }
       }
-    }    
+    }
   });
 }
 

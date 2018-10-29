@@ -1,7 +1,7 @@
 import angular from 'angular';
 
 import * as schemaForm from 'angular-schema-form';
-import 'angular-schema-form-bootstrap';
+import * as sfb from 'angular-schema-form-bootstrap';
 import * as ngMaterial from 'angular-material';
 import * as ngMessages from 'angular-messages';
 import * as ui_bootstrap from 'angular-ui-bootstrap';
@@ -43,7 +43,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 
- $urlRouterProvider.otherwise('/workbench/dashboard');
+ $urlRouterProvider.when('/workbench/', '/workbench/dashboard');
 
  $stateProvider
   .state('wb', {
@@ -62,6 +62,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     'url': '/dashboard',
     'template': dashboardTemplate,
     'controller': 'DashboardCtrl',
+    controllerAs: 'vm',
     'resolve': {
       // 'test': function () {console.log("dashboard resolve");}
     }
@@ -98,6 +99,8 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   .state('wb.search', {
     'url': '/search?query_string&type_filter',
     'template': searchTemplate,
+    controller: 'SearchViewCtrl',
+    controllerAs: 'vm',
     'params': {
       query_string: null,
       type_filter: 'cms',

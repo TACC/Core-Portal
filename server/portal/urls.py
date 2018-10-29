@@ -69,6 +69,8 @@ urlpatterns += [
     url(r'^api/notifications/', include('portal.apps.notifications.urls',
                                     namespace='notifications')),
 
+    # webhooks
+    url(r'^webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
 
     # version check.
     url(r'^version/', des_version),

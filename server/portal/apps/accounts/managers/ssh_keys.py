@@ -73,8 +73,7 @@ class KeysManager(AbstractKeysManager):
 
     def get_transport(self, hostname, port):
         """Gets authenticated transport"""
-        if hostname.endswith('.tacc.utexas.edu'):
-            handler = self._tacc_prompt_handler
+        handler = self._tacc_prompt_handler
 
         trans = paramiko.Transport((hostname, port))
         # trans.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)

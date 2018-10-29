@@ -1,4 +1,4 @@
-
+import asfAgaveFilePickerTemplate from './templates/asf-agave-file-picker.html';
 import {mod as controllers} from './controllers';
 import {mod as directives} from './directives';
 import {mod as services} from './services';
@@ -37,9 +37,7 @@ let mod = angular.module('portal.workspace', [
 
 angular.module('schemaForm')
   .run(['$templateCache', '$http', function ($templateCache, $http) {
-    $http.get('/static/src/angular/workspace/templates/asf-agave-file-picker.html').then(function (response) {
-      $templateCache.put('/static/src/angular/workspace/templates/asf-agave-file-picker.html', response.data);
-    });
+    $templateCache.put('/asf-agave-file-picker.html', asfAgaveFilePickerTemplate);
   }])
   .config(
   ['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfPathProvider', 'sfBuilderProvider',
@@ -66,7 +64,7 @@ angular.module('schemaForm')
       schemaFormDecoratorsProvider.defineAddOn(
         'bootstrapDecorator',
         'agaveFilePicker',
-        '/static/src/angular/workspace/templates/asf-agave-file-picker.html',
+        '/asf-agave-file-picker.html',
         defaults
       );
     }

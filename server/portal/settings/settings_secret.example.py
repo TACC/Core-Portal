@@ -14,8 +14,7 @@ _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
-_PORTAL_APPS_METADATA_NAME = ''  # Needed if portal has portal specific apps, in the format of cep_apps
-_CORE_APPS_METADATA_NAME = 'portal_apps'
+_PORTAL_APPS_METADATA_NAMES = ['portal_apps']
 
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
@@ -41,7 +40,8 @@ _TAS_CLIENT_SECRET='secret'
 _RT_HOST='https://consult.tacc.utexas.edu/REST/1.0'
 _RT_UN='username'
 _RT_PW='password'
-_RT_QUEUE = 'QUEUENAME'
+_RT_QUEUE = 'QUEUE'
+_RT_TAG = 'CEP_portal'
 
 # Recaptcha Authentication.
 _RECAPTCHA_PUBLIC_KEY='public_key'
@@ -103,7 +103,8 @@ _ES_HOSTS = 'cep_prtl_elasticsearch'
 # DJANGO APP: WORKSPACE
 ########################
 
-# TBD
+# NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
+_WH_BASE_URL = ''
 
 ########################
 # DJANGO APP: DATA DEPOT

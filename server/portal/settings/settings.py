@@ -29,7 +29,9 @@ gettext = lambda s: s  # noqa:E731
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, 'fixtures'),
+]
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -260,8 +262,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../../', 'client'),
-    ('vendor', os.path.join(BASE_DIR, '../../client/node_modules')),
+    # os.path.join(BASE_DIR, '../../', 'client'),
+    ('build', os.path.join(BASE_DIR, '../../client/build')),
+    ('css', os.path.join(BASE_DIR, '../../client/css')),
+    ('img', os.path.join(BASE_DIR, '../../client/img')),
+    ('src', os.path.join(BASE_DIR, '../../client/src')),
+    ('node_modules/bootstrap', os.path.join(BASE_DIR, '../../client/node_modules/bootstrap')),
 ]
 
 STATICFILES_FINDERS = [
@@ -307,6 +313,7 @@ RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
 RT_PW = settings_secret._RT_PW
 RT_QUEUE = settings_secret._RT_QUEUE
+RT_TAG = getattr(settings_secret, '_RT_TAG', "")
 
 # Recaptcha Authentication.
 RECAPTCHA_PUBLIC_KEY = settings_secret._RECAPTCHA_PUBLIC_KEY
@@ -621,6 +628,14 @@ PORTAL_DATA_DEPOT_MANAGERS = {
     'shared': 'portal.apps.data_depot.managers.shared.FileManager',
     'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
+
+PORTAL_SEARCH_MANAGERS = {
+    'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
+    'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
+    'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
+    # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
+}
+
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
 PORTAL_WORKSPACE_MANAGERS = {
@@ -675,9 +690,9 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = settings_secret.\
 PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
     _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM
 
-PORTAL_APPS_METADATA_NAME = settings_secret._PORTAL_APPS_METADATA_NAME
+PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
-CORE_APPS_METADATA_NAME = settings_secret._CORE_APPS_METADATA_NAME
+WH_BASE_URL = getattr(settings_secret, '_WH_BASE_URL', '')
 
 """
 SETTINGS: ELASTICSEARCH
