@@ -231,8 +231,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 IMPERSONATE_REQUIRE_SUPERUSER = True
 
-# LOGIN_REDIRECT_URL = '/'   # '/index/'
-LOGIN_REDIRECT_URL = settings_secret._LOGIN_REDIRECT_URL
+LOGIN_REDIRECT_URL = getattr(settings_secret, 'LOGIN_REDIRECT_URL', '/')
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/

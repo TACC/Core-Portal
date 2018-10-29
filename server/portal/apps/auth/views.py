@@ -130,10 +130,7 @@ def agave_oauth_callback(request):
         return HttpResponseRedirect(next_uri)
     else:
         login_url = getattr(settings, 'LOGIN_REDIRECT_URL')
-        if login_url:
-            return HttpResponseRedirect(login_url)
-        else:
-            return HttpResponseRedirect('/')
+        return HttpResponseRedirect(login_url)
 
 def agave_session_error(request):
     """Agave token error handler.
