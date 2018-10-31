@@ -3,7 +3,7 @@
 <nav class="navbar navbar-default" style="background-image: url('{{ settings.PORTAL_NAVBAR_BACKGROUND_FILENAME }}');">
 {% else %}
 <nav class="navbar navbar-default">
-{% endif %}
+  {% endif %}
   <div class="container-fluid">
     <div class="navbar-header">
       <a href="/" class="navbar-left">
@@ -15,17 +15,7 @@
       </a>
       <!-- Normal Navbar -->
       <ul class="nav navbar-nav hidden-xs">
-        <!-- when user is logged in, show these nav items -->
-        {% if user.is_authenticated %}
-        <li class="{% active 'workbench' %}">
-          {% if settings.PORTAL_NAMESPACE|lower == "sd2e" %}
-          <a href="{% url 'workbench:index' %}">Workbench</a>
-          {% else %}
-          <a href="{% url 'workbench:index' %}">Dashboard</a>
-          {% endif %}
-        </li>
-        {% endif %}
-        <!-- end of user authed nav items-->
+        <!-- No navigation controlled by portal. All nav will be handled in the CMS. -->
       </ul>
       {% if section_root %}
       <a class="navbar-brand">{{section_root.title}}</a>
@@ -41,62 +31,54 @@
     <!-- Collapsed Navbar -->
     <div class="collapse navbar-collapse" id="main-navigation">
       <ul class="nav navbar-nav">
-         {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
+        <!-- All top nav elements handled here. -->
+        {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
-      {% if user.is_authenticated %}
+        {% if user.is_authenticated %}
         <div id="notifications-bell-container">
           <notifications-bell></notifications-bell>
         </div>
-
-     <div class="nav navbar-nav navbar-right">
-        <!-- Unused Serach Bar -->
-        <!--
-        <form class="navbar-form navbar-left navbar-input-group">
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Search" ng-model="vm.text"/>
-            <button
-              type="submit"
-              ng-click="vm.search(vm.text)"
-              class="btn btn-default">
-              <i class="fa fa-search"></i>
-            </button>
-          </div>
-        </form>
-        -->
-        <li class="dropdown right-nav-links">
-          <a class="dropdown-toggle"
-                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </a>
-          <ul class="dropdown-menu">
-            <li {% if request.get_full_path == '/accounts/profile/' %} class="active" {% endif %}>
-              <a href="{% url 'portal_accounts:manage_profile' %}">
-                <i class="fa fa-user-circle-o nav-icon"></i> My account
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'tickets:mytickets' %}">
-                <i class="fa fa-ticket nav-icon"></i> My tickets
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'portal_accounts:logout' %}">
-                <i class="fa fa-sign-out nav-icon"></i> Log out
-              </a>
-            </li>
-            {% if user.is_impersonate %}
-            <li>
-              <i class="fa fa-user-secret nav-icon"></i>
-              <a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a>
-            </li>
-            {% endif %} <!-- end of impersonate -->
-          </ul>
+        <div class="nav navbar-nav navbar-right">
+          <li class="dropdown right-nav-links">
+            <a class="dropdown-toggle" style="cursor: pointer;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{% url 'workbench:index' %}">
+                  <i class="fa fa-desktop nav-icon"></i> My Dashboard
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'portal_accounts:manage_profile' %}">
+                  <i class="fa fa-user-circle-o nav-icon"></i> My Account
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'tickets:mytickets' %}">
+                  <i class="fa fa-ticket nav-icon"></i> My Tickets
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'portal_accounts:logout' %}">
+                  <i class="fa fa-sign-out nav-icon"></i> Log Out
+                </a>
+              </li>
+              {% if user.is_impersonate %}
+              <li>
+                <i class="fa fa-user-secret nav-icon"></i>
+                <a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a>
+              </li>
+              {% endif %}
+              <!-- end of impersonate -->
+            </ul>
+          </li>
         </div>
-        </li>
-        {% else %} <!-- if user is not logged in -->
+        {% else %}
+        <!-- if user is not logged in -->
         <li class="right-nav-links {% if request.get_full_path == '/about/' %} active {% endif %}">
           <a href="/accounts/request-access/" class="btn btn-link-alt">
             <i class="fa fa-group nav-icon"></i> Request Access
@@ -119,4 +101,5 @@
         <!-- end of user logged in/not logged in if -->
       </ul>
     </div><!-- /.navbar-collapse -->
+  </div>
 </nav>
