@@ -61,13 +61,6 @@ function SimpleList($http, $q, appCategories) {
             appMeta.value.definition.icon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
           }
 
-          // Is Public? NOTE: Only needed for tacc.prod tenant
-          if (AGAVE_TENANT_BASEURL == "api.tacc.utexas.edu") {
-            if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('isPublic')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('isPublic')).length != 0) {
-              appMeta.value.definition.isPublic = (appMeta.value.definition.tags.filter(s => s.includes('isPublic'))[0].split(':')[1] == 'true');
-            }
-          }
-
           if (appMeta.value.definition.isPublic) {
             // If App has no category, place in Simulation tab
             // Check if category exists in a tag.
