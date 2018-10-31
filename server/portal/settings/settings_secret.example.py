@@ -113,7 +113,7 @@ _WH_BASE_URL = ''
 # Absolute path where home directories should be created.
 # Absolute with respect to the host
 # Use only if all home directories are under one parent directory.
-_PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/home/wma_portal/cep/home_dirs/'
+_PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/corral-repl/tacc/aci/CEP/home_dirs/'
 # Relative path from the default sotrage system where home directories
 # should be created.
 # Use only if all home directories are under one parent directory.
