@@ -9,12 +9,15 @@ import $ from 'jquery';
   $scope.simpleList.getPrivate();
   $scope.addDefaultTabs = function () {
     $scope.error = '';
-    var self = this;
-    var deferred = $q.defer();
-
-    var body = {};
-    body.permission = 'READ';
-
+    let deferred = $q.defer();
+    $scope.simpleList.getDefaultLists()
+      .then(response => {
+        deferred.resolve(response);
+      })
+      .catch(response => {
+        this.error = this.$translate.instant('error_tab_get') + response.data;
+        deferred.reject(response);
+      });
     return deferred.promise;
   };
 
