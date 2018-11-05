@@ -33,15 +33,6 @@ function Apps($http, $q, $translate) {
     });
   };
 
-  service.shareAppsWithUser = function(permission, query) {
-    return $http({
-      url: '/api/workspace/meta',
-      method: 'POST',
-      data: permission,
-      params: {'q': query, 'share_all': true}
-    });
-  };
-
   service.formSchema = function(app) {
     /**
      * Generate a JSON.schema for the app ready for angular-schema-form

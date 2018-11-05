@@ -231,7 +231,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 IMPERSONATE_REQUIRE_SUPERUSER = True
 
-LOGIN_REDIRECT_URL = '/index/'
+LOGIN_REDIRECT_URL = getattr(settings_secret, '_LOGIN_REDIRECT_URL', '/')
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
@@ -306,7 +306,7 @@ TAS_URL = settings_secret._TAS_URL
 TAS_CLIENT_KEY = settings_secret._TAS_CLIENT_KEY
 TAS_CLIENT_SECRET = settings_secret._TAS_CLIENT_SECRET
 
-REQUEST_ACCESS = settings_secret._REQUEST_ACCESS
+REQUEST_ACCESS = getattr(settings_secret, "_REQUEST_ACCESS", True)
 
 # Redmine Tracker Authentication.
 RT_HOST = settings_secret._RT_HOST
