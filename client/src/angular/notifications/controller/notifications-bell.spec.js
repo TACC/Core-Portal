@@ -16,7 +16,7 @@ describe("NotificationsBellCtrl", function() {
 
   it("should handle a delete", angular.mock.inject( ($q) => {
     var fakePromise = $q.when();
-    spyOn(Notifications, 'delete').andReturn(fakePromise);
+    spyOn(Notifications, 'delete').and.returnValue(fakePromise);
     controller.deleteAll();
     expect(Notifications.delete).toHaveBeenCalledWith('all');
 

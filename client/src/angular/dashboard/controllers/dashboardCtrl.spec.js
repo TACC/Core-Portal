@@ -33,10 +33,10 @@ describe("DashboardCtrl", function() {
       {"jobId": 3, appId: 'test', created: new Date("2018-1-3")},
 
     ];
-    spyOn(Jobs, 'list').andReturn($q.when(jobs_data));
-    spyOn(Apps, 'list').andReturn(fakePromise);
-    spyOn(SystemsService, 'list').andReturn(fakePromise);
-    spyOn(UserService, 'usage').andReturn(fakePromise);
+    spyOn(Jobs, 'list').and.returnValue($q.when(jobs_data));
+    spyOn(Apps, 'list').and.returnValue(fakePromise);
+    spyOn(SystemsService, 'list').and.returnValue(fakePromise);
+    spyOn(UserService, 'usage').and.returnValue(fakePromise);
     ctrl = $controller('DashboardCtrl', {
       $uibModal:$uibModal, Apps: Apps, $scope: scope,
       Jobs: Jobs, SystemsService:SystemsService, UserService:UserService,
@@ -73,7 +73,7 @@ describe("DashboardCtrl", function() {
   });
 
   it("Should call SystemsService.resetKeys", ()=> {
-    spyOn(SystemsService, 'resetKeys').andReturn(fakePromise);
+    spyOn(SystemsService, 'resetKeys').and.returnValue(fakePromise);
     let sys = {id:1};
     ctrl.resetKeys(sys);
     expect(SystemsService.resetKeys).toHaveBeenCalledWith(sys);
@@ -83,14 +83,14 @@ describe("DashboardCtrl", function() {
     let mockModal = {
       result: fakePromise
     };
-    spyOn($uibModal, 'open').andReturn(mockModal);
+    spyOn($uibModal, 'open').and.returnValue(mockModal);
     ctrl.pushKey({});
     expect($uibModal.open).toHaveBeenCalled();
   });
 
   it("should test systems", ()=> {
     let sys = {id:1};
-    spyOn(SystemsService, 'test').andReturn(fakePromise);
+    spyOn(SystemsService, 'test').and.returnValue(fakePromise);
     ctrl.testSystem(sys);
     expect(SystemsService.test).toHaveBeenCalledWith(sys);
   });

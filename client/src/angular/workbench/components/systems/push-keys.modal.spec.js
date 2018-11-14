@@ -58,7 +58,7 @@ describe("systemPushKeysModal", function() {
         mockPromise.resolve({ status: 200});
        
         // Intercept calls to SystemsService.pushKeys and return mocked promise
-        spyOn(SystemsService, 'pushKeys').andReturn(mockPromise.promise);
+        spyOn(SystemsService, 'pushKeys').and.returnValue(mockPromise.promise);
 
         // Trigger Authenticate button code
         controller.ok();
@@ -74,7 +74,7 @@ describe("systemPushKeysModal", function() {
     it ("should display an 'Authorization failed' message if the user has a bad password or token", () => {
         var mockPromise = $q.defer();
         mockPromise.reject({ status: 403, data: { message: "AuthenticationException "}});
-        spyOn(SystemsService, 'pushKeys').andReturn(mockPromise.promise);
+        spyOn(SystemsService, 'pushKeys').and.returnValue(mockPromise.promise);
         controller.ok();
         scope.$apply();
         expect(controller.ui.error).toEqual(true);
@@ -86,7 +86,7 @@ describe("systemPushKeysModal", function() {
     var causeResetKeys = function() {
         var mockPromise = $q.defer();
         mockPromise.reject({ status: 409, data: { message: "ValueError"} });
-        spyOn(SystemsService, 'pushKeys').andReturn(mockPromise.promise);
+        spyOn(SystemsService, 'pushKeys').and.returnValue(mockPromise.promise);
         controller.ok();
         scope.$apply();
     };
@@ -102,7 +102,7 @@ describe("systemPushKeysModal", function() {
         causeResetKeys();
         var mockPromise = $q.defer();
         mockPromise.resolve({ status: 200 });
-        spyOn(SystemsService, 'resetKeys').andReturn(mockPromise.promise);
+        spyOn(SystemsService, 'resetKeys').and.returnValue(mockPromise.promise);
         controller.resetKeys();
         scope.$apply();
         expect(controller.ui.reset_keys_finished).toEqual(true);
@@ -117,7 +117,7 @@ describe("systemPushKeysModal", function() {
         causeResetKeys();
         var mockPromise = $q.defer();
         mockPromise.reject({ status: 409, data: { message: "Exception"} });
-        spyOn(SystemsService, 'resetKeys').andReturn(mockPromise.promise);
+        spyOn(SystemsService, 'resetKeys').and.returnValue(mockPromise.promise);
         controller.resetKeys();
         scope.$apply();
         expect(controller.ui.reset_keys_finished).toEqual(true);
@@ -131,7 +131,7 @@ describe("systemPushKeysModal", function() {
     it ("should display 'submit a ticket' for other error types", () => {
         var mockPromise = $q.defer();
         mockPromise.reject({ status: 500, data: { message: "Exception"} });
-        spyOn(SystemsService, 'pushKeys').andReturn(mockPromise.promise);
+        spyOn(SystemsService, 'pushKeys').and.returnValue(mockPromise.promise);
         controller.ok();
         scope.$apply();
         expect(controller.ui.status).toBeGreaterThan( 500 - 1 );
