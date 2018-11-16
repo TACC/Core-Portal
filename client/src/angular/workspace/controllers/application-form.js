@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import angular from 'angular';
 
-function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, SystemsService, Systems, Django) {
+function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, SystemsService, Django) {
   "ngInject";
   $localStorage.systemChecks = {};
 

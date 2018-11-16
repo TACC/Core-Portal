@@ -32,7 +32,7 @@ describe("DashboardCtrl", function() {
   });
 
   it("Should view next page of results", ()=> {
-    spyOn(SearchService, 'search').andReturn($q.when({}));
+    spyOn(SearchService, 'search').and.returnValue($q.when({}));
     ctrl.$state.params.query_string = 'test';
     ctrl.$onInit();
     ctrl.next();
@@ -41,7 +41,7 @@ describe("DashboardCtrl", function() {
   });
 
   it("should change filter type", ()=>{
-    spyOn(ctrl, 'search_browse').andReturn($q.when({}));
+    spyOn(ctrl, 'search_browse').and.returnValue($q.when({}));
     ctrl.filter('test_filter');
     expect(ctrl.data.type_filter).toEqual('test_filter');
     expect(ctrl.page_num).toEqual(0);
