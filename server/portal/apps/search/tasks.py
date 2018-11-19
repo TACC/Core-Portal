@@ -17,7 +17,7 @@ from portal.libs.agave.utils import service_account
 logger = logging.getLogger(__name__)
 
 # Crawl and index agave files
-@shared_task(bind=True, max_retries=3, retry_backoff=True, rate_limit="1/s")
+@shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="1/s")
 def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, update_pems = False, ignore_hidden=True):
 
     # prevent recursive indexing until we can do it without thrashing Agave
@@ -46,7 +46,7 @@ def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, upd
         for child in folders:
             self.delay(systemId, filePath=child.path)
 
-@shared_task(bind=True)
+@shared_task(bind=True, queue='indexing')
 def index_community_data(self):
     # s = IndexedFile.search()
     # s = s.query("match", **{"system._exact": settings.AGAVE_COMMUNITY_DATA_SYSTEM})
@@ -54,7 +54,7 @@ def index_community_data(self):
     agave_indexer.apply_async(args=[settings.AGAVE_COMMUNITY_DATA_SYSTEM])
 
 # Indexing task for My Data.
-@shared_task(bind=True)
+@shared_task(bind=True, queue='indexing')
 def index_my_data(self):
     users = User.objects.all()
     for user in users:
@@ -68,7 +68,7 @@ def index_my_data(self):
             kwargs={'username': uname, 'filePath': '/'}
         )
 
-@shared_task(bind=True)
+@shared_task(bind=True, queue='indexing')
 def index_cms(self):
     logger.info("Updating search index")
     if not settings.DEBUG:
