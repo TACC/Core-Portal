@@ -13,6 +13,7 @@ describe("systemPushKeysModal", function() {
     // Mock only the necessary portal components
     beforeEach(angular.mock.module("portal.workbench.components"));
     beforeEach(angular.mock.module("portal.data_depot.services"));
+    beforeEach(angular.mock.module("portal.common"));
     
     beforeEach( ()=> {
         angular.module('django.context', []).constant('Django', {user: 'test_user'});
