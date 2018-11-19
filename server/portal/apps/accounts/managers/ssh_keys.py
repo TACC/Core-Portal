@@ -25,8 +25,12 @@ class KeyCannotBeAdded(Exception):
         self.output = output
         self.error_output = error_output
 
-    def __unicode__(self):
-        return self.msg
+    def __str__(self):
+        return '{msg}: {output} \n {error}'.format(
+            msg=self.msg,
+            output=self.output,
+            error=self.error_output
+        )
 
 
 class KeysManager(AbstractKeysManager):
