@@ -143,7 +143,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: "celery -A portal worker --concurrency=2"
+    command: "celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
     container_name: cep_prtl_workers
     hostname: cep_prtl_workers
     networks:
