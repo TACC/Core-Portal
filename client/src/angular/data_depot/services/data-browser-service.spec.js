@@ -83,7 +83,7 @@ describe("DataBrowserService", function() {
     let mockModal = {
       result: fakePromise
     };
-    spyOn($uibModal, 'open').andReturn(mockModal);
+    spyOn($uibModal, 'open').and.returnValue(mockModal);
     DataBrowserService.copy(files);
     expect($uibModal.open).toHaveBeenCalled();
   });

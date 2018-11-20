@@ -116,4 +116,37 @@ import * as _ from 'underscore';
             return this.$q.reject(err);
         });
     };
+
+    getMonitor(system_id) {
+        return this. $http({
+            url: '/api/workspace/monitors',
+            method: 'GET',
+            params: {'target': system_id},
+            cache: false
+        });
+    };
+  
+    getSystemRoles(system_id) {
+        return this.$http({
+            url: 'api/workspace/systems',
+            method: 'GET',
+            params: { 'system_id': system_id, 'roles': true }
+        });
+    };
+  
+    getRoleForUser(system_id) {
+        return this.$http({
+            url: 'api/workspace/systems',
+            method: 'GET',
+            params: { 'system_id': system_id, 'user_role': true }
+        });
+    };
+  
+    updateRole(system_id, role) {
+        return this.$http({
+            url: 'api/workspace/systems',
+            method: 'POST',
+            data: { 'system_id': system_id, 'role': role }
+        });
+    };
 }
