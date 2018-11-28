@@ -64,7 +64,8 @@ function Apps($http, $q, $translate) {
         var field = {
           title: param.details.label,
           description: param.details.description,
-          required: param.value.required
+          required: param.value.required,
+          default: param.value.default
         };
         switch (param.value.type) {
           case 'bool':
@@ -101,7 +102,6 @@ function Apps($http, $q, $translate) {
     }
 
     if (inputs.length > 0) {
-
       schema.properties.inputs = {
         type: 'object',
         properties: {}
@@ -116,7 +116,8 @@ function Apps($http, $q, $translate) {
         var field = {
           title: input.details.label,
           description: input.details.description,
-          id: input.id
+          id: input.id,
+          default: input.value.default
         };
         if (input.semantics.maxCardinality === 1) {
           field.type = 'string';
@@ -127,6 +128,7 @@ function Apps($http, $q, $translate) {
           field.items = {
             type: 'string',
             format: 'agaveFile',
+            required: input.value.required,
             'x-schema-form': {notitle: true}
           };
           if (input.semantics.maxCardinality > 1) {
@@ -138,10 +140,11 @@ function Apps($http, $q, $translate) {
     }
 
     schema.properties.maxRunTime = {
+      default: app.defaultMaxRunTime || "06:00:00",
       title: 'Maximum job runtime',
       description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is 48:00:00 (48 hours).',
       type: 'string',
-      "pattern":"^(48:00:00)|([0-4][0-7]:[0-5][0-9]:[0-5][0-9])$",
+      "pattern":"^(48:00:00)|([0-4][0-9]:[0-5][0-9]:[0-5][0-9])$",
       "validationMessage":"Must be in format HH:MM:SS and be less than 48 hours (48:00:00)",
       required: true,
       'x-schema-form': {placeholder: app.defaultMaxRunTime}
@@ -151,7 +154,9 @@ function Apps($http, $q, $translate) {
       title: 'Job name',
       description: 'A recognizable name for this job',
       type: 'string',
-      required: true
+      required: true,
+      default: app.id + "_" + new Date().toISOString(),
+      maxLength: 64
     };
 
     schema.properties.archivePath = {
@@ -162,7 +167,6 @@ function Apps($http, $q, $translate) {
       id: 'archivePath',
       'x-schema-form': {placeholder: 'archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}'}
     };
-
     return schema;
   };
 
