@@ -32,7 +32,7 @@ class NotAuthorizedError(ApiException):  # pylint:disable=too-many-ancestors
         :param dict extra: Extra information to send.
         """
         msg = "User is not Authorized."
-        sts = 401
+        sts = 403
         super(NotAuthorizedError, self).__init__(
             message=message or msg,
             status=status or sts,

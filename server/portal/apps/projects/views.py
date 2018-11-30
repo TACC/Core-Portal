@@ -18,17 +18,6 @@ from portal.apps.projects.managers.base import ProjectsManager
 LOGGER = logging.getLogger(__name__)
 
 
-class ProjectsView(TemplateView):
-    """Data Depot View."""
-
-    template_name = 'portal/apps/data_depot/data_depot.html'
-
-    @method_decorator(ensure_csrf_cookie)
-    def dispatch(self, request, *args, **kwargs):
-        """Overwrite dispatch to ensure csrf cookie."""
-        return super(ProjectsView, self).dispatch(request, *args, **kwargs)
-
-
 class ProjectsApiView(BaseApiView):
     """Projects API view.
 
