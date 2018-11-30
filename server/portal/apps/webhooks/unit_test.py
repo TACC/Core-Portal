@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class TestJobsWebhookView(TestCase):
-    fixtures = ['user-data', 'auth']
+    fixtures = ['users', 'auth']
 
     @classmethod
     def setUpClass(cls):

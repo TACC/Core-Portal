@@ -1,25 +1,57 @@
-
+/**
+ * User Service Class.
+ */
 export default class UserService {
+    /**
+     * Constructor.
+     * @param {Object} $http
+     * @param {Object} $q
+     */
+    constructor($http, $q) {
+        'ngInject';
+        this.$http = $http;
+        this.$q = $q;
+        this.currentUser = {};
+    }
+    /**
+     * Authenticate
+     */
+    authenticate() {
+        return this.$http.get('/auth/user/')
+        .then( (resp)=>{
+              this.currentUser = resp.data;
+        }, (err) =>{
+              return this.$q.reject({"message": "auth error"});
+        });
+    }
 
-  constructor($http, $q) {
-    'ngInject';
-    this.$http = $http;
-    this.$q = $q;
-    this.currentUser = {};
-  }
-
-  authenticate() {
-    return this.$http.get('/auth/user/').then( (resp)=>{
-      this.currentUser = resp.data;
-    }, (err) =>{
-      return this.$q.reject({"message": "auth error"});
-    });
-  }
-
-  usage() {
-    return this.$http.get('/api/users/usage/').then(function (resp) {
-      return resp.data;
-    });
-  };
-
+    usage() {
+        return this.$http.get('/api/users/usage/')
+        .then(function (resp) {
+              return resp.data;
+        });
+    };
+    /**
+     * Search
+     * @param {String} q - Query to search on first name, last name or email.
+     * @param {String} role - Optional user role
+     */
+    search(q, role){
+        if (typeof role === 'undefined'){
+            role = '';
+        }
+        return this.$http.get(
+            '/api/users/',
+            {
+                params: {
+                    q: q,
+                    role: role,
+                },
+            }
+        ).then((resp) => {
+            return resp.data;
+        }, (err) => {
+            this.$q.reject(err);
+        });
+    }
 }

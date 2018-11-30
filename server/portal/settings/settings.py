@@ -275,6 +275,10 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, 'fixtures'),
+]
+
 """
 SETTINGS: LOCAL
 """
@@ -369,7 +373,7 @@ LOGGING = {
         'metrics_file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/portal.log',
+            'filename': '/var/log/portal/metrics.log',
             'maxBytes': 1024*1024*5,  # 5 MB
             'backupCount': 5,
             'formatter': 'metrics',
@@ -643,7 +647,7 @@ PORTAL_WORKSPACE_MANAGERS = {
     'shared': 'portal.apps.workspace.managers.shared.FileManager',
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
-
+ 
 TOOLBAR_OPTIONS = {
     'trash_enabled': True,
     'share_enabled': True,
@@ -669,8 +673,29 @@ PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = settings_secret.\
 PORTAL_DATA_DEPOT_STORAGE_HOST = settings_secret.\
     _PORTAL_DATA_DEPOT_STORAGE_HOST
 
-PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = settings_secret.\
+PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = settings_secret.\
     _PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX
+
+PORTAL_PROJECTS_NAME_PREFIX = settings_secret.\
+    _PORTAL_PROJECTS_NAME_PREFIX
+
+PORTAL_PROJECTS_ID_PREFIX = settings_secret.\
+    _PORTAL_PROJECTS_ID_PREFIX
+
+PORTAL_PROJECTS_ROOT_DIR = settings_secret.\
+    _PORTAL_PROJECTS_ROOT_DIR
+
+PORTAL_PROJECTS_ROOT_SYSTEM_NAME = settings_secret.\
+    _PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+
+PORTAL_PROJECTS_ROOT_HOST = settings_secret.\
+    _PORTAL_PROJECTS_ROOT_HOST
+
+PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
+    _PORTAL_PROJECTS_PRIVATE_KEY
+
+PORTAL_PROJECTS_PUBLIC_KEY = settings_secret.\
+    _PORTAL_PROJECTS_PUBLIC_KEY
 
 PORTAL_USER_HOME_MANAGER = settings_secret.\
     _PORTAL_USER_HOME_MANAGER
@@ -694,6 +719,7 @@ PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
 WH_BASE_URL = getattr(settings_secret, '_WH_BASE_URL', '')
 
+PORTAL_DOMAIN = settings_secret._PORTAL_DOMAIN
 """
 SETTINGS: ELASTICSEARCH
 """

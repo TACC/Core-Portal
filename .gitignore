@@ -72,6 +72,7 @@ htmlcov/
 .tox/
 .coverage
 .coverage.*
+.coverage*
 .cache
 nosetests.xml
 coverage.xml
@@ -106,6 +107,7 @@ __pycache__/
 *.py[cod]
 db.sqlite3
 logs/
+log/
 docker/requirements.txt
 .db/
 # C extensions

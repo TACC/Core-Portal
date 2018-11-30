@@ -7,15 +7,29 @@
 pipelines:
   default:
     - step:
+        name: First Step on task/**
+        script:
+          - echo "Not on master"
+    - step:
+        name: Unit Tests
         image: python:2.7
         caches:
           - pip
         script: # Modify the commands below to build your repository.
           - cd server
+          - mkdir -p log/portal
           - pip install -r requirements.txt
-          - DJANGO_SETTINGS_MODULE=portal.settings.unit_test_settings
-            python manage.py test -v1 --pattern="unit_test.py"
+          - mkdir -p $BITBUCKET_CLONE_DIR/.reports
+          - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
+            coverage run --branch --source="portal" manage.py test
+            --pattern="unit_test.py"
+            -v2 --settings="portal.settings.unit_test_settings"
+          - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
+            coverage report -m
+        artifacts:
+          - .reports/**
     - step:
+        name: Client Side Unit Tests
         image: timbru31/node-chrome
         caches:
           - node
@@ -23,6 +37,69 @@ pipelines:
           - cd client
           - npm install
           - npm run test
+    - step:
+        name: Unit test delta with master
+        image: python:2.7
+        caches:
+          - pip
+        script:
+          - git remote set-url origin git@bitbucket.org:$BITBUCKET_REPO_OWNER/$BITBUCKET_REPO_SLUG.git
+          - git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+          - git fetch
+          - git checkout master
+          - git status
+          - cd server
+          - mkdir -p log/portal
+          - pip install -r requirements.txt
+          - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT_master
+            coverage run --branch --source="portal" manage.py test
+            --pattern="unit_test.py"
+            -v2 --settings="portal.settings.unit_test_settings"
+          - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT_master
+            coverage report -m
+          - master_coverage=$(COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT_master
+            coverage report -m | awk '/^TOTAL/ { gsub("%", "", $6); print $6 }')
+          - commit_coverage=$(COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
+            coverage report -m | awk '/^TOTAL/ { gsub("%", "", $6); print $6 }')
+          - 'if [ "$master_coverage" -gt "$commit_coverage" ]; then echo "Test coverage decreased";
+            echo "Master branch tests coverage: $master_coverage";
+            echo "This commit test coverage: $commit_coverage";
+            $(exit 1);
+            fi'
+  branches:
+    master:
+      - step:
+          name: First Step on master
+          script:
+            - echo "On Master"
+      - step:
+          name: Unit Tests
+          image: python:2.7
+          caches:
+            - pip
+          script: # Modify the commands below to build your repository.
+            - cd server
+            - mkdir -p log/portal
+            - pip install -r requirements.txt
+            - mkdir -p $BITBUCKET_CLONE_DIR/.reports
+            - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
+              coverage run --branch --source="portal" manage.py test
+              --pattern="unit_test.py"
+              -v2 --settings="portal.settings.unit_test_settings"
+            - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
+              coverage report -m
+          artifacts:
+            - reports/**
+      - step:
+          name: Client Side Unit Tests
+          image: timbru31/node-chrome
+          caches:
+            - node
+          script: # Modify the commands below to build your repository.
+            - cd client
+            - npm install
+            - npm run test
+    
 definitions:
   caches:
     node: ./client/node_modules

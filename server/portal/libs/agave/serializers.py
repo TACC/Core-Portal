@@ -26,7 +26,8 @@ class BaseAgaveFileSerializer(json.JSONEncoder):
                     _wrapped[key] = val.isoformat()
 
             try:
-                if obj._children is not None:  # pylint: disable=protected-access
+                # pylint: disable=protected-access
+                if obj._children is not None:
                     kids = []
                     for child in obj.children():
                         tmp = child.to_dict()
@@ -54,6 +55,23 @@ class BaseAgaveFileSerializer(json.JSONEncoder):
 
 
 class BaseAgaveSystemSerializer(json.JSONEncoder):
+    """Class to serialize an Agave System object"""
+    def default(self, obj):  # pylint: disable=method-hidden, arguments-differ
+        if (isinstance(obj, BaseAgaveResource) or
+                hasattr(obj, 'to_dict')):
+            _wrapped = obj.to_dict()
+            if isinstance(_wrapped, list):
+                return _wrapped
+
+            for key, val in six.iteritems(_wrapped):
+                if isinstance(val, datetime.datetime):
+                    _wrapped[key] = val.isoformat()
+            return _wrapped
+
+        return json.JSONEncoder(self, obj)
+
+
+class BaseAgaveMetaSerializer(json.JSONEncoder):
     """Class to serialize an Agave System object"""
     def default(self, obj):  # pylint: disable=method-hidden, arguments-differ
         if (isinstance(obj, BaseAgaveResource) or

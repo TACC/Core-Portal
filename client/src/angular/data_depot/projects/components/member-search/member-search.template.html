@@ -1,0 +1,43 @@
+<script type="text/ng-template" id="itemTmpl.html">
+    <a href>
+        <span ng-bind-html="match.label.last_name | uibTypeaheadHighlight:query"></span>,
+        <span ng-bind-html="match.label.first_name | uibTypeaheadHighlight:query"></span> :  
+        ( <span ng-bind-html="match.label.email | uibTypeaheadHighlight:query"></span> )
+    </a>
+</script>
+<div class="modal-header">
+    <h3 class="modal-title">
+        {{$ctrl.ui.title}}.
+    </h3>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <input type="text"
+               class="form-control"
+               id="member"
+               data-ng-model="$ctrl.data.member"
+               placeholder="Search user by name or email address"
+               autocomplete="off"
+               data-uib-typeahead="user for user in $ctrl.search($viewValue)"
+               data-typeahead-loading="$ctrl.ui.loadingResult"
+               data-typeahead-no-results="$ctrl.ui.noResults"
+               data-typeahead-input-formatter="$ctrl.formatSelection()"
+               data-typeahead-min-length="3"
+               data-typeahead-template-url="itemTmpl.html"/>
+        <i data-ng-if="$ctrl.ui.loadingResults"
+           class="fa fa-refresh">&nbsp;</i>
+        <div data-ng-if="$ctrl.ui.noResults">
+            <i class="fa fa-times">&nbsp;</i> No Results Found.
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default"
+            data-ng-click="$ctrl.cancel()">
+        Cancel
+    </button>
+    <button class="btn btn-info"
+            data-ng-click="$ctrl.select()">
+        Select User
+    </button>
+</div>

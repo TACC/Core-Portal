@@ -1,0 +1,46 @@
+[
+{
+  "model": "accounts.portalprofile",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "ethnicity": "",
+    "gender": ""
+  }
+},
+{
+  "model": "accounts.portalprofile",
+  "pk": 2,
+  "fields": {
+    "user": 2,
+    "ethnicity": "",
+    "gender": ""
+  }
+},
+{
+  "model": "accounts.portalprofile",
+  "pk": 3,
+  "fields": {
+    "user": 3,
+    "ethnicity": "",
+    "gender": ""
+  }
+},
+{
+  "model": "accounts.sshkeys",
+  "pk": 1,
+  "fields": {
+    "user": 1
+  }
+},
+{
+  "model": "accounts.keys",
+  "pk": 1,
+  "fields": {
+    "ssh_keys": 1,
+    "system": "portal.work.home.username",
+    "private": "private key",
+    "public": "ssh-rsa public key"
+  }
+}
+]

@@ -18,8 +18,7 @@
     <table class="table table-bordered table-striped" style="background-color: #fff;">
         <thead>
         <th>Project title</th>
-        <!-- <th>PI</th>-->
-        <th>Last Updated</th>
+        <th>Project Id</th>
         </thead>
 
         <tbody>
@@ -27,15 +26,10 @@
             ng-if="data.projects">
             <td ng-click="onBrowse($event, project)">
                 <i class="fa fa-briefcase"></i>
-                <a ui-sref="wb.data_depot.projects.listing({systemId:project.id})"> {{project.name}}        </a>
+                <a ui-sref="wb.data_depot.projects.listing({systemId:project.id})"> {{project.description}}</a>
             </td>
-            <!-- <td>
-                <ds-user username="project.value.pi" format="name-username">
-                    {{ project.value.pi }}
-                </ds-user>
-            </td>-->
             <td>
-                {{ project.lastUpdated|date:"short" }}
+                {{ project.name }}
             </td>
         </tr>
         </tbody>

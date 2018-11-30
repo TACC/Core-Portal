@@ -10,8 +10,16 @@ module.exports = {
     module: {
       rules: [
         {
-          test: /\.css$/,
-          loader: 'ignore-loader',
+          test: /\.(s?)css$/,
+          use: [{
+                  loader: 'css-loader',
+              },
+              {
+                  loader: 'sass-loader',
+                  options: {
+                      sourceMap: true,
+                  }
+              }],
         },
         {
           test: /\.js$/,

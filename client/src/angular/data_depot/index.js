@@ -4,6 +4,8 @@ import './controllers';
 import './directives';
 import '../workbench/components';
 
+import './projects';
+
 //templates
 import agaveDataListingTemplate from './templates/agave-data-listing.html';
 import projectListTemplate from './templates/project-list.html';
@@ -13,6 +15,8 @@ let mod = angular.module('portal.data_depot', [
     'portal.data_depot.controllers',
     'portal.data_depot.directives',
     'portal.workbench.components',
+    'portal.data_depot.projects',
+    'ui.bootstrap',
 ]);
 
 /**
@@ -63,9 +67,21 @@ function config(
       controller: 'ProjectListCtrl'
     })
     .state('wb.data_depot.projects.listing', {
-      url: '{systemId}/{filePath:any}',
-      controller: 'ProjectListingCtrl',
-      template: agaveDataListingTemplate,
+        url: '{systemId}/{filePath:any}',
+        component: 'projectListingComponent',
+        params: {
+            projectId: false,
+        },
+        resolve: {
+            params: ($stateParams)=>{
+                'ngInject';
+                return {
+                    systemId: $stateParams.systemId,
+                    filePath: $stateParams.filePath,
+                    projectId: $stateParams.projectTitle,
+                };
+            }
+        }
     });
 }
 

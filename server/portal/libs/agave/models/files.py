@@ -2,7 +2,7 @@
 .. module: portal.libs.agave.models.files
    :synopsis: Models to represent resources pertaining to Agave Files
 """
-from __future__ import  absolute_import
+from __future__ import absolute_import
 import os
 import json
 import logging
@@ -11,16 +11,18 @@ import urllib
 from requests.exceptions import HTTPError
 from agavepy.async import AgaveAsyncResponse, Error
 from future.utils import python_2_unicode_compatible
-from cached_property import cached_property
 from django.conf import settings
+from cached_property import cached_property
 from .base import BaseAgaveResource
-#from agavepy.agave import AgaveException
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
+
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-public-methods
 @python_2_unicode_compatible
 class BaseFile(BaseAgaveResource):
     """Represents and Agave File
@@ -33,22 +35,28 @@ class BaseFile(BaseAgaveResource):
         '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xltx', '.xltm',
     ]
     SUPPORTED_MS_POWERPOINT = [
-        '.ppt', '.pot', '.pps', '.pptx', '.pptm', '.potx', '.ppsx', '.ppsm', '.sldx', '.sldm',
+        '.ppt', '.pot', '.pps', '.pptx', '.pptm',
+        '.potx', '.ppsx', '.ppsm', '.sldx', '.sldm',
     ]
 
-    SUPPORTED_MS_OFFICE = SUPPORTED_MS_WORD + SUPPORTED_MS_POWERPOINT + SUPPORTED_MS_EXCEL
+    SUPPORTED_MS_OFFICE = (
+        SUPPORTED_MS_WORD +
+        SUPPORTED_MS_POWERPOINT +
+        SUPPORTED_MS_EXCEL
+    )
 
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
         '.png', '.gif', '.jpg', '.jpeg',
     ]
 
     SUPPORTED_TEXT_PREVIEW_EXTS = [
-        '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css',
-        '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml', '.hh', '.htm', '.html',
-        '.java', '.js', '.less', '.m', '.make', '.md', '.ml', '.mm', '.msg', '.php',
-        '.pl', '.properties', '.py', '.rb', '.sass', '.scala', '.script', '.sh', '.sml',
-        '.sql', '.txt', '.vi', '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl',
-        '.json', '.out', '.err', '.f',
+        '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp',
+        '.cs', '.css', '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml',
+        '.hh', '.htm', '.html', '.java', '.js', '.less', '.m', '.make', '.md',
+        '.ml', '.mm', '.msg', '.php', '.pl', '.properties', '.py', '.rb',
+        '.sass', '.scala', '.script', '.sh', '.sml', '.sql', '.txt', '.vi',
+        '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl', '.json',
+        '.out', '.err', '.f',
     ]
 
     SUPPORTED_OBJECT_PREVIEW_EXTS = [
@@ -65,22 +73,35 @@ class BaseFile(BaseAgaveResource):
                                     SUPPORTED_MS_OFFICE +
                                     SUPPORTED_IPYNB_PREVIEW_EXTS)
 
-    def __init__(self, client, system=settings.AGAVE_STORAGE_SYSTEM, path='/', **kwargs):
+    def __init__(
+            self,
+            client,
+            system=settings.AGAVE_STORAGE_SYSTEM,
+            path='/',
+            **kwargs
+    ):
         """Agave File representation
 
-        By default this class does not retrieve the file object from Agave. This is to save
-        lower latency. The file object is retrieved only when applying an action to it.
+        By default this class does not retrieve the file object from Agave.
+        This is to save lower latency. The file object is retrieved only when
+        applying an action to it.
 
-        .. note:: The attributes set here are used for readability. When ever an attribute
-         is accessed we look at the ``_wrapped`` dict to see if the value exists. After this
-         then we take a look at instance and class attributes.
+        .. note:: The attributes set here are used for readability. When ever
+            an attribute is accessed we look at the ``_wrapped`` dict to see if
+            the value exists. After this then we take a look at instance and
+            class attributes.
         """
-        super(BaseFile, self).__init__(client, system=system, path=path, **kwargs)
+        kwargs.pop('permissions', None)
+        super(BaseFile, self).__init__(
+            client,
+            system=system,
+            path=path,
+            **kwargs
+        )
         self.name = getattr(self, 'name', None)
         self.path = getattr(self, 'path', None)
         self.last_modified = getattr(self, 'last_modified', None)
         self.length = getattr(self, 'length', None)
-        self.permissions = getattr(self, 'permissions', None)
         self.format = getattr(self, 'format', None)
         self.mime_type = getattr(self, 'mime_type', None)
         self.type = getattr(self, 'type', None)
@@ -113,8 +134,9 @@ class BaseFile(BaseAgaveResource):
         :returns: :class:`BaseFile` list
         :rtype: list
 
-        .. warning:: This method will "cache" the children list. If there's a need to force
-         re-load of the children list you can set this to ``None`` and access the property again.
+        .. warning:: This method will "cache" the children list.
+            If there's a need to force re-load of the children list you can set
+            this to ``None`` and access the property again.
         >>> _dir = BaseFile(system='system.id', path='/folder')
         >>> _dir.children()
         >>> #[<BaseFile: system.id/children1>]
@@ -133,8 +155,7 @@ class BaseFile(BaseAgaveResource):
         if self.type == 'dir' and self._children is None:
             METRICS.info('system=%s, path=%s, offset=%s, limit=%s',
                          self.system, self.path, offset, limit,
-                         extra=
-                         {
+                         extra={
                              'user': '',
                              'sessionId': '',
                              'operation': 'listing',
@@ -143,6 +164,7 @@ class BaseFile(BaseAgaveResource):
             listing = self.listing(self._ac, self.system, self.path,
                                    offset=offset, limit=limit)
             self._children = listing.children
+            # pylint: disable=protected-access
             self._wrapped = listing._wrapped
 
         return self._children
@@ -190,19 +212,26 @@ class BaseFile(BaseAgaveResource):
         :Example:
 
         >>> #Getting the parent directory
-        >>> output = BaseFile.listing(agave_client, 'system.id', 'path/to/file.out')
+        >>> output = BaseFile.listing(
+        ...     agave_client,
+        ...     'system.id',
+        ...     'path/to/file.out'
+        ... )
         >>> parent_dir = output.trail[-1]
         >>> #Create a directory in the parent directory
         >>> new_directory = parent_dir.mkdir('new_directory')
         """
         path_comps = self.path.split('/')
-        trail = [BaseFile(client=self._ac, system=self.system,
-                          path='/'.join(path_comps[0:i+1])) for i in range(len(path_comps))]
+        trail = [BaseFile(
+            client=self._ac,
+            system=self.system,
+            path='/'.join(path_comps[0:i+1])
+        ) for i in range(len(path_comps))]
         return trail
 
-    #TODO: implement this.
-    #@cached_property
-    #def metadata(self)
+    # .. todo:: #TODO: implement this.
+    # @cached_property
+    # def metadata(self)
 
     @cached_property
     def uuid(self):
@@ -211,16 +240,17 @@ class BaseFile(BaseAgaveResource):
         :returns: UUID of file
         :rtype: str
 
-        .. warning:: As of Jun/2017 the only way to get a file UUID is to list that
-        specific file and parse the UUID from the ``_links`` value.
-        This means that if this object was instantiated as a trail object then an extra
-        call to Agave need to be made in order to retrieve the UUID.
+        .. warning:: As of Jun/2017 the only way to get a file UUID is to
+            list that specific file and parse the UUID from the ``_links``
+            value. This means that if this object was instantiated as a trail
+            object then an extra call to Agave need to be made in order to
+            retrieve the UUID.
         """
         self._populate_obj()
         try:
             getattr(self._links, 'metadata')
         except AttributeError:
-            #obj is not completely populated, force it.
+            # obj is not completely populated, force it.
             self._links = None
             self._populate_obj()
         try:
@@ -233,6 +263,7 @@ class BaseFile(BaseAgaveResource):
 
         except AttributeError:
             raise
+        return None
 
     @property
     def parent_path(self):
@@ -246,10 +277,11 @@ class BaseFile(BaseAgaveResource):
     def _populate_obj(self):
         """Fully populates object.
 
-        This is used because we do not fully populate a file object when instantiating, this is
-         to save calls to Agave. Since some actions only require ``system`` and ``path`` then
-         we do not have to waste time in fully populating the object.
-        There are some other actions that need more information, e.g. :met:`uuid` or :meth:`postit`.
+        This is used because we do not fully populate a file object when
+        instantiating, this is to save calls to Agave. Since some actions only
+        require ``system`` and ``path`` then we do not have to waste time in
+        fully populating the object. There are some other actions that need
+        more information, e.g. :met:`uuid` or :meth:`postit`.
 
         :return: Self for chainability
         :rtype: :class:`BaseFile`
@@ -277,36 +309,52 @@ class BaseFile(BaseAgaveResource):
         .. todo:: We should implement a fallback using another type of
         data transfer method if this fails.
         """
-        remote_url = u'agave://{}/{}'.format(from_system, urllib.quote(from_path))
+        remote_url = u'agave://{}/{}'.format(
+            from_system,
+            urllib.quote(from_path)
+        )
         file_name = os.path.split(from_path)[1]
         _retries = retries
         while _retries > 0:
             try:
-                result = self._ac.files.importData(systemId=self.system,
-                                                   filePath=urllib.quote(self.path),
-                                                   fileName=file_name,
-                                                   urlToIngest=remote_url)
+                result = self._ac.files.importData(
+                    systemId=self.system,
+                    filePath=urllib.quote(self.path),
+                    fileName=file_name,
+                    urlToIngest=remote_url
+                )
                 async_resp = AgaveAsyncResponse(self._ac, result)
                 async_status = async_resp.result(600)
                 _retries = 0
             except Error as err:
-                logger.debug(u'There was an error importing data. %s. Retrying...', err)
+                logger.error(
+                    'There was an error importing data. %s. Retrying...',
+                    err,
+                    exc_info=True
+                )
                 _retries -= 1
 
         if unicode(async_status) == u'FAILED':
-            logger.error(u'Import Data failed from: systemId=%s, filePath=%s. '\
-                         u'to: systemId=%s, filePath=%s '\
-                         u'using URI: %s', from_system, from_path,
-                         self.system, self.path, remote_url)
+            logger.error(
+                'Import Data failed from: systemId=%s, filePath=%s. '
+                'to: systemId=%s, filePath=%s '
+                'using URI: %s',
+                from_system,
+                from_path,
+                self.system,
+                self.path,
+                remote_url,
+                exc_info=True
+            )
 
         return BaseFile.listing(self._ac, self.system, result['path'])
 
     def copy(self, dest_path, file_name=None):
         """Copies the current file to the provided destination path.
 
-        If ``new_name`` is *not* provided the file will be copied with the same name.
-        If ``dest_path`` is the same as the original and *no* ``new_name`` is provided
-        a random string will be appended to the end
+        If ``new_name`` is *not* provided the file will be copied with the
+        same name. If ``dest_path`` is the same as the original and *no*
+        ``new_name`` is provided a random string will be appended to the end
 
         :param str dest_path: Destination path.
         :param str file_name: New name.
@@ -316,9 +364,9 @@ class BaseFile(BaseAgaveResource):
 
         .. warning:: If ``dest_path`` does not exists this function will fail.
 
-        .. note:: When returning the response we have to do a :meth:`listing` because
-        the response from Agave is not the same a ``listing`` response and we need to
-        standardize that.
+        .. note:: When returning the response we have to do a :meth:`listing`
+        because the response from Agave is not the same a ``listing`` response
+        and we need to standardize that.
         """
         if file_name is None:
             file_name = self.name
@@ -346,7 +394,8 @@ class BaseFile(BaseAgaveResource):
         """Ensure the given path exists in the given sotrage system.
 
         This function will return the last response from Agave.
-        This means that if four folders are created then only the last folder data is returned.
+        This means that if four folders are created then only the last folder
+        data is returned.
 
         :param str system: System ID
         :param str path: Path to ensure.
@@ -361,8 +410,11 @@ class BaseFile(BaseAgaveResource):
         for path_comp in path_comps:
             logger.info(path_comps[:path_indx])
             try:
-                ensured = cls.listing(client, system,
-                            os.path.join(*path_comps[:path_indx]))
+                ensured = cls.listing(
+                    client,
+                    system,
+                    os.path.join(*path_comps[:path_indx])
+                )
             except HTTPError as err:
                 if err.response.status_code in [400, 403, 404]:
                     ensured = parent.mkdir(path_comp)
@@ -381,7 +433,8 @@ class BaseFile(BaseAgaveResource):
         """
         return self._agave.files.getHistory(systemId=self.system,
                                             filePath=urllib.quote(self.path))
-    #pylint: disable=too-many-arguments
+
+    # pylint: disable=too-many-arguments
     @classmethod
     def listing(cls, client, system=settings.AGAVE_STORAGE_SYSTEM,
                 path='/', offset=0, limit=100):
@@ -397,15 +450,17 @@ class BaseFile(BaseAgaveResource):
         :return: File/folder listed.
         :rtype: :class:`BaseFile`
 
-        :raises HTTPError: ``status_code == 403`` if the user does not have, at least,
-                           read permissions.
-        :raises HTTPError: ``status_code == 404`` if the :attr:`path` does not exists.
+        :raises HTTPError: ``status_code == 403`` if the user does not have,
+            at least, read permissions.
+        :raises HTTPError: ``status_code == 404`` if the :attr:`path` does
+            not exists.
 
         .. warning:: Agave uses a page size of 100 by default.
 
-        .. warning:: Agave listing response is *always* an array of objects with the first
-         object being the file/folder which we are listing. This means that on the first page
-         the children are [1:] of the response. The rest of the pages are OK.
+        .. warning:: Agave listing response is *always* an array of objects
+            with the first object being the file/folder which we are listing.
+            This means that on the first page the children are [1:] of the
+            response. The rest of the pages are OK.
         """
         lower = 1
         if offset > 0:
@@ -426,9 +481,10 @@ class BaseFile(BaseAgaveResource):
             listing.name = os.path.basename(listing.path)
             listing.children = [cls(client=client, **f)
                                 for f in list_result[lower:]]
-        
+
         return listing
-    #pylint: enable=too-many-arguments
+
+    # pylint: enable=too-many-arguments
     def pems_list(self):
         """Permissions List
 
@@ -468,6 +524,7 @@ class BaseFile(BaseAgaveResource):
         :rtype: str
         """
         self._populate_obj()
+        # pylint: disable=protected-access
         args = {
             'url': urllib.unquote(self._links._self.href),
             'maxUses': max_uses,
@@ -475,6 +532,7 @@ class BaseFile(BaseAgaveResource):
             'lifetime': lifetime,
             'noauth': False
         }
+        # pylint: enable=protected-access
         if force:
             args['url'] += '?force=True'
 
@@ -484,7 +542,8 @@ class BaseFile(BaseAgaveResource):
     def mkdir(self, dir_name):
         """Create a new directory.
 
-        The directory will be created inside the directory represented by this class.
+        The directory will be created inside the directory represented by this
+        class.
 
         :param str dir_name: The name of the new directory.
 
@@ -492,8 +551,9 @@ class BaseFile(BaseAgaveResource):
         :rtype: :class:`BaseFile`
         :raises HTTPError: if an error occurs calling the files endpoint.
 
-        .. note:: The response from Agave after creating a diretory is not the same
-        returned when listing a file/folder. Because of this we return an instance of
+        .. note:: The response from Agave after creating a diretory is not
+            the same returned when listing a file/folder. Because of this we
+            return an instance of
         :class:`BaseFile` using only ``systemId`` and ``path``.
 
         .. todo:: Does this method needs to be a ``@classmethod``?
@@ -513,8 +573,9 @@ class BaseFile(BaseAgaveResource):
     def move(self, system, dest_path, file_name=None):
         """Move the current file to the given destination.
 
-        If a :attr:`file_name` is given then the file will be renamed upon moving it.
-        If :attr:`file_name` is *not* given the file will preserve its name.
+        If a :attr:`file_name` is given then the file will be renamed upon
+        moving it. If :attr:`file_name` is *not* given the file will preserve
+        its name.
 
         :param str des_path: Destination path.
         :param str file_name: New name for file.
@@ -522,8 +583,9 @@ class BaseFile(BaseAgaveResource):
         :return: This instance updated.
         :rtype: :class:`BaseFile`
 
-        .. note:: The response from Agave after creating a diretory is not the same
-        returned when listing a file/folder. Because of this we return an instance of
+        .. note:: The response from Agave after creating a diretory is not
+            the same returned when listing a file/folder. Because of this we
+            return an instance of
         :class:`BaseFile` using only ``systemId`` and ``path``.
 
         """
@@ -543,8 +605,8 @@ class BaseFile(BaseAgaveResource):
     def rename(self, new_name):
         """Renames file/folder
 
-        This is only a convenience method, we use :meth:`move` since we have had
-        some problems using ``agavepy``'s rename action.
+        This is only a convenience method, we use :meth:`move` since we have
+        had some problems using ``agavepy``'s rename action.
 
         :param str new_name: New name
 
@@ -584,7 +646,8 @@ class BaseFile(BaseAgaveResource):
     def unshare(self, username):
         """Unshare a file for a given username.
 
-        This is a shortcut method for :meth:`BaseFile.share('username', 'NONE')`
+        This is a shortcut method for
+        :meth:`BaseFile.share('username', 'NONE')`
 
         :param str username: username which permissions will be updated.
 
@@ -596,9 +659,9 @@ class BaseFile(BaseAgaveResource):
     def upload(self, upload_file):
         """Upload a file to this directory.
 
-        If the instance of this class is a *directory* the file uploaded will be
-         uploaded to this directory.
-        If the instance of this class is a *file* then it will be overwritten.
+        If the instance of this class is a *directory* the file uploaded will
+        be uploaded to this directory. If the instance of this class is a
+        *file* then it will be overwritten.
 
         :param upload_file: File to upload
 

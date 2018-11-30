@@ -1,118 +1,196 @@
-import logging
+"""Project views.
+
+.. :module:: apps.projects.views
+   :synopsis: Views to handle Projects
+"""
+from __future__ import unicode_literals, absolute_import
 import json
+import logging
 from django.http import JsonResponse
-from django.conf import settings
+from django.views.generic.base import TemplateView
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.cache import cache_control
-from portal.views.base import BaseApiView
+from django.views.decorators.csrf import ensure_csrf_cookie
 from portal.exceptions.api import ApiException
-from portal.apps.projects.models import Project
-from portal.libs.agave.models.files import BaseFile
-from portal.libs.agave.models.systems.storage import StorageSystem
-from portal import utils
-from portal.decorators.api_authentication import api_login_required
-
-logger = logging.getLogger(__name__)
-
-@method_decorator(api_login_required, name='dispatch')
-class ProjectInstanceView(BaseApiView):
-
-    def get(self, request, project_uuid):
-        logger.info("ProjectInstanceView")
-        logger.info(project_uuid)
-        ac = request.user.agave_oauth.client
-        project = Project.fetch(ac, project_uuid)
-        logger.info(project)
-        return JsonResponse(project.to_dict())
-
-    def put(self, request, project_uuid):
-        """Can only update title and description for now, the
-        other actions are handled by separate requests
-        """
-        post_data = json.loads(request.body)
-        logger.info(post_data)
-        ac = request.user.agave_oauth.client
-        project = Project.fetch(ac, project_uuid)
-
-        if project.pi != request.user.username:
-            raise ApiException("Forbidden")
-        project.title = post_data["value"]["title"]
-        project.description = post_data["value"]["description"]
-        project.save()
-        logger.info(project)
-        return JsonResponse(project.to_dict())
+from portal.views.base import BaseApiView
+from portal.apps.projects.managers.base import ProjectsManager
 
 
-@method_decorator(api_login_required, name='dispatch')
-class ProjectView(BaseApiView):
-    """ Projects listing view"""
-    cacher = cache_control(private=True, max_age=60*5)
+LOGGER = logging.getLogger(__name__)
 
-    @method_decorator(cacher)
+
+class ProjectsApiView(BaseApiView):
+    """Projects API view.
+
+    This view handles anything that has to do with multiple projects.
+    Creating a project is implemented here since the call does not
+    specify an id. Creating a project id takes into consideration the rest
+    of the projects.
+    """
+
     def get(self, request):
-        #TODO: fix this to work with the full metadata definition
-        #of projects. For now, can just list the storage systems
-        ac = request.user.agave_oauth.client
-        systems = StorageSystem.search(
-            ac,
-            {
-                'type.eq': "STORAGE",
-                'id.like': '*-projects-*'
-            }
+        """GET handler."""
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 100))
+        res = ProjectsManager(request.user).list(
+            offset=offset,
+            limit=limit
         )
-        # projects = Project.list_projects(agave_client=ac)
-        # for p in projects:
-        #     logger.info(p.to_dict())
-        out = [s.to_dict() for s in systems]
-        return JsonResponse(out, safe=False)
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': res
+            },
+            encoder=ProjectsManager.systems_serializer_cls
+        )
 
-    def post(self, request):
+    def post(self, request):  # pylint: disable=no-self-use
+        """POST handler."""
+        title = request.POST.get('title')
+        mgr = ProjectsManager(request.user)
+        prj = mgr.create(title)
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': prj.storage,
+            },
+            encoder=mgr.systems_serializer_cls
+        )
+
+
+class ProjectInstanceApiView(BaseApiView):
+    """Project Instance API view.
+
+    Any functionality pertaining to a single project instance should be
+    implemented here, **unless** there is a more specific API view
+    e.g. :class:`~portal.apps.projects.views.ProjectsPemsApiView`
+    """
+
+    def get(self, request, project_id=None, system_id=None):
+        """Retrieve single project instance.
+
+        A project instance can be retrieved by project or system id.
+
+        :param request: Request object.
+        :param str project_id: Project Id.
+        :param str system_id: System Id.
         """
-        Create a new Project. Projects and the root File directory for a Project should
-        be owned by the portal, with roles/permissions granted to the creating user.
+        mgr = ProjectsManager(request.user)
+        prj = mgr.get_project(project_id, system_id)
 
-        1. Create the metadata record for the project
-        2. Create a directory on the projects storage system named after the metadata uuid
-        3. Associate the metadata uuid and file uuid
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': prj.metadata,
+            },
+            encoder=ProjectsManager.meta_serializer_cls
+        )
 
-        :param request:
-        :return: The newly created project
-        :rtype: JsonResponse
+    def patch(
+            self,
+            request,
+            project_id=None,
+            system_id=None
+    ):  # pylint: disable=no-self-use
+        """Update one or multiple fields.
+
+        This method should be used to update metadata values **mainly**.
+        The updated values must live in the POST body of the request.
+
+        .. example::
+        POST data to update a project's title.
+        ```json
+        {
+            "title": "New title"
+        }
+        ```
+        POST data to update a project's title and description.
+        ```json
+        {
+            "title": "New Title",
+            "description": "New Description"
+        }
+
+        .. warning::
+        This method will not update any team members on a project.
+        That should be handled through permissions.
+
+        :param request: Request object
+        :param str project_id: Project Id.
         """
+        mgr = ProjectsManager(request.user)
+        data = json.loads(request.body)
+        LOGGER.debug('data: %s', data)
+        prj = mgr.update_prj(project_id, system_id, **data)
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': prj.metadata
+            },
+            encoder=mgr.meta_serializer_cls
+        )
 
-        # portal service account needs to create the objects on behalf of the user
-        ag = utils.agave.get_service_account_client()
 
-        if request.is_ajax():
-            post_data = json.loads(request.body)
-        else:
-            post_data = request.POST.copy()
+class ProjectMembersApiView(BaseApiView):
+    """Project Members API view."""
 
-        prj = Project(ag)
-        prj.pi = request.user.username
-        prj.pi_name = u"{fn} {ln}".format(fn=request.user.first_name, ln=request.user.last_name)
-        prj.title = post_data.get('title')
-        prj.award_number = post_data.get('awardNumber', '')
-        prj.project_type = post_data.get('projectType', '')
-        prj.associated_projects = post_data.get('associatedProjects', {})
-        prj.description = post_data.get('description', '')
-        prj.keywords = post_data.get('keywords', '')
-        prj.project_id = post_data.get('projectId', '')
-        prj.save()
+    def patch(self, request, project_id):
+        """PATCH handler.
 
-        mngr = BaseFile(ag, Project.STORAGE_SYSTEM_ID, '/')
-        mngr.mkdir(prj.uuid)
+        Process any action on a project
+        """
+        data = json.loads(request.body)
+        action = data.get('action')
+        try:
+            operation = getattr(self, action.lower())
+        except AttributeError:
+            LOGGER.error(
+                'Invalid action.',
+                extra=request.POST.dict(),
+                exc_info=True
+            )
+            raise ApiException(
+                'Invalid action.',
+                403,
+                request.POST.dict()
+            )
+        return operation(request, project_id, **data)
 
-        #
-        # # Wrap Project Directory as private system for project
-        # project_system_tmpl = template_project_storage_system(prj)
-        # project_system_tmpl['storage']['rootDir'] = \
-        #     project_system_tmpl['storage']['rootDir'].format(project_uuid)
-        #
-        # ag.systems.add(body=project_system_tmpl)
-        #
-        #
-        # prj.add_team_members([request.user.username])
+    # pylint: disable=no-self-use
+    def add_member(self, request, project_id, **data):
+        """Add member to a project."""
+        username = data.get('username')
+        member_type = data.get('memberType')
+        res = ProjectsManager(request.user).add_member(
+            project_id,
+            member_type,
+            username
+        )
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': res.metadata
+            },
+            encoder=ProjectsManager.meta_serializer_cls
+        )
 
-        return JsonResponse(prj.to_dict(), safe=False)
+    def remove_member(self, request, project_id, **data):
+        """Remove member from project.
+
+        :param request: Request object.
+        :param str project_id: Project id.
+        :param dict data: Data.
+        """
+        username = data.get('username')
+        member_type = data.get('memberType')
+        prj = ProjectsManager(request.user).remove_member(
+            project_id=project_id,
+            member_type=member_type,
+            username=username
+        )
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': prj.metadata,
+            },
+            encoder=ProjectsManager.meta_serializer_cls
+        )

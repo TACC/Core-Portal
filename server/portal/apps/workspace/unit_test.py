@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 print settings.FIXTURE_DIRS
 
 class TestAppsApiViews(TestCase):
-    fixtures = ['user-data', 'auth']
+    fixtures = ['users', 'auth']
 
     @classmethod
     def setUpClass(cls):
