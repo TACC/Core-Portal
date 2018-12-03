@@ -647,7 +647,7 @@ PORTAL_WORKSPACE_MANAGERS = {
     'shared': 'portal.apps.workspace.managers.shared.FileManager',
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
- 
+
 TOOLBAR_OPTIONS = {
     'trash_enabled': True,
     'share_enabled': True,
@@ -674,7 +674,7 @@ PORTAL_DATA_DEPOT_STORAGE_HOST = settings_secret.\
     _PORTAL_DATA_DEPOT_STORAGE_HOST
 
 PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = settings_secret.\
-    _PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX
+    _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
 
 PORTAL_PROJECTS_NAME_PREFIX = settings_secret.\
     _PORTAL_PROJECTS_NAME_PREFIX
