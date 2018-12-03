@@ -271,7 +271,7 @@ def add_pub_key_to_resource(
         password,
         token,
         system_id,
-        hostname,
+        hostname=None,
         port=22
 ):  # pylint: disable=too-many-arguments
     """Add Publike Key to Remote Resource
@@ -286,6 +286,11 @@ def add_pub_key_to_resource(
     :raises: :class:`~portal.apps.accounts.managers.`
 
     """
+    if hostname is None:
+        user = check_user(username)
+        sys = get_system(user, system_id)
+        hostname = sys.storage.host
+
     success = True
     user = check_user(username)
     mgr = _lookup_keys_manager(
