@@ -157,8 +157,20 @@
   text-overflow: ellipsis;
 }
 
+.agave-file-picker {
+    padding: 0.5em 0.5em 0.5em 0.5em;
+}
+
 .agave-file-picker.wants {
-    background-color: #fcf8e3;
+    background-color: #5bc0de;
+}
+
+.agave-file-picker.wants label {
+    color: #fff;
+}
+
+.agave-file-picker-cancel {
+    color: #fff;
 }
 
 .dnd-list ul[dnd-list] {
