@@ -43,14 +43,16 @@ pipelines:
         caches:
           - pip
         script:
+          - cd server
+          - mkdir -p log/portal
+          - pip install -r requirements.txt
+          - commit_coverage=$(COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
+            coverage report -m | awk '/^TOTAL/ { gsub("%", "", $6); print $6 }')
           - git remote set-url origin git@bitbucket.org:$BITBUCKET_REPO_OWNER/$BITBUCKET_REPO_SLUG.git
           - git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
           - git fetch
           - git checkout master
           - git status
-          - cd server
-          - mkdir -p log/portal
-          - pip install -r requirements.txt
           - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT_master
             coverage run --branch --source="portal" manage.py test
             --pattern="unit_test.py"
@@ -58,8 +60,6 @@ pipelines:
           - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT_master
             coverage report -m
           - master_coverage=$(COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT_master
-            coverage report -m | awk '/^TOTAL/ { gsub("%", "", $6); print $6 }')
-          - commit_coverage=$(COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
             coverage report -m | awk '/^TOTAL/ { gsub("%", "", $6); print $6 }')
           - 'if [ "$master_coverage" -gt "$commit_coverage" ]; then echo "Test coverage decreased";
             echo "Master branch tests coverage: $master_coverage";
