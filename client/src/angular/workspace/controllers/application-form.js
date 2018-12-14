@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import angular from 'angular';
 
-function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, SystemsService, Django) {
+function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, SystemsService, Django, $timeout) {
   "ngInject";
   $localStorage.systemChecks = {};
 
@@ -12,6 +12,14 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     app: null,
     form: {}
   };
+
+  // TODO: this is heinous. For some reason have to use $timeout in order
+  // to get the models / forms in sync
+  $scope.$on('sf-render-finished', () => {
+    $timeout( ()=> {
+      $scope.$broadcast("schemaFormValidate");
+    }, 1);
+  });
 
   $scope.$on('launch-app', function(e, app) {
     $scope.error = '';
@@ -24,28 +32,6 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     if (app.value.type === 'agave'){
       Apps.get(app.value.definition.id).then(
         function(resp) {
-        // check app execution system
-        // Systems.getMonitor(resp.data.response.executionSystem)
-        //   .then(
-        //     function(response){
-        //       if (response.data.response.length > 0){
-        //           // perform check only when monitor is active
-        //           if (response.data[0].active){
-        //             if (response.data[0].lastSuccess !== null){
-        //               var currentDate = new Date();
-        //               var monitorLastSuccessDate = Date.parse(response.data[0].lastSuccess);
-        //               var diff = Math.abs((currentDate - monitorLastSuccessDate) / 60000);
-        //
-        //               if (diff > response.data[0].frequency){
-        //                 toastr.warning($translate.instant('error_system_monitor'));
-        //               }
-        //             } else {
-        //               toastr.warning($translate.instant('error_system_monitor'));
-        //             }
-        //         }
-        //       }
-        //     });
-
         $scope.data.app = resp.data.response;
         $scope.resetForm();
       });
@@ -68,22 +54,24 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     $scope.form.form = [];
 
     /* inputs */
-    var items = [];
     if ($scope.form.schema.properties.inputs) {
-      items.push('inputs');
+      $scope.form.form.push({
+        type: 'fieldset',
+        readonly: $scope.data.needsLicense,
+        title: 'Inputs',
+        items: ['inputs']
+      });
     }
     if ($scope.form.schema.properties.parameters) {
-      items.push('parameters');
+      $scope.form.form.push({
+        type: 'fieldset',
+        readonly: $scope.data.needsLicense,
+        title: 'Parameters',
+        items: ['parameters']
+      });
     }
-    $scope.form.form.push({
-      type: 'fieldset',
-      readonly: $scope.data.needsLicense,
-      title: 'Inputs',
-      items: items
-    });
-
     /* job details */
-    items = [];
+    let items = [];
     if ($scope.data.app.tags.includes('Interactive')) {
       items.push('name');
     } else {
@@ -109,7 +97,7 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
     });
   };
 
-  $scope.onSubmit = function(form) {    
+  $scope.onSubmit = function(form) {
     $scope.data.messages = [];
     $scope.$broadcast('schemaFormValidate');
     if (form.$valid) {

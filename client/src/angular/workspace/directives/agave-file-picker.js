@@ -8,7 +8,12 @@ function agaveFilePicker() {
       template: fpTemplate,
       link: function($scope, $element, attrs, $ngModel) {
         var formKey = $scope.form.key.join('.');
-
+        $scope.data = {
+          input: null
+        };
+        $scope.$watch( ()=> {return $ngModel;}, (value)=> {
+          $scope.data.input = value.$viewValue;
+        });
         /*
         formKey requires an index when it is an array. $scope.$parent.$index will be a value 0 or greater
         if it's an array, so append it to the formKey
@@ -20,9 +25,7 @@ function agaveFilePicker() {
 
         $scope.requesting = false;
 
-        $scope.data = {
-          input: null
-        };
+
 
         $scope.wantFile = function wantFile($event) {
           $event.preventDefault();
