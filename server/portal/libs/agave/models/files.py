@@ -91,7 +91,7 @@ class BaseFile(BaseAgaveResource):
             the value exists. After this then we take a look at instance and
             class attributes.
         """
-        kwargs.pop('permissions', None)
+        # kwargs.pop('permissions', None)
         super(BaseFile, self).__init__(
             client,
             system=system,
