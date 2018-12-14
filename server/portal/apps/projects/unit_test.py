@@ -143,8 +143,12 @@ class TestProjectsModels(TestCase):
             }
         )
 
+        # Mock project creator/owner
+        username = 'username'
+        mock_owner = get_user_model().objects.get(username=username)
+
         ###############
-        prj = Project.create(self.magave, 'Project Title', 'PRJ-123')
+        prj = Project.create(self.magave, 'Project Title', 'PRJ-123', mock_owner)
         ###############
 
         # Assert file creation
@@ -210,6 +214,7 @@ class TestProjectsModels(TestCase):
         meta_model.objects.get_or_create.assert_called_with(
             project_id="PRJ-123",
             defaults={
+                'owner': mock_owner,
                 'title': 'Project Title'
             }
         )
@@ -481,3 +486,26 @@ class TestProjectsModels(TestCase):
         self.assertEqual(exc.exception.extra['user'].username, username)
         self.assertIsNot(exc.exception.message, None)
         self.assertNotEqual(exc.exception.response.status_code, 200)
+
+    @patch('portal.apps.projects.models.base.ProjectMetadata')
+    def test_create_metadata(self, meta_model):
+        # Test creating metadata with no owner
+        Project._create_metadata("Project Title", "PRJ-123")
+        meta_model.objects.get_or_create.assert_called_with(
+            project_id="PRJ-123",
+            defaults={
+                'title': 'Project Title'
+            }
+        ) 
+
+        # Test creating metadata with mock project creator/owner
+        username = 'username'
+        mock_owner = get_user_model().objects.get(username=username)
+        Project._create_metadata("Project Title", "PRJ-123", mock_owner)
+        meta_model.objects.get_or_create.assert_called_with(
+            project_id="PRJ-123",
+            defaults={
+                'title': 'Project Title',
+                'owner': mock_owner
+            }
+        ) 

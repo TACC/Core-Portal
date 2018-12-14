@@ -1,0 +1,49 @@
+<script type="text/ng-template" id="userSearchTypeahead.html">
+    <a href>
+        <span ng-bind-html="match.label.last_name | uibTypeaheadHighlight:query"></span>,
+        <span ng-bind-html="match.label.first_name | uibTypeaheadHighlight:query"></span> :  
+        ( <span ng-bind-html="match.label.email | uibTypeaheadHighlight:query"></span> )
+    </a>
+</script>
+<div class="user-member-search">
+    <div ng-if="!$ctrl.showConfirm">
+        <div class="form-group">
+            <label ng-if="$ctrl.label"><i>{{ $ctrl.label }}</i></label>
+            <input type="text"
+                    class="form-control"
+                    id="member"
+                    data-ng-model="$ctrl.data.member"
+                    placeholder="Search user by name or email address"
+                    autocomplete="off"
+                    data-uib-typeahead="user for user in $ctrl.search($viewValue)"
+                    data-typeahead-loading="$ctrl.ui.loadingResult"
+                    data-typeahead-no-results="$ctrl.ui.noResults"
+                    data-typeahead-input-formatter="$ctrl.formatSelection()"
+                    data-typeahead-min-length="3"
+                    data-typeahead-template-url="userSearchTypeahead.html"/>
+            <i data-ng-if="$ctrl.ui.loadingResults"
+                class="fa fa-refresh">&nbsp;</i>
+            <div data-ng-if="$ctrl.ui.noResults">
+                <i class="fa fa-times">&nbsp;</i> No Results Found.
+            </div>
+        </div>
+        <button class="btn btn-default"
+                data-ng-click="$ctrl.cancel()">
+            Cancel
+        </button>
+        <button class="btn btn-info"
+                data-ng-click="$ctrl.select()"
+                ng-disabled="!$ctrl.data.member || !$ctrl.data.member.username">
+            Select User
+        </button>
+    </div>
+    <div ng-if="$ctrl.showConfirm" class="user-search-animate">
+        <div>
+            <i class="fa fa-exclamation-circle"></i>&nbsp;{{ $ctrl.warning }}
+        </div>
+        <div class="user-search-button-container">
+            <button class="btn btn-warning" data-ng-click="$ctrl.confirm()">Confirm</button>
+            <button class="btn btn-primary" data-ng-click="$ctrl.cancel()">Cancel</button>
+        </div>
+    </div>
+</div>

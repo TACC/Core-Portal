@@ -39,6 +39,13 @@ class AbstractProjectMetadata(models.Model):
     description = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="rel_owner_%(class)s",
+        related_query_name="owner_%(class)s",
+        blank=True,
+        null=True
+    )
     pi = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='rel_pi_%(class)s',

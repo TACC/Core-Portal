@@ -1,0 +1,76 @@
+<div class="modal-header">
+    <h3 class="modal-title">
+        Edit Project Members
+    </h3>
+</div>
+<div class="modal-body">
+    <!-- PI -->
+    <div>
+        <h4>PI</h4>
+
+        <div ng-if="$ctrl.meta.pi">
+            {{ $ctrl.meta.pi.fullName }}
+        </div>
+        <div ng-if="!$ctrl.meta.pi">
+            This project currently does not have a PI.
+            <span ng-if="$ctrl.canSetPI()">
+                <i>As the project creator, you may set a PI. Once you set a PI,
+                only the new PI may set a different PI.</i>
+            </span>
+        </div>
+
+        <div ng-if="$ctrl.showPIControls()" class="projects-button-container">
+            <button class="btn btn-success"
+                ng-click="$ctrl.showPISearch()">
+                <i class="fa fa-user-plus">&nbsp;</i> Set the PI
+            </button>
+        </div>
+
+        <div ng-if="$ctrl.isSavingPI" class="projects-button-container">
+            <button class="btn btn-link" disabled="true">
+                Saving <i class="fa fa-spinner fa-spin"></i>
+            </button>
+        </div>
+
+        <div ng-if="$ctrl.piSearch" class="projects-animate search-box">
+            <user-search
+                label="Select a user to be this project's PI"
+                warning="{{ $ctrl.piChangeWarning }}"
+                on-cancel="$ctrl.cancelSetPI()"
+                on-select="$ctrl.setPI($user)">
+            </user-search>
+        </div>
+    </div>
+
+    <!-- Co PIs -->
+    <div>
+        <member-list
+            meta="$ctrl.meta"
+            field="coPis"
+            member-type="co_pi"
+            label="Co-PIs"
+            button-text="Add a Co-PI"
+            editable="$ctrl.canAddCoPI()"
+            validator="$ctrl.coPIValidator($user)">
+        </member-list>
+    </div>
+
+    <!-- Team Members -->
+    <div>
+        <member-list
+            meta="$ctrl.meta"
+            field="teamMembers"
+            member-type="team_member"
+            label="Team Members"
+            button-text="Add a Member"
+            editable="$ctrl.canAddCoPI()"
+            validator="$ctrl.teamMemberValidator($user)">
+        </member-list> 
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default"
+            data-ng-click="$ctrl.ok()">
+        Close
+    </button>
+</div>

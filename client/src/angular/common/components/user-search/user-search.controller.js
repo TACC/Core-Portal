@@ -2,7 +2,7 @@ import _ from 'underscore';
 /**
  * Controller for member search.
  */
-export default class ProjectMemberSearchCtrl {
+export default class UserSearchCtrl {
     /**
      * Initialize Controller.
      * @param {Object} UserService
@@ -10,18 +10,36 @@ export default class ProjectMemberSearchCtrl {
     constructor(UserService) {
         'ngInject';
         this.UserService = UserService;
-        this.ui = {};
         this.data = {};
+        this.warning = null;
+        this.showConfirm = false;
     }
+
     /**
-     * On Init
+     * Cancel button handler
      */
-    $onInit() {
-        this.ui.title = this.resolve.title;
+    cancel() {
+        this.onCancel();
     }
-    cancel(){
-        this.dismiss({$value:'cancel'});
+    
+    /**
+     * Select button handler
+     */
+    select() {
+        if (!this.warning) {
+            this.confirm();
+        } else {
+            this.showConfirm = true;
+        }
     }
+
+    /**
+     * Send the data back
+     */
+    confirm() {
+        this.onSelect({ $user: this.data.member });
+    }
+
     /**
      * Search a user
      * @param {String} q - Query string to search on first name, last name or email.
@@ -29,6 +47,7 @@ export default class ProjectMemberSearchCtrl {
     search(q) {
         return this.UserService.search(q);
     }
+
     /**
      * Format typeahead selection
      * @return {String}
@@ -40,11 +59,5 @@ export default class ProjectMemberSearchCtrl {
         return `${this.data.member.first_name}\
  ${this.data.member.last_name} : (${this.data.member.email})`;
     }
-    select() {
-        this.close({
-            $value: {
-                user: this.data.member,
-            }
-        });
-    }
+
 }

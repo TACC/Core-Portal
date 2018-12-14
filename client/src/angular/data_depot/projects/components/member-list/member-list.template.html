@@ -1,0 +1,47 @@
+<div>
+    <h4>
+        {{ $ctrl.label }}
+    </h4>
+    <div ng-if="$ctrl.meta[$ctrl.field].length">
+        <div ng-repeat="member in $ctrl.meta[$ctrl.field]" class="team-member-row">
+            <div>{{ member.fullName }}</div>
+            <button class="btn btn-sm pull-right" 
+                    ng-if="$ctrl.editable && !$ctrl.memberRemovingStates[member.username]" 
+                    ng-click="$ctrl.removeMember(member)">
+                <i class="fa fa-times" ></i>&nbsp;
+                Remove
+            </button>
+            <button class="btn btn-sm pullright"
+                    ng-if="$ctrl.memberRemovingStates[member.username]"
+                    disabled="true">
+                Removing <i class="fa fa-spinner fa-spin"></i>
+            </button>
+        </div>
+    </div>
+    <div ng-if="!($ctrl.meta[$ctrl.field].length)">
+        No members.
+    </div>
+    <div ng-if="$ctrl.editable" class="projects-button-container">
+        <button ng-if="!$ctrl.isSaving && !$ctrl.memberSearch" class="btn btn-success" ng-click="$ctrl.showMemberSearch()">
+            <i class="fa fa-user-plus">&nbsp;</i>{{ $ctrl.buttonText }}
+        </button>
+        <button ng-if="$ctrl.isSaving" class="btn btn-link" disabled="true">
+            Saving <i class="fa fa-spinner fa-spin"></i>
+        </button>
+    </div>
+    <div ng-if="$ctrl.memberSearch" class="projects-animate">
+        <user-search
+            label="Select a user to add as a Co-PI"
+            on-cancel="$ctrl.cancelMemberSearch()"
+            on-select="$ctrl.addMember($user)">
+        </user-search>
+    </div>
+    <div ng-if="$ctrl.validatorMessage" class="projects-animate validator-message">
+        <div>
+            <i class="fa fa-exclamation-circle"></i>&nbsp;{{ $ctrl.validatorMessage }}
+        </div>
+        <div class="projects-button-container">
+            <button class="btn btn-primary" ng-click="$ctrl.dismissValidatorWarning()">OK</button>
+        </div>
+    </div>
+</div>

@@ -107,7 +107,8 @@ class ProjectsManager(object):
         prj = Project.create(
             self.user.agave_oauth.client,
             title,
-            project_id
+            project_id,
+            self.user
         )
         prj.storage.update_role(
             self.user.username,

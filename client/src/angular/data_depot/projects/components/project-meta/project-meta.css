@@ -1,0 +1,19 @@
+.project-meta-detail {
+    border: 1px solid #DDD;
+    padding: 1em 1em 1em 1em;
+    margin-bottom: 1em;
+}
+.project-meta-buttons {
+    margin-top: 1em;
+}
+.project-meta-table {
+    font-size: 1em;
+    margin-left: 0.25em;
+}
+.project-meta-table tr {
+    vertical-align: top;
+}
+.project-meta-table th,td {
+    padding-right: 2.25em;
+    padding-bottom: 0.5em;
+}

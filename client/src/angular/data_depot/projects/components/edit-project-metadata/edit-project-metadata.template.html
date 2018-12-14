@@ -1,0 +1,33 @@
+<div class="modal-header">
+    <h3 class="modal-title">
+        Edit Project Metadata
+    </h3>
+</div>
+<div class="modal-body">
+    <!-- Project Title/Description -->
+    <div>
+        <metadata-field
+            meta="$ctrl.meta"
+            field="title"
+            label="Project Title"
+            editable="$ctrl.canEdit()"
+            on-save="$ctrl.saveField($value)"
+            saving="$ctrl.fieldSaving['title']">
+        </metadata-field>
+        <metadata-field
+            meta="$ctrl.meta"
+            field="description"
+            label="Description"
+            editable="$ctrl.canEdit()"
+            input-type="textarea"
+            on-save="$ctrl.saveField($value)"
+            saving="$ctrl.fieldSaving['description']">
+        </metadata-field>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default"
+            data-ng-click="$ctrl.ok()">
+        Close
+    </button>
+</div>

@@ -1,0 +1,13 @@
+.field-input {
+    width: 100%;
+}
+.field-textarea {
+    width: 100%;
+    min-height: 4em;
+}
+.edit-control-container {
+    min-height: 1em;
+}
+.edit-control-container button {
+    float: right;
+}

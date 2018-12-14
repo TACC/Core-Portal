@@ -197,18 +197,27 @@ class Project(object):
         return storage
 
     @staticmethod
-    def _create_metadata(title, project_id):
+    def _create_metadata(title, project_id, owner=None):
         """Crate metadata for project.
 
         :param str title: Project Title.
         :param str project_id: Project Id.
-        :param pi: Django user set as PI.
+        :param owner: Django user set as owner, who can set the project's PI.
         """
+
+        # Create a default metadata object
+        defaults = {
+            'title' : title
+        }
+
+        # If owner is specified for metadata, insert it
+        # into the parameters for the model
+        if owner:
+            defaults['owner'] = owner
+
         meta = ProjectMetadata.objects.get_or_create(
             project_id=project_id,
-            defaults={
-                'title': title,
-            }
+            defaults=defaults
         )
         return meta
 
@@ -223,7 +232,8 @@ class Project(object):
             cls,
             client,
             title,
-            project_id
+            project_id,
+            owner
     ):
         """Create a project.
 
@@ -241,7 +251,8 @@ class Project(object):
 
         meta = cls._create_metadata(
             title,
-            project_id
+            project_id,
+            owner
         )
         return cls(client, project_id, metadata=meta, storage=storage)
 
