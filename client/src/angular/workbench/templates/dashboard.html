@@ -100,11 +100,11 @@
         <div class="panel-heading dashboard">
           <h3 class="panel-title">Recent Apps</h3>
         </div>
-        <ul class="list-group">
-          <li class="list-group-item" data-ng-repeat="app in recent_apps">
+        <ul class="list-group" ng-show="!vm.loading_jobs">
+          <li class="list-group-item" data-ng-repeat="app in vm.recent_apps">
             <a ui-sref="wb.workspace"> {{app}} </a>
           </li>
-          <li class="list-group-item" data-ng-show="!recent_apps.length">
+          <li class="list-group-item" data-ng-show="!vm.recent_apps.length">
             Wow, no recent apps! You can submit jobs in
             <a data-ui-sref="wb.workspace"> Applications </a>
           </li>

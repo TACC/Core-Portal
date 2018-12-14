@@ -14,8 +14,6 @@ _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
-_PORTAL_APPS_METADATA_NAMES = ['portal_apps']
-_CORE_APPS_METADATA_NAME = 'portal_apps'
 _PORTAL_DOMAIN = 'cep.dev'
 
 # Admin account
@@ -106,6 +104,8 @@ _ES_HOSTS = 'cep_prtl_elasticsearch'
 ########################
 # DJANGO APP: WORKSPACE
 ########################
+
+_PORTAL_APPS_METADATA_NAMES = ['portal_apps']
 
 # NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
 _WH_BASE_URL = ''
