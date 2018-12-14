@@ -95,13 +95,16 @@ class AgaveOAuthToken(models.Model):
         :return: Agave client using refresh token.
         :rtype: :class:Agave
         """
-        return Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
-                     api_key=getattr(settings, 'AGAVE_CLIENT_KEY'),
-                     api_secret=getattr(settings, 'AGAVE_CLIENT_SECRET'),
-                     token=self.access_token,
-                     resources=AGAVE_RESOURCES,
-                     refresh_token=self.refresh_token,
-                     token_callback=self.update)
+        return Agave(
+            api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
+            api_key=getattr(settings, 'AGAVE_CLIENT_KEY'),
+            api_secret=getattr(settings, 'AGAVE_CLIENT_SECRET'),
+            token=self.access_token,
+            resources=AGAVE_RESOURCES,
+            refresh_token=self.refresh_token,
+            token_callback=self.update,
+            token_username=self.user.username
+        )
 
     def update(self, **kwargs):
         """Update and save.

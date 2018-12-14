@@ -283,15 +283,15 @@ class Project(object):
                 storage=system
             )
 
-    def _can_edit_member(self, user):
+    def _can_edit_member(self, username):
         """Check if user can edit team members.
 
-        :param user: Django user instance.
+        :param str username: Username to check for pems.
         """
-        role = self.storage.roles.for_user(user.username)
+        role = self.storage.roles.for_user(username)
         if (role is not None and
-                role.role == role.ADMIN or
-                role.role == role.OWNER):
+                (role.role == role.ADMIN or
+                role.role == role.OWNER)):
             return True
 
         return False
@@ -302,7 +302,7 @@ class Project(object):
         A project's PI will have an ``OWNER`` system role.
         :param user: Django user instance.
         """
-        if not self._can_edit_member(user):
+        if not self._can_edit_member(self._ac.token.token_username):
             raise NotAuthorizedError(extra={'user': user})
 
         self.storage.roles.add(
@@ -319,7 +319,7 @@ class Project(object):
 
         :param user: Django user instance.
         """
-        if not self._can_edit_member(user):
+        if not self._can_edit_member(self._ac.token.token_username):
             raise NotAuthorizedError(extra={'user': user})
 
         self.storage.roles.delete_for_user(user.username)
@@ -334,7 +334,7 @@ class Project(object):
         A project's Co-PI will have an ``ADMIN`` system role.
         :param user: Django user instance.
         """
-        if not self._can_edit_member(user):
+        if not self._can_edit_member(self._ac.token.token_username):
             raise NotAuthorizedError(extra={'user': user})
 
         self.storage.roles.add(
@@ -351,7 +351,7 @@ class Project(object):
 
         :param user: Django user instance.
         """
-        if not self._can_edit_member(user):
+        if not self._can_edit_member(self._ac.token.token_username):
             raise NotAuthorizedError(extra={'user': user})
 
         self.storage.roles.delete_for_user(user.username)
@@ -369,7 +369,7 @@ class Project(object):
 
         :param str user: Django user object.
         """
-        if not self._can_edit_member(user):
+        if not self._can_edit_member(self._ac.token.token_username):
             raise NotAuthorizedError(extra={'user': user})
 
         self.storage.roles.add(
@@ -386,7 +386,7 @@ class Project(object):
 
         :param user: Django user instance.
         """
-        if not self._can_edit_member(user):
+        if not self._can_edit_member(self._ac.token.token_username):
             raise NotAuthorizedError(extra={'user': user})
 
         self.storage.roles.delete_for_user(user.username)

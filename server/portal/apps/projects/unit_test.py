@@ -250,7 +250,7 @@ class TestProjectsModels(TestCase):
 
     @patch('portal.apps.projects.models.base.Project.save_metadata')
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
-    def test_add_member(self, save_metadata, can_edit_member):
+    def test_add_member(self, can_edit_member, save_metadata):
         """Test add member."""
         self.magave.reset_mock()
         can_edit_member.return_value = True
@@ -262,6 +262,7 @@ class TestProjectsModels(TestCase):
         prj = Project(self.magave, "PRJ-123", mock_meta, mock_storage)
         prj.add_member(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.add.assert_called_with(username, 'USER')
         mock_storage.roles.save.called_once()
         mock_meta.team_members.add.assert_called_with(user)
@@ -281,13 +282,14 @@ class TestProjectsModels(TestCase):
         with self.assertRaises(NotAuthorizedError) as exc:
             prj.add_member(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         self.assertEqual(exc.exception.extra['user'].username, username)
         self.assertIsNot(exc.exception.message, None)
         self.assertNotEqual(exc.exception.response.status_code, 200)
 
     @patch('portal.apps.projects.models.base.Project.save_metadata')
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
-    def test_remove_member(self, save_metadata, can_edit_member):
+    def test_remove_member(self, can_edit_member, save_metadata):
         """Test remove member."""
         self.magave.reset_mock()
         can_edit_member.return_value = True
@@ -299,6 +301,7 @@ class TestProjectsModels(TestCase):
         prj = Project(self.magave, "PRJ-123", mock_meta, mock_storage)
         prj.remove_member(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.delete_for_user.assert_called_with(username)
         mock_storage.roles.save.called_once()
         mock_meta.team_members.remove.called_once_with(user)
@@ -318,13 +321,14 @@ class TestProjectsModels(TestCase):
         with self.assertRaises(NotAuthorizedError) as exc:
             prj.remove_member(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         self.assertEqual(exc.exception.extra['user'].username, username)
         self.assertIsNot(exc.exception.message, None)
         self.assertNotEqual(exc.exception.response.status_code, 200)
 
     @patch('portal.apps.projects.models.base.Project.save_metadata')
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
-    def test_add_co_pi(self, save_metadata, can_edit_member):
+    def test_add_co_pi(self, can_edit_member, save_metadata):
         """Test add co pi."""
         self.magave.reset_mock()
         can_edit_member.return_value = True
@@ -336,6 +340,7 @@ class TestProjectsModels(TestCase):
         prj = Project(self.magave, "PRJ-123", mock_meta, mock_storage)
         prj.add_co_pi(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.add.assert_called_with(username, 'ADMIN')
         mock_storage.roles.save.called_once()
         mock_meta.co_pis.add.assert_called_with(user)
@@ -355,13 +360,14 @@ class TestProjectsModels(TestCase):
         with self.assertRaises(NotAuthorizedError) as exc:
             prj.add_co_pi(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         self.assertEqual(exc.exception.extra['user'].username, username)
         self.assertIsNot(exc.exception.message, None)
         self.assertNotEqual(exc.exception.response.status_code, 200)
 
     @patch('portal.apps.projects.models.base.Project.save_metadata')
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
-    def test_remove_co_pi(self, save_metadata, can_edit_member):
+    def test_remove_co_pi(self, can_edit_member, save_metadata):
         """Test remove co pi."""
         self.magave.reset_mock()
         can_edit_member.return_value = True
@@ -373,6 +379,7 @@ class TestProjectsModels(TestCase):
         prj = Project(self.magave, "PRJ-123", mock_meta, mock_storage)
         prj.remove_co_pi(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.delete_for_user.assert_called_with(username)
         mock_storage.roles.save.called_once()
         mock_meta.co_pis.remove.called_once_with(user)
@@ -392,13 +399,14 @@ class TestProjectsModels(TestCase):
         with self.assertRaises(NotAuthorizedError) as exc:
             prj.remove_co_pi(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         self.assertEqual(exc.exception.extra['user'].username, username)
         self.assertIsNot(exc.exception.message, None)
         self.assertNotEqual(exc.exception.response.status_code, 200)
 
     @patch('portal.apps.projects.models.base.Project.save_metadata')
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
-    def test_add_pi(self, save_metadata, can_edit_member):
+    def test_add_pi(self, can_edit_member, save_metadata):
         """Test add pi."""
         self.magave.reset_mock()
         can_edit_member.return_value = True
@@ -410,6 +418,7 @@ class TestProjectsModels(TestCase):
         prj = Project(self.magave, "PRJ-123", mock_meta, mock_storage)
         prj.add_pi(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.add.assert_called_with(username, 'OWNER')
         mock_storage.roles.save.called_once()
         self.assertEqual(mock_meta.pi, user)
@@ -429,13 +438,14 @@ class TestProjectsModels(TestCase):
         with self.assertRaises(NotAuthorizedError) as exc:
             prj.add_pi(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         self.assertEqual(exc.exception.extra['user'].username, username)
         self.assertIsNot(exc.exception.message, None)
         self.assertNotEqual(exc.exception.response.status_code, 200)
 
     @patch('portal.apps.projects.models.base.Project.save_metadata')
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
-    def test_remove_pi(self, save_metadata, can_edit_member):
+    def test_remove_pi(self, can_edit_member, save_metadata):
         """Test remove pi."""
         self.magave.reset_mock()
         can_edit_member.return_value = True
@@ -447,6 +457,7 @@ class TestProjectsModels(TestCase):
         prj = Project(self.magave, "PRJ-123", mock_meta, mock_storage)
         prj.remove_pi(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.delete_for_user.assert_called_with(username)
         mock_storage.roles.save.called_once()
         self.assertIs(mock_meta.pi, None)
@@ -466,6 +477,7 @@ class TestProjectsModels(TestCase):
         with self.assertRaises(NotAuthorizedError) as exc:
             prj.remove_pi(user)
 
+        can_edit_member.assert_called_with(self.magave.token.token_username)
         self.assertEqual(exc.exception.extra['user'].username, username)
         self.assertIsNot(exc.exception.message, None)
         self.assertNotEqual(exc.exception.response.status_code, 200)
