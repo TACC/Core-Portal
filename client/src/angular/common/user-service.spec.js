@@ -28,7 +28,7 @@ describe("UserService", function() {
         expect(httpResponse.total_storage_bytes).toEqual(10);
     });
 
-    it("should handle a auth request", ()=> {
+    it("should handle a auth request", () => {
         var httpResponse;
         let data = {
             "first_name": 'test_firstname',
@@ -43,8 +43,8 @@ describe("UserService", function() {
         };
 
         //Use a regex so that any query param will pass through
-        $httpBackend.whenGET('/auth/user/').respond(200, data);
-        UserService.authenticate().then( resp => {
+        $httpBackend.whenGET('/api/users/auth/').respond(200, data);
+        UserService.authenticate().then((resp) => {
             httpResponse = resp;
         });
         $httpBackend.flush();

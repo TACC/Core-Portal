@@ -5,13 +5,12 @@ import * as _ from 'underscore';
  * @param {Object} $http - Angular HTTP service
  * @param {Object} $q - Angular Q service
  */
- export default class SystemsService {
-
+export default class SystemsService {
     constructor($http, $q) {
-      'ngInject';
-      this.systems = null;
-      this.$http = $http;
-      this.$q = $q;
+        'ngInject';
+        this.systems = null;
+        this.$http = $http;
+        this.$q = $q;
     }
 
     /**
@@ -24,7 +23,7 @@ import * as _ from 'underscore';
             .then((resp)=>{
                 return resp.data.response;
             });
-    };
+    }
 
     /**
    * Returns a list of systems for a specific user
@@ -38,7 +37,7 @@ import * as _ from 'underscore';
                 this.mydata_system = _.find(this.systems, (d)=>{return d.name === 'My Data';});
                 return resp.data.response;
             });
-    };
+    }
 
     /**
    * Returns a list of ALL systems for a specific user
@@ -61,7 +60,7 @@ import * as _ from 'underscore';
         ).then((resp)=>{
             return resp.data.response;
         });
-    };
+    }
 
     /**
    * Tests a system
@@ -75,7 +74,7 @@ import * as _ from 'underscore';
         ).then((resp)=>{
             return resp.data;
         });
-    };
+    }
 
     /**
    * Resets a system's keys
@@ -90,7 +89,7 @@ import * as _ from 'underscore';
         ).then((resp)=>{
             return resp.data;
         });
-    };
+    }
 
     /**
    * Pushed a system's public key to a host
@@ -115,38 +114,48 @@ import * as _ from 'underscore';
         (err)=>{
             return this.$q.reject(err);
         });
-    };
+    }
 
-    getMonitor(system_id) {
-        return this. $http({
+    listRoles(systemId) {
+        return this.$http.get(
+            `/api/accounts/systems/${systemId}/roles/`
+        ).then((resp) => {
+            return resp.data.response;
+        }, (err) => {
+            return this.$q.reject(err);
+        });
+    }
+
+    getMonitor(systemId) {
+        return this.$http({
             url: '/api/workspace/monitors',
             method: 'GET',
-            params: {'target': system_id},
-            cache: false
+            params: { target: systemId },
+            cache: false,
         });
-    };
-  
-    getSystemRoles(system_id) {
+    }
+
+    getSystemRoles(systemId) {
         return this.$http({
             url: 'api/workspace/systems',
             method: 'GET',
-            params: { 'system_id': system_id, 'roles': true }
+            params: { system_id: systemId, roles: true },
         });
-    };
-  
-    getRoleForUser(system_id) {
+    }
+
+    getRoleForUser(systemId) {
         return this.$http({
             url: 'api/workspace/systems',
             method: 'GET',
-            params: { 'system_id': system_id, 'user_role': true }
+            params: { system_id: systemId, user_role: true },
         });
-    };
-  
-    updateRole(system_id, role) {
+    }
+
+    updateRole(systemId, role) {
         return this.$http({
             url: 'api/workspace/systems',
             method: 'POST',
-            data: { 'system_id': system_id, 'role': role }
+            data: { system_id: systemId, role: role },
         });
-    };
+    }
 }

@@ -7,7 +7,8 @@ from portal.apps.accounts.api.views.systems import (
     SystemsListView,
     SystemView,
     SystemTestView,
-    SystemKeysView
+    SystemKeysView,
+    SystemRolesView
 )
 
 urlpatterns = [
@@ -16,6 +17,8 @@ urlpatterns = [
         SystemTestView.as_view()),
     url(r'^systems/(?P<system_id>[\w.\-\/]+)/keys/?$',
         SystemKeysView.as_view()),
+    url(r'^systems/(?P<system_id>[\w.\-\/]+)/roles/?$',
+        SystemRolesView.as_view()),
     url(r'^systems/(?P<system_id>[\w.\-\/]+)/?$',
         SystemView.as_view()),
 ]

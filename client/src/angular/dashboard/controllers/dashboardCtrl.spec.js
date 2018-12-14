@@ -37,6 +37,7 @@ describe("DashboardCtrl", function() {
     spyOn(Apps, 'list').and.returnValue(fakePromise);
     spyOn(SystemsService, 'list').and.returnValue(fakePromise);
     spyOn(UserService, 'usage').and.returnValue(fakePromise);
+    spyOn(UserService, 'authenticate').and.returnValue(fakePromise);
     ctrl = $controller('DashboardCtrl', {
       $uibModal:$uibModal, Apps: Apps, $scope: scope,
       Jobs: Jobs, SystemsService:SystemsService, UserService:UserService,

@@ -13,31 +13,33 @@ export default class UserService {
         this.$q = $q;
         this.currentUser = {};
     }
+
     /**
      * Authenticate
      */
     authenticate() {
-        return this.$http.get('/auth/user/')
-        .then( (resp)=>{
-              this.currentUser = resp.data;
-        }, (err) =>{
-              return this.$q.reject({"message": "auth error"});
-        });
+        return this.$http.get('/api/users/auth/')
+            .then((resp) => {
+                return this.currentUser = resp.data;
+            }, (err) => {
+                return this.$q.reject({ "message": "auth error" });
+            });
     }
 
     usage() {
         return this.$http.get('/api/users/usage/')
-        .then(function (resp) {
-              return resp.data;
-        });
+            .then(function(resp) {
+                return resp.data;
+            });
     };
+
     /**
      * Search
      * @param {String} q - Query to search on first name, last name or email.
      * @param {String} role - Optional user role
      */
-    search(q, role){
-        if (typeof role === 'undefined'){
+    search(q, role) {
+        if (typeof role === 'undefined') {
             role = '';
         }
         return this.$http.get(

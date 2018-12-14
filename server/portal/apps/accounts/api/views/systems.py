@@ -177,3 +177,17 @@ class SystemKeysView(BaseApiView):
             },
             status=http_status
         )
+
+
+@python_2_unicode_compatible
+@method_decorator(login_required, name='dispatch')
+class SystemRolesView(BaseApiView):
+    """Systems Roles View
+
+    View for system roles inspection
+    """
+
+    def get(self, request, system_id):
+        client = request.user.agave_oauth.client
+        data = client.systems.listRoles(systemId=system_id)
+        return JsonResponse({"status": 200, "response": data})
