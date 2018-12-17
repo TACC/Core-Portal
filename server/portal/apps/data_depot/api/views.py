@@ -14,7 +14,6 @@ from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from portal.apps.accounts.managers.accounts import get_user_home_system_id
 
-
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))

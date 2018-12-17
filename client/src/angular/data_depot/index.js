@@ -3,6 +3,7 @@ import './services';
 import './controllers';
 import './directives';
 import '../workbench/components';
+import './css/data-browser-service-preview.css';
 
 import './projects';
 

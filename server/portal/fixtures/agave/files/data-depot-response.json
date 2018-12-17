@@ -16,6 +16,7 @@
             "name": "parent_folder"
         }],
         "length": 22,
+        "jupyterUrl": null,
         "_links": {
             "_self": {
                 "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder"
@@ -53,6 +54,7 @@
                 "name": "file_one.json"
             }],
             "length": 9,
+            "jupyterUrl": null,
             "_links": {
                 "_self": {
                     "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder/file_one.json"
@@ -84,6 +86,7 @@
                 "name": "sub_folder"
             }],
             "length": 22,
+            "jupyterUrl": null,
             "_links": {
                 "_self": {
                     "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder/sub_folder"

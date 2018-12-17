@@ -86,10 +86,13 @@ class BaseFile(BaseAgaveResource):
         This is to save lower latency. The file object is retrieved only when
         applying an action to it.
 
-        .. note:: The attributes set here are used for readability. When ever
-            an attribute is accessed we look at the ``_wrapped`` dict to see if
-            the value exists. After this then we take a look at instance and
-            class attributes.
+        .. note:: The attributes set here are used for readability. When ever an attribute
+         is accessed we look at the ``_wrapped`` dict to see if the value exists. After this
+         then we take a look at instance and class attributes. The 'jupyter_url' attribute
+         in _wrapped is one such attribute. In this case, jupyter_url (a mapping of
+         an Agave file to a portal's Jupyter Notebook URL) is computed during
+         file listing and must be included in the serialized BaseFile, though it is not
+         a value that is retrieved from Agave.
         """
         # kwargs.pop('permissions', None)
         super(BaseFile, self).__init__(
@@ -111,6 +114,9 @@ class BaseFile(BaseAgaveResource):
         self._metadata = getattr(self, '_metadata', None)
         if self.name is None:
             self.name = os.path.basename(self.path)
+
+        self.jupyter_url = getattr(self, 'jupyter_url', None)
+        self._wrapped['jupyter_url'] = None
 
     def __str__(self):
         return u'agave://{}/{}'.format(self.system, self.path)

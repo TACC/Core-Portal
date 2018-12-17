@@ -785,7 +785,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     trash: trash,
     upload: upload,
 
-
     /* events */
     subscribe: subscribe,
     notify: notify,

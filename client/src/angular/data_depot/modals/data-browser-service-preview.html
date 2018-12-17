@@ -2,45 +2,30 @@
     <h3 class="modal-title">File Preview: {{ file.name }}</h3>
 </div>
 <div class="modal-body">
-    <div class="thumbnail">
-        <div class="text-center nbv-preview">
-            <div ng-if="busy">
-                <i class="fa fa-spinner fa-spin" style="font-size:150px"></i>
-            </div>
-            <div ng-show="!busy && previewError">
-                <div class="alert alert-warning"><p class="lead">{{ previewError }}</p></div>
-                <i class="fa {{ file.icon() }}" style="font-size:150px"></i>
-            </div>
-            <div class="embed-responsive embed-responsive-4by3" ng-if="previewHref">
-                <iframe frameborder="0" class="embed-responsive-item" ng-src="{{ previewHref }}" iframe-onload="iframeLoadedCallback()">
-
-                </iframe>
-            </div>
-        </div>
-        <div class="caption">
-            <table class="table table-bordered">
-                <tbody>
-                <tr>
-                    <th>File name</th>
-                    <td>{{ file.name }}</td>
-                </tr>
-                <tr>
-                    <th>File path</th>
-                    <td>{{ file.path }}</td>
-                </tr>
-                <tr>
-                    <th>File size</th>
-                    <td>{{ file.length|bytes }}</td>
-                </tr>
-                <tr>
-                    <th>Last modified</th>
-                    <td>{{ file.lastModified|date:"short" }}</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="caption">
+        <table class="table table-bordered file-preview-table">
+            <tbody>
+            <tr>
+                <th>File name</th>
+                <td>{{ file.name }}</td>
+            </tr>
+            <tr>
+                <th>File path</th>
+                <td>{{ file.path }}</td>
+            </tr>
+            <tr>
+                <th>File size</th>
+                <td>{{ file.length|bytes }}</td>
+            </tr>
+            <tr>
+                <th>Last modified</th>
+                <td>{{ file.lastModified|date:"short" }}</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
     <div class="actions text-center">
+        <a ng-href="{{ file.jupyterUrl }}" class="btn btn-sm btn-default" ng-if="file.jupyterUrl" target=_blank>View in JupyterHub</a>
         <button class="btn btn-sm btn-default" ng-if="tests.canDownload" ng-click="download()">
             <i class="fa fa-cloud-download"></i> Download
         </button>
@@ -73,6 +58,24 @@
             <i class="fa fa-trash"></i> Delete
         </button>
     </div>
+    <br />
+    <div class="thumbnail">
+        <div class="text-center nbv-preview">
+            <div ng-if="busy">
+                <i class="fa fa-spinner fa-spin" style="font-size:150px"></i>
+            </div>
+            <div ng-show="!busy && previewError">
+                <div class="alert alert-warning"><p class="lead">{{ previewError }}</p></div>
+                <i class="fa {{ file.icon() }}" style="font-size:150px"></i>
+            </div>
+            <div class="embed-responsive embed-responsive-4by3" ng-if="previewHref">
+                <iframe frameborder="0" class="embed-responsive-item" ng-src="{{ previewHref }}" iframe-onload="iframeLoadedCallback()">
+
+                </iframe>
+            </div>
+        </div>
+    </div>
+
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="close()">Close</button>

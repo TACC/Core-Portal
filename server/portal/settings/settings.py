@@ -717,6 +717,11 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
 
 PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
+# "View in Jupyter Notebook" base URL
+PORTAL_JUPYTER_URL = getattr(settings_secret, '_PORTAL_JUPYTER_URL', None)
+# "View in Jupyter Notebook" mount map, i.e. "data-sd2e-community" -> "/sd2e-community" for SD2E
+PORTAL_JUPYTER_SYSTEM_MAP = getattr(settings_secret, '_PORTAL_JUPYTER_SYSTEM_MAP', None)
+
 WH_BASE_URL = getattr(settings_secret, '_WH_BASE_URL', '')
 
 PORTAL_DOMAIN = settings_secret._PORTAL_DOMAIN

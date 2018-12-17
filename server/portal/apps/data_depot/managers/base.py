@@ -17,6 +17,7 @@ from requests.exceptions import HTTPError
 from portal.libs.agave.models.files import BaseFile
 from portal.libs.agave.serializers import BaseAgaveFileSerializer
 from portal.exceptions.api import ApiException
+from portal.utils.translations import get_jupyter_url
 
 from portal.apps.search.tasks import agave_indexer
 #pylint: disable=invalid-name
@@ -256,7 +257,13 @@ class AgaveFileManager(AbstractFileManager):
 
         limit = kwargs.get('limit', settings.PORTAL_DATA_DEPOT_PAGE_SIZE)
 
-        return _file.listing(self._ac, system=system, path=path, offset=offset, limit=limit)
+        _file = _file.listing(self._ac, system=system, path=path, offset=offset, limit=limit)
+
+        # Calculate a jupyter_url for every file in this listing
+        for child in _file._children:
+            child.jupyter_url = get_jupyter_url(child.system, child.path, self.username)
+
+        return _file
 
     def copy(self, file_id_src, file_id_dest, **kwargs):
         """Copy a file.

@@ -134,6 +134,10 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 ]
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'EXECUTION_SYSTEM'
+_PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
+_PORTAL_JUPYTER_SYSTEM_MAP = { 
+    "cep.home.{username}" : "/tacc-work", 
+}
 
 #######################
 # PROJECTS SETTING

@@ -15,6 +15,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
+from portal.utils.translations import get_jupyter_url
 from portal.apps.workspace.api import lookups as LookupManager
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
@@ -158,6 +159,15 @@ class JobsView(BaseApiView):
             archive_system_path = '{}/{}'.format(data['archiveSystem'], data['archivePath'])
             data['archiveUrl'] = '/workbench/data-depot/'
             data['archiveUrl'] += 'agave/{}/'.format(archive_system_path)
+
+            jupyter_url = get_jupyter_url(
+                data['archiveSystem'], 
+                "/" + data['archivePath'], 
+                request.user.username, 
+                is_dir=True
+            )
+            if jupyter_url:
+                data['jupyterUrl'] = jupyter_url
 
         # list jobs
         else:

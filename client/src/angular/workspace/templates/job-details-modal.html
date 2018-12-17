@@ -21,8 +21,8 @@
 
         <dt>Output</dt>
         <dd ng-if="jobFinished(job)">
-            <a href="{{job.archiveUrl}}" target="_blank" class="btn btn-primary" title="agave://{{job.archiveSystem}}/{{job.archivePath}}">View</a>
-
+            <a href="{{job.archiveUrl}}" target="_blank" class="btn btn-primary" title="agave://{{job.archiveSystem}}/{{job.archivePath}}">View in Data Files</a>&nbsp;
+            <a ng-href="{{job.jupyterUrl}}" class="btn btn-default" ng-if="job.jupyterUrl" target=_blank>View in JupyterHub</a> 
         </dd>
         <dd ng-if="!jobFinished(job)">
             <button class="btn btn-default disabled" type="button">Output pending</button>
