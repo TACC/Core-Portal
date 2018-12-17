@@ -6,7 +6,7 @@ from __future__ import unicode_literals, absolute_import
 import logging
 import json
 import os
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from portal.apps.data_depot.api import lookups as LookupManager
 from portal.apps.search.api import lookups as SearchLookupManager
@@ -69,8 +69,13 @@ class FileListingView(BaseApiView):
                             'sessionId': request.session.session_key,
                             'operation': 'File Listing', 'info': ''})
         fmgr = get_manager(request, file_mgr_name)
-        offset = request.GET.get('offset', 0)
-        limit = request.GET.get('limit', 100)
+
+        try:
+            offset = int(request.GET.get('offset', 0))
+            limit = int(request.GET.get('limit', 100))
+        except ValueError:
+            return HttpResponse(status=400, content='Received non-numerical offset or limit arguments.')
+
         query_string = request.GET.get('queryString')
         
         if query_string is None:

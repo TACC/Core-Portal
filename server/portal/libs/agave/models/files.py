@@ -462,25 +462,18 @@ class BaseFile(BaseAgaveResource):
             This means that on the first page the children are [1:] of the
             response. The rest of the pages are OK.
         """
-        lower = 1
-        if offset > 0:
-            lower = 0
 
         list_result = client.files.list(systemId=system,
                                         filePath=urllib.quote(path),
                                         offset=offset,
-                                        limit=limit)
-
-        if lower:
-            listing = cls(client=client, **list_result[0])
-        else:
-            listing = cls(client=client, system=system, path=path)
+                                        limit=limit+1)
+        listing = cls(client=client, **list_result[0])
 
         if listing.type == 'dir' or offset:
             # directory names display as "/" from API
             listing.name = os.path.basename(listing.path)
-            listing.children = [cls(client=client, **f)
-                                for f in list_result[lower:]]
+            listing._children = [cls(client=client, **f)
+                                for f in list_result[1:]]
 
         return listing
 

@@ -247,6 +247,7 @@ class AgaveFileManager(AbstractFileManager):
         :rtype: obj
         """
         _file = self.get_file(file_id)
+        system, path = self._parse_file_id(file_id)
         page = kwargs.get('page', None)
         if page is not None:
             offset = page * settings.PORTAL_DATA_DEPOT_PAGE_SIZE
@@ -254,8 +255,8 @@ class AgaveFileManager(AbstractFileManager):
             offset = kwargs.get('offset', 0)
 
         limit = kwargs.get('limit', settings.PORTAL_DATA_DEPOT_PAGE_SIZE)
-        _file.children(offset=offset, limit=limit)
-        return _file
+
+        return _file.listing(self._ac, system=system, path=path, offset=offset, limit=limit)
 
     def copy(self, file_id_src, file_id_dest, **kwargs):
         """Copy a file.
