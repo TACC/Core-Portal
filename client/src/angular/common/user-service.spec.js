@@ -28,7 +28,7 @@ describe("UserService", function() {
         expect(httpResponse.total_storage_bytes).toEqual(10);
     });
 
-    it("should handle a auth request", () => {
+    it("should handle an auth request", () => {
         var httpResponse;
         let data = {
             "first_name": 'test_firstname',
