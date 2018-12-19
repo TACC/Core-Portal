@@ -48,13 +48,7 @@ module.exports = function(env, argv){
                 "presets": ["es2015"],
                 "plugins": ["angularjs-annotate"]
               }
-            },
-            {
-              loader: 'eslint-loader',
-              options: {
-               failonError: false
-             }
-           }
+            }
          ]
         },
         {
