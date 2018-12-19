@@ -68,8 +68,8 @@ export default class DashboardCtrl {
 
         this.Jobs.list(
             {
-                'limit': 100,
-                'offset': 0
+                limit: 100,
+                offset: 0
             }
         ).then((resp) => {
             this.jobs = resp;
@@ -137,24 +137,24 @@ export default class DashboardCtrl {
     */
     testSystem(sys) {
         this.ui.testSystems[sys.id] = {
-            'testing': true,
-            'error': false,
-            'response': null
+            testing: true,
+            error: false,
+            response: null
         };
         this.SystemsService.test(sys).then((resp) => {
             this.ui.testSystems[resp.response.systemId] = {
-                'testing': false,
-                'error': false,
-                'response': resp.response.message
+                testing: false,
+                error: false,
+                response: resp.response.message
             };
         }, (err) => {
             this.ui.testSystems[err.data.response.systemId] = {
-                'testing': false,
-                'error': true,
-                'response': err.data.response.message
+                testing: false,
+                error: true,
+                response: err.data.response.message
             };
         });
-    };
+    }
 
     /**
     * Shows a system's public key
@@ -163,7 +163,7 @@ export default class DashboardCtrl {
     */
     publicKey(sys) {
         alert(sys.publicKey.public_key);
-    };
+    }
 
     /**
     * Resets a system's keys
@@ -172,9 +172,9 @@ export default class DashboardCtrl {
     */
     resetKeys(sys) {
         this.ui.resetSystems[sys.id] = {
-            'resetting': true,
-            'error': false,
-            'response': null
+            resetting: true,
+            error: false,
+            response: null
         };
         this.SystemsService.resetKeys(sys).
             then((resp) => {
@@ -191,18 +191,18 @@ export default class DashboardCtrl {
                 _sys.keysTracked = true;
                 _sys.publicKey.public_key = resp.publicKey;
                 this.ui.resetSystems[resp.systemId] = {
-                    'resetting': false,
-                    'error': false,
-                    'response': resp.message
+                    resetting: false,
+                    error: false,
+                    response: resp.message
                 };
             }, (resp) => {
                 this.ui.resetSystems[resp.systemId] = {
-                    'resetting': false,
-                    'error': true,
-                    'response': resp.message
+                    resetting: false,
+                    error: true,
+                    response: resp.message
                 };
             });
-    };
+    }
 
     /**
     * Pushes a private key to the specified host
@@ -211,25 +211,32 @@ export default class DashboardCtrl {
     */
     pushKey(sys) {
         this.ui.pushSystems[sys.id] = {
-            'pushing': true,
-            'error': false,
-            'response': null
+            pushing: true,
+            error: false,
+            response: null
         };
-        let modal = this.$uibModal.open({
-            component: 'systemPushKeysModal',
-            resolve: {
-                sys: function() {
-                    return sys;
-                }
-            }
-        });
-        modal.result.finally(
-            () => {
+        this.SystemsService.get(sys.id)
+            .then((system) => {
+                return this.$uibModal.open({
+                    component: 'SystemPushKeysModal',
+                    resolve: {
+                        sys: () => {
+                            return system;
+                        },
+                    },
+                }).result;
+            }, (err) => {
                 this.ui.pushSystems[sys.id] = {
-                    'resetting': false,
-                    'error': false,
-                    'response': ''
+                    resetting: false,
+                    error: true,
+                    response: err.message
+                };
+            }).finally(() => {
+                this.ui.pushSystems[sys.id] = {
+                    resetting: false,
+                    error: false,
+                    response: ''
                 };
             });
-    };
+    }
 }

@@ -1,4 +1,4 @@
-<div class="notification">
+<div class="notification" ng-class="{'unread':vm.note.read==false}">
   <div class="status"
       ng-class="{'success':vm.note.status=='SUCCESS',
                  'danger': vm.note.status=='ERROR',
@@ -19,6 +19,6 @@
     <span class="badge"> {{vm.note.datetime | date:'medium'}} </span>
   </div>
   <div class="notification-delete">
-    <i class="fa fa-remove" ng-click="vm.delete(note)"></i>
+    <i class="fa fa-remove" ng-click="vm.delete(note.pk)"></i>
   </div>
 </div>

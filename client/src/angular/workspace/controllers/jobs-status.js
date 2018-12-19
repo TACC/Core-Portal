@@ -92,12 +92,4 @@ function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job) {
     };
 }
 
-function VNCJobDetailsModalCtrl($scope, $uibModalInstance, msg) {
-    'ngInject';
-    $scope.msg = msg;
-    $scope.dismiss = function() {
-        $uibModalInstance.dismiss('cancel');
-    };
-}
-
-export { JobsStatusCtrl, JobDetailsModalCtrl, VNCJobDetailsModalCtrl };
+export { JobsStatusCtrl, JobDetailsModalCtrl };

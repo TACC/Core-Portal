@@ -1,6 +1,6 @@
 export default class NotificationDetailCtrl {
 
-  constructor() {
-    'ngInject';
-  }
+    constructor() {
+        'ngInject';
+    }
 }

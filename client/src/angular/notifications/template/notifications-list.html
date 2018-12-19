@@ -5,6 +5,6 @@
   <notification-detail
     ng-repeat="note in vm.service.notes.notifs"
     note="note"
-    delete="vm.delete(note)">
+    delete="vm.delete(note.pk)">
   </notification-detail>
 </div>

@@ -80,14 +80,23 @@ describe("DashboardCtrl", function() {
     expect(SystemsService.resetKeys).toHaveBeenCalledWith(sys);
   });
 
-  it("Should open the push keys modal", ()=>{
-    let mockModal = {
-      result: fakePromise
-    };
-    spyOn($uibModal, 'open').and.returnValue(mockModal);
-    ctrl.pushKey({});
-    expect($uibModal.open).toHaveBeenCalled();
-  });
+    it('Should open the push keys modal', () => {
+        let mockModal = {
+                result: fakePromise
+            },
+            sys = { id: 1 };
+        spyOn(SystemsService, 'get').and.callFake(() => {
+            return {
+                then: function(callback) {
+                    return callback(sys);
+                },
+            };
+        });
+        spyOn($uibModal, 'open').and.returnValue(mockModal);
+        ctrl.pushKey(sys);
+        expect(SystemsService.get).toHaveBeenCalledWith(sys.id);
+        expect($uibModal.open).toHaveBeenCalled();
+    });
 
   it("should test systems", ()=> {
     let sys = {id:1};

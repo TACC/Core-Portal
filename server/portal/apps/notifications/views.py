@@ -22,10 +22,17 @@ class ManageNotificationsView(BaseApiView):
             total = Notification.objects.filter(event_type = event_type,
                           deleted = False,
                           user = request.user.username).count()
+            unread = Notification.objects.filter(event_type=event_type,
+                          deleted=False,
+                          read=False,
+                          user = request.user.username).count()
         else:
             notifs = Notification.objects.filter(deleted = False,
                           user = request.user.username).order_by('-datetime')
             total = Notification.objects.filter(deleted = False,
+                          user = request.user.username).count()
+            unread = Notification.objects.filter(deleted = False,
+                          read = False,
                           user = request.user.username).count()
         if limit:
             limit = int(limit)
@@ -33,21 +40,26 @@ class ManageNotificationsView(BaseApiView):
             offset = page * limit
             notifs = notifs[offset:offset+limit]
 
-        for n in notifs:
-            if not n.read:
-                n.mark_read()
-
         notifs = [n.to_dict() for n in notifs]
-        return JsonResponse({'notifs':notifs, 'page':page, 'total': total})
-        # return self.render_to_json_response(notifs)
+        return JsonResponse({'notifs':notifs, 'page':page, 'total': total, 'unread': unread})
 
     def post(self, request, *args, **kwargs):
         body_json = json.loads(request.body)
         nid = body_json['id']
         read = body_json['read']
-        n = Notification.get(id = nid)
-        n.read = read
-        n.save()
+
+        if nid == 'all' and read == True:
+            notifs = Notification.objects.filter(deleted = False,
+                          user = request.user.username)
+            for n in notifs:
+                if not n.read:
+                    n.mark_read()
+        else:
+            n = Notification.get(id = nid)
+            n.read = read
+            n.save()
+
+        return HttpResponse('OK')
 
     def delete(self, request, pk, *args, **kwargs):
         if pk == 'all':

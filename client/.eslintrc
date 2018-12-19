@@ -25,6 +25,7 @@
         "one-var"               : [1, "consecutive"],
         "brace-style"           : [1, "1tbs", { "allowSingleLine": true }],
         "object-curly-spacing"  : [1, "always"],
+        "no-unused-vars"        : 1,
     },
     "globals": {
         "moment": false,

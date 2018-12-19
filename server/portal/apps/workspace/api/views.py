@@ -202,6 +202,9 @@ class JobsView(BaseApiView):
                 if parsed.path.startswith('/') and len(parsed.path) > 1:
                     # strip leading '/'
                     archive_path = parsed.path[1:]
+                elif parsed.path == '':
+                    # if path is blank, set to root of system
+                    archive_path = '/'
                 else:
                     archive_path = parsed.path
 

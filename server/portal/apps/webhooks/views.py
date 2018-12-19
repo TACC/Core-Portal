@@ -58,6 +58,7 @@ class JobsWebhookView(BaseApiView):
                 pass
 
             logger.debug(job_status)
+
             event_data = {
                 Notification.EVENT_TYPE: 'job',
                 Notification.JOB_ID: job_id,
@@ -67,11 +68,19 @@ class JobsWebhookView(BaseApiView):
                 Notification.EXTRA: job
             }
 
+
+            archive_id = 'agave/{}/{}'.format(archiveSystem,(archivePath.strip('/')))
+            target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
+
+
             if job_status == 'FAILED':
                 logger.debug('JOB FAILED: id={} status={}'.format(job_id, job_status))
+                logger.debug('archivePath: {}'.format(archivePath))
                 event_data[Notification.STATUS] = Notification.ERROR
                 event_data[Notification.MESSAGE] = "Job '{}' Failed. Please try again...".format(job_name)
                 event_data[Notification.OPERATION] = 'job_failed'
+                event_data[Notification.EXTRA]['target_path'] = target_path
+                event_data[Notification.ACTION_LINK] = target_path
 
                 with transaction.atomic():
                     last_notification = Notification.objects.filter(jobId=job_id).last()
@@ -93,8 +102,6 @@ class JobsWebhookView(BaseApiView):
                 logger.debug('JOB STATUS CHANGE: id={} status={}'.format(job_id, job_status))
 
                 logger.debug('archivePath: {}'.format(archivePath))
-                archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
-                target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
 
                 event_data[Notification.STATUS] = Notification.SUCCESS
                 event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
@@ -198,8 +205,11 @@ class InteractiveWebhookView(BaseApiView):
                 Notification.OPERATION: 'web_link',
                 Notification.USER: job_owner,
                 Notification.MESSAGE: 'Ready to view.',
+                Notification.ACTION_LINK: address,
                 Notification.EXTRA: {
                     'address': address,
+                    'target_uri': address,
+                    'associationIds': job_uuid
                 }
             }
             n = Notification.objects.create(**event_data)

@@ -1,8 +1,8 @@
-<div id="notification-container" class="dropdown btn btn-link" uib-dropdown auto-close="outsideClick">
+<div id="notification-container" class="dropdown btn btn-link" uib-dropdown auto-close="outsideClick" on-toggle="vm.readAll(open)">
     <a id="dLabel" class="dropdown-toggle" role="button" uib-dropdown-toggle> 
         <i id="notification_bell" class="fa fa-bell fa-2x"></i>
-        <span id="notification-badge" title="Notifications" ng-if="vm.service.notes.total > 0">
-            {{vm.service.notes.total}}
+        <span id="notification-badge" title="Notifications" ng-if="vm.service.notes.unread > 0">
+            {{vm.service.notes.unread}}
         </span>
     </a>
     <ul uib-dropdown-menu class="dropdown-menu notifications" aria-labelledby="dLabel"> 
@@ -16,13 +16,13 @@
             </a>
         </li>
         <div class="notifications-wrapper" ng-if="vm.service.notes.total > 0">
-            <notification-detail ng-repeat="note in vm.service.notes.notifs" note="note"></notification-detail>
+            <notification-detail ng-repeat="note in vm.service.notes.notifs" note="note" delete="vm.delete(note.pk)"></notification-detail>
         </div>
         <div class="notifications-none" ng-if="vm.service.notes.total == 0">
             <div class="text-center">Whew, no notifications!</div>
         </div>
         <li ng-if="vm.service.notes.total > 0">
-            <a href class="text-center" ng-click="vm.deleteAll()">
+            <div class="clear-notifs text-center" ng-click="vm.delete('all')">
                 Clear all notifications
             </a>
         </li>
