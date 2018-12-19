@@ -28,8 +28,10 @@ class TicketForm(forms.Form):
     cc = MultiEmailField(widget=forms.TextInput(), required=False, help_text='Multiple emails should be comma-separated')
     subject = forms.CharField(label='Subject')
     problem_description = forms.CharField(widget=forms.Textarea())
+    attachments = forms.FileField(required=False)
     metadata = forms.CharField(widget=forms.HiddenInput())
 
 class ReplyForm(forms.Form):
     reply = forms.CharField(widget=forms.Textarea(), label="")
+    attachments = forms.FileField(required=False)
 

@@ -49,14 +49,15 @@ class DjangoRt:
 	# Returns the ticket id of the created ticket
 	def createTicket(self, ticket):
 		return self.tracker.create_ticket(Queue=self.rtQueue,
+				files=ticket.attachments,
 				Subject=ticket.subject,
 				Text=ticket.problem_description,
 				Requestors=ticket.requestor,
 				Cc=",".join(ticket.cc),
 				CF_resource=settings.RT_TAG)
 
-	def replyToTicket(self, ticket_id, reply_text):
-		return self.tracker.reply(ticket_id, text=reply_text)
+	def replyToTicket(self, ticket_id, reply_text, files=[]):
+		return self.tracker.reply(ticket_id, text=reply_text, files=files)
 
 	# Checks if the current user is a requestor or CC on the ticket
 	# Also doesn't crap out if the user isn't logged in even though

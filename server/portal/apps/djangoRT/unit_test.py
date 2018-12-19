@@ -25,7 +25,8 @@ class TestDataDepotApiViews(TestCase):
             subject="Mock Subject", 
             problem_description="Mock Description",
             requestor="Mock Requestor",
-            cc=[ "first@email.com", "second@email.com" ]
+            cc=[ "first@email.com", "second@email.com" ],
+            attachments = []
         )
 
     @override_settings(RT_TAG="Mock Tag")
@@ -34,6 +35,7 @@ class TestDataDepotApiViews(TestCase):
         django_rt = DjangoRt()
         django_rt.createTicket(self.mock_ticket)
         django_rt.tracker.create_ticket.assert_called_with(
+            files = [],
             Subject="Mock Subject",
             Text="Mock Description",
             Requestors="Mock Requestor",

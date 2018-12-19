@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from portal.apps.djangoRT import rtUtil, forms, rtModels
 from django.contrib.auth.decorators import login_required
+from django.core.files.base import ContentFile
 import os
 
 logger = logging.getLogger(__name__)
@@ -52,22 +53,29 @@ def ticketcreate(request):
 
 	if request.method == 'POST':
 		form = forms.TicketForm(request.POST)
-		if form.is_valid():
-			ticket = rtModels.Ticket(subject = form.cleaned_data['subject'],
-					problem_description = form.cleaned_data['problem_description'] + \
-						os.linesep + os.linesep + form.cleaned_data['metadata'],
-					requestor = form.cleaned_data['email'],
-					cc = form.cleaned_data['cc'])
-			ticket_id = rt.createTicket(ticket)
+		file = request.FILES.get('attachments', None)
 
-			if ticket_id > -1:
-				return HttpResponseRedirect( reverse( 'tickets:detail', args=[ ticket_id ] ) )
-			else:
-				# make this cleaner probably
-				data['subject'] = ticket.subject
-				data['problem_description'] = ticket.problem_description
-				data['cc'] = ticket.cc
-				form = forms.TicketForm(data)
+		if form.is_valid():
+
+                    attachments = []
+                    if file:
+                        attachments.append((file.name, ContentFile(file.read()), file.content_type))
+                    
+                    ticket = rtModels.Ticket(subject = form.cleaned_data['subject'],
+                                    problem_description = form.cleaned_data['problem_description'] + \
+                                            os.linesep + os.linesep + form.cleaned_data['metadata'],
+                                    requestor = form.cleaned_data['email'],
+                                    cc = form.cleaned_data['cc'], attachments=attachments)
+                    ticket_id = rt.createTicket(ticket)
+
+                    if ticket_id > -1:
+                            return HttpResponseRedirect( reverse( 'tickets:detail', args=[ ticket_id ] ) )
+                    else:
+                            # make this cleaner probably
+                            data['subject'] = ticket.subject
+                            data['problem_description'] = ticket.problem_description
+                            data['cc'] = ticket.cc
+                            form = forms.TicketForm(data)
 	else:
 		form = forms.TicketForm(initial=data)
 
@@ -85,13 +93,18 @@ def ticketreply(request, ticketId):
 
 	if request.method == 'POST':
 		form = forms.ReplyForm(request.POST)
+		file = request.FILES.get('attachments', None)
 
 		if form.is_valid():
-			if rt.replyToTicket(ticketId, form.cleaned_data['reply']):
-				return HttpResponseRedirect(reverse( 'tickets:detail', args=[ ticketId ] ) )
-			else:
-				data['reply'] = form.cleaned_data['reply']
-				form = forms.ReplyForm(data)
+		    attachments = []
+                    if file:
+			attachments.append((file.name, ContentFile(file.read()), file.content_type))
+
+                    if rt.replyToTicket(ticketId, form.cleaned_data['reply'], files=attachments):
+                            return HttpResponseRedirect(reverse( 'tickets:detail', args=[ ticketId ] ) )
+                    else:
+                            data['reply'] = form.cleaned_data['reply']
+                            form = forms.ReplyForm(data)
 
 	else:
 		form = forms.ReplyForm()

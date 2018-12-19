@@ -174,3 +174,6 @@ portal_crypt.key
 
 # docker-compose file with pgadmin.
 server/conf/docker/docker-compose-dev.all.debug.utils.yml
+
+# vim stuff
+*.swp
