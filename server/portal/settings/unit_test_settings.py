@@ -328,6 +328,7 @@ AGAVE_DEFAULT_TRASH_NAME = 'test'
 ES_HOSTS = ['test.com']
 ES_DEFAULT_INDEX = "files"
 ES_DEFAULT_INDEX_ALIAS = "default"
+ES_REINDEX_INDEX_ALIAS = "reindex"
 ES_PUBLIC_INDEX = "publications"
 ES_PUBLIC_INDEX_ALIAS = "public"
 ES_FILES_DOC_TYPE = "files"

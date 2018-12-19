@@ -57,7 +57,7 @@ def index_agave(systemId, client, username, filePath='/', update_pems=False):
             offset += limit
             page = [doc for doc in es_root.children(offset=offset, limit=limit)]
 
-def index_level(path, folders, files, systemId, username):
+def index_level(path, folders, files, systemId, username, reindex=False):
     """
     Index a set of folders and files corresponding to the output from one 
     iteration of walk_levels
@@ -65,7 +65,7 @@ def index_level(path, folders, files, systemId, username):
     from portal.libs.elasticsearch.docs.files import BaseESFile
     for obj in folders + files:
             obj_dict = obj.to_dict()
-            doc = BaseESFile(username, **obj_dict)
+            doc = BaseESFile(username, reindex=reindex, **obj_dict)
             saved = doc.save()
 
             #if update_pems:
@@ -74,7 +74,7 @@ def index_level(path, folders, files, systemId, username):
 
     offset = 0
     limit = 100
-    es_root = BaseESFile(username, systemId, path)
+    es_root = BaseESFile(username, systemId, path, reindex=reindex)
     page = [doc for doc in es_root.children(offset=offset, limit=limit)]
     children_paths = [_file.path for _file in folders + files]
 

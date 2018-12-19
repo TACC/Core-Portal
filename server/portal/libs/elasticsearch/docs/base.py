@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
 try:
-    DEFAULT_INDEX = settings.ES_DEFAULT_INDEX
+    DEFAULT_INDEX = settings.ES_DEFAULT_INDEX_ALIAS
+    REINDEX_INDEX = settings.ES_REINDEX_INDEX_ALIAS
     HOSTS = settings.ES_HOSTS
     FILES_DOC_TYPE = settings.ES_FILES_DOC_TYPE
     connections.configure(
@@ -111,6 +112,12 @@ class IndexedFile(DocType):
         doc_type = FILES_DOC_TYPE
 
 @python_2_unicode_compatible
+class ReindexedFile(IndexedFile):
+    class Meta:
+        index = REINDEX_INDEX
+        doc_type = FILES_DOC_TYPE
+
+@python_2_unicode_compatible
 class BaseESResource(object):
     """Base class used to represent an Elastic Search resource.
 
@@ -156,7 +163,7 @@ class BaseESResource(object):
         return val
 
     def __setattr__(self, name, value):
-        if name not in ['_wrapped', '_username']:
+        if name not in ['_wrapped', '_username', 'indexed_file_cls']:
             camel_name = ESUtils.to_camel_case(name)
             setattr(self._wrapped, camel_name, value)
             return

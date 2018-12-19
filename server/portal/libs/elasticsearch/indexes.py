@@ -3,6 +3,7 @@
    :synopsis: ElasticSearch Index setup
 """
 from __future__ import unicode_literals, absolute_import
+from datetime import datetime
 import logging
 from django.conf import settings
 from elasticsearch_dsl import Index
@@ -25,27 +26,40 @@ except AttributeError as exc:
     logger.error('Missing ElasticSearch config. %s', exc)
     raise
 
-def setup_indexes(name, force=False):
-    index_var = 'ES_{}_INDEX'.format(name.upper())
-    index_name = getattr(settings, index_var)
-    index = Index(index_name)
-    try:
-        alias = getattr(settings, '{}_ALIAS'.format(index_var))
+def setup_indexes(name, key, force=False):
+    """
+    Set up an index with a name and alias key. The key should correspond 
+    to a settings variable in the format 'ES_{}_INDEX_ALIAS'.format(key). 
+    The behavior of the function is as follows:
+     - If an index exists under the provided alias and force=False, just return
+       the existing index.
+     - If an index exists under the provided alias and force=True, then delete 
+       any indices under that alias and create a new index with that alias
+       and the provided name.
+     - If an index does not exist under the provided alias, then create a new 
+       index with that alias and the provided name.
+    """
+    alias = getattr(settings, 'ES_{}_INDEX_ALIAS'.format(key.upper()))
+    index = Index(alias)
+
+    if force or not index.exists(): 
+        # If an index exists under the alias and force=True, delete any indices 
+        # with that alias.
+        while index.exists():
+            index.delete(ignore=404)
+            index = Index(alias)
+        # Create a new index with the provided name.
+        index = Index(name)
+        # Alias this new index with the provided alias key.
         aliases = {alias: {}}
         index.aliases(**aliases)
-    except AttributeError:
-        pass
-
-    index.analyzer(path_analyzer)
-    index.analyzer(file_analyzer)
-
-    if force:
-        index.delete(ignore=404)
-    
+        
     return index
 
-def setup_files_index(force=False):
-    index = setup_indexes('DEFAULT', force)
-    index.doc_type(IndexedFile)
-    index.create()
-    # IndexedFile.init()
+def setup_files_index(key='DEFAULT', force=False):
+    time_now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+    name = DEFAULT_INDEX + '-' + time_now
+    index = setup_indexes(name, key, force)
+    if not index.exists():
+        index.doc_type(IndexedFile)
+        index.create()
