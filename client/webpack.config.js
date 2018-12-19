@@ -52,7 +52,7 @@ module.exports = function(env, argv){
             {
               loader: 'eslint-loader',
               options: {
-               failonError: true
+               failonError: false
              }
            }
          ]
