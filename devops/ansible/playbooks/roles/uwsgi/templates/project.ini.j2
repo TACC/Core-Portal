@@ -1,7 +1,7 @@
 [uwsgi]
 home={{ uwsgi_home }}
 chdir={{ uwsgi_chdir }}
-logger=logfile:/var/log/uwsgi/{{ uwsgi_log_filename}}:maxsize={{ uwsgi_log_maxsize }}
+logger=file:/var/log/uwsgi/{{ uwsgi_log_filename}}:maxsize={{ uwsgi_log_maxsize }}
 logger=syslog:uwsgi_django
 module={{ uwsgi_module }}
 enable-threads = true
