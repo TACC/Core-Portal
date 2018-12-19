@@ -20,12 +20,20 @@ class CMSSearchManager(BaseSearchManager):
         if request:
             self._username = request.user.username
             self._query_string = request.GET.get('queryString')
+            self._sortKey = request.GET.get('sortKey')
+            self._sortOrder = request.GET.get('sortOrder')
         else:
             self._username = kwargs.get(
                 'username', settings.PORTAL_ADMIN_USERNAME)
             self._query_string = kwargs.get('queryString')
 
         cms_index = Index('cms')
+
+        self.sortFields = {
+            'link': 'title_exact',
+            'date': 'date'
+        }
+
         super(CMSSearchManager, self).__init__(cms_index, cms_index.search())
 
     def search(self, offset, limit):
@@ -43,5 +51,9 @@ class CMSSearchManager(BaseSearchManager):
             pre_tags=["<b>"],
             post_tags=["</b>"],
             require_field_match=False)
+
+        sort_arg = self.sortFields.get(self._sortKey, None)
+        if sort_arg:
+            self.sort({sort_arg: {'order': self._sortOrder}})
 
         return self._search

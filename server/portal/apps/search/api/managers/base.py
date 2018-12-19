@@ -31,7 +31,7 @@ class BaseSearchManager(object):
 
     def sort(self, *keys):
         self._search = self._search.sort(*keys)
-        return self
+        return self._search
 
     def extra(self, *args, **kwargs):
         self._search = self._search.extra(*args, **kwargs)

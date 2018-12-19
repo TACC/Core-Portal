@@ -28,22 +28,22 @@ except AttributeError as exc:
 
 def setup_indexes(name, key, force=False):
     """
-    Set up an index with a name and alias key. The key should correspond 
-    to a settings variable in the format 'ES_{}_INDEX_ALIAS'.format(key). 
+    Set up an index with a name and alias key. The key should correspond
+    to a settings variable in the format 'ES_{}_INDEX_ALIAS'.format(key).
     The behavior of the function is as follows:
      - If an index exists under the provided alias and force=False, just return
        the existing index.
-     - If an index exists under the provided alias and force=True, then delete 
+     - If an index exists under the provided alias and force=True, then delete
        any indices under that alias and create a new index with that alias
        and the provided name.
-     - If an index does not exist under the provided alias, then create a new 
+     - If an index does not exist under the provided alias, then create a new
        index with that alias and the provided name.
     """
     alias = getattr(settings, 'ES_{}_INDEX_ALIAS'.format(key.upper()))
     index = Index(alias)
 
-    if force or not index.exists(): 
-        # If an index exists under the alias and force=True, delete any indices 
+    if force or not index.exists():
+        # If an index exists under the alias and force=True, delete any indices
         # with that alias.
         while index.exists():
             index.delete(ignore=404)
@@ -53,7 +53,7 @@ def setup_indexes(name, key, force=False):
         # Alias this new index with the provided alias key.
         aliases = {alias: {}}
         index.aliases(**aliases)
-        
+
     return index
 
 def setup_files_index(key='DEFAULT', force=False):

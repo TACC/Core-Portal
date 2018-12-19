@@ -1,91 +1,218 @@
 <div class="container-fluid" role="main" id="search">
   <div class="container-fluid">
-      <div class="row justify-content-center" >
-        <div class="col-md-3"></div>
-        <div class="col-md-6">
-          <form ng-submit="vm.search_browse(true)">
-          <div class="input-group">
-            <input type="text" class="form-control input-lg" ng-model="vm.data.text" placeholder="Search for...">
-            <span class="input-group-btn">
-              <button class="btn btn-default btn-lg" type="button" ng-click="vm.search_browse(true)">
-                <i class="fa fa-search"></i>
-              </button>
-            </span>
-          </div><!-- /input-group -->
-        </form>
-        </div>
+    <div class="row justify-content-center" >
+      <div class="col-md-3"></div>
+      <!-- Query String Input -->
+      <div class="col-md-6">
+        <form ng-submit="vm.search_browse(true)">
+        <div class="input-group">
+          <input type="text" class="form-control input-lg" ng-model="vm.data.text" placeholder="Search for...">
+          <span class="input-group-btn">
+            <button class="btn btn-default btn-lg" type="button" ng-click="vm.search_browse(true)">
+              <i class="fa fa-search"></i>
+            </button>
+          </span>
+        </div><!-- /Query String Input -->
+      </form>
       </div>
-      <div class="row">
-        <div class="col-md-3">
-          <h2>Refine By:</h2>
-          <div class=list-group>
-            <a class="list-group-item"
-               ng-class='{"active": vm.data.type_filter == "private_files"}'
-               ng-click='vm.filter("private_files")'>My Data
-                <span class="badge" ng-show='vm.data.search_results.private_files_total'>
-                  {{ vm.data.search_results.private_files_total }}
-                </span>
-            </a>
-
-            <a class="list-group-item disabled"
-               ng-class='{"active": vm.data.type_filter == "published"}'>Published Projects
-                <span class="badge" ng-show='vm.data.search_results.published_total'>
-                  {{ vm.data.search_results.published_total }}
-                </span>
-            </a>
-
-            <a class="list-group-item"
-               ng-class='{"active": vm.data.type_filter == "public_files"}'
-               ng-click='vm.filter("public_files")'>Public Files
-                <span class="badge" ng-show='vm.data.search_results.public_files_total'>
-                  {{ vm.data.search_results.public_files_total }}
-                </span>
-            </a>
-
-            <a class="list-group-item"
-               ng-class='{"active": vm.data.type_filter == "cms"}'
-               ng-click='vm.filter("cms")'>Web Content
-                <span class="badge" ng-show='vm.data.search_results.cms_total'>
-                  {{ vm.data.search_results.cms_total }}
-                </span>
-            </a>
+    </div>
+    <div class="row">
+      <!-- Filters -->
+      <div class="col-md-3">
+        <h2>Refine By:</h2>
+        <div class=list-group>
+          <a class="list-group-item"
+             ng-class='{"active": vm.data.type_filter == "private_files"}'
+             ng-click='vm.filter("private_files")'>My Data
+              <span class="badge" ng-show='vm.data.search_results.private_files_total'>
+                {{ vm.data.search_results.private_files_total }}
+              </span>
+          </a>
+          <a class="list-group-item disabled"
+             ng-class='{"active": vm.data.type_filter == "published"}'>
+             <!-- ng-click='vm.filter("published")' --> Published Projects
+              <span class="badge" ng-show='vm.data.search_results.published_total'>
+                {{ vm.data.search_results.published_total }}
+              </span>
+          </a>
+          <a class="list-group-item"
+             ng-class='{"active": vm.data.type_filter == "public_files"}'
+             ng-click='vm.filter("public_files")'>Public Files
+              <span class="badge" ng-show='vm.data.search_results.public_files_total'>
+                {{ vm.data.search_results.public_files_total }}
+              </span>
+          </a>
+          <a class="list-group-item"
+             ng-class='{"active": vm.data.type_filter == "cms"}'
+             ng-click='vm.filter("cms")'>Web Content
+              <span class="badge" ng-show='vm.data.search_results.cms_total'>
+                {{ vm.data.search_results.cms_total }}
+              </span>
+          </a>
+        </div>
+      </div><!-- /Filters -->
+      <!-- Results -->
+      <div class="col-md-9 search-results" ng-show="vm.data.search_results">
+        <!-- Search Results IF EMPTY -->
+        <div ng-show='vm.data.search_results.total_hits === 0'>
+          <div class="search-results-none">
+            <h5>There are no results matching <b>{{ vm.data.text }}</b> in <b><i>{{vm.prettyFilterName[vm.data.type_filter]}}</i></b>.</h5>
           </div>
         </div>
-        <div class="col-md-9" ng-show="vm.data.search_results">
-          <div ng-show='vm.data.search_results.total_hits === 0'>
-            <div class="alert alert-info">
-              <h3>
-                  no results in {{vm.prettyFilterName[vm.data.type_filter]}}
-              </h3>
-            </div></div>
-          <search-result
-            route='vm.ddSystemRoute()'
-            data='hit'
-            ng-repeat="hit in vm.data.search_results.hits">
-          </search-result>
-
-        <div class="row" ng-if="vm.data.search_results.total_hits > vm.limit">
-            <div class="col-md-3">
-                <button class="btn btn-default pull-left"
-                  ng-click="vm.prev()"
-                  ng-disabled="vm.page_num === 0">
-                  <i class="fa fa-chevron-left"></i> Prev
-                </button>
-              </div>
-              <div class="col-md-6">
-                <div class="text-center">
-                  <span class="badge"> {{vm.page_num + 1}} / {{ vm.max_pages }} </span>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <button class="btn btn-default pull-right"
-                  ng-click="vm.next()"
-                  ng-disabled="vm.page_num + 1 === vm.max_pages">
-                  <i class="fa fa-chevron-right"></i> More
-                </button>
-              </div>
+        <!-- Search Results -->
+        <div ng-show='vm.data.search_results.total_hits != 0'>
+          <!-- Search Hits Count -->
+          <div>
+            <div class="search-results-match">
+              <h5>Total number of matches for <b>{{ vm.data.text }}</b> in <b><i>{{vm.prettyFilterName[vm.data.type_filter]}}</i></b>:
+                <span class="badge badge-success" style="margin-left:0.5rem; font-size:1.4rem;">
+                  <strong>{{ vm.data.search_results.total_hits }}</strong>
+                </span>
+              </h5>
+            </div>
+          </div>
+          <!-- Search Hits Count Warning -->
+          <div ng-show='vm.data.search_results.total_hits >= 100'>
+            <p class="well well-sm search-results-warning">The current search exceeds 100 results. Consider refining your search terms to get better results.</p>
+          </div>
+          <!-- Search Results TABLE -->
+          <!-- My Data -->
+          <table ng-if='vm.data.type_filter == "private_files"' class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <td ng:click='vm.changeSorting("name")'>Name (Link)
+                  <!-- Create component for header sorting direction icons -->
+                  <span ng-if='vm.$state.params.sortKey == "name" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "name" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+                <td ng:click='vm.changeSorting("date_created")'>Date Created
+                  <span ng-if='vm.$state.params.sortKey == "date_created" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "date_created" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+                <td ng:click='vm.changeSorting("size")'>Size
+                  <span ng-if='vm.$state.params.sortKey == "size" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "size" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+                <td ng:click='vm.changeSorting("last_updated")'>Last Updated
+                  <span ng-if='vm.$state.params.sortKey == "last_updated" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "last_updated" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+              </tr>
+            </thead>
+            <tbody ng-if='vm.data.type_filter == "private_files"'>
+              <tr search-result
+                  route='vm.ddSystemRoute()'
+                  data='hit'
+                  ng-repeat="hit in vm.data.search_results.hits">
+              </tr>
+            </tbody>
+          </table><!-- /My Data -->
+          <!-- Published -->
+          <table ng-if='vm.data.type_filter == "published"' class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <td ng:click='vm.changeSorting("title")'>Project Title
+                  <span ng-if='vm.$state.params.sortKey == "title" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "title" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+                <td ng:click='vm.changeSorting("type")'>Project Type
+                  <span ng-if='vm.$state.params.sortKey == "type" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "type" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+                <td ng:click='vm.changeSorting("description")'>Description
+                  <span ng-if='vm.$state.params.sortKey == "description" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "description" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+                <td ng:click='vm.changeSorting("date_created")'>Date Created
+                  <span ng-if='vm.$state.params.sortKey == "date_created" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "date_created" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+              </tr>
+            </thead>
+            <tbody ng-if='vm.data.type_filter == "published"'>
+              <tr search-result
+                  route='vm.ddSystemRoute()'
+                  data='hit'
+                  ng-repeat="hit in vm.data.search_results.hits">
+              </tr>
+            </tbody>
+          </table><!-- /Published -->
+          <!-- Public Data -->
+          <table ng-if='vm.data.type_filter == "public_files"' class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <td ng:click='vm.changeSorting("name")'>Name
+                  <span ng-if='vm.$state.params.sortKey == "name" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "name" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+                <td ng:click='vm.changeSorting("date_created")'>Date Created
+                  <span ng-if='vm.$state.params.sortKey == "date_created" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "date_created" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+                <td ng:click='vm.changeSorting("size")'>Size
+                  <span ng-if='vm.$state.params.sortKey == "size" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "size" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+              </tr>
+            </thead>
+            <tbody ng-if='vm.data.type_filter == "public_files"'>
+              <tr search-result
+                  route='vm.ddSystemRoute()'
+                  data='hit'
+                  ng-repeat="hit in vm.data.search_results.hits">
+              </tr>
+            </tbody>
+          </table><!-- /Public Data -->
+          <!-- Web Content (CMS) -->
+          <table ng-if='vm.data.type_filter == "cms"' class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <td ng:click='vm.changeSorting("label")'>Label
+                  <span ng-if='vm.$state.params.sortKey == "label" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "label" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+                <td ng:click='vm.changeSorting("link")'>Name (Link)
+                  <span ng-if='vm.$state.params.sortKey == "link" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "link" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+                <td ng:click='vm.changeSorting("date_created")'>Date Created
+                  <span ng-if='vm.$state.params.sortKey == "date_created" && vm.$state.params.sortOrder == "desc"'><i class="fa fa-caret-down"></i></span>
+                  <span ng-if='vm.$state.params.sortKey == "date_created" && vm.$state.params.sortOrder == "asc"'><i class="fa fa-caret-up"></i></span>
+                </td>
+              </tr>
+            </thead>
+            <tbody ng-if='vm.data.type_filter == "cms"'>
+              <tr search-result
+                  route='vm.ddSystemRoute()'
+                  data='hit'
+                  ng-repeat="hit in vm.data.search_results.hits">
+              </tr>
+            </tbody>
+          </table><!-- /Web Content (CMS) -->
         </div>
-      </div>
+        <!-- Pagination Controls -->
+        <div class="row" ng-if="vm.data.search_results.total_hits > vm.limit">
+          <div class="col-md-3">
+            <button class="btn btn-default pull-left"
+              ng-click="vm.prev()"
+              ng-disabled="vm.page_num === 0">
+              <i class="fa fa-chevron-left"></i> Prev
+            </button>
+          </div>
+          <div class="col-md-6">
+            <div class="text-center">
+              <span class="badge"> {{vm.page_num + 1}} / {{ vm.max_pages }} </span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <button class="btn btn-default pull-right"
+              ng-click="vm.next()"
+              ng-disabled="vm.page_num + 1 === vm.max_pages">
+              <i class="fa fa-chevron-right"></i> More
+            </button>
+          </div>
+        </div><!-- /Pagination Controls -->
+      </div><!-- /Results -->
     </div>
-    </div>
+  </div>
 </div>

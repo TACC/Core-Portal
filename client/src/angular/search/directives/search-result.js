@@ -1,23 +1,24 @@
 import resultTemplate from '../templates/search-result.html';
 
-export default function searchResult() {
-    return {
-      restrict: 'E',
-      scope: {
-        listing: '=data',
-        route: '=',
-        click: '&click',
-        makeUrl: '&makeUrl'
-      },
-      template: resultTemplate,
-      link: function ($scope, elem, attrs) {
-        $scope.onClick = function (listing) {
-          $scope.click(listing);
-        };
+// TODO: Convert to component.
 
-        $scope.url = function (listing) {
-          return $scope.makeUrl(listing);
-        };
-      }
-    };
+export default function searchResult() {
+  return {
+    restrict: 'EA',
+    scope: {
+      listing: '=data',
+      route: '=',
+      click: '&click',
+      makeUrl: '&makeUrl'
+    },
+    template: resultTemplate,
+    link: function ($scope, elem, attrs) {
+      $scope.onClick = function (listing) {
+        $scope.click(listing);
+      };
+      $scope.url = function (listing) {
+        return $scope.makeUrl(listing);
+      };
+    }
+  };
 }

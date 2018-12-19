@@ -20,12 +20,20 @@ class SharedSearchManager(BaseSearchManager):
         if request:
             self._username = request.user.username
             self._query_string = request.GET.get('queryString')
+            self._sortKey = request.GET.get('sortKey')
+            self._sortOrder = request.GET.get('sortOrder')
         else:
             self._username = kwargs.get(
                 'username', settings.PORTAL_ADMIN_USERNAME)
             self._query_string = kwargs.get('query_string')
 
         self._system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
+
+        self.sortFields = {
+            'name': 'name._exact',
+            'date_created': 'lastUpdated',
+            'size': 'length'
+        }
 
         super(SharedSearchManager, self).__init__(
             IndexedFile, IndexedFile.search())
@@ -39,6 +47,11 @@ class SharedSearchManager(BaseSearchManager):
                    fields=["name", "name._exact"], minimum_should_match="80%")
 
         self.extra(from_=offset, size=limit)
+
+        sort_arg = self.sortFields.get(self._sortKey, None)
+        if sort_arg:
+            self.sort({sort_arg: {'order': self._sortOrder}})
+
         return self._search
 
     def listing(self, ac):

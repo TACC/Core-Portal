@@ -1,7 +1,42 @@
+.search-results {
+  margin-top: 1rem;
+}
+
+.search-result-alt {
+  /* border-bottom: 1px solid #d3d3d3; */
+  /* margin-bottom: 10px; */
+  /* display: block; */
+  /* font-size: 1.2em; */
+  /* padding: 5px; */
+}
+
 .search-result {
-  border-bottom: 1px solid #d3d3d3;
+  /* border-bottom: 1px solid #d3d3d3; */
   margin-bottom: 10px;
   display: block;
   font-size: 1.2em;
   padding: 5px;
+}
+
+.search-results-warning {
+  border: 1px solid rgb(64, 56, 46);
+  background-color: rgb(255, 224, 184);
+}
+
+.search-results-none {
+  margin: 0.5rem 0 1rem;
+  padding: 0 0 0 1rem;
+  border: 1px solid rgb(76, 51, 51);
+  background-color: rgb(242, 222, 222);
+}
+
+.search-results-match {
+  margin: 0.5rem 0 1rem;
+  padding: 0 0 0 1rem;
+  border: 1px solid rgb(51, 76, 51);
+  background-color: rgb(223, 240, 216);
+}
+
+.badge-success {
+  background-color: rgb(102, 153, 102);
 }

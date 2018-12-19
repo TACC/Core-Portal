@@ -54,7 +54,7 @@ export default function DataDepotCtrl(
 
     $scope.loadMore = function() {
         DataBrowserService.scrollToBottom(options)
-            
+
     }
 
     $scope.openPushPublicKeyForm = ()=>{
@@ -100,7 +100,7 @@ export default function DataDepotCtrl(
         DataBrowserService.browse(options)
             .then((resp)=>{
                 $scope.searchState = DataBrowserService.apiParams.searchState;
-                $scope.browser = DataBrowserService.state(); 
+                $scope.browser = DataBrowserService.state();
                 if ($scope.browser.listing.children.length < options.limit) {
                     $scope.browser.reachedEnd = true
                 }

@@ -35,7 +35,8 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
     # cmsplugin_ptr_id = indexes.IntegerField(model_attr='cmsplugin_ptr_id')
     slug = indexes.CharField()
     page_id = indexes.IntegerField()
-    title = indexes.CharField()
+    title = indexes.CharField(faceted=True)
+    date = indexes.DateTimeField()
 
     def get_model(self):
         return Title
@@ -78,6 +79,7 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         self.prepared_data["slug"] = obj.slug
         self.prepared_data["url"] = "https://" + obj.page.site.domain + '/' + obj.path
         self.prepared_data["title"] = obj.title
+        self.prepared_data["date"] = obj.creation_date
 
         # self.prepared_data['language'] = self._language
         return self.prepared_data

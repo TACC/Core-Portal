@@ -33,7 +33,7 @@ def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, upd
     client = service_account()
 
     if filePath[0] != '/':
-        filePath = '/' + filePath 
+        filePath = '/' + filePath
 
     try:
         filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).next()

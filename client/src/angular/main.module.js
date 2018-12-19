@@ -97,14 +97,17 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     }
   })
   .state('wb.search', {
-    'url': '/search?query_string&type_filter',
+    'url': '/search?query_string&type_filter&sortKey&sortOrder',
     'template': searchTemplate,
     controller: 'SearchViewCtrl',
     controllerAs: 'vm',
     'params': {
       query_string: null,
       type_filter: 'cms',
-      switch_filter: null
+      switch_filter: null,
+      oldKey: null,
+      sortKey: 'name',
+      sortOrder: 'asc'
     },
     'resolve': {
       // 'test': function () {console.log("search resolve");}
@@ -112,36 +115,36 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   });
 }
 
-let mod = angular.module('portal', [
-  'ngCookies',
-  'ngAria',
-  'ngAnimate',
-  'ui.bootstrap',
-  'ui.router',
-  'schemaForm',
-  'dndLists',
-  'xeditable',
-  'pascalprecht.translate',
-  'ngStorage',
-  'ngSanitize',
-  'ngMaterial',
-  'ng.modernizr',
-  'django.context',
-  'portal.directives',
-  'portal.filters',
-  'portal.workspace',
-  'portal.data_depot',
-  'portal.search',
-  'portal.dashboard',
-  'portal.workbench',
-  'portal.notifications',
-  'portal.common'
-])
-
+let mod = angular
+  .module('portal', [
+    'ngCookies',
+    'ngAria',
+    'ngAnimate',
+    'ui.bootstrap',
+    'ui.router',
+    'schemaForm',
+    'dndLists',
+    'xeditable',
+    'pascalprecht.translate',
+    'ngStorage',
+    'ngSanitize',
+    'ngMaterial',
+    'ng.modernizr',
+    'django.context',
+    'portal.directives',
+    'portal.filters',
+    'portal.workspace',
+    'portal.data_depot',
+    'portal.search',
+    'portal.dashboard',
+    'portal.workbench',
+    'portal.notifications',
+    'portal.common'
+  ])
   .config(config)
-//  .run(['Notifications', function(Notifications) {
-//    Notifications.connect();
-//  }])
+  // .run(['Notifications', function(Notifications) {
+  //   Notifications.connect();
+  // }])
   .constant('appCategories', ['Simulation', 'Visualization', 'Data Processing', 'Utilities'])
   .constant('appIcons', ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'visit', 'openfoam', 'opensees']);
 
