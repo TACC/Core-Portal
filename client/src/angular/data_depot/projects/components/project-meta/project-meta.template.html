@@ -20,7 +20,7 @@
                     </tr>
                 </table>
         
-                <div class="project-meta-buttons" ng-if="$ctrl.isPI() || $ctrl.isCoPI()">
+                <div class="project-meta-buttons" ng-if="$ctrl.canEdit()">
                     <button class="btn btn-sm btn-primary"
                             data-ng-click="$ctrl.editMetadata()">
                         Edit Project Info

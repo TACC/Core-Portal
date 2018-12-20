@@ -134,8 +134,14 @@ describe('ProjectMetadataComponent', ()=>{
         expect(element.text()).toContain("Edit Project Info");
         expect(element.text()).toContain("Manage Members");
 
+        // test_user is the owner, no PI has been set
+        controller.data.meta.pi = null;
+        controller.data.meta.owner.username = "test_user";
+        scope.$digest();
+        expect(element.text()).toContain("Edit Project Info");
+
         // test_user is not the PI or owner
-        controller.data.meta.pi.username = "not_test_user";
+        controller.data.pi = { username: "not_test_user", fullName: "someone else" };
         controller.data.meta.owner.username = "not_test_user";
         scope.$digest();
         expect(element.text()).not.toContain("Edit Project Info");
