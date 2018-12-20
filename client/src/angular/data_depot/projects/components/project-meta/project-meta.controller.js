@@ -83,6 +83,13 @@ export default class ProjectMetadataCtrl {
         }
     }
 
+    canEdit() {
+        if (this.data.meta && !this.data.meta.pi && this.isOwner()) {
+            return true;
+        }
+        return this.isPI() || this.isCoPI();
+    }
+
     /**
      * Returns true if the current user is the PI of this project
      * 
