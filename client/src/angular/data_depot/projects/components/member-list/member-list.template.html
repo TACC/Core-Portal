@@ -3,7 +3,7 @@
         {{ $ctrl.label }}
     </h4>
     <div ng-if="$ctrl.meta[$ctrl.field].length">
-        <div ng-repeat="member in $ctrl.meta[$ctrl.field]" class="team-member-row">
+        <div ng-repeat="member in $ctrl.meta[$ctrl.field]" class="member-row">
             <div>{{ member.fullName }}</div>
             <button class="btn btn-sm pull-right" 
                     ng-if="$ctrl.editable && !$ctrl.memberRemovingStates[member.username]" 
