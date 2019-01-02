@@ -16,12 +16,10 @@
     </div>
     <div data-ng-if="$ctrl.isBeingEdited || $ctrl.saving" class="projects-animate">
         <input ng-If="$ctrl.inputType != 'textarea'" ng-attr-type="$ctrl.inputType"
-                ng-attr-placeholder="$ctrl.label"
                 data-ng-model="$ctrl.value"
                 class="field-input"/>
         <textarea 
             ng-If="$ctrl.inputType == 'textarea'" 
-            ng-attr-placeholder="$ctrl.label"
             data-ng-model="$ctrl.value"
             class="field-textarea"></textarea>
         <div class="edit-control-container">
