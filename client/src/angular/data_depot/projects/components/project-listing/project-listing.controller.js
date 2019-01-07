@@ -13,6 +13,10 @@ class ProjectListingCtrl {
             }
         };
         this.ui = {};
+        this.options = {
+            offset: 0,
+            limit: 100
+        }
         this.DataBrowserService.apiParams.fileMgr = 'my-projects';
         this.DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
         this.DataBrowserService.apiParams.searchState = 'dataSearch';
@@ -27,6 +31,9 @@ class ProjectListingCtrl {
         })
         .then((resp)=>{
             this.browser = this.DataBrowserService.state();
+            if (this.browser.listing.children.length < this.options.limit) {
+                this.browser.reachedEnd = true
+            }
         });
 
         this.searchState = this.DataBrowserService.apiParams.searchState;
@@ -74,6 +81,14 @@ class ProjectListingCtrl {
               }
           );
         }
+    }
+
+    showMoreFilesButton() {
+        return typeof (this.browser.listing || {}).children === 'object'
+            && !(this.browser.busyListing 
+                || this.browser.busy 
+                || this.browser.reachedEnd
+                )
     }
 };
 

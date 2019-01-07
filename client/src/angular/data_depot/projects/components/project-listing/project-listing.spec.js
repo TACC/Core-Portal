@@ -83,4 +83,18 @@ describe('ProjectListingCtrl', ()=>{
             }
         );
     });
+    it('should show/hide the Show More Files button depending on browser state', () => {
+        //hide button when listing.children is undefined, e.g. when an error occurs
+        controller.browser = {listing: {}, busyListing: false, busy: false, reachedEnd: false}
+        expect(controller.showMoreFilesButton()).toBe(false)
+        //hide button when a listing is completed and the reachedEnd flag has been set to true
+        controller.browser = {listing: {children: []}, busyListing: false, busy: false, reachedEnd: true}
+        expect(controller.showMoreFilesButton()).toBe(false)
+        //hide button while initial listing is being retrieved
+        controller.browser = {listing: {children: []}, busyListing: true, busy: true, reachedEnd: false}
+        expect(controller.showMoreFilesButton()).toBe(false)
+        //show button when listing.children is defined but reachedEnd is still false
+        controller.browser = {listing: {children: []}, busyListing: false, busy: false, reachedEnd: false}
+        expect(controller.showMoreFilesButton()).toBe(true)
+    })
 });

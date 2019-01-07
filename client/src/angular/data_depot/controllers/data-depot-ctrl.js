@@ -57,6 +57,14 @@ export default function DataDepotCtrl(
 
     }
 
+    $scope.showMoreFilesButton = function() {
+        return typeof ($scope.browser.listing || {}).children === 'object'
+            && !($scope.browser.busyListing 
+                || $scope.browser.busy 
+                || $scope.browser.reachedEnd
+                )
+    }
+
     $scope.openPushPublicKeyForm = ()=>{
         $scope.browser.ui.pushKeyModalOpening = true;
         SystemsService.get(options.system)
@@ -251,5 +259,7 @@ export default function DataDepotCtrl(
             }
             return file.name;
         };
+
+        
     }
 }

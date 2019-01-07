@@ -89,11 +89,7 @@
 <div class="col-md-3"></div>
 <div class="col-md-6">
     <button class="btn btn-default btn-block" 
-            data-ng-show="!(
-                $ctrl.browser.busyListing ||
-                $ctrl.browser.busy ||
-                $ctrl.browser.reachedEnd
-            )"
+            data-ng-show="$ctrl.showMoreFilesButton()"
             data-ng-click="$ctrl.loadMore()">
                 Show more files
                 <i class="fa fa-spinner fa-spin" 
