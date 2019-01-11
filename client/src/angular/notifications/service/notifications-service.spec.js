@@ -8,11 +8,10 @@ describe('Notifications', function() {
         $http,
         $uibModal,
         $rootScope,
-        JobsStatusCtrl,
-        Jobs,
         $q,
         $httpBackend,
-        fakePromise;
+        fakePromise,
+        notes;
 
     beforeEach(angular.mock.module('portal'));
 
@@ -26,8 +25,6 @@ describe('Notifications', function() {
             _$http_,
             _$uibModal_,
             _$rootScope_,
-            // _JobsStatusCtrl_,
-            _Jobs_,
             _$q_,
             _$httpBackend_
         ) => {
@@ -37,14 +34,27 @@ describe('Notifications', function() {
             $http = _$http_;
             $uibModal = _$uibModal_;
             $rootScope = _$rootScope_;
-            // JobsStatusCtrl = _JobsStatusCtrl_;
-            Jobs = _Jobs_;
             $q = _$q_;
             $httpBackend = _$httpBackend_;
         });
 
         Notifications.toasting = true;
         fakePromise = $q.when();
+
+        notes = {
+            notifs: [jobsStatusUpdateData],
+            page: 0,
+            total: 1,
+            unread: 1,
+        };
+        $httpBackend.whenGET('/api/notifications/').respond(200, notes);
+        spyOn(Notifications, 'list').and.callFake(() => {
+            return {
+                then: function(callback) {
+                    return callback(notes);
+                },
+            };
+        });
     });
 
     it('Should have right methods', function() {
@@ -57,14 +67,15 @@ describe('Notifications', function() {
 
     it('should process a notification from websocket subscription', () => {
         fakePromise = $q.when();
-        spyOn(Jobs, 'list').and.returnValue(fakePromise);
-        spyOn(Notifications, 'list').and.returnValue(fakePromise);
         spyOn(Notifications, 'showToast').and.returnValue(fakePromise);
+        Notifications.list().then((resp) => {
+            Notifications.notes = resp;
+        });
 
+        let unread = Notifications.notes.unread;
         Notifications.processMessage(jobsStatusUpdateData);
 
-        expect(Notifications.list).toHaveBeenCalled();
-        // expect(JobsStatusCtrl.refresh).toHaveBeenCalled();
+        expect(Notifications.notes.unread).toEqual(unread+1);
         expect(Notifications.showToast).toHaveBeenCalled();
     });
 
@@ -90,7 +101,6 @@ describe('Notifications', function() {
 
     it('should handle a delete request', () => {
         let response;
-        spyOn(Notifications, 'list').and.returnValue(fakePromise);
         $httpBackend.whenDELETE('/api/notifications/delete/all').respond(200);
 
         Notifications.delete('all').then((resp) => {
@@ -135,6 +145,9 @@ describe('Notifications', function() {
         };
         fakePromise = $q.when(),
         spyOn($uibModal, 'open').and.returnValue(mockModal);
+        Notifications.list().then((resp) => {
+            Notifications.notes = resp;
+        });
 
         Notifications.processMessage(interactiveNotificationData);
         expect($uibModal.open).toHaveBeenCalled();

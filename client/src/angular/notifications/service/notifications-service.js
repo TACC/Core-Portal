@@ -46,6 +46,7 @@ export default class Notifications {
                 }
             }
         };
+        this.list();
     }
 
     list() {
@@ -73,13 +74,14 @@ export default class Notifications {
     }
 
     processMessage(msg) {
-        this.list();
-
         // suppress first (old) message
         if (!this.toasting) {
             this.toasting = true;
             return;
         }
+
+        this.notes.unread++;
+        this.notes.notifs.unshift(msg);
 
         // Update jobs-status panel in workspace
         this.$rootScope.$broadcast('jobs-refresh');
