@@ -6,74 +6,9 @@
 
 pipelines:
   default:
-    - step:
-        name: First Step on task/**
-        script:
-          - echo "Not on master"
-    - step:
-        name: Unit Tests
-        image: python:2.7
-        caches:
-          - pip
-        script: # Modify the commands below to build your repository.
-          - cd server
-          - mkdir -p log/portal
-          - pip install -r requirements.txt
-          - mkdir -p $BITBUCKET_CLONE_DIR/.reports
-          - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
-            coverage run --branch --source="portal" manage.py test
-            --pattern="unit_test.py"
-            -v2 --settings="portal.settings.unit_test_settings"
-          - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
-            coverage report -m
-        artifacts:
-          - .reports/**
-    - step:
-        name: Client Side Unit Tests
-        image: timbru31/node-chrome
-        caches:
-          - node
-        script: # Modify the commands below to build your repository.
-          - cd client
-          - npm install
-          - npm run test
-    - step:
-        name: Unit test delta with master
-        image: python:2.7
-        caches:
-          - pip
-        script:
-          - cd server
-          - mkdir -p log/portal
-          - pip install -r requirements.txt
-          - commit_coverage=$(COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
-            coverage report -m | awk '/^TOTAL/ { gsub("%", "", $6); print $6 }')
-          - git remote set-url origin git@bitbucket.org:$BITBUCKET_REPO_OWNER/$BITBUCKET_REPO_SLUG.git
-          - git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
-          - git fetch
-          - git checkout master
-          - git status
-          - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT_master
-            coverage run --branch --source="portal" manage.py test
-            --pattern="unit_test.py"
-            -v2 --settings="portal.settings.unit_test_settings"
-          - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT_master
-            coverage report -m
-          - master_coverage=$(COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT_master
-            coverage report -m | awk '/^TOTAL/ { gsub("%", "", $6); print $6 }')
-          - 'if [ "$master_coverage" -gt "$commit_coverage" ]; then echo "Test coverage decreased";
-            echo "Master branch tests coverage: $master_coverage";
-            echo "This commit test coverage: $commit_coverage";
-            $(exit 1);
-            fi'
-  branches:
-    master:
+    - parallel:
       - step:
-          name: First Step on master
-          script:
-            - echo "On Master"
-      - step:
-          name: Unit Tests
+          name: Server Side Unit Tests
           image: python:2.7
           caches:
             - pip
@@ -81,15 +16,11 @@ pipelines:
             - cd server
             - mkdir -p log/portal
             - pip install -r requirements.txt
-            - mkdir -p $BITBUCKET_CLONE_DIR/.reports
-            - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
-              coverage run --branch --source="portal" manage.py test
+            - coverage run --branch --source="portal" manage.py test
               --pattern="unit_test.py"
               -v2 --settings="portal.settings.unit_test_settings"
-            - COVERAGE_FILE=$BITBUCKET_CLONE_DIR/.reports/coverage_$BITBUCKET_COMMIT
-              coverage report -m
-          artifacts:
-            - reports/**
+            - coverage xml -i
+            - bash <(curl -s https://codecov.io/bash) -cF python
       - step:
           name: Client Side Unit Tests
           image: timbru31/node-chrome
@@ -99,7 +30,36 @@ pipelines:
             - cd client
             - npm install
             - npm run test
-    
+            - bash <(curl -s https://codecov.io/bash) -cF javascript
+
+  pull-requests:
+    '**':
+      - parallel:
+        - step:
+            name: Unit Tests
+            image: python:2.7
+            caches:
+              - pip
+            script: # Modify the commands below to build your repository.
+              - cd server
+              - mkdir -p log/portal
+              - pip install -r requirements.txt
+              - coverage run --branch --source="portal" manage.py test
+                --pattern="unit_test.py"
+                -v2 --settings="portal.settings.unit_test_settings"
+              - coverage xml -i
+              - bash <(curl -s https://codecov.io/bash) -cF python
+        - step:
+            name: Client Side Unit Tests
+            image: timbru31/node-chrome
+            caches:
+              - node
+            script: # Modify the commands below to build your repository.
+              - cd client
+              - npm install
+              - npm run test
+              - bash <(curl -s https://codecov.io/bash) -cF javascript
+
 definitions:
   caches:
     node: ./client/node_modules

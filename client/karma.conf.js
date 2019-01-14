@@ -37,7 +37,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['spec', 'coverage-istanbul'],
+    reporters: ['spec', 'coverage-istanbul', 'coverage'],
     coverageReporter: {
       watermarks: {
         statements: [ 50, 75 ],
@@ -47,7 +47,8 @@ module.exports = function(config) {
       },
       dir: 'coverage',
       reporters: [
-        { type: 'html', subdir: 'report-html' },
+        { type: 'lcov', subdir: 'lcov-report' },
+        { type: 'cobertura', subdir: '.', }
       ]
     },
     // web server port
