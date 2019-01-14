@@ -177,3 +177,5 @@ server/conf/docker/docker-compose-dev.all.debug.utils.yml
 
 # vim stuff
 *.swp
+server/conf/nginx/certificates/wma_prtl.key
+server/conf/nginx/certificates/wma_prtl.pub

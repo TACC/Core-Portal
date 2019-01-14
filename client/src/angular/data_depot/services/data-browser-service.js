@@ -201,9 +201,9 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     currentState.reachedEnd = false;
     currentState.busyListingPage = false;
     currentState.page = 0;
-    currentBrowseRequest =  FileListing.get(options, apiParams, {queryString: options.queryString, 
-                                                                 system: options.system, 
-                                                                 offset: options.offset, 
+    currentBrowseRequest =  FileListing.get(options, apiParams, {queryString: options.queryString,
+                                                                 system: options.system,
+                                                                 offset: options.offset,
                                                                  limit: options.limit});
 
     currentBrowseRequest.then(function (listing) {
@@ -224,7 +224,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         currentState.busyListing = false;
       }
       currentState.listing = null;
-      currentState.error = err;
+      currentState.error = err.data;
       //currentState.loadingMore = false;
       currentState.reachedEnd = false;
       return err;

@@ -1,5 +1,6 @@
 import angular from 'angular';
 import './services';
+import './components';
 import './controllers';
 import './directives';
 import '../workbench/components';
@@ -8,11 +9,11 @@ import './css/data-browser-service-preview.css';
 import './projects';
 
 //templates
-import agaveDataListingTemplate from './templates/agave-data-listing.html';
 import projectListTemplate from './templates/project-list.html';
 
 let mod = angular.module('portal.data_depot', [
     'portal.data_depot.services',
+    'portal.data_depot.components',
     'portal.data_depot.controllers',
     'portal.data_depot.directives',
     'portal.workbench.components',
@@ -45,8 +46,7 @@ function config(
     $stateProvider.state(
         'wb.data_depot.db', {
             url: '/{directory}/{systemId}{filePath:any}?query_string&offset&limit',
-            template: agaveDataListingTemplate,
-            controller: 'DataDepotCtrl',
+            component: 'dataViewComponent',
             params: {
                 systemId: {value: '', squash: true},
                 name: {value: '', squash: true},
@@ -55,6 +55,18 @@ function config(
                 offset: null,
                 limit: null
             },
+            resolve: {
+                params: ($stateParams)=>{
+                    'ngInject';
+                    return {
+                        systemId: $stateParams.systemId,
+                        filePath: $stateParams.filePath,
+                        name: $stateParams.name,
+                        directory: $stateParams.directory,
+                        query_string: $stateParams.query_string
+                    };
+                }
+            }
         }
     )
 
@@ -80,6 +92,7 @@ function config(
                     systemId: $stateParams.systemId,
                     filePath: $stateParams.filePath,
                     projectId: $stateParams.projectTitle,
+                    browseState: 'wb.data_depot.projects.listing'
                 };
             }
         }
