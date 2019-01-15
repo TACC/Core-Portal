@@ -32,7 +32,7 @@
       $event.stopPropagation();
 
       var filePath = file.id;
-      if (file.type === 'file'){
+      if (file.isFile()){
         DataBrowserService.preview(file);
       } else {
         $state.go($state.current.name, {filePath: file.id});

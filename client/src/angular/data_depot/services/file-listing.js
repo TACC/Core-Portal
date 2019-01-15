@@ -284,6 +284,10 @@ function FileListing($http, $q) {
     });
   };
 
+  Listing.prototype.isFile = function() {
+    return this.type != undefined && this.type === 'file';
+  }
+
   Listing.prototype.icon = function() {
     if (this.type === 'dir' || this.type === 'folder') {
       return 'fa-folder';

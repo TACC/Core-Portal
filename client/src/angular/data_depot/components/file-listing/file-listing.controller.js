@@ -71,7 +71,7 @@ class FileListingCtrl {
     onBrowse($event, file) {
         $event.preventDefault();
         $event.stopPropagation();
-        if (file.type === 'file') {
+        if (file.isFile()) {
             this.DataBrowserService.preview(file, this.browser.listing);
         } else {
           this.$state.go(

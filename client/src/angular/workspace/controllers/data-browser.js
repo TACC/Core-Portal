@@ -135,7 +135,7 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
 
 
   $scope.browseFile = function(file){
-    if (file.type !== 'folder' && file.type !== 'dir'){
+    if (file.isFile()){
       return;
     }
     $scope.data.filesListing = null;

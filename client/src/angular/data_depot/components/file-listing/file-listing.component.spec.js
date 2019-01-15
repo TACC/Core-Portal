@@ -1,5 +1,6 @@
 describe('FileListingCtrl', ()=>{
     let controller, deferred, $scope, browsePromise;
+    let FileListing;
 
     // Mock requirements.
     beforeEach(angular.mock.module("portal"));
@@ -11,11 +12,13 @@ describe('FileListingCtrl', ()=>{
             _DataBrowserService_,
             _$state_,
             _$stateParams_,
-            $componentController
+            $componentController,
+            _FileListing_
         ) => {
             $scope = _$rootScope_.$new();
             deferred = _$q_.defer();
             browsePromise = _$q_.defer();
+            FileListing = _FileListing_;
             const mockedServices = {
                 $state: _$state_,
                 DataBrowserService: _DataBrowserService_
@@ -61,7 +64,7 @@ describe('FileListingCtrl', ()=>{
         controller.onBrowse(
             {preventDefault: ()=>{return;},
             stopPropagation: ()=>{return;}},
-            {system: 'mock.system', path:'path/to/dir', type:'dir'}
+            FileListing.init({system: 'mock.system', path:'path/to/dir', type:'dir'})
         );
         expect(controller.$state.go).toHaveBeenCalledWith(
             controller.params.browseState,

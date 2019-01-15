@@ -69,6 +69,19 @@ describe("FileListing", function() {
     expect(listing.children.length).toEqual(2);
   });
 
+  it("should determine if a listing is a file", function() {
+    let options = {
+      system: 'test-system',
+      path: '/file.txt',
+      name: 'file.txt',
+      directory: '/',
+      queryString: '',
+    };
+    let listing = FileListing.init(options);
+    expect(listing.isFile()).toEqual(false);
 
-
+    options.type = 'file';
+    listing = FileListing.init(options);
+    expect(listing.isFile()).toEqual(true);
+  });
 });

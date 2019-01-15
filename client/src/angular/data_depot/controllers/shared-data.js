@@ -34,7 +34,7 @@ export default function SharedDataCtrl ($scope, $state, Django, DataBrowserServi
     } else {
       filePath = file.path;
     }
-    if (file.type === 'file'){
+    if (file.isFile()){
       DataBrowserService.preview(file, $scope.browser.listing);
     } else {
       $state.go('sharedData', {systemId: file.system, filePath: file.path});
