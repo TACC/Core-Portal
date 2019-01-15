@@ -86,3 +86,67 @@ describe('FileListingCtrl', ()=>{
         expect(controller.showMoreFilesButton()).toBe(true)
     })
 });
+
+// TODO: This functionality should be moved to data-view.controller
+describe('FileListingCtrl file modal open', function() {
+    let controller, $scope, $q;
+
+    // Mock requirements.
+    beforeEach(angular.mock.module("portal"));
+    beforeEach( ()=> {
+        angular.module('django.context', []).constant('Django', {user: 'test_user'});
+        angular.mock.inject((
+            _$q_,
+            _$rootScope_,
+            _DataBrowserService_,
+            _$state_,
+            _$stateParams_,
+            $componentController
+        ) => {
+            $q = _$q_;
+            $scope = _$rootScope_.$new();
+            const mockedServices = {
+                $state: _$state_,
+                DataBrowserService: _DataBrowserService_
+            };
+            const mockedBindings = {
+                params: {
+                    systemId: '',
+                    filePath: '/',
+                    browseState: ''
+                }
+            };
+
+            controller = $componentController(
+                'fileListingComponent',
+                mockedServices,
+                mockedBindings
+            );
+            
+            spyOn(controller.DataBrowserService, 'browse').and.callFake(function() {
+                var deferred = $q.defer();
+                deferred.resolve("Response");
+                return deferred.promise;
+            });
+            spyOn(controller.DataBrowserService, 'preview');
+            spyOn(controller.DataBrowserService, 'state').and.returnValue(
+                {
+                    listing: {
+                        type: 'file'
+                    },
+                    children: {
+                        length: 0
+                    }
+                }
+            );
+            controller.$onInit();
+            $scope.$digest();
+        });
+    });
+
+    it('should open a file preview modal', () => {
+        expect(controller.DataBrowserService.browse).toHaveBeenCalled();
+        expect(controller.DataBrowserService.state).toHaveBeenCalled();
+        expect(controller.DataBrowserService.preview).toHaveBeenCalled();
+    });
+});

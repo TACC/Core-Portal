@@ -20,6 +20,8 @@ class FileListingCtrl {
             system: this.params.systemId
 
         }
+
+        // TODO: DataBrowserService.browse call should be moved into data-view.controller
         this.DataBrowserService.browse({
             system: this.params.systemId,
             path: this.params.filePath,
@@ -27,8 +29,11 @@ class FileListingCtrl {
             limit: this.options.limit,
             queryString: this.params.queryString
         })
-        .then((resp)=>{
+        .then((resp)=> {
             this.browser = this.DataBrowserService.state();
+            if (this.browser.listing.type == "file") {
+                this.DataBrowserService.preview(this.browser.listing);
+            }
             if (this.browser.listing.children.length < this.options.limit) {
                 this.browser.reachedEnd = true
             }

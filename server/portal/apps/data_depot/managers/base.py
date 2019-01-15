@@ -260,8 +260,11 @@ class AgaveFileManager(AbstractFileManager):
         _file = _file.listing(self._ac, system=system, path=path, offset=offset, limit=limit)
 
         # Calculate a jupyter_url for every file in this listing
-        for child in _file._children:
-            child.jupyter_url = get_jupyter_url(child.system, child.path, self.username)
+        if _file._children:
+            for child in _file._children:
+                child.jupyter_url = get_jupyter_url(child.system, child.path, self.username)
+        else:
+            _file.jupyter_url = get_jupyter_url(system, path, self.username)
 
         return _file
 

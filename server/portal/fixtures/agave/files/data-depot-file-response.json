@@ -1,0 +1,50 @@
+{
+    "response": {
+        "mimeType": "text/plain",
+        "name": "file.txt",
+        "format": "raw",
+        "lastModified": "2018-09-11T11:38:18.000-05:00",
+        "system": "portal.home.username",
+        "trail": [
+            {
+                "path": "",
+                "system": "portal.home.username",
+                "name": ""
+            },
+            {
+                "path": "/parent_folder",
+                "system": "portal.home.username",
+                "name": "parent_folder"
+            },
+            {
+                "path": "/parent_folder/sub_folder",
+                "system": "portal.home.username",
+                "name": "sub_folder"
+            },
+            {
+                "path": "/parent_folder/sub_folder/file.txt",
+                "system": "portal.home.username",
+                "name": "file.txt"
+            }
+        ],
+        "length": 5,
+        "jupyterUrl": null,
+        "path": "/parent_folder/sub_folder/file.txt",
+        "_links": {
+            "_self": {
+                "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder/sub_folder/file.txt"
+            },
+            "metadata": {
+                "href": "https://api.tacc.utexas.edu/meta/v2/data?q=%7B%22associationIds%22%3A%221502879830585044504-242ac113-0001-002%22%7D"
+            },
+            "system": {
+                "href": "https://api.tacc.utexas.edu/systems/v2/portal.home.username"
+            },
+            "history": {
+                "href": "https://api.tacc.utexas.edu/files/v2/history/system/portal.home.username//parent_folder/sub_folder/file.txt"
+            }
+        },
+        "type": "file",
+        "permissions": "READ_WRITE"
+    }
+}

@@ -40,6 +40,24 @@ class TestDataDepotApiViews(TestCase):
         ) as _file:
             self.EXPECTED_RESPONSE = json.load(_file)
 
+        with open(
+            os.path.join(
+                agave_path,
+                'files',
+                'file-listing.json'
+                )
+        ) as _file:
+            self.agave_file_listing = json.load(_file)
+
+        with open(
+            os.path.join(
+                agave_path,
+                'files',
+                'data-depot-file-response.json'
+                )
+        ) as _file:
+            self.EXPECTED_FILE_RESPONSE = json.load(_file)
+
 
     def test_files_listing(self):
         self.mock_client.files.list.return_value = self.agave_listing
@@ -68,3 +86,9 @@ class TestDataDepotApiViews(TestCase):
     def test_projects_list(self):
         """https://agavepy.readthedocs.io/en/latest/agavepy.systems.html"""
         pass
+
+    def test_single_file_listing(self):
+        self.mock_client.files.list.return_value = self.agave_file_listing
+        resp = self.client.get("/api/data-depot/files/listing/my-data/parent_folder/sub_folder/file.txt")
+        response_json = resp.json() 
+        self.assertEqual(response_json, self.EXPECTED_FILE_RESPONSE)
