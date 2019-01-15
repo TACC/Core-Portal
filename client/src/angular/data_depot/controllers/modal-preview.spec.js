@@ -1,26 +1,23 @@
 import previewModalTemplate from './../modals/data-browser-service-preview.html';
 
 describe("ModalPreview", function() {
-    var $q;
     var $uibModal;
-    var $httpBackend;
     var modalParams;
+    var modal;
     var scope;
 
     // Mock only the necessary portal components
     beforeEach(angular.mock.module("portal"));
-    beforeEach(angular.mock.module("ui.bootstrap")); 
     beforeEach( ()=> {
+        angular.module('ui.bootstrap');
         // Setup our component test
-        angular.mock.inject(function(_$rootScope_, _$q_, _$uibModal_, _$httpBackend_) {
+        angular.mock.inject(function(_$rootScope_, _$q_, _$uibModal_) {
             scope = _$rootScope_.$new(); 
-            $q = _$q_;
             $uibModal = _$uibModal_;
-            $httpBackend = _$httpBackend_;
 
             // $uibModal.open parameter
             let file = {
-                system: "/system",
+                system: "agave.system",
                 path: "/filename.txt"
             };
             modalParams = {
@@ -33,7 +30,14 @@ describe("ModalPreview", function() {
                   listing: function() { return undefined; },
                 } 
             }
-      });
+
+            modal = $uibModal.open(modalParams);
+            scope.$digest();
+        });
+    });
+
+    it ('should load the modal', function() {
+        expect(modal.opened).toBeTruthy();
     });
   });
   
