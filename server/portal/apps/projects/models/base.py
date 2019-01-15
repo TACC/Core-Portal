@@ -182,7 +182,7 @@ class Project(object):
             description=title,
             site=settings.PORTAL_DOMAIN
         )
-        storage.storage.port = 22
+        storage.storage.port = settings.PORTAL_PROJECTS_SYSTEM_PORT
         storage.storage.home_dir = '/'
         storage.storage.root_dir = os.path.join(
             settings.PORTAL_PROJECTS_ROOT_DIR,

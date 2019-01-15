@@ -272,6 +272,8 @@ PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'projects.system.name'
 
 PORTAL_PROJECTS_ROOT_HOST = 'host.for.projects'
 
+PORTAL_PROJECTS_SYSTEM_PORT = 22
+
 PORTAL_PROJECTS_PRIVATE_KEY = ('-----BEGIN RSA PRIVATE KEY-----'
                                'change this'
                                '-----END RSA PRIVATE KEY-----')
