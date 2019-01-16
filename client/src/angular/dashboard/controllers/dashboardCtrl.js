@@ -60,75 +60,72 @@ export default class DashboardCtrl {
 
     }
 
+    checkSystemKeys(system, pubKey) {
+        system.keysTracked = false;
+        if (pubKey && pubKey.public_key) {
+            system.publicKey = pubKey;
+            system.keysTracked = true;
+        }
+    }
 
     $onInit() {
-        this.UserService.usage().then((resp) => {
-            this.usage = resp;
-        });
+        let user = this.UserService.currentUser;
+
+        this.UserService.usage().then(
+            (resp) => {
+                this.usage = resp;
+            }
+        );
 
         this.Jobs.list(
             {
                 limit: 100,
                 offset: 0
             }
-        ).then((resp) => {
-            this.jobs = resp;
-            this.jobs = _.filter(this.jobs, (d) => { return moment(d.created).isAfter(this.first_jobs_date); });
-            this.chart_data = this.Jobs.jobsByDate(this.jobs);
-            this.chart.data(this.chart_data);
-            var tmp = _.groupBy(this.jobs, (d) => { return d.appId; });
-            this.recent_apps = Object.keys(tmp);
-            this.loading_jobs = false;
-        });
+        ).then(
+            (resp) => {
+                this.jobs = resp;
+                this.jobs = _.filter(this.jobs, (d) => { return moment(d.created).isAfter(this.first_jobs_date); });
+                this.chart_data = this.Jobs.jobsByDate(this.jobs);
+                this.chart.data(this.chart_data);
+                var tmp = _.groupBy(this.jobs, (d) => { return d.appId; });
+                this.recent_apps = Object.keys(tmp);
+                this.loading_jobs = false;
+            }
+        );
 
-        this.Apps.list().then((resp) => {
-            this.apps = resp.data.response;
-        });
+        this.Apps.list().then(
+            (resp) => {
+                this.apps = resp.data.response;
+            }
+        );
 
-        this.SystemsService.list().then((resp) => {
-            this.UserService.authenticate().then((response) => {
-                const user = response;
-                _.each(resp.execution, (exec) => {
-                    let pubKey = resp.publicKeys[exec.id];
-                    exec.keysTracked = false;
-                    if (pubKey.public_key !== null &&
-                        typeof pubKey.public_key !== 'undefined') {
-                        exec.publicKey = pubKey;
-                        exec.keysTracked = true;
+        this.SystemsService.list().then(
+            (resp) => {
+                resp.execution.forEach(
+                    (exec) => {
+                        let pubKey = resp.publicKeys[exec.id];
+                        this.checkSystemKeys(exec, pubKey);
+                        this.data.execSystems.push(exec);
+                    }  
+                )
+                resp.storage.forEach(
+                    (storage) => {
+                        let pubKey = resp.publicKeys[storage.id];
+                        this.checkSystemKeys(storage, pubKey);
+                        this.data.strgSystems.push(storage);
                     }
-                    this.data.execSystems.push(exec);
-                });
-                _.each(resp.storage, (strg) => {
-                    this.SystemsService.listRoles(strg.id).then((response) => {
-                        _.each(response, (role) => {
-                            if (role.username === user.username) {
-                                if (role.role === 'ADMIN' || role.role === 'PUBLISHER' || role.role === 'OWNER') {
-                                    let pubKey = resp.publicKeys[strg.id];
-                                    strg.keysTracked = false;
-                                    if (pubKey.public_key !== null &&
-                                        typeof pubKey.public_key !== 'undefined') {
-                                        strg.publicKey = pubKey;
-                                        strg.keysTracked = true;
-                                    }
-                                    this.data.strgSystems.push(strg);
-                                }
-                            }
-                        });
-                    });
-                });
-            });
-        }, (err) => {
-            this.ui.systemsErrors = err;
-        }).finally(() => {
-            this.ui.loadingSystems = false;
-        });
+                );
+            },
+            (err) => {
+                this.ui.systemsErrors = err;
+            }
+        ).finally(
+            () => {
+                this.ui.loadingSystems = false;
+            }
+        )
     }
-    // TicketsService.get().then(function (resp) {
-    //   this.my_tickets = resp;
-    //   this.loading_tickets = false;
-    // }, function (err) {
-    //   this.loading_tickets = false;
-    // });
 
     /**
     * Test a system

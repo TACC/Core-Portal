@@ -120,7 +120,7 @@
           <h3 class="panel-title">My Storage Systems</h3>
         </div>
         <div class="panel-body">
-          <div ng-if="vm.data.strgSystems.length == 0">
+          <div ng-if="vm.data.strgSystems.length == 0 && !vm.ui.loadingSystems">
             No Storage Systems Available!
           </div>
           <div class="system-item"

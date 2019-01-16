@@ -55,6 +55,9 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     resolve: {
       'systems': ['SystemsService', function(SystemsService) {
         return SystemsService.listing();
+      }],
+      'users' : ['UserService', function(UserService) {
+        return UserService.authenticate();
       }]
     }
   })

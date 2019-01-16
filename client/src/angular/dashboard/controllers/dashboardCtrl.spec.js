@@ -106,3 +106,144 @@ describe('DashboardCtrl', function() {
     });
 
 });
+
+describe("DashboardCtrl.$onInit() Systems", function() {
+  var Notifications, controller, $q,
+      Jobs, Apps, SystemsService, UserService, scope,
+      $uibModal, $rootScope, $controller, ctrl,
+      $httpBackend, fakePromise, systems;
+  beforeEach(angular.mock.module("portal"));
+  beforeEach( ()=> {
+    angular.module('django.context', []).constant('Django', {user: 'test_user'});
+    //these get passed into controller via a resolve in ui-router
+    systems = [{systemId : 1, name: 'My Data'}];
+    angular.mock.inject(function(_$rootScope_, _$controller_, _Jobs_, _Apps_,
+        _$uibModal_, _SystemsService_, _UserService_, _$q_, _$httpBackend_) {
+      $controller = _$controller_;
+      Jobs = _Jobs_;
+      Apps = _Apps_;
+      SystemsService = _SystemsService_;
+      UserService = _UserService_;
+      $uibModal = _$uibModal_;
+      $rootScope = _$rootScope_;
+      $q = _$q_;
+      $httpBackend = _$httpBackend_;
+      systems = systems;
+      fakePromise = $q.when();
+      $httpBackend.whenGET(/.html*/).respond(200, '');
+    });
+  });
+  beforeEach( ()=> {
+    scope = $rootScope.$new();
+    let jobs_data = [
+      {"jobId": 1, appId: 'test', created: new Date("2018-1-2")},
+      {"jobId": 2, appId: 'test', created: new Date("2018-1-3")},
+      {"jobId": 3, appId: 'test', created: new Date("2018-1-3")},
+
+    ];
+    spyOn(Jobs, 'list').and.returnValue($q.when(jobs_data));
+    spyOn(Apps, 'list').and.returnValue(fakePromise);
+    spyOn(UserService, 'usage').and.returnValue(fakePromise);
+    spyOn(UserService, 'authenticate').and.returnValue(fakePromise);
+    ctrl = $controller('DashboardCtrl', {
+      $uibModal:$uibModal, Apps: Apps, $scope: scope,
+      Jobs: Jobs, SystemsService:SystemsService, UserService:UserService,
+      systems: systems
+    });
+    ctrl.first_jobs_date = new Date("2018-1-1");
+  });
+
+  it ("should check systems for keys", () => {
+    // If there is no key provided, then the system does not have keys tracked
+    let system = { 
+      keysTracked: false
+    }
+    ctrl.checkSystemKeys(system, null);
+    expect(system.keysTracked).toBe(false);
+    
+    // If the key is missing the pubKey field, then the system does not have keys tracked
+    let pubKey = { 
+    }
+    ctrl.checkSystemKeys(system, pubKey);
+    expect(system.keysTracked).toBe(false);
+
+    // If the public key is valid, assign it to the system and marked that keys are tracked
+    pubKey['public_key'] = "1234";
+    ctrl.checkSystemKeys(system, pubKey);
+    expect(system.keysTracked).toBe(true);
+    expect(system.publicKey).toEqual(pubKey);
+  });
+
+  it("should inject retrieved keys into systems", () => {
+    let storageSystemKey = {
+        owner: null,
+        public_key: "1234"
+    }
+    let storageSystemKey2 = {
+      owner: null,
+      public_key: null
+    }
+    var deferred = $q.defer();
+    deferred.resolve({
+      execution: [ 
+        {
+          id: "exec.system",
+          keysTracked: false,
+          type: "EXECUTION"
+        }
+      ],
+      storage: [
+        {
+          id: "storage.system",
+          keysTracked: false,
+          type: "STORAGE"
+        },
+        {
+          id: "storage.system.2",
+          keysTracked: false,
+          type: "STORAGE"
+        }
+      ],
+      publicKeys: {
+        "storage.system" : storageSystemKey,
+        "storage.system.2" : storageSystemKey2
+      }
+    });
+    spyOn(SystemsService, 'list').and.returnValue(deferred.promise);
+    ctrl.$onInit();
+    scope.$digest();
+
+    expect(SystemsService.list).toHaveBeenCalled();
+
+    // Test exec.system - should be in ctrl.data.execSystems, keys not being tracked
+    let execSystem = ctrl.data.execSystems.find(system => system.id == "exec.system");
+    expect(execSystem).toBeTruthy();
+    expect(execSystem.keysTracked).toBe(false);
+
+    // Test storage.system - should be in ctrl.data.strgSystems, keys tracked
+    let storageSystem = ctrl.data.strgSystems.find(system => system.id == "storage.system");
+    expect(storageSystem).toBeTruthy();
+    expect(storageSystem.keysTracked).toBe(true);
+    expect(storageSystem.publicKey).toEqual(storageSystemKey);
+
+    // Test storage.system.2 - should be in ctrl.data.strgSystems, keys not tracked
+    let storageSystem2 = ctrl.data.strgSystems.find(system => system.id == "storage.system.2");
+    expect(storageSystem2).toBeTruthy();
+    expect(storageSystem2.keysTracked).toBe(false);
+    expect(storageSystem2.publicKey).toBeFalsy();
+
+    expect(ctrl.ui.loadingSystems).toBe(false);
+  });
+
+  it ("should respond to system loading errors", () => {
+    let error = "error";
+    var deferred = $q.defer();
+    deferred.reject(error);
+    spyOn(SystemsService, 'list').and.returnValue(deferred.promise);
+    ctrl.$onInit();
+    scope.$digest();
+    expect(ctrl.ui.loadingSystems).toBe(false);
+    expect(ctrl.ui.systemsErrors).toEqual("error");
+  });
+
+});
