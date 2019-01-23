@@ -135,7 +135,9 @@ function DataBrowserCtrl($scope, $controller, $rootScope, SystemsService, DataBr
 
 
   $scope.browseFile = function(file){
-    if (file.isFile()){
+    // Revert from using isFile for the time being
+    // TODO: file parameter should be a FileListing object, not a json response from agave
+    if (file.type !== 'folder' && file.type !== 'dir') {
       return;
     }
     $scope.data.filesListing = null;
