@@ -14,6 +14,7 @@ import _ from 'underscore';
 class DataViewCtrl {
     constructor(
         $stateParams,
+        $state,
         DataBrowserService,
         UserService
     ) {
@@ -21,8 +22,20 @@ class DataViewCtrl {
         // get user data from service
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
-        this.UserService = UserService
+        this.UserService = UserService;
+        this.$state = $state;
     }
+
+    onBrowse (ev, item) {
+        this.$state.go('wb.data_depot.db',
+            {
+                directory: this.params.directory,
+                systemId: item.system,
+                filePath: item.path,
+            }
+        );
+    }
+
     $onInit() {
         this.listingParams = {
             systemId: this.params.systemId,
@@ -31,7 +44,7 @@ class DataViewCtrl {
             limit: this.params.limit || 100,
             queryString: this.params.query_string,
             browseState: 'wb.data_depot.db',
-        }
+        };
         //  $stateParams is pulling info from the html section of the data-depot
         //  and we will swap the data based on the systemID variables we place there
         //  'options' will contain the different variables
@@ -44,7 +57,7 @@ class DataViewCtrl {
         };
 
         this.browser = this.DataBrowserService.state();
-        
+
         if (this.options.name == 'My Data' || this.options.directory == 'agave') {
             this.data = {
                 user: this.UserService.currentUser,

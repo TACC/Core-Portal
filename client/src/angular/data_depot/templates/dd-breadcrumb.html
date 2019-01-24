@@ -9,7 +9,11 @@
       </li>
       <li ng-repeat="item in listing.trail | limitTo: (offset - listing.trail.length)">
           <span ng-if="$last">{{ item.name }}</span>
-          <a href="{{ itemHref()(item) }}" ng-if="! $last" ng-click="onBrowse()($event, item)">{{ item.name }}</a>
+          <!-- <a href="" ng-if="! $last" ng-click="onBrowse()(item)">{{ item.name }}</a> -->
+          <a  ng-if="! $last"
+              ng-click="onBrowse({ev:$event, item:item})">
+              {{ item.name }}
+          </a>
       </li>
   </ul>
 </div>

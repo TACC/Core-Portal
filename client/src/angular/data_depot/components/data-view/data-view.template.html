@@ -2,10 +2,9 @@
   listing="$ctrl.browser.listing"
   skip-root="true"
   custom-root="$ctrl.data.customRoot"
-  on-browse="$ctrl.onBrowse"
+  on-browse="$ctrl.onBrowse(ev, item)"
   project="$ctrl.data.project"
   item-href="$ctrl.resolveBreadcrumbHref">
 </dd-breadcrumb>
 
 <file-listing-component params="$ctrl.listingParams"></file-listing-component>
-
