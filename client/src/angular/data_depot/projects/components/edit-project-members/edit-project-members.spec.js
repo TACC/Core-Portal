@@ -5,15 +5,18 @@ describe('EditProjectMembersCtrl', ()=>{
     let controller;
     let $q;
     let ProjectService;
+    let UserService;
+
     // Mock requirements.
     beforeEach(angular.mock.module("portal"));
     beforeEach( ()=> {
         angular.module('django.context', []).constant('Django', {user: 'test_user'});
         angular.mock.inject(
-            (_$rootScope_, _$q_, _$compile_, _ProjectService_) => {
+            (_$rootScope_, _$q_, _$compile_, _ProjectService_, _UserService_) => {
 
                 // Mock ProjectService.addMember and .deleteMember calls
                 ProjectService = _ProjectService_;
+                UserService = _UserService_;
                 $q = _$q_;
                 var deferred = $q.defer();
                 deferred.resolve({
@@ -24,7 +27,7 @@ describe('EditProjectMembersCtrl', ()=>{
                 });
                 spyOn(ProjectService, 'addMember').and.returnValue(deferred.promise);
                 spyOn(ProjectService, 'deleteMember').and.returnValue(deferred.promise);
-
+                UserService.currentUser = { username: "newpi" };
                 $compile = _$compile_;
                 scope = _$rootScope_.$new();
                 
@@ -192,11 +195,20 @@ describe('EditProjectMembersCtrl', ()=>{
     });
 
     it("should update this.meta with new values from ProjectService response upon setPI", () => {
+        // Before 'newpi' is the PI of this project, they cannot change members
+        controller.roles.isPI = false;
+        controller.roles.isCoPI = false;
+        scope.$digest();
+        expect(element.text()).not.toContain('Add a Member');
         // Call setPI - the mocked ProjectService will always return
         // 'newpi' in the faked metadata response
         controller.setPI({ username: 'newpi' });
         scope.$digest();
         expect(controller.meta.pi.username).toEqual("newpi");
+        // The new PI should be able to add members
+        expect(controller.roles.isPI).toEqual(true);
+        expect(controller.canAddCoPI()).toEqual(true);
+        expect(element.text()).toContain('Add a Member');
     });
 
     it ("should generate validator warnings when trying to add users that already have a role", () => {
@@ -215,6 +227,12 @@ describe('EditProjectMembersCtrl', ()=>{
         let newUser = { username: "newuser", fullName: "New User" };
         expect(controller.coPIValidator(newUser)).not.toBeTruthy();
         expect(controller.teamMemberValidator(newUser)).not.toBeTruthy();
+    });
+
+    it("should dismiss", () => {
+        spyOn(controller, 'dismiss');
+        controller.ok();
+        expect(controller.dismiss).toHaveBeenCalled();
     });
 
 });

@@ -53,16 +53,6 @@ export default class ProjectMetadataCtrl {
         });
     }
 
-    coPIList() {
-        let coPINames = [ ];
-        this.data.meta.coPis.forEach(
-            (coPI) => {
-                coPINames.push(coPI.fullName);
-            }
-        )
-        return coPINames.join(", ");
-    }
-
     /**
      * Edit Members button handler
      */

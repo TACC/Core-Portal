@@ -6,10 +6,10 @@ export default class EditProjectMembersCtrl {
     /**
      * Initialize Controller.
      */
-    constructor(ProjectService, Django) {
+    constructor(ProjectService, UserService) {
         'ngInject';
         this.ProjectService = ProjectService;
-        this.Django = Django;
+        this.UserService = UserService;
         this.meta = { };
         this.roles = { };
         this.resolve = { };
@@ -86,7 +86,7 @@ export default class EditProjectMembersCtrl {
 
         this.isSavingPI = true;
 
-        // Change thePI
+        // Change theP
         this.ProjectService.addMember(
             this.meta.projectId,
             "pi",
@@ -97,6 +97,7 @@ export default class EditProjectMembersCtrl {
                 // do not replace the object completely (otherwise)
                 // the bound metadata reference will be invalid!
                 Object.assign(this.meta, resp.response);
+                this.roles.isPI = this.meta.pi && this.meta.pi.username === this.UserService.currentUser.username;
             } 
         ).finally(
             () => {
