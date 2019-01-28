@@ -261,6 +261,7 @@ PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'
 PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
+PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
 
 PORTAL_PROJECTS_NAME_PREFIX = 'cep.project'
 

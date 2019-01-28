@@ -101,10 +101,10 @@ class ExecutionSystem(BaseSystem):
 
     def validate_type(self):
         """Validate self.type"""
-        if self.type != BaseSystem.TYPES.STORAGE:
+        if self.type != BaseSystem.TYPES.EXECUTION:
             raise ValidationError(
-                "Storage system type must be {storage_type}".format(
-                    storage_type=BaseSystem.TYPES.STORAGE
+                "Execution system type must be {storage_type}".format(
+                    storage_type=BaseSystem.TYPES.EXECUTION
                 )
             )
 

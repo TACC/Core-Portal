@@ -204,10 +204,9 @@ class Project(object):
         :param str project_id: Project Id.
         :param owner: Django user set as owner, who can set the project's PI.
         """
-
         # Create a default metadata object
         defaults = {
-            'title' : title
+            'title': title
         }
 
         # If owner is specified for metadata, insert it
@@ -302,7 +301,7 @@ class Project(object):
         role = self.storage.roles.for_user(username)
         if (role is not None and
                 (role.role == role.ADMIN or
-                role.role == role.OWNER)):
+                 role.role == role.OWNER)):
             return True
 
         return False
@@ -452,6 +451,15 @@ class ProjectId(models.Model):
 
     value = models.IntegerField()
     last_updated = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    @transaction.atomic
+    def update(cls, value):
+        """Atomically updates value of next project id."""
+        row = cls.objects.select_for_update().latest('last_updated')
+        row.value = value
+        row.save()
+        return row.value
 
     @classmethod
     @transaction.atomic

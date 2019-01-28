@@ -159,18 +159,11 @@ class BaseFile(BaseAgaveResource):
             self._populate_obj()
 
         if self.type == 'dir' and self._children is None:
-            METRICS.info('system=%s, path=%s, offset=%s, limit=%s',
-                         self.system, self.path, offset, limit,
-                         extra={
-                             'user': '',
-                             'sessionId': '',
-                             'operation': 'listing',
-                             'info': ''
-                         })
             listing = self.listing(self._ac, self.system, self.path,
                                    offset=offset, limit=limit)
             self._children = listing.children()
             # pylint: disable=protected-access
+            self._children = listing._children
             self._wrapped = listing._wrapped
 
         return self._children
@@ -473,14 +466,17 @@ class BaseFile(BaseAgaveResource):
                                         filePath=urllib.quote(path),
                                         offset=offset,
                                         limit=limit+1)
-        listing = cls(client=client, **list_result[0])
+        if not list_result:
+            listing = cls(client=client, system=system, path=path)
+            listing._children = []
+        else:
+            listing = cls(client=client, **list_result[0])
+            if listing.type == 'dir' or offset:
+                # directory names display as "/" from API
+                listing._children = [cls(client=client, **f)
+                                    for f in list_result[1:]]
 
-        if listing.type == 'dir' or offset:
-            # directory names display as "/" from API
-            listing.name = os.path.basename(listing.path)
-            listing._children = [cls(client=client, **f)
-                                for f in list_result[1:]]
-
+        listing.name = os.path.basename(listing.path)
         return listing
 
     # pylint: enable=too-many-arguments

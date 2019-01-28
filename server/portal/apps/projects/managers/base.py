@@ -8,6 +8,7 @@ import logging
 from future.utils import python_2_unicode_compatible
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from portal.libs.agave.utils import service_account
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.apps.projects.models import Project, ProjectId
@@ -37,6 +38,54 @@ class ProjectsManager(object):
         :param user: Django user instance.
         """
         self.user = user
+
+    def _add_acls(self, username, project_id):
+        """Run an agave job to set ACLs.
+
+        :param str username: Username.
+        :param str project_id: Project Id.
+        """
+        logger.info('Adding ACLs for %s in project %s', username, project_id)
+        client = service_account()
+        job = client.jobs.submit(body={
+            "name": "{username}-{project_id}-acls".format(
+                username=username,
+                project_id=project_id
+            ),
+            "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
+            "archive": False,
+            "parameter": {
+                "projectId": project_id,
+                "username": username,
+                "action": "add",
+                "root_dir": settings.PORTAL_PROJECTS_ROOT_DIR,
+            }
+        })
+        logger.info('Add ACLs job id: %s', job.id)
+
+    def _remove_acls(self, username, project_id):
+        """Run an agave job to set ACLs.
+
+        :param str username: Username.
+        :param str project_id: Project Id.
+        """
+        logger.info('Removing ACLs for %s in project %s', username, project_id)
+        client = service_account()
+        job = client.jobs.submit(body={
+            "name": "{username}-{project_id}-acls".format(
+                username=username,
+                project_id=project_id
+            ),
+            "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
+            "archive": False,
+            "parameter": {
+                "projectId": project_id,
+                "username": username,
+                "action": "remove",
+                "root_dir": settings.PORTAL_PROJECTS_ROOT_DIR,
+            }
+        })
+        logger.info('Remove ACLs job id: %s', job.id)
 
     def get_by_system_id(self, system_id):
         """Get a single project by system id.
@@ -148,6 +197,7 @@ class ProjectsManager(object):
             prj.add_pi(user)
         else:
             raise Exception('Invalid member type.')
+        self._add_acls(username, project_id)
         return prj
 
     def remove_member(self, project_id, member_type, username):
@@ -167,6 +217,7 @@ class ProjectsManager(object):
             prj.remove_pi(user)
         else:
             raise Exception('Invalid member type.')
+        self._remove_acls(username, project_id)
         return prj
 
     def _update_meta(self, project, **data):  # pylint: disable=no-self-use

@@ -697,6 +697,19 @@ PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
 PORTAL_PROJECTS_PUBLIC_KEY = settings_secret.\
     _PORTAL_PROJECTS_PUBLIC_KEY
 
+# This setting is not used directly most of the time.
+# We mainly use it when creating the execution system for the pems app
+# but that might not happen in every portal.
+# We are only keeping this in the setting to have written down somewhere
+# so we can refer to this line when looking for this system's ID.
+# Also, it might be useful in the future when we need to do any changes
+# to this system or setup any management commands.
+PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = settings_secret.\
+    _PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID
+
+PORTAL_PROJECTS_PEMS_APP_ID = settings_secret.\
+    _PORTAL_PROJECTS_PEMS_APP_ID
+
 PORTAL_USER_HOME_MANAGER = settings_secret.\
     _PORTAL_USER_HOME_MANAGER
 
