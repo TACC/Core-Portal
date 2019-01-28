@@ -124,6 +124,7 @@ class ModalMoveCopyCtrl {
 
     validDestination (fileListing) {
         return fileListing &&
+            !this.busy &&
             (fileListing.type === 'dir' || fileListing.type === 'folder') &&
             fileListing.permissions &&
             (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
