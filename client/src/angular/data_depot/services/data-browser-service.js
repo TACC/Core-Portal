@@ -1,8 +1,7 @@
 import _ from 'underscore';
 import angular from 'angular';
 import $ from 'jquery';
-import copyModalTemplate from '../modals/data-browser-service-copy.html';
-import moveModalTemplate from '../modals/data-browser-service-move.html';
+
 import mkdirModalTemplate from '../modals/data-browser-service-mkdir.html';
 import previewModalTemplate from '../modals/data-browser-service-preview.html';
 import renameModalTemplate from '../modals/data-browser-service-rename.html';
@@ -274,12 +273,10 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     }
 
     var modal = $uibModal.open({
-      template: copyModalTemplate,
-      controller: 'ModalMoveCopy',
+      component: 'modalMoveCopyComponent',
       resolve: {
-        data: {
-          files: function () {return files;}
-        }
+          files: ()=>{ return files;},
+          action: ()=>{return 'COPY';}
       }
     });
 
@@ -288,7 +285,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         currentState.busy = true;
         var copyPromises = _.map(files, function (f) {
 
-          return f.copy({system: result.system, path: result.path, resource: result.resource}).then(function (result) {
+          return f.copy({system: result.target.system, path: result.target.path, resource: result.target.resource}).then(function (result) {
             //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
             $mdToast.show($mdToast.simple()
             .content($translate.instant('success_copy_file'))
@@ -475,16 +472,12 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     }
 
     var modal = $uibModal.open({
-      template: moveModalTemplate,
-      controller: 'ModalMoveCopy',
+     component: 'modalMoveCopyComponent',
       resolve: {
-        data: {
-          files: function () {return files;},
-          // initialDestination: function () { return initialDestination; }
-        }
+          files: ()=>{ return files;},
+          action: ()=>{return 'MOVE';}
       }
     });
-
     return modal.result.then(
       function (result) {
         currentState.busy = true;
@@ -492,7 +485,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         //  return $q.when(files);
         //}
         var movePromises = _.map(files, function (f) {
-          return f.move({system: result.system, path: result.path}).then(function (result) {
+          return f.move({system: result.target.system, path: result.target.path}).then(function (result) {
             deselect([f]);
             //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
             $mdToast.show($mdToast.simple()
@@ -748,7 +741,6 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
           currentState.reachedEnd = true;
         }
       }, function (err){
-           console.log('err')
            currentState.loadingMore = false;
            currentState.reachedEnd = true;
            currentState.error.message = err.data;

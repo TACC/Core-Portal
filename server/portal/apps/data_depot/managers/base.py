@@ -211,7 +211,7 @@ class AgaveFileManager(AbstractFileManager):
             file_path = '/' + os.path.join(*id_comps[1:])
         else:
             file_path = '/'
-        
+
         return (system, file_path)
 
     def get_file(self, file_id, **kwargs):
@@ -283,7 +283,7 @@ class AgaveFileManager(AbstractFileManager):
         _file_src = self.get_file(file_id_src)
         _file_dest = self.get_file(file_id_dest)
         _file_dest_children = _file_dest.children()
-        
+
         for i in _file_dest_children:
             if _file_src.name == i.name:
                 _ext = _file_src.ext
@@ -337,7 +337,7 @@ class AgaveFileManager(AbstractFileManager):
         if not preview:
             url = _file.postit(force=True)
             return {'href': url, 'fileType': ''}
-        
+
         url = _file.postit(force=False)
 
         if _file.ext in BaseFile.SUPPORTED_TEXT_PREVIEW_EXTS:
@@ -410,7 +410,6 @@ class AgaveFileManager(AbstractFileManager):
         :returns: A file object.
         :rtype: obj
         """
-        logger.info(file_id_src)
         _file_src = self.get_file(file_id_src)
         _file_dest = self.get_file(file_id_dest)
         # try:
@@ -423,7 +422,7 @@ class AgaveFileManager(AbstractFileManager):
         if _file_src.system == _file_dest.system:
             _file_src.move(_file_dest.system, _file_dest.path)
         else:
-            _file_dest.importData(_file_src.system, _file_src.path)
+            _file_dest.import_data(_file_src.system, _file_src.path)
             _file_src.delete()
 
         agave_indexer.apply_async(kwargs={'systemId': _file_src.system, 'filePath': os.path.dirname(_file_src.path), 'recurse': False}, routing_key='indexing')

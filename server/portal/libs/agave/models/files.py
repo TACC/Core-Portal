@@ -169,7 +169,7 @@ class BaseFile(BaseAgaveResource):
                          })
             listing = self.listing(self._ac, self.system, self.path,
                                    offset=offset, limit=limit)
-            self._children = listing.children
+            self._children = listing.children()
             # pylint: disable=protected-access
             self._wrapped = listing._wrapped
 
@@ -315,7 +315,7 @@ class BaseFile(BaseAgaveResource):
         .. todo:: We should implement a fallback using another type of
         data transfer method if this fails.
         """
-        remote_url = u'agave://{}/{}'.format(
+        remote_url = 'agave://{}/{}'.format(
             from_system,
             urllib.quote(from_path)
         )
@@ -326,7 +326,7 @@ class BaseFile(BaseAgaveResource):
                 result = self._ac.files.importData(
                     systemId=self.system,
                     filePath=urllib.quote(self.path),
-                    fileName=file_name,
+                    fileName=str(file_name),
                     urlToIngest=remote_url
                 )
                 async_resp = AgaveAsyncResponse(self._ac, result)
