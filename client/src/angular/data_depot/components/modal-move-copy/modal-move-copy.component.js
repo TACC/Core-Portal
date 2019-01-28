@@ -79,6 +79,7 @@ class ModalMoveCopyCtrl {
             skipPath: true,
             customRoot: { name: '', path: '' }
         };
+        this.project = true;
         this.listingProjects = true;
         this.ProjectService.list()
             .then((projects)=> {
@@ -93,8 +94,8 @@ class ModalMoveCopyCtrl {
         this.listingProjects = false;
         this.project = project;
         this.breadCrumbParams = {
-            filePath: '',
-            systemId: '',
+            filePath: '/',
+            systemId: this.project.id,
             customRoot: { name: project.name || project.description, path: '' }
         };
         this.busy = true;
