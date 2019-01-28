@@ -212,6 +212,9 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       //currentState.loadingMore = false;
       currentState.reachedEnd = false;
       currentState.listing = listing;
+      if (listing.children.length < options.limit) {
+        currentState.reachedEnd = true
+      }
       return listing;
     }, function (err) {
       // This is for a cancelled promise...
@@ -303,6 +306,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
         });
         return $q.all(copyPromises).then(function (results) {
           currentState.busy = false;
+          browse(currentState.listing, apiParams);
           return results;
         });
       }

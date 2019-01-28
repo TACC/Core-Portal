@@ -203,9 +203,6 @@ function FileListing($http, $q) {
 
     return $http.put(this.mediaUrl(), body).then(function (resp) {
       var newCopy = new Listing(resp.data.response);
-      if (options.path == self._parent.path) {
-        self._parent.children.push(newCopy);
-      }
       return newCopy;
     }, function (err) {
       return $q.reject(err.data);
