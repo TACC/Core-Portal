@@ -1,0 +1,104 @@
+<div class="workspace-panel-container">
+  <div class="workspace-panel workspace-panel-sidebar workspace-panel-sidebar-left"
+       ng-class="{'workspace-panel-collapsed': $ctrl.collapsed}">
+       <span class="workspace-panel-title">Data Depot Browser</span>
+       <div class="workspace-panel-content">
+           <h2>Data Depot Browser</h2>
+           <form>
+               <div class="form-group">
+                   <label for="id_system_id">Select data source</label>
+                   <select id="id_system_id" name="system_id" class="form-control"
+                           ng-model="$ctrl.data.cOption"
+                           ng-disabled="$ctrl.data.loading"
+                           ng-options="s as s.label for s in $ctrl.data.options"
+                           ng-change="$ctrl.dataSourceUpdated()"
+                   ></select>
+               </div>
+           </form>
+           <p ng-if="$ctrl.data.wants" class="alert alert-info">
+               Select file for <em>{{ $ctrl.data.wants.title }}</em>.
+               <a class="btn btn-link btn-xs"
+                  ng-if="$ctrl.data.wants.description"
+                  uib-tooltip="{{$ctrl.data.wants.description}}"
+                  tooltip-placement="right"
+                  tooltip-append-to-body="true"><i class="fa fa-info-circle"></i> More info</a>
+           </p>
+           <div class="table-responsive" ng-if="$ctrl.data.listingProjects">
+             <table class="table table-bordered tables-striped" style="background-color: #fff;">
+               <thead>
+                <th>Name</th>
+               </thead>
+               <tbody ng-if="!state.busy">
+                 <tr ng-repeat="item in $ctrl.data.projects">
+                   <td>
+                     <i class="fa fa-briefcase"></i>
+                     <a ng-href="" ng-click = "$ctrl.selectProject(item)">
+                       {{item.name}}
+                     </a>
+                   </td>
+                 </tr>
+               </tbody>
+               <caption class="text-center" ng-if="! state.busy && state.error">
+                   <p class="alert alert-danger">
+                       {{ state.error }}
+                   </p>
+               </caption>
+             </table>
+           </div>
+           <div class="files-listing" ng-if="!$ctrl.data.listingProjects">
+               <div class="table-responsive ds-table-display-wrapper"
+                    data-bottom-height="0">
+                   <table class="table table-striped">
+                       <caption style="white-space:nowrap">
+                           <label>Browsing:</label><br>
+                           <span ng-if="$ctrl.data.project"> {{$ctrl.data.project.name}} </span>
+                           <span
+                             ng-repeat-start="dirElem in $ctrl.data.dirPath track by $index"
+                             class="text text-info">
+                              <a href="#"
+                                  ng-if="dirElem != '/' "
+                                  ng-click="$ctrl.browseTrail($event, $index)">{{dirElem}}</a>
+                              <a ng-if="dirElem == '/' || dirElem == '' "
+                                  ng-click="$ctrl.browseTrail($event, $index)">{{$ctrl.data.cOption.label}}</a>
+                            </span>
+                             <span ng-repeat-end
+                                   ng-if="!$last">/</span>
+                       </caption>
+                       <thead>
+                       <th>File name</th>
+                       <th>Size</th>
+                       </thead>
+                       <tbody>
+                       <tr ng-repeat="f in $ctrl.data.filesListing.children">
+                           <td>
+                               <button ng-if="f.name !== '.' && $ctrl.data.wants"
+                                       type="button"
+                                       class="btn btn-xs btn-info"
+                                       ng-click="$ctrl.chooseFile(f)">Select</button>
+                               <a ng-click="$ctrl.browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="agave://{{f.system}}/{{f.path}}">
+                                   <i class="fa {{f.icon()}}"></i>
+                                   <span>{{f.name}}</span>
+                               </a>
+                           </td>
+                           <td>{{f.length|bytes:0}}</td>
+                       </tr>
+                       <tr ng-if="$ctrl.data.error"><td colspan="3"><p class="alert alert-danger">{{$ctrl.data.error}}</p></td></tr>
+                       </tbody>
+                   </table>
+               </div>
+           </div>
+           <div ng-if="$ctrl.data.loading || $ctrl.data.loadingMore">
+             <p class="lead">
+               <i class="fa fa-spin fa-circle-o-notch"></i> Loading files...
+             </p>
+           </div>
+           <button ng-if="!($ctrl.data.loading || $ctrl.data.loadingMore || $ctrl.data.reachedEnd)"
+                   class="btn btn-default btn-block"
+                   ng-click="$ctrl.scrollToBottom()">Show more files</button>
+
+       </div>
+       <button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="$ctrl.togglePanel()">
+           <i class="fa" ng-class="{'fa-caret-right': $ctrl.collapsed, 'fa-caret-left':! $ctrl.collapsed}"></i>
+           <span class="sr-only">Toggle panel</span>
+       </button>
+  </div>

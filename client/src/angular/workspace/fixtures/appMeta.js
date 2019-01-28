@@ -1,10 +1,10 @@
-import {agaveApp} from './app';
+import { agaveApp } from './app';
 
 const meta = {
-  value: {
-    definition: agaveApp,
-    type: 'agave'
-  }
+    value: {
+        definition: agaveApp,
+        type: 'agave'
+    }
 };
 
-export {meta};
+export { meta };

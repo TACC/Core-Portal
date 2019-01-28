@@ -14,6 +14,10 @@ export default class Notifications {
             wsurl = 'wss://' + host + '/ws/notifications?subscribe-broadcast&subscribe-user';
         this.subject = new WebSocketSubject(wsurl);
         this.toasting = false;
+        this.notes = {
+            unread: 0,
+            notifs: []
+        };
         this.subject.subscribe(
             (data) => {
                 this.processMessage(data);
@@ -73,18 +77,24 @@ export default class Notifications {
         });
     }
 
+    /*
+        callback MUST be a fat-arrow function (msg)=>{ this.doSomething(msg) }
+    */
+    subscribe (callback) {
+        this.$rootScope.$on('notification', (ev, data) => {
+            callback(data);
+        });
+    }
+
     processMessage(msg) {
+        this.notes.unread++;
+        this.notes.notifs.unshift(msg);
+        this.$rootScope.$broadcast('notification', msg);
         // suppress first (old) message
         if (!this.toasting) {
             this.toasting = true;
             return;
         }
-
-        this.notes.unread++;
-        this.notes.notifs.unshift(msg);
-
-        // Update jobs-status panel in workspace
-        this.$rootScope.$broadcast('jobs-refresh');
 
         let eventType = msg.event_type.toLowerCase();
         if (eventType === 'vnc' || eventType === 'web') {

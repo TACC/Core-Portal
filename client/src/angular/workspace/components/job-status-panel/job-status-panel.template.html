@@ -1,0 +1,31 @@
+<div class="workspace-panel workspace-panel-sidebar workspace-panel-sidebar-right"
+     ng-class="{'workspace-panel-collapsed': $ctrl.collapsed}">
+     <div class="workspace-panel-title">Jobs Status</div>
+     <div class="workspace-panel-content">
+         <h2>
+             Jobs Status
+             <button ng-click="$ctrl.refresh()" class="btn btn-sm btn-default pull-right">
+                 <i class="fa fa-refresh" ng-class="{'fa-spin': $ctrl.loading}"></i>
+                 <span class="sr-only">Refresh</span>
+             </button>
+         </h2>
+         <div ng-if="!$ctrl.jobs && !$ctrl.loading" class="alert alert-info">
+             No job history to display.
+         </div>
+         <div class="jobs-list-wrapper">
+             <ul class="list-group">
+                 <job-status ng-repeat="job in $ctrl.jobs" job="job"></job-status>
+             </ul>
+             <button class="btn btn-sm btn-block btn-default"
+                     ng-disabled="!$ctrl.hasMoreJobs"
+                     ng-click="$ctrl.loadMore()">
+                 <i class="fa fa-refresh" ng-class="{'fa-spin': $ctrl.loading}"></i>
+                 Load more jobs
+             </button>
+         </div>
+     </div>
+     <button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="$ctrl.togglePanel()">
+         <i class="fa" ng-class="{'fa-caret-left': $ctrl.collapsed, 'fa-caret-right': !$ctrl.collapsed}"></i>
+         <span class="sr-only">Toggle panel</span>
+     </button>
+</div>

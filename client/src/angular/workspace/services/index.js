@@ -6,8 +6,8 @@ import SimpleList from './simple-list-service';
 
 let mod = angular.module('portal.workspace.services', []);
 
-mod.factory('Apps', Apps);
-mod.factory('Jobs', Jobs);
+mod.service('Apps', Apps);
+mod.service('Jobs', Jobs);
 mod.service('MultipleList', MultipleList);
 mod.service('SimpleList', SimpleList);
 

@@ -1,0 +1,8 @@
+<div class="container-fluid" role="main" id="workspace">
+    <app-tray on-app-select="$ctrl.onAppSelect(app)"></app-tray>
+    <div class="workspace-panel-container">
+        <workspace-data-browser></workspace-data-browser>
+        <app-form selected-app="$ctrl.selectedApp"></app-form>
+        <job-status-panel></job-status-panel>
+    </div>
+</div>

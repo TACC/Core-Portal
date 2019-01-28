@@ -1,0 +1,11 @@
+<li class="list-group-item"
+    ng-class="{'list-group-item-danger': $ctrl.job.status==='FAILED',
+               'list-group-item-success': $ctrl.job.status==='FINISHED'}">
+    <h4>{{$ctrl.job.name}}</h4>
+    <span>{{$ctrl.job.status}}</span>
+    <button class="btn btn-sm btn-default"
+            ng-click="$ctrl.jobDetails($ctrl.job)">
+        <i class="fa fa-info-circle"></i>
+        <span class="hidden-md"> More info</span>
+    </button>
+</li>

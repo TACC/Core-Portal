@@ -30,7 +30,6 @@ import {mod as common} from './common';
 import homeTemplate from './workbench/templates/home.html';
 import dashboardTemplate from './workbench/templates/dashboard.html';
 import dataDepotTemplate from './workbench/templates/data-depot.html';
-import workspaceTemplate from './workbench/templates/workspace.html';
 import searchTemplate from './workbench/templates/search.html';
 import helpTemplate from './workbench/templates/help.html';
 import notificationsTemplate from './workbench/templates/notifications.html';
@@ -76,13 +75,6 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     'controller': 'DataDepotCtrl',
     'resolve': {
       // 'test': function () {console.log("data-depot resolve");},
-    }
-  })
-  .state('wb.workspace', {
-    'url': '/workspace',
-    'template': workspaceTemplate,
-    'resolve': {
-      // 'test': function () {console.log("workspace resolve");}
     }
   })
   .state('wb.help', {
