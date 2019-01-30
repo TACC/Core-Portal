@@ -1,26 +1,28 @@
 import os
-from mock import Mock, patch, MagicMock, PropertyMock
+import json
+from mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.conf import settings
-import json
 
 
 class TestDataDepotApiViews(TestCase):
-
-    fixtures = ['users', 'auth', 'accounts']
+    fixtures = ['users', 'auth']
 
     @classmethod
     def setUpClass(cls):
         super(TestDataDepotApiViews, cls).setUpClass()
-        cls.mock_client_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client')
+        cls.mock_client_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
         cls.mock_client = cls.mock_client_patcher.start()
 
     @classmethod
     def tearDownClass(cls):
         cls.mock_client_patcher.stop()
+        super(TestDataDepotApiViews, cls).tearDownClass()
 
     def setUp(self):
+        self.mock_client.reset_mock()
+
         self.client.force_login(get_user_model().objects.get(username="username"))
         agave_path = os.path.join(settings.BASE_DIR, 'fixtures/agave')
         with open(
@@ -28,7 +30,7 @@ class TestDataDepotApiViews(TestCase):
                 agave_path,
                 'files',
                 'listing.json'
-                )
+            )
         ) as _file:
             self.agave_listing = json.load(_file)
         with open(
@@ -36,7 +38,7 @@ class TestDataDepotApiViews(TestCase):
                 agave_path,
                 'files',
                 'data-depot-response.json'
-                )
+            )
         ) as _file:
             self.EXPECTED_RESPONSE = json.load(_file)
 
@@ -45,7 +47,7 @@ class TestDataDepotApiViews(TestCase):
                 agave_path,
                 'files',
                 'file-listing.json'
-                )
+            )
         ) as _file:
             self.agave_file_listing = json.load(_file)
 
@@ -54,10 +56,27 @@ class TestDataDepotApiViews(TestCase):
                 agave_path,
                 'files',
                 'data-depot-file-response.json'
-                )
+            )
         ) as _file:
             self.EXPECTED_FILE_RESPONSE = json.load(_file)
 
+        with open(
+            os.path.join(
+                agave_path,
+                'files',
+                'pems.json'
+            )
+        ) as _file:
+            self.agave_pems_listing = json.load(_file)
+
+        with open(
+            os.path.join(
+                agave_path,
+                'files',
+                'data-depot-file-pems-response.json'
+            )
+        ) as _file:
+            self.EXPECTED_PEMS_RESPONSE = json.load(_file)
 
     def test_files_listing(self):
         self.mock_client.files.list.return_value = self.agave_listing
@@ -90,5 +109,14 @@ class TestDataDepotApiViews(TestCase):
     def test_single_file_listing(self):
         self.mock_client.files.list.return_value = self.agave_file_listing
         resp = self.client.get("/api/data-depot/files/listing/my-data/parent_folder/sub_folder/file.txt")
-        response_json = resp.json() 
-        self.assertEqual(response_json, self.EXPECTED_FILE_RESPONSE)
+        self.assertEqual(resp.json(), self.EXPECTED_FILE_RESPONSE)
+
+    @patch('portal.apps.data_depot.managers.base.service_account')
+    def test_pems_listing(self, mocked_service_account):
+        self.mock_client.files.listPermissions.return_value = self.agave_pems_listing
+
+        mocked_service_account.return_value = self.mock_client
+
+        resp = self.client.get("/api/data-depot/files/pems/my-data/test")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json(), self.EXPECTED_PEMS_RESPONSE)

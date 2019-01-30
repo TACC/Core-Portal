@@ -16,6 +16,7 @@ from django.urls import reverse
 from requests.exceptions import HTTPError
 from portal.libs.agave.models.files import BaseFile
 from portal.libs.agave.serializers import BaseAgaveFileSerializer
+from portal.libs.agave.utils import service_account
 from portal.exceptions.api import ApiException
 from portal.utils.translations import get_jupyter_url
 
@@ -370,7 +371,7 @@ class AgaveFileManager(AbstractFileManager):
         :rtype: list
         """
         system, path = self._parse_file_id(file_id)
-        pems = self._ac.files.listPermissions(systemId=system,
+        pems = service_account().files.listPermissions(systemId=system,
                                               filePath=path)
         if username is not None:
             pems = [p for p in pems if p['username'] == username]

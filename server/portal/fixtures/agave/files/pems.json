@@ -1,5 +1,5 @@
 [ {
-    "username" : "username_1",
+    "username" : "username",
     "internalUsername" : null,
     "permission" : {
       "read" : true,
@@ -19,7 +19,7 @@
       }
     }
   }, {
-    "username" : "username_2",
+    "username" : "username2",
     "internalUsername" : null,
     "permission" : {
       "read" : true,
@@ -39,12 +39,12 @@
       }
     }
 }, {
-    "username" : "username_3",
+    "username" : "username3",
     "internalUsername" : null,
     "permission" : {
       "read" : true,
-      "write" : false,
-      "execute" : false
+      "write" : true,
+      "execute" : true
     },
     "recursive" : true,
     "_links" : {
