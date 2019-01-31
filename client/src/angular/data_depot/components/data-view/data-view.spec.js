@@ -19,17 +19,16 @@ describe('DataViewCtrl', ()=>{
             browsePromise = _$q_.defer();
             const mockedServices = {
                 $state: _$state_,
-                DataBrowserService: _DataBrowserService_,
-                Django: _Django_
-            };
-            const mockedBindings = {
-                params: {
+                $stateParams: {
                     systemId: '',
                     filePath: '/',
                     name: 'My Data',
                     directory: 'agave'
-                }
+                },
+                DataBrowserService: _DataBrowserService_,
+                Django: _Django_
             };
+            const mockedBindings = {};
             controller = $componentController(
                 'dataViewComponent',
                 mockedServices,
@@ -43,15 +42,15 @@ describe('DataViewCtrl', ()=>{
         expect(controller.browser).toBeDefined();
     });
     it('should set apiParams correctly on init', () => {
-        controller.params.name = 'My Data';
-        controller.params.directory = 'agave';
+        controller.$stateParams.name = 'My Data';
+        controller.$stateParams.directory = 'agave';
         controller.$onInit();
         expect(controller.DataBrowserService.apiParams.fileMgr).toBe('my-data');
         expect(controller.DataBrowserService.apiParams.baseUrl).toBe('/api/data-depot/files');
         expect(controller.DataBrowserService.apiParams.searchState).toBe('wb.data_depot.db');
 
-        controller.params.name = 'Community Data';
-        controller.params.directory = 'public';
+        controller.$stateParams.name = 'Community Data';
+        controller.$stateParams.directory = 'public';
         controller.$onInit();
         expect(controller.DataBrowserService.apiParams.fileMgr).toBe('shared');
         expect(controller.DataBrowserService.apiParams.baseUrl).toBe('/api/data-depot/files');

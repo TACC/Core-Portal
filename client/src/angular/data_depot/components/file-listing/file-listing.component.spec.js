@@ -71,6 +71,7 @@ describe('FileListingCtrl', ()=>{
             {
                 systemId: 'mock.system',
                 filePath: 'path/to/dir',
+                query_string: null
             }
         );
     });

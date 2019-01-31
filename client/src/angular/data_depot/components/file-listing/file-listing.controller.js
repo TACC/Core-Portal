@@ -79,6 +79,7 @@ class FileListingCtrl {
               {
                   systemId: file.system,
                   filePath: file.path,
+                  query_string: null
               }
           );
         }

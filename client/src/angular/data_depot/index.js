@@ -55,21 +55,8 @@ function config(
                 offset: null,
                 limit: null
             },
-            resolve: {
-                params: ($stateParams)=>{
-                    'ngInject';
-                    return {
-                        systemId: $stateParams.systemId,
-                        filePath: $stateParams.filePath,
-                        name: $stateParams.name,
-                        directory: $stateParams.directory,
-                        query_string: $stateParams.query_string
-                    };
-                }
-            }
         }
     )
-
     .state('wb.data_depot.projects', {
       url: '/projects/',
       abstract: true,
@@ -100,35 +87,5 @@ function config(
 }
 
 mod.config(config)
-    .run([
-        '$rootScope',
-        '$location',
-        '$state',
-        'Django',
-        '$trace',
-        (
-            $rootScope,
-            $location,
-            $state,
-            Django,
-            $trace
-        )=> {
-            $rootScope.$on(
-                '$stateChangeError',
-                (
-                    event,
-                    toState,
-                    toParams,
-                    fromState,
-                    fromParams, error
-                )=>{
-                    if (error.type === 'authn') {
-                        let redirectUrl = $state.href(toState.name, toParams);
-                        window.location = '/login/?next=' + redirectUrl;
-                    }
-                }
-            );
-        },
-    ]);
 
 export default mod;

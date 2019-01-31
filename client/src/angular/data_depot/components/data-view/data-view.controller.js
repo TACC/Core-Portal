@@ -29,7 +29,7 @@ class DataViewCtrl {
     onBrowse (ev, item) {
         this.$state.go('wb.data_depot.db',
             {
-                directory: this.params.directory,
+                directory: this.$stateParams.directory,
                 systemId: item.system,
                 filePath: item.path,
             }
@@ -38,11 +38,11 @@ class DataViewCtrl {
 
     $onInit() {
         this.listingParams = {
-            systemId: this.params.systemId,
-            filePath: this.params.filePath,
-            offset: this.params.offset || 0,
-            limit: this.params.limit || 100,
-            queryString: this.params.query_string,
+            systemId: this.$stateParams.systemId,
+            filePath: this.$stateParams.filePath,
+            offset: this.$stateParams.offset || 0,
+            limit: this.$stateParams.limit || 100,
+            queryString: this.$stateParams.query_string,
             browseState: 'wb.data_depot.db',
         };
         //  $stateParams is pulling info from the html section of the data-depot
@@ -50,10 +50,10 @@ class DataViewCtrl {
         //  'options' will contain the different variables
         //  required to change the display
         this.options = {
-            system: this.params.systemId,
-            path: this.params.filePath,
-            name: this.params.name,
-            directory: this.params.directory,
+            system: this.$stateParams.systemId,
+            path: this.$stateParams.filePath,
+            name: this.$stateParams.name,
+            directory: this.$stateParams.directory,
         };
 
         this.browser = this.DataBrowserService.state();
@@ -63,8 +63,8 @@ class DataViewCtrl {
                 user: this.UserService.currentUser,
                 customRoot: {
                     name: 'My Data',
-                    path: this.params.filePath,
-                    route: `wb.data_depot.db({systemId: "${this.params.systemId}", query_string: null, filePath: '', directory: "${this.params.directory}"})`,
+                    path: this.$stateParams.filePath,
+                    route: `wb.data_depot.db({systemId: "${this.$stateParams.systemId}", query_string: null, filePath: '', directory: "${this.$stateParams.directory}"})`,
                 },
             };
 
@@ -77,8 +77,8 @@ class DataViewCtrl {
                 user: this.UserService.currentUser,
                 customRoot: {
                     name: 'Community Data',
-                    path: this.params.filePath,
-                    route: `wb.data_depot.db({systemId: "${this.params.systemId}", query_string: null, filePath: '', directory: "${this.params.directory}"})`,
+                    path: this.$stateParams.filePath,
+                    route: `wb.data_depot.db({systemId: "${this.$stateParams.systemId}", query_string: null, filePath: '', directory: "${this.$stateParams.directory}"})`,
                 },
             };
 
