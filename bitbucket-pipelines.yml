@@ -16,7 +16,7 @@ pipelines:
             - cd server
             - mkdir -p log/portal
             - pip install -r requirements.txt
-            - coverage run --branch --source="portal" manage.py test
+            - coverage run --branch --source="portal" --omit "*/unit_test.py" manage.py test
               --pattern="unit_test.py"
               -v2 --settings="portal.settings.unit_test_settings"
             - coverage xml -i
@@ -44,7 +44,7 @@ pipelines:
               - cd server
               - mkdir -p log/portal
               - pip install -r requirements.txt
-              - coverage run --branch --source="portal" manage.py test
+              - coverage run --branch --source="portal" --omit "*/unit_test.py" manage.py test
                 --pattern="unit_test.py"
                 -v2 --settings="portal.settings.unit_test_settings"
               - coverage xml -i

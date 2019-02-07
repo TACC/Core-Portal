@@ -2,6 +2,8 @@
 
 * v0.1.0
 
+[![codecov](https://codecov.io/bb/taccaci/core-exp-portal/branch/master/graph/badge.svg?token=4KdoK5U2NV)](https://codecov.io/bb/taccaci/core-exp-portal)
+
 ## Prequisites for running the portal application
 
 * Docker
