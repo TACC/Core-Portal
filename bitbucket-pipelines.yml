@@ -3,6 +3,8 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
+options:
+  max-time: 10 # configure default 10 minute timeout
 
 pipelines:
   default:
