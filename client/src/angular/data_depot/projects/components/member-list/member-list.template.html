@@ -31,7 +31,7 @@
     </div>
     <div ng-if="$ctrl.memberSearch" class="projects-animate">
         <user-search
-            label="Select a user to add as a Co-PI"
+            label="Select a user to add to {{ $ctrl.label }}"
             on-cancel="$ctrl.cancelMemberSearch()"
             on-select="$ctrl.addMember($user)">
         </user-search>
