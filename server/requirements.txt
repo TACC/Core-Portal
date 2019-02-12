@@ -47,7 +47,7 @@ djangocms-style>=2.0
 djangocms-text-ckeditor==3.6.1
 djangocms-video>=2.0
 djangocms-youtube>=0.2
-easy_thumbnails
+easy_thumbnails==2.5
 elasticsearch==5.4.0
 elasticsearch-dsl==5.3.0
 enum34==1.1.6
