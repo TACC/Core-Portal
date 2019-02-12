@@ -57,5 +57,24 @@ describe('DataViewCtrl', ()=>{
         expect(controller.DataBrowserService.apiParams.searchState).toBe('wb.data_depot.db');
 
     });
+    it('should go to correct state when browsing', () => {
+        spyOn(
+            controller.$state,
+            'go'
+        );
+        controller.onBrowse(
+            {preventDefault: ()=>{return;},
+            stopPropagation: ()=>{return;}},
+            {system: 'mock.system', path:'path/to/dir', type:'dir'},
+        );
+        expect(controller.$state.go).toHaveBeenCalledWith(
+            'wb.data_depot.db',
+            {
+                systemId: 'mock.system',
+                filePath: 'path/to/dir',
+            },
+            {reload: true}
+        );
+    });
 
 });

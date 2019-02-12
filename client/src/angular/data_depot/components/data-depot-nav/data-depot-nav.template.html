@@ -1,0 +1,39 @@
+<div class="list-group list-group-root well">
+    <div>
+        <a class="list-group-item" 
+           ui-sref="wb.data_depot.db({
+                    systemId: $ctrl.sysMyData.systemId,
+                    filePath:'',
+                    query_string: null,
+                    name: $ctrl.sysMyData.name,
+                    directory: 'agave'})"
+            ui-sref-opts="{reload: true}" ng-class="{active: $ctrl.params.systemId == $ctrl.sysMyData.systemId}">
+            <i class="fa fa-user">&ensp;</i>
+            My Data
+        </a>
+    </div>
+    <div>
+        <a 
+           class="list-group-item" 
+           ui-sref="wb.data_depot.projects.list" 
+           ui-sref-opts="{reload: true}"
+           ui-sref-active="{'active': 'wb.data_depot.projects.*'}">
+            <i class="fa fa-briefcase">&ensp;</i>
+            My Projects
+        </a>
+    </div>
+    <div>
+        <a 
+           class="list-group-item" 
+           ui-sref="wb.data_depot.db({
+                        systemId: $ctrl.sysCommunityData.systemId,
+                        filePath:'',
+                        query_string: null,
+                        name: $ctrl.sysCommunityData.name,
+                        directory: 'public'})"
+           ui-sref-opts="{reload: true}" ng-class="{active: $ctrl.params.systemId == $ctrl.sysCommunityData.systemId}">
+            <i class="fa fa-users">&ensp;</i>
+            Community Data
+        </a>
+    </div>
+</div>

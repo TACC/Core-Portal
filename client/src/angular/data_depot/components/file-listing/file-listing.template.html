@@ -59,7 +59,7 @@
                data-ng-click="onBrowse($event, file)">
                {{ file.name }}
             </a> -->
-            <a data-ng-click="$ctrl.onBrowse($event, file)">
+            <a data-ng-click="$ctrl.onBrowse({$event: $event, file: file})">
                {{ file.name }}
             </a>
 

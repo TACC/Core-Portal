@@ -1,16 +1,16 @@
-<dd-breadcrumb
-    listing="$ctrl.browser.listing"
-    skip-root="true"
+<dd-breadcrumb-component
     custom-root="$ctrl.data.customRoot"
-    on-browse="$ctrl.onBrowse"
-    project="$ctrl.data.project"
-    item-href="$ctrl.resolveBreadcrumbHref">
-</dd-breadcrumb>
+    on-browse="$ctrl.onBrowse($event, file)"
+    on-browse-project-root="$ctrl.onBrowseProjectRoot()"
+    project="true"
+    params="$ctrl.breadcrumbParams"
+>
+</dd-breadcrumb-component>
 
 <!-- projectMetadata component from data_depot/projects/component/project-meta -->
 <project-meta data-system-id="$ctrl.params.systemId">
         &nbsp;
-    </project-meta>
+</project-meta>
     
-<file-listing-component params="$ctrl.params"></file-listing-component>
+<file-listing-component params="$ctrl.params" on-browse="$ctrl.onBrowse($event, file)"></file-listing-component>
 

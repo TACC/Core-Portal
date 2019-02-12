@@ -2,20 +2,15 @@ import angular from 'angular';
 import './services';
 import './components';
 import './controllers';
-import './directives';
 import '../workbench/components';
 import './css/data-browser-service-preview.css';
 
 import './projects';
 
-//templates
-import projectListTemplate from './templates/project-list.html';
-
 let mod = angular.module('portal.data_depot', [
     'portal.data_depot.services',
     'portal.data_depot.components',
     'portal.data_depot.controllers',
-    'portal.data_depot.directives',
     'portal.workbench.components',
     'portal.data_depot.projects',
     'ui.bootstrap',
@@ -49,6 +44,7 @@ function config(
             component: 'dataViewComponent',
             params: {
                 systemId: {value: '', squash: true},
+                filePath: {value: ''},
                 name: {value: '', squash: true},
                 directory: {value: ''},
                 query_string: null,
@@ -58,19 +54,19 @@ function config(
         }
     )
     .state('wb.data_depot.projects', {
-      url: '/projects/',
-      abstract: true,
+        url: '/projects/',
+        abstract: true,
     })
     .state('wb.data_depot.projects.list', {
-      url: '',
-      template: projectListTemplate,
-      controller: 'ProjectListCtrl'
+        url: '',
+        component: 'projectListComponent'
     })
     .state('wb.data_depot.projects.listing', {
-        url: '{systemId}/{filePath:any}',
+        url: '{systemId}{filePath:any}?query_string',
         component: 'projectListingComponent',
         params: {
             projectId: false,
+            query_string: null,
         },
         resolve: {
             params: ($stateParams)=>{
@@ -79,6 +75,7 @@ function config(
                     systemId: $stateParams.systemId,
                     filePath: $stateParams.filePath,
                     projectId: $stateParams.projectTitle,
+                    queryString: $stateParams.query_string,
                     browseState: 'wb.data_depot.projects.listing'
                 };
             }

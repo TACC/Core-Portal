@@ -1,0 +1,17 @@
+<div class="container-fluid">
+    <!-- Toolbar -->
+    <dd-toolbar-component></dd-toolbar-component>
+    <hr>
+    <div class="row">
+        <div class="col-sm-3 col-md-2">
+            <!-- New file/folder/project button -->
+            <dd-new-component></dd-new-component>
+            <!-- Nav -->
+            <dd-nav-component systems="$ctrl.systems" params="$ctrl.$stateParams"></dd-nav-component>
+        </div>
+        <div class="col-sm-9 col-md-10">
+            <ui-view>
+            </ui-view>
+        </div>
+    </div>
+</div>

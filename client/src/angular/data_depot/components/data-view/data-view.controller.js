@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 /**
  * Data Depot Controller
  * @function
@@ -16,7 +14,7 @@ class DataViewCtrl {
         $stateParams,
         $state,
         DataBrowserService,
-        UserService
+        UserService,
     ) {
         'ngInject';
         // get user data from service
@@ -24,6 +22,7 @@ class DataViewCtrl {
         this.DataBrowserService = DataBrowserService;
         this.UserService = UserService;
         this.$state = $state;
+        this.onBrowse = this.onBrowse.bind(this);
     }
 
     onBrowse (ev, item) {
@@ -58,6 +57,12 @@ class DataViewCtrl {
 
         this.browser = this.DataBrowserService.state();
 
+        this.breadcrumbParams = {
+            filePath: this.$stateParams.filePath,
+            systemId: this.$stateParams.systemId,
+            customRoot: {name: 'My Data', path: ''}
+        }
+    
         if (this.options.name == 'My Data' || this.options.directory == 'agave') {
             this.data = {
                 user: this.UserService.currentUser,
@@ -86,6 +91,20 @@ class DataViewCtrl {
             this.DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
             this.DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
         }
+    }
+    onBrowse($event, file) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        this.$state.go(
+            'wb.data_depot.db',
+            {
+                systemId: file.system,
+                filePath: file.path,
+            },
+            {
+                reload: true
+            }
+        );
     }
 }
 

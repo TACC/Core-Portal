@@ -1,4 +1,4 @@
-describe('ProjectListingCtrl', ()=>{
+describe('ProjectListCtrl', ()=>{
     let controller, deferred, $scope, browsePromise;
     const systemOne = {
         'id': 'prtl.project.PRJ-123',
@@ -35,48 +35,25 @@ describe('ProjectListingCtrl', ()=>{
                 DataBrowserService: _DataBrowserService_
             };
             const mockedBindings = {
-                params: {
-                    systemId: '',
-                    filePath: '/',
-                    browseState: 'wb.data_depot.projects.listing'
-                }
             };
             controller = $componentController(
-                'projectListingComponent',
+                'projectListComponent',
                 mockedServices,
                 mockedBindings
             );
-            spyOn(
-                controller.DataBrowserService,
-                'browse'
-            ).and.returnValue(browsePromise.promise);
-
+            spyOn(controller.ProjectService, 'list').and.returnValue(deferred.promise)
             controller.$onInit();
         });
     });
 
     it('should initialize controller', () => {
-        expect(controller.browser).toBeDefined();
-        expect(controller.DataBrowserService.apiParams.fileMgr).toEqual('my-projects');
+        expect(controller).toBeDefined();
+        expect(controller.onBrowse).toBeDefined();
+        expect(controller.onBrowseProjectRoot).toBeDefined();
     });
-    it('should go to correct state when browsing', () => {
-        spyOn(
-            controller.$state,
-            'go'
-        );
-        controller.onBrowse(
-            {preventDefault: ()=>{return;},
-            stopPropagation: ()=>{return;}},
-            {system: 'mock.system', path:'path/to/dir', type:'dir'},
-        );
-        expect(controller.$state.go).toHaveBeenCalledWith(
-            'wb.data_depot.projects.listing',
-            {
-                systemId: 'mock.system',
-                filePath: 'path/to/dir',
-            },
-            {reload: true}
-        );
-    });
-
+    it('should resolve project list promise', () => {
+        deferred.resolve('project response')
+        $scope.$apply();
+        expect(controller.data.projects).toBe('project response')
+    })
 });

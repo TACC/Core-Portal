@@ -4,6 +4,7 @@ const fileListingComponent = {
     template: require("./file-listing.template.html"),
     bindings: {
         params: '<',
+        onBrowse: '&'
     },
     controller: FileListingCtrl,
 };

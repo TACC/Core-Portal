@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 class FileListingCtrl {
     constructor($state, $stateParams, DataBrowserService, SystemsService, $uibModal) {
         'ngInject';
@@ -68,22 +66,6 @@ class FileListingCtrl {
             this.DataBrowserService.select([file], true);
         }
     }
-    onBrowse($event, file) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        if (file.isFile()) {
-            this.DataBrowserService.preview(file, this.browser.listing);
-        } else {
-          this.$state.go(
-              this.params.browseState,
-              {
-                  systemId: file.system,
-                  filePath: file.path,
-                  query_string: null
-              }
-          );
-        }
-    }
     loadMore() {
         this.DataBrowserService.scrollToBottom(this.options)
     }
@@ -98,7 +80,6 @@ class FileListingCtrl {
         this.browser.ui.pushKeyModalOpening = true;
         this.SystemsService.get(this.options.system)
         .then((sys)=>{
-            console.log(sys)
             return this.$uibModal.open({
                 component: 'SystemPushKeysModal',
                 resolve: {

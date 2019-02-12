@@ -29,7 +29,6 @@ import {mod as common} from './common';
 //templates
 import homeTemplate from './workbench/templates/home.html';
 import dashboardTemplate from './workbench/templates/dashboard.html';
-import dataDepotTemplate from './workbench/templates/data-depot.html';
 import searchTemplate from './workbench/templates/search.html';
 import helpTemplate from './workbench/templates/help.html';
 import notificationsTemplate from './workbench/templates/notifications.html';
@@ -52,11 +51,11 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     controllerAs: 'vm',
     abstract: true,
     resolve: {
-      'systems': ['SystemsService', function(SystemsService) {
-        return SystemsService.listing();
-      }],
-      'users' : ['UserService', function(UserService) {
+      users: ['UserService', function(UserService) {
         return UserService.authenticate();
+      }],
+      systems: ['SystemsService', function(SystemsService) {
+        return SystemsService.listing();
       }]
     }
   })
@@ -71,9 +70,12 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
   })
   .state('wb.data_depot', {
     'url': '/data-depot',
-    'template': dataDepotTemplate,
-    'controller': 'DataDepotCtrl',
-    'resolve': {
+    component: 'ddMainComponent',
+    resolve: {
+      params: ($stateParams) => {
+        'ngInject';
+        return $stateParams
+      }
       // 'test': function () {console.log("data-depot resolve");},
     }
   })
