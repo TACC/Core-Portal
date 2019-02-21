@@ -225,6 +225,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
       }
       currentState.listing = null;
       currentState.error = err.data;
+      currentState.error.status = err.status;
       //currentState.loadingMore = false;
       currentState.reachedEnd = false;
       return err;

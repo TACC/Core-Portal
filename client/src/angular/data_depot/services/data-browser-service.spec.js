@@ -1,6 +1,6 @@
 
 describe("DataBrowserService", function() {
-  var DataBrowserService, $httpBackend, $uibModal, $q, FileListing;
+  var DataBrowserService, $httpBackend, $uibModal, $q, FileListing, options;
   beforeEach(angular.mock.module("portal"));
   beforeEach( ()=> {
     angular.module('django.context', []).constant('Django', {user: 'test_user'});
@@ -10,6 +10,14 @@ describe("DataBrowserService", function() {
       $uibModal = _$uibModal_;
       FileListing = _FileListing_;
       $q = _$q_;
+
+      options = {
+        system: 'test-system',
+        path: '/',
+        name: '',
+        directory: '/',
+        queryString: '',
+        };
     });
   });
 
@@ -48,13 +56,6 @@ describe("DataBrowserService", function() {
     DataBrowserService.apiParams.fileMgr = 'my-data';
     DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
     DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
-    let options = {
-        system: 'test-system',
-        path: '/',
-        name: '',
-        directory: '/',
-        queryString: '',
-    };
     DataBrowserService.browse(options);
     $httpBackend.flush();
     let state = DataBrowserService.state();
@@ -75,6 +76,26 @@ describe("DataBrowserService", function() {
     // have to compare date times, not objects
     // expect(result1.lastModified.getTime()).toEqual(new Date("2018-01-01").getTime());
 
+  });
+
+  it("should provide correct error message/status during a failed listing", ()=> {
+    let error_status = 502;
+    let error_message = "error message"
+    var data = {
+        "message": error_message,
+    };
+
+    //Use a regex so that any query param will pass through
+    $httpBackend.whenGET(/api\/data-depot\/files\/listing\/my-data\/test-system*/).respond(error_status, data);
+    DataBrowserService.apiParams.fileMgr = 'my-data';
+    DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
+    DataBrowserService.browse(options);
+    $httpBackend.flush();
+    let state = DataBrowserService.state();
+
+    // Error should have a message and status
+    expect(state.error.message).toEqual(error_message);
+    expect(state.error.status).toEqual(error_status);
   });
 
   it("should open a modal on copy", () => {
