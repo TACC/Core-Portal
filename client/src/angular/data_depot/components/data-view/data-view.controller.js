@@ -60,7 +60,6 @@ class DataViewCtrl {
         this.breadcrumbParams = {
             filePath: this.$stateParams.filePath,
             systemId: this.$stateParams.systemId,
-            customRoot: {name: 'My Data', path: ''}
         }
     
         if (this.options.name == 'My Data' || this.options.directory == 'agave') {
@@ -76,6 +75,7 @@ class DataViewCtrl {
             this.DataBrowserService.apiParams.fileMgr = 'my-data';
             this.DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
             this.DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
+            this.breadcrumbParams.customRoot = {name: 'My Data', path: ''}
 
         } else if (this.options.name == 'Community Data' || this.options.directory == 'public') {
             this.data = {
@@ -90,6 +90,7 @@ class DataViewCtrl {
             this.DataBrowserService.apiParams.fileMgr = 'shared';
             this.DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
             this.DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
+            this.breadcrumbParams.customRoot = {name: 'Community Data', path: ''}
         }
     }
     onBrowse($event, file) {

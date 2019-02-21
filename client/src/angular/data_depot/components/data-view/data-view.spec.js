@@ -48,6 +48,7 @@ describe('DataViewCtrl', ()=>{
         expect(controller.DataBrowserService.apiParams.fileMgr).toBe('my-data');
         expect(controller.DataBrowserService.apiParams.baseUrl).toBe('/api/data-depot/files');
         expect(controller.DataBrowserService.apiParams.searchState).toBe('wb.data_depot.db');
+        expect(controller.breadcrumbParams.customRoot.name).toBe('My Data');
 
         controller.$stateParams.name = 'Community Data';
         controller.$stateParams.directory = 'public';
@@ -55,6 +56,7 @@ describe('DataViewCtrl', ()=>{
         expect(controller.DataBrowserService.apiParams.fileMgr).toBe('shared');
         expect(controller.DataBrowserService.apiParams.baseUrl).toBe('/api/data-depot/files');
         expect(controller.DataBrowserService.apiParams.searchState).toBe('wb.data_depot.db');
+        expect(controller.breadcrumbParams.customRoot.name).toBe('Community Data');
 
     });
     it('should go to correct state when browsing', () => {
