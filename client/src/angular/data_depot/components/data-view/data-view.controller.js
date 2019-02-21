@@ -25,14 +25,20 @@ class DataViewCtrl {
         this.onBrowse = this.onBrowse.bind(this);
     }
 
-    onBrowse (ev, item) {
-        this.$state.go('wb.data_depot.db',
-            {
-                directory: this.$stateParams.directory,
-                systemId: item.system,
-                filePath: item.path,
-            }
-        );
+    onBrowse($event, file) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        if (file.type === 'file') {
+            this.DataBrowserService.preview(file, this.browser.listing);
+        } else {
+          this.$state.go('wb.data_depot.db',
+              {
+                  systemId: file.system,
+                  filePath: file.path,
+              },
+              {reload: true}
+          );
+        }
     }
 
     $onInit() {
@@ -92,20 +98,6 @@ class DataViewCtrl {
             this.DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
             this.breadcrumbParams.customRoot = {name: 'Community Data', path: ''}
         }
-    }
-    onBrowse($event, file) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        this.$state.go(
-            'wb.data_depot.db',
-            {
-                systemId: file.system,
-                filePath: file.path,
-            },
-            {
-                reload: true
-            }
-        );
     }
 }
 
