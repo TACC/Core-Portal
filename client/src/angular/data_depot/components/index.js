@@ -7,6 +7,10 @@ import dataDepotNewComponent from './data-depot-new/data-depot-new.component';
 import dataDepotNavComponent from './data-depot-nav/data-depot-nav.component';
 import dataDepotMainComponent from './data-depot-main/data-depot-main.component';
 import dataDepotBreadcrumbComponent from './data-depot-breadcrumb/data-depot-breadcrumb.component';
+import modalMakeDirComponent from './modal-mkdir/modal-mkdir.component';
+import modalRenameComponent from './modal-rename/modal-rename.component';
+import modalUploadComponent from './modal-upload/modal-upload.component';
+import modalPreviewComponent from './modal-preview/modal-preview.component';
 
 const ddComponents = angular.module('portal.data_depot.components', [
     'portal.data_depot.services',
@@ -17,9 +21,15 @@ ddComponents.component('fileListingComponent', fileListingComponent);
 ddComponents.component('dataViewComponent', dataViewComponent);
 ddComponents.component('modalMoveCopyComponent', modalMoveCopyComponent);
 ddComponents.component('ddBreadcrumbComponent', dataDepotBreadcrumbComponent);
-ddComponents.component('ddToolbarComponent', dataDepotToolbarComponent)
-ddComponents.component('ddNewComponent', dataDepotNewComponent)
-ddComponents.component('ddNavComponent', dataDepotNavComponent)
-ddComponents.component('ddMainComponent', dataDepotMainComponent)
+
+ddComponents.component('modalMakeDirComponent', modalMakeDirComponent);
+ddComponents.component('modalRenameComponent', modalRenameComponent);
+ddComponents.component('modalUploadComponent', modalUploadComponent);
+ddComponents.component('modalPreviewComponent', modalPreviewComponent);
+
+ddComponents.component('ddToolbarComponent', dataDepotToolbarComponent);
+ddComponents.component('ddNewComponent', dataDepotNewComponent);
+ddComponents.component('ddNavComponent', dataDepotNavComponent);
+ddComponents.component('ddMainComponent', dataDepotMainComponent);
 
 export default ddComponents;

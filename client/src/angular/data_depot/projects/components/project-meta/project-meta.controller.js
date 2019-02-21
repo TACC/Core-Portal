@@ -49,7 +49,7 @@ export default class ProjectMetadataCtrl {
     editMetadata() {
         let modal = this.$uibModal.open({
             component: 'editProjectMetadataModal',
-            resolve: this.getModalResolve() 
+            resolve: this.getModalResolve()
         });
     }
 
@@ -59,7 +59,7 @@ export default class ProjectMetadataCtrl {
     editMembers() {
         let modal = this.$uibModal.open({
             component: 'editProjectMembersModal',
-            resolve: this.getModalResolve() 
+            resolve: this.getModalResolve()
         });
     }
 
@@ -82,7 +82,7 @@ export default class ProjectMetadataCtrl {
 
     /**
      * Returns true if the current user is the PI of this project
-     * 
+     *
      * @return {Boolean}
      */
     isPI() {
@@ -107,8 +107,8 @@ export default class ProjectMetadataCtrl {
      * Returns an object describing this user's project role
      */
     getRoles() {
-        return { 
-            isPI: this.isPI(), 
+        return {
+            isPI: this.isPI(),
             isCoPI: this.isCoPI(),
             isOwner: this.isOwner()
         }

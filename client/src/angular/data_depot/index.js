@@ -1,8 +1,6 @@
 import angular from 'angular';
 import './services';
 import './components';
-import './controllers';
-import '../workbench/components';
 import './css/data-browser-service-preview.css';
 
 import './projects';
@@ -10,8 +8,6 @@ import './projects';
 let mod = angular.module('portal.data_depot', [
     'portal.data_depot.services',
     'portal.data_depot.components',
-    'portal.data_depot.controllers',
-    'portal.workbench.components',
     'portal.data_depot.projects',
     'ui.bootstrap',
 ]);

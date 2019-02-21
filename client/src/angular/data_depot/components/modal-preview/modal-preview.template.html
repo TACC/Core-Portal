@@ -1,0 +1,78 @@
+<div class="modal-header">
+    <h3 class="modal-title">File Preview: {{ $ctrl.file.name }}</h3>
+</div>
+<div class="modal-body">
+    <div class="caption">
+        <table class="table table-bordered file-preview-table">
+            <tbody>
+            <tr>
+                <th>File name</th>
+                <td>{{ $ctrl.file.name }}</td>
+            </tr>
+            <tr>
+                <th>Agave URI</th>
+                <td>agave://{{ $ctrl.file.system }}{{ $ctrl.file.path }}</td>
+            </tr>
+            <tr>
+                <th>File size</th>
+                <td>{{ $ctrl.file.length|bytes }}</td>
+            </tr>
+            <tr>
+                <th>Last modified</th>
+                <td>{{ $ctrl.file.lastModified|date:"short" }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="actions text-center">
+        <a ng-href="{{ $ctrl.file.jupyterUrl }}" class="btn btn-sm btn-default" ng-if="$ctrl.file.jupyterUrl" target=_blank>View in JupyterHub</a>
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canDownload" ng-click="$ctrl.download()">
+            <i class="fa fa-cloud-download"></i> Download
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canShare" ng-click="$ctrl.share()">
+            <i class="fa fa-send"></i> Share
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canCopy" ng-click="$ctrl.copy()">
+            <i class="fa fa-copy"></i> Copy
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canMove" ng-click="$ctrl.move()">
+            <i class="fa fa-arrows"></i> Move
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canRename" ng-click="$ctrl.rename()">
+            <i class="fa fa-pencil"></i> Rename
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="$ctrl.tests.canTrash" ng-click="$ctrl.trash()">
+            <i class="fa fa-trash"></i> Move to Trash
+        </button>
+
+        <button class="btn btn-sm btn-danger" ng-if="$ctrl.tests.canDelete" ng-click="$ctrl.rm()">
+            <i class="fa fa-trash"></i> Delete
+        </button>
+    </div>
+    <br />
+    <div class="thumbnail">
+        <div class="text-center nbv-preview">
+            <div ng-if="$ctrl.busy">
+                <i class="fa fa-spinner fa-spin" style="font-size:150px"></i>
+            </div>
+            <div ng-show="!$ctrl.busy && $ctrl.previewError">
+                <div class="alert alert-warning"><p class="lead">{{ $ctrl.previewError }}</p></div>
+                <i class="fa {{ $ctrl.file.icon() }}" style="font-size:150px"></i>
+            </div>
+            <div class="embed-responsive embed-responsive-4by3" ng-if="$ctrl.previewHref">
+                <iframe frameborder="0" class="embed-responsive-item" ng-src="{{ $ctrl.previewHref }}" iframe-onload="$ctrl.iframeLoadedCallback()">
+
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="$ctrl.close()">Close</button>
+</div>

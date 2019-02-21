@@ -62,16 +62,20 @@ mod.directive('httpSrc', [
   }
 ]);
 
-mod.directive('accessfiles', function() {
+mod.directive('fileChange', function() {
   return {
     scope: {
-      accessfiles: '='
+      fileChange: '&'
     },
     link: function(scope, element, attributes) {
-      element.bind('change', function(event) {
+      element.on('change', function(event) {
         scope.$apply(function() {
-          scope.accessfiles = event.target.files;
+          scope.fileChange({files: event.target.files});
+          element.val(null);
         });
+      });
+      scope.$on('destroy', ()=>{
+        element.off();
       });
     }
   };

@@ -6,8 +6,7 @@ class DataDepotNewCtrl {
         $uibModal,
         Django,
         DataBrowserService,
-        UserService,
-        ProjectService
+        UserService
     ) {
         'ngInject';
         this.$scope = $scope;
@@ -16,7 +15,7 @@ class DataDepotNewCtrl {
         this.DataBrowserService = DataBrowserService;
         this.UserService = UserService;
 
-    };
+    }
     $onInit() {
         this.test = {
             enabled: (this.UserService.currentUser.oauth && true) || false,
@@ -47,7 +46,7 @@ class DataDepotNewCtrl {
             $event.preventDefault();
             $event.stopPropagation();
         }
-    };
+    }
     createProject($event) {
         $event.preventDefault();
         $event.stopPropagation();
@@ -59,7 +58,7 @@ class DataDepotNewCtrl {
         });
         modal.result.then(
             (res) => {
-                $state.go(
+                this.$state.go(
                     'wb.data_depot.projects.listing',
                     {
                         systemId: res.project.id,
@@ -69,7 +68,7 @@ class DataDepotNewCtrl {
                 );
             }
         );
-    };
+    }
     uploadFiles($event) {
         if (this.test.createFiles) {
             this.DataBrowserService.upload(false);
@@ -77,7 +76,7 @@ class DataDepotNewCtrl {
             $event.preventDefault();
             $event.stopPropagation();
         }
-    };
+    }
     uploadFolders($event) {
         if (this.test.createFiles) {
             this.DataBrowserService.upload(true);
@@ -85,9 +84,8 @@ class DataDepotNewCtrl {
             $event.preventDefault();
             $event.stopPropagation();
         }
-    };
+    }
 
 }
 
-export default DataDepotNewCtrl
-
+export default DataDepotNewCtrl;

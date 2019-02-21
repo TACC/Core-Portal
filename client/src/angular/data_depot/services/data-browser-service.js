@@ -2,10 +2,8 @@ import _ from 'underscore';
 import angular from 'angular';
 import $ from 'jquery';
 
-import mkdirModalTemplate from '../modals/data-browser-service-mkdir.html';
-import previewModalTemplate from '../modals/data-browser-service-preview.html';
-import renameModalTemplate from '../modals/data-browser-service-rename.html';
-import uploadModalTemplate from '../modals/data-browser-service-upload.html';
+// import previewModalTemplate from '../modals/data-browser-service-preview.html';
+// import uploadModalTemplate from '../modals/data-browser-service-upload.html';
 
 // var $ = require('jquery');
 
@@ -423,35 +421,22 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function mkdir () {
     var modal = $uibModal.open({
-      template: mkdirModalTemplate,
-      controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
-        $scope.form = {
-          folderName: 'Untitled_folder'
-        };
-
-        $scope.doCreateFolder = function($event) {
-          $event.preventDefault();
-          $uibModalInstance.close($scope.form.folderName);
-        };
-
-        $scope.cancel = function () {
-          $uibModalInstance.dismiss('cancel');
-        };
-      }]
+        component: 'modalMakeDirComponent'
     });
 
-    return modal.result.then(function(folderName) {
+    return modal.result.then((folderName)=> {
+      console.log(folderName)
       currentState.busy = true;
       currentState.listing.mkdir({
         name: folderName
-      }).then(function(newDir) {
+    }).then((newDir)=> {
         currentState.busy = false;
         //notify(FileEvents.FILE_ADDED, FileEventsMsg.FILE_ADDED, newDir);
         $mdToast.show($mdToast.simple()
         .content($translate.instant('success_mkdir'))
         .toastClass('success')
         .parent($("#toast-container")));
-      }, function(err) {
+    }, (err)=> {
         // TODO better error handling
         currentState.busy = false;
         $mdToast.show($mdToast.simple()
@@ -523,15 +508,15 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function preview(file, listing) {
     var modal = $uibModal.open({
-      template: previewModalTemplate,
-      controller: 'ModalPreview',
-      size: 'lg',
-      resolve: {
-        file: function() { return file; },
-        listing: function() { return currentState.listing; },
-      }
-    });
+        component: 'modalPreviewComponent',
+        size: 'lg',
+        resolve: {
+            file: file,
+            listing: currentState.listing,
+        }
+     });
   }
+
 
   /**
    *
@@ -540,45 +525,24 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function rename (file) {
     var modal = $uibModal.open({
-      template: renameModalTemplate,
-      controller: ['$scope', '$uibModalInstance', 'file', function ($scope, $uibModalInstance, file) {
-        $scope.form = {
-          targetName: file.name
-        };
-
-        $scope.file = file;
-
-        $scope.doRenameFile = function($event) {
-          $event.preventDefault();
-          $uibModalInstance.close({file: file, renameTo: $scope.form.targetName});
-        };
-
-        $scope.cancel = function () {
-          $uibModalInstance.dismiss('cancel');
-        };
-      }],
+      component: 'modalRenameComponent',
       resolve: {
         file: file
       }
     });
 
-    return modal.result.then(function (result) {
+    return modal.result.then( (result)=> {
       currentState.busy = true;
       return result.file.rename({name: result.renameTo})
         .then(
-          function (result) {
+           (result)=> {
             currentState.busy = false;
-            // $rootScope.$broadcast('DataBrowserService::Refresh', {
-            //   type: 'rename',
-            //   context: result,
-            //   msg: result
-            // });
             $mdToast.show($mdToast.simple()
             .content($translate.instant('success_rename_file'))
             .toastClass('success')
             .parent($("#toast-container")));
           },
-          function (err) {
+           (err)=> {
             currentState.busy = false;
             $mdToast.show($mdToast.simple()
             .content($translate.instant('error_rename_file'))
@@ -675,14 +639,13 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
    */
   function upload(directoryUpload, files) {
     var modal = $uibModal.open({
-      template: uploadModalTemplate,
-      controller: 'ModalUpload',
+      component: 'modalUploadComponent',
       size: 'lg',
       resolve: {
-        directoryUpload: function() { return directoryUpload; },
-        destination: function() { return currentState.listing; },
-        files: function() { return files; },
-        currentState: function() { return currentState; },
+        directoryUpload: directoryUpload,
+        destination: currentState.listing,
+        files: files,
+        currentState: currentState,
       }
     });
   }

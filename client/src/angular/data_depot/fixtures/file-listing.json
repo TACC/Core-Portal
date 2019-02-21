@@ -1,0 +1,100 @@
+{
+    "mimeType": "text/directory",
+    "name": "test",
+    "format": "folder",
+    "lastModified": "2019-01-28T11:52:32-06:00",
+    "system": "test.system",
+    "trail": [{
+        "path": "",
+        "system": "test.system",
+        "name": ""
+    }, {
+        "path": "/test",
+        "system": "test.system",
+        "name": "test"
+    }],
+    "length": 4096,
+    "jupyterUrl": null,
+    "path": "/test",
+    "_links": {
+        "_self": {
+            "href": "https://api.sd2e.org/files/v2/media/system/test.system//test"
+        },
+        "metadata": {
+            "href": "https://api.sd2e.org/meta/v2/data?q=%7B%22associationIds%22%3A%22322235519150583320-242ac113-0001-002%22%7D"
+        },
+        "system": {
+            "href": "https://api.sd2e.org/systems/v2/test.system"
+        },
+        "history": {
+            "href": "https://api.sd2e.org/files/v2/history/system/test.system//test"
+        }
+    },
+    "type": "dir",
+    "children": [{
+        "mimeType": "text/directory",
+        "name": "folder1",
+        "format": "folder",
+        "lastModified": "2018-08-28T16:01:44-05:00",
+        "system": "test.system",
+        "trail": [{
+            "path": "",
+            "system": "test.system",
+            "name": ""
+        }, {
+            "path": "/test",
+            "system": "test.system",
+            "name": "test"
+        }, {
+            "path": "/test/folder1",
+            "system": "test.system",
+            "name": "folder1"
+        }],
+        "length": 4096,
+        "jupyterUrl": null,
+        "path": "/test/folder1",
+        "_links": {
+            "_self": {
+                "href": "https://api.sd2e.org/files/v2/media/system/test.system//test/folder1"
+            },
+            "system": {
+                "href": "https://api.sd2e.org/systems/v2/test.system"
+            }
+        },
+        "type": "dir",
+        "permissions": "ALL"
+    }, {
+        "mimeType": "application/octet-stream",
+        "name": "file.json",
+        "format": "raw",
+        "lastModified": "2019-01-28T11:52:32-06:00",
+        "system": "test.system",
+        "trail": [{
+            "path": "",
+            "system": "test.system",
+            "name": ""
+        }, {
+            "path": "/test",
+            "system": "test.system",
+            "name": "test"
+        }, {
+            "path": "/test/file.json",
+            "system": "test.system",
+            "name": "file.json"
+        }],
+        "length": 2211,
+        "jupyterUrl": null,
+        "path": "/test/file.json",
+        "_links": {
+            "_self": {
+                "href": "https://api.sd2e.org/files/v2/media/system/test.system//test/file.json"
+            },
+            "system": {
+                "href": "https://api.sd2e.org/systems/v2/test.system"
+            }
+        },
+        "type": "file",
+        "permissions": "READ_WRITE"
+    }],
+    "permissions": "ALL"
+}
