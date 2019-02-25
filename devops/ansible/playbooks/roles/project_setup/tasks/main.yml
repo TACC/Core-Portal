@@ -57,10 +57,6 @@
   npm:
     path: "{{project_home_dir}}/{{project_name}}/client"
 
-- name: Install bower packages
-  bower:
-    path: "{{project_home_dir}}/{{project_name}}/client"
-
 - name: Django Apply migrations
   command: "{{ project_home_dir }}/.envs/{{project_name}}/bin/python2 {{project_home_dir}}/{{project_name}}/server/manage.py migrate"
   become_user: portal

@@ -41,12 +41,6 @@
 - name: Install npm
   yum: name=npm state=present
 
-- name: Install bower
-  npm:
-    name: bower
-    state: present
-    global: yes
-
 - name: Update pip
   pip:
     name: "pip"
