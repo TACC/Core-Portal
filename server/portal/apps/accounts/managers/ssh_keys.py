@@ -158,7 +158,7 @@ class KeysManager(AbstractKeysManager):
         if status == -1:
             logger.info('No response from the server')
         elif status == 0:
-            logger.info('Public key added successfully')
+            logger.info('Public key added successfully to {}'.format(hostname))
         elif status > 0:
             error_lines = ''
             for line in stderr.readlines():

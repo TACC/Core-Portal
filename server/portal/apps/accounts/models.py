@@ -170,6 +170,94 @@ class SSHKeysManager(models.Manager):
             self
         ).get_queryset().get(user=user)
 
+    def save_hostname_keys(
+            self,
+            user,
+            hostname,
+            priv_key,
+            pub_key,
+    ):
+        """Saves a new set of keys for a specific system and user obj
+
+        :param user: Django user object
+        :param str hostname: system hostname
+        :param str priv_key: Private Key
+        :param str pub_key: Public Key
+
+        :returns: Set of keys
+        :rtype: :class:`SSHKeys`
+
+        :raises: ValueError if key set already exists for user and system
+
+        .. note::
+            The priv key need to be given as clear text strings and will be
+             encrypted using AES
+        """
+        try:
+            HostKeys.objects.get(
+                ssh_keys__user=user,
+                hostname=hostname
+            )
+        except ObjectDoesNotExist:
+            ssh_keys = super(SSHKeysManager, self).create(user=user)
+            HostKeys.objects.create(
+                ssh_keys=ssh_keys,
+                hostname=hostname,
+                private=priv_key,
+                public=pub_key
+            )
+            return ssh_keys
+        raise ValueError(
+            """A set of keys for hostname: '{hostname}' and username: '{username}'
+               already exists""".format(
+                hostname=hostname,
+                username=user.username)
+        )
+
+    def update_hostname_keys(self, user, hostname, priv_key, pub_key):
+        """Update set of keys for a specific user and system
+
+        :param user: Django user obj
+        :param str hostname: system hostname
+        :param str priv_key: Private Key
+        :param str pub_key: Public Key
+
+        :returns: Set of keys
+        :rtype: :class:`SSHKeys`
+
+        :raises: ObjectDoesNotExist if there are no preexisting set of keys
+            for specific user and system
+
+        .. note::
+            The keys need to be given as clear text strings and will be
+             encrypted using AES
+        """
+        try:
+            keys = HostKeys.objects.get(
+                ssh_keys__user=user,
+                hostname=hostname
+            )
+        except ObjectDoesNotExist:
+            try:
+                ssh_keys = super(
+                    SSHKeysManager,
+                    self
+                ).get_queryset().get(user=user)
+            except ObjectDoesNotExist:
+                ssh_keys = super(
+                    SSHKeysManager,
+                    self
+                ).create(user=user)
+            keys = HostKeys.objects.create(ssh_keys=ssh_keys, hostname=hostname)
+
+        keys.public = pub_key
+        keys.private = priv_key
+        keys.save()
+        return super(
+            SSHKeysManager,
+            self
+        ).get_queryset().get(user=user)
+
 
 class SSHKeys(models.Model):
     """SSHKeys
@@ -217,6 +305,32 @@ class SSHKeys(models.Model):
         keys = Keys.objects.get(ssh_keys=self, system=system_id)
         return keys
 
+    def for_hostname(self, hostname):
+        """Returns a set of keys for a specific hostname
+
+        :param str hostname: System hostname
+
+        :returns: Set of keys
+        :rtype: :class:`~Keys`
+
+        :Example:
+
+        Retreive set of keys for system
+        >>> ssh_keys = SSHkeys.objects.get(user=user)
+        >>> private = ssh_keys.for_hostname('data.tacc').private_key()
+        >>> #or directly from the user object
+        >>> django.contrib.auth import get_user
+        >>> user = get_user(request)
+        >>> user.ssh_keys.for_hostname('data.tacc').private_key()
+
+        .. note::
+            This query is purposley here to have two step retreival of keys.
+            As well as having a more explicit syntax.
+              See Example
+        """
+        keys = HostKeys.objects.get(ssh_keys=self, hostname=hostname)
+        return keys
+
     def __unicode__(self):
         return unicode(self.user)
 
@@ -259,4 +373,48 @@ class Keys(models.Model):
         return '{username}: {system}'.format(
             username=self.ssh_keys.user.username,
             system=self.system
+        )
+
+
+class HostKeys(models.Model):
+    """Keys stored by hostname, mainly for execution systems
+
+    .. note::
+        The keys need to be given as clear text strings and will be
+            encrypted using AES
+    """
+
+    hostname = models.TextField()
+    ssh_keys = models.ForeignKey(SSHKeys, related_name='+')
+    private = models.TextField()
+    public = models.TextField()
+
+    class Meta:
+        unique_together = (('hostname', 'ssh_keys'),)
+
+    def __init__(self, *args, **kwargs):
+        super(HostKeys, self).__init__(*args, **kwargs)
+        self._private = self.private
+
+    def private_key(self):
+        """Returns decrypted private key"""
+        return EncryptionUtil.decrypt(self.private)
+
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        """Saves a set of keys
+
+        .. note::
+            The keys need to be given as clear text strings and will be
+             encrypted using AES
+        """
+        if (self.private != self._private or
+                self.pk is None):
+            self.private = EncryptionUtil.encrypt(self.private)
+        super(HostKeys, self).save(*args, **kwargs)
+        self._private = self.private
+
+    def __unicode__(self):
+        return '{username}: {host}'.format(
+            username=self.ssh_keys.user.username,
+            host=self.hostname
         )

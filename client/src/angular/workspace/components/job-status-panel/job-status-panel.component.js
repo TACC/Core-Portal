@@ -1,11 +1,12 @@
 import template from './job-status-panel.template.html';
 class JobStatusPanelCtrl {
 
-    constructor (Notifications, Jobs, $uibModal) {
+    constructor (Notifications, Jobs, $uibModal, $rootScope) {
         'ngInject';
         this.Notifications = Notifications;
         this.Jobs = Jobs;
         this.$uibModal = $uibModal;
+        this.$rootScope = $rootScope;
     }
 
     $onInit () {
@@ -15,6 +16,9 @@ class JobStatusPanelCtrl {
         this.jobs = [];
         this.Notifications.subscribe( ()=>{ this.refresh(); });
         this.refresh();
+        this.$rootScope.$on('job-submitted', () => {
+            this.collapsed = false;
+        });
     }
 
     togglePanel () {
@@ -40,7 +44,6 @@ class JobStatusPanelCtrl {
         this.limit += 10;
         this.refresh();
     }
-
 }
 
 const jobStatusPanel = {

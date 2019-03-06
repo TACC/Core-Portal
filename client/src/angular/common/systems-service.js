@@ -34,7 +34,7 @@ export default class SystemsService {
         return this.$http.get('/api/data-depot/systems/list')
             .then((resp)=>{
                 this.systems = resp.data.response;
-                this.mydata_system = _.find(this.systems, (d)=>{return d.name === 'My Data';});
+                this.mydata_system = _.find(this.systems, (d) => { return d.name === 'My Data'; });
                 return resp.data.response;
             });
     }
@@ -45,19 +45,21 @@ export default class SystemsService {
    *  include public keys
    * @param {number} limit - Limit count of results
    * @param {number} offset - Offset count
+   * @param {object} filterPrefix - Dict stating whether to filter prefix for system type
    * @return {Array} an array of systems
    */
-    list(publicKeys=true, limit=100, offset=0) {
+    list({ publicKeys=true, limit=100, offset=0, filterPrefix=null } = {}) {
         let params = {
             publicKeys: publicKeys,
             limit: limit,
             offset: offset,
             thisPortal: true,
+            filterPrefix: filterPrefix,
         };
         return this.$http.get(
             '/api/accounts/systems/list?publicKey',
-            {params: params}
-        ).then((resp)=>{
+            { params: params }
+        ).then((resp) => {
             return resp.data.response;
         });
     }
@@ -85,8 +87,8 @@ export default class SystemsService {
     resetKeys(sys) {
         return this.$http.put(
             '/api/accounts/systems/' + sys.id + '/keys',
-            {action: 'reset'}
-        ).then((resp)=>{
+            { action: 'reset' }
+        ).then((resp) => {
             return resp.data;
         });
     }
@@ -111,7 +113,7 @@ export default class SystemsService {
         ).then((resp)=>{
             return resp.data;
         },
-        (err)=>{
+        (err) => {
             return this.$q.reject(err);
         });
     }

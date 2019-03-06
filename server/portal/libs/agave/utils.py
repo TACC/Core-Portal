@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def to_camel_case(input_str):
     """Convert from snake_case to lowerCamelCase.
 
-    This should is mainly used to translate between
+    This should be mainly used to translate between
     python_attributes and jsonAttributes.
     Agavepy returns python dicts with jsonAttrbiutes for keys.
 

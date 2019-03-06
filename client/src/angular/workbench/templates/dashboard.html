@@ -124,7 +124,7 @@
             No Storage Systems Available!
           </div>
           <div class="system-item"
-               data-ng-repeat="sys in vm.data.strgSystems"
+               data-ng-repeat="sys in vm.data.strgSystems | orderBy: -Date(sys.lastModified)"
                data-ng-if="!vm.ui.loadingSystems">
             <div class="col-sm-6">
               <dl class="system-def-list">
@@ -199,17 +199,19 @@
       </div>
     </div>
     <div class="col-sm-6">
-      <!--
       <div class="panel panel-default">
         <div class="panel-heading dashboard">
           <h3 class="panel-title">My Execution Systems</h3>
         </div>
         <div class="panel-body">
-          <div class="system-item"
-               data-ng-repeat="sys in vm.data.execSystems"
-               data-ng-if="!vm.ui.loadingSystems">
+          <div ng-if="vm.data.execSystems.length == 0">
+            No Execution Systems Available!
+          </div>
+          <div class="system-item" data-ng-repeat="sys in vm.data.execSystems | orderBy: -Date('lastModified')" data-ng-if="!vm.ui.loadingSystems" >
             <div class="col-sm-6">
               <dl class="system-def-list">
+                <dt>ID</dt>
+                <dd>{{sys.id}}</dd>
                 <dt>Name</dt>
                 <dd>{{sys.name}}</dd>
                 <dt>Storage Host</dt>
@@ -228,60 +230,41 @@
               </dl>
             </div>
             <div class="col-sm-6 btn-group system-actions">
-              <button type="button"
-                      class="btn btn-info"
-                      data-ng-click="vm.testSystem(sys)"
-                      data-ng-disabled="vm.ui.testSystems[sys.id].testing">
-                Test <i class="fa fa-check text-success"
-                        data-ng-if="!vm.ui.testSystems[sys.id].error &&
-                                    !vm.ui.testSystems[sys.id].testing &&
-                                    vm.ui.testSystems[sys.id].response">&nbsp;</i>
-                     <i class="fa fa-times text-error"
-                        data-ng-if="vm.ui.testSystems[sys.id].error">&nbsp;</i>
-                     <span data-ng-if="vm.ui.testSystems[sys.id].testing">
-                       {{vm.ui.testSystems[sys.id].message}}
-                     </span>
-                <span data-ng-if="vm.ui.testSystems[sys.id].testing" > Loading ...</span>
-                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
-                   data-ng-if="vm.ui.testSystems[sys.id].testing">&nbsp;</i>
+              <button type="button" class="btn btn-info" data-ng-click="vm.testSystem(sys)" data-ng-disabled="vm.ui.testSystems[sys.id].testing">
+                Test <i class="fa fa-check text-success" data-ng-if="!vm.ui.testSystems[sys.id].error &&
+                                        !vm.ui.testSystems[sys.id].testing &&
+                                        vm.ui.testSystems[sys.id].response">&nbsp;</i>
+                <i class="fa fa-times text-error" data-ng-if="vm.ui.testSystems[sys.id].error">&nbsp;</i>
+                <span data-ng-if="vm.ui.testSystems[sys.id].testing">
+                  {{vm.ui.testSystems[sys.id].message}}
+                </span>
+                <span data-ng-if="vm.ui.testSystems[sys.id].testing"> Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw" data-ng-if="vm.ui.testSystems[sys.id].testing">&nbsp;</i>
               </button>
               <br />
-              <button type="button"
-                      class="btn btn-default"
-                      data-ng-click="vm.publicKey(sys)"
-                      data-ng-disabled="!sys.keysTracked">
+              <button type="button" class="btn btn-default" data-ng-click="vm.publicKey(sys)" data-ng-disabled="!sys.keysTracked">
                 Public Key
               </button>
               <br />
-              <button type="button"
-                      class="btn btn-warning"
-                      data-ng-click="vm.resetKeys(sys)"
-                      data-ng-disabled="vm.ui.resetSystems[sys.id].resetting">
+              <button type="button" class="btn btn-warning" data-ng-click="vm.resetKeys(sys)" data-ng-disabled="vm.ui.resetSystems[sys.id].resetting">
                 Reset Keys
                 <span data-ng-if="vm.ui.resetSystems[sys.id].resetting"> Loading ...</span>
-                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
-                   data-ng-if="vm.ui.resetSystems[sys.id].resetting">&nbsp;</i>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw" data-ng-if="vm.ui.resetSystems[sys.id].resetting">&nbsp;</i>
               </button>
-              <button type="button"
-                      class="btn btn-success"
-                      data-ng-click="vm.pushKey(sys)"
-                      data-ng-disabled="vm.ui.pushSystems[sys.id].pushing ||
-                                        !sys.keysTracked">
+              <button type="button" class="btn btn-success" data-ng-click="vm.pushKey(sys)" data-ng-disabled="vm.ui.pushSystems[sys.id].pushing
+                                            || !sys.keysTracked">
                 Push Public Key
                 <span data-ng-if="vm.ui.pushSystems[sys.id].pushing"> Loading ...</span>
-                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
-                   data-ng-if="vm.ui.pushSystems[sys.id].pushing">&nbsp;</i>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw" data-ng-if="vm.ui.pushSystems[sys.id].pushing">&nbsp;</i>
               </button>
             </div>
           </div>
-          <div class="loading-msg"
-               data-ng-if="vm.ui.loadingSystems">
-            <i class="fa fa-spinner fa-pulse fa-2x fa-fw" >&nbsp;</i>
+          <div class="loading-msg" data-ng-if="vm.ui.loadingSystems">
+            <i class="fa fa-spinner fa-pulse fa-2x fa-fw">&nbsp;</i>
             <span> Loading ...</span>
           </div>
         </div>
       </div>
-      -->
     </div>
   </div> <!-- SYSTEMS END -->
 

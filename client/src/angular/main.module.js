@@ -54,6 +54,9 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
       users: ['UserService', function(UserService) {
         return UserService.authenticate();
       }],
+      allocations: ['UserService', function(UserService) {
+        return UserService.allocations();
+      }],
       systems: ['SystemsService', function(SystemsService) {
         return SystemsService.listing();
       }]

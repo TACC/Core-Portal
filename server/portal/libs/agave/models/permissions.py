@@ -228,15 +228,15 @@ class FilePermissions(Permissions):
 
 
 class MetadataPermissions(Permissions):
-    """File Permissions representation."""
+    """Metadata Permissions representation."""
 
     def __init__(self, client, permissions, parent):
-        """Class to manage File permissions.
+        """Class to manage Metadata permissions.
 
         :param client: Agave client
         :param list permissions: List of permissions as returned by
             agave's pems endpoint.
-        :param parent: Agave File object.
+        :param parent: Agave Metadata object.
         """
         super(MetadataPermissions, self).__init__(client, permissions)
         self.parent = parent
@@ -252,4 +252,30 @@ class MetadataPermissions(Permissions):
         # We are using cached_property and this is the way to
         # invalidate the cache.
         del self.parent.__dict__['permissions']
+        return self
+
+
+class ApplicationPermissions(Permissions):
+    "Application Permissions representation"
+
+    def __init__(self, client, permissions, parent):
+        """Class to manage Application permissions.
+
+        :param client: Agave client
+        :param list permissions: List of permissions as returned by
+            agave's pems endpoint.
+        :param parent: Agave Application object.
+        """
+        super(ApplicationPermissions, self).__init__(client, permissions)
+        self.parent = parent
+
+    def save(self):
+        """Save."""
+        for pem in self.to_update:
+            res = self._ac.apps.updateApplicationPermissions(
+                appId=self.parent.id,
+                body=pem.to_dict()
+            )
+            logger.debug('Saving applications permissions response: %s', res)
+
         return self

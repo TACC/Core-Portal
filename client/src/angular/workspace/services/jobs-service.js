@@ -32,7 +32,10 @@ class Jobs {
     }
 
     submit (data) {
-        return this.$http.post('/api/workspace/jobs/', data);
+        return this.$http.post('/api/workspace/jobs/', data)
+            .then((resp) => {
+                return resp.data.response;
+            });
     }
 
     delete (job) {
@@ -50,7 +53,7 @@ class Jobs {
     jobsByDate (jobs) {
         let nested = d3.nest()
             .key(function(d) {
-                var ct = d.created;
+                let ct = d.created;
                 ct.setHours(0, 0, 0);
                 return ct;
             })

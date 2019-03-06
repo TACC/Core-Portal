@@ -214,11 +214,20 @@ def reset_system_keys(username, system_id):
     sys.set_storage_keys(
         username,
         priv_key_str,
-        publ_key_str
+        publ_key_str,
+        update=(sys.type == StorageSystem.TYPES.STORAGE)
     )
     SSHKeys.objects.update_keys(
         user,
         system_id=system_id,
+        priv_key=priv_key_str,
+        pub_key=publ_key_str
+    )
+
+    # Update keys for hostname too
+    SSHKeys.objects.update_hostname_keys(
+        user,
+        hostname=sys.storage.host,
         priv_key=priv_key_str,
         pub_key=publ_key_str
     )
@@ -227,6 +236,13 @@ def reset_system_keys(username, system_id):
             username,
             priv_key_str,
             publ_key_str
+        )
+
+        SSHKeys.objects.update_hostname_keys(
+            user,
+            hostname=sys.login.host,
+            priv_key=priv_key_str,
+            pub_key=publ_key_str
         )
 
     return publ_key_str
@@ -274,7 +290,7 @@ def add_pub_key_to_resource(
         hostname=None,
         port=22
 ):  # pylint: disable=too-many-arguments
-    """Add Publike Key to Remote Resource
+    """Add Public Key to Remote Resource
 
     :param str username: Username
     :param str password: Username's pasword to remote resource
@@ -301,7 +317,13 @@ def add_pub_key_to_resource(
     message = "add_pub_key_to_resource"
     try:
         transport = mgr.get_transport(hostname, port)
-        pub_key = user.ssh_keys.for_system(system_id).public
+        try:
+            pub_key = user.ssh_keys.for_hostname(hostname).public
+        except ObjectDoesNotExist:
+            try:
+                pub_key = user.ssh_keys.for_system(system_id).public
+            except:
+                raise
         message = mgr.add_public_key(
             system_id,
             hostname,

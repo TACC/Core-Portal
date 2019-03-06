@@ -38,12 +38,12 @@ class Apps {
      * Generate a JSON.schema for the app ready for angular-schema-form
      * https://github.com/json-schema-form/angular-schema-form
      */
-        var params = app.parameters || [];
-        var inputs = app.inputs || [];
-        var schema = {
-            type: 'object',
-            properties: {}
-        };
+        let params = app.parameters || [],
+            inputs = app.inputs || [],
+            schema = {
+                type: 'object',
+                properties: {}
+            };
 
         if (params.length > 0) {
             schema.properties.parameters = {
@@ -100,20 +100,20 @@ class Apps {
         if (inputs.length > 0) {
             schema.properties.inputs = {
                 type: 'object',
-                properties: {}
+                properties: {},
             };
-            _.each(inputs, (input)=> {
+            _.each(inputs, (input) => {
                 if (!input.value.visible) {
                     return;
                 }
                 if (input.id.startsWith('_')) {
                     return;
                 }
-                var field = {
+                let field = {
                     title: input.details.label,
                     description: input.details.description,
                     id: input.id,
-                    default: input.value.default
+                    default: input.value.default,
                 };
                 if (input.semantics.maxCardinality === 1) {
                     field.type = 'string';
@@ -125,7 +125,7 @@ class Apps {
                         type: 'string',
                         format: 'agaveFile',
                         required: input.value.required,
-                        'x-schema-form': { notitle: true }
+                        'x-schema-form': { notitle: true },
                     };
                     if (input.semantics.maxCardinality > 1) {
                         field.maxItems = input.semantics.maxCardinality;
@@ -134,6 +134,15 @@ class Apps {
                 schema.properties.inputs.properties[input.id] = field;
             });
         }
+
+        schema.properties.allocation = {
+            default: app.portal_alloc ? app.portal_alloc : app.allocations[0],
+            title: 'Allocation',
+            description: 'Select the project allocation you would like to use with this job submission.',
+            type: 'string',
+            required: true,
+            enum: app.allocations.sort(),
+        };
 
         schema.properties.maxRunTime = {
             default: app.defaultMaxRunTime || '06:00:00',

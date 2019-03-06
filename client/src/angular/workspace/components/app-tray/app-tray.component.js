@@ -5,14 +5,13 @@ import $ from 'jquery';
 class ApplicationTrayCtrl {
 
     constructor($rootScope, $stateParams, $translate,
-        Apps, SimpleList, MultipleList, Notifications, $mdToast) {
+        Apps, SimpleList, Notifications, $mdToast) {
         'ngInject';
         this.$rootScope = $rootScope;
         this.$stateParams = $stateParams;
         this.$translate = $translate;
         this.Apps = Apps;
         this.SimpleList = SimpleList;
-        this.MultipleList = MultipleList;
         this.Notifications = Notifications;
         this.$mdToast = $mdToast;
 
@@ -28,8 +27,8 @@ class ApplicationTrayCtrl {
             publicOnly: false,
             type: null
         };
-        this.$rootScope.$on('close-app', (e, label) => {
-            if (this.data.activeApp && this.data.activeApp.label === label) {
+        this.$rootScope.$on('close-app', (e, id) => {
+            if (this.data.activeApp && this.data.activeApp.value.definition.id === id) {
                 this.data.activeApp = null;
             }
         });
@@ -37,9 +36,9 @@ class ApplicationTrayCtrl {
 
         // TODO: This should be doable without jQuery.
         $(document).mousedown((event) => {
-            var element = $(event.target);
-            var workspaceTab = element.closest(".workspace-tab");
-            var appsTray = element.closest("div .apps-tray");
+            let element = $(event.target),
+                workspaceTab = element.closest('.workspace-tab'),
+                appsTray = element.closest('div .apps-tray');
 
             // Want all tabs to be inactive whenever user clicks outside the tab-tray.
             if (!(appsTray.length > 0 || workspaceTab.length > 0) && this.activeTab != null) {
@@ -49,7 +48,7 @@ class ApplicationTrayCtrl {
 
                 // If user clicks on same tab, close tab.
                 if (workspaceTab.length == 1 && this.activeTab != null && workspaceTab[0].innerText.includes(this.tabs[this.activeTab].title)) {
-                    if (workspaceTab.hasClass("active")) {
+                    if (workspaceTab.hasClass('active')) {
                         this.activeTab = null;
                     }
                 }
@@ -57,20 +56,15 @@ class ApplicationTrayCtrl {
         });
     }
 
-
     addDefaultTabs() {
         this.error = '';
         return this.simpleList.getDefaultLists();
     }
 
-
-
-    closeApp(label) {
-        this.$rootScope.$broadcast('close-app', label);
+    closeApp(id) {
+        this.$rootScope.$broadcast('close-app', id);
         this.data.activeApp = null;
     }
-
-
 
     refreshApps() {
         this.error = '';
@@ -89,20 +83,20 @@ class ApplicationTrayCtrl {
                                 this.$mdToast.show(this.$mdToast.simple()
                                     .content(this.$translate.instant('error_app_disabled'))
                                     .toastClass('warning')
-                                    .parent($("#toast-container")));
+                                    .parent($('#toast-container')));
                             }
                         } else {
                             this.$mdToast.show(this.$mdToast.simple()
                                 .content(this.$translate.instant('error_app_run'))
                                 .toastClass('warning')
-                                .parent($("#toast-container")));
+                                .parent($('#toast-container')));
                         }
                     },
                     function(response) {
                         this.$mdToast.show(this.$mdToast.simple()
                             .content(this.$translate.instant('error_app_run'))
                             .toastClass('warning')
-                            .parent($("#toast-container")));
+                            .parent($('#toast-container')));
                     }
                 );
         }

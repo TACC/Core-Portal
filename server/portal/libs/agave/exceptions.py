@@ -25,3 +25,8 @@ class CreationError(PortalLibException):
 class DeletionError(PortalLibException):
     """Deletion Error"""
     pass
+
+
+class APIError(PortalLibException):
+    """API Error"""
+    pass

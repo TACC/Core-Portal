@@ -10,5 +10,6 @@
     "archivePath": "/",
     "archiveSystem": "cep.home.test",
     "appId": "compress-0.1",
-    "archive": "true"
+    "archive": "true",
+    "allocation": "FORK"
 }

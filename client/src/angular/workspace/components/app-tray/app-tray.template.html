@@ -1,7 +1,7 @@
 <div class="workspace-panel-tabs">
   <div>
-      <p ng-show="error" class="alert alert-danger">{{error}}</p>
-      <div class="app-wrapper" ng-if="requesting">
+      <p ng-show="$ctrl.error" class="alert alert-danger">{{$ctrl.error}}</p>
+      <div class="app-wrapper" ng-if="$ctrl.requesting">
           <div class="app text-center">
               <div class="app-icon"><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
               <div class="app-title">Loading...</div>
@@ -25,7 +25,7 @@
                               </md-grid-tile-header>
                               <div class="app-icon">
                                   <i ng-if="app.value.definition.icon" class="icon-{{app.value.definition.icon}}"></i>
-                                  <span ng-if="!app.value.definition.icon" class="icon-letter">{{app.value.definition.label[0].toUpperCase()}}</span>
+                                  <span ng-if="!app.value.definition.icon" class="icon-letter">{{app.value.definition.label[0] | uppercase}}</span>
                               </div>
                               <!-- <div class="app-version">{{app.value.definition.version}}</div> -->
                           </div>

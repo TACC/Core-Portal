@@ -3,8 +3,8 @@ import { agaveApp } from './app';
 const meta = {
     value: {
         definition: agaveApp,
-        type: 'agave'
-    }
+        type: 'agave',
+    },
 };
 
 export { meta };

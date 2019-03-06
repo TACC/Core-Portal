@@ -49,6 +49,7 @@ class ExecutionSystem(BaseSystem):
         'default',
         'public',
         'global_default',
+        'last_modified'
     ]
 
     # pylint: disable=redefined-builtin
@@ -93,8 +94,8 @@ class ExecutionSystem(BaseSystem):
         self.revision = getattr(self, 'revision', None)
         self.default = getattr(self, 'default', False)
         self.public = getattr(self, 'public', False)
-        self.global_default = getattr(self, 'globalDefault', False)
-        self.last_modified = getattr(self, 'lastModified', None)
+        self.global_default = getattr(self, 'global_default', False)
+        self.last_modified = getattr(self, 'last_modified', None)
         self.storage = getattr(self, 'storage', None)
         self.login = getattr(self, 'login', None)
         self.queues = getattr(self, 'queues', None)
@@ -103,7 +104,7 @@ class ExecutionSystem(BaseSystem):
         """Validate self.type"""
         if self.type != BaseSystem.TYPES.EXECUTION:
             raise ValidationError(
-                "Execution system type must be {storage_type}".format(
+                "Execution system type must be {execution_type}".format(
                     storage_type=BaseSystem.TYPES.EXECUTION
                 )
             )

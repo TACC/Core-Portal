@@ -144,7 +144,7 @@ describe("DashboardCtrl.$onInit() Systems", function() {
     spyOn(Jobs, 'list').and.returnValue($q.when(jobs_data));
     spyOn(Apps, 'list').and.returnValue(fakePromise);
     spyOn(UserService, 'usage').and.returnValue(fakePromise);
-    spyOn(UserService, 'authenticate').and.returnValue(fakePromise);
+    UserService.currentUser = { username: 'testUser' };
     ctrl = $controller('DashboardCtrl', {
       $uibModal:$uibModal, Apps: Apps, $scope: scope,
       Jobs: Jobs, SystemsService:SystemsService, UserService:UserService,
@@ -210,10 +210,11 @@ describe("DashboardCtrl.$onInit() Systems", function() {
       }
     });
     spyOn(SystemsService, 'list').and.returnValue(deferred.promise);
+    spyOn(SystemsService, 'listRoles').and.returnValue($q.when([{ username: 'testUser', role: 'ADMIN' }]));
     ctrl.$onInit();
     scope.$digest();
-
     expect(SystemsService.list).toHaveBeenCalled();
+    expect(SystemsService.listRoles).toHaveBeenCalled();
 
     // Test exec.system - should be in ctrl.data.execSystems, keys not being tracked
     let execSystem = ctrl.data.execSystems.find(system => system.id == "exec.system");

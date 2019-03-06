@@ -22,6 +22,8 @@ from portal.exceptions.api import ApiException
 from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from agavepy.agave import Agave
+from portal.libs.agave.models.systems.execution import ExecutionSystem
+from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 
 
 
@@ -52,6 +54,11 @@ class AppsView(BaseApiView):
         if app_id:
             METRICS.debug("User " + request.user.username + " is requesting app id " + app_id)
             data = agave.apps.get(appId=app_id)
+
+            # GET EXECUTION SYSTEM INFO FOR USER APPS
+            exec_sys = ExecutionSystem(agave, data['executionSystem'])
+            data['resource'] = exec_sys.login.host
+            data['scheduler'] = exec_sys.scheduler
 
             lic_type = _app_license_type(app_id)
             data['license'] = {
@@ -244,6 +251,16 @@ class JobsView(BaseApiView):
                             parsed = urlparse(input)
                             input = '{}://{}{}'.format(
                                 parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+
+            # Get or create application based on allocation and execution system
+            apps_mgr = UserApplicationsManager(request.user)
+            app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
+
+            if app._new_exec_sys:
+                return JsonResponse({"response": {"execSys": app._new_exec_sys.to_dict()}})
+
+            job_post['appId'] = app.id
+            del job_post['allocation']
 
             if settings.DEBUG:
                 wh_base_url = settings.WH_BASE_URL + '/webhooks/'

@@ -71,7 +71,7 @@ class SearchView(BaseApiView):
             try:
                 user = model.objects.get(username=q)
             except ObjectDoesNotExist as err:
-                return HttpResponseNotFound();
+                return HttpResponseNotFound()
             res_dict = {
                 'first_name': user.first_name,
                 'last_name': user.last_name,
@@ -105,3 +105,55 @@ class SearchView(BaseApiView):
             return JsonResponse(resp, safe=False)
         else:
             return HttpResponseNotFound()
+
+
+@python_2_unicode_compatible
+@method_decorator(login_required, name='dispatch')
+class AllocationsView(BaseApiView):
+
+    def get(self, request):
+        """Returns active user allocations on TACC resources
+
+        *allocations * is a dict, with keys corresponding to TACC system hostnames, and values
+        being the allocation project ids the user has on that system.
+
+        e.g. allocations = {'stampede2': [
+            'TACC-ACI', 'PT2050-DataX', 'NeuroNex-3DEM', 'DesignSafe-Community']}
+
+        : returns: {'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION}
+        : rtype: dict
+        """
+
+        # A dict for translating TAS allocation resources to hostnames
+        hosts = {
+            'Stampede4': 'stampede2.tacc.utexas.edu',
+            'Corral2': 'data.tacc.utexas.edu',
+            'Lonestar5': 'ls5.tacc.utexas.edu',
+            'Maverick2': 'maverick.tacc.utexas.edu',
+            'Maverick3': 'maverick2.tacc.utexas.edu',
+            'Rodeo2': 'rodeo.tacc.utexas.edu'
+        }
+
+        username = request.user.username
+
+        tas_client = TASClient(
+            baseURL=settings.TAS_URL,
+            credentials={
+                'username': settings.TAS_CLIENT_KEY,
+                'password': settings.TAS_CLIENT_SECRET
+            }
+        )
+
+        projects = tas_client.projects_for_user(username=username)
+        allocations = {}
+
+        for proj in projects:
+            for alloc in proj['allocations']:
+                if alloc['status'] == 'Active' and alloc['resource'] in hosts:
+                    resource = hosts[alloc['resource']]
+                    if resource in allocations:
+                        allocations[resource].append(alloc['project'])
+                    else:
+                        allocations[resource] = [alloc['project']]
+
+        return JsonResponse({'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION}, safe=False)

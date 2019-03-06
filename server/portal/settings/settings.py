@@ -740,6 +740,9 @@ PORTAL_JUPYTER_SYSTEM_MAP = getattr(settings_secret, '_PORTAL_JUPYTER_SYSTEM_MAP
 WH_BASE_URL = getattr(settings_secret, '_WH_BASE_URL', '')
 
 PORTAL_DOMAIN = settings_secret._PORTAL_DOMAIN
+
+PORTAL_ALLOCATION = getattr(settings_secret, '_PORTAL_ALLOCATION', '')
+
 """
 SETTINGS: ELASTICSEARCH
 """

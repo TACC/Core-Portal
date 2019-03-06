@@ -100,20 +100,32 @@ export default class DashboardCtrl {
             }
         );
 
-        this.SystemsService.list().then(
+        this.SystemsService.list({ filterPrefix: { execution: false } }).then(
             (resp) => {
                 resp.execution.forEach(
                     (exec) => {
-                        let pubKey = resp.publicKeys[exec.id];
-                        this.checkSystemKeys(exec, pubKey);
-                        this.data.execSystems.push(exec);
-                    }  
-                )
+                        this.SystemsService.listRoles(exec.id).then((response) => {
+                            response.forEach((role) => {
+                                if ((role.username === user.username) && (role.role === 'ADMIN' || role.role === 'PUBLISHER' || role.role === 'OWNER')) {
+                                    let pubKey = resp.publicKeys[exec.id];
+                                    this.checkSystemKeys(exec, pubKey);
+                                    this.data.execSystems.push(exec);
+                                }
+                            });
+                        });
+                    }
+                );
                 resp.storage.forEach(
                     (storage) => {
-                        let pubKey = resp.publicKeys[storage.id];
-                        this.checkSystemKeys(storage, pubKey);
-                        this.data.strgSystems.push(storage);
+                        this.SystemsService.listRoles(storage.id).then((response) => {
+                            response.forEach((role) => {
+                                if ((role.username === user.username) && (role.role === 'ADMIN' || role.role === 'PUBLISHER' || role.role === 'OWNER')) {
+                                    let pubKey = resp.publicKeys[storage.id];
+                                    this.checkSystemKeys(storage, pubKey);
+                                    this.data.strgSystems.push(storage);
+                                }
+                            });
+                        });
                     }
                 );
             },
@@ -124,7 +136,7 @@ export default class DashboardCtrl {
             () => {
                 this.ui.loadingSystems = false;
             }
-        )
+        );
     }
 
     /**

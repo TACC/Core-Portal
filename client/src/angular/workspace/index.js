@@ -27,22 +27,22 @@ function config($interpolateProvider, $httpProvider, $urlRouterProvider, $stateP
         success_copy_file: 'File/folder has been copied.',
         success_trash_file: 'File/folder has been moved to trash.',
         error_mkdir: 'There was an error creating the file.',
-        success_mkdir: 'Directory created.'
+        success_mkdir: 'Directory created.',
     });
     $translateProvider.preferredLanguage('en');
 }
 
 let mod = angular.module('portal.workspace', [
-        'portal.workspace.services',
-        'portal.workspace.directives',
-        'portal.workspace.components',
+    'portal.workspace.services',
+    'portal.workspace.directives',
+    'portal.workspace.components',
 ]).config(config)
     .run(function(editableOptions) {
         editableOptions.theme = 'bs3';
     });
 
 angular.module('schemaForm')
-    .run(['$templateCache', '$http', function($templateCache) {
+    .run(['$templateCache', function($templateCache) {
         $templateCache.put('/asf-agave-file-picker.html', asfAgaveFilePickerTemplate);
     }])
     .config(
@@ -63,9 +63,9 @@ angular.module('schemaForm')
                 schemaFormProvider.defaults.string.unshift(filePicker);
 
                 //Add to the bootstrap directive
-                let sfField = sfBuilderProvider.builders.sfField;
-                let ngModel = sfBuilderProvider.builders.ngModel;
-                let defaults = [sfField, ngModel];
+                let sfField = sfBuilderProvider.builders.sfField,
+                    ngModel = sfBuilderProvider.builders.ngModel,
+                    defaults = [sfField, ngModel];
 
                 schemaFormDecoratorsProvider.defineAddOn(
                     'bootstrapDecorator',
@@ -73,7 +73,7 @@ angular.module('schemaForm')
                     '/asf-agave-file-picker.html',
                     defaults
                 );
-            }
+            },
         ]);
 
 export default mod;

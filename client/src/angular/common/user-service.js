@@ -12,6 +12,7 @@ export default class UserService {
         this.$http = $http;
         this.$q = $q;
         this.currentUser = {};
+        this.userAllocations = {};
     }
 
     /**
@@ -22,7 +23,7 @@ export default class UserService {
             .then((resp) => {
                 return this.currentUser = resp.data;
             }, (err) => {
-                return this.$q.reject({ "message": "auth error" });
+                return this.$q.reject({ message: 'auth error' });
             });
     }
 
@@ -31,7 +32,7 @@ export default class UserService {
             .then(function(resp) {
                 return resp.data;
             });
-    };
+    }
 
     /**
      * Search
@@ -55,5 +56,12 @@ export default class UserService {
         }, (err) => {
             this.$q.reject(err);
         });
+    }
+
+    allocations() {
+        return this.$http.get('/api/users/allocations')
+            .then((resp) => {
+                return this.userAllocations = resp.data;
+            });
     }
 }

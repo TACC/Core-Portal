@@ -297,20 +297,22 @@ class BaseSystem(BaseAgaveResource):
             body=self.to_dict()
         )
 
-    def set_login_keys(self, username, priv_key, pub_key):
+    def set_login_keys(self, username, priv_key, pub_key, update=True):
         """Set SSH keys for login in a system"""
         self.login.auth.username = username
         self.login.auth.private_key = priv_key
         self.login.auth.public_key = pub_key
-        self.update()
+        if update:
+            self.update()
         return self
 
-    def set_storage_keys(self, username, priv_key, pub_key):
+    def set_storage_keys(self, username, priv_key, pub_key, update=True):
         """Set SSH keys for storage login in a system"""
         self.storage.auth.username = username
         self.storage.auth.private_key = priv_key
         self.storage.auth.public_key = pub_key
-        self.update()
+        if update:
+            self.update()
         return self
 
     def save(self):
@@ -379,6 +381,19 @@ class BaseSystem(BaseAgaveResource):
             result = 'SUCCESS'
 
         return success, result
+
+    def enable(self):
+        """Enables a system
+        """
+
+        clone_body = {
+            'action': 'ENABLE'
+        }
+
+        self._ac.systems.manage(body=clone_body, systemId=self.id)
+        self.available = True
+        return self
+
 
     def __str__(self):
         """String -> self.id: self.type"""
@@ -658,27 +673,15 @@ class BaseSystemQueue(BaseAgaveResource):
 
     def __init__(self, client, **kwargs):
         super(BaseSystemQueue, self).__init__(client, **kwargs)
-        self.name = kwargs.get('name', '')
-        self.max_jobs = kwargs.get('max_jobs', 10)
-        self.max_user_jobs = kwargs.get('max_user_jobs', 10)
-        self.max_nodes = kwargs.get('max_nodes', None)
-        self.max_processors_per_node = kwargs.get(
-            'max_processors_per_node',
-            None
-        )
-        self.max_memory_per_node = kwargs.get(
-            'max_memory_per_node',
-            None
-        )
-        self.max_requested_time = kwargs.get(
-            'max_requested_time',
-            None
-        )
-        self.custom_directives = kwargs.get(
-            'custom_directives',
-            None
-        )
-        self.default = kwargs.get('default', False)
+        self.name = getattr(self, 'name', '')
+        self.max_jobs = getattr(self, 'maxJobs', 10)
+        self.max_user_jobs = getattr(self, 'maxUserJobs', 10)
+        self.max_nodes = getattr(self, 'maxNodes', None)
+        self.max_processors_per_node = getattr(self, 'maxProcessorsPerNode', None)
+        self.max_memory_per_node = getattr(self, 'maxMemoryPerNode', None)
+        self.max_requested_time = getattr(self, 'maxRequestedTime', None)
+        self.custom_directives = getattr(self, 'customDirectives', None)
+        self.default = getattr(self, 'default', False)
 
     def populate_obj(self):
         """Overriding """
@@ -700,7 +703,7 @@ class BaseSystemQueue(BaseAgaveResource):
 
     def validate_max_user_jobs(self):
         """Validate self.max_user_jobs"""
-        if (not isinstance(self.mx_user_jobs, int) or
+        if (not isinstance(self.max_user_jobs, int) or
                 self.max_user_jobs < -1):
             raise ValidationError(
                 "'max_user_jobs' should be an integer greater or equal to '-1'"
@@ -716,7 +719,7 @@ class BaseSystemQueue(BaseAgaveResource):
 
     def validate_max_processors_per_node(self):  # pylint: disable=invalid-name
         """Validate self.max_processors_per_node"""
-        if (not isinstance(self.validate_max_processors_per_node, int) or
+        if (not isinstance(self.max_processors_per_node, int) or
                 self.max_processors_per_node < -1):
             raise ValidationError(
                 "'max_processors_per_node' should be an integer "
@@ -739,9 +742,9 @@ class BaseSystemQueue(BaseAgaveResource):
 
     def validate_custom_directives(self):
         """Validate self.custom_directives"""
-        if not self.custom_directives:
+        if (self.custom_directives and not isinstance(self.custom_directives, str)):
             raise ValidationError(
-                "'custom_directives' should not be empty"
+                "'custom_directives' should be type 'str'"
             )
 
     def validate_default(self):

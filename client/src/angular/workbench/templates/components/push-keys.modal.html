@@ -17,9 +17,21 @@
              class="form-control">
     </div>
     <div class="form-group">
-      <label>Hostname: </label>
+      <label>Type: </label>
       <input type="text" disabled
-             data-ng-model="$ctrl.form.hostname"
+             data-ng-model="$ctrl.form.type"
+             class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Storage Hostname: </label>
+      <input type="text" disabled
+             data-ng-model="$ctrl.form.storageHost"
+             class="form-control">
+    </div>
+    <div ng-if="$ctrl.form.loginHost" class="form-group">
+      <label>Login Hostname: </label>
+      <input type="text" disabled
+             data-ng-model="$ctrl.form.loginHost"
              class="form-control">
     </div>
     <div class="form-group">

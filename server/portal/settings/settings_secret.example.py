@@ -106,6 +106,7 @@ _ES_HOSTS = 'cep_prtl_elasticsearch'
 ########################
 
 _PORTAL_APPS_METADATA_NAMES = ['portal_apps']
+_PORTAL_ALLOCATION = 'TACC-ACI'
 
 # NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
 _WH_BASE_URL = ''

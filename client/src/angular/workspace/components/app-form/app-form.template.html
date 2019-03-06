@@ -9,32 +9,52 @@
             </p>
          </div>
      </div>
+     <div class="lead alert alert-warning" ng-if="$ctrl.needsLicense">
+         <h2>Software License Required</h2>
+         <p>
+             The use of this application required that you have a {{$ctrl.app.license.type}}
+             license enabled for your account. Please visit the
+             <a href="/accounts/licenses/" target="_blank">manage software licenses</a>
+             section on the My Account page for details on how to enable this license.
+         </p>
+     </div>
      <div ng-if="$ctrl.type === 'html' && $ctrl.app">
-         <div class="lead alert alert-warning" ng-if="$ctrl.needsLicense">
-             <h2>Software License Required</h2>
-             <p>
-                 The use of this application required that you have a {{$ctrl.app.license.type}}
-                 license enabled for your account. Please visit the
-                 <a href="/accounts/licenses/" target="_blank">manage software licenses</a>
-                 section on the My Account page for details on how to enable this license.
-             </p>
-         </div>
        <p ng-bind-html="$ctrl.app"></p>
      </div>
      <div ng-if="$ctrl.type === 'agave' && $ctrl.app" class="app-form-wrapper">
-         <div class="lead alert alert-warning" ng-if="$ctrl.needsLicense">
-             <h2>Software License Required</h2>
+         <div class="lead alert alert-warning" ng-if="$ctrl.needsAllocation">
+             <h2>This application requires access to {{$ctrl.app.resource}}</h2>
              <p>
-                 The use of this application required that you have a {{$ctrl.app.license.type}}
-                 license enabled for your account. Please visit the
-                 <a href="/accounts/licenses/" target="_blank">manage software licenses</a>
-                 section on the My Account page for details on how to enable this license.
+                 Your profile requires an allocation that has access to this system. Please 
+                <a class="alert-link" href="/tickets" target="_blank">submit a support ticket</a> to request an allocation.
              </p>
          </div>
          <div class="messages">
-             <div ng-repeat="message in $ctrl.messages" class="alert alert-{{message.type}}">
+             <div ng-repeat="message in $ctrl.messages" class="alert alert-{{message.type}} alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
                  <h4 ng-if="message.header" ng-bind-html="message.header"></h4>
-                 <p ng-bind-html="message.body"></p>
+                 <p class="mb-0" ng-bind-html="message.body"></p>
+             </div>
+             <div ng-if="$ctrl.app.clonedSysId" class="alert alert-warning alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                 <h4>Invalid Execution System Credentials</h4>
+                 <p>
+                    <b>There seems to be an issue with your execution system.</b> You may be able to fix this issue by
+                    <span data-ng-if="$ctrl.app.resettingKeys">
+                        <i class="fa fa-spinner fa-spin">&nbsp;</i>Loading ...
+                    </span>
+                    <span data-ng-if="!$ctrl.app.resettingKeys">
+                        <button type="button" class="btn btn-link" ng-click="$ctrl.openResetSystemKeysForm($ctrl.app.clonedSysId)">
+                            resetting the keys
+                        </button>
+                        <i class="fa fa-check text-success" ng-if="$ctrl.app.keysReset">&nbsp;</i>
+                    </span>
+                    to this execution system and
+                    <button type="button" class="btn btn-link" ng-click="$ctrl.openPushPublicKeyForm($ctrl.app.clonedSysId)">
+                        pushing the new public keys.
+                    </button>
+                    <i class="fa fa-check text-success" ng-if="$ctrl.app.keysPushed">&nbsp;</i>
+                 </p>
              </div>
          </div>
          <h2>Run <em>{{$ctrl.app.label}}</em></h2>

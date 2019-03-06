@@ -58,6 +58,9 @@ class AddPubKeyTests(TestCase):
         self.mock_check_user.return_value.ssh_keys = MagicMock(
             for_system=MagicMock(
                 side_effect=ObjectDoesNotExist("Mock Exception while setting pub_key")
+            ),
+            for_hostname=MagicMock(
+                side_effect=ObjectDoesNotExist("Mock Exception while setting pub_key")
             )
         )
         result, message, status = self.run_add_pub_key_to_resource()

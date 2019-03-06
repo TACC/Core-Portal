@@ -28,7 +28,7 @@ class UserHomeManager(AbstractUserHomeManager):
 
     .. note::
         If a special case needs to be implemented first see if it can be done
-         by adding classes/callabels to `PORTAL_USER_ACCOUNT_SETUP_STEPS`.
+         by adding classes/callables to `PORTAL_USER_ACCOUNT_SETUP_STEPS`.
         If not, be careful when overriding methods in this class.
     """
 

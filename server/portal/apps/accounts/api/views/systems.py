@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from portal.views.base import BaseApiView
 from portal.apps.accounts.managers import accounts as AccountsManager
 from portal.apps.search.tasks import agave_indexer
+import json
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -32,6 +33,7 @@ class SystemsListView(BaseApiView):
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
         public_keys = request.GET.get('publicKeys', None)
+        filter_prefix = json.loads(request.GET.get('filterPrefix', '{}'))
         response = {}
 
         storage_systems = AccountsManager.storage_systems(
@@ -44,7 +46,8 @@ class SystemsListView(BaseApiView):
         exec_systems = AccountsManager.execution_systems(
             request.user,
             offset=offset,
-            limit=limit
+            limit=limit,
+            filter_prefix=getattr(filter_prefix, 'execution', False)
         )
         response['execution'] = exec_systems
         if public_keys is not None:
@@ -161,7 +164,7 @@ class SystemKeysView(BaseApiView):
             system_id=system_id,
             hostname=body['form']['hostname']
         )
-        if success:
+        if success and body['form']['type'] == 'STORAGE':
             # Index the user's home directory once keys are successfully pushed.
             agave_indexer.apply_async(args=[system_id], 
                                     kwargs={'username': request.user.username})
