@@ -199,6 +199,7 @@ class InteractiveWebhookView(BaseApiView):
             # like the Potree Viewer Application
             job_owner = request.POST.get('owner', '')
             address = request.POST.get('address', '')
+            job_uuid = request.POST.get('job_uuid', '')
             event_data = {
                 Notification.EVENT_TYPE: event_type,
                 Notification.STATUS: Notification.INFO,
@@ -208,13 +209,11 @@ class InteractiveWebhookView(BaseApiView):
                 Notification.ACTION_LINK: address,
                 Notification.EXTRA: {
                     'address': address,
-                    'target_uri': address,
-                    'associationIds': job_uuid
+                    'target_uri': address
                 }
             }
             n = Notification.objects.create(**event_data)
             n.save()
-            return HttpResponse('OK')
         elif event_type == 'VNC':
             job_owner = request.POST.get('owner', '')
             host = request.POST.get('host', '')
@@ -244,26 +243,26 @@ class InteractiveWebhookView(BaseApiView):
             }
             n = Notification.objects.create(**event_data)
             n.save()
-
-            # create metadata for VNC connection and save to agave metadata?
-            try:
-                agave_job_meta = {
-                    'name': 'interactiveJobDetails',
-                    'value': event_data,
-                    'associationIds': [job_uuid],
-                }
-                user = get_user_model().objects.get(username=job_owner)
-                agave = user.agave_oauth.client
-                agave.meta.addMetadata(body=json.dumps(agave_job_meta))
-
-            except (HTTPError, AgaveException) as e:
-                logger.exception(
-                    'Could not add interactive connection data to metadata')
-                return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
-
-            return HttpResponse('OK')
         else:
             return HttpResponse('Unexpected event_type', status=400)
+
+        # create metadata for VNC connection and save to agave metadata
+        try:
+            agave_job_meta = {
+                'name': 'interactiveJobDetails',
+                'value': event_data,
+                'associationIds': [job_uuid],
+            }
+            user = get_user_model().objects.get(username=job_owner)
+            agave = user.agave_oauth.client
+            agave.meta.addMetadata(body=json.dumps(agave_job_meta))
+
+        except (HTTPError, AgaveException) as e:
+            logger.exception(
+                'Could not add interactive connection data to metadata')
+            return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
+
+        return HttpResponse('OK')
 
 
 class OnboardingWebhookView(BaseApiView):

@@ -2,7 +2,7 @@
     <h3 class="modal-title">{{$ctrl.job.name}}</h3>
 </div>
 <div class="modal-body">
-    <div ng-if="job.message" class="alert alert-warning">
+    <div ng-if="$ctrl.job.message" class="alert alert-warning">
         <h4>Job status: {{$ctrl.job.status}}</h4>
         <p>{{$ctrl.job.message}}</p>
     </div>
@@ -19,20 +19,20 @@
         <dt>Finished<dt>
         <dd>{{$ctrl.job.endTime | date:'medium'}}</dd>
 
-        <dt>Output</dt>
-        <dd ng-if="$ctrl.jobFinished($ctrl.job)">
+        <dt ng-if="$ctrl.job.archiveSystem">Output</dt>
+        <dd ng-if="$ctrl.jobFinished && $ctrl.job.archiveSystem">
             <a href="{{$ctrl.job.archiveUrl}}" target="_blank" class="btn btn-primary" title="agave://{{$ctrl.job.archiveSystem}}/{{$ctrl.job.archivePath}}">View in Data Files</a>&nbsp;
             <a ng-href="{{$ctrl.job.jupyterUrl}}" class="btn btn-default" ng-if="$ctrl.job.jupyterUrl" target=_blank>View in JupyterHub</a>
         </dd>
-        <dd ng-if="!$ctrl.jobFinished($ctrl.job)">
+        <dd ng-if="!$ctrl.jobFinished">
             <button class="btn btn-default disabled" type="button">Output pending</button>
         </dd>
 
         <dt>Actions</dt>
-        <dd ng-if="$ctrl.jobFinished($ctrl.job)">
+        <dd ng-if="$ctrl.jobFinished">
             <button class="btn btn-danger" type="button" ng-click="$ctrl.deleteJob()">Delete</button>
         </dd>
-        <dd ng-if="!jobFinished(job)">
+        <dd ng-if="!$ctrl.jobFinished">
             <a href="{{$ctrl.job.connection_address}}" ng-if="$ctrl.job.interactive" class="btn btn-primary" title="Connect to Interactive Session" target="_blank">Connect</a>
             <button class="btn btn-warning" type="button" ng-click="$ctrl.cancelJob()">Cancel</button>
             <button class="btn btn-danger" type="button" ng-click="$ctrl.deleteJob()">Delete</button>

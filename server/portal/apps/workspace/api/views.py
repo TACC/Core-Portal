@@ -163,18 +163,20 @@ class JobsView(BaseApiView):
             data['_embedded'] = {"metadata": job_meta}
 
             #TODO: Decouple this from front end somehow!
-            archive_system_path = '{}/{}'.format(data['archiveSystem'], data['archivePath'])
-            data['archiveUrl'] = '/workbench/data-depot/'
-            data['archiveUrl'] += 'agave/{}/'.format(archive_system_path)
+            archiveSystem = data.get('archiveSystem', None)
+            if archiveSystem:
+                archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])
+                data['archiveUrl'] = '/workbench/data-depot/'
+                data['archiveUrl'] += 'agave/{}/'.format(archive_system_path.strip('/'))
 
-            jupyter_url = get_jupyter_url(
-                data['archiveSystem'], 
-                "/" + data['archivePath'], 
-                request.user.username, 
-                is_dir=True
-            )
-            if jupyter_url:
-                data['jupyterUrl'] = jupyter_url
+                jupyter_url = get_jupyter_url(
+                    archiveSystem,
+                    "/" + data['archivePath'],
+                    request.user.username,
+                    is_dir=True
+                )
+                if jupyter_url:
+                    data['jupyterUrl'] = jupyter_url
 
         # list jobs
         else:
@@ -275,6 +277,7 @@ class JobsView(BaseApiView):
                 'event': e}
                 for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
 
+            logger.debug('Submitting job for user {}: {}'.format(request.user.username, job_post))
             response = agave.jobs.submit(body=job_post)
             return JsonResponse({"response": response})
 

@@ -3,7 +3,6 @@ import $ from 'jquery';
 import modalInteractiveDetailsTemplate from '../template/interactive-details-modal.html';
 
 export default class Notifications {
-
     constructor($location, $mdToast, $http, $uibModal, $rootScope) {
         'ngInject';
         this.$location = $location;
@@ -16,7 +15,7 @@ export default class Notifications {
         this.toasting = false;
         this.notes = {
             unread: 0,
-            notifs: []
+            notifs: [],
         };
         this.subject.subscribe(
             (data) => {
@@ -73,28 +72,30 @@ export default class Notifications {
     markRead(id) {
         return this.$http.post('/api/notifications/', {
             id: id,
-            read: true
+            read: true,
         });
     }
 
     /*
         callback MUST be a fat-arrow function (msg)=>{ this.doSomething(msg) }
     */
-    subscribe (callback) {
+    subscribe(callback) {
         this.$rootScope.$on('notification', (ev, data) => {
             callback(data);
         });
     }
 
     processMessage(msg) {
-        this.notes.unread++;
-        this.notes.notifs.unshift(msg);
-        this.$rootScope.$broadcast('notification', msg);
-        // suppress first (old) message
+        // suppress first (old) message from db that is emitted on subject.subscribe()
         if (!this.toasting) {
             this.toasting = true;
             return;
         }
+
+        this.notes.unread++;
+        this.notes.notifs.unshift(msg);
+        this.notes.total = this.notes.notifs.length;
+        this.$rootScope.$broadcast('notification', msg);
 
         let eventType = msg.event_type.toLowerCase();
         if (eventType === 'vnc' || eventType === 'web') {

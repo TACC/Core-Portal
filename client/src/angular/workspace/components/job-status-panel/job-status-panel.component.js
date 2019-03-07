@@ -1,7 +1,6 @@
 import template from './job-status-panel.template.html';
 class JobStatusPanelCtrl {
-
-    constructor (Notifications, Jobs, $uibModal, $rootScope) {
+    constructor(Notifications, Jobs, $uibModal, $rootScope) {
         'ngInject';
         this.Notifications = Notifications;
         this.Jobs = Jobs;
@@ -9,38 +8,37 @@ class JobStatusPanelCtrl {
         this.$rootScope = $rootScope;
     }
 
-    $onInit () {
+    $onInit() {
         this.hasMoreJobs = true;
         this.limit = 10;
         this.collapsed = true;
         this.jobs = [];
-        this.Notifications.subscribe( ()=>{ this.refresh(); });
+        this.Notifications.subscribe(() => { this.refresh(); });
         this.refresh();
         this.$rootScope.$on('job-submitted', () => {
             this.collapsed = false;
         });
+        this.$rootScope.$on('refresh-jobs-panel', () => {
+            this.refresh();
+        });
     }
 
-    togglePanel () {
+    togglePanel() {
         this.collapsed = !this.collapsed;
     }
 
-    jobFinished (job) {
-        return job.status == 'FINISHED' || job.status == 'FAILED';
-    }
-
-    refresh () {
+    refresh() {
         this.loading = true;
         this.Jobs.list({ limit: this.limit })
-            .then( (resp) => {
+            .then((resp) => {
                 this.jobs = resp;
             })
-            .finally( ()=>{
+            .finally(() => {
                 this.loading = false;
             });
     }
 
-    loadMore () {
+    loadMore() {
         this.limit += 10;
         this.refresh();
     }
@@ -49,7 +47,7 @@ class JobStatusPanelCtrl {
 const jobStatusPanel = {
     template: template,
     bindings: {},
-    controller: JobStatusPanelCtrl
+    controller: JobStatusPanelCtrl,
 };
 
 export default jobStatusPanel;

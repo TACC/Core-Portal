@@ -1,11 +1,11 @@
 
 describe('JobStatusPanelComponent', function() {
-    var $q, $rootScope, $componentController, ctrl,
+    let $q, $rootScope, $componentController, ctrl,
         Jobs, Notifications, $uibModal;
     beforeEach(angular.mock.module('portal'));
     beforeEach(() => {
         angular.module('django.context', []).constant('Django', {
-            user: 'test_user'
+            user: 'test_user',
         });
 
         angular.mock.inject(function(_$rootScope_, _$componentController_, _Jobs_,
@@ -24,11 +24,10 @@ describe('JobStatusPanelComponent', function() {
         ctrl = $componentController('jobStatusPanel', {
             Jobs: Jobs,
             Notifications: Notifications,
-            $uibModal: $uibModal
+            $uibModal: $uibModal,
         });
 
         ctrl.$onInit();
-
     });
 
     it('should have called Jobs.list on init', () => {
@@ -37,13 +36,12 @@ describe('JobStatusPanelComponent', function() {
 
     it('should reload the jobs list when a notification is received', ()=>{
         spyOn(ctrl, 'refresh');
+        spyOn(Notifications, 'showToast');
+        Notifications.toasting = true;
         Notifications.processMessage({
             event_type: 'job',
-            message: 'Hello World'
+            message: 'Hello World',
         });
         expect(ctrl.refresh).toHaveBeenCalled();
     });
-
-
-
 });
