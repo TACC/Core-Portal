@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from django.test.client import Client
 from portal.utils.translations import get_jupyter_url
+from portal.utils.translations import url_parse_inputs
 
 mock_jupyter_url = "https://mock.jupyter.url"
 mock_system_map = { 
@@ -56,3 +57,28 @@ class TestGetJupyterUrl(TestCase):
         # If the filepath is a directory, it should generate a /tree url
         result = get_jupyter_url("data-tacc-work-mock", "/directory", mock_user.username, is_dir=True)
         assert (result == "https://mock.jupyter.url/user/mock/tree/tacc-work/directory")
+
+
+class TestUrlParseInputs(TestCase):
+    
+    def setUp(self):
+        super(TestUrlParseInputs, self).setUp()
+        self.job = {
+            "inputs" : {
+                "inputFile" : "agave://test.system/test file.txt",
+                "inputFiles" : [
+                    "agave://test.system/test file 1.txt",
+                    "agave://test.system/test file 2.txt"
+                ]
+            }
+        }
+
+    def test_url_parse_inputs(self):
+        result = url_parse_inputs(self.job)
+        self.assertEqual(result["inputs"]["inputFile"], "agave://test.system/test%20file.txt")
+        self.assertEqual(result["inputs"]["inputFiles"][0], "agave://test.system/test%20file%201.txt")
+        self.assertEqual(result["inputs"]["inputFiles"][1], "agave://test.system/test%20file%202.txt")
+
+        # Assert original object has not mutated
+        self.assertEqual(self.job["inputs"]["inputFile"], "agave://test.system/test file.txt")
+        self.assertNotEqual(self.job, result)

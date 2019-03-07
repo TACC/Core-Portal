@@ -6,7 +6,6 @@ from __future__ import unicode_literals, absolute_import
 import logging
 import json
 import urllib
-import six
 import os
 from urlparse import urlparse
 from datetime import datetime
@@ -24,8 +23,7 @@ from portal.libs.agave.utils import service_account
 from agavepy.agave import Agave
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
-
-
+from portal.utils.translations import url_parse_inputs
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -239,20 +237,7 @@ class JobsView(BaseApiView):
             # url encode inputs
             # TODO: PUll this out of here and make it a utility
             if job_post['inputs']:
-                for key, value in six.iteritems(job_post['inputs']):
-                    # this could either be an array, or a string...
-                    if isinstance(value, basestring):
-                        parsed = urlparse(value)
-                        if parsed.scheme:
-                            job_post['inputs'][key] = '{}://{}{}'.format(
-                                parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
-                        else:
-                            job_post['inputs'][key] = urllib.quote(parsed.path)
-                    else:
-                        for input in value:
-                            parsed = urlparse(input)
-                            input = '{}://{}{}'.format(
-                                parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                job_post = url_parse_inputs(job_post)
 
             # Get or create application based on allocation and execution system
             apps_mgr = UserApplicationsManager(request.user)

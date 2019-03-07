@@ -1,4 +1,8 @@
 import os
+import six
+import urllib
+import copy
+from urlparse import urlparse
 from django.conf import settings
 
 def get_jupyter_url(system, path, username, is_dir=False):
@@ -48,3 +52,28 @@ def get_jupyter_url(system, path, username, is_dir=False):
         system=system_map[system],
         path=path
     )
+
+def url_parse_inputs(job):
+    """
+    Translates the inputs of an Agave job to be URL encoded
+    """
+    job = copy.deepcopy(job)
+    for key, value in six.iteritems(job['inputs']):
+        # this could either be an array, or a string...
+        if isinstance(value, basestring):
+            parsed = urlparse(value)
+            if parsed.scheme:
+                job['inputs'][key] = '{}://{}{}'.format(
+                    parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+            else:
+                job['inputs'][key] = urllib.quote(parsed.path)
+        else:
+            # If array, replace it with new array where each element was parsed
+            parsed_values = [ ]
+            for input in value:
+                parsed = urlparse(input)
+                input = '{}://{}{}'.format(
+                    parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                parsed_values.append(input)
+            job['inputs'][key] = parsed_values
+    return job
