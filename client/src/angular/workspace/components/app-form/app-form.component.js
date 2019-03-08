@@ -201,6 +201,12 @@ class ApplicationFormCtrl {
                 }
             }
 
+            /* To ensure that DCV server is alive, name of job
+            * needs to contain 'dcvserver' */
+            if (this.app.tags.includes('DCV')) {
+                jobData.name += "-dcvserver";
+            }
+
             /* remove falsy input/parameter */
             for (let k in jobData.inputs) {
                 let v = jobData.inputs[k];

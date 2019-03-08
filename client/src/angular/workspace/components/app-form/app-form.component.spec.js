@@ -106,6 +106,35 @@ describe('AppFormComponent', function() {
             ctrl.onSubmit({ $valid: true });
             expect(jobSpy.calls.mostRecent().args[0].inputs.problem).toBe(inputFile);
             expect(jobSpy.calls.mostRecent().args[0].appId).toBe(appDefn.id);
+            expect(jobSpy.calls.mostRecent().args[0].name).toMatch(appDefn.name);
+            done();
+        }, 10);
+    });
+
+    it('Should alter the name of DCV jobs when handling submit', (done)=>{
+        // Add DCV tag to definition
+        appMeta.value.definition.tags.push("DCV");
+
+        let jobSpy = spyOn(Jobs, 'submit').and.returnValue($q.when({}));
+        let scope = $rootScope.$new();
+        scope.app = appMeta;
+
+        let inputFile = 'agave://some-system/some-file.plan',
+            template = angular.element('<app-form selected-app=app></app-form>'),
+            el = $compile(template)(scope);
+        let ctrl = el.controller('app-form');
+        $rootScope.$digest();
+
+        // Have to put this in a timeOut to work around ASF issue
+        setTimeout( ()=> {
+            //input fields should be there now...
+            expect(el.find('form').children.length > 0).toBe(true);
+            ctrl.model.inputs.problem = inputFile;
+            ctrl.onSubmit({ $valid: true });
+            expect(jobSpy.calls.mostRecent().args[0].inputs.problem).toBe(inputFile);
+            expect(jobSpy.calls.mostRecent().args[0].appId).toBe(appDefn.id);
+            expect(jobSpy.calls.mostRecent().args[0].name).toMatch(appDefn.name);
+            expect(jobSpy.calls.mostRecent().args[0].name).toMatch("dcvserver");
             done();
         }, 10);
     });

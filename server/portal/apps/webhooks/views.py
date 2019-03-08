@@ -1,20 +1,21 @@
 import json
 import logging
 import os
+
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.http import HttpResponse
-from django.conf import settings
-from django.views.decorators.http import require_POST
-from requests import HTTPError
-from agavepy.agave import Agave, AgaveException
-from portal.apps.notifications.models import Notification
 from django.core.exceptions import ObjectDoesNotExist
+
+from requests import HTTPError
+from agavepy.agave import AgaveException
+
+from portal.apps.notifications.models import Notification
 from portal.apps.search.tasks import agave_indexer
 from portal.views.base import BaseApiView
+from portal.libs.exceptions import PortalLibException
 
 logger = logging.getLogger(__name__)
 
@@ -68,10 +69,8 @@ class JobsWebhookView(BaseApiView):
                 Notification.EXTRA: job
             }
 
-
-            archive_id = 'agave/{}/{}'.format(archiveSystem,(archivePath.strip('/')))
+            archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
             target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
-
 
             if job_status == 'FAILED':
                 logger.debug('JOB FAILED: id={} status={}'.format(job_id, job_status))
@@ -130,8 +129,8 @@ class JobsWebhookView(BaseApiView):
                         try:
                             logger.debug('Preparing to Index Job Output job={}'.format(job_name))
 
-                            agave_indexer.apply_async(args=[archiveSystem], 
-                                    kwargs={'username': username, 'filePath': archivePath})
+                            agave_indexer.apply_async(args=[archiveSystem],
+                                                      kwargs={'username': username, 'filePath': archivePath})
                             logger.debug(
                                 'Finished Indexing Job Output job={}'.format(job_name))
                         except Exception as e:
@@ -181,7 +180,7 @@ class JobsWebhookView(BaseApiView):
 
 class InteractiveWebhookView(BaseApiView):
     """
-    Dispatches notifications when receiving a POST request from interactive jobs (e.g. VNC or DCV)
+    Dispatches notifications when receiving a POST request from interactive jobs (e.g. VNC or WEB)
     """
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -192,11 +191,10 @@ class InteractiveWebhookView(BaseApiView):
         Creates a notification with a link to the interactive job event.
 
         """
-
         event_type = request.POST.get('event_type', None)
         if event_type == 'WEB':
             # This is for jobs that just point to a URL that gets created
-            # like the Potree Viewer Application
+            # like the Potree Viewer Application or DCV-based apps
             job_owner = request.POST.get('owner', '')
             address = request.POST.get('address', '')
             job_uuid = request.POST.get('job_uuid', '')
@@ -212,9 +210,8 @@ class InteractiveWebhookView(BaseApiView):
                     'target_uri': address
                 }
             }
-            n = Notification.objects.create(**event_data)
-            n.save()
         elif event_type == 'VNC':
+
             job_owner = request.POST.get('owner', '')
             host = request.POST.get('host', '')
             port = request.POST.get('port', '')
@@ -241,12 +238,30 @@ class InteractiveWebhookView(BaseApiView):
                     'associationIds': job_uuid
                 }
             }
-            n = Notification.objects.create(**event_data)
-            n.save()
+
         else:
             return HttpResponse('Unexpected event_type', status=400)
 
-        # create metadata for VNC connection and save to agave metadata
+        # confirm that there is a corresponding running agave job before sending notification
+        try:
+            user = get_user_model().objects.get(username=job_owner)
+            agave = user.agave_oauth.client
+            job_data = agave.jobs.get(jobId=job_uuid)
+            if job_data['owner'] != job_owner or job_data["status"] != "RUNNING":
+                logger.error(
+                    "Agave job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(job_data['owner'],
+                                                                                                         job_data['status'],
+                                                                                                         job_owner))
+                raise PortalLibException("Unable to find a related valid job for this interactive event.")
+        except (HTTPError, AgaveException, PortalLibException) as e:
+            logger.exception(
+                "Could not find valid corresponding Agave job for interactive event")
+            return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
+
+        n = Notification.objects.create(**event_data)
+        n.save()
+
+        # create metadata for interactive connection and save to agave metadata
         try:
             agave_job_meta = {
                 'name': 'interactiveJobDetails',
