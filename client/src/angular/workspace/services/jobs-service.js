@@ -1,17 +1,16 @@
 import * as d3 from 'd3';
 
 class Jobs {
-
-    constructor ($http) {
+    constructor($http) {
         'ngInject';
         this.$http = $http;
     }
 
-    list (options) {
+    list(options) {
         options.limit = options.limit || 10;
         options.offest = options.offest || 0;
         return this.$http.get('/api/workspace/jobs/', {
-            params: options
+            params: options,
         }).then(function(resp) {
             let data = resp.data.response;
             data.forEach((d) => {
@@ -21,36 +20,36 @@ class Jobs {
         });
     }
 
-    get (uuid) {
+    get(uuid) {
         return this.$http.get('/api/workspace/jobs/', {
             params: {
-                job_id: uuid
-            }
+                job_id: uuid,
+            },
         }).then(function(resp) {
             return resp.data.response;
         });
     }
 
-    submit (data) {
+    submit(data) {
         return this.$http.post('/api/workspace/jobs/', data)
             .then((resp) => {
                 return resp.data.response;
             });
     }
 
-    delete (job) {
+    delete(job) {
         return this.$http.delete('/api/workspace/jobs/', {
             params: { job_id: job.id },
         });
     }
 
-    cancel (job) {
+    cancel(job) {
         return this.$http.post('/api/workspace/jobs/', {
-            job_id: this.job.id, params: { job_id: job.id, action: 'cancel', body: '{"action":"stop"}' },
+            job_id: job.id, params: { job_id: job.id, action: 'cancel', body: '{"action":"stop"}' },
         });
     }
 
-    jobsByDate (jobs) {
+    jobsByDate(jobs) {
         let nested = d3.nest()
             .key(function(d) {
                 let ct = d.created;
@@ -66,7 +65,6 @@ class Jobs {
         });
         return nested;
     }
-
 }
 
 export default Jobs;

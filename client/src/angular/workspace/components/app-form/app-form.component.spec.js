@@ -3,7 +3,7 @@ import { meta as appMeta } from '../../fixtures/appMeta';
 
 describe('AppFormComponent', function() {
     let $q, Apps, $rootScope, $componentController, ctrl,
-        $timeout, Jobs, $compile, $httpBackend, UserService, $uibModal, SystemsService;
+        $timeout, Jobs, $compile, $httpBackend, UserService, $uibModal, SystemsService, ProjectService;
 
     beforeEach(angular.mock.module('portal'));
     beforeEach(() => {
@@ -12,7 +12,7 @@ describe('AppFormComponent', function() {
         });
 
         angular.mock.inject(function(_$rootScope_, _$componentController_, _Apps_, _Jobs_,
-            _$timeout_, _$q_, _$compile_, _$httpBackend_, _UserService_, _$uibModal_, _SystemsService_) {
+            _$timeout_, _$q_, _$compile_, _$httpBackend_, _UserService_, _$uibModal_, _SystemsService_, _ProjectService_) {
             $componentController = _$componentController_;
             Apps = _Apps_;
             Jobs = _Jobs_;
@@ -24,6 +24,7 @@ describe('AppFormComponent', function() {
             UserService = _UserService_;
             $uibModal = _$uibModal_;
             SystemsService = _SystemsService_;
+            ProjectService = _ProjectService_;
         });
     });
     beforeEach(() => {
@@ -74,6 +75,20 @@ describe('AppFormComponent', function() {
     });
 
     it('Should handle a submit', (done)=>{
+        spyOn(SystemsService, 'listRoles').and.callFake(() => {
+            return {
+                then: function(callback) {
+                    return callback({ role: 'ADMIN', username: 'test_user' });
+                },
+            };
+        });
+        spyOn(ProjectService, 'list').and.callFake(() => {
+            return {
+                then: function(callback) {
+                    return callback([{ name: 'CEP.TEST-1', id: 'CEP.PRTL.TEST-1' }]);
+                },
+            };
+        });
         let jobSpy = spyOn(Jobs, 'submit').and.returnValue($q.when({})),
             scope = $rootScope.$new();
         scope.app = appMeta;

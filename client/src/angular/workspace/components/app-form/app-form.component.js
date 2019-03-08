@@ -2,7 +2,7 @@ import template from './app-form.template.html';
 import angular from 'angular';
 
 class ApplicationFormCtrl {
-    constructor($rootScope, Apps, Jobs, $timeout, UserService, $uibModal, SystemsService, $q) {
+    constructor($rootScope, Apps, Jobs, $timeout, UserService, $uibModal, SystemsService, $q, ProjectService) {
         'ngInject';
         this.$rootScope =$rootScope;
         this.Apps = Apps;
@@ -11,7 +11,8 @@ class ApplicationFormCtrl {
         this.UserService = UserService;
         this.$uibModal = $uibModal;
         this.SystemsService = SystemsService;
-        this.$q;
+        this.$q = $q;
+        this.ProjectService = ProjectService;
     }
 
     $onChanges() {
@@ -38,6 +39,7 @@ class ApplicationFormCtrl {
     $onInit() {
         this.needsAllocation = false;
         this.allocations = this.UserService.userAllocations;
+        this.user = this.UserService.currentUser;
         this.type = 'agave';
         this.submitting = false;
         this.model = {};
@@ -134,16 +136,28 @@ class ApplicationFormCtrl {
         this.$rootScope.$broadcast('schemaFormValidate');
         if (form.$valid) {
             let jobData = {
-                appId: this.app.id,
-                archive: true,
-                inputs: {},
-                parameters: {},
-            };
+                    appId: this.app.id,
+                    archive: true,
+                    inputs: {},
+                    parameters: {},
+                },
 
-            /* Add any attribute that requires an API call for the job to be ready to $scope.jobReady, i.e. project listings for VNC apps */
-            // $scope.jobReady = {
-            //     ready: true,
-            // };
+                /* Add any attribute that requires an API call for the job to be ready to jobReady, i.e. project listings for interactive apps */
+                jobReady = new Proxy({
+                    jobDataReady: false,
+                    rolesReady: true,
+                    projectsReady: true,
+                },
+                {
+                    set: (obj, prop, val) => {
+                        obj[prop] = val;
+                        if (Object.values(jobReady).every(Boolean)) {
+                            jobReady.jobDataReady = false;
+                            this.submitJob(jobData);
+                        }
+                        return true;
+                    },
+                });
 
             /* copy form model to disconnect from this */
             Object.assign(jobData, angular.copy(this.model));
@@ -151,15 +165,40 @@ class ApplicationFormCtrl {
             /* Set allocation to exec system scheduler if scheduler is not 'SLURM' since user won't need an allocation to charge for not SLURM jobs */
             jobData.allocation = (this.app.scheduler == 'SLURM') ? jobData.allocation : this.app.scheduler;
 
+            if (this.app.tags.includes('Interactive')) {
+                jobReady.projectsReady = false;
+                this.ProjectService.list({ offset: 0, limit: -1 }).then((resp) => {
+                    if (resp.length > 0) {
+                        angular.forEach(resp, function(project, key) {
+                            resp[key] = `${project.name ? project.name : project.id}`;
+                        });
+                        jobData.parameters._userProjects = resp;
+                    }
+                    jobReady.projectsReady = true;
+                });
+            }
+
             /* move archivePath from inputs */
             if (jobData.inputs.hasOwnProperty('archivePath')) {
                 jobData.archivePath = jobData.inputs.archivePath;
                 delete jobData.inputs.archivePath;
-            } else if (jobData.appId.includes('compress') || jobData.appId.includes('extract')) {
-                /* Set archivePath to inputPath for compress and zip apps */
-                let tmpPath = Object.values(jobData.inputs)[0].split('/');
-                tmpPath.pop();
-                jobData.archivePath = tmpPath.join('/');
+            } else if ((jobData.appId.includes('compress') || jobData.appId.includes('extract')) && !jobData.archivePath) {
+                let inputFile = Object.values(jobData.inputs)[0];
+                if (inputFile.startsWith('agave://')) {
+                    let archiveSystem = inputFile.split('/')[2];
+                    jobReady.rolesReady = false;
+                    this.SystemsService.listRoles(archiveSystem).then((resp) => {
+                        resp.forEach((role) => {
+                            if ((role.username === this.user.username) && (role.role === 'ADMIN' || role.role === 'PUBLISHER' || role.role === 'OWNER')) {
+                                /* Set archivePath to inputPath for compress and zip apps */
+                                let tmpPath = inputFile.split('/');
+                                tmpPath.pop();
+                                jobData.archivePath = tmpPath.join('/');
+                            }
+                        });
+                        jobReady.rolesReady = true;
+                    });
+                }
             }
 
             /* remove falsy input/parameter */
@@ -183,8 +222,7 @@ class ApplicationFormCtrl {
                     }
                 }
             }
-
-            this.submitJob(jobData);
+            jobReady.jobDataReady = true;
         }
     }
 
@@ -268,7 +306,7 @@ class ApplicationFormCtrl {
         this.app.resettingKeys = true;
         this.app.keysReset = false;
         this.SystemsService.resetKeys({ id: systemId }).
-            then((resp) => {
+            then(() => {
                 this.app.resettingKeys = false;
                 this.app.keysReset = true;
                 this.app.keysPushed = false;

@@ -18,5 +18,5 @@ urlpatterns = [
         views.ProjectInstanceApiView.as_view(),
         name='project'
     ),
-    url(r'^', views.ProjectsApiView.as_view(), name='project_api'),
+    url(r'^', views.ProjectsApiView.as_view(), name='projects_api'),
 ]

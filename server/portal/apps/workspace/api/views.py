@@ -198,7 +198,7 @@ class JobsView(BaseApiView):
 
         # cancel job / stop job
         if job_id:
-            data = agave.jobs.manage(jobId=job_id, body='{"action":"stop"}')
+            data = agave.jobs.manage(jobId=job_id, body={"action":"stop"})
             return JsonResponse({"response": data})
         # submit job
         elif job_post:
