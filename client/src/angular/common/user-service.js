@@ -59,6 +59,9 @@ export default class UserService {
     }
 
     allocations() {
+        if (Object.entries(this.userAllocations).length) {
+            return this.$q.defer(this.allocations);
+        }
         return this.$http.get('/api/users/allocations')
             .then((resp) => {
                 return this.userAllocations = resp.data;
