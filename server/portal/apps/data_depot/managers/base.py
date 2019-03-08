@@ -353,7 +353,7 @@ class AgaveFileManager(AbstractFileManager):
                   format(url)
         elif _file.ext in BaseFile.SUPPORTED_IPYNB_PREVIEW_EXTS:
             file_type = 'ipynb'
-            tmp = url.lstrip('https://')
+            tmp = url.replace('https://', '')
             url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
         else:
             file_type = 'other'
