@@ -60,11 +60,14 @@ export default class UserService {
 
     allocations() {
         if (Object.entries(this.userAllocations).length) {
-            return this.$q.defer(this.allocations);
+            let prom = this.$q.defer();
+            prom.resolve(this.userAllocations);
+            return prom.promise;
         }
         return this.$http.get('/api/users/allocations')
             .then((resp) => {
-                return this.userAllocations = resp.data;
+                this.userAllocations = resp.data;
+                return this.userAllocations;
             });
     }
 }

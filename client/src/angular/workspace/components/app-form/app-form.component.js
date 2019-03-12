@@ -16,6 +16,8 @@ class ApplicationFormCtrl {
     }
 
     $onChanges() {
+        //TODO: This should be in a resolve, need to have it here because it was blocking too long
+        this.allocations = this.UserService.userAllocations;
         if (!this.selectedApp) return;
         this.type = this.selectedApp.value.type;
         if (this.selectedApp.value.type === 'agave') {
@@ -37,8 +39,9 @@ class ApplicationFormCtrl {
     }
 
     $onInit() {
-        this.needsAllocation = false;
+        //TODO: This should be in a resolve, need to have it here because it was blocking too long
         this.allocations = this.UserService.userAllocations;
+        this.needsAllocation = false;
         this.user = this.UserService.currentUser;
         this.type = 'agave';
         this.submitting = false;

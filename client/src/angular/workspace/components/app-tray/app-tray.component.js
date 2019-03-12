@@ -5,7 +5,7 @@ import $ from 'jquery';
 class ApplicationTrayCtrl {
 
     constructor($rootScope, $stateParams, $translate,
-        Apps, SimpleList, Notifications, $mdToast) {
+        Apps, SimpleList, Notifications, $mdToast, UserService) {
         'ngInject';
         this.$rootScope = $rootScope;
         this.$stateParams = $stateParams;
@@ -14,10 +14,14 @@ class ApplicationTrayCtrl {
         this.SimpleList = SimpleList;
         this.Notifications = Notifications;
         this.$mdToast = $mdToast;
-
+        this.UserService = UserService;
     }
 
     $onInit() {
+        this.UserService.allocations().then( (resp)=>{
+            this.allocations = resp;
+        });
+
         this.tabs = [];
         this.outsideClick = false;
         this.simpleList = new this.SimpleList();

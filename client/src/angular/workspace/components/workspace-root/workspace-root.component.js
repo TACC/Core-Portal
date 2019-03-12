@@ -2,6 +2,7 @@ import template from './workspace-root.template.html';
 import './workspace.css';
 
 class WorkspaceRootCtrl {
+    
     $onInit () {
         this.selectedApp = null;
     }

@@ -1,14 +1,14 @@
 <div class="workspace-panel-tabs">
   <div>
       <p ng-show="$ctrl.error" class="alert alert-danger">{{$ctrl.error}}</p>
-      <div class="app-wrapper" ng-if="$ctrl.requesting">
+      <div class="app-wrapper" ng-if="$ctrl.requesting || !$ctrl.allocations">
           <div class="app text-center">
               <div class="app-icon"><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
               <div class="app-title">Loading...</div>
               <div class="app-version">&nbsp;</div>
           </div>
       </div>
-      <uib-tabset id="workspace-tabs" ng-show="!$ctrl.requesting" active="$ctrl.activeTab">
+      <uib-tabset id="workspace-tabs" ng-show="!$ctrl.requesting && $ctrl.allocations" active="$ctrl.activeTab">
           <uib-tab class="workspace-tab" ng-repeat="tab in $ctrl.tabs" focusout="$ctrl.closeTab($event, tab)">
               <uib-tab-heading>
                   <h3 class="workspace-tab-title">{{tab.title}} [{{tab.count}}]</h3>
