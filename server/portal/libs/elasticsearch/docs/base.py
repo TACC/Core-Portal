@@ -27,14 +27,74 @@ logger = logging.getLogger(__name__)
 try:
     DEFAULT_INDEX = settings.ES_DEFAULT_INDEX_ALIAS
     REINDEX_INDEX = settings.ES_REINDEX_INDEX_ALIAS
+    DEFAULT_PROJECT_INDEX = settings.ES_DEFAULT_PROJECT_INDEX_ALIAS
     HOSTS = settings.ES_HOSTS
     FILES_DOC_TYPE = settings.ES_FILES_DOC_TYPE
+    PROJECTS_DOC_TYPE = settings.ES_PROJECTS_DOC_TYPE
     connections.configure(
         default={'hosts': HOSTS}
     )
 except AttributeError as exc:
     logger.error('Missing ElasticSearch config. %s', exc)
     raise
+
+@python_2_unicode_compatible
+class IndexedProject(DocType):
+    title = Text(fields={'_exact': Keyword()})
+    description = Text()
+    created = Date()
+    lastModified = Date()
+    projectId = Keyword()
+    owner = Object(
+        properties={
+            'username': Keyword(),
+            'fullName': Text()
+        }
+    )
+    pi = Object(
+        properties={
+            'username': Keyword(),
+            'fullName': Text()
+        }
+    )
+    coPIs = Object(
+        multi=True,
+        properties={
+            'username': Keyword(),
+            'fullName': Text()
+        }
+    )
+    teamMembers = Object(
+        multi=True,
+        properties={
+            'username': Keyword(),
+            'fullName': Text()
+        }
+    ) 
+
+    @classmethod 
+    def from_id(cls, projectId):
+        search = cls.search()
+        search = search.query()
+        search = search.query('term', **{'projectId': projectId})
+        try:
+            res = search.execute()
+        except TransportError as exc:
+            if exc.status_code == 404:
+                raise
+            res = search.execute()
+        if res.hits.total > 1:
+            for doc in search[1:res.hits.total]:
+                doc.delete()
+            return res[0]
+        elif res.hits.total == 1:
+            return res[0]
+        else:
+            raise DocumentNotFound("No document found for project ID {}.".format(projectId))
+
+    class Meta:
+        index = DEFAULT_PROJECT_INDEX
+        doc_type = PROJECTS_DOC_TYPE
 
 @python_2_unicode_compatible
 class IndexedFile(DocType):

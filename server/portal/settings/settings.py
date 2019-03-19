@@ -751,6 +751,11 @@ ES_HOSTS = settings_secret._ES_HOSTS
 ES_DEFAULT_INDEX = "files"
 ES_DEFAULT_INDEX_ALIAS = "default"
 ES_REINDEX_INDEX_ALIAS = "reindex"
+
+ES_DEFAULT_PROJECT_INDEX = "projects"
+ES_DEFAULT_PROJECT_INDEX_ALIAS = "projects-default"
+ES_REINDEX_PROJECT_INDEX_ALIAS = "projects-reindex"
+
 ES_PUBLIC_INDEX = "publications"
 ES_PUBLIC_INDEX_ALIAS = "public"
 ES_FILES_DOC_TYPE = "files"

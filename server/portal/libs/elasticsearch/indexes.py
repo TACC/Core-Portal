@@ -8,7 +8,7 @@ import logging
 from django.conf import settings
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections
-from portal.libs.elasticsearch.docs.base import IndexedFile
+from portal.libs.elasticsearch.docs.base import IndexedFile, IndexedProject
 from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer
 
 #pylint: disable=invalid-name
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 try:
     DEFAULT_INDEX = settings.ES_DEFAULT_INDEX
+    DEFAULT_PROJECT_INDEX = settings.ES_DEFAULT_PROJECT_INDEX
     HOSTS = settings.ES_HOSTS
     FILES_DOC_TYPE = settings.ES_FILES_DOC_TYPE
     connections.configure(
@@ -56,10 +57,23 @@ def setup_indexes(name, key, force=False):
 
     return index
 
+def index_time_string():
+    """Get the current string-formatted time for use in index names."""
+    return datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+
 def setup_files_index(key='DEFAULT', force=False):
-    time_now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+    time_now = index_time_string()
     name = DEFAULT_INDEX + '-' + time_now
     index = setup_indexes(name, key, force)
     if not index.exists():
         index.doc_type(IndexedFile)
+        index.create()
+
+def setup_projects_index(key='DEFAULT', force=False):
+    key = '{}_PROJECT'.format(key)
+    time_now = index_time_string()
+    name = DEFAULT_PROJECT_INDEX + '-' + time_now
+    index = setup_indexes(name, key, force)
+    if not index.exists():
+        index.doc_type(IndexedProject)
         index.create()

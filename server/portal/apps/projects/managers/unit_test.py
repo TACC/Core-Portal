@@ -49,11 +49,14 @@ class TestProjectsManager(TestCase):
             return_value=Mock(autospec=True)
         )
         self.mock_service_account = self.patch_service_account.start()
+        self.patch_indexer = patch('portal.apps.projects.managers.base.project_indexer')
+        self.mock_project_indexer = self.patch_indexer.start()
 
     def tearDown(self):
         """Teardown."""
         self.patch_get_project.stop()
         self.patch_service_account.stop()
+        self.mock_project_indexer.stop()
 
     def test_add_member_pi(self):
         """Test add a PI to a project."""
@@ -74,6 +77,7 @@ class TestProjectsManager(TestCase):
                 }
             }
         )
+        self.mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])
 
     def test_add_member_co_pi(self):
         """Test add a Co PI to a project."""
@@ -94,6 +98,7 @@ class TestProjectsManager(TestCase):
                 }
             }
         )
+        self.mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])
 
     def test_add_member(self):
         """Test add a member to a project."""
@@ -114,9 +119,10 @@ class TestProjectsManager(TestCase):
                 }
             }
         )
+        self.mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])
 
     def test_remove_member_pi(self):
-        """Test add a PI to a project."""
+        """Test remove a PI from a project"""
         self.mgr.remove_member('PRJ-123', 'pi', 'username')
         self.mock_get_project().remove_member.assert_not_called()
         self.mock_get_project().remove_co_pi.assert_not_called()
@@ -134,9 +140,10 @@ class TestProjectsManager(TestCase):
                 }
             }
         )
+        self.mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])
 
     def test_remove_member_co_pi(self):
-        """Test add a Co PI to a project."""
+        """Test remove a co-PI from a project"""
         self.mgr.remove_member('PRJ-123', 'co_pi', 'username')
         self.mock_get_project().remove_member.assert_not_called()
         self.mock_get_project().remove_pi.assert_not_called()
@@ -154,9 +161,10 @@ class TestProjectsManager(TestCase):
                 }
             }
         )
+        self.mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])
 
     def test_remove_member(self):
-        """Test add a member to a project."""
+        """Test remove a member from a project"""
         self.mgr.remove_member('PRJ-123', 'team_member', 'username')
         self.mock_get_project().remove_co_pi.assert_not_called()
         self.mock_get_project().remove_pi.assert_not_called()
@@ -174,3 +182,4 @@ class TestProjectsManager(TestCase):
                 }
             }
         )
+        self.mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])

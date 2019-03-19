@@ -11,7 +11,9 @@ from elasticsearch_dsl import Q, Search
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
 from portal.libs.elasticsearch.docs.files import BaseESFile
-from portal.libs.elasticsearch.utils import index_agave
+from portal.libs.elasticsearch.utils import index_agave, index_project
+from portal.apps.projects.utils import project_id_to_system_id
+from portal.apps.projects.models import ProjectMetadata
 from portal.libs.agave.models.files import BaseFile
 from portal.libs.agave.utils import service_account
 logger = logging.getLogger(__name__)
@@ -52,6 +54,37 @@ def index_community_data(self, reindex=False):
     # s = s.query("match", **{"system._exact": settings.AGAVE_COMMUNITY_DATA_SYSTEM})
     # resp = s.delete()
     agave_indexer.apply_async(args=[settings.AGAVE_COMMUNITY_DATA_SYSTEM], kwargs={'reindex': reindex})
+
+@shared_task(bind=True, queue='indexing')
+def project_indexer(self, projectId):
+    """
+    Background task to index a single project given its ID
+    """
+    index_project(projectId)
+
+@shared_task(bind=True, queue='indexing')
+def index_all_projects(self):
+    """
+    Retrieve all project metadata records from the database and index them
+    """
+    project_records = ProjectMetadata.objects.all()
+    for project in project_records:
+        project_indexer.apply_async(args=[project.project_id])
+
+@shared_task(bind=True, queue='indexing')
+def index_project_files(self, reindex=False):
+    """
+    Index all storage systems associated with projects.
+    """
+    project_records = ProjectMetadata.objects.all()
+    for project in project_records:
+        projectId = project.project_id
+        uname = project.owner.username
+        systemId = project_id_to_system_id(projectId)
+        agave_indexer.apply_async(
+            args=[systemId],
+            kwargs={'username': uname, 'filePath': '/', 'reindex': reindex}
+        )
 
 # Indexing task for My Data.
 @shared_task(bind=True, queue='indexing')

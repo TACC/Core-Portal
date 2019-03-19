@@ -13,6 +13,7 @@ from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.apps.projects.models import Project, ProjectId
 from portal.apps.projects.serializers import MetadataJSONSerializer
+from portal.apps.search.tasks import project_indexer
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -167,6 +168,9 @@ class ProjectsManager(object):
             'Project created: project_id=%s, project_title:%s, username=%s',
             project_id, title, self.user.username
         )
+
+        project_indexer.apply_async(args=[project_id])
+
         return prj
 
     def list(self, offset=0, limit=100):
@@ -197,6 +201,7 @@ class ProjectsManager(object):
             prj.add_pi(user)
         else:
             raise Exception('Invalid member type.')
+        project_indexer.apply_async(args=[project_id])
         self._add_acls(username, project_id)
         return prj
 
@@ -217,6 +222,7 @@ class ProjectsManager(object):
             prj.remove_pi(user)
         else:
             raise Exception('Invalid member type.')
+        project_indexer.apply_async(args=[project_id])
         self._remove_acls(username, project_id)
         return prj
 
@@ -277,4 +283,5 @@ class ProjectsManager(object):
         prj = self.get_project(project_id, system_id)
         self._update_meta(prj, **data)
         self._update_storage(prj, **data)
+        project_indexer.apply_async(args=[project_id])
         return prj

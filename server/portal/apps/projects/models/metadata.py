@@ -78,4 +78,8 @@ class AbstractProjectMetadata(models.Model):
 
 class ProjectMetadata(AbstractProjectMetadata):
     """Project Metadata"""
-    pass
+
+    def to_dict(self):
+        from portal.apps.projects.serializers import MetadataJSONSerializer
+
+        return MetadataJSONSerializer().default(self)
