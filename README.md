@@ -24,54 +24,9 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 After you clone the repository locally, there are several configuration steps required to prepare the project.
 
 
-#### Copy the example files for `server/conf`, `server/conf/env_files` and `server/portal/settings`:
+#### Create settings_secret.py
 
-_server/conf_
-
-    cd core-exp-portal/server/conf
-    cp rabbitmq.sample.conf rabbitmq.conf
-    cp redis.sample.conf redis.conf
-
-_server/conf/env_files_
-
-    cd core-exp-portal/server/conf/env_files
-    cp portal.sample.env portal.env
-    cp rabbitmq.sample.env rabbitmq.env
-
-_server/portal/settings_
-
-    cd core-exp-portal/server/portal/settings
-    cp settings_secret.example.py settings_secret.py
-
-
-#### Edit the following conf, env_files, nginx and settings files accordingly:
-
-    # server/conf/mysql.cnf
-    # No edits required.
-
-    # server/conf/rabbitmq.conf
-    # No edits required.
-
-    # server/conf/redis.conf
-    # No edits required.
-
-    # server/conf/env_files/portal.env
-    # No edits required.
-
-    # server/conf/env_files/rabbitmq.env
-    # No edits required
-
-    # server/conf/nginx/nginx.conf
-    # No edits required
-
-    # server/portal/settings/settings_secret.py
-    # These values will be secured in UT Stache under `CEP_portal_secrets`
-    # Do NOT copy the database settings from Stache. Use what was in settings_secret.example.py
-    # Make sure you keep the DJANGO APP: DATA DEPOT information from settings_secret.example.py
-
-
-- _Note: Those files that do not require edits may still need to be customized to fit the neeeds of the project. Edit them as necessary._
-
+Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `CEP_portal_secrets` entry secured on [UT Stache](https://stache.security.utexas.edu)
 
 #### Build the image for the portal's django container:
 
@@ -92,9 +47,9 @@ _server/portal/settings_
 -  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 8.x and not an earlier version_ 
 
 
-#### Initialize the application in the `cep_django` container:
+#### Initialize the application in the `cep_prtl_django` container:
 
-    docker exec -it cep_django /bin/bash
+    docker exec -it cep_prtl_django /bin/bash
     python manage.py migrate
     python manage.py createsuperuser
     python manage.py collectstatic
@@ -117,7 +72,7 @@ _server/portal/settings_
 ### Installing local CA
 
 For your browser to open your local development environment, you need to configure your computer to accept the development environment's self-signed certificates.
-Every file needed is in `conf/nginx/certs`.
+Every file needed is in `conf/nginx/certificates`.
 
 #### OSX
 
@@ -163,6 +118,14 @@ Every file needed is in `conf/nginx/certs`.
 5. Make sure `cep.dev.ext` is correct
 6. Generate Cert: `openssl x509 -req -in cep.dev.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out cep.dev.crt -days 365 -sha256 -extfile cep.dev.ext` (Cert is valid for 365 days. Keep default form values defined in .conf file)
 7. Files created: `cep.dev.key` (site private key), `cep.dev.csr` (site certificate signing request), `cep.dev.crt` (actual site certificate), `ca.key` (CA private key) and `ca.pem` (CA certificate).
+
+### Additional Setup
+
+Follow the Confluence pages below to set up Projects, Notifications, and Elastic Search.
+
+- Projects: https://confluence.tacc.utexas.edu/x/pQCPAQ
+- Notifications: https://confluence.tacc.utexas.edu/x/3QnG
+- ElasticSearch: https://confluence.tacc.utexas.edu/x/aARkAQ
 
 
 ### TBD
