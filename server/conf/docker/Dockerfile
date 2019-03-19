@@ -18,7 +18,9 @@ RUN yum -y install nodejs
 #install uwsgi
 RUN pip install uwsgi
 
-RUN pip install --upgrade pip && pip install uwsgitop
+# RUN pip install --upgrade pip && pip install uwsgitop
+RUN pip install --upgrade pip
+RUN pip install uwsgitop==0.10
 
 COPY server/requirements.txt /tmp/requirements.txt
 
@@ -33,4 +35,4 @@ WORKDIR /srv/www/portal/server
 
 #RUN npm install
 
-# RUN python manage.py collectstatic -c --traceback --noinput
+#RUN python manage.py collectstatic -c --traceback --noinput
