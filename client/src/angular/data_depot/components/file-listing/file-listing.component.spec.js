@@ -3,9 +3,9 @@ describe('FileListingCtrl', ()=>{
     let FileListing;
 
     // Mock requirements.
-    beforeEach(angular.mock.module("portal"));
+    beforeEach(angular.mock.module('portal'));
     beforeEach( ()=> {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
+        angular.module('django.context', []).constant('Django', { user: 'test_user' });
         angular.mock.inject((
             _$q_,
             _$rootScope_,
@@ -57,51 +57,84 @@ describe('FileListingCtrl', ()=>{
             queryString: undefined
         });
     });
-    /*
-    it('should go to correct state when browsing', () => {
-        spyOn(
-            controller.$state,
-            'go'
-        );
-        controller.onBrowse(
-            {preventDefault: ()=>{return;},
-            stopPropagation: ()=>{return;}},
-            FileListing.init({system: 'mock.system', path:'path/to/dir', type:'dir'})
-        );
-        expect(controller.$state.go).toHaveBeenCalledWith(
-            controller.params.browseState,
-            {
-                systemId: 'mock.system',
-                filePath: 'path/to/dir',
-                query_string: null
-            }
-        );
-    });
-    */
+
     it('should show/hide the Show More Files button depending on browser state', () => {
         //hide button when listing.children is undefined, e.g. when an error occurs
-        controller.browser = {listing: {}, busyListing: false, busy: false, reachedEnd: false}
-        expect(controller.showMoreFilesButton()).toBe(false)
+        controller.browser = { listing: {}, busyListing: false, busy: false, reachedEnd: false };
+        expect(controller.showMoreFilesButton()).toBe(false);
         //hide button when a listing is completed and the reachedEnd flag has been set to true
-        controller.browser = {listing: {children: []}, busyListing: false, busy: false, reachedEnd: true}
-        expect(controller.showMoreFilesButton()).toBe(false)
+        controller.browser = { listing: { children: [] }, busyListing: false, busy: false, reachedEnd: true };
+        expect(controller.showMoreFilesButton()).toBe(false);
         //hide button while initial listing is being retrieved
-        controller.browser = {listing: {children: []}, busyListing: true, busy: true, reachedEnd: false}
-        expect(controller.showMoreFilesButton()).toBe(false)
+        controller.browser = { listing: { children: [] }, busyListing: true, busy: true, reachedEnd: false };
+        expect(controller.showMoreFilesButton()).toBe(false);
         //show button when listing.children is defined but reachedEnd is still false
-        controller.browser = {listing: {children: []}, busyListing: false, busy: false, reachedEnd: false}
-        expect(controller.showMoreFilesButton()).toBe(true)
-    })
+        controller.browser = { listing: { children: [] }, busyListing: false, busy: false, reachedEnd: false };
+        expect(controller.showMoreFilesButton()).toBe(true);
+    });
 });
+
+
+describe('FileListingComponent', function() {
+    let controller, $scope, $q, $compile, element, DataBrowserService, FileListing;
+
+    // Mock requirements.
+    beforeEach(angular.mock.module('portal'));
+    beforeEach( ()=> {
+        angular.module('django.context', []).constant('Django', { user: 'test_user' });
+        angular.mock.inject((
+            _$q_,
+            _$rootScope_,
+            _DataBrowserService_,
+            _$state_,
+            _$stateParams_,
+            $componentController,
+            _$compile_,
+            _FileListing_
+        ) => {
+            $q = _$q_;
+            DataBrowserService = _DataBrowserService_;
+            FileListing = _FileListing_;
+            $compile = _$compile_;
+            $scope = _$rootScope_.$new();
+            $scope.onBrowse = (f)=>{};
+            $scope.listingParams = {systemId: 'test', limit: 100, offset: 0};
+            let componentHtml = '<file-listing-component params="listingParams" on-browse="onBrowse($event, file)"></file-listing-component>';
+            element = angular.element(componentHtml);
+
+        });
+    });
+
+    // TODO: Add more file listing tests in here
+
+    it('Should have a message if there are no files in the listing', () => {
+        spyOn(FileListing, 'get').and.returnValue(
+            $q.when({ name:'test', path: '/test', children: [] })
+        );
+        element = $compile(element)($scope);
+        $scope.$digest();
+        expect(element.html()).toContain('No files to show!');
+    });
+
+    it('Should not have the no files message when there are files in a listing', () => {
+        spyOn(FileListing, 'get').and.returnValue(
+            $q.when({ name:'test', path: '/test', children: [{}, {}] })
+        );
+        element = $compile(element)($scope);
+        $scope.$digest();
+        expect(element.html()).not.toContain('No files to show!');
+    });
+});
+
 
 // TODO: This functionality should be moved to data-view.controller
 describe('FileListingCtrl file modal open', function() {
-    let controller, $scope, $q;
+    let controller, $scope, $q;
 
     // Mock requirements.
-    beforeEach(angular.mock.module("portal"));
+    beforeEach(angular.mock.module('portal'));
     beforeEach( ()=> {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
+        angular.module('django.context', []).constant('Django', { user: 'test_user' });
         angular.mock.inject((
             _$q_,
             _$rootScope_,
@@ -132,7 +165,7 @@ describe('FileListingCtrl file modal open', function() {
             
             spyOn(controller.DataBrowserService, 'browse').and.callFake(function() {
                 var deferred = $q.defer();
-                deferred.resolve("Response");
+                deferred.resolve('Response');
                 return deferred.promise;
             });
             spyOn(controller.DataBrowserService, 'preview');

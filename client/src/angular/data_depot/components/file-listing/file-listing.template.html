@@ -68,6 +68,16 @@
           <td>{{ file.lastModified|date:"short" }}</td>
           <td> {{ file.permissions | agaveperms}}
       </tr>
+      <tr ng-if="!($ctrl.browser.busyListing || $ctrl.browser.busy) && $ctrl.browser.listing.children.length === 0" >
+        <td colspan="4">
+            <div  class="text-center">
+                <p class="lead">
+                    No files to show!
+                    <br><i class="fa fa-folder-open-o"></i>
+                </p>
+              </div>
+        </td>
+      </tr>
     </tbody>
   </table> <!-- ENDS FILE LISTING TABLE -->
 </div>
