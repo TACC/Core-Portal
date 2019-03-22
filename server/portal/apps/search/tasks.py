@@ -22,9 +22,6 @@ logger = logging.getLogger(__name__)
 @shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="1/s")
 def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, update_pems = False, ignore_hidden=True, reindex=False):
 
-    # prevent recursive indexing until we can do it without thrashing Agave
-    recurse = False
-
     from portal.libs.elasticsearch.utils import index_level
     from portal.libs.agave.utils import walk_levels
 
