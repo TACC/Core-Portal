@@ -191,6 +191,9 @@
 .icon-fiji:before {
     content: "\e90d";
 }
+.icon-blender:before {
+    content: "\e90e";
+}
 
 @media (max-width: 992px) {
     .app-version {
