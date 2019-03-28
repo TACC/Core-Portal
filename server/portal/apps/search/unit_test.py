@@ -3,11 +3,13 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from portal.apps.auth.models import AgaveOAuthToken
 from django.conf import settings
+from elasticsearch_dsl import Q
 
 from portal.apps.search.api.lookups import search_lookup_manager
 from portal.apps.search.api.managers.cms_search import CMSSearchManager
 from portal.apps.search.api.managers.shared_search import SharedSearchManager
 from portal.apps.search.api.managers.private_data_search import PrivateDataSearchManager
+from portal.apps.search.api.managers.project_search import ProjectSearchManager
 
 from django.http import HttpRequest
 from django.contrib.sessions.models import Session
@@ -167,3 +169,40 @@ class TestSiteSearchView(TestCase):
     def test_cms_files_type_filter_query_includes_sortOrder_parameter(self):
         """Test that the search query is correctly called using the sortOrder value"""
         return True;
+
+class TestProjectSearchManager(TestCase):
+
+    def test_mgr_init(self):
+        mgr = ProjectSearchManager(**{'username': 'test_user', 'query_string': 'test_query'})
+        self.assertEqual(mgr._username, 'test_user')
+        self.assertEqual(mgr._query_string, 'test_query') 
+
+    @patch('portal.apps.search.api.managers.project_search.BaseSearchManager.filter')
+    @patch('portal.apps.search.api.managers.project_search.BaseSearchManager.query')
+    @patch('portal.apps.search.api.managers.project_search.BaseSearchManager.extra')
+    def test_search(self, mock_extra, mock_query, mock_filter):
+        mgr = ProjectSearchManager(**{'username': 'test_user', 'query_string': 'test_query'})
+        mgr.search(offset=0, limit=100)
+
+        owner_query = Q({'term': {'owner.username': 'test_user'}})
+        pi_query = Q({'term': {'pi.username': 'test_user'}})
+        team_query = Q({'term': {'teamMembers.username': 'test_user'}}) 
+
+        mock_filter.assert_called_once_with(owner_query | pi_query | team_query)
+        mock_extra.assert_called_once_with(from_=0, size=100)
+
+    @patch('portal.apps.search.api.managers.project_search.IndexedProject.search')
+    def test_listing(self, mock_search):
+        mock_mgr = MagicMock()
+        mock_storage = MagicMock()
+        mock_mgr.get_by_project_id.return_value.storage = mock_storage
+
+        mock_hit = MagicMock()
+        mock_hit.projectId = 'testProject1'
+
+        mock_search().execute.return_value = [mock_hit]
+
+        mgr = ProjectSearchManager(**{'username': 'test_user', 'query_string': 'test_query'})
+        listing = mgr.list(mgr=mock_mgr)
+
+        self.assertEqual(listing, [mock_storage])

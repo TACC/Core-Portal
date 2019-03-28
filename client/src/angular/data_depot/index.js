@@ -54,8 +54,11 @@ function config(
         abstract: true,
     })
     .state('wb.data_depot.projects.list', {
-        url: '',
-        component: 'projectListComponent'
+        url: '?query_string',
+        component: 'projectListComponent',
+        params: {
+            query_string: null
+        }
     })
     .state('wb.data_depot.projects.listing', {
         url: '{systemId}{filePath:any}?query_string',

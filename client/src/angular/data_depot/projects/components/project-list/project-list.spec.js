@@ -56,4 +56,7 @@ describe('ProjectListCtrl', ()=>{
         $scope.$apply();
         expect(controller.data.projects).toBe('project response')
     })
+    it('should set search state', () => {
+        expect(controller.DataBrowserService.apiParams.searchState).toBe('wb.data_depot.projects.list')
+    })
 });

@@ -1,10 +1,12 @@
 
 class ProjectListCtrl {
-    constructor($scope, $state, ProjectService, $uibModal) {
+    constructor($scope, $state, $stateParams, ProjectService, DataBrowserService, $uibModal) {
         'ngInject';
         this.$state = $state;
+        this.$stateParams = $stateParams
         this.ProjectService = ProjectService;
         this.$uibModal = $uibModal;
+        this.DataBrowserService = DataBrowserService
     }
     $onInit() {
         this.ui = {};
@@ -14,12 +16,13 @@ class ProjectListCtrl {
                 route: 'wb.data_depot.projects.list'
             }
         };
+        this.DataBrowserService.apiParams.searchState = 'wb.data_depot.projects.list';
         this.data.projects = [];
         this.loadProjects();
     }
     loadProjects() {
         this.ui.busy = true;
-        this.ProjectService.list().then(projects => {
+        this.ProjectService.list({query_string: this.$stateParams.query_string}).then(projects => {
             this.ui.busy = false;
             this.data.projects = projects;
         });

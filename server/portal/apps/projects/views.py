@@ -13,6 +13,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.managers.base import ProjectsManager
+from portal.apps.search.api.managers.project_search import ProjectSearchManager
 
 
 LOGGER = logging.getLogger(__name__)
@@ -29,12 +30,21 @@ class ProjectsApiView(BaseApiView):
 
     def get(self, request):
         """GET handler."""
+        query_string = request.GET.get('query_string')
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
-        res = ProjectsManager(request.user).list(
+
+        mgr = ProjectsManager(request.user)
+
+        if query_string is not None:
+            search_mgr = ProjectSearchManager(username=request.user.username, query_string=query_string)
+            search_mgr.search(offset=offset, limit=limit)
+            res = search_mgr.list(mgr=mgr)
+        else:
+            res = mgr.list(
             offset=offset,
             limit=limit
-        )
+            )
         return JsonResponse(
             {
                 'status': 200,

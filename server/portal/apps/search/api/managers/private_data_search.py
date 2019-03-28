@@ -21,21 +21,21 @@ class PrivateDataSearchManager(BaseSearchManager):
         if request:
             self._username = request.user.username
             self._query_string = request.GET.get('queryString')
-            self._sortKey = request.GET.get('sortKey')
-            self._sortOrder = request.GET.get('sortOrder')
+            self._sort_key = request.GET.get('sort_key')
+            self._sort_order = request.GET.get('sort_order')
+            self._system = request.GET.get('system')
         else:
             self._username = kwargs.get(
                 'username', settings.PORTAL_ADMIN_USERNAME)
             self.query_string = kwargs.get('query_string')
+            self._system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(
+                self._username)
 
         self.sortFields = {
             'name': 'name._exact',
             'date_created': 'lastUpdated',
             'size': 'length'
         }
-
-        self._system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(
-            self._username)
         super(PrivateDataSearchManager, self).__init__(
             IndexedFile, IndexedFile.search())
 
@@ -45,9 +45,9 @@ class PrivateDataSearchManager(BaseSearchManager):
         self.query("query_string", query=self._query_string,
                    fields=["name", "name._exact"], minimum_should_match="80%")
         self.filter(Q({'term': {'system._exact': self._system}}))
-        sort_arg = self.sortFields.get(self._sortKey, None)
+        sort_arg = self.sortFields.get(self._sort_key, None)
         if sort_arg:
-            self.sort({sort_arg: {'order': self._sortOrder}})
+            self.sort({sort_arg: {'order': self._sort_order}})
         self.extra(from_=offset, size=limit)
         # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         return self._search
