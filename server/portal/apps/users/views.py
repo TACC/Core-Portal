@@ -131,7 +131,10 @@ class AllocationsView(BaseApiView):
             'Lonestar5': 'ls5.tacc.utexas.edu',
             'Maverick2': 'maverick.tacc.utexas.edu',
             'Maverick3': 'maverick2.tacc.utexas.edu',
-            'Rodeo2': 'rodeo.tacc.utexas.edu'
+            'Rodeo2': 'rodeo.tacc.utexas.edu',
+            'Wrangler': 'wrangler.tacc.utexas.edu',
+            'Wrangler2': 'wrangler.tacc.utexas.edu',
+            'Wrangler3': 'wrangler.tacc.utexas.edu',
         }
 
         username = request.user.username
