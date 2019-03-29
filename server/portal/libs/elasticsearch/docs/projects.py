@@ -13,15 +13,18 @@ from portal.libs.elasticsearch.exceptions import DocumentNotFound
 
 class BaseESProject(BaseESResource):
     def __init__(self, projectId, wrapped_doc=None, **kwargs):
-        if wrapped_doc:
-            super(BaseESProject, self).__init__(projectId, wrapped_doc, **kwargs)
-        else:
-            try:
-                wrapped_doc = IndexedProject.from_id(projectId)
-                super(BaseESProject, self).__init__(projectId, wrapped_doc, **kwargs)
-            except DocumentNotFound:
-                wrapped_doc = IndexedProject(projectId=projectId, **kwargs)
-                super(BaseESProject, self).__init__(projectId, wrapped_doc)
+
+        super(BaseESProject, self).__init__(wrapped_doc, **kwargs)
+        if not wrapped_doc:
+            self._populate(projectId, **kwargs)
+
+    def _populate(self, projectId, **kwargs):
+        try:
+            self._wrapped = IndexedProject.from_id(projectId)
+            if kwargs:
+                self._wrapped.update(**kwargs)
+        except DocumentNotFound:
+            self._wrapped = IndexedProject.from_id(projectId, **kwargs)
 
     def save(self):
         return self._wrapped.save()

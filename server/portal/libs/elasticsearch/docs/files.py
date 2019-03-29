@@ -35,54 +35,60 @@ class BaseESFile(BaseESResource):
         This class directly wraps an Agave indexed file.
 
         """
-        if reindex:
-            self.indexed_file_cls = ReindexedFile
-        else:
-            self.indexed_file_cls = IndexedFile
-        
-        if wrapped_doc:
-            super(BaseESFile, self).__init__(username, wrapped_doc, **kwargs)
-        else: 
-            try:
-                wrapped_doc = self.indexed_file_cls.from_path(username, system, path)
-                super(BaseESFile, self).__init__(username, wrapped_doc, **kwargs)
-            except DocumentNotFound:
-                wrapped_doc = self.indexed_file_cls(system=system,
+        super(BaseESFile, self).__init__(wrapped_doc, **kwargs)
+        self._username = username
+        self._reindex = reindex
+
+        if not wrapped_doc:
+            self._populate(system, path, **kwargs)
+
+    def _populate(self, system, path, **kwargs):
+        try:
+            self._wrapped = self._index_cls(self._reindex).from_path(system, path)
+        except DocumentNotFound:
+            self._wrapped = self._index_cls(self._reindex)(system=system,
                                             path=path,
                                             **kwargs)
-                super(BaseESFile, self).__init__(username, wrapped_doc)
-        if getattr(self, 'name', None) is None:
-            self._wrapped.name = os.path.basename(self.path)
+    @classmethod
+    def _index_cls(cls, reindex):
+        if reindex:
+            return ReindexedFile
+        else:
+            return IndexedFile
 
-    def children(self, offset=0, limit=100):
-        """Children list
+    def children(self, limit=100):
+        """
+        Yield all children (i.e. documents whose basePath matches self.path) by 
+        paginating with the search_after api.
 
         """
-        try:
-            res, search = self.indexed_file_cls.children(self._username,
-                                                    self.system,
-                                                    self.path)
-            limit = offset+limit
-            for doc in search[offset:limit]:
-                yield BaseESFile(self._username, doc.system, doc.path)
+        res, search_after = self._index_cls(self._reindex).children(
+                                                self.system,
+                                                self.path, 
+                                                limit=limit)
+        for doc in res:
+                yield BaseESFile(self._username, wrapped_doc=doc)
 
-        except DocumentNotFound:
-            pass
+        while not len(res) < limit: # If the number or results doesn't match the limit, we're done paginating.
+            # Retrieve the sort key from the last element then use  
+            # search_after to get the next page of results
+            res, search_after = self._index_cls(self._reindex).children(
+                                                self.system,
+                                                self.path, 
+                                                limit=limit,
+                                                search_after=search_after)
+            for doc in res:
+                yield BaseESFile(self._username, wrapped_doc=doc)
 
     def save(self, using=None, index=None, validate=True, **kwargs):
         """Save document
-
         """
         base_path = os.path.dirname(self.path)
-        self._wrapped.basePath = base_path
+        self._update(**{'basePath': base_path})
         return self._wrapped.save()
 
-    def delete(self, using=None, index=None, **kwargs):
-        """Overwriting to implement delte recursively.
-
-        :param index: elasticsearch index to use.
-        :param using: connection alias to use.
-
+    def delete(self):
+        """Overwriting to implement delete recursively.
         .. seealso:
             Module :class:`elasticsearch_dsl.document.DocType`
 
@@ -90,5 +96,5 @@ class BaseESFile(BaseESResource):
         if self.format == 'folder':
             children = self.children()
             for child in children:
-                child.delete(using, index, **kwargs)
-        self._wrapped.delete(using, index, **kwargs)
+                child.delete()
+        self._wrapped.delete()

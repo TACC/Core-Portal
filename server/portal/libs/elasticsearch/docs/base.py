@@ -8,7 +8,7 @@ import logging
 import copy
 import json
 import os
-from datetime import datetime
+import datetime
 from django.conf import settings
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import (Search, DocType, Date, Nested,
@@ -129,11 +129,11 @@ class IndexedFile(DocType):
     })
    
     def save(self, **kwargs):
-        self.lastUpdated = datetime.now()
+        self.lastUpdated = datetime.datetime.now()
         return super(IndexedFile, self).save(**kwargs)
 
     @classmethod
-    def from_path(cls, username, system, path):
+    def from_path(cls, system, path):
         search = cls.search()
         search = search.query('term', **{'path._exact': path})
         search = search.filter('term', **{'system._exact': system})
@@ -142,34 +142,36 @@ class IndexedFile(DocType):
         except TransportError as exc:
             if exc.status_code == 404:
                 raise
-            res = search.execute()
         if res.hits.total > 1:
-            for doc in search[1:res.hits.total]:
+            for doc in res[1:res.hits.total]:
                 doc.delete()
             return res[0]
         elif res.hits.total == 1:
             return res[0]
         else:
-            raise DocumentNotFound("No document found for username={} "
-                                   "{}/{}".format(username, system, path))
+            raise DocumentNotFound("No document found for "
+                                   "{}/{}".format(system, path))
 
     @classmethod
-    def children(cls, username, system, path):
+    def children(cls, system, path, limit=100, search_after=None):
         search = cls.search()
         search = search.query('term', **{'basePath._exact': path})
         search = search.filter('term', **{'system._exact': system})
-        search = search.sort('path._exact')
+        search = search.sort('_uid')
+        search = search.extra(size=limit)
+        if search_after:
+            search = search.extra(search_after=search_after)
         try:
             res = search.execute()
         except TransportError as exc:
             if exc.status_code == 404:
                 raise
-            res = search.execute()
-        if res.hits.total:
-            return (res, search)
+        if len(res.hits) > 0:
+            wrapped_children = [cls.get(doc._id) for doc in res]
+            sort_key = res.hits.hits[-1]['sort']
+            return wrapped_children, sort_key
         else:
-            raise DocumentNotFound("No document found for username={} "
-                                   "{}/{}".format(username, system, path))
+            return [], None
 
     class Meta:
         index = DEFAULT_INDEX
@@ -186,50 +188,38 @@ class BaseESResource(object):
     """Base class used to represent an Elastic Search resource.
 
     This class implements basic wrapping functionality.
+    .. note::
+
+        Params stored in ``_wrapped`` are made available as attributes
+        of the class.
     """
-    def __init__(self, username, wrapped_doc, **kwargs):
-        """This class will allow easy access to a JSON object which has been
-        converted into a dictionary.
-
-        :param str username: username
-
-        .. note::
-
-        Every parameter given other than :param:`client` will be
-        internally stored in ``_wrapped``.
-
-        .. note::
-
-        Attributes can be access using snake_case or lowerCamelCase.
-
-        """
-        self._username = username
-        if kwargs:
-            wrapped_doc.update(**kwargs)
-        self._wrapped = wrapped_doc
-
+    def __init__(self, wrapped_doc=None, **kwargs):
+        self._wrap(wrapped_doc, **kwargs)
+        
     def to_dict(self):
         """Return wrapped doc as dict"""
         return self._wrapped.to_dict()
 
+    def _wrap(self, wrapped_doc, **kwargs):
+        if wrapped_doc and kwargs:
+            wrapped_doc.update(**kwargs)
+        object.__setattr__(self, '_wrapped', wrapped_doc)
+
+    def _update(self, **kwargs):
+        self._wrapped.update(**kwargs)
+
     def __getattr__(self, name):
-        """Custom attribute getter for correct translation
-
-        snake_case to lowerCamelCase translation happens here as well
-        as wrapping nested objects in this class"""
-
-        camel_name = ESUtils.to_camel_case(name)
+        """Custom attribute getter
+        """
         _wrapped = object.__getattribute__(self, '_wrapped')
-        if camel_name not in _wrapped:
-            return object.__getattribute__(self, name)
-
-        val = getattr(_wrapped, camel_name)
-        return val
+        if _wrapped and hasattr(_wrapped, name):
+            return getattr(_wrapped, name) 
 
     def __setattr__(self, name, value):
-        if name not in ['_wrapped', '_username', 'indexed_file_cls']:
-            camel_name = ESUtils.to_camel_case(name)
-            setattr(self._wrapped, camel_name, value)
+        _wrapped = object.__getattribute__(self, '_wrapped')
+        if _wrapped and hasattr(_wrapped, name):
+            object.__setattr__(self._wrapped, name, value)
             return
-
-        super(BaseESResource, self).__setattr__(name, value)
+        else:
+            object.__setattr__(self, name, value)
+            return
