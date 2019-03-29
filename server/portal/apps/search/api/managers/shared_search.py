@@ -32,7 +32,8 @@ class SharedSearchManager(BaseSearchManager):
         self.sortFields = {
             'name': 'name._exact',
             'date_created': 'lastUpdated',
-            'size': 'length'
+            'size': 'length',
+            'last_modified': 'lastModified'
         }
 
         super(SharedSearchManager, self).__init__(
@@ -43,9 +44,14 @@ class SharedSearchManager(BaseSearchManager):
 
         self.filter(Q({'term': {'system._exact': self._system}}))
 
+        if len(self._query_string) <= 20:
+            query_analyzer = 'file_query_analyzer_short'
+        else:
+            query_analyzer = 'file_query_analyzer_long'
+            
         self.query("query_string", query=self._query_string,
-                   fields=["name", "name._exact", "name._pattern"], 
-                   analyzer='file_query_analyzer')
+                   fields=["name", "name._exact", "name._pattern"],
+                   analyzer=query_analyzer)
 
         self.extra(from_=offset, size=limit)
 

@@ -21,9 +21,13 @@ class PrivateDataSearchManager(BaseSearchManager):
         if request:
             self._username = request.user.username
             self._query_string = request.GET.get('queryString')
-            self._sort_key = request.GET.get('sort_key')
-            self._sort_order = request.GET.get('sort_order')
+            self._sort_key = request.GET.get('sortKey')
+            self._sort_order = request.GET.get('sortOrder')
             self._system = request.GET.get('system')
+
+            if self._system is None:
+                self._system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(
+                self._username)
         else:
             self._username = kwargs.get(
                 'username', settings.PORTAL_ADMIN_USERNAME)
@@ -34,7 +38,8 @@ class PrivateDataSearchManager(BaseSearchManager):
         self.sortFields = {
             'name': 'name._exact',
             'date_created': 'lastUpdated',
-            'size': 'length'
+            'size': 'length',
+            'last_modified': 'lastModified'
         }
         super(PrivateDataSearchManager, self).__init__(
             IndexedFile, IndexedFile.search())
