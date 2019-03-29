@@ -44,7 +44,8 @@ class SharedSearchManager(BaseSearchManager):
         self.filter(Q({'term': {'system._exact': self._system}}))
 
         self.query("query_string", query=self._query_string,
-                   fields=["name", "name._exact"], minimum_should_match="80%")
+                   fields=["name", "name._exact", "name._pattern"], 
+                   analyzer='file_query_analyzer')
 
         self.extra(from_=offset, size=limit)
 

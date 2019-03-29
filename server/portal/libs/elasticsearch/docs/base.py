@@ -18,7 +18,7 @@ from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError
 from portal.libs.elasticsearch import utils as ESUtils
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
-from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer
+from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, file_pattern_analyzer, reverse_file_analyzer
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -99,10 +99,14 @@ class IndexedProject(DocType):
 @python_2_unicode_compatible
 class IndexedFile(DocType):
     name = Text(analyzer=file_analyzer, fields={
-        '_exact': Keyword()})
+        '_exact': Keyword(),
+        '_pattern': Text(analyzer=file_pattern_analyzer),
+        '_reverse': Text(analyzer=reverse_file_analyzer)})
     path = Text(fields={
         '_comps': Text(analyzer=path_analyzer),
-        '_exact': Keyword()})
+        '_exact': Keyword(),
+        '_reverse': Text(analyzer=reverse_file_analyzer)},
+        )
     lastModified = Date()
     length = Long()
     format = Text()

@@ -39,6 +39,7 @@ class Command(BaseCommand):
         if not swap_only:
             confirm = input('This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(reindex_index_alias))
             if confirm != 'Y':
+                self.stdout.write('Aborting reindex.')
                 return
             # Set up a fresh reindexing alias.
             setup_files_index(key='REINDEX', force=True)
