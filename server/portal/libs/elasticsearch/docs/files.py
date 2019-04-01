@@ -83,8 +83,6 @@ class BaseESFile(BaseESResource):
     def save(self, using=None, index=None, validate=True, **kwargs):
         """Save document
         """
-        base_path = os.path.dirname(self.path)
-        self._update(**{'basePath': base_path})
         return self._wrapped.save()
 
     def delete(self):

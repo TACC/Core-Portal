@@ -31,7 +31,7 @@ def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, upd
         pems_username = settings.PORTAL_ADMIN_USERNAME
     client = service_account()
 
-    if filePath[0] != '/':
+    if not filePath.startswith('/'):
         filePath = '/' + filePath
 
     try:

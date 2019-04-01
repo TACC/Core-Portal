@@ -74,6 +74,7 @@ def index_level(path, folders, files, systemId, username, reindex=False):
     from portal.libs.elasticsearch.docs.files import BaseESFile
     for obj in folders + files:
             obj_dict = obj.to_dict()
+            obj_dict['basePath'] = os.path.dirname(obj.path)
             doc = BaseESFile(username, reindex=reindex, **obj_dict)
             saved = doc.save()
 

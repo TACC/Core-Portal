@@ -121,7 +121,6 @@ class TestBaseESFile(TestCase):
         object.__setattr__(base, '_wrapped', wrapped_doc)
 
         base.save()
-        self.mock_base_update.assert_called_with(**{'basePath': '/path/to'})
         mock_save.assert_called_with()
 
     
