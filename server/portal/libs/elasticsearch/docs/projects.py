@@ -24,7 +24,7 @@ class BaseESProject(BaseESResource):
             if kwargs:
                 self._wrapped.update(**kwargs)
         except DocumentNotFound:
-            self._wrapped = IndexedProject.from_id(projectId, **kwargs)
+            self._wrapped = IndexedProject(projectId=projectId, **kwargs)
 
     def save(self):
         return self._wrapped.save()
