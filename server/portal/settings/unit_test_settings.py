@@ -249,7 +249,7 @@ DATABASES = {
 PORTAL_NAMESPACE='test'
 
 PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/path/to/home_dirs'
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = 'work'
+PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
 PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'stampede2'
 # Relative path from the default sotrage system where home directories
 # should be created.

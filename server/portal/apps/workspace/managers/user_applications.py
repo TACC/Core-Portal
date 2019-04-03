@@ -122,7 +122,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         host_exec = ExecutionSystem(self.client, host_app.execution_system)
 
         host_exec_user_role = host_exec.roles.for_user(username=self.user.username)
-        if host_exec_user_role.role == 'OWNER':
+        if host_exec_user_role and host_exec_user_role.role == 'OWNER':
             cloned_exec_sys = host_exec
             logger.debug('Using current execution system {}'.format(cloned_exec_sys.id))
         else:
@@ -302,7 +302,11 @@ class UserApplicationsManager(AbstractApplicationsManager):
         system.login.auth.username = self.user.username
         system.login.auth.type = system.AUTH_TYPES.SSHKEYS
 
-        system.scratch_dir = system.storage.home_dir
+        scratch_hosts = ['data', 'stampede2', 'lonestar5']
+        if system.storage.host in [s + '.tacc.utexas.edu' for s in scratch_hosts]:
+            system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch')
+        else:
+            system.scratch_dir = system.storage.home_dir
         system.work_dir = system.storage.home_dir
 
         if system.scheduler == 'SLURM':

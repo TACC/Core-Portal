@@ -102,6 +102,11 @@ class ApplicationFormCtrl {
         } else {
             items.push('maxRunTime', 'name', 'archivePath');
         }
+        if (this.app.parallelism == 'PARALLEL' && !this.app.tags.includes('hideNodeCount')) {
+            items.push('nodeCount');
+        } else {
+            delete this.schema.properties.nodeCount;
+        }
 
         this.form.push({
             type: 'fieldset',
@@ -231,6 +236,12 @@ class ApplicationFormCtrl {
                     }
                 }
             }
+
+            // Calculate processorsPerNode if nodeCount parameter submitted
+            if ('nodeCount' in jobData) {
+                jobData.processorsPerNode = jobData.nodeCount * (this.app.defaultProcessorsPerNode / this.app.defaultNodeCount);
+            }
+
             jobReady.jobDataReady = true;
         }
     }

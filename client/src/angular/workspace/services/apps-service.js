@@ -180,6 +180,16 @@ class Apps {
             id: 'archivePath',
             'x-schema-form': { placeholder: 'archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}' }
         };
+
+        schema.properties.nodeCount = {
+            title: 'Node Count',
+            description: `Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.`,
+            type: 'integer',
+            default: app.defaultNodeCount,
+            minimum: 1,
+            maximum: app.maxNodeCount,
+        };
+
         return schema;
     }
 

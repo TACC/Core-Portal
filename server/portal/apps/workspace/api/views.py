@@ -58,6 +58,13 @@ class AppsView(BaseApiView):
             data['resource'] = exec_sys.login.host
             data['scheduler'] = exec_sys.scheduler
 
+            # set maxNodeCount from system queue for app
+            if (data['parallelism'] == 'PARALLEL') and ('defaultQueue' in data):
+                for queue in exec_sys.queues.all():
+                    if queue.name == data['defaultQueue']:
+                        data['maxNodeCount'] = queue.maxNodes
+                        break
+
             lic_type = _app_license_type(app_id)
             data['license'] = {
                 'type': lic_type
