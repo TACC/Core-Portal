@@ -3,12 +3,14 @@ class DataDepotToolbarCtrl {
         $scope,
         $state,
         $uibModal,
-        DataBrowserService) {
+        DataBrowserService,
+        ZipService) {
         'ngInject';
         this.$scope = $scope;
         this.$state = $state;
         this.$uibModal = $uibModal;
         this.DataBrowserService = DataBrowserService;
+        this.ZipService = ZipService;
     }
 
     $onInit() {
@@ -81,6 +83,40 @@ class DataDepotToolbarCtrl {
             'systemId': (this.browser.listing || {}).system,
             'filePath': ''
         });
+    }
+
+    compress() {
+        this.ZipService.compress(this.browser.selected);
+    }
+
+    extract() {
+        this.ZipService.extract(this.browser.selected);
+    }
+
+    compressButtonDisabled() {
+        return this.ZipService.compressing || 
+               !this.tests.canCompress || 
+               this.browser.busy || 
+               this.browser.busyListing;
+    }
+
+    compressButtonClass() {
+        return this.ZipService.compressing
+                    ? 'fa fa-spinner fa-spin data-depot-compress'
+                    : 'icon-compress data-depot-compress';
+    }
+
+    extractButtonDisabled() {
+        return this.ZipService.extracting ||
+                !this.tests.canExtract || 
+                this.browser.busy || 
+                this.browser.busyListing;
+    }
+
+    extractButtonClass() {
+        return this.ZipService.extracting
+                        ? 'fa fa-spinner fa-spin data-depot-compress' 
+                        : 'icon-extract data-depot-compress'
     }
 };
 

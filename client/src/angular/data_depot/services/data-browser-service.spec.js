@@ -1,10 +1,12 @@
-
 describe("DataBrowserService", function() {
-  var DataBrowserService, $httpBackend, $uibModal, $q, FileListing, options;
+  var DataBrowserService, $httpBackend, $uibModal, 
+      $q, FileListing, options;
   beforeEach(angular.mock.module("portal"));
   beforeEach( ()=> {
     angular.module('django.context', []).constant('Django', {user: 'test_user'});
-    angular.mock.inject(function(_$httpBackend_, _DataBrowserService_, _$uibModal_, _$q_, _FileListing_) {
+    angular.mock.inject(function(
+      _$httpBackend_, _DataBrowserService_,_Jobs_,  _$uibModal_, _$q_, _FileListing_,
+      _$mdToast_, _SystemsService_, _$rootScope_) {
       DataBrowserService = _DataBrowserService_;
       $httpBackend = _$httpBackend_;
       $uibModal = _$uibModal_;
@@ -123,5 +125,4 @@ describe("DataBrowserService", function() {
     $httpBackend.flush();
     expect(httpResp.length).toEqual(2);
   });
-
 });

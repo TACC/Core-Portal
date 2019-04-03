@@ -42,6 +42,22 @@
         </div>
         <div class="btn-group">
             <button class="btn btn-sm btn-default"
+                title="Compress"
+                ng-if="$ctrl.ZipService.zippyAppId"
+                ng-click="$ctrl.compress()"
+                ng-disabled="$ctrl.compressButtonDisabled()">
+                <i ng-class="$ctrl.compressButtonClass()"></i>
+                <span style="display:block;">Compress</span>
+            </button>
+            <button class="btn btn-sm btn-default"
+                title="Extract"
+                ng-if="$ctrl.ZipService.extractAppId"
+                ng-click="$ctrl.extract()"
+                ng-disabled="$ctrl.extractButtonDisabled()">
+                <i ng-class="$ctrl.extractButtonClass()"></i>
+                <span style="display:block;">Extract</span>
+            </button>
+            <button class="btn btn-sm btn-default"
                     title="Download"
                     ng-click="$ctrl.download(preview=False)"
                     ng-disabled="!$ctrl.tests.canDownload || $ctrl.browser.busy || $ctrl.browser.busyListing">

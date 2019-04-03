@@ -1,5 +1,7 @@
 describe('DataDepotToolbarCtrl', () => {
-    let controller, UserService, DataBrowserService, $compile, $state, $stateProvider, deferred, $scope, browsePromise;
+    let controller, UserService, DataBrowserService, 
+        $compile, $state, $stateProvider, deferred, $scope, browsePromise;
+ 
 
     // Mock requirements.
     beforeEach(angular.mock.module("portal"));
@@ -19,9 +21,11 @@ describe('DataDepotToolbarCtrl', () => {
             $state = _$state_;
             deferred = _$q_.defer();
             browsePromise = _$q_.defer();
+
             const mockedServices = {
                 UserService: _UserService_,
-                DataBrowserService: _DataBrowserService_
+                DataBrowserService: _DataBrowserService_,
+                ZipService: jasmine.createSpyObj('ZipService', [ 'compress', 'extract' ])
             };
             const mockedBindings = {
                 systems: [

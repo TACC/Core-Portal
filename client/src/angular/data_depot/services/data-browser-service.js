@@ -7,7 +7,9 @@ import $ from 'jquery';
 
 // var $ = require('jquery');
 
-function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, $translate, $mdToast, Django, FileListing) {
+function DataBrowserService(
+  $rootScope, $http, $q, $timeout, $uibModal, $state, 
+  $translate, $mdToast, Django, FileListing) {
   'ngInject';
 
   /**
@@ -159,6 +161,16 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
     tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && (apiParams.fileMgr !== 'shared');
     tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && (apiParams.fileMgr !== 'shared');
     tests.canViewCategories = files.length >=1 && hasPermission('WRITE', files);
+    tests.canCompress = 
+      files.length >= 1 && 
+      !(files.length == 1 && files[0].name.endsWith(".zip")) &&
+      hasPermission('WRITE', [currentState.listing].concat(files)) && 
+      (apiParams.fileMgr !== 'shared');
+    tests.canExtract = 
+      files.length === 1 && 
+      hasPermission('WRITE', [currentState.listing].concat(files)) && 
+      files[0].name.endsWith(".zip") &&
+      (apiParams.fileMgr !== 'shared');
 
     var trashPath = _trashPath();
     tests.canTrash = ($state.current.name === 'wb.data_depot.db' || $state.current.name === 'db.projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && !_.some(files, function(sel) { return isProtected(sel); }) && (apiParams.fileMgr !== 'shared');
@@ -715,6 +727,7 @@ function DataBrowserService($rootScope, $http, $q, $timeout, $uibModal, $state, 
            currentState.error.status = err.status;
       });
   }
+
 
   return {
     /* properties */

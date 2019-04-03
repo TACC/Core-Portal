@@ -33,6 +33,14 @@ class Apps {
         });
     }
 
+    getPublic() {
+        return this.$http({
+            url: '/api/workspace/apps',
+            method: 'GET',
+            params: { publicOnly: true }
+        });
+    }
+
     formSchema (app) {
     /**
      * Generate a JSON.schema for the app ready for angular-schema-form

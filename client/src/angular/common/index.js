@@ -3,6 +3,7 @@ import UserSearchComponent
 import UserService from './user-service';
 import SystemsService from './systems-service';
 import AuthInterceptor from './auth-interceptor';
+import icons from './css/icons.css';
 
 let mod = angular.module('portal.common', []);
 
