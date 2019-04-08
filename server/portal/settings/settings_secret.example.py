@@ -128,11 +128,7 @@ _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home.{}'
 _PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 _PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
-_PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    'portal.apps.accounts.steps.step_one',
-    'portal.apps.accounts.steps.step_two',
-    'portal.apps.accounts.steps.StepThree',
-]
+_PORTAL_USER_ACCOUNT_SETUP_STEPS = [ ]
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'EXECUTION_SYSTEM'
 _PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"

@@ -18,5 +18,5 @@ def setup_user(self, username):
 
         What else do we need to do here?
     """
-    from portal.apps.accounts.managers import accounts
-    accounts.setup(username)
+    from portal.apps.accounts.managers.accounts import setup
+    setup(username)

@@ -3,8 +3,8 @@
    :synopsis: Manager handling anything pertaining to accounts
 """
 from __future__ import unicode_literals, absolute_import
-import inspect
 import logging
+from inspect import isclass, isfunction
 from importlib import import_module
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -20,6 +20,7 @@ from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.accounts.models import SSHKeys, Keys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
+from portal.apps.onboarding.execute import prepare_setup_steps, execute_setup_steps
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -108,9 +109,10 @@ def get_user_home_system_id(user):
     mgr = _lookup_user_home_manager(user)
     return mgr.get_system_id()
 
-
 def setup(username):
     """Fires necessary steps for setup
+
+    Called asynchronously from portal.apps.auth.tasks.setup_user
 
     As of 03/2018 a new account setup means creating a home directory
     (optional), creating an Agave system for that home directory
@@ -138,27 +140,26 @@ def setup(username):
         Callables will be called with 'res', `user`, `home_dir` and `home_sys`
         in that order. `res` is the last step's return value.
     """
+
     user = check_user(username)
     mgr = _lookup_user_home_manager(user)
     logger.debug('User Home Manager class: %s', mgr.__class__)
     home_dir = mgr.get_or_create_dir(user)
     home_sys = mgr.get_or_create_system(user)
     extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
-    res = None
-    for step in extra_steps:
-        module_str, callable_str = step.rsplit('.', 1)
-        module = import_module(module_str)
-        call = getattr(module, callable_str)
-        if inspect.isclass(call):
-            res = call(user, home_dir, home_sys).step(res)
-        elif inspect.isfunction(call):
-            res = call(res, user, home_dir, home_sys)
-        else:
-            raise ValueError(
-                'Setup step {step_str} is not a class or function'.format(
-                    step_str=step
-                )
-            )
+    # Check to see if there are account setup steps
+    # The default value of setup_complete is False.
+    if len(extra_steps) == 0:
+        # If extra_steps are not present, set setup_complete to True
+        logger.debug("No setup steps, %s setup_complete is True", username)
+        user.profile.setup_complete = True
+        user.profile.save()
+    elif not user.profile.setup_complete:
+        logger.debug("Executing setup steps for %s", username)
+        logger.debug(extra_steps)
+        prepare_setup_steps(user)
+        execute_setup_steps(user.username)
+
     return home_dir, home_sys
 
 

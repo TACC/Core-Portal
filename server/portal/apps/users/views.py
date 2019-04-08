@@ -3,16 +3,17 @@ from future.utils import python_2_unicode_compatible
 from portal.views.base import BaseApiView
 from portal.apps.users import utils as users_utils
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import user_passes_test
 from django.forms.models import model_to_dict
 from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+from django.utils.decorators import method_decorator 
 from django.conf import settings
 from elasticsearch_dsl import Q
 from pytas.http import TASClient
 from portal.libs.elasticsearch.docs.base import IndexedFile
-
+from portal.apps.users.utils import get_allocations
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,8 @@ class AuthenticatedView(BaseApiView):
                     "access_token": u.agave_oauth.access_token,
                     "expires_in": u.agave_oauth.expires_in,
                     "scope": u.agave_oauth.scope,
-                }
+                },
+                "isStaff": u.is_staff
             }
 
             return JsonResponse(out)
@@ -114,49 +116,9 @@ class AllocationsView(BaseApiView):
     def get(self, request):
         """Returns active user allocations on TACC resources
 
-        *allocations * is a dict, with keys corresponding to TACC system hostnames, and values
-        being the allocation project ids the user has on that system.
-
-        e.g. allocations = {'stampede2': [
-            'TACC-ACI', 'PT2050-DataX', 'NeuroNex-3DEM', 'DesignSafe-Community']}
-
         : returns: {'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION}
         : rtype: dict
         """
-
-        # A dict for translating TAS allocation resources to hostnames
-        hosts = {
-            'Stampede4': 'stampede2.tacc.utexas.edu',
-            'Corral2': 'data.tacc.utexas.edu',
-            'Lonestar5': 'ls5.tacc.utexas.edu',
-            'Maverick2': 'maverick.tacc.utexas.edu',
-            'Maverick3': 'maverick2.tacc.utexas.edu',
-            'Rodeo2': 'rodeo.tacc.utexas.edu',
-            'Wrangler': 'wrangler.tacc.utexas.edu',
-            'Wrangler2': 'wrangler.tacc.utexas.edu',
-            'Wrangler3': 'wrangler.tacc.utexas.edu',
-        }
-
-        username = request.user.username
-
-        tas_client = TASClient(
-            baseURL=settings.TAS_URL,
-            credentials={
-                'username': settings.TAS_CLIENT_KEY,
-                'password': settings.TAS_CLIENT_SECRET
-            }
-        )
-
-        projects = tas_client.projects_for_user(username=username)
-        allocations = {}
-
-        for proj in projects:
-            for alloc in proj['allocations']:
-                if alloc['status'] == 'Active' and alloc['resource'] in hosts:
-                    resource = hosts[alloc['resource']]
-                    if resource in allocations:
-                        allocations[resource].append(alloc['project'])
-                    else:
-                        allocations[resource] = [alloc['project']]
+        allocations = get_allocations(request.user.username)
 
         return JsonResponse({'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION}, safe=False)

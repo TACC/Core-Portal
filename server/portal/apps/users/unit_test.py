@@ -1,7 +1,11 @@
 from mock import Mock, patch, MagicMock, PropertyMock
-from django.test import TestCase
+from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth import get_user_model
 from portal.apps.auth.models import AgaveOAuthToken
+from django.http import JsonResponse
+from django.http.response import HttpResponseRedirect
+from pytas.http import TASClient
+from portal.apps.users.utils import get_allocations
 
 class AttrDict(dict):
 
@@ -34,6 +38,8 @@ class TestUserApiViews(TestCase):
             created=1523633447)
         token.user = user
         token.save()
+        user.is_staff = False
+        user.save()
 
     def test_auth_view(self):
         self.client.login(username='test', password='test')
@@ -43,6 +49,7 @@ class TestUserApiViews(TestCase):
         # should only return user data system and community
         self.assertTrue(data["username"] == 'test')
         self.assertTrue(data["email"] == "test@test.com")
+        self.assertFalse(data["isStaff"])
 
     def test_auth_view_noauth(self):
         resp = self.client.get("/api/users/auth/", follow=True)
@@ -67,3 +74,49 @@ class TestUserApiViews(TestCase):
         # TODO: API routes should return a 401 not a 302 that redirects to login
         resp = self.client.get("/api/users/usage/")
         self.assertTrue(resp.status_code == 302)
+
+class TestGetAllocations(TestCase):
+    def setUp(self):
+        super(TestGetAllocations, self).setUp()
+        self.mock_tas_patcher = patch(
+            'portal.apps.users.utils.TASClient',
+            spec=TASClient
+        )
+        self.mock_tas = self.mock_tas_patcher.start()
+
+    def tearDown(self):
+        super(TestGetAllocations, self).tearDown()
+        self.mock_tas_patcher.stop()
+
+    def test_allocations_returned(self):
+        self.mock_tas.return_value.projects_for_user.return_value = [
+            {
+                "allocations" : [
+                    {
+                        "resource": "Lonestar5",
+                        "status": "Active",
+                        "project": "myproject"
+                    },
+                    {
+                        "resource": "Lonestar5",
+                        "status": "Not Active",
+                        "project": "myoldproject"
+                    },
+                    {
+                        "resource": "Lonestar5",
+                        "status": "Active",
+                        "project": "myotherproject"
+                    },
+                    {
+                        "resource": "Lonestar4",
+                        "status": "Not Active",
+                        "project": "mysuperoldproject"
+                    }
+                ]
+            }
+        ]
+        expected = {
+            "ls5.tacc.utexas.edu": [ "myproject", "myotherproject" ]
+        }
+        result = get_allocations("username")
+        self.assertEquals(result, expected)

@@ -1,0 +1,8 @@
+.hover-table tr:hover {
+    background-color: #F4FFF4;
+    cursor: pointer;
+}
+
+.hover-table tr {
+    outline: none !important;
+}

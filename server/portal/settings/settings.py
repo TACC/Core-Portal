@@ -139,6 +139,7 @@ INSTALLED_APPS = [
     'portal.apps.projects',
     'portal.apps.licenses',
     'portal.apps.notifications',
+    'portal.apps.onboarding',
 ]
 
 MIDDLEWARE = [
@@ -164,6 +165,8 @@ MIDDLEWARE = [
 
     # Throws an Error.
     # 'portal.middleware.PortalTermsMiddleware',
+
+    'portal.apps.onboarding.middleware.SetupCompleteMiddleware'
 ]
 
 TEMPLATES = [
@@ -718,6 +721,9 @@ PORTAL_KEYS_MANAGER = settings_secret.\
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
     _PORTAL_USER_ACCOUNT_SETUP_STEPS
+
+PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = settings_secret.\
+    _PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD
 
 PORTAL_NAMESPACE = settings_secret.\
     _PORTAL_NAMESPACE

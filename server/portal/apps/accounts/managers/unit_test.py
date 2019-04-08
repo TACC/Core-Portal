@@ -1,11 +1,11 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 import mock
-from mock import MagicMock
-from mock import patch
+from mock import MagicMock, patch, ANY
 from django.core.exceptions import ObjectDoesNotExist
-from portal.apps.accounts.managers.accounts import add_pub_key_to_resource
+from portal.apps.accounts.managers.accounts import add_pub_key_to_resource, setup
 from portal.apps.accounts.managers.user_work_home import UserWORKHomeManager
 from portal.apps.accounts.managers.ssh_keys import KeysManager
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
 from paramiko.ssh_exception import (
@@ -13,7 +13,7 @@ from paramiko.ssh_exception import (
     ChannelException,
     SSHException
 )
- 
+
 # Create your tests here.
 class AddPubKeyTests(TestCase):
 
@@ -105,3 +105,59 @@ class AddPubKeyTests(TestCase):
             result, message, status = self.run_add_pub_key_to_resource()
         except Exception as exc:
             self.assertEqual(str(exc), exception_message)
+
+class TestUserSetup(TestCase):
+
+    def setUp(self):
+        super(TestUserSetup, self).setUp()
+
+        # check_user function should be faked
+        self.mock_user = MagicMock(spec=get_user_model())
+        self.mock_user.profile.setup_complete = False
+        self.mock_check_user_patcher = patch('portal.apps.accounts.managers.accounts.check_user', return_value=self.mock_user)
+        self.mock_check_user = self.mock_check_user_patcher.start()
+
+        # _lookup_user_home_manager should be faked
+        self.mock_home_manager = MagicMock()
+        self.mock_home_manager.get_or_create_dir = MagicMock()
+        self.mock_home_manager.get_or_create_system = MagicMock()
+        self.mock_lookup_user_home_manager_patcher = patch('portal.apps.accounts.managers.accounts._lookup_user_home_manager', return_value=self.mock_home_manager)
+        self.mock_lookup_user_home_manager = self.mock_lookup_user_home_manager_patcher.start()
+
+        # Mock execute_setup_steps
+        self.mock_execute_patcher = patch('portal.apps.accounts.managers.accounts.execute_setup_steps')
+        self.mock_execute = self.mock_execute_patcher.start()
+
+        # Mock prepare_setup_steps
+        self.mock_prepare_patcher = patch('portal.apps.accounts.managers.accounts.prepare_setup_steps')
+        self.mock_prepare = self.mock_prepare_patcher.start()
+
+        self.addCleanup(self.mock_check_user_patcher.stop)
+        self.addCleanup(self.mock_lookup_user_home_manager_patcher.stop)
+        self.addCleanup(self.mock_execute_patcher.stop)
+        self.addCleanup(self.mock_prepare_patcher.stop)
+   
+    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
+    def test_setup(self):
+        # If there are no setup steps, setup_complete should be marked True
+        # and setup steps should be skipped
+        setup("username")
+        self.mock_home_manager.get_or_create_dir.assert_called_with(ANY)
+        self.mock_home_manager.get_or_create_system.assert_called_with(ANY)
+        self.mock_execute.assert_not_called()
+        self.assertEqual(self.mock_user.profile.setup_complete, True)
+
+    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=['fake.setup.setup_class'])
+    def test_setup_user(self):
+        # A user with setup_complete == False should cause setup steps to run
+        self.mock_user.profile.setup_complete = False
+        setup("username")
+        self.mock_execute.assert_called_with(ANY)
+        self.mock_prepare.assert_called_with(ANY)
+
+    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=['fake.setup.setup_class'])
+    def test_skip_setup(self):
+        # A user that has setup_complete should not execute setup steps
+        self.mock_user.profile.setup_complete = True
+        setup("username")
+        self.mock_execute.assert_not_called()

@@ -47,6 +47,12 @@ export default class Notifications {
                         },
                     });
                 }
+            },
+            setup_event: {
+                process: function procesSetupEvent(msg) {
+                    // Do not process seutp_events. These will be processed
+                    // by user-setup
+                }
             }
         };
         this.list();

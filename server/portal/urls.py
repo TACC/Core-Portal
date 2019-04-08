@@ -39,6 +39,18 @@ urlpatterns += [
             'portal.apps.accounts.api.urls',
             namespace='portal_accounts_api'
         )),
+    url(r'^onboarding/', 
+        include(
+            'portal.apps.onboarding.urls',
+            namespace='portal_onboarding'
+        )
+    ),
+    url(r'^api/onboarding/',
+        include(
+            'portal.apps.onboarding.api.urls',
+            namespace='portal_onboarding_api'
+        )
+    ),
     url(r'^register/$',
         RedirectView.as_view(
             pattern_name='portal_accounts:register',
@@ -64,6 +76,10 @@ urlpatterns += [
                                 namespace='workbench')),
     url(r'^tickets/', include('portal.apps.djangoRT.urls',
                               namespace='tickets')),
+
+    # user setup
+    url(r'^api/onboarding/', include('portal.apps.onboarding.api.urls',
+                                namespace='setup')),
 
     # notifications
     url(r'^api/notifications/', include('portal.apps.notifications.urls',

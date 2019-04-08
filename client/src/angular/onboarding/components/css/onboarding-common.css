@@ -1,0 +1,42 @@
+
+.setup-complete {
+    color: #66B;
+}
+
+.setup-incomplete {
+    color: red;
+}
+
+.setup-event-timestamp {
+    font-size: 0.75em;
+    color: #AAA;
+}
+
+.setup-table {
+    font-size: 1em;
+    border-bottom: 1px solid black;
+}
+
+.setup-table tr > th {
+    padding-left: 0.5em;
+}
+
+.setup-table tr > td {
+    padding-top: 1em;
+    padding-left: 0.5em;
+    padding-bottom: 1em;
+}
+
+.setup-table tr:nth-child(even) {
+    background: #F4F4FF;
+}
+
+.setup-table tr:first-child {
+    border-bottom: 1px solid black;
+    background: #FFF;
+}
+
+.setup-table td {
+    vertical-align: top;
+    padding-top: 0.25em;
+}

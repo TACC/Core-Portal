@@ -9,7 +9,11 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.serializers.json import DjangoJSONEncoder
 from portal.utils import encryption as EncryptionUtil
+from django.contrib.postgres.fields import JSONField
+
+import json
 # Create your models here.
 
 
@@ -29,7 +33,11 @@ class PortalProfile(models.Model):
     )
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)
-
+    
+    # Default to False. If PORTAL_USER_ACCOUNT_SETUP_STEPS is empty,
+    # setup_complete will be set to True on first login
+    setup_complete = models.BooleanField(default=False)
+    
     def send_mail(self, subject, body=None):
         """Send mail to user"""
         send_mail(subject,

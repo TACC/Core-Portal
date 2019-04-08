@@ -11,14 +11,16 @@ from django.contrib import messages
 from django.views.generic.base import TemplateView, View
 from django.shortcuts import render, render_to_response
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-
+from portal.apps.notifications.models import Notification
+from future.utils import python_2_unicode_compatible
 from pytas.http import TASClient
+from portal.decorators.api_authentication import staff_login_required
 # from pytas.models import User as TASUser
 
 from portal.apps.accounts import forms, integrations
@@ -361,6 +363,16 @@ def manage_identities(request):
         context
     )
 
+@login_required
+def manage_onboarding(request):
+    context = {
+        'title': 'Account Setup'
+    }
+    return render(
+        request,
+        'portal/apps/accounts/manage_onboarding.html',
+        context
+    )
 
 @login_required
 def manage_notifications(request):

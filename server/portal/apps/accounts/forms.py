@@ -393,7 +393,7 @@ class UserRegistrationForm(forms.Form):
                 first_name=tas_user['firstName'],
                 last_name=tas_user['lastName'],
                 email=tas_user['email'],
-                )
+            )
 
         # extended profile information
         try:

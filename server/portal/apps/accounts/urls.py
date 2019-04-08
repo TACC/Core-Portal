@@ -3,8 +3,12 @@
    :synopsis: Accounts URLs
 """
 from django.conf.urls import url
-from portal.apps.accounts.views import (IndexView, LoginView,
-                                        LogoutView, RegisterView)
+from portal.apps.accounts.views import (
+    IndexView, 
+    LoginView,
+    LogoutView, 
+    RegisterView
+)
 from portal.apps.accounts import views
 
 
@@ -13,6 +17,7 @@ urlpatterns = [
     url(r'^logout/?', LogoutView.as_view(), name='logout'),
     url(r'^register/?', RegisterView.as_view(), name='register'),
     url(r'^request-access/?', view=views.request_access, name='request-access'),
+
     # url(r'^register/?', views.register, name='register'),
 
     # url(r'^test/$', views.test, name='test'),
@@ -28,6 +33,7 @@ urlpatterns = [
     url(r'^identities/$', views.manage_identities, name='manage_identities'),
 
     url(r'^licenses/$', views.manage_licenses, name='manage_licenses'),
+    url(r'^onboarding/$', views.manage_onboarding, name='manage_onboarding'),
     url(r'^applications/$', views.manage_applications, name='manage_applications'),
 
     url(r'^notifications/settings/$', views.manage_notifications, name='manage_notifications'),

@@ -15,16 +15,17 @@ import * as xeditable from 'angular-xeditable';
 import * as dndLists from 'angular-drag-and-drop-lists';
 import * as ngAnimate from 'angular-animate';
 
-import { mod as directives } from './ng-portal-directives';
-import { mod as filters } from './ng-portal-filters';
-import { mod as ng_modernizer } from './ng-modernizr';
-import { mod as workspace } from './workspace';
-import { mod as data_depot } from './data_depot';
-import { mod as search } from './search';
-import { mod as dashboard } from './dashboard';
-import { mod as workbench } from './workbench';
-import { mod as notifications } from './notifications';
-import { mod as common } from './common';
+import {mod as directives} from './ng-portal-directives';
+import {mod as filters} from './ng-portal-filters';
+import {mod as ng_modernizer} from './ng-modernizr';
+import {mod as workspace} from './workspace';
+import {mod as data_depot} from './data_depot';
+import {mod as search} from './search';
+import {mod as dashboard} from './dashboard';
+import {mod as workbench} from './workbench';
+import {mod as notifications} from './notifications';
+import {mod as common} from './common';
+import {mod as onboarding} from './onboarding';
 
 //templates
 import homeTemplate from './workbench/templates/home.html';
@@ -136,7 +137,8 @@ let mod = angular
         'portal.dashboard',
         'portal.workbench',
         'portal.notifications',
-        'portal.common'
+        'portal.common',
+        'portal.onboarding'
     ])
     .config(config)
     // .run(['UserService', function(UserService) {

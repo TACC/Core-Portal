@@ -278,7 +278,3 @@ class InteractiveWebhookView(BaseApiView):
             return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
 
         return HttpResponse('OK')
-
-
-class OnboardingWebhookView(BaseApiView):
-    pass

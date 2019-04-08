@@ -130,6 +130,7 @@ INSTALLED_APPS = [
     'portal.apps.projects',
     'portal.apps.licenses',
     'portal.apps.notifications',
+    'portal.apps.onboarding',
 ]
 
 MIDDLEWARE = [
@@ -198,6 +199,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REQUEST_ACCESS = True
 
 IMPERSONATE_REQUIRE_SUPERUSER = True
 
@@ -281,10 +284,10 @@ PORTAL_PROJECTS_PRIVATE_KEY = ('-----BEGIN RSA PRIVATE KEY-----'
 PORTAL_PROJECTS_PUBLIC_KEY = 'ssh-rsa change this'
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    'portal.apps.accounts.steps.step_one',
-    'portal.apps.accounts.steps.step_two',
-    'portal.apps.accounts.steps.StepThree',
+    'portal.apps.accounts.steps.test_steps.MockStep'
 ]
+PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = 'dev'
+
 PORTAL_DATA_DEPOT_MANAGERS = {
     'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
     'shared': 'portal.apps.data_depot.managers.shared.FileManager',

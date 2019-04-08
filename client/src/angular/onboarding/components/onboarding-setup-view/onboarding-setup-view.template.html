@@ -1,0 +1,138 @@
+<div class="user-setup-view">
+    <div>
+        <h4>
+            Setup Status: 
+            <span ng-if="$ctrl.user.setupComplete">
+                Complete <i class="fa fa-check text-success"></i>&nbsp;
+                <a 
+                    ng-if="$ctrl.viewingSelf" 
+                    class="btn btn-primary" 
+                    href="/workbench/dashboard">
+                    Continue to Dashboard
+                </a>
+            </span>
+            <span ng-if="!$ctrl.user.setupComplete">
+                Setup Incomplete <i class="fa fa-exclamation-triangle text-danger"></i>
+            </span>
+        </h4>
+        <br />
+    </div>
+    <div>
+        <table width="100%" class="setup-table">
+            <tr>
+                <th width="10%">Step</th>
+                <th width="10%">Status</th>
+                <th width="20%">Log</th>
+                <th width="10%" ng-if="$ctrl.viewingSelf">Actions</th>
+                <th width="20%" ng-if="$ctrl.isStaff">Administrative Actions</th>
+            </tr>
+            <tr ng-repeat="step in $ctrl.user.steps">
+                <td>{{ step.displayName }}</td>
+                <td><onboarding-setup-state state="step.state"></onboarding-setup-state></td>
+                <td class="setup-event-log">
+                    <div class="setup-event-log-button-container">
+                        <button 
+                            class="btn btn-sm btn-link"
+                            ng-click="$ctrl.toggleStepLog(step)"
+                            ng-if="step.events.length > 1">
+                            <i ng-if="!step.expanded" class="fa fa-caret-right"></i>
+                            <i ng-if="step.expanded" class="fa fa-caret-down"></i>
+                        </button>
+                    </div>
+                    <div class="setup-event-log-event-container">
+                        <div ng-repeat="event in step.events" class="user-setup-event" ng-if="$first || step.expanded">
+                            <div ng-class=" $first ? 'first-setup-event' : '' ">{{ event.message }}</div>
+                            <div ng-class="setup-event-timestamp">{{ event.time }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td ng-if="$ctrl.viewingSelf">
+                    <div ng-if="step.saving">
+                        <i class="fa fa-spinner fa-spin"></i> Saving...
+                    </div>
+                    <div ng-if="!step.saving && step.state === 'userwait'" >
+                        Please complete the requested action on the left, then click confirm. <br />
+                        <button 
+                            class="btn btn-success"
+                            ng-click="$ctrl.action(step, 'user_confirm')">
+                            Confirm
+                        </button>
+
+                        <span ng-if="step.userError">
+                            <br /><br />
+                            <i class="fa fa-exclamation-triangle text-danger"></i>
+                            There was an error processing your request. Please retry, or 
+                            <submit-ticket 
+                                subject="{{ step.errorSubject }}" 
+                                info="{{ step.errorInfo }}">
+                            </submit-ticket>
+                        </span>
+                    </div>
+                    <div ng-if="!step.saving && step.state === 'error'">
+                        There was an error processing your request. Please
+                        <submit-ticket
+                            subject="{{ step.displayName }} had an error while processing"
+                            info="{{ step.step }} with message {{ step.events[0].message }}">
+                        </submit-ticket>
+                    </div>
+                    <div ng-if="!step.saving && step.state === 'failed'">
+                        This step did not complete successfully. You may 
+                        <submit-ticket 
+                            subject="Onboarding step {{ step.displayName }} has failed"
+                            info="{{ step.step }} with message {{ step.events[0].message }}">
+                        </submit-ticket>.
+                    </div>
+                </td>
+                <td ng-if="$ctrl.isStaff">
+                    <div ng-if="step.saving">
+                        <i class="fa fa-spinner fa-spin"></i> Saving...
+                    </div>
+                    <div ng-if="!step.saving">
+                        <span ng-if="step.state === 'staffwait'">
+                            <button 
+                                class="btn btn-success btn-link" 
+                                ng-click="$ctrl.action(step, 'staff_approve')">
+                                <i class="fa fa-check text-success"></i>
+                                Approve the user's request
+                            </button>
+                            <br />
+                        </span>
+                        <span ng-if="step.state === 'staffwait'">
+                            <button 
+                                class="btn btn-danger btn-link" 
+                                ng-click="$ctrl.action(step, 'staff_deny')">
+                                <i class="fa fa-times text-danger"></i>
+                                Deny the user's request
+                            </button>
+                            <br />
+                        </span>
+                        <button 
+                            class="btn btn-info btn-link"
+                            ng-click="$ctrl.action(step, 'reset')">
+                            <i class="fa fa-exclamation-circle text-warning"></i>
+                            Reset this step
+                        </button>
+                        <br />
+                        <button 
+                            class="btn btn-success btn-link" 
+                            ng-if="step.state !== 'completed'"
+                            ng-click="$ctrl.action(step, 'complete')">
+                            <i class="fa fa-check text-info"></i>
+                            Mark this step as complete
+                        </button>
+                        <br />
+                        <span ng-if="step.staffError">
+                            <br /><br />
+                            <i class="fa fa-exclamation-triangle text-danger"></i>
+                            There was an error processing your request. Please retry, or 
+                            <submit-ticket 
+                                subject="{{ step.errorSubject }}" 
+                                info="{{ step.errorInfo }}">
+                            </submit-ticket>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
