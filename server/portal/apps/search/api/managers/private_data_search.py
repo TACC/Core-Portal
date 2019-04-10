@@ -46,15 +46,11 @@ class PrivateDataSearchManager(BaseSearchManager):
 
     def search(self, offset, limit):
         """runs a search and returns an ES search object."""
-
-        if len(self._query_string) <= 20:
-            query_analyzer = 'file_query_analyzer_short'
-        else:
-            query_analyzer = 'file_query_analyzer_long'
             
         self.query("query_string", query=self._query_string,
                    fields=["name", "name._exact", "name._pattern"], 
-                   analyzer=query_analyzer)
+                   analyzer='file_query_analyzer',
+                   default_operator='and')
         self.filter(Q({'term': {'system._exact': self._system}}))
         sort_arg = self.sortFields.get(self._sort_key, None)
         if sort_arg:

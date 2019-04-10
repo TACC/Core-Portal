@@ -17,12 +17,8 @@ file_analyzer = analyzer('file_analyzer',
                          tokenizer=tokenizer('trigram', 'nGram', min_gram=2, max_gram=20),
                          filter='lowercase')
 
-file_query_analyzer_short = analyzer('file_query_analyzer_short',
-                               tokenizer='keyword', filter='lowercase')
-
-file_query_analyzer_long = analyzer('file_query_analyzer_long',
-                               tokenizer=tokenizer('20gram', 'nGram', min_gram=20, max_gram=20), 
-                               filter='lowercase')
+file_query_analyzer = analyzer('file_query_analyzer',
+                               tokenizer='whitespace', filter=['lowercase', token_filter('trunc20', 'truncate', length=20)])
 
 file_pattern_analyzer = analyzer('file_ext_analyzer',
                         tokenizer=tokenizer('file_pattern', 'pattern', pattern='\\.'),
