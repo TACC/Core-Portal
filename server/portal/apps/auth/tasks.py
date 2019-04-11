@@ -9,14 +9,7 @@ logger = logging.getLogger(__name__)
 def setup_user(self, username):
     """Setup workflow for each user
 
-    .. todo::
-        As of 03/2018 this is the workflow:
-
-        1. Create user's home directory
-        2. Create user's home system
-        3. Save ssh keys locally
-
-        What else do we need to do here?
+        Called asynchronously from portal.apps.auth.views.agave_oauth_callback
     """
     from portal.apps.accounts.managers.accounts import setup
     setup(username)

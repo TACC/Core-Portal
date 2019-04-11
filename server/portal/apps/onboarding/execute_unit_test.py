@@ -1,4 +1,10 @@
-from django.test import TestCase, Client, RequestFactory, override_settings
+from django.test import (
+    TestCase, 
+    TransactionTestCase, 
+    Client, 
+    RequestFactory, 
+    override_settings
+)
 from django.contrib.auth import get_user_model
 from django.db.models import signals
 from mock import Mock, patch, MagicMock, ANY
@@ -22,6 +28,7 @@ from portal.apps.onboarding.execute import (
     prepare_setup_steps,
     load_setup_step,
     log_setup_state,
+    new_user_setup_check,
     StepExecuteException
 )
 
@@ -330,3 +337,33 @@ class TestExecuteSteps(TestCase):
                 "portal.apps.onboarding.steps.test_steps.MockProcessingFailStep"
             )
             self.assertEqual(setup_events[-1].state, SetupState.FAILED)
+
+class TestNewUserSetup(TransactionTestCase):
+    def setUp(self):
+        super(TestNewUserSetup, self).setUp()
+        self.user = get_user_model().objects.create_user(
+            username="testuser",
+            first_name="test",
+            last_name="user",
+            email="test@email.com"
+        )
+        self.user.save()
+        self.user.profile = PortalProfile(user=self.user)
+        self.user.profile.save()
+
+    def tearDown(self):
+        super(TestNewUserSetup, self).tearDown()
+
+    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
+    def test_no_setup_steps(self):
+        # Assert that when there are no setup steps, 
+        # the setup_complete flag is True
+        new_user_setup_check(self.user)
+        profile = PortalProfile.objects.get(user=self.user)
+        self.assertEqual(profile.setup_complete, True)
+
+    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=['onboarding.step'])
+    @patch('portal.apps.onboarding.execute.prepare_setup_steps')
+    def test_prepare_setup_steps(self, mock_prepare):
+        new_user_setup_check(self.user)
+        mock_prepare.assert_called_with(self.user)

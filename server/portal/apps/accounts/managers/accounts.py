@@ -20,7 +20,10 @@ from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.accounts.models import SSHKeys, Keys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
-from portal.apps.onboarding.execute import prepare_setup_steps, execute_setup_steps
+from portal.apps.onboarding.execute import (
+    execute_setup_steps,
+    new_user_setup_check
+)
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -126,19 +129,6 @@ def setup(username):
     .. note::
         The django setting `PORTAL_USER_ACCOUNT_SETUP_STEPS` can be used to
         add any additional steps after the default setup.
-
-        `PORTAL_USER_ACCOUNT_SETUP_STEPS` is a list of strings.
-        The dot notation of any custom class or callable.
-        Any class listed should implement a `step()`
-        method, which will be called.
-
-        Classes will be instantiated with `user`, `home_dir`, `home_sys`
-        in that order and then the `step()` method will be called with the
-        last step's return value. If there are no previous step `None`
-        will be passsed.
-
-        Callables will be called with 'res', `user`, `home_dir` and `home_sys`
-        in that order. `res` is the last step's return value.
     """
 
     user = check_user(username)
@@ -146,18 +136,8 @@ def setup(username):
     logger.debug('User Home Manager class: %s', mgr.__class__)
     home_dir = mgr.get_or_create_dir(user)
     home_sys = mgr.get_or_create_system(user)
-    extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
-    # Check to see if there are account setup steps
-    # The default value of setup_complete is False.
-    if len(extra_steps) == 0:
-        # If extra_steps are not present, set setup_complete to True
-        logger.debug("No setup steps, %s setup_complete is True", username)
-        user.profile.setup_complete = True
-        user.profile.save()
-    elif not user.profile.setup_complete:
-        logger.debug("Executing setup steps for %s", username)
-        logger.debug(extra_steps)
-        prepare_setup_steps(user)
+    if not user.profile.setup_complete:
+        logger.info("Executing setup steps for %s", username)
         execute_setup_steps(user.username)
 
     return home_dir, home_sys

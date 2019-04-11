@@ -9,6 +9,7 @@ from django.contrib.auth.backends import ModelBackend
 #from django.core.exceptions import ValidationError
 #from django.dispatch import receiver
 from portal.apps.accounts.models import PortalProfile
+from portal.apps.onboarding.execute import prepare_setup_steps
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -55,7 +56,6 @@ class AgaveOAuthBackend(ModelBackend):
                 except PortalProfile.DoesNotExist:
                     profile = PortalProfile(user=user)
                     profile.save()
-
                 logger.info('Login successful for user "%s"' % username)
             else:
                 logger.info('Agave Authentication failed: %s' % json_result)

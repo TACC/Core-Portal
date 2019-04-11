@@ -14,7 +14,7 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.auth.tasks import setup_user
-
+from portal.apps.onboarding.execute import new_user_setup_check
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -92,6 +92,7 @@ def agave_oauth_callback(request):
         token_data['created'] = int(time.time())
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
+
         if user:
             try:
                 token = user.agave_oauth
@@ -106,6 +107,11 @@ def agave_oauth_callback(request):
             # msg_tmpl = 'Login successful. Welcome back, %s %s!'
             # msg_tmpl = getattr(settings, 'LOGIN_SUCCESS_MSG', msg_tmpl)
             # messages.success(request, msg_tmpl % (user.first_name, user.last_name))
+
+            # Synchronously do the onboarding preparation
+            new_user_setup_check(user)
+
+            # Apply asynchronous long onboarding calls
             setup_user.apply_async(args=[user.username])
         else:
             messages.error(

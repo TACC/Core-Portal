@@ -1,4 +1,7 @@
-from django.test import TestCase, override_settings
+from django.test import (
+    TestCase, 
+    override_settings
+)
 import mock
 from mock import MagicMock, patch, ANY
 from django.core.exceptions import ObjectDoesNotExist
@@ -129,18 +132,19 @@ class TestUserSetup(TestCase):
         self.mock_execute = self.mock_execute_patcher.start()
 
         # Mock prepare_setup_steps
-        self.mock_prepare_patcher = patch('portal.apps.accounts.managers.accounts.prepare_setup_steps')
-        self.mock_prepare = self.mock_prepare_patcher.start()
+        self.mock_new_user_setup_patcher = patch('portal.apps.accounts.managers.accounts.new_user_setup_check')
+        self.mock_new_user_setup = self.mock_new_user_setup_patcher.start()
 
         self.addCleanup(self.mock_check_user_patcher.stop)
         self.addCleanup(self.mock_lookup_user_home_manager_patcher.stop)
         self.addCleanup(self.mock_execute_patcher.stop)
-        self.addCleanup(self.mock_prepare_patcher.stop)
+        self.addCleanup(self.mock_new_user_setup_patcher.stop)
    
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
     def test_setup(self):
-        # If there are no setup steps, setup_complete should be marked True
-        # and setup steps should be skipped
+        # If the user is already setup_complete, steps should
+        # not be executed
+        self.mock_user.profile.setup_complete = True
         setup("username")
         self.mock_home_manager.get_or_create_dir.assert_called_with(ANY)
         self.mock_home_manager.get_or_create_system.assert_called_with(ANY)
@@ -153,7 +157,6 @@ class TestUserSetup(TestCase):
         self.mock_user.profile.setup_complete = False
         setup("username")
         self.mock_execute.assert_called_with(ANY)
-        self.mock_prepare.assert_called_with(ANY)
 
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=['fake.setup.setup_class'])
     def test_skip_setup(self):

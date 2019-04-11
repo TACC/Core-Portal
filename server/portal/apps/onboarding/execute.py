@@ -6,7 +6,10 @@ from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from celery import shared_task
+from portal.apps.accounts.models import PortalProfile
+import logging
 
+logger = logging.getLogger(__name__)
 class StepExecuteException(Exception):
     """
     Exception raised when setup step processing
@@ -14,6 +17,16 @@ class StepExecuteException(Exception):
     """
     def __init__(self, message):
         super(StepExecuteException, self).__init__(message)
+
+def new_user_setup_check(user):
+    extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
+    if len(extra_steps) == 0:
+        logger.info("No extra setup steps for user {username}".format(username=user.username))
+        profile = PortalProfile.objects.get(user=user)
+        profile.setup_complete = True
+        profile.save()
+    else:
+        prepare_setup_steps(user)
 
 def log_setup_state(user, message):
     # Create an event log for a user completing setup.
