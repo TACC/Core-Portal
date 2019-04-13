@@ -75,7 +75,7 @@ describe('DataViewCtrl', ()=>{
                 systemId: 'mock.system',
                 filePath: 'path/to/dir',
             },
-            {reload: true}
+            {reload: true, inherit: false}
         );
     });
 

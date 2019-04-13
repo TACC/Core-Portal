@@ -104,7 +104,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
                 type_filter: 'cms',
                 switch_filter: null,
                 oldKey: null,
-                sortKey: 'name',
+                sortKey: null,
                 sortOrder: 'asc'
             },
             resolve: {

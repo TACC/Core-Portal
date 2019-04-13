@@ -36,7 +36,7 @@ class DataViewCtrl {
                   systemId: file.system,
                   filePath: file.path,
               },
-              {reload: true}
+              {reload: true, inherit: false}
           );
         }
     }
