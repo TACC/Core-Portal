@@ -109,7 +109,8 @@ def request_access(request):
                                   'access to Portal.').format(
                                       username=username
                                   ),
-                            Requestors=user['email']
+                            Requestors=user['email'], 
+                            CF_resource=settings.RT_TAG
                         )
                         tracker.logout()
                         messages.success(
