@@ -133,6 +133,17 @@ class Project(object):
         """Return project title."""
         return self._storage.description
 
+    @property
+    def absolute_path(self):
+        """Return absolute path for this project."""
+        if self.storage.storage.root_dir:
+            return self.storage.storage.root_dir
+
+        return os.path.join(
+            settings.PORTAL_PROJECTS_ROOT_DIR,
+            self.storage.name
+        )
+
     def _get_metadata(self):
         """Get metadata record for project.
 
@@ -286,12 +297,14 @@ class Project(object):
                 meta = ProjectMetadata.objects.get(project_id=system.name)
             except ObjectDoesNotExist:
                 meta = {}
-            yield cls(
+            prj = cls(
                 client,
                 system.name,
                 metadata=meta,
                 storage=system
             )
+            prj.storage.absolute_path = prj.absolute_path
+            yield prj
 
     def _can_edit_member(self, username):
         """Check if user can edit team members.

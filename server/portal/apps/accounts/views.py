@@ -20,7 +20,6 @@ from django.utils.translation import ugettext_lazy as _
 from portal.apps.notifications.models import Notification
 from future.utils import python_2_unicode_compatible
 from pytas.http import TASClient
-from portal.decorators.api_authentication import staff_login_required
 # from pytas.models import User as TASUser
 
 from portal.apps.accounts import forms, integrations

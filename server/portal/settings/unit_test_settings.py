@@ -262,6 +262,7 @@ PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home.{}'
 PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 
 PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'
+
 PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
@@ -314,7 +315,7 @@ TAS_CLIENT_KEY = 'test'
 TAS_CLIENT_SECRET = 'test'
 # Redmine Tracker Authentication.
 RT_URL = 'test'
-RT_HOST= 'test'
+RT_HOST = 'test'
 RT_UN = 'test'
 RT_PW = 'test'
 RT_QUEUE = 'test'
@@ -330,6 +331,10 @@ AGAVE_SUPER_TOKEN = 'test'
 AGAVE_STORAGE_SYSTEM = 'test'
 AGAVE_COMMUNITY_DATA_SYSTEM = 'test.storage'
 AGAVE_DEFAULT_TRASH_NAME = 'test'
+
+AGAVE_JWT_HEADER = 'HTTP_X_AGAVE_HEADER'
+AGAVE_JWT_ISSUER = 'wso2.org/products/am'
+AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
 
 ES_HOSTS = ['test.com']
 ES_DEFAULT_INDEX = "files"

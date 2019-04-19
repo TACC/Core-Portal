@@ -11,9 +11,9 @@ from django.http import (
     HttpResponseForbidden
 )
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator 
 from django.conf import settings
-from portal.decorators.api_authentication import staff_login_required
 from portal.apps.accounts.models import PortalProfile
 from portal.apps.onboarding.models import (
     SetupEvent, 
@@ -226,7 +226,8 @@ class SetupStepView(BaseApiView):
         )
 
 @python_2_unicode_compatible
-@method_decorator(staff_login_required, name='dispatch')
+@method_decorator(login_required, name='dispatch')
+@method_decorator(staff_member_required, name='dispatch')
 class SetupAdminView(BaseApiView):
     def get(self, request):
         limit = int(request.GET.get('limit', '20'))

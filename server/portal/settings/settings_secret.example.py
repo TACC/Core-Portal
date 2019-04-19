@@ -67,6 +67,8 @@ _AGAVE_STORAGE_SYSTEM = 'my.storage.default'
 _AGAVE_COMMUNITY_DATA_SYSTEM = 'storage_system'
 _AGAVE_DEFAULT_TRASH_NAME = 'Trash'
 
+_AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
+
 ########################
 # RABBITMQ SETTINGS
 ########################

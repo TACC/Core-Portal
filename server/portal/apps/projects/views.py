@@ -6,10 +6,13 @@
 from __future__ import unicode_literals, absolute_import
 import json
 import logging
+from future.utils import python_2_unicode_compatible
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.generic.base import TemplateView
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
+from portal.utils.decorators import agave_jwt_login
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.managers.base import ProjectsManager
@@ -19,6 +22,9 @@ from portal.apps.search.api.managers.project_search import ProjectSearchManager
 LOGGER = logging.getLogger(__name__)
 
 
+@python_2_unicode_compatible
+@method_decorator(agave_jwt_login, name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class ProjectsApiView(BaseApiView):
     """Projects API view.
 
@@ -29,7 +35,54 @@ class ProjectsApiView(BaseApiView):
     """
 
     def get(self, request):
-        """GET handler."""
+        """GET handler.
+
+        If no 'query_string' is present this view will return a list of every
+        project where the requesting user is a part of.
+        If a `query_string` value is present (e.g.
+        ``GET /api/projects/?query_string="vertigo"```) then the list of
+        projects returned are the projects where the requesting user is a
+        part of AND the query string is present in any of its fields.
+
+        Sample response:
+        ```json
+        {"response": [{
+            "absolutePath": "/corral-repl/tacc/aci/CEP/projects/CEP-7",
+            "available": true,
+            "default": false,
+            "description": "Project Title",
+            "globalDefault": false,
+            "id": "cep.project.CEP-7",
+            "name": "CEP-7",
+            "owner": null,
+            "public": false,
+            "revision": null,
+            "site": null,
+            "status": "UP",
+            "storage": {
+                "auth": {
+                    "password": null,
+                    "privateKey": null,
+                    "publicKey": null,
+                    "type": null,
+                    "username": null
+                },
+                "homeDir": null,
+                "host": null,
+                "mirror": false,
+                "port": null,
+                "protocol": null,
+                "proxy": null,
+                "publicAppsDir": null,
+                "rootDir": null
+            },
+            "type": "STORAGE",
+            "uuid": null
+        }, ... ],
+        "status": 200
+        }
+        ```
+        """
         query_string = request.GET.get('query_string')
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
@@ -67,6 +120,9 @@ class ProjectsApiView(BaseApiView):
         )
 
 
+@python_2_unicode_compatible
+@method_decorator(agave_jwt_login, name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class ProjectInstanceApiView(BaseApiView):
     """Project Instance API view.
 
@@ -140,6 +196,9 @@ class ProjectInstanceApiView(BaseApiView):
         )
 
 
+@python_2_unicode_compatible
+@method_decorator(agave_jwt_login, name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class ProjectMembersApiView(BaseApiView):
     """Project Members API view."""
 

@@ -13,6 +13,7 @@ vacuum=true
 processes={{ uwsgi_processes_no }}
 harakiri={{ uwsgi_harakiri }}
 post-buffering={{ uwsgi_post_buffering }}
+buffer-size={{ uwsgi_buffer_size or 8192 }}
 max-requests={{ uwsgi_max_requests }}
 socket={{ uwsgi_socket_path }}
 chown-soscket={{ uwsgi_chown_socket }}

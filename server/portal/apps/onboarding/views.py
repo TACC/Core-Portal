@@ -1,4 +1,4 @@
-from portal.decorators.api_authentication import staff_login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from future.utils import python_2_unicode_compatible
@@ -40,7 +40,8 @@ class SetupStatusView(View):
         return render(request, 'portal/apps/onboarding/setup.html', context)
 
 @python_2_unicode_compatible
-@method_decorator(staff_login_required, name='dispatch')
+@method_decorator(login_required, name='dispatch')
+@method_decorator(staff_member_required, name='dispatch')
 class SetupAdminView(View):
     """User setup admin view
     """

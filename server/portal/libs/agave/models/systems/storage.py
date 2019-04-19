@@ -38,7 +38,8 @@ class StorageSystem(BaseSystem):
         'name',
         'id',
         'status',
-        'storage'
+        'storage',
+        'absolute_path',
     ]
 
     # pylint: disable=redefined-builtin
@@ -64,6 +65,9 @@ class StorageSystem(BaseSystem):
         self.id = id  # pylint: disable=invalid-name
         self.status = getattr(self, 'status', 'UP')
         self.storage = getattr(self, 'storage', None)
+
+        self.absolute_path = getattr(self, 'absolute_path', None)
+        self._wrapped['absolute_path'] = None
 
     def validate_type(self):
         """Validate self.type"""

@@ -1,9 +1,14 @@
+import logging
 import os
 import six
 import urllib
 import copy
 from urlparse import urlparse
 from django.conf import settings
+
+
+LOGGER = logging.getLogger(__name__)
+
 
 def get_jupyter_url(system, path, username, is_dir=False):
     """Translate file path and system to Jupyter URL
@@ -21,6 +26,7 @@ def get_jupyter_url(system, path, username, is_dir=False):
     portal_jupyter_system_map = getattr(settings, 'PORTAL_JUPYTER_SYSTEM_MAP', None)
 
     if (portal_jupyter_url is None or portal_jupyter_system_map is None):
+        LOGGER.warning('No Jupyter URL or Jupyter System Map found.')
         return None
 
     # Have to make a storage system map -> jupyter mount point map with portal-home-{username} keys replaced
@@ -31,6 +37,10 @@ def get_jupyter_url(system, path, username, is_dir=False):
 
     # Check to see that the request file manager is configured to a Jupyter mount point
     if system not in system_map:
+        LOGGER.warning(
+            'System \'%s\' not found in Jupyter System Map.',
+            system
+        )
         return None
 
     # Default action is to /edit a file
