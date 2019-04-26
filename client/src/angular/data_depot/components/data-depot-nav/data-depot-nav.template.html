@@ -1,6 +1,7 @@
 <div class="list-group list-group-root well">
     <div>
         <a class="list-group-item" 
+           uib-tooltip="Private directory for your data"
            ui-sref="wb.data_depot.db({
                     systemId: $ctrl.sysMyData.systemId,
                     filePath:'',
@@ -15,6 +16,7 @@
     <div>
         <a 
            class="list-group-item" 
+           uib-tooltip="Directories shared with collaborators"
            ui-sref="wb.data_depot.projects.list" 
            ui-sref-opts="{reload: true, inherit: false}"
            ui-sref-active="{'active': 'wb.data_depot.projects.*'}">
@@ -25,6 +27,7 @@
     <div>
         <a 
            class="list-group-item" 
+           uib-tooltip="Data viewable by all authorized portal users"
            ui-sref="wb.data_depot.db({
                         systemId: $ctrl.sysCommunityData.systemId,
                         filePath:'',

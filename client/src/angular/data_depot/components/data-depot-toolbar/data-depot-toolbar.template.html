@@ -75,6 +75,8 @@
         <div class="btn-group">
             <button class="btn btn-sm btn-default"
                     title="Move to trash"
+                    uib-tooltip="Move a file to the .Trash folder. If you wish to delete a file or folder permanently, please submit a ticket."
+                    tooltip-placement="bottom"
                     ng-click="$ctrl.trash()"
                     ng-if="!$ctrl.tests.canDelete"
                     ng-disabled="!$ctrl.tests.canTrash ||
