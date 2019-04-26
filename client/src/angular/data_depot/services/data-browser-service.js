@@ -172,11 +172,33 @@ function DataBrowserService(
       files[0].name.endsWith(".zip") &&
       (apiParams.fileMgr !== 'shared');
 
-    var trashPath = _trashPath();
-    tests.canTrash = ($state.current.name === 'wb.data_depot.db' || $state.current.name === 'db.projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && !_.some(files, function(sel) { return isProtected(sel); }) && (apiParams.fileMgr !== 'shared');
+    tests.canTrash = canTrash($state.current.name, files);
+    
+    let trashPath = _trashPath();
     tests.canDelete = $state.current.name === 'wb.data_depot.db' && files.length >= 1 && currentState.listing.path === trashPath && (apiParams.fileMgr !== 'shared');
 
     return tests;
+  }
+
+  function canTrash(stateName, files) {
+    if (!currentState.listing) {
+      return false;
+    }
+    let notTrashPath = currentState.listing.path !== _trashPath();
+    let stateNameValid = stateName === 'wb.data_depot.db' 
+        || stateName === 'db.projects.view.data'
+        || stateName === 'wb.data_depot.projects.listing';
+    let hasFiles = files.length >= 1;
+    let notProtected = !_.some(files, function(sel) { return isProtected(sel); });
+    let canWrite = hasPermission('WRITE', [currentState.listing]); 
+    let notShared = apiParams.fileMgr !== 'shared';
+    return currentState.listing
+      && stateNameValid
+      && hasFiles
+      && notTrashPath
+      && notProtected
+      && notShared
+      && canWrite;
   }
 
   function showListing(){
@@ -747,6 +769,7 @@ function DataBrowserService(
     // details: details,
     download: download,
     getFileManagers: getFileManagers,
+    canTrash: canTrash,
     hasPermission: hasPermission,
     isProtected: isProtected,
     mkdir: mkdir,

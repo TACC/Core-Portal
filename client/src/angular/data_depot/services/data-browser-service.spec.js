@@ -125,4 +125,48 @@ describe("DataBrowserService", function() {
     $httpBackend.flush();
     expect(httpResp.length).toEqual(2);
   });
+
+  it("should test that files can be trashed", () => {
+    var httpResponse;
+    var data = {response: {
+        "name": "test",
+        "system": "test-system",
+        "format": "folder",
+        "path": "/",
+        "permissions": "ALL",
+        "children": [
+            {
+              "name": "test_child1.txt",
+              "system": "test-system",
+              "path": "/test_child1.txt"
+            },
+            {
+              "name": "test_child2.txt",
+              "system": "test-system",
+              "path": "/test_child1.txt"
+            }
+        ]
+      }
+    }
+
+    //Use a regex so that any query param will pass through
+    $httpBackend.whenGET(/api\/data-depot\/files\/listing\/my-data\/test-system*/).respond(200, data);
+    DataBrowserService.apiParams.fileMgr = 'my-data';
+    DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
+    DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
+    DataBrowserService.browse(options);
+    $httpBackend.flush();
+
+    let files = [
+      {
+        name: "testfile",
+        permissions: "READ_WRITE",
+        system: "cep.home.test",
+        trail: [ "/" ]
+      }
+    ];
+    let result = DataBrowserService.canTrash('wb.data_depot.db', files);
+    expect(result).toEqual(true);
+  })
+
 });
