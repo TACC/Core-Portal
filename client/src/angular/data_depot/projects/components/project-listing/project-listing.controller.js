@@ -53,7 +53,7 @@ class ProjectListingCtrl {
                   systemId: file.system,
                   filePath: file.path,
               },
-              {reload: true}
+              {reload: true, inherit: false}
           );
         }
     }
