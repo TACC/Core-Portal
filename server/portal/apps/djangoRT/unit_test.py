@@ -1,13 +1,18 @@
 from rt import Rt
 import os
+import time
 from django.test import TestCase, override_settings
 from mock import Mock, patch, MagicMock, PropertyMock, ANY
+from django.test import Client
 from django.test.client import RequestFactory
 from django.contrib.auth.models import User
 from portal.apps.djangoRT.views import ticketcreate
+from portal.apps.djangoRT import views
 from portal.apps.djangoRT.rtUtil import DjangoRt
 from portal.apps.djangoRT.forms import TicketForm
 from portal.apps.djangoRT.rtModels import Ticket
+from django.contrib.auth import get_user_model
+import random
 
 class TestDataDepotApiViews(TestCase):
     @classmethod
@@ -44,7 +49,6 @@ class TestDataDepotApiViews(TestCase):
             CF_resource="Mock Tag"
         )
 
-
 class TestTicketMetadata(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -68,8 +72,6 @@ class TestTicketMetadata(TestCase):
             'None' + os.linesep + os.linesep + \
             'HTTP_USER_AGENT' + os.linesep +  \
             'None' + os.linesep + os.linesep + \
-            'HTTP_COOKIE' + os.linesep + \
-            'None' + os.linesep +  os.linesep + \
             'SERVER_NAME' + os.linesep + \
             'testserver' + os.linesep + os.linesep
 
@@ -95,7 +97,6 @@ class TestTicketMetadata(TestCase):
             'info' : "Mock Client Info"}
         )
         get_request.user = mock_user
-        get_request.META['HTTP_COOKIE'] = 'None'
 
 
         # Test ticketcreate and make sure it creates a form with
@@ -118,7 +119,7 @@ class TestTicketMetadata(TestCase):
         # Therefore, to test the Ticket object to see if metadata was inserted as a field, 
         # we will use an assertion as a side_effect of the mocked DjangoRt.createTicket
         def test_ticket_metadata(ticket):
-            assert self.metadata_fixture in ticket.problem_description 
+            assert self.metadata_fixture in ticket.problem_description
 
         self.mock_rtUtil.DjangoRt.return_value.createTicket.side_effect=test_ticket_metadata
         
@@ -144,3 +145,69 @@ class TestTicketMetadata(TestCase):
         # Sanity check - if the mocked createTicket was never called then no side_effect would 
         # have ever been generated
         self.mock_rtUtil.DjangoRt.return_value.createTicket.assert_called_with(ANY)
+
+'''
+Testing that user tickets are parsed and rendered
+'''
+class TestGetUserTickets(TestCase):
+    fixtures = ['users', 'auth']
+    @patch('portal.apps.djangoRT.rtUtil.rt.Rt')
+    def test_get_user_tickets(self, rt_class):
+        self.search_statuses = []
+        self.ticket_id = 2500
+        def rt_search_patch(Queue=[], Requestors__exact='', Status__exact='status', order='-LastUpdated'):
+            self.search_statuses.append(Status__exact)
+            return [{'id': 'ticket/' + str(self.ticket_id),
+                    'numerical_id': self.ticket_id, 'Subject': 'Ticket with status: '\
+                    + Status__exact,'LastUpdated': 'Fri Apr 19 11:09:29 2019'}]
+
+        rt_class.return_value.login.return_value = True
+        rt_class.return_value.search.side_effect = rt_search_patch
+
+        user = get_user_model().objects.get(username="username")
+        self.client.force_login(user)
+        resp = self.client.get('/tickets/', follow=True)
+        self.assertTrue(resp.status_code == 200)
+        content = resp.content.decode('utf-8')
+
+        '''
+        Checking that ticket counts are correct on render
+        '''
+        self.assertIn('Open (1)', content)
+        self.assertIn('New (1)', content)
+        self.assertIn('Response Required (1)', content)
+        self.assertIn('Resolved (2)', content) # includes tickets marked resolved and closed
+
+        for status in self.search_statuses:
+            render_text = '<a href="/tickets/ticket/' + str(self.ticket_id) + '/"> #'\
+                    + str(self.ticket_id) + ' : Ticket with status: ' + status + '</a>'
+            self.assertTrue(render_text in content, 'Did not find render text: ' + render_text)
+
+'''
+Testing that user gets redirected correctly after creating a ticket
+'''
+class TestCreateTicketAndRedirect(TestCase):
+    fixtures = ['users', 'auth']
+    @patch('portal.apps.djangoRT.rtUtil.rt.Rt')
+    def test_create_ticket_and_redirect(self, rt_class):
+        self.ticket_id = '42'
+
+        rt_class.return_value.login.return_value = True
+        rt_class.return_value.create_ticket.return_value = self.ticket_id
+
+        post_data = {
+            'first_name': 'First Name', 
+            'last_name': 'Last Name', 
+            'email': 'test@test.com',
+            'cc': 'test2@test.com',
+            'subject': 'Mock Subject',
+            'problem_description' : "Mock Description",
+            'metadata': 'fake_data'
+        }
+
+        user = get_user_model().objects.get(username="username")
+        self.client.force_login(user)
+        resp = self.client.post('/tickets/ticket/new/', post_data, follow=False,
+            HTTP_USER_AGENT='Mozilla/5.0', HTTP_REFERER='test referrer', SERVER_NAME='test.test')
+        expected_redirect = '/tickets/ticket/%s/' % (self.ticket_id)
+        self.assertRedirects(resp, expected_redirect, status_code=302, msg_prefix='', fetch_redirect_response=False)

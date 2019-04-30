@@ -50,7 +50,7 @@ def ticketcreate(request):
 	metadata = "*** Ticket Metadata ***" + os.linesep + os.linesep
 	metadata = metadata + "Client info:" + os.linesep + info + os.linesep + os.linesep
 
-	for meta in ['HTTP_REFERER', 'HTTP_USER_AGENT', 'HTTP_COOKIE', 'SERVER_NAME']:
+	for meta in ['HTTP_REFERER', 'HTTP_USER_AGENT', 'SERVER_NAME']:
 		metadata = metadata + meta + os.linesep + request.META.get(meta, "None") + os.linesep + os.linesep
 
 	data['metadata'] = metadata

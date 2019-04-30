@@ -16,6 +16,7 @@ pipelines:
             - pip
           script: # Modify the commands below to build your repository.
             - cd server
+            - cp portal/templates/base.j2 portal/templates/base.html
             - mkdir -p log/portal
             - pip install -r requirements.txt
             - coverage run --branch --source="portal" --omit "*/unit_test.py" manage.py test
@@ -44,6 +45,7 @@ pipelines:
               - pip
             script: # Modify the commands below to build your repository.
               - cd server
+              - cp portal/templates/base.j2 portal/templates/base.html
               - mkdir -p log/portal
               - pip install -r requirements.txt
               - coverage run --branch --source="portal" --omit "*/unit_test.py" manage.py test

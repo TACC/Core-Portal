@@ -315,10 +315,11 @@ TAS_CLIENT_KEY = 'test'
 TAS_CLIENT_SECRET = 'test'
 # Redmine Tracker Authentication.
 RT_URL = 'test'
-RT_HOST = 'test'
+RT_HOST = 'https://test.com'
 RT_UN = 'test'
 RT_PW = 'test'
 RT_QUEUE = 'test'
+RT_TAG = 'test_tag'
 
 # Agave Tenant.
 AGAVE_TENANT_ID = 'portal'
