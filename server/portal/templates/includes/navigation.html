@@ -62,6 +62,13 @@
                   <i class="fa fa-ticket nav-icon"></i> My Tickets
                 </a>
               </li>
+              {% if user.is_staff %}
+              <li>
+                <a href="{% url 'portal_onboarding:admin' %}">
+                  <i class="fa fa-users"></i> &nbsp;Onboarding
+                </a>
+              </li>
+              {% endif %}
               <li>
                 <a href="{% url 'portal_accounts:logout' %}">
                   <i class="fa fa-sign-out nav-icon"></i> Log Out

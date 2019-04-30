@@ -6,3 +6,14 @@
 .hover-table tr {
     outline: none !important;
 }
+
+.paginator-container {
+    width: 100%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.limit-select {
+    margin-top: 0.5em;
+}

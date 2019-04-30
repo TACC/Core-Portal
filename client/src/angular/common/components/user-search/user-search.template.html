@@ -27,14 +27,16 @@
                 <i class="fa fa-times">&nbsp;</i> No Results Found.
             </div>
         </div>
-        <button class="btn btn-default"
+        <button 
+                ng-if="!$ctrl.hideCancel"
+                class="btn btn-default"
                 data-ng-click="$ctrl.cancel()">
             Cancel
         </button>
         <button class="btn btn-info"
                 data-ng-click="$ctrl.select()"
                 ng-disabled="!$ctrl.data.member || !$ctrl.data.member.username">
-            Select User
+           {{ $ctrl.selectText }} 
         </button>
     </div>
     <div ng-if="$ctrl.showConfirm" class="user-search-animate">

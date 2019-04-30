@@ -2,7 +2,7 @@ import logging
 from future.utils import python_2_unicode_compatible
 from portal.views.base import BaseApiView
 from django.contrib.auth import get_user_model
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import (
     Http404,
     JsonResponse, 
@@ -26,6 +26,7 @@ from portal.apps.onboarding.execute import (
     execute_setup_steps
 )
 from portal.apps.onboarding.state import SetupState
+import math
 import json
 
 logger = logging.getLogger(__name__)
@@ -229,44 +230,45 @@ class SetupStepView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 @method_decorator(staff_member_required, name='dispatch')
 class SetupAdminView(BaseApiView):
-    def get(self, request):
-        limit = int(request.GET.get('limit', '20'))
-        page = int(request.GET.get('page', '1'))
+    def create_user_result(self, user):
+        user_result = { }
+        user_result['username'] = user.username
+        user_result['lastName'] = user.last_name
+        user_result['firstName'] = user.first_name
+        user_result['dateJoined'] = user.date_joined
+        user_result['email'] = user.email
+        user_result['setupComplete'] = user.profile.setup_complete
+        
+        try:
+            last_event = SetupEvent.objects.all().filter(
+                user=user
+            ).latest('time')
+            user_result['lastEvent'] = last_event
+        except SetupEvent.DoesNotExist:
+            pass
 
-        resp = [ ]
+        return user_result
+
+    def get(self, request):
+        users = [ ]
         model = get_user_model()
         # Get users, with users that do not have setup_complete, first
-        new_users = model.objects.all().order_by('profile__setup_complete', 'last_name', 'first_name')
-        pages = Paginator(new_users, limit)
-
-        result = pages.page(page).object_list
+        result = model.objects.all().order_by('profile__setup_complete', 'last_name', 'first_name')
 
         # Assemble an array with the User data we care about
         for user in result:
             try:
-                user_result = { }
-                user_result['username'] = user.username
-                user_result['lastName'] = user.last_name
-                user_result['firstName'] = user.first_name
-                user_result['dateJoined'] = user.date_joined
-                user_result['email'] = user.email
-                user_result['setupComplete'] = user.profile.setup_complete
-                
-                try:
-                    last_event = SetupEvent.objects.all().filter(
-                        user=user
-                    ).latest('time')
-                    user_result['lastEvent'] = last_event
-                except SetupEvent.DoesNotExist as err:
-                    pass
-
-                resp.append(user_result)
-            except PortalProfile.DoesNotExist as err:
+                users.append(self.create_user_result(user))
+            except ObjectDoesNotExist as err:
                 # If a user does not have a PortalProfile, skip it
                 logger.info(err)
+        
+        response = { 
+            "users" : users
+        }
 
         return JsonResponse(
-            resp,
+            response,
             encoder=SetupEventEncoder,
             safe=False
         )

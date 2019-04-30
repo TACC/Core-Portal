@@ -13,6 +13,13 @@ export default class UserSearchCtrl {
         this.data = {};
         this.warning = null;
         this.showConfirm = false;
+        this.hideCancel = false;
+    }
+
+    $onInit() {
+        if (!this.selectText) {
+            this.selectText = "Select User";
+        }
     }
 
     /**

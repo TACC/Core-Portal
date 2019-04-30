@@ -26,6 +26,7 @@ def new_user_setup_check(user):
         profile.setup_complete = True
         profile.save()
     else:
+        logger.info("Preparing onboarding steps for user {username}".format(username=user.username))
         prepare_setup_steps(user)
 
 def log_setup_state(user, message):

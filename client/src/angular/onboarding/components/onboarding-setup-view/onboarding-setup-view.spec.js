@@ -61,7 +61,7 @@ describe('OnboardingSetupViewStaff', ()=>{
 
                 spyOn(OnboardingSetupService, 'list').and.returnValue(deferredUserSetup.promise);
 
-                let elementHtml = "<onboarding-setup-view username='mockuser'></onboarding-setup-view>";
+                let elementHtml = "<onboarding-setup-view show-admin='true' username='mockuser'></onboarding-setup-view>";
                 element = angular.element(elementHtml)
                 element = $compile(element)(scope);
                 scope.$digest()
@@ -287,6 +287,25 @@ describe('OnboardingSetupViewSelf', ()=>{
         controller.processEvent(event);
         expect(controller.user.setupComplete).toEqual(true);
         expect(controller.$window.location.href).toEqual("/workbench/dashboard");
+    });
+
+    it("should determine if a user has setup events", () => {
+        controller.user = {
+            steps: [
+                {
+                    events: [ ]
+                }
+            ]
+        }
+        expect(controller.hasStepEvents()).toEqual(false);
+        controller.user = { 
+            steps: [
+                {
+                    events: [ "event1" ]
+                }
+            ]
+        }
+        expect(controller.hasStepEvents()).toEqual(true);
     });
 
 });

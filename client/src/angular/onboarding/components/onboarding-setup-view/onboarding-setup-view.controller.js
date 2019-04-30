@@ -10,6 +10,7 @@ class OnboardingSetupViewCtrl {
         this.events = Notifications.subject;
         this.$scope = $scope;
         this.$window = $window;
+        this.showAdmin = false;
     }
 
     $onInit() {
@@ -55,6 +56,26 @@ class OnboardingSetupViewCtrl {
                 }
             }
         )
+    }
+
+    hasStepEvents() {
+        return this.user.steps.some(
+            (step) => {
+                return step.events.length > 0;
+            }
+        )
+    }
+
+    showAllSteps() {
+        return this.showAdmin || this.hasStepEvents();
+    }
+
+    showStepEvents(step) {
+        return this.showAdmin || step.events.length > 0;
+    }
+
+    showAdminInterface() {
+        return this.isStaff & this.showAdmin;
     }
 
     processEvent(event) {

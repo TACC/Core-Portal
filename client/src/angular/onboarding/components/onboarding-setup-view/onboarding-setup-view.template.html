@@ -18,15 +18,15 @@
         <br />
     </div>
     <div>
-        <table width="100%" class="setup-table">
+        <table width="100%" class="setup-table" ng-if="$ctrl.showAllSteps()">
             <tr>
                 <th width="10%">Step</th>
                 <th width="10%">Status</th>
                 <th width="20%">Log</th>
                 <th width="10%" ng-if="$ctrl.viewingSelf">Actions</th>
-                <th width="20%" ng-if="$ctrl.isStaff">Administrative Actions</th>
+                <th width="20%" ng-if="$ctrl.showAdminInterface()">Administrative Actions</th>
             </tr>
-            <tr ng-repeat="step in $ctrl.user.steps">
+            <tr ng-repeat="step in $ctrl.user.steps" ng-if="$ctrl.showStepEvents(step)">
                 <td>{{ step.displayName }}</td>
                 <td><onboarding-setup-state state="step.state"></onboarding-setup-state></td>
                 <td class="setup-event-log">
@@ -83,7 +83,7 @@
                         </submit-ticket>.
                     </div>
                 </td>
-                <td ng-if="$ctrl.isStaff">
+                <td ng-if="$ctrl.showAdminInterface()">
                     <div ng-if="step.saving">
                         <i class="fa fa-spinner fa-spin"></i> Saving...
                     </div>

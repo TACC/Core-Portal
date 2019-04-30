@@ -6,6 +6,7 @@ const onboardingSetupViewComponent = {
     template: require("./onboarding-setup-view.template.html"),
     bindings: {
         username: '@',
+        showAdmin: '<'
     },
     controller: OnboardingSetupViewCtrl,
 };

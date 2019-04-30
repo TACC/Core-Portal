@@ -112,6 +112,7 @@ def agave_oauth_callback(request):
             new_user_setup_check(user)
 
             # Apply asynchronous long onboarding calls
+            logger.info("Starting celery task for onboarding {username}".format(username=user.username))
             setup_user.apply_async(args=[user.username])
         else:
             messages.error(

@@ -12,15 +12,17 @@ describe('OnboardingAdminService', function() {
             $q = _$q_;
             $httpBackend = _$httpBackend_;
 
-            sampleResponse = [
-                { 
-                    "username" : "mockuser",
-                    "lastName" : "user",
-                    "firstName" : "mock",
-                    "setupComplete" : false,
-                    "dateJoined" : "today"
-                }
-            ];
+            sampleResponse = {
+                users: [
+                    { 
+                        "username" : "mockuser",
+                        "lastName" : "user",
+                        "firstName" : "mock",
+                        "setupComplete" : false,
+                        "dateJoined" : "today"
+                    }
+                ]
+            };
         });
     });
 
@@ -31,7 +33,7 @@ describe('OnboardingAdminService', function() {
     it ("should get a list of users", () => {
         OnboardingAdminService.list().then(
             (response) => {
-                expect(response[0].username).toEqual("mockuser");
+                expect(response["users"][0].username).toEqual("mockuser");
             }
         )
         $httpBackend.whenGET("/api/onboarding/admin").respond(sampleResponse);

@@ -12,4 +12,5 @@ def setup_user(self, username):
         Called asynchronously from portal.apps.auth.views.agave_oauth_callback
     """
     from portal.apps.accounts.managers.accounts import setup
+    logger.info("Async setup task for {username} launched".format(username=username))
     setup(username)

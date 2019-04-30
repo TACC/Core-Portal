@@ -17,21 +17,23 @@ describe('OnboardingAdminViewCtrl', ()=>{
 
                 let deferred = $q.defer();        
                 deferred.resolve(
-                    [
-                        {
-                            "username" : "mockuser",
-                            "lastName" : "user",
-                            "firstName" : "mock",
-                            "setupComplete" : false,
-                            "email" : "mock@user.com",
-                            "dateJoined" : "yesterday",
-                            "lastEvent" : {
-                                "time" : "yesterday",
-                                "message" : "Setup Event message",
-                                "step" : "MockStep"
+                    {
+                        users: [
+                            {
+                                "username" : "mockuser",
+                                "lastName" : "user",
+                                "firstName" : "mock",
+                                "setupComplete" : false,
+                                "email" : "mock@user.com",
+                                "dateJoined" : "yesterday",
+                                "lastEvent" : {
+                                    "time" : "yesterday",
+                                    "message" : "Setup Event message",
+                                    "step" : "MockStep"
+                                }
                             }
-                        }
-                    ]
+                        ]
+                    }
                 );
                 spyOn(OnboardingAdminService, 'list').and.returnValue(deferred.promise);
                 let elementHtml = "<onboarding-admin-view></onboarding-admin-view>";
@@ -50,5 +52,14 @@ describe('OnboardingAdminViewCtrl', ()=>{
 
     it("should show a list of users", () => {
         expect(element.text()).toContain("user");
+    });
+
+    it("should calculate whether or not to show a user result", () => {
+        controller.users = new Array(30);
+        controller.currentPage = 2;
+        controller.limit = 10;
+        expect(controller.indexInPage(5)).toEqual(false);
+        expect(controller.indexInPage(15)).toEqual(true);
+        expect(controller.indexInPage(25)).toEqual(false);
     });
 });

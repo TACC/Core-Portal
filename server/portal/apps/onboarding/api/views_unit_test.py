@@ -2,7 +2,7 @@ from django.test import TestCase, Client, RequestFactory, override_settings
 from mock import Mock, patch, MagicMock, ANY
 from django.contrib.auth import get_user_model
 from django.db.models import signals
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import (
     Http404,
     JsonResponse, 
@@ -365,6 +365,41 @@ class TestSetupAdminViews(TestCase):
         resp = self.client.get("/api/onboarding/admin/", follow=False)
         self.assertNotEqual(resp.status_code, 200)
 
+    def test_create_user_result(self):
+        # Test a user with no events
+        User = get_user_model()
+        b_user = User.objects.get(username="b_user")
+        user_result = self.view.create_user_result(b_user)
+        self.assertEquals(user_result['username'], "b_user")
+        self.assertEquals(user_result['lastName'], "b")
+        self.assertEquals(user_result['email'], "b@user.com")
+
+        # Test with an event
+        mock_event = SetupEvent.objects.create(
+            user=b_user,
+            step="portal.apps.onboarding.steps.test_steps.MockStep",
+            state="complete" 
+        )
+        user_result = self.view.create_user_result(b_user)
+        self.assertEquals(
+            user_result['lastEvent'].step, 
+            "portal.apps.onboarding.steps.test_steps.MockStep"
+        )
+
+    def test_get_no_profile(self):
+        # Test that no object is returned for a user with no profile
+        d_user = get_user_model().objects.create_user("d_user", "d@user.com", "dpassword")
+        d_user.last_name = "d"
+        d_user.first_name = "user"
+        d_user.save()
+        request = self.factory.get("/api/onboarding/admin")
+        response = self.view.get(request)
+        response_data = json.loads(response.content)
+
+        # d_user should not be in the list of users returned
+        d_user_result = [ user for user in response_data['users'] if user['username'] == 'd_user' ]
+        self.assertEquals(len(d_user_result), 0)
+
     def test_get(self):
         # Create an event for user b
         User = get_user_model()
@@ -383,31 +418,28 @@ class TestSetupAdminViews(TestCase):
         # Get the JsonResponse from SetupAdminView.get
         response = self.view.get(request)
         result = json.loads(response.content)
+        
+        users = result["users"]
 
         # The first result should be user with last name "b", since they have not completed setup and
         # are alphabetically first, by last name
-        self.assertEqual(result[0]['lastName'], "b")
+        self.assertEqual(users[0]['lastName'], "b")
 
         # User b's last event should be MockStep
         self.assertEqual(
-            result[0]['lastEvent']['step'],
+            users[0]['lastEvent']['step'],
             "portal.apps.onboarding.steps.test_steps.MockStep"
         )
 
         # There should be more than two users returned, total
-        self.assertGreater(len(result), 2)
+        self.assertGreater(len(users), 2)
 
         # There should be two users that do not have setupComplete
-        matches = [ user for user in result if user['setupComplete'] == False ]
+        matches = [ user for user in users if user['setupComplete'] == False ]
         self.assertEqual(len(matches), 2)
 
         # Users with no profile should not be returned
-        matches = [ user for user in result if user['lastName'] == 'no' ]
+        matches = [ user for user in users if user['lastName'] == 'no' ]
         self.assertEqual(len(matches), 0)
 
-        # Test paginated search results
-        request = self.factory.get("/api/onboarding/admin/?limit=5&page=1")
-        response = self.view.get(request)
-        result = json.loads(response.content)
-        self.assertLessEqual(len(result), 5)
 

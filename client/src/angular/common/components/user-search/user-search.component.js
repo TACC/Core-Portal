@@ -9,7 +9,9 @@ const userSearchComponent = {
         label: '@',
         warning: '@',           // If there is a warning, a confirmation will be given before onSelect
         onSelect: '&',
-        onCancel: '&'
+        onCancel: '&',
+        hideCancel: '<',
+        selectText: '@'
     }
 };
 

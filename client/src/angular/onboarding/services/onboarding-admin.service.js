@@ -6,7 +6,7 @@ export default class OnboardingAdminService {
         this.url = "/api/onboarding/admin"
     }
 
-    list(limit, page) {
+    list() {
         return this.$http.get(this.url).then(
             (resp) => {
                 return resp.data;
