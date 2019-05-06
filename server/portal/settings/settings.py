@@ -763,6 +763,12 @@ PORTAL_DOMAIN = settings_secret._PORTAL_DOMAIN
 PORTAL_ALLOCATION = getattr(settings_secret, '_PORTAL_ALLOCATION', '')
 
 """
+SETTINGS: settings related to possible steps in PORTAL_USER_ACCOUNT_SETUP_STEPS
+"""
+# ProjectMembershipStep
+REQUIRED_PROJECTS = getattr(settings_secret, '_REQUIRED_PROJECTS', [])
+
+"""
 SETTINGS: ELASTICSEARCH
 """
 
