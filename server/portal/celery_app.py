@@ -33,7 +33,7 @@ app.conf.beat_schedule = {
     }
 }
 
-if settings.COMMUNITY_INDEX_SCHEDULE is not None:
+if settings.COMMUNITY_INDEX_SCHEDULE is not {}:
     app.conf.beat_schedule['index_community'] = {
         'task': 'portal.apps.search.tasks.index_community_data',
         'schedule': crontab(**settings.COMMUNITY_INDEX_SCHEDULE)
