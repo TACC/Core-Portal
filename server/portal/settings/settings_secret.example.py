@@ -170,6 +170,8 @@ _HAYSTACK_CONNECTIONS = {
     }
 }
 
+_COMMUNITY_INDEX_SCHEDULE = None
+
 ########################
 # Custom Portal Template Assets
 # Asset path root is static files output dir.

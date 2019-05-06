@@ -710,6 +710,9 @@ PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
 PORTAL_PROJECTS_PUBLIC_KEY = settings_secret.\
     _PORTAL_PROJECTS_PUBLIC_KEY
 
+COMMUNITY_INDEX_SCHEDULE = settings_secret.\
+    _COMMUNITY_INDEX_SCHEDULE
+
 # This setting is not used directly most of the time.
 # We mainly use it when creating the execution system for the pems app
 # but that might not happen in every portal.

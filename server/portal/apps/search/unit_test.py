@@ -11,6 +11,8 @@ from portal.apps.search.api.managers.shared_search import SharedSearchManager
 from portal.apps.search.api.managers.private_data_search import PrivateDataSearchManager
 from portal.apps.search.api.managers.project_search import ProjectSearchManager
 
+from portal.apps.search.tasks import index_community_data
+
 from django.http import HttpRequest
 from django.contrib.sessions.models import Session
 
@@ -206,3 +208,10 @@ class TestProjectSearchManager(TestCase):
         listing = mgr.list(mgr=mock_mgr)
 
         self.assertEqual(listing, [mock_storage])
+
+class TestCommunityIndexer(TestCase):
+
+    @patch('portal.apps.search.tasks.agave_indexer')
+    def test_community_index(self, mock_indexer):
+        index_community_data()
+        mock_indexer.apply_async.assert_called_once_with(args=['test.storage'], kwargs={'reindex': False})

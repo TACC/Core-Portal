@@ -445,3 +445,5 @@ MIGRATION_MODULES = {
     'cmsplugin_iframe': None,
     'djangocms_forms': None
 }
+
+COMMUNITY_INDEX_SCHEDULE = {'hour': 0, 'minute': 0, 'day_of_week': 0}
