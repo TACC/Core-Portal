@@ -13,7 +13,6 @@ describe("AuthInterceptor", function() {
     })
   );
   beforeEach( ()=> {
-    angular.module('django.context', []).constant('Django', {user: 'test_user'});
     angular.mock.inject(function(_$q_, _AuthInterceptor_, _$http_, _$window_, _$httpBackend_) {
       AuthInterceptor = _AuthInterceptor_;
       $q = _$q_;

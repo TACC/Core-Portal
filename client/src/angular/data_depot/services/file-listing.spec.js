@@ -3,7 +3,6 @@ describe("FileListing", function() {
   var $httpBackend, $q, FileListing;
   beforeEach(angular.mock.module("portal"));
   beforeEach( ()=> {
-    angular.module('django.context', []).constant('Django', {user: 'test_user'});
     angular.mock.inject(function(_$httpBackend_, _$q_, _FileListing_) {
       $httpBackend = _$httpBackend_;
       FileListing = _FileListing_;

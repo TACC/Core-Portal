@@ -10,7 +10,6 @@ describe('OnboardingSetupService', function() {
 
     beforeEach(angular.mock.module('portal'));
     beforeEach(() => {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
         angular.mock.inject(function(_$rootScope_, _OnboardingSetupService_, _$q_, _$http_, _$httpBackend_) {
             $http = _$http_;
             OnboardingSetupService = _OnboardingSetupService_;

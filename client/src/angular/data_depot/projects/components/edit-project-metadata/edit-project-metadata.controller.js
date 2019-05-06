@@ -6,10 +6,9 @@ export default class EditProjectMetadataCtrl {
     /**
      * Initialize Controller.
      */
-    constructor(ProjectService, Django) {
+    constructor(ProjectService) {
         'ngInject';
         this.ProjectService = ProjectService;
-        this.Django = Django;
         this.meta = { };
         this.roles = { };
         this.resolve = { };

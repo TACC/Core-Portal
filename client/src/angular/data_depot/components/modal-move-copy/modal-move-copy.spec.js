@@ -16,7 +16,6 @@ describe('ModalMoveCopy', function() {
     // Mock only the necessary portal components
     beforeEach(angular.mock.module('portal'));
     beforeEach( ()=> {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
         angular.mock.inject(function(_$componentController_, _FileListing_,
             _SystemsService_, _ProjectService_, _$q_, _$rootScope_) {
             $componentController = _$componentController_;

@@ -6,7 +6,6 @@ describe('DashboardCtrl', function() {
         $httpBackend, fakePromise, systems;
     beforeEach(angular.mock.module('portal'));
     beforeEach(() => {
-        angular.module('django.context', []).constant('Django', { user: 'test_user' });
         //these get passed into controller via a resolve in ui-router
         systems = [{ systemId: 1, name: 'My Data' }];
         angular.mock.inject(function(_$rootScope_, _$controller_, _Jobs_, _Apps_,
@@ -114,7 +113,6 @@ describe("DashboardCtrl.$onInit() Systems", function() {
       $httpBackend, fakePromise, systems;
   beforeEach(angular.mock.module("portal"));
   beforeEach( ()=> {
-    angular.module('django.context', []).constant('Django', {user: 'test_user'});
     //these get passed into controller via a resolve in ui-router
     systems = [{systemId : 1, name: 'My Data'}];
     angular.mock.inject(function(_$rootScope_, _$controller_, _Jobs_, _Apps_,

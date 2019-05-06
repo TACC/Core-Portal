@@ -4,7 +4,6 @@ describe("DashboardCtrl", function() {
       $controller, $rootScope, scope, ctrl, $q;
   beforeEach(angular.mock.module("portal"));
   beforeEach( ()=> {
-    angular.module('django.context', []).constant('Django', {user: 'test_user'});
     angular.mock.inject(function(_$rootScope_, _$controller_,
       _SearchService_, _$location_, _$state_, _$q_) {
       $location = _$location_;

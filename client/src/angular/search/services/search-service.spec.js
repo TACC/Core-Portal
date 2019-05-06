@@ -6,7 +6,6 @@ describe("SearchService", function() {
   var SearchService, $httpBackend;
   beforeEach(angular.mock.module("portal"));
   beforeEach( ()=> {
-    angular.module('django.context', []).constant('Django', {user: 'test_user'});
     angular.mock.inject(function(_$httpBackend_, _SearchService_) {
       SearchService = _SearchService_;
       $httpBackend = _$httpBackend_;

@@ -7,10 +7,6 @@ describe('AppFormComponent', function() {
 
     beforeEach(angular.mock.module('portal'));
     beforeEach(() => {
-        angular.module('django.context', []).constant('Django', {
-            user: 'test_user',
-        });
-
         angular.mock.inject(function(_$rootScope_, _$componentController_, _Apps_, _Jobs_,
             _$timeout_, _$q_, _$compile_, _$httpBackend_, _UserService_, _$uibModal_, _SystemsService_, _ProjectService_) {
             $componentController = _$componentController_;

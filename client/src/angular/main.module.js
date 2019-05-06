@@ -128,7 +128,6 @@ let mod = angular
         'ngSanitize',
         'ngMaterial',
         'ng.modernizr',
-        'django.context',
         'portal.directives',
         'portal.filters',
         'portal.workspace',

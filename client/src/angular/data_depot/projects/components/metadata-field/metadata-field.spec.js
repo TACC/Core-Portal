@@ -8,7 +8,6 @@ describe('MetadataFieldCtrl', ()=>{
     // Mock requirements.
     beforeEach(angular.mock.module("portal"));
     beforeEach( ()=> {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
         angular.mock.inject(
             (_$rootScope_, _$q_, _$compile_, $componentController) => {
                 $compile = _$compile_;

@@ -3,7 +3,6 @@ describe("DataBrowserService", function() {
       $q, FileListing, options;
   beforeEach(angular.mock.module("portal"));
   beforeEach( ()=> {
-    angular.module('django.context', []).constant('Django', {user: 'test_user'});
     angular.mock.inject(function(
       _$httpBackend_, _DataBrowserService_,_Jobs_,  _$uibModal_, _$q_, _FileListing_,
       _$mdToast_, _SystemsService_, _$rootScope_) {

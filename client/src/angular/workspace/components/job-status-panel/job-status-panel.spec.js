@@ -4,10 +4,6 @@ describe('JobStatusPanelComponent', function() {
         Jobs, Notifications, $uibModal;
     beforeEach(angular.mock.module('portal'));
     beforeEach(() => {
-        angular.module('django.context', []).constant('Django', {
-            user: 'test_user',
-        });
-
         angular.mock.inject(function(_$rootScope_, _$componentController_, _Jobs_,
             _Notifications_, _$uibModal_, _$q_) {
             $componentController = _$componentController_;

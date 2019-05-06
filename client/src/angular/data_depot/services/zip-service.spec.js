@@ -31,7 +31,6 @@ describe("ZipService", function() {
         });
     });
     beforeEach(() => {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
         angular.mock.inject(function(_Jobs_,  _$uibModal_, _$q_, _$mdToast_, 
                     _SystemsService_, _ZipService_, _$rootScope_, _Apps_) {
             ZipService = _ZipService_;

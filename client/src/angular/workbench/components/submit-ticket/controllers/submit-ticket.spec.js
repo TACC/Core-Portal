@@ -26,7 +26,6 @@ describe("submitTicket", function() {
     beforeEach(angular.mock.module("portal.workbench.components"));
     
     beforeEach( ()=> {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
         // Setup our component test
         angular.mock.inject(function(_$rootScope_, _$compile_) {
             // Bring in the $compile provider for UI testing

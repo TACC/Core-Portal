@@ -6,7 +6,6 @@ describe('DataDepotToolbarCtrl', () => {
     // Mock requirements.
     beforeEach(angular.mock.module("portal"));
     beforeEach(() => {
-        angular.module('django.context', []).constant('Django', { user: 'test_user' });
         angular.mock.inject((
             _$q_,
             _$rootScope_,

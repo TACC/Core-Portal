@@ -15,7 +15,6 @@ describe("ProjectMetadataComponent Error Case", () => {
     let $uibModal;
 
     beforeEach( ()=> {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
         angular.mock.module("portal.data_depot.projects");
         angular.mock.module("portal");
         angular.mock.inject(
@@ -62,16 +61,21 @@ describe('ProjectMetadataComponent', ()=>{
     let element;
     let ProjectService;
     let $uibModal;
+    let UserService;
 
     beforeEach( ()=> {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
         angular.mock.module("portal.data_depot.projects");
         angular.mock.module("portal");
         angular.mock.inject(
-            (_$q_, _$rootScope_, _$compile_, _ProjectService_, _$uibModal_) => {
+            (_$q_, _$rootScope_, _$compile_, _ProjectService_, _$uibModal_, _UserService_) => {
 
             // Mock ProjectService.getBySystemId call and return mocked project metadata
             ProjectService = _ProjectService_;
+            UserService = _UserService_;
+            UserService.currentUser = {
+                username: "test_user",
+                fullName: "mockPI"
+            }
             $q = _$q_;
             var deferred = $q.defer();
             deferred.resolve({
@@ -119,7 +123,7 @@ describe('ProjectMetadataComponent', ()=>{
         expect(controller).toBeTruthy();
     });
 
-    it("should compute roles based on Django User", () => {
+    it("should compute roles based on Currently logged in User", () => {
         // test_user is the PI and Owner
         expect(controller.isPI()).toBeTruthy();
         expect(controller.isOwner()).toBeTruthy();

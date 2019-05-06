@@ -4,12 +4,11 @@ describe('DataViewCtrl', ()=>{
     // Mock requirements.
     beforeEach(angular.mock.module("portal"));
     beforeEach( ()=> {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
         angular.mock.inject((
             _$q_,
             _$rootScope_,
-            _Django_,
             _DataBrowserService_,
+            _UserService_,
             _$state_,
             _$stateParams_,
             $componentController
@@ -26,7 +25,7 @@ describe('DataViewCtrl', ()=>{
                     directory: 'agave'
                 },
                 DataBrowserService: _DataBrowserService_,
-                Django: _Django_
+                UserService: _UserService_
             };
             const mockedBindings = {};
             controller = $componentController(

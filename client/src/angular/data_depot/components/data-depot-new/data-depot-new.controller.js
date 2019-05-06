@@ -4,7 +4,6 @@ class DataDepotNewCtrl {
         $scope,
         $state,
         $uibModal,
-        Django,
         DataBrowserService,
         UserService
     ) {

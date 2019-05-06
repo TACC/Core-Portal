@@ -47,17 +47,6 @@
       <!-- Extended templates JS -->
     {% block scripts %}{% endblock %}
     <!-- User Auth Check -->
-    <script type="text/javascript">
-      (function(angular) {
-        var django = angular.module('django.context', []);
-        django.constant('Django', {
-          user: "{{ request.user }}",
-          context: {
-            authenticated: {{ request.user.is_authenticated|yesno:"true,false,false" }}
-          }
-        });
-      })(angular);
-    </script>
     {% render_block "js" %}
   </body>
 </html>

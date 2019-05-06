@@ -3,10 +3,6 @@ describe('JobDetailsModal', function() {
         Jobs;
     beforeEach(angular.mock.module('portal'));
     beforeEach(() => {
-        angular.module('django.context', []).constant('Django', {
-            user: 'test_user'
-        });
-
         angular.mock.inject(function(_$componentController_,  _Jobs_, _$q_, _$rootScope_) {
             $componentController = _$componentController_;
             Jobs = _Jobs_;

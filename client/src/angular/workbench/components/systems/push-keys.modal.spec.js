@@ -16,7 +16,6 @@ describe("systemPushKeysModal", function() {
     beforeEach(angular.mock.module("portal.common"));
     
     beforeEach( ()=> {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
         // Setup our component test
         angular.mock.inject(function(_$rootScope_, $componentController, _$compile_, _$q_) {
             

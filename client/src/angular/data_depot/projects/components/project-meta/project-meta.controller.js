@@ -8,11 +8,11 @@ export default class ProjectMetadataCtrl {
      * Initialize controller.
      * @param {Object} ProjectService
      */
-    constructor(ProjectService, $uibModal, Django) {
+    constructor(ProjectService, $uibModal, UserService) {
         'ngInject';
         this.$uibModal = $uibModal;
         this.ProjectService = ProjectService;
-        this.Django = Django;
+        this.UserService = UserService;
         this.ui = {
             loading: true,
         };
@@ -86,21 +86,21 @@ export default class ProjectMetadataCtrl {
      * @return {Boolean}
      */
     isPI() {
-        return this.data.meta && this.data.meta.pi && this.Django.user == this.data.meta.pi.username;
+        return this.data.meta && this.data.meta.pi && this.UserService.currentUser.username == this.data.meta.pi.username;
     }
 
     /**
      * Returns true if the current user is a Co-PI of this project
      */
     isCoPI() {
-        return this.data.meta && _.findWhere(this.data.meta.coPis, {username: this.Django.user}) !== undefined;
+        return this.data.meta && _.findWhere(this.data.meta.coPis, {username: this.UserService.currentUser.username}) !== undefined;
     }
 
     /**
      * Returns true if the current user created this project
      */
     isOwner() {
-        return this.data.meta && this.data.meta.owner && this.Django.user == this.data.meta.owner.username;
+        return this.data.meta && this.data.meta.owner && this.UserService.currentUser.username == this.data.meta.owner.username;
     }
 
     /**

@@ -9,7 +9,7 @@ import $ from 'jquery';
 
 function DataBrowserService(
   $rootScope, $http, $q, $timeout, $uibModal, $state, 
-  $translate, $mdToast, Django, FileListing) {
+  $translate, $mdToast, UserService, FileListing) {
   'ngInject';
 
   /**
@@ -654,7 +654,7 @@ function DataBrowserService(
     if (currentState.listing && currentState.listing.system) {
       switch (currentState.listing.system) {
         case 'designsafe.storage.default':
-          return ['', Django.user, '.Trash'].join('/');
+          return ['', UserService.currentUser.username, '.Trash'].join('/');
         case 'designsafe.storage.projects':
           var projectDir = currentState.listing.path.split('/')[1];
           return ['', projectDir, '.Trash'].join('/');

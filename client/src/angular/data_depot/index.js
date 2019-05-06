@@ -20,7 +20,6 @@ let mod = angular.module('portal.data_depot', [
  * @param {Object} $qProvider - Angular prov
  * @param {Object} $urlRouterProvider - UI Router prov
  * @param {Object} $urlMatcherFactoryProvider - Angular prov
- * @param {Object} Django - Django factory provider (custom)
  */
 
 function config(
@@ -30,7 +29,6 @@ function config(
     $qProvider,
     $urlRouterProvider,
     $urlMatcherFactoryProvider,
-    Django
 ) {
     'ngInject';
     $qProvider.errorOnUnhandledRejections(false);

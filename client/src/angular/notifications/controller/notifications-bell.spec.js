@@ -3,7 +3,6 @@ describe('NotificationsBellCtrl', function() {
     var Notifications, controller, $q;
     beforeEach(angular.mock.module('portal'));
     beforeEach(() => {
-        angular.module('django.context', []).constant('Django', { user: 'test_user' });
         angular.mock.inject(function($rootScope, $componentController, _Notifications_) {
             Notifications = _Notifications_;
             controller = $componentController('notificationsBell', { Notifications: Notifications });

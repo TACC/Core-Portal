@@ -13,7 +13,6 @@ describe("ModalUpload", function() {
     // Mock only the necessary portal components
     beforeEach(angular.mock.module('portal'));
     beforeEach( ()=> {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
         angular.mock.inject(function(_$componentController_, _$q_, _$rootScope_, _Modernizr_, _FileListing_) {
             $componentController = _$componentController_;
             $q = _$q_;
