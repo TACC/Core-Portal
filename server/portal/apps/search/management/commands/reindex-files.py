@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         connections.configure(default={'hosts': settings.ES_HOSTS})
-        es_client = elasticsearch.Elasticsearch([{'host': settings.ES_HOSTS}])
+        es_client = elasticsearch.Elasticsearch([{'host': settings.ES_HOSTS}], timeout=60)
         cleanup = options.get('cleanup')
         swap_only = options.get('swap-only')
         default_index_alias = settings.ES_DEFAULT_INDEX_ALIAS
@@ -40,7 +40,7 @@ class Command(BaseCommand):
             confirm = input('This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(reindex_index_alias))
             if confirm != 'Y':
                 self.stdout.write('Aborting reindex.')
-                return
+                raise SystemExit
             # Set up a fresh reindexing alias.
             setup_files_index(key='REINDEX', force=True)
 
@@ -48,8 +48,8 @@ class Command(BaseCommand):
             default_index_name = Index(default_index_alias).get_alias().keys()[0]
             reindex_index_name = Index(reindex_index_alias).get_alias().keys()[0]
         except Exception as e:
-            self.stdout.write(e)
             self.stdout.write('Unable to lookup required indices by alias. Have you set up both a default and a reindexing index?')
+            raise SystemExit
 
         if not swap_only:
             # Reindex file metadata from the default index to the reindexing index
