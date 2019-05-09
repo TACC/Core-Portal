@@ -7,7 +7,7 @@
             </button>
         </form>
         <div class="btn-group">
-            <button class="btn btn-sm btn-default" title="Rename" ng-click="$ctrl.rename()" ng-disabled="!$ctrl.tests.canRename ||
+            <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.rename()" ng-disabled="!$ctrl.tests.canRename ||
                                         $ctrl.browser.busy ||
                                         $ctrl.browser.busyListing">
                 <i class="fa fa-pencil"></i>
@@ -16,33 +16,33 @@
         </div>
         <div class="btn-group">
 
-            <button class="btn btn-sm btn-default" title="Move" ng-click="$ctrl.move()" ng-disabled="!$ctrl.tests.canMove ||
+            <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.move()" ng-disabled="!$ctrl.tests.canMove ||
                                         $ctrl.browser.busy ||
                                         $ctrl.browser.busyListing">
                 <i class="fa fa-arrows"></i>
                 <span style="display:block;">Move</span>
             </button>
 
-            <button class="btn btn-sm btn-default" title="Copy" ng-click="$ctrl.copy()" ng-disabled="!$ctrl.tests.canCopy ||
+            <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.copy()" ng-disabled="!$ctrl.tests.canCopy ||
                                         $ctrl.browser.busy ||
                                         $ctrl.browser.busyListing">
                 <i class="fa fa-copy"></i>
                 <span style="display:block;">Copy</span>
             </button>
 
-            <button class="btn btn-sm btn-default" title="Preview" ng-click="$ctrl.preview()" ng-disabled="!$ctrl.tests.canPreview ||
+            <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.preview()" ng-disabled="!$ctrl.tests.canPreview ||
                                         $ctrl.browser.busy ||
                                         $ctrl.browser.busyListing">
                 <i class="fa fa-binoculars"></i>
                 <span style="display:block;">Preview</span>
             </button>
-                <!-- <button class="btn btn-sm btn-default" title="Preview Images" ng-click="$ctrl.previewImages()">
+                <!-- <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.previewImages()">
                     <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
                 </button> -->
         </div>
         <div class="btn-group">
             <button class="btn btn-sm btn-default"
-                title="Compress"
+                title=""
                 ng-if="$ctrl.ZipService.zippyAppId"
                 ng-click="$ctrl.compress()"
                 ng-disabled="$ctrl.compressButtonDisabled()">
@@ -50,7 +50,7 @@
                 <span style="display:block;">Compress</span>
             </button>
             <button class="btn btn-sm btn-default"
-                title="Extract"
+                title=""
                 ng-if="$ctrl.ZipService.extractAppId"
                 ng-click="$ctrl.extract()"
                 ng-disabled="$ctrl.extractButtonDisabled()">
@@ -58,7 +58,7 @@
                 <span style="display:block;">Extract</span>
             </button>
             <button class="btn btn-sm btn-default"
-                    title="Download"
+                    title=""
                     ng-click="$ctrl.download(preview=False)"
                     ng-disabled="!$ctrl.tests.canDownload || $ctrl.browser.busy || $ctrl.browser.busyListing">
                 <i class="fa fa-cloud-download"></i>
@@ -73,7 +73,7 @@
             </button>
         </div>
             <!-- <div class="btn-group">
-                <button class="btn btn-sm btn-default" title="Share" ng-click="$ctrl.share()"
+                <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.share()"
                         ng-disabled="!$ctrl.tests.canShare ||
                                     $ctrl.browser.project.publicationStatus === 'publishing'">
                     <i class="fa fa-send"></i><span style="display:block;">Share</span>
@@ -92,12 +92,12 @@
                 <i class="fa fa-trash"></i>
                 <span style="display:block;">Move to Trash</span>
             </button>
-            <!-- <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="$ctrl.rm()" ng-disabled="!$ctrl.tests.canDelete" ng-if="$ctrl.tests.canDelete">
+            <!-- <button class="btn btn-sm btn-danger" title="" ng-click="$ctrl.rm()" ng-disabled="!$ctrl.tests.canDelete" ng-if="$ctrl.tests.canDelete">
                         <i class="fa fa-trash"></i><span style="display:block;">Delete selected files</span>
                     </button> -->
         </div>
             <!-- <div class="btn-group">
-                <button class="btn btn-sm btn-info" title="Details for {{ $ctrl.browser.listing.name }}" ng-click="$ctrl.details()">
+                <button class="btn btn-sm btn-info" title="" ng-click="$ctrl.details()">
                     <i class="fa fa-info-circle"></i><span style="display:block;">Details</span>
                     <span class="sr-only">{{ $ctrl.browser.listing.name }}</span>
                 </button>

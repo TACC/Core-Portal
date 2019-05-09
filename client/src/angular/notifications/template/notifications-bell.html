@@ -1,11 +1,11 @@
 <div id="notification-container" class="dropdown btn btn-link" uib-dropdown auto-close="outsideClick" on-toggle="vm.readAll(open)">
-    <a id="dLabel" class="dropdown-toggle" role="button" uib-dropdown-toggle> 
+    <a id="dLabel" class="dropdown-toggle" role="button" uib-dropdown-toggle>
         <i id="notification_bell" class="fa fa-bell fa-2x"></i>
-        <span id="notification-badge" title="Notifications" ng-if="vm.service.notes.unread > 0">
+        <span id="notification-badge" title="" ng-if="vm.service.notes.unread > 0">
             {{vm.service.notes.unread}}
         </span>
     </a>
-    <ul uib-dropdown-menu class="dropdown-menu notifications" aria-labelledby="dLabel"> 
+    <ul uib-dropdown-menu class="dropdown-menu notifications" aria-labelledby="dLabel">
         <li>
             <a href="/workbench/notifications">
                 Notifications
