@@ -1,9 +1,11 @@
 import os
 import json
+import datetime
 from mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from portal.apps.data_depot.models import PublicUrl
 
 
 class TestDataDepotApiViews(TestCase):
@@ -120,3 +122,23 @@ class TestDataDepotApiViews(TestCase):
         resp = self.client.get("/api/data-depot/files/pems/my-data/test")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json(), self.EXPECTED_PEMS_RESPONSE)
+
+
+class TestPublicUrlModel(TestCase):
+
+    def test_dict_method(self):
+
+        testUrl = PublicUrl(
+            file_id='file01',
+            postit_url='http://postit_url',
+            updated=datetime.datetime(2019, 5, 1, 14, 51, 5, 930428),
+            expires=datetime.datetime(2020, 5, 1, 14, 51, 5, 930428)
+        )
+        testUrl.save()
+        urldict = PublicUrl.objects.get(pk='file01').to_dict()
+        self.assertEqual(urldict, {
+            'file_id': 'file01',
+            'postit_url': 'http://postit_url',
+            'updated': '2019-05-01 14:51:05.930428+00:00',
+            'expires': '2020-05-01 14:51:05.930428+00:00'
+        })

@@ -96,7 +96,7 @@ class FileMediaView(BaseApiView):
     ALLOWED_FILE_ACTIONS = [
                             'copy', 'download',
                             'mkdir', 'move', 'rename',
-                            'trash', 'preview'
+                            'trash', 'preview', 'public_url'
                            ]
 
     def get(self, request, file_mgr_name, file_id, **kwargs):
@@ -211,6 +211,10 @@ class FileMediaView(BaseApiView):
     def preview(self, request, req_body, file_id, fmgr):
         """Preview a file"""
         return fmgr.download(file_id, preview=True)
+
+    def public_url(self, request, req_body, file_id, fmgr):
+        """Generate a public URL for use with 3rd party apps"""
+        return fmgr.public_url(file_id, refresh=req_body['refresh'])
 
 class FilePemsView(BaseApiView):
     """View to handle permissions operations"""

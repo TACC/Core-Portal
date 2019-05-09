@@ -76,6 +76,9 @@ class DataDepotToolbarCtrl {
     rm() {
         this.DataBrowserService.rm(this.browser.selected);
     }
+    publicUrl() {
+        this.DataBrowserService.publicUrl(this.browser.selected[0]);
+    }
     search() {
         var state = this.apiParams.searchState;
         this.$state.go(state, {

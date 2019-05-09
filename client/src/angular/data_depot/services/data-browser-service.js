@@ -552,6 +552,15 @@ function DataBrowserService(
      });
   }
 
+  function publicUrl(file) {
+    var modal = $uibModal.open({
+        component: 'modalPublicUrlComponent',
+        size: 'lg',
+        resolve: {
+            file: file,
+        }
+     });
+  }
 
   /**
    *
@@ -780,6 +789,7 @@ function DataBrowserService(
     select: select,
     trash: trash,
     upload: upload,
+    publicUrl: publicUrl,
 
     /* events */
     subscribe: subscribe,

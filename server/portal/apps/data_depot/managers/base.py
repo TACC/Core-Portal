@@ -25,6 +25,10 @@ from portal.apps.search.tasks import agave_indexer
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
+from portal.apps.data_depot.models import PublicUrl
+from django.utils import timezone
+from datetime import timedelta  
+
 @add_metaclass(ABCMeta)
 class AbstractFileManager:
     """Abstract class describing a File Manager needed to manage different
@@ -317,6 +321,37 @@ class AgaveFileManager(AbstractFileManager):
             return True
 
         return _file.delete()
+
+    def public_url(self, file_id, refresh=False):
+        """Generate a public URL for a file. 
+
+        :param str file_id: Id representing a file/folder.
+        :param bool refresh: Set to True to force creation of a new public URL.
+
+        :returns: Dict representation of a PublicUrl instance
+        """
+        
+        _file = self.get_file(file_id)
+        if _file.type == 'dir':
+            raise ValueError('Cannot link to a folder')
+        try:
+            if refresh:
+                raise PublicUrl.DoesNotExist
+            url = PublicUrl.objects.get(pk=file_id)
+        except PublicUrl.DoesNotExist:
+            # Persist the postit for 1 year or 10,000 uses.
+            lifetime = int(3.154e7)
+            max_uses = 10000
+
+            url = PublicUrl(
+                file_id=file_id,
+                postit_url=_file.postit(force=True, max_uses=max_uses, lifetime=lifetime),
+                updated = timezone.now(),
+                expires = timezone.now() + timedelta(seconds=lifetime)
+            )
+            url.save()
+
+        return url.to_dict()
 
     def download(self, file_id, preview=True, **kwargs):
         """Download a file.

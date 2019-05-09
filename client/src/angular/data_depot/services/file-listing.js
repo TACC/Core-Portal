@@ -539,7 +539,19 @@ function FileListing($http, $q) {
         return $q.reject(err.data);
       });
   };
-
+  
+  Listing.prototype.publicUrl = function(refresh) {
+    var body = {
+      "action": "public_url",
+      "refresh": refresh
+    };
+    return $http.put(this.mediaUrl(), body).then(function (resp) {
+      return resp.data.response;
+    }, function (err) {
+      return $q.reject(err.data);
+    });
+  };
+  
 
   // function FilePermission(json) {
   //   angular.extend(this, json);
