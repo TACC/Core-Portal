@@ -2,19 +2,19 @@
 ..: module:: apps.workspace.managers.user_applications
    : synopsis: Manager handling user's cloned applications and systems
 """
-import os
 import logging
+
+from requests.exceptions import HTTPError
+
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+
 from portal.libs.agave.models.systems.execution import ExecutionSystem
-from portal.libs.agave.models.systems.storage import StorageSystem 
 from portal.libs.agave.models.applications import Application
 from portal.apps.workspace.managers.base import AbstractApplicationsManager
 from portal.utils import encryption as EncryptionUtil
-from requests.exceptions import HTTPError
-from portal.libs.agave.utils import service_account
 from portal.apps.accounts.managers.accounts import _lookup_user_home_manager
 from portal.apps.accounts.models import SSHKeys
-from django.core.exceptions import ObjectDoesNotExist
 from portal.apps.accounts.managers.user_work_home import UserWORKHomeManager
 
 # pylint: disable=invalid-name
@@ -35,7 +35,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
     def get_clone_system_id(self):
         """Gets system id to deploy cloned app materials to.
-        
+
         *System Id* is a string, unique id for each system.
         This function returns the system id for a user's home system.
 
@@ -64,12 +64,11 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
         :param cloned_app: Application instance of the cloned application
         :param host_app_id: Agave id of the host application
-        :host_app: Application instance of the host application
+        :param host_app: Application instance of the host application
 
         :returns: update_required
         :rtype: bool
         """
-
         update_required = False
 
         # compare cloned app revision number to original app revision number
@@ -80,20 +79,19 @@ class UserApplicationsManager(AbstractApplicationsManager):
         # find revision number in tags
         tag_match = [s for s in cloned_app.tags if 'cloneRevision' in s]
         if not tag_match:
-            logger.debug('No cloneRevision in tags, deleting app to ensure consistincy.')
-            cloned_app.delete()
+            logger.error('No cloneRevision in tags, app should be updated to ensure consistency.')
             update_required = True
-
         else:
-            clone_rev = tag_match[0].split(':')[1]
-
-            if clone_rev != host_app.revision:
-                logger.debug('Cloned app revision does not match host: {} != {}'.format(
-                    clone_rev,
-                    host_app.revision
-                ))
-                # Need to update cloned app by deleting and re-cloning
-                cloned_app.delete()
+            try:
+                clone_rev = int(tag_match[0].split(':')[1])
+                if clone_rev != host_app.revision:
+                    logger.warning('Cloned app revision does not match host: {} != {}'.format(
+                        clone_rev,
+                        host_app.revision
+                    ))
+                    update_required = True
+            except ValueError as exc:
+                logger.exception('cloneRevision in tags cannot be converted to integer, app should be updated to ensure consistency. %s', exc)
                 update_required = True
 
         return update_required
@@ -101,7 +99,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
     def clone_application(self, allocation, cloned_app_name, host_app_id=None, host_app=None):
         """Clones an application given a host app, allocation, and target name.
 
-        ..note: checks if cloned Execution System already exists for user, 
+        ..note: checks if cloned Execution System already exists for user,
         and creates it if not.
 
         :param str allocation: Project allocation
@@ -134,7 +132,6 @@ class UserApplicationsManager(AbstractApplicationsManager):
             )
             logger.debug('Getting cloned execution system: {}'.format(cloned_exec_id))
             cloned_exec_sys = self.get_or_create_exec_system(cloned_exec_id, host_exec.id, allocation)
-
 
         cloned_depl_path = '.APPDATA/{appName}-{rev}.0'.format(
             username=self.user.username,
@@ -169,10 +166,10 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
     def get_or_create_cloned_app(self, host_app, allocation):
         """Gets or creates a cloned app for the user.
-        
+
         Generates a cloned app id and tries to fetch that app.
         If the app exists, check for updates.
-        
+
         If app does not exist, clone the host app to cloned app id.
 
         :param host_app: Application instance of host app
@@ -201,6 +198,9 @@ class UserApplicationsManager(AbstractApplicationsManager):
             if not host_app.is_public:
                 update_required = self.check_app_for_updates(cloned_app, host_app=host_app)
                 if update_required:
+                    # Need to update cloned app by deleting and re-cloning
+                    logger.warning('Cloned app is being updated (i.e. deleted and re-cloned)')
+                    cloned_app.delete()
                     cloned_app = self.clone_application(allocation, cloned_app_name, host_app=host_app)
                 else:
                     logger.debug('Cloned app is current with host!')
@@ -218,7 +218,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         """Gets or creates application for user.
 
         If application selected is owned by user, return the app,
-        else clone the app to the same exec system with the 
+        else clone the app to the same exec system with the
         specified allocation.
 
         ..note: Entry point.
@@ -239,7 +239,6 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
         else:
             return self.get_or_create_cloned_app(app, allocation)
-            
 
     def clone_execution_system(self, host_system_id, new_system_id, alloc):
         """Clone execution system for user.
@@ -247,7 +246,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         :param str host_system_id: Agave id of host execution system
         :param str new_system_id: id for system clone
         :param str alloc: Project allocation for system's custom directives
-        
+
         :returns: ExecutionSystem instance
         :rtype: ExecutionSystem
         """

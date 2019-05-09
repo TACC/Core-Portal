@@ -1,14 +1,13 @@
 import os
 import json
 from django.conf import settings
-from mock import patch, Mock, MagicMock
+from mock import patch, Mock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.libs.agave.models.applications import Application
 from portal.libs.agave.models.systems.execution import ExecutionSystem
-from portal.apps.accounts.managers.user_work_home import UserWORKHomeManager
 
 
 class TestUserApplicationsManager(TestCase):
@@ -28,9 +27,9 @@ class TestUserApplicationsManager(TestCase):
         cls.magave_patcher.stop()
 
     def setUp(self):
-        self.user = get_user_model().objects.get(username='username')
+        user = get_user_model().objects.get(username='username')
 
-        self.user_application_manager = UserApplicationsManager(self.user)
+        self.user_application_manager = UserApplicationsManager(user)
 
         agave_path = os.path.join(settings.BASE_DIR, 'fixtures/agave')
         with open(
@@ -50,9 +49,9 @@ class TestUserApplicationsManager(TestCase):
             self.execution_sys
         )
 
-        sys.login.host='stampede2.tacc.utexas.edu'
+        sys.login.host = 'stampede2.tacc.utexas.edu'
 
-        with patch.object(UserApplicationsManager ,'get_exec_system', return_value=sys):
+        with patch.object(UserApplicationsManager, 'get_exec_system', return_value=sys):
             exec_sys_def = self.user_application_manager.set_system_definition('test_id', 'test_alloc')
 
             self.assertIn('/scratch', exec_sys_def.scratch_dir)
@@ -74,3 +73,24 @@ class TestUserApplicationsManager(TestCase):
 
             self.assertIn('/work', exec_sys_def.scratch_dir)
             self.assertNotIn('/scratch', exec_sys_def.scratch_dir)
+
+    @patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+    def test_check_app_for_updates_with_matching_clone_revision(self, mock_client):
+        host_app = Application(mock_client, revision=3)
+        cloned_app = Application(mock_client, tags=['cloneRevision:3'])
+
+        self.assertFalse(self.user_application_manager.check_app_for_updates(cloned_app=cloned_app, host_app=host_app))
+
+    @patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+    def test_check_app_for_updates_with_wrong_clone_revision(self, mock_client):
+        host_app = Application(mock_client, revision=3)
+        cloned_app = Application(mock_client, tags=['cloneRevision:2'])
+
+        self.assertTrue(self.user_application_manager.check_app_for_updates(cloned_app=cloned_app, host_app=host_app))
+
+    @patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+    def test_check_app_for_updates_with_missing_clone_revision(self, mock_client):
+        host_app = Application(mock_client, revision=3)
+        cloned_app = Application(mock_client)
+
+        self.assertTrue(self.user_application_manager.check_app_for_updates(cloned_app=cloned_app, host_app=host_app))
