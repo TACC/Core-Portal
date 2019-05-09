@@ -447,3 +447,51 @@ MIGRATION_MODULES = {
 }
 
 COMMUNITY_INDEX_SCHEDULE = {'hour': 0, 'minute': 0, 'day_of_week': 0}
+
+# CMS Test Coverage for Settings.
+
+CMS_PERMISSION = True
+
+CMS_PLACEHOLDER_CONF = {}
+
+CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
+CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.link')
+SELECT2_CSS = 'node_modules/select2/dist/css/select2.min.css'  # PATH?
+SELECT2_JS = 'node_modules/select2/dist/js/select2.min.js'     # PATH?
+
+
+CMSPLUGIN_FILER_IMAGE_STYLE_CHOICES = (
+    ('default', 'Default'),
+)
+CMSPLUGIN_FILER_IMAGE_DEFAULT_STYLE = 'default'
+
+# These settings enable iFrames in the CMS cktext-editor.
+TEXT_ADDITIONAL_TAGS = ('iframe',)
+TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'src', 'height', 'width')
+
+TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
+
+THUMBNAIL_HIGH_RESOLUTION = True
+
+THUMBNAIL_PROCESSORS = (
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+    'easy_thumbnails.processors.filters',
+    'easy_thumbnails.processors.background'
+)
+
+CKEDITOR_SETTINGS = {
+    'language': '{{ language }}',
+    'skin': 'moono-lisa',
+    'toolbar': 'CMS',
+}
+
+ALDRYN_BOILERPLATE_NAME='bootstrap3'
+
+# DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = RECAPTCHA_PUBLIC_KEY
+# DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = RECAPTCHA_PRIVATE_KEY
+
+DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
+
+DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']

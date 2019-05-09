@@ -476,6 +476,10 @@ CMSPLUGIN_FILER_IMAGE_STYLE_CHOICES = (
 )
 CMSPLUGIN_FILER_IMAGE_DEFAULT_STYLE = 'default'
 
+# These settings enable iFrames in the CMS cktext-editor.
+TEXT_ADDITIONAL_TAGS = ('iframe',)
+TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'src', 'height', 'width')
+
 TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
 
 THUMBNAIL_HIGH_RESOLUTION = True
