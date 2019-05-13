@@ -766,6 +766,8 @@ PORTAL_DOMAIN = settings_secret._PORTAL_DOMAIN
 
 PORTAL_ALLOCATION = getattr(settings_secret, '_PORTAL_ALLOCATION', '')
 
+ALLOCATION_SYSTEMS = getattr(settings_secret, '_ALLOCATION_SYSTEMS', [])
+
 """
 SETTINGS: settings related to possible steps in PORTAL_USER_ACCOUNT_SETUP_STEPS
 """
