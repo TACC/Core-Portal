@@ -68,7 +68,9 @@ class WorkspaceDataBrowserCtrl {
                 label: 'My Projects',
                 conf: {
                     system: 'projects', 
-                    path: ''
+                    path: '',
+                    offset: 0,
+                    limit: 100
                 },
                 apiParams: {
                     fileMgr: 'shared', 
@@ -197,6 +199,7 @@ class WorkspaceDataBrowserCtrl {
             this.data.listingProjects = false;
             this.data.loading = false;
             this.data.filesListing = listing;
+            this.data.reachedEnd = listing.children.length < this.data.cOption.conf.limit;
         });
     }
 

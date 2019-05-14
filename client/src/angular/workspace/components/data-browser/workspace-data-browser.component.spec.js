@@ -2,6 +2,7 @@ describe('WorkspaceDataBrowserCtrl', ()=>{
     let controller, $scope;
     let SystemsService, ProjectService, DataBrowserService;
     let $q;
+    let projectOption;
 
     // Mock requirements.
     beforeEach(angular.mock.module("portal"));
@@ -44,7 +45,21 @@ describe('WorkspaceDataBrowserCtrl', ()=>{
                 "format": "folder",
                 "children": [ ],
                 "path" : "/"
-            })
+            });
+
+            projectOption = {
+                label: "My Projects",
+                apiParams: {
+                    fileMgr: 'agave',
+                    baseUrl: '/api/files'
+                },
+                conf: {
+                    system: "test.system",
+                    path: '',
+                    offset: 0,
+                    limit: 100
+                }
+            }
 
             DataBrowserService = _DataBrowserService_;
             SystemsService = _SystemsService_;
@@ -62,16 +77,15 @@ describe('WorkspaceDataBrowserCtrl', ()=>{
         expect(controller).toBeDefined();
     });
     it('should get a project listing when My Projects is selected', () => {
-        controller.data.cOption = {
-            label: "My Projects",
-            apiParams: {
-                fileMgr: 'agave',
-                baseUrl: '/api/files'
-            },
-            conf: "mock"
-        }
+        controller.data.cOption = projectOption;
         controller.dataSourceUpdated();
         $scope.$digest();
         expect(controller.data.projects.length).toEqual(1);
+    });
+    it('should hide Show More Files when browsing a project', () => {
+        controller.data.cOption = projectOption;
+        controller.selectProject({ id: "Mock Project" });
+        $scope.$digest();
+        expect(controller.data.reachedEnd).toEqual(true);
     });
 });
