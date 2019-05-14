@@ -65,6 +65,17 @@ class WorkspaceDataBrowserCtrl {
                 }
             },
             {
+                label: 'My Projects',
+                conf: {
+                    system: 'projects', 
+                    path: ''
+                },
+                apiParams: {
+                    fileMgr: 'shared', 
+                    baseUrl: '/api/data-depot/files'
+                }
+            },
+            {
                 label: 'Community Data',
                 conf: {
                     system: comdata_system.systemId,
@@ -76,11 +87,7 @@ class WorkspaceDataBrowserCtrl {
                     fileMgr: 'shared',
                     baseUrl: '/api/data-depot/files'
                 }
-            },
-            // {label: 'My Projects',
-            //  conf: {system: 'projects', path: ''},
-            //  apiParams: {fileMgr: 'shared', baseUrl: '/api/data-depot/files'}},
-            ];
+            }];
             this.data.cOption = this.data.options[0];
             this.dataSourceUpdated();
         });
