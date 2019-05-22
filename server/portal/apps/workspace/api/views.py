@@ -269,7 +269,11 @@ class JobsView(BaseApiView):
                 'event': e}
                 for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
 
-            logger.debug('Submitting job for user {}: {}'.format(request.user.username, job_post))
+            # Remove any params from job_post that are not in appDef
+            for param, _ in job_post['parameters'].items():
+                if not any(p['id'] == param for p in app.parameters):
+                    del job_post['parameters'][param]
+
             response = agave.jobs.submit(body=job_post)
             return JsonResponse({"response": response})
 

@@ -173,7 +173,7 @@ class ApplicationFormCtrl {
             /* Set allocation to exec system scheduler if scheduler is not 'SLURM' since user won't need an allocation to charge for not SLURM jobs */
             jobData.allocation = (this.app.scheduler == 'SLURM') ? jobData.allocation : this.app.scheduler;
 
-            if (this.app.tags.includes('Interactive')) {
+            if (this.app.parameters.some((p) => p.id === '_userProjects')) {
                 jobReady.projectsReady = false;
                 this.ProjectService.list({ offset: 0, limit: -1 }).then((resp) => {
                     if (resp.length > 0) {
