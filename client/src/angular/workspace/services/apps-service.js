@@ -41,6 +41,11 @@ class Apps {
         });
     }
 
+    getDateString() {
+        let result = new Date().toISOString();
+        return result.slice(0, result.indexOf('.'));
+    }
+
     formSchema (app) {
     /**
      * Generate a JSON.schema for the app ready for angular-schema-form
@@ -168,7 +173,7 @@ class Apps {
             description: 'A recognizable name for this job',
             type: 'string',
             required: true,
-            default: app.id + '_' + new Date().toISOString(),
+            default: app.id + '_' + this.getDateString(),
             maxLength: 64
         };
 
@@ -189,7 +194,7 @@ class Apps {
             minimum: 1,
             maximum: app.maxNodeCount,
         };
-
+        
         return schema;
     }
 
