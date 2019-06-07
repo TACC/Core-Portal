@@ -102,8 +102,13 @@ class ApplicationFormCtrl {
         } else {
             items.push('maxRunTime', 'name', 'archivePath');
         }
-        if (this.app.parallelism == 'PARALLEL' && !this.app.tags.includes('hideNodeCount')) {
-            items.push('nodeCount');
+        if (this.app.parallelism == 'PARALLEL') {
+            if (!this.app.tags.includes('hideNodeCount')) {
+                items.push('nodeCount');
+            }
+            if (!this.app.tags.includes('hideProcessorsPerNode')) {
+                items.push('processorsPerNode');
+            }
         } else {
             delete this.schema.properties.nodeCount;
         }
@@ -212,34 +217,36 @@ class ApplicationFormCtrl {
             /* To ensure that DCV server is alive, name of job
             * needs to contain 'dcvserver' */
             if (this.app.tags.includes('DCV')) {
-                jobData.name += "-dcvserver";
+                jobData.name += '-dcvserver';
             }
 
             /* remove falsy input/parameter */
-            for (let k in jobData.inputs) {
-                let v = jobData.inputs[k];
+            Object.entries(jobData.inputs).forEach(([k, v]) => {
                 if (Array.isArray(v)) {
                     v = v.filter(Boolean);
                     if (v.length === 0) {
                         delete jobData.inputs[k];
                     }
                 }
-            }
+            });
 
             /* remove falsy input/parameter */
-            for (let k in jobData.parameter) {
-                let v = jobData.inputs[k];
+            Object.entries(jobData.parameters).forEach(([k, v]) => {
                 if (Array.isArray(v)) {
                     v = v.filter(Boolean);
                     if (v.length === 0) {
-                        delete jobData.inputs[k];
+                        delete jobData.parameters[k];
                     }
                 }
-            }
+            });
 
             // Calculate processorsPerNode if nodeCount parameter submitted
-            if ('nodeCount' in jobData) {
+            if (('nodeCount' in jobData) && !('processorsPerNode' in jobData)) {
                 jobData.processorsPerNode = jobData.nodeCount * (this.app.defaultProcessorsPerNode / this.app.defaultNodeCount);
+            } else if (('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
+                jobData.processorsPerNode = jobData.nodeCount * jobData.processorsPerNode;
+            } else if (!('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
+                jobData.processorsPerNode = jobData.defaultNodeCount * jobData.processorsPerNode;
             }
 
             jobReady.jobDataReady = true;

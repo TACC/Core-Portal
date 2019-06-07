@@ -1,35 +1,35 @@
 import _ from 'underscore';
 
 class Apps {
-    constructor ($http, $q, $translate) {
+    constructor($http, $q, $translate) {
         'ngInject';
         this.$http = $http;
         this.$q = $q;
         this.$translate = $translate;
     }
-    
-    list (query) {
+
+    list(query) {
         return this.$http({
             url: '/api/workspace/meta',
             method: 'GET',
             params: { q: query },
-            cache: true
+            cache: true,
         });
     }
 
-    get (app_id) {
+    get(app_id) {
         return this.$http({
             url: '/api/workspace/apps',
             method: 'GET',
-            params: { app_id: app_id }
+            params: { app_id: app_id },
         });
     }
 
-    getMeta (app_id) {
+    getMeta(app_id) {
         return this.$http({
             url: '/api/workspace/meta',
             method: 'GET',
-            params: { app_id: app_id }
+            params: { app_id: app_id },
         });
     }
 
@@ -37,7 +37,7 @@ class Apps {
         return this.$http({
             url: '/api/workspace/apps',
             method: 'GET',
-            params: { publicOnly: true }
+            params: { publicOnly: true },
         });
     }
 
@@ -46,7 +46,7 @@ class Apps {
         return result.slice(0, result.indexOf('.'));
     }
 
-    formSchema (app) {
+    formSchema(app) {
     /**
      * Generate a JSON.schema for the app ready for angular-schema-form
      * https://github.com/json-schema-form/angular-schema-form
@@ -55,26 +55,24 @@ class Apps {
             inputs = app.inputs || [],
             schema = {
                 type: 'object',
-                properties: {}
+                properties: {},
             };
 
         if (params.length > 0) {
             schema.properties.parameters = {
                 type: 'object',
-                properties: {}
+                properties: {},
             };
-            _.each(params, (param)=> {
-                if (!param.value.visible) {
+            _.each(params, (param) => {
+                if (!param.value.visible || param.id.startsWith('_')) {
                     return;
                 }
-                if (param.id.startsWith('_')) {
-                    return;
-                }
-                var field = {
+                let field = {
                     title: param.details.label,
                     description: param.details.description,
                     required: param.value.required,
-                    default: param.value.default
+                    default: param.value.default,
+                    pattern: param.value.validator,
                 };
                 switch (param.value.type) {
                     case 'bool':
@@ -84,17 +82,17 @@ class Apps {
 
                     case 'enumeration':
                         field.type = 'string';
-                        field.enum = _.map(param.value.enum_values, function(enum_val) {
-                            return Object.keys(enum_val)[0];
+                        field.enum = _.map(param.value.enum_values, function(enumVal) {
+                            return Object.keys(enumVal)[0];
                         });
                         field['x-schema-form'] = {
-                            titleMap: _.map(param.value.enum_values, function(enum_val) {
-                                var key = Object.keys(enum_val)[0];
+                            titleMap: _.map(param.value.enum_values, function(enumVal) {
+                                let key = Object.keys(enumVal)[0];
                                 return {
                                     value: key,
-                                    name: enum_val[key]
+                                    name: enumVal[key],
                                 };
-                            })
+                            }),
                         };
                         break;
 
@@ -103,6 +101,11 @@ class Apps {
                         break;
 
                     case 'string':
+                        field.type = 'string';
+                        if (('ontology' in param.semantics) && (param.semantics.ontology.includes('agaveFile'))) {
+                            field.format = 'agaveFile';
+                        }
+                        break;
                     default:
                         field.type = 'string';
                 }
@@ -116,10 +119,7 @@ class Apps {
                 properties: {},
             };
             _.each(inputs, (input) => {
-                if (!input.value.visible) {
-                    return;
-                }
-                if (input.id.startsWith('_')) {
+                if (input.id.startsWith('_') || !input.value.visible) {
                     return;
                 }
                 let field = {
@@ -139,6 +139,8 @@ class Apps {
                         format: 'agaveFile',
                         required: input.value.required,
                         'x-schema-form': { notitle: true },
+                        title: input.details.label,
+                        description: input.details.description,
                     };
                     if (input.semantics.maxCardinality > 1) {
                         field.maxItems = input.semantics.maxCardinality;
@@ -162,19 +164,19 @@ class Apps {
             title: 'Maximum job runtime',
             description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is 48:00:00 (48 hours).',
             type: 'string',
-            pattern:'^(48:00:00)|([0-4][0-9]:[0-5][0-9]:[0-5][0-9])$',
-            validationMessage:'Must be in format HH:MM:SS and be less than 48 hours (48:00:00)',
+            pattern: '^(48:00:00)|([0-4][0-9]:[0-5][0-9]:[0-5][0-9])$',
+            validationMessage: 'Must be in format HH:MM:SS and be less than 48 hours (48:00:00).',
             required: true,
-            'x-schema-form': { placeholder: app.defaultMaxRunTime }
+            'x-schema-form': { placeholder: app.defaultMaxRunTime },
         };
 
         schema.properties.name = {
             title: 'Job name',
-            description: 'A recognizable name for this job',
+            description: 'A recognizable name for this job.',
             type: 'string',
             required: true,
             default: app.id + '_' + this.getDateString(),
-            maxLength: 64
+            maxLength: 64,
         };
 
         schema.properties.archivePath = {
@@ -183,7 +185,7 @@ class Apps {
             type: 'string',
             format: 'agaveFile',
             id: 'archivePath',
-            'x-schema-form': { placeholder: 'archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}' }
+            'x-schema-form': { placeholder: 'archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}' },
         };
 
         schema.properties.nodeCount = {
@@ -194,7 +196,17 @@ class Apps {
             minimum: 1,
             maximum: app.maxNodeCount,
         };
-        
+
+        schema.properties.processorsPerNode = {
+            title: 'Processors Per Node',
+            description: `Number of processors (cores) per node for the job. e.g. A selection of 16 processors per node along with 4 nodes
+            will result in 16 processors on 4 nodes, with 64 processors total. Default number of processors per node is ${Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount)}.`,
+            type: 'integer',
+            default: Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount),
+            minimum: 1,
+            maximum: Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount),
+        };
+
         return schema;
     }
 
