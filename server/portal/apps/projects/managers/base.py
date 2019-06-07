@@ -55,7 +55,7 @@ class ProjectsManager(object):
             ),
             "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
             "archive": False,
-            "parameter": {
+            "parameters": {
                 "projectId": project_id,
                 "username": username,
                 "action": "add",
@@ -79,7 +79,7 @@ class ProjectsManager(object):
             ),
             "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
             "archive": False,
-            "parameter": {
+            "parameters": {
                 "projectId": project_id,
                 "username": username,
                 "action": "remove",

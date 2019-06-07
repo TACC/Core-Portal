@@ -64,12 +64,12 @@ class TestProjectsManager(TestCase):
         self.mock_get_project().add_member.assert_not_called()
         self.mock_get_project().add_co_pi.assert_not_called()
         self.assertEqual(len(self.mock_get_project().add_pi.mock_calls), 1)
-        self.mock_service_account().jobs.submit.called_with(
+        self.mock_service_account().jobs.submit.assert_called_with(
             body={
                 "name": "username-PRJ-123-acls",
                 "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
                 "archive": False,
-                "parameter": {
+                "parameters": {
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "add",
@@ -85,12 +85,12 @@ class TestProjectsManager(TestCase):
         self.mock_get_project().add_member.assert_not_called()
         self.mock_get_project().add_pi.assert_not_called()
         self.assertEqual(len(self.mock_get_project().add_co_pi.mock_calls), 1)
-        self.mock_service_account().jobs.submit.called_with(
+        self.mock_service_account().jobs.submit.assert_called_with(
             body={
                 "name": "username-PRJ-123-acls",
                 "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
                 "archive": False,
-                "parameter": {
+                "parameters": {
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "add",
@@ -106,12 +106,12 @@ class TestProjectsManager(TestCase):
         self.mock_get_project().add_co_pi.assert_not_called()
         self.mock_get_project().add_pi.assert_not_called()
         self.assertEqual(len(self.mock_get_project().add_member.mock_calls), 1)
-        self.mock_service_account().jobs.submit.called_with(
+        self.mock_service_account().jobs.submit.assert_called_with(
             body={
                 "name": "username-PRJ-123-acls",
                 "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
                 "archive": False,
-                "parameter": {
+                "parameters": {
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "add",
@@ -127,12 +127,12 @@ class TestProjectsManager(TestCase):
         self.mock_get_project().remove_member.assert_not_called()
         self.mock_get_project().remove_co_pi.assert_not_called()
         self.assertEqual(len(self.mock_get_project().remove_pi.mock_calls), 1)
-        self.mock_service_account().jobs.submit.called_with(
+        self.mock_service_account().jobs.submit.assert_called_with(
             body={
                 "name": "username-PRJ-123-acls",
                 "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
                 "archive": False,
-                "parameter": {
+                "parameters": {
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "remove",
@@ -148,12 +148,12 @@ class TestProjectsManager(TestCase):
         self.mock_get_project().remove_member.assert_not_called()
         self.mock_get_project().remove_pi.assert_not_called()
         self.assertEqual(len(self.mock_get_project().remove_co_pi.mock_calls), 1)
-        self.mock_service_account().jobs.submit.called_with(
+        self.mock_service_account().jobs.submit.assert_called_with(
             body={
                 "name": "username-PRJ-123-acls",
                 "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
                 "archive": False,
-                "parameter": {
+                "parameters": {
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "remove",
@@ -169,12 +169,12 @@ class TestProjectsManager(TestCase):
         self.mock_get_project().remove_co_pi.assert_not_called()
         self.mock_get_project().remove_pi.assert_not_called()
         self.assertEqual(len(self.mock_get_project().remove_member.mock_calls), 1)
-        self.mock_service_account().jobs.submit.called_with(
+        self.mock_service_account().jobs.submit.assert_called_with(
             body={
                 "name": "username-PRJ-123-acls",
                 "appId": settings.PORTAL_PROJECTS_PEMS_APP_ID,
                 "archive": False,
-                "parameter": {
+                "parameters": {
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "remove",
