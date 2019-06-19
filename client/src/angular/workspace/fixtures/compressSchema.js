@@ -41,6 +41,7 @@ const compressSchema = {
                     type: 'string',
                     format: 'agaveFile',
                     required: true,
+                    pattern: undefined,
                 },
             },
         },
@@ -59,14 +60,12 @@ const compressSchema = {
         maxRunTime: {
             default: '02:00:00',
             title: 'Maximum job runtime',
-            description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is 48:00:00 (48 hours).',
+            description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is 24:00:00 (hrs:min:sec).',
             type: 'string',
-            pattern: '^(48:00:00)|([0-4][0-9]:[0-5][0-9]:[0-5][0-9])$',
-            validationMessage: 'Must be in format HH:MM:SS and be less than 48 hours (48:00:00).',
+            pattern: '^([0-1][0-9]:[0-5][0-9]:[0-5][0-9])|^([0-2][0-3]:[0-5][0-9]:[0-5][0-9])|^([0-2][0-4]:[0-0][0-0]:[0-0][0-0])$',
+            validationMessage: 'Must be in format HH:MM:SS and be less than 24:00:00 (hrs:min:sec).',
             required: true,
-            'x-schema-form': {
-                placeholder: '02:00:00',
-            },
+            'x-schema-form': { placeholder: '02:00:00' },
         },
         name: {
             title: 'Job name',

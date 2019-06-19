@@ -12,26 +12,26 @@ const agaveApp = {
     version: '0.1.0',
     _links: {
         self: {
-            href: 'https://api.sd2e.org/apps/v2/xplan-0.1.0u1'
+            href: 'https://api.sd2e.org/apps/v2/xplan-0.1.0u1',
         },
         storageSystem: {
-            href: 'https://api.sd2e.org/systems/v2/data-sd2e-projects-users'
+            href: 'https://api.sd2e.org/systems/v2/data-sd2e-projects-users',
         },
         executionSystem: {
-            href: 'https://api.sd2e.org/systems/v2/hpc-tacc-maverick'
+            href: 'https://api.sd2e.org/systems/v2/hpc-tacc-maverick',
         },
         owner: {
-            href: 'https://api.sd2e.org/profiles/v2/dbryce'
+            href: 'https://api.sd2e.org/profiles/v2/dbryce',
         },
         permissions: {
-            href: 'https://api.sd2e.org/apps/v2/xplan-0.1.0u1/pems'
+            href: 'https://api.sd2e.org/apps/v2/xplan-0.1.0u1/pems',
         },
         history: {
-            href: 'https://api.sd2e.org/apps/v2/xplan-0.1.0u1/history'
+            href: 'https://api.sd2e.org/apps/v2/xplan-0.1.0u1/history',
         },
         metadata: {
-            href: 'https://api.sd2e.org/meta/v2/data/?q=%7B%22associationIds%22%3A%224067809291888160280-242ac115-0001-005%22%7D'
-        }
+            href: 'https://api.sd2e.org/meta/v2/data/?q=%7B%22associationIds%22%3A%224067809291888160280-242ac115-0001-005%22%7D',
+        },
     },
     templatePath: 'runner-template.sh',
     defaultMaxRunTime: null,
@@ -43,9 +43,9 @@ const agaveApp = {
                 fileTypes: [],
                 minCardinality: 1,
                 ontology: [
-                    'http://edamontology.org/format_1929'
+                    'http://edamontology.org/format_1929',
                 ],
-                maxCardinality: 1
+                maxCardinality: 1,
             },
             id: 'problem',
             value: {
@@ -54,22 +54,22 @@ const agaveApp = {
                 validator: null,
                 default: '',
                 required: true,
-                order: 0
+                order: 0,
             },
             details: {
                 argument: null,
                 repeatArgument: false,
                 description: 'Problem definition file',
                 showArgument: false,
-                label: 'problem'
-            }
-        }
+                label: 'problem',
+            },
+        },
     ],
     tags: [
         'xplan',
         'XPLAN',
         'sift',
-        'SIFT'
+        'SIFT',
     ],
     outputs: [],
     isPublic: true,
@@ -82,16 +82,16 @@ const agaveApp = {
     deploymentSystem: 'data-sd2e-projects-users',
     name: 'xplan',
     license: {
-        type: null
+        type: null,
     },
     checkpointable: false,
     lastModified: '2018-05-03T12:45:34-05:00',
     modules: [
-        'load tacc-singularity/2.3.1'
+        'load tacc-singularity/2.3.1',
     ],
     executionType: 'HPC',
     parallelism: 'SERIAL',
-    helpURI: null
+    helpURI: null,
 };
 
 export { agaveApp };

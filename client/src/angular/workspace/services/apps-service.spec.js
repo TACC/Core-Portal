@@ -2,6 +2,7 @@ import { agaveApp as appDefn } from '../fixtures/app';
 import { meta as appMeta } from '../fixtures/appMeta';
 import { compressApp } from '../fixtures/compressApp';
 import { compressSchema } from '../fixtures/compressSchema';
+import { executionSystem } from '../fixtures/executionSystem';
 
 describe('AppsService', function() {
     let $q, Apps, $rootScope, $httpBackend, $translate, $scope;
@@ -62,6 +63,7 @@ describe('AppsService', function() {
 
     it('should create an ASF schema for an app', () => {
         spyOn(Apps, 'getDateString').and.returnValue('2019-01-01T00:00:00');
+        compressApp.exec_sys = executionSystem;
         expect(Apps.formSchema(compressApp)).toEqual(compressSchema);
     });
 

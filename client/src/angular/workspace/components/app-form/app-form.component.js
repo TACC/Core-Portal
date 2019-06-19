@@ -105,12 +105,17 @@ class ApplicationFormCtrl {
         if (this.app.parallelism == 'PARALLEL') {
             if (!this.app.tags.includes('hideNodeCount')) {
                 items.push('nodeCount');
+            } else {
+                delete this.schema.properties.nodeCount;
             }
             if (!this.app.tags.includes('hideProcessorsPerNode')) {
                 items.push('processorsPerNode');
+            } else {
+                delete this.schema.properties.processorsPerNode;
             }
         } else {
             delete this.schema.properties.nodeCount;
+            delete this.schema.properties.processorsPerNode;
         }
 
         this.form.push({
@@ -183,7 +188,7 @@ class ApplicationFormCtrl {
                 this.ProjectService.list({ offset: 0, limit: -1 }).then((resp) => {
                     if (resp.length > 0) {
                         angular.forEach(resp, function(project, key) {
-                            resp[key] = `${project.name ? project.name : project.id}`;
+                            resp[key] = `${project.name || project.id}`;
                         });
                         jobData.parameters._userProjects = resp;
                     }
@@ -227,6 +232,8 @@ class ApplicationFormCtrl {
                     if (v.length === 0) {
                         delete jobData.inputs[k];
                     }
+                } else if (!v) {
+                    delete jobData.inputs[k];
                 }
             });
 
@@ -242,11 +249,11 @@ class ApplicationFormCtrl {
 
             // Calculate processorsPerNode if nodeCount parameter submitted
             if (('nodeCount' in jobData) && !('processorsPerNode' in jobData)) {
-                jobData.processorsPerNode = jobData.nodeCount * (this.app.defaultProcessorsPerNode / this.app.defaultNodeCount);
+                jobData.processorsPerNode = jobData.nodeCount * (this.app.defaultProcessorsPerNode || 1) / (this.app.defaultNodeCount || 1);
             } else if (('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
                 jobData.processorsPerNode = jobData.nodeCount * jobData.processorsPerNode;
             } else if (!('nodeCount' in jobData) && ('processorsPerNode' in jobData)) {
-                jobData.processorsPerNode = jobData.defaultNodeCount * jobData.processorsPerNode;
+                jobData.processorsPerNode = (this.app.defaultNodeCount || 1) * jobData.processorsPerNode;
             }
 
             jobReady.jobDataReady = true;

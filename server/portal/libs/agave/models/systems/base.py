@@ -668,7 +668,8 @@ class BaseSystemQueue(BaseAgaveResource):
         'max_processors_per_node',
         'max_memory_per_node',
         'custom_directives',
-        'default'
+        'default',
+        'max_requested_time'
     ]
 
     def __init__(self, client, **kwargs):

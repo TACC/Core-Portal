@@ -1,14 +1,15 @@
 import { agaveApp as appDefn } from '../../fixtures/app';
 import { meta as appMeta } from '../../fixtures/appMeta';
+import { executionSystem as execSys } from '../../fixtures/executionSystem';
 
 describe('AppFormComponent', function() {
     let $q, Apps, $rootScope, $componentController, ctrl,
-        $timeout, Jobs, $compile, $httpBackend, UserService, $uibModal, SystemsService, ProjectService;
+        $timeout, Jobs, $compile, UserService, $uibModal, SystemsService, ProjectService;
 
     beforeEach(angular.mock.module('portal'));
     beforeEach(() => {
         angular.mock.inject(function(_$rootScope_, _$componentController_, _Apps_, _Jobs_,
-            _$timeout_, _$q_, _$compile_, _$httpBackend_, _UserService_, _$uibModal_, _SystemsService_, _ProjectService_) {
+            _$timeout_, _$q_, _$compile_, _UserService_, _$uibModal_, _SystemsService_, _ProjectService_) {
             $componentController = _$componentController_;
             Apps = _Apps_;
             Jobs = _Jobs_;
@@ -16,7 +17,6 @@ describe('AppFormComponent', function() {
             $timeout = _$timeout_;
             $q = _$q_;
             $compile = _$compile_;
-            $httpBackend = _$httpBackend_;
             UserService = _UserService_;
             $uibModal = _$uibModal_;
             SystemsService = _SystemsService_;
@@ -24,6 +24,7 @@ describe('AppFormComponent', function() {
         });
     });
     beforeEach(() => {
+        appDefn.exec_sys = execSys;
         spyOn(Apps, 'get').and.returnValue($q.when({
             data: {
                 response: appDefn,
@@ -109,7 +110,7 @@ describe('AppFormComponent', function() {
 
     it('Should alter the name of DCV jobs when handling submit', (done)=>{
         // Add DCV tag to definition
-        appMeta.value.definition.tags.push("DCV");
+        appMeta.value.definition.tags.push('DCV');
 
         let jobSpy = spyOn(Jobs, 'submit').and.returnValue($q.when({}));
         let scope = $rootScope.$new();
@@ -130,7 +131,7 @@ describe('AppFormComponent', function() {
             expect(jobSpy.calls.mostRecent().args[0].inputs.problem).toBe(inputFile);
             expect(jobSpy.calls.mostRecent().args[0].appId).toBe(appDefn.id);
             expect(jobSpy.calls.mostRecent().args[0].name).toMatch(appDefn.name);
-            expect(jobSpy.calls.mostRecent().args[0].name).toMatch("dcvserver");
+            expect(jobSpy.calls.mostRecent().args[0].name).toMatch('dcvserver');
             done();
         }, 10);
     });
@@ -178,6 +179,32 @@ describe('AppFormComponent', function() {
         ctrl.app = appDefn;
         ctrl.openResetSystemKeysForm(sys.id);
         expect(SystemsService.resetKeys).toHaveBeenCalledWith(sys);
+    });
+
+    it('Should not include processorsPerNode or nodeCount if SERIAL', () => {
+        let jobSpy = spyOn(Jobs, 'submit').and.returnValue($q.when({}));
+        let scope = $rootScope.$new();
+        scope.app = appMeta;
+
+        let inputFile = 'agave://some-system/some-file.plan',
+            template = angular.element('<app-form selected-app=app></app-form>'),
+            el = $compile(template)(scope);
+        let ctrl = el.controller('app-form');
+        $rootScope.$digest();
+
+        // Have to put this in a timeOut to work around ASF issue
+        setTimeout(() => {
+            // input fields should be there now...
+            expect(el.find('form').children.length > 0).toBe(true);
+            ctrl.model.inputs.problem = inputFile;
+            ctrl.onSubmit({ $valid: true });
+            expect(jobSpy.calls.mostRecent().args[0].inputs.problem).toBe(inputFile);
+            expect(jobSpy.calls.mostRecent().args[0].appId).toBe(appDefn.id);
+            expect(jobSpy.calls.mostRecent().args[0].name).toMatch(appDefn.name);
+            expect(jobSpy.calls.mostRecent().args[0].processorsPerNode).not.toBeDefined();
+            expect(jobSpy.calls.mostRecent().args[0].nodeCount).not.toBeDefined();
+            done();
+        }, 10);
     });
 
     // TODO: Add test for bourbon prize, i.e. when there are a variable number of
