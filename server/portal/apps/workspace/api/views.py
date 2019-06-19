@@ -227,6 +227,10 @@ class JobsView(BaseApiView):
 
                 if parsed.netloc:
                     job_post['archiveSystem'] = parsed.netloc
+                else:
+                    job_post['archiveSystem'] = \
+                        settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(
+                            request.user.username)
             else:
                 job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(

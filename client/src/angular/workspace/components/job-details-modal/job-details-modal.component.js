@@ -31,7 +31,8 @@ class JobDetailsModalCtrl {
     }
 
     jobIsFinished(job) {
-        return job.status == 'FINISHED' || job.status == 'FAILED';
+        let finishedStatus = ['FAILED', 'STOPPED', 'FINISHED', 'KILLED'];
+        return (finishedStatus.some((e) => e === job.status));
     }
 }
 
