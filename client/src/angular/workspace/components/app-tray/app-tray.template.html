@@ -9,7 +9,7 @@
           </div>
       </div>
       <uib-tabset id="workspace-tabs" ng-show="!$ctrl.requesting && $ctrl.allocations" active="$ctrl.activeTab">
-          <uib-tab class="workspace-tab" ng-repeat="tab in $ctrl.tabs" focusout="$ctrl.closeTab($event, tab)">
+          <uib-tab class="workspace-tab" ng-repeat="tab in $ctrl.tabs" ng-if="tab.count > 0" focusout="$ctrl.closeTab($event, tab)">
               <uib-tab-heading>
                   <h3 class="workspace-tab-title">{{tab.title}} [{{tab.count}}]</h3>
               </uib-tab-heading>
