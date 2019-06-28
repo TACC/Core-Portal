@@ -91,6 +91,10 @@ urlpatterns += [
     # version check.
     url(r'^version/', des_version),
 
+    # googledrive
+    url(r'^accounts/applications/googledrive/', include('portal.apps.googledrive_integration.urls',
+                                                       namespace='googledrive_integration')),
+
     # cms forms.
     url(r'^', include('djangocms_forms.urls')),
 

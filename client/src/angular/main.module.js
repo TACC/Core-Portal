@@ -53,9 +53,15 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
             abstract: true,
             resolve: {
                 users: ['UserService', function(UserService) {
+                    if (Object.entries(UserService.currentUser).length) {
+                        return UserService.currentUser;
+                    }
                     return UserService.authenticate();
                 }],
                 systems: ['SystemsService', function(SystemsService) {
+                    if (SystemsService.systems) {
+                        return SystemsService.systems;
+                    }
                     return SystemsService.listing();
                 }]
             }

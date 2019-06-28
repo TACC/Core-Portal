@@ -52,6 +52,6 @@ urlpatterns = [
     #     name='mailing_list_subscription'),
 
     # These need to go last else they intercept other routes.
-    url(r'^', IndexView.as_view(), name='index'),
+    url(r'^$', IndexView.as_view(), name='index'),
     # url(r'^', views.index, name='index'),
 ]

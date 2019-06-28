@@ -112,19 +112,20 @@ describe('AppFormComponent', function() {
         // Add DCV tag to definition
         appMeta.value.definition.tags.push('DCV');
 
-        let jobSpy = spyOn(Jobs, 'submit').and.returnValue($q.when({}));
-        let scope = $rootScope.$new();
+        let jobSpy = spyOn(Jobs, 'submit').and.returnValue($q.when({})),
+            scope = $rootScope.$new();
+
         scope.app = appMeta;
 
         let inputFile = 'agave://some-system/some-file.plan',
             template = angular.element('<app-form selected-app=app></app-form>'),
-            el = $compile(template)(scope);
-        let ctrl = el.controller('app-form');
+            el = $compile(template)(scope),
+            ctrl = el.controller('app-form');
         $rootScope.$digest();
 
         // Have to put this in a timeOut to work around ASF issue
         setTimeout( ()=> {
-            //input fields should be there now...
+            // input fields should be there now...
             expect(el.find('form').children.length > 0).toBe(true);
             ctrl.model.inputs.problem = inputFile;
             ctrl.onSubmit({ $valid: true });

@@ -81,6 +81,15 @@ class Roles(object):
         """Public property for roles marked as updated."""
         return self._updated_roles
 
+    def to_dict(self):
+        """Dict representation of Roles."""
+
+        roles= {}
+        for role in self.roles:
+            roles[role.username] = role.role
+
+        return roles
+
     def _mark_as_updated(self, role):
         """Mark role object as updated.
 

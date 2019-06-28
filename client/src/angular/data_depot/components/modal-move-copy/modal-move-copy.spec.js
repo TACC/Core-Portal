@@ -2,11 +2,10 @@ import fileListing from '../../fixtures/file-listing.json';
 import projectsListing from '../../fixtures/projects-listing.json';
 
 describe('ModalMoveCopy', function() {
-    var ctrl,
+    let ctrl,
         $q,
         file,
         scope,
-        $rootScope,
         FileListing,
         SystemsService,
         ProjectService,
@@ -15,7 +14,7 @@ describe('ModalMoveCopy', function() {
 
     // Mock only the necessary portal components
     beforeEach(angular.mock.module('portal'));
-    beforeEach( ()=> {
+    beforeEach(() => {
         angular.mock.inject(function(_$componentController_, _FileListing_,
             _SystemsService_, _ProjectService_, _$q_, _$rootScope_) {
             $componentController = _$componentController_;
@@ -26,14 +25,14 @@ describe('ModalMoveCopy', function() {
             scope = _$rootScope_.$new();
             SystemsService.systems = [
                 {
-                    name: 'My Data', systemId: 'test.system'
-                }
+                    name: 'My Data', systemId: 'test.system',
+                },
             ];
             file = {
                 system: 'agave.system',
                 path: '/filename.txt',
                 name: 'filename.txt',
-                preview: function () {}
+                preview: function() { },
             };
             spyOn(FileListing, 'get').and.returnValue(
                 $q.when(fileListing)
@@ -43,13 +42,13 @@ describe('ModalMoveCopy', function() {
             );
             ctrl = $componentController(
                 'modalMoveCopyComponent',
-                {FileListing: FileListing, ProjectService:ProjectService, SystemsService:SystemsService},
+                { FileListing: FileListing, ProjectService: ProjectService, SystemsService: SystemsService },
                 {
                     resolve: {
-                        files: [file]
+                        files: [file],
                     },
-                    close: ()=>{},
-                    dismiss: ()=>{}
+                    close: () => { },
+                    dismiss: () => { },
                 }
             );
 
@@ -57,7 +56,7 @@ describe('ModalMoveCopy', function() {
     });
 
 
-    it ('should init with the file name as the current value', ()=> {
+    it('should init with the file name as the current value', () => {
         spyOn(ctrl, 'selectMyData');
         ctrl.$onInit();
         expect(ctrl.files.length).toBe(1);
@@ -65,14 +64,14 @@ describe('ModalMoveCopy', function() {
         expect(ctrl.selectMyData).toHaveBeenCalled();
     });
 
-    it('should update the breadcrumbs with a listing', ()=>{
+    it('should update the breadcrumbs with a listing', () => {
         ctrl.$onInit();
         ctrl.selectMyData();
         scope.$digest();
         expect(ctrl.breadCrumbParams.filePath).toEqual('/test');
     });
 
-    it('should list the projects', ()=>{
+    it('should list the projects', () => {
         ctrl.$onInit();
         ctrl.selectMyProjects();
         scope.$digest();
@@ -82,7 +81,7 @@ describe('ModalMoveCopy', function() {
         expect(ctrl.busy).toBe(false);
     });
 
-    it('should browse into a project', ()=>{
+    it('should browse into a project', () => {
         ctrl.$onInit();
         ctrl.browseProject({}, projectsListing[0]);
         scope.$digest();
@@ -91,7 +90,4 @@ describe('ModalMoveCopy', function() {
         expect(ctrl.listingProjects).toBe(false);
         expect(ctrl.busy).toBe(false);
     });
-
-
-
-  });
+});

@@ -69,6 +69,9 @@ funcsigs==0.4
 future==0.16.0
 futures==3.0.5
 gevent==1.2.1
+google-api-python-client==1.7.8
+google-auth==1.6.3
+google-auth-oauthlib==0.3.0
 greenlet==0.4.12
 hashids==1.2.0
 html5lib==1.0.1
@@ -81,6 +84,8 @@ isodate==0.6.0
 jdcal==1.4
 Jinja2==2.7.3
 jsonfield==2.0.2
+jsonpickle==1.1
+kitchen==1.1.1
 kombu==4.1.0
 lxml==4.3.3
 MarkupSafe==1.0

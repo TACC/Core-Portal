@@ -292,7 +292,7 @@ class BaseFile(BaseAgaveResource):
             self._wrapped = res[0]
         return self
 
-    def import_data(self, from_system, from_path, retries=5):
+    def import_data(self, from_system, from_path, retries=5, remote_url=None, external_resource=False):
         """Imports data from an external storage system
 
         :param str from_system: System to import from.
@@ -308,10 +308,11 @@ class BaseFile(BaseAgaveResource):
         .. todo:: We should implement a fallback using another type of
         data transfer method if this fails.
         """
-        remote_url = 'agave://{}/{}'.format(
-            from_system,
-            urllib.quote(from_path)
-        )
+        if not remote_url:
+            remote_url = 'agave://{}/{}'.format(
+                from_system,
+                urllib.quote(from_path)
+            )
         file_name = os.path.split(from_path)[1]
         _retries = retries
         while _retries > 0:
@@ -346,6 +347,12 @@ class BaseFile(BaseAgaveResource):
                 exc_info=True
             )
 
+        # If import is coming from an external resource like google drive,
+        # don't return a listing for every recursive file upload.
+        if external_resource:
+            return BaseFile(system=result['systemId'],
+                            path=result['path'],
+                            client=self._ac)
         return BaseFile.listing(self._ac, self.system, result['path'])
 
     def copy(self, dest_path, file_name=None):

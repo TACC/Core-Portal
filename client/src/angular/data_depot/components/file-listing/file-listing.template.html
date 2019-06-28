@@ -11,9 +11,16 @@
     {{$ctrl.browser.ui.message.content}}
   </p>
 </div>
-<div class="alert alert-danger" data-ng-show="$ctrl.browser.error.message">
-  {{$ctrl.browser.error.message}}
+<div ng-if="$ctrl.browser.error.message"
+  ng-bind-html="$ctrl.browser.error.message" class="alert alert-warning">
 </div>
+<!-- <div ng-if="$ctrl.browser.error.message && [409, 401].includes($ctrl.browser.error.status)"
+  ng-bind-html="$ctrl.browser.error.message" class="alert alert-warning">
+</div>
+<div class="alert alert-danger"
+  ng-if="$ctrl.browser.error.message && ![409, 401].includes($ctrl.browser.error.status)">
+  {{$ctrl.browser.error.message}}
+</div> -->
 <div class="push-keys-message" data-ng-if="$ctrl.browser.error.status == 502">
   <p>
     There seems to be a problem with your storage system. <br/>

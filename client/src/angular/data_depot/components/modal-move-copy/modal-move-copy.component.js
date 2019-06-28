@@ -5,7 +5,7 @@ const modalMoveCopyComponent = {
     bindings: {
         resolve: '<',
         close: '&',
-        dismiss: '&'
+        dismiss: '&',
     },
     controller: ModalMoveCopyCtrl,
 };

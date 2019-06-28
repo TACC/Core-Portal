@@ -131,6 +131,7 @@ INSTALLED_APPS = [
     'portal.apps.licenses',
     'portal.apps.notifications',
     'portal.apps.onboarding',
+    'portal.apps.googledrive_integration'
 ]
 
 MIDDLEWARE = [
@@ -294,7 +295,8 @@ PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = 'dev'
 PORTAL_DATA_DEPOT_MANAGERS = {
     'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
     'shared': 'portal.apps.data_depot.managers.shared.FileManager',
-    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
+    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager',
+    'google-drive': 'portal.apps.data_depot.managers.google_drive.FileManager'
 }
 
 PORTAL_SEARCH_MANAGERS = {
@@ -302,6 +304,15 @@ PORTAL_SEARCH_MANAGERS = {
     'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
     'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
+}
+
+EXTERNAL_RESOURCE_SECRETS = {
+    "google-drive": {
+        "client_secret": "test",
+        "client_id": "test",
+        "name": "Google Drive",
+        "directory": "external-resources"
+    }
 }
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100

@@ -1,5 +1,4 @@
 class DataDepotNewCtrl {
-
     constructor(
         $scope,
         $state,
@@ -13,13 +12,13 @@ class DataDepotNewCtrl {
         this.$uibModal = $uibModal;
         this.DataBrowserService = DataBrowserService;
         this.UserService = UserService;
-
     }
+
     $onInit() {
         this.test = {
             enabled: (this.UserService.currentUser.oauth && true) || false,
             createFiles: false,
-            createProject: (this.UserService.currentUser.oauth && true) || false
+            createProject: (this.UserService.currentUser.oauth && true) || false,
         };
 
         this.browser = this.DataBrowserService.state();
@@ -27,17 +26,17 @@ class DataDepotNewCtrl {
         this.$scope.$watch(() => this.browser.listing, () => {
             this.test.createFiles = false;
             if (this.browser.listing) {
-                this.browser.listing.listPermissions().then( (res) => {
-                    this.res = res
-                    var pems = res.response;
-                    this.test.createFiles = pems.find(pem => {
+                this.browser.listing.listPermissions().then((res) => {
+                    this.res = res;
+                    let pems = res.response;
+                    this.test.createFiles = pems.find((pem) => {
                         return pem.username == this.UserService.currentUser.username;
-                    }).permission.write
+                    }).permission.write;
                 });
             }
-        })
-
+        });
     }
+
     createFolder($event) {
         if (this.test.createFiles) {
             this.DataBrowserService.mkdir();
@@ -46,6 +45,7 @@ class DataDepotNewCtrl {
             $event.stopPropagation();
         }
     }
+
     createProject($event) {
         $event.preventDefault();
         $event.stopPropagation();
@@ -53,7 +53,7 @@ class DataDepotNewCtrl {
             return;
         }
         const modal = this.$uibModal.open({
-            component: 'newProjectModal'
+            component: 'newProjectModal',
         });
         modal.result.then(
             (res) => {
@@ -68,6 +68,7 @@ class DataDepotNewCtrl {
             }
         );
     }
+
     uploadFiles($event) {
         if (this.test.createFiles) {
             this.DataBrowserService.upload(false);
@@ -76,6 +77,7 @@ class DataDepotNewCtrl {
             $event.stopPropagation();
         }
     }
+
     uploadFolders($event) {
         if (this.test.createFiles) {
             this.DataBrowserService.upload(true);
@@ -84,7 +86,6 @@ class DataDepotNewCtrl {
             $event.stopPropagation();
         }
     }
-
 }
 
 export default DataDepotNewCtrl;

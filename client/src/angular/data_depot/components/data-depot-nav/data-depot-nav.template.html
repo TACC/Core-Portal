@@ -39,4 +39,19 @@
             Community Data
         </a>
     </div>
+    <div ng-repeat="extSys in $ctrl.externalResources">
+        <a
+           class="list-group-item"
+           uib-tooltip="Access to my {{extSys.name}} for copying"
+           ui-sref="wb.data_depot.external_resources({
+                        filePath:'',
+                        name: extSys.name,
+                        directory: extSys.directory,
+                        fileMgr: extSys.fileMgr,
+                        id: null})"
+           ui-sref-opts="{reload: true}" ng-class="{active: $ctrl.params.fileMgr == extSys.fileMgr}">
+            <i class="fa-brand-icon {{extSys.fileMgr}}">&ensp;</i>
+            {{ extSys.name }}
+        </a>
+    </div>
 </div>

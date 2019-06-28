@@ -7,8 +7,12 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from portal.apps.data_depot.managers.base import AgaveFileManager
 from portal.apps.data_depot.models import PublicUrl
+from portal.apps.data_depot.managers.google_drive import FileManager as GoogleDriveFileManager
+from portal.apps.googledrive_integration.models import GoogleDriveUserToken
 from datetime import timedelta
 from dateutil.tz import tzutc
+from google.oauth2.credentials import Credentials
+from portal.exceptions.api import ApiException
 
 class TestAgaveFileManager(TestCase):
 
@@ -68,10 +72,40 @@ class TestAgaveFileManager(TestCase):
             testUrl = fmgr.public_url('cep.test//file01', refresh=False)
 
 
+class TestGoogleDriveFileManager(TestCase):
+    fixtures = ['users', 'auth']
 
+    @classmethod
+    def setUpClass(cls):
+        super(TestGoogleDriveFileManager, cls).setUpClass()
+        cls.mock_client_patcher = patch(
+            'portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+        cls.mock_client = cls.mock_client_patcher.start()
 
+        cls.mock_gdrive_client_patcher = patch(
+            'portal.apps.googledrive_integration.models.GoogleDriveUserToken.client', autospec=True)
+        cls.mock_gdrive_client = cls.mock_gdrive_client_patcher.start()
 
+    @classmethod
+    def tearDownClass(cls):
+        cls.mock_client_patcher.stop()
+        cls.mock_gdrive_client_patcher.stop()
+        super(TestGoogleDriveFileManager, cls).tearDownClass()
 
+    def setUp(self):
+        self.mock_client.reset_mock()
+        self.mock_client.user = get_user_model().objects.get(username="username")
 
+    def test_no_googldrive_client(self):
+        with self.assertRaises(ApiException):
+            GoogleDriveFileManager(self.mock_client)
 
-    
+    def test_client_exists(self):
+        token = GoogleDriveUserToken(
+            user=get_user_model().objects.get(username="username"),
+            credentials=Credentials(token='asdf', refresh_token='1234')
+        )
+        token.save()
+
+        fmgr = GoogleDriveFileManager(self.mock_client)
+        self.assertEqual(fmgr.googledrive_api, self.mock_client.user.googledrive_user_token.client)

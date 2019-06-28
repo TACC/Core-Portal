@@ -47,8 +47,9 @@ SESSION_COOKIE_AGE = 24*60*60*7  # the number of seconds for only 7 for example
 # whether a user's session cookie expires when the web browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
@@ -140,6 +141,7 @@ INSTALLED_APPS = [
     'portal.apps.licenses',
     'portal.apps.notifications',
     'portal.apps.onboarding',
+    'portal.apps.googledrive_integration',
 ]
 
 MIDDLEWARE = [
@@ -647,7 +649,8 @@ SETTINGS: DATA DEPOT
 PORTAL_DATA_DEPOT_MANAGERS = {
     'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
     'shared': 'portal.apps.data_depot.managers.shared.FileManager',
-    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
+    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager',
+    'google-drive': 'portal.apps.data_depot.managers.google_drive.FileManager'
 }
 
 PORTAL_SEARCH_MANAGERS = {
@@ -658,6 +661,13 @@ PORTAL_SEARCH_MANAGERS = {
 }
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
+
+"""
+SETTINGS: EXTERNAL DATA RESOURCES
+"""
+
+EXTERNAL_RESOURCE_SECRETS = getattr(settings_secret, '_EXTERNAL_RESOURCE_SECRETS', {})
+
 
 PORTAL_WORKSPACE_MANAGERS = {
     'private': 'portal.apps.workspace.managers.private.FileManager',

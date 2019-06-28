@@ -44,7 +44,6 @@ describe('DataDepotToolbarCtrl', () => {
             spyOn(controller.DataBrowserService, 'allowedActions').and.returnValue({
                 canDownload: true,
                 canPreview: true,
-                canPreviewImages: true,
                 canViewMetadata: true,
                 canShare: true,
                 canCopy: true,
@@ -71,7 +70,6 @@ describe('DataDepotToolbarCtrl', () => {
         expect(controller.tests).toEqual({
             canDownload: true,
             canPreview: true,
-            canPreviewImages: true,
             canViewMetadata: true,
             canShare: true,
             canCopy: true,

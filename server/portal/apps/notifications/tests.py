@@ -24,7 +24,7 @@ webhook_body_pending = json.dumps(json.load(open(FILEDIR_PENDING)))
 webhook_body_pending2 = json.dumps(json.load(open(FILEDIR_PENDING2))) 
 webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING))) 
 
-wh_url = reverse('designsafe_api:jobs_wh_handler')
+wh_url = reverse('webhooks:jobs_wh_handler')
 
 # Create your tests here.
 class NotificationsTestCase(TestCase):
@@ -85,8 +85,3 @@ class NotificationsTestCase(TestCase):
         r2 = self.client.post(wh_url, webhook_body_pending2, content_type='application/json')
 
         self.assertEqual(Notification.objects.count(), 2)
-
-
-    
-
-    

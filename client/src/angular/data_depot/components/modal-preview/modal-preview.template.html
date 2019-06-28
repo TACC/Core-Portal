@@ -9,7 +9,7 @@
                 <th>File name</th>
                 <td>{{ $ctrl.file.name }}</td>
             </tr>
-            <tr>
+            <tr ng-if="$ctrl.file.system">
                 <th>Agave URI</th>
                 <td>agave://{{ $ctrl.file.system }}{{ $ctrl.file.path }}</td>
             </tr>

@@ -427,7 +427,7 @@ def manage_licenses(request):
 @login_required
 def manage_applications(request):
     context = {
-        'title': 'Manage Applications',
+        'title': 'Manage 3rd Party Applications',
         'integrations': integrations.get_integrations()
     }
     return render(
@@ -573,7 +573,7 @@ def _process_password_reset_request(request, form):
             )
             resp = tas.request_password_reset(
                 user['username'],
-                source='DesignSafe'
+                source=settings.PORTAL_NAMESPACE
             )
             logger.debug(resp)
         except Exception as e:

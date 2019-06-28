@@ -38,6 +38,8 @@ class SystemListingView(BaseApiView):
     def get(self, request):
         community_data_system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
         mydata_system = get_user_home_system_id(request.user)
+        external_resource_secrets = settings.EXTERNAL_RESOURCE_SECRETS
+
         listing = [
             {
                 "systemId": community_data_system,
@@ -47,7 +49,15 @@ class SystemListingView(BaseApiView):
                 "systemId": mydata_system,
                 "name": "My Data"
             }
+        ] + \
+        [
+            {
+                "fileMgr": fileMgr,
+                "name": sys["name"],
+                "directory": sys["directory"]
+            } for fileMgr, sys in external_resource_secrets.items()
         ]
+
         return JsonResponse({'response': listing})
 
 class ToolbarOptionsView(BaseApiView):
@@ -60,7 +70,7 @@ class ToolbarOptionsView(BaseApiView):
 class FileListingView(BaseApiView):
     """File Listing View"""
 
-    def get(self, request, file_mgr_name, file_id, **kwargs):
+    def get(self, request, file_mgr_name, file_id=None, **kwargs):
         """GET Handles files listing"""
 
         METRICS.info('File Listing: file_mgr=%s, path=%s', file_mgr_name, file_id,
@@ -78,7 +88,7 @@ class FileListingView(BaseApiView):
         query_string = request.GET.get('queryString')
         
         if query_string is None:
-            # If there is no query string, perform a file listing using Agave.
+            # If there is no query string, perform a file listing using the File Manager.
             listing = fmgr.listing(file_id, offset=offset, limit=limit)
             
         else:
@@ -102,7 +112,7 @@ class FileMediaView(BaseApiView):
     def get(self, request, file_mgr_name, file_id, **kwargs):
         """GET
 
-        This method handles file downloads.
+        This method handles file downloads and previews.
 
         :param request: Django request.
         :param str file_mgr_name: Manager name.

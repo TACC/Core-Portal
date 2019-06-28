@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load sekizai_tags staticfiles %}
+{% block title %}Google Drive Integration{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Disconnect Google Drive</h1>
+
+    <p class="lead">
+        By disconnecting your Google Drive account from this portal, you will no longer be able
+        to browse files from Google Drive {{ settings.PORTAL_NAMESPACE }}. This <strong>will not</strong>
+        delete any files from either this portal or Google Drive. What <strong>will</strong> happen
+        is that you will be removing the authorization you granted {{ settings.PORTAL_NAMESPACE }} to manage files
+        and folders in your Google Drive account.
+    </p>
+    <p class="alert alert-info">
+        To reiterate, this will not delete any files. If you wish to delete the files from either
+        your Google Drive storage or your this portal's storage you will need to do that manually.
+    </p>
+    <hr>
+    <p class="lead">
+        If you would like to disconnect your Google Drive account from {{ settings.PORTAL_NAMESPACE }}, you can
+        do so by clicking the button below.
+    </p>
+    <form action="{% url 'googledrive_integration:disconnect' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <button type="submit" class="btn btn-lg btn-danger">Disconnect Google Drive</button>
+            <a href="{% url 'googledrive_integration:index' %}" class="btn btn-lg btn-default">Cancel</a>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

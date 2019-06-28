@@ -156,6 +156,29 @@ _PORTAL_PROJECTS_PEMS_APP_ID = ''
 _PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = '123'
 
 ########################
+# EXTERNAL DATA RESOURCES SETTINGS
+########################
+
+# NOTE: set 'name' to that of the custom data api,
+# keeping 'directory' set as 'external-resources'.
+# The key of each system should be equivalent to the NAME of the FileManager.
+
+# NOTE: Kept as a secret setting so portals can decide what external
+# resources to have available.
+
+# For google drive secrets, go to https://console.cloud.google.com/apis
+
+_EXTERNAL_RESOURCE_SECRETS = {
+    "google-drive": {
+        "client_secret": "S3CR3T_K3Y",
+        "client_id": "XXXXXXX.apps.googleusercontent.com",
+        "name": "Google Drive",
+        "directory": "external-resources"
+    }
+}
+
+
+########################
 # DJANGO CMS SETTINGS
 ########################
 
