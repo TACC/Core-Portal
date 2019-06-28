@@ -62,7 +62,7 @@ const compressSchema = {
             title: 'Maximum job runtime',
             description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is 24:00:00 (hrs:min:sec).',
             type: 'string',
-            pattern: '^([0-1][0-9]:[0-5][0-9]:[0-5][0-9])|^([0-2][0-3]:[0-5][0-9]:[0-5][0-9])|^([0-2][0-4]:[0-0][0-0]:[0-0][0-0])$',
+            pattern: '^[0-1][0-9]:[0-5][0-9]:[0-5][0-9]$|^[0-2][0-3]:[0-5][0-9]:[0-5][0-9]$|^[0-2][0-4]:[0-0][0-0]:[0-0][0-0]$',
             validationMessage: 'Must be in format HH:MM:SS and be less than 24:00:00 (hrs:min:sec).',
             required: true,
             'x-schema-form': { placeholder: '02:00:00' },
