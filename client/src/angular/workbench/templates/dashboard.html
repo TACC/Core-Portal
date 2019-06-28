@@ -168,22 +168,11 @@
                       data-ng-disabled="!sys.keysTracked">
                 Public Key
               </button>
-              <br />
-              <button type="button"
-                      class="btn btn-warning"
-                      data-ng-click="vm.resetKeys(sys)"
-                      data-ng-disabled="vm.ui.resetSystems[sys.id].resetting">
-                Reset Keys
-                <span data-ng-if="vm.ui.resetSystems[sys.id].resetting"> Loading ...</span>
-                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
-                   data-ng-if="vm.ui.resetSystems[sys.id].resetting">&nbsp;</i>
-              </button>
               <button type="button"
                       class="btn btn-success"
                       data-ng-click="vm.pushKey(sys)"
-                      data-ng-disabled="vm.ui.pushSystems[sys.id].pushing
-                                        || !sys.keysTracked">
-                Push Public Key
+                      data-ng-disabled="vm.ui.pushSystems[sys.id].pushing">
+                Reset and Push Public Key
                 <span data-ng-if="vm.ui.pushSystems[sys.id].pushing"> Loading ...</span>
                 <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
                    data-ng-if="vm.ui.pushSystems[sys.id].pushing">&nbsp;</i>
@@ -246,14 +235,9 @@
                 Public Key
               </button>
               <br />
-              <button type="button" class="btn btn-warning" data-ng-click="vm.resetKeys(sys)" data-ng-disabled="vm.ui.resetSystems[sys.id].resetting">
-                Reset Keys
-                <span data-ng-if="vm.ui.resetSystems[sys.id].resetting"> Loading ...</span>
-                <i class="fa fa-spinner fa-pulse fa-2x fa-fw" data-ng-if="vm.ui.resetSystems[sys.id].resetting">&nbsp;</i>
-              </button>
               <button type="button" class="btn btn-success" data-ng-click="vm.pushKey(sys)" data-ng-disabled="vm.ui.pushSystems[sys.id].pushing
                                             || !sys.keysTracked">
-                Push Public Key
+                Reset and Push Public Key
                 <span data-ng-if="vm.ui.pushSystems[sys.id].pushing"> Loading ...</span>
                 <i class="fa fa-spinner fa-pulse fa-2x fa-fw" data-ng-if="vm.ui.pushSystems[sys.id].pushing">&nbsp;</i>
               </button>

@@ -178,8 +178,6 @@ def reset_system_keys(username, system_id):
     """
     user = check_user(username)
     home_sys_id = get_user_home_system_id(user)
-    if system_id == home_sys_id:
-        return reset_home_system_keys(username)
 
     sys_dict = user.agave_oauth.client.systems.get(systemId=system_id)
     if sys_dict['type'] == StorageSystem.TYPES.STORAGE:
