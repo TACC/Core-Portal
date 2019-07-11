@@ -88,3 +88,7 @@ def login_user_agave_jwt(request):
     if user is not None:
         user.backend = 'django.contrib.auth.backends.ModelBackend',
         login(request, user)
+
+        # Refresh agave oauth token
+        if user.agave_oauth.expired:
+            user.agave_oauth.client.token.refresh()
