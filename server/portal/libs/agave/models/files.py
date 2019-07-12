@@ -397,7 +397,7 @@ class BaseFile(BaseAgaveResource):
 
     @classmethod
     def ensure_path(cls, client, system, path):
-        """Ensure the given path exists in the given sotrage system.
+        """Ensure the given path exists in the given storage system.
 
         This function will return the last response from Agave.
         This means that if four folders are created then only the last folder

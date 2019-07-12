@@ -40,7 +40,7 @@ class ProjectsManager(object):
         """
         self.user = user
 
-    def _add_acls(self, username, project_id):
+    def _add_acls(self, username, project_id, project_root):
         """Run an agave job to set ACLs.
 
         :param str username: Username.
@@ -59,12 +59,12 @@ class ProjectsManager(object):
                 "projectId": project_id,
                 "username": username,
                 "action": "add",
-                "root_dir": settings.PORTAL_PROJECTS_ROOT_DIR,
+                "root_dir": project_root,
             }
         })
         logger.info('Add ACLs job id: %s', job.id)
 
-    def _remove_acls(self, username, project_id):
+    def _remove_acls(self, username, project_id, project_root):
         """Run an agave job to set ACLs.
 
         :param str username: Username.
@@ -83,7 +83,7 @@ class ProjectsManager(object):
                 "projectId": project_id,
                 "username": username,
                 "action": "remove",
-                "root_dir": settings.PORTAL_PROJECTS_ROOT_DIR,
+                "root_dir": project_root,
             }
         })
         logger.info('Remove ACLs job id: %s', job.id)
@@ -202,7 +202,8 @@ class ProjectsManager(object):
         else:
             raise Exception('Invalid member type.')
         project_indexer.apply_async(args=[project_id])
-        self._add_acls(username, project_id)
+        project_root = prj.storage.storage.root_dir
+        self._add_acls(username, project_id, project_root)
         return prj
 
     def remove_member(self, project_id, member_type, username):
@@ -223,7 +224,8 @@ class ProjectsManager(object):
         else:
             raise Exception('Invalid member type.')
         project_indexer.apply_async(args=[project_id])
-        self._remove_acls(username, project_id)
+        project_root = prj.storage.storage.root_dir
+        self._remove_acls(username, project_id, project_root)
         return prj
 
     def _update_meta(self, project, **data):  # pylint: disable=no-self-use

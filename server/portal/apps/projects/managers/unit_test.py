@@ -5,6 +5,7 @@
 """
 from __future__ import unicode_literals, absolute_import
 import logging
+import os
 from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth import get_user_model
@@ -44,6 +45,7 @@ class TestProjectsManager(TestCase):
             return_value=Mock()
         )
         self.mock_get_project = self.patch_get_project.start()
+        self.mock_get_project().storage.storage.root_dir = os.path.join(settings.PORTAL_PROJECTS_ROOT_DIR, "PRJ-123")
         self.patch_service_account = patch(
             'portal.apps.projects.managers.base.service_account',
             return_value=Mock(autospec=True)
@@ -73,7 +75,7 @@ class TestProjectsManager(TestCase):
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "add",
-                    "root_dir": settings.PORTAL_PROJECTS_ROOT_DIR,
+                    "root_dir": os.path.join(settings.PORTAL_PROJECTS_ROOT_DIR, "PRJ-123"),
                 }
             }
         )
@@ -94,7 +96,7 @@ class TestProjectsManager(TestCase):
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "add",
-                    "root_dir": settings.PORTAL_PROJECTS_ROOT_DIR,
+                    "root_dir": os.path.join(settings.PORTAL_PROJECTS_ROOT_DIR, "PRJ-123"),
                 }
             }
         )
@@ -115,7 +117,7 @@ class TestProjectsManager(TestCase):
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "add",
-                    "root_dir": settings.PORTAL_PROJECTS_ROOT_DIR,
+                    "root_dir": os.path.join(settings.PORTAL_PROJECTS_ROOT_DIR, "PRJ-123"),
                 }
             }
         )
@@ -136,7 +138,7 @@ class TestProjectsManager(TestCase):
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "remove",
-                    "root_dir": settings.PORTAL_PROJECTS_ROOT_DIR,
+                    "root_dir": os.path.join(settings.PORTAL_PROJECTS_ROOT_DIR, "PRJ-123"),
                 }
             }
         )
@@ -157,7 +159,7 @@ class TestProjectsManager(TestCase):
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "remove",
-                    "root_dir": settings.PORTAL_PROJECTS_ROOT_DIR,
+                    "root_dir": os.path.join(settings.PORTAL_PROJECTS_ROOT_DIR, "PRJ-123"),
                 }
             }
         )
@@ -178,7 +180,7 @@ class TestProjectsManager(TestCase):
                     "projectId": "PRJ-123",
                     "username": "username",
                     "action": "remove",
-                    "root_dir": settings.PORTAL_PROJECTS_ROOT_DIR,
+                    "root_dir": os.path.join(settings.PORTAL_PROJECTS_ROOT_DIR, "PRJ-123"),
                 }
             }
         )
