@@ -235,8 +235,7 @@
                 Public Key
               </button>
               <br />
-              <button type="button" class="btn btn-success" data-ng-click="vm.pushKey(sys)" data-ng-disabled="vm.ui.pushSystems[sys.id].pushing
-                                            || !sys.keysTracked">
+              <button type="button" class="btn btn-success" data-ng-click="vm.pushKey(sys)" data-ng-disabled="vm.ui.pushSystems[sys.id].pushing">
                 Reset and Push Public Key
                 <span data-ng-if="vm.ui.pushSystems[sys.id].pushing"> Loading ...</span>
                 <i class="fa fa-spinner fa-pulse fa-2x fa-fw" data-ng-if="vm.ui.pushSystems[sys.id].pushing">&nbsp;</i>
