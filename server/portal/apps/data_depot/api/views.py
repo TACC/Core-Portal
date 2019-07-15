@@ -37,6 +37,7 @@ class SystemListingView(BaseApiView):
 
     def get(self, request):
         community_data_system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
+        public_data_system = settings.AGAVE_PUBLIC_DATA_SYSTEM
         mydata_system = get_user_home_system_id(request.user)
         external_resource_secrets = settings.EXTERNAL_RESOURCE_SECRETS
 
@@ -48,6 +49,10 @@ class SystemListingView(BaseApiView):
             {
                 "systemId": mydata_system,
                 "name": "My Data"
+            },
+            {
+                "systemId": public_data_system,
+                "name": "Public Data"
             }
         ] + \
         [

@@ -10,6 +10,7 @@ from portal.apps.search.api.managers.cms_search import CMSSearchManager
 from portal.apps.search.api.managers.shared_search import SharedSearchManager
 from portal.apps.search.api.managers.private_data_search import PrivateDataSearchManager
 from portal.apps.search.api.managers.project_search import ProjectSearchManager
+from portal.apps.search.api.managers.public_search import PublicSearchManager
 
 from portal.apps.search.tasks import index_community_data
 
@@ -209,9 +210,58 @@ class TestProjectSearchManager(TestCase):
 
         self.assertEqual(listing, [mock_storage])
 
+class TestPublicSearchManager(TestCase):
+
+    def test_mgr_init_with_request(self):
+        mock_request = MagicMock()
+        mock_request.GET = {
+            'queryString': 'test_query',
+        }
+        mgr = PublicSearchManager(mock_request)
+        self.assertEqual(mgr._query_string, 'test_query') 
+        self.assertEqual(mgr._system, 'test.public') 
+
+    def test_mgr_init_no_request(self):
+        mgr = PublicSearchManager(**{'query_string': 'test_query'})
+        self.assertEqual(mgr._query_string, 'test_query') 
+        self.assertEqual(mgr._system, 'test.public') 
+
+    @patch('portal.apps.search.api.managers.public_search.BaseSearchManager.filter')
+    @patch('portal.apps.search.api.managers.public_search.BaseSearchManager.query')
+    @patch('portal.apps.search.api.managers.public_search.BaseSearchManager.extra')
+    def test_search(self, mock_extra, mock_query, mock_filter):
+        mgr = PublicSearchManager(**{'username': 'test_user', 'query_string': 'test_query'})
+        mgr.search(offset=0, limit=100)
+
+        sys_filter = (Q({'term': {'system._exact': 'test.public'}}))
+
+        mock_filter.assert_called_once_with(sys_filter)
+        mock_query.assert_called_once_with("query_string", query='test_query',
+                   fields=["name", "name._exact", "name._pattern"],
+                   analyzer='file_query_analyzer',
+                   default_operator='and')
+        mock_extra.assert_called_once_with(from_=0, size=100)
+
+    @patch('portal.apps.search.api.managers.public_search.BaseSearchManager.filter')
+    @patch('portal.apps.search.api.managers.public_search.BaseSearchManager.query')
+    @patch('portal.apps.search.api.managers.public_search.BaseSearchManager.extra')
+    @patch('portal.apps.search.api.managers.public_search.BaseSearchManager.sort')
+    def test_sort(self, mock_sort, mock_extra, mock_query, mock_filter):
+        mgr = PublicSearchManager(**{'query_string': 'test_query', 'sortKey': 'name', 'sortOrder': 'asc'})
+        mgr.search(offset=0, limit=100)
+        mock_sort.assert_called_once_with({'name._exact': {'order': 'asc'}})
+
+    @patch('portal.apps.search.api.managers.public_search.BaseSearchManager._listing')
+    def test_listing(self, mock_listing):
+        mgr = PublicSearchManager(**{'username': 'test_user', 'query_string': 'test_query'})
+        mock_ac = MagicMock()
+
+        mgr.listing(mock_ac)
+        mock_listing.assert_called_once_with(mock_ac, 'test.public')
+
 class TestCommunityIndexer(TestCase):
 
     @patch('portal.apps.search.tasks.agave_indexer')
     def test_community_index(self, mock_indexer):
         index_community_data()
-        mock_indexer.apply_async.assert_called_once_with(args=['test.storage'], kwargs={'reindex': False})
+        self.assertEqual(mock_indexer.apply_async.call_count, 2)

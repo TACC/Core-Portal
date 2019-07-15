@@ -96,15 +96,17 @@ class TestDataDepotApiViews(TestCase):
 
     def test_systems_list(self):
         comm_data = settings.AGAVE_COMMUNITY_DATA_SYSTEM
+        public_data = settings.AGAVE_PUBLIC_DATA_SYSTEM
         user_data = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format("username")
         resp = self.client.get("/api/data-depot/systems/list/", follow=True)
         data = resp.json()
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(comm_data in resp.content)
+        self.assertTrue(public_data in resp.content)
         self.assertTrue(user_data in resp.content)
         # should only return user data system and community
         self.assertTrue("response" in data)
-        self.assertTrue(len(data["response"]) == 3)
+        self.assertEqual(len(data["response"]), 4)
 
     def test_projects_list(self):
         """https://agavepy.readthedocs.io/en/latest/agavepy.systems.html"""

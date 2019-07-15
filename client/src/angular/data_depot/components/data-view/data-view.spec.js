@@ -33,6 +33,7 @@ describe('DataViewCtrl', () => {
                     },
                     $state: _$state_,
                     DataBrowserService: _DataBrowserService_,
+                    UserService: _UserService_,
                     SystemsService: SystemsService,
                 },
                 mockedBindings = {};
@@ -94,9 +95,11 @@ describe('DataViewCtrl', () => {
             {
                 systemId: 'mock.system',
                 filePath: 'path/to/dir',
-                directory: 'agave',
+                query_string: null, 
+                offset: null, 
+                limit: null,
             },
-            { reload: true, inherit: false }
+            {reload: true}
         );
         expect(controller.$state.go).toHaveBeenCalledTimes(1);
 

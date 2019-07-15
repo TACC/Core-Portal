@@ -9,7 +9,7 @@ export default class AuthInterceptor {
   }
 
   responseError (resp) {
-    if (resp.status == 401) {
+    if (resp.status == 401 && this.$window.location.pathname.slice(0,12) !== '/public_data') {
       this.$window.location.href = "/login";
     }
     return this.$q.reject(resp);

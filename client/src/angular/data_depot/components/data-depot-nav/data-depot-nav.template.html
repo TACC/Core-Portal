@@ -33,10 +33,25 @@
                         filePath:'',
                         query_string: null,
                         name: $ctrl.sysCommunityData.name,
-                        directory: 'public'})"
+                        directory: 'shared'})"
            ui-sref-opts="{reload: true}" ng-class="{active: $ctrl.params.systemId == $ctrl.sysCommunityData.systemId}">
             <i class="fa fa-users">&ensp;</i>
             Community Data
+        </a>
+    </div>
+    <div ng-if="$ctrl.sysPublicData.systemId">
+        <a 
+            class="list-group-item" 
+            uib-tooltip="Data viewable by the public"
+            ui-sref="wb.data_depot.db({
+                        systemId: $ctrl.sysPublicData.systemId,
+                        filePath:'',
+                        query_string: null,
+                        name: $ctrl.sysPublicData.name,
+                        directory: 'public'})"
+            ui-sref-opts="{reload: true}" ng-class="{active: $ctrl.params.systemId == $ctrl.sysPublicData.systemId}">
+            <i class="fa fa-institution">&ensp;</i>
+            Public Data
         </a>
     </div>
     <div ng-repeat="extSys in $ctrl.externalResources">

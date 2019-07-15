@@ -51,6 +51,53 @@ describe("UserService", function() {
         expect(UserService.currentUser.username).toEqual('test');
     });
 
+    it("should get current user with 200", () => {
+        var httpResponse;
+        let data = {
+            "first_name": 'test_firstname',
+            "username": 'test',
+            "last_name": 'test_lastname',
+            "email": 'test@test.com',
+            "oauth": {
+                "access_token": '123',
+                "expires_in": '12345',
+                "scope": 'scope',
+            }
+        };
+
+        //Use a regex so that any query param will pass through
+        $httpBackend.whenGET('/api/users/auth/').respond(200, data);
+        UserService.getUser().then((resp) => {
+            httpResponse = resp;
+        });
+        $httpBackend.flush();
+        expect(UserService.currentUser.first_name).toEqual('test_firstname');
+        expect(UserService.currentUser.username).toEqual('test');
+    });
+
+    it("should return blank user with error", () => {
+        var httpResponse;
+        let data = {
+            "first_name": 'test_firstname',
+            "username": 'test',
+            "last_name": 'test_lastname',
+            "email": 'test@test.com',
+            "oauth": {
+                "access_token": '123',
+                "expires_in": '12345',
+                "scope": 'scope',
+            }
+        };
+
+        //Use a regex so that any query param will pass through
+        $httpBackend.whenGET('/api/users/auth/').respond(400, {});
+        UserService.getUser().then((resp) => {
+            httpResponse = resp;
+        });
+        $httpBackend.flush();
+        expect(UserService.currentUser).toEqual({})
+    });
+
     it("should handle user search request", ()=>{
         let response;
         let data = [

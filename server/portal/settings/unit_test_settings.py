@@ -131,6 +131,7 @@ INSTALLED_APPS = [
     'portal.apps.licenses',
     'portal.apps.notifications',
     'portal.apps.onboarding',
+    'portal.apps.public_data',
     'portal.apps.googledrive_integration'
 ]
 
@@ -344,6 +345,7 @@ AGAVE_CLIENT_SECRET = 'test'
 AGAVE_SUPER_TOKEN = 'test'
 AGAVE_STORAGE_SYSTEM = 'test'
 AGAVE_COMMUNITY_DATA_SYSTEM = 'test.storage'
+AGAVE_PUBLIC_DATA_SYSTEM = 'test.public'
 AGAVE_DEFAULT_TRASH_NAME = 'test'
 
 AGAVE_JWT_HEADER = 'HTTP_X_AGAVE_HEADER'

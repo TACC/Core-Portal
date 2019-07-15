@@ -8,6 +8,9 @@ class DataDepotNavCtrl {
         this.sysCommunityData = this.systems.find((sys) => {
             return sys.name == 'Community Data';
         });
+        this.sysPublicData = this.systems.find(sys => {
+            return sys.name == 'Public Data';
+        });
         this.sysMyData = this.systems.find((sys) => {
             return sys.name == 'My Data';
         });

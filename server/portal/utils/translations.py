@@ -22,6 +22,9 @@ def get_jupyter_url(system, path, username, is_dir=False):
     Returns:
         a Jupyter URL for viewing notebooks, editing text files or showing directory listings
     """
+    if username is None:
+        return None
+
     portal_jupyter_url = getattr(settings, 'PORTAL_JUPYTER_URL', None)
     portal_jupyter_system_map = getattr(settings, 'PORTAL_JUPYTER_SYSTEM_MAP', None)
 

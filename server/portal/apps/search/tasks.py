@@ -52,6 +52,7 @@ def index_community_data(self, reindex=False):
     # resp = s.delete()
     logger.info('INDEXING COMMUNITY DATA SYSTEM')
     agave_indexer.apply_async(args=[settings.AGAVE_COMMUNITY_DATA_SYSTEM], kwargs={'reindex': reindex})
+    agave_indexer.apply_async(args=[settings.AGAVE_PUBLIC_DATA_SYSTEM], kwargs={'reindex': reindex})
 
 @shared_task(bind=True, queue='indexing')
 def project_indexer(self, projectId):

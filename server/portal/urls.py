@@ -74,6 +74,8 @@ urlpatterns += [
                                  namespace='users')),
     url(r'^workbench/', include('portal.apps.workbench.urls',
                                 namespace='workbench')),
+    url(r'^public_data/', include('portal.apps.public_data.urls',
+                                namespace='public_data')),
     url(r'^tickets/', include('portal.apps.djangoRT.urls',
                               namespace='tickets')),
 

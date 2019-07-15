@@ -6,11 +6,14 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from portal.apps.data_depot.managers.base import AgaveFileManager
+from portal.apps.data_depot.managers.public import FileManager as PublicFileManager
+from portal.libs.agave.serializers import BaseAgaveFileSerializer
 from portal.apps.data_depot.models import PublicUrl
 from portal.apps.data_depot.managers.google_drive import FileManager as GoogleDriveFileManager
 from portal.apps.googledrive_integration.models import GoogleDriveUserToken
 from datetime import timedelta
 from dateutil.tz import tzutc
+from django.core.exceptions import PermissionDenied
 from google.oauth2.credentials import Credentials
 from portal.exceptions.api import ApiException
 
@@ -71,6 +74,61 @@ class TestAgaveFileManager(TestCase):
         with self.assertRaises(ValueError):
             testUrl = fmgr.public_url('cep.test//file01', refresh=False)
 
+class TestPublicFileManager(TestCase):
+
+    @patch('portal.apps.data_depot.managers.public.service_account')
+    def test_public_file_mgr_init(self, mock_service_account):
+        mock_ac = MagicMock()
+        mock_request = MagicMock()
+        mock_service_account.return_value = mock_ac
+        mock_request.session.session_key = 'abcdefg'
+
+        public_fm = PublicFileManager(mock_request)
+
+        self.assertEqual(public_fm.serializer_cls, BaseAgaveFileSerializer)
+        self.assertFalse(public_fm.requires_auth)
+
+    @patch('portal.apps.data_depot.managers.public.service_account')
+    def test_public_file_mgr_unsafe_actions_not_implemented(self, mock_service_account):
+        mock_ac = MagicMock()
+        mock_request = MagicMock()
+        mock_service_account.return_value = mock_ac
+        mock_request.session.session_key = 'abcdefg'
+
+        public_fm = PublicFileManager(mock_request)
+
+        self.assertEqual(public_fm.delete('file01'), NotImplemented)
+        self.assertEqual(public_fm.mkdir('file01'), NotImplemented)
+        self.assertEqual(public_fm.mkdir('file01'), NotImplemented)
+        self.assertEqual(public_fm.trash('file01'), NotImplemented)
+        self.assertEqual(public_fm.upload('dest', ['file01']), NotImplemented)
+        self.assertEqual(public_fm.update_pems('file01', {}), NotImplemented)
+        self.assertEqual(public_fm.rename('file01', 'newname'), NotImplemented)
+
+    @patch('portal.apps.data_depot.managers.public.service_account')
+    def test_public_file_mgr_copy_checks_auth_fail(self, mock_service_account):
+        mock_ac = MagicMock()
+        mock_request = MagicMock()
+        mock_service_account.return_value = mock_ac
+        mock_request.session.session_key = 'abcdefg'
+        mock_request.user.is_authenticated = False
+        public_fm = PublicFileManager(mock_request)
+
+        with self.assertRaises(PermissionDenied):
+            public_fm.copy('scr', 'dest')
+
+    @patch('portal.apps.data_depot.managers.public.service_account')
+    @patch('portal.apps.data_depot.managers.public.FileManager.copy')
+    def test_public_file_mgr_copy_checks_auth_pass(self, mock_copy, mock_service_account):
+        mock_ac = MagicMock()
+        mock_request = MagicMock()
+        mock_service_account.return_value = mock_ac
+        mock_request.session.session_key = 'abcdefg'
+        mock_request.user.is_authenticated = True
+        public_fm = PublicFileManager(mock_request)
+
+        public_fm.copy('source', 'dest')
+        mock_copy.assert_called_with('source', 'dest')
 
 class TestGoogleDriveFileManager(TestCase):
     fixtures = ['users', 'auth']

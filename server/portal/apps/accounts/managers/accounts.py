@@ -109,8 +109,10 @@ def get_user_home_system_id(user):
     :return: System id
     :rtype: str
     """
-    mgr = _lookup_user_home_manager(user)
-    return mgr.get_system_id()
+    if user.is_authenticated:
+        mgr = _lookup_user_home_manager(user)
+        return mgr.get_system_id()
+    return None
 
 def setup(username):
     """Fires necessary steps for setup

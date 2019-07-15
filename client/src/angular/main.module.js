@@ -26,6 +26,7 @@ import {mod as workbench} from './workbench';
 import {mod as notifications} from './notifications';
 import {mod as common} from './common';
 import {mod as onboarding} from './onboarding';
+import {mod as public_data} from './public_data';
 
 //templates
 import homeTemplate from './workbench/templates/home.html';
@@ -43,6 +44,7 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     $httpProvider.interceptors.push('AuthInterceptor');
     $urlRouterProvider.when('/workbench/', '/workbench/dashboard');
+    $urlRouterProvider.when('/public_data/', '/public_data/public/');
 
     $stateProvider
         .state('wb', {
@@ -116,6 +118,25 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
             resolve: {
                 // 'test': function () {console.log("search resolve");}
             }
+        })
+        .state('public_data', {
+            url: '/public_data/{directory}{filePath:any}?query_string&offset&limit',
+            component: 'publicDataViewComponent',
+            params: {
+                filePath: {value: ''},
+                directory: {value: 'public'},
+                query_string: null,
+                offset: null,
+                limit: null
+            },
+            resolve: {
+                systems: ['SystemsService', function(SystemsService) {
+                    return SystemsService.listing();
+                }],
+                users: ['UserService', function(UserService) {
+                    return UserService.getUser();
+                }],
+            }
         });
 }
 
@@ -143,7 +164,8 @@ let mod = angular
         'portal.workbench',
         'portal.notifications',
         'portal.common',
-        'portal.onboarding'
+        'portal.onboarding',
+        'portal.public_data'
     ])
     .config(config)
     // .run(['UserService', function(UserService) {

@@ -141,6 +141,7 @@ INSTALLED_APPS = [
     'portal.apps.licenses',
     'portal.apps.notifications',
     'portal.apps.onboarding',
+    'portal.apps.public_data',
     'portal.apps.googledrive_integration',
 ]
 
@@ -419,6 +420,7 @@ AGAVE_CLIENT_SECRET = settings_secret._AGAVE_CLIENT_SECRET
 AGAVE_SUPER_TOKEN = settings_secret._AGAVE_SUPER_TOKEN
 AGAVE_STORAGE_SYSTEM = settings_secret._AGAVE_STORAGE_SYSTEM
 AGAVE_COMMUNITY_DATA_SYSTEM = settings_secret._AGAVE_COMMUNITY_DATA_SYSTEM
+AGAVE_PUBLIC_DATA_SYSTEM = settings_secret._AGAVE_PUBLIC_DATA_SYSTEM
 
 PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 
@@ -650,6 +652,7 @@ PORTAL_DATA_DEPOT_MANAGERS = {
     'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
     'shared': 'portal.apps.data_depot.managers.shared.FileManager',
     'my-projects': 'portal.apps.data_depot.managers.projects.FileManager',
+    'public': 'portal.apps.data_depot.managers.public.FileManager',
     'google-drive': 'portal.apps.data_depot.managers.google_drive.FileManager'
 }
 
@@ -657,7 +660,8 @@ PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
     'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
     'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
-    'my-projects': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager'
+    'my-projects': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
+    'public': 'portal.apps.search.api.managers.public_search.PublicSearchManager' 
 }
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100

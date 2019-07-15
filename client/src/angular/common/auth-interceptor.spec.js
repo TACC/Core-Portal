@@ -8,7 +8,7 @@ describe("AuthInterceptor", function() {
     angular.mock.module("portal", ($httpProvider, $provide) => {
       httpProvider = $httpProvider;
       $provide.value('$window', {
-          location: {href: '/test'}
+          location: {href: '/test', pathname: '/test'}
       });
     })
   );

@@ -57,6 +57,14 @@ class TestTranslations(TestCase):
         )
         self.assertIsNone(result)
 
+        # If username is None, should return None
+        result = get_jupyter_url(
+            "unknown",
+            "/filename.txt",
+            None
+        )
+        self.assertIsNone(result)
+
         # On a valid request and server side configuration,
         # return a jupyter url for a file
         result = get_jupyter_url(

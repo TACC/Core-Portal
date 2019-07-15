@@ -27,6 +27,15 @@ export default class UserService {
             });
     }
 
+    getUser() {
+        return this.$http.get('/api/users/auth/')
+            .then((resp) => {
+                return this.currentUser = resp.data;
+            }, (err) => {
+                return this.currentUser = {}
+            });
+    }
+
     usage() {
         return this.$http.get('/api/users/usage/')
             .then(function(resp) {

@@ -14,7 +14,8 @@ class DataViewCtrl {
         $stateParams,
         $state,
         DataBrowserService,
-        SystemsService
+        SystemsService,
+        UserService
     ) {
         'ngInject';
         // get user data from service
@@ -24,6 +25,7 @@ class DataViewCtrl {
         this.$state = $state;
         this.onBrowse = this.onBrowse.bind(this);
         this.SystemsService = SystemsService;
+        this.UserService = UserService;
     }
 
     onBrowse($event, file) {
@@ -49,14 +51,16 @@ class DataViewCtrl {
                 { reload: true }
             );
         } else {
-            this.$state.go('wb.data_depot.db',
-                {
-                    systemId: file.system,
-                    filePath: file.path,
-                    directory: this.$stateParams.directory,
-                },
-                { reload: true, inherit: false }
-            );
+          this.$state.go('wb.data_depot.db',
+              {
+                  systemId: file.system,
+                  filePath: file.path,
+                  query_string: null,
+                  offset: null,
+                  limit: null
+              },
+              {reload: true}
+          );
         }
     }
 
@@ -101,7 +105,15 @@ class DataViewCtrl {
             this.DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
             this.breadcrumbParams.customRoot = { name: 'My Data', path: '' };
 
-        } else if (this.options.name == 'Community Data' || this.options.directory == 'public') {
+        } else if (this.options.name == 'Community Data' || this.options.directory == 'shared') {
+            this.data = {
+                user: this.UserService.currentUser,
+                customRoot: {
+                    name: 'Community Data',
+                    path: this.$stateParams.filePath,
+                    route: `wb.data_depot.db({systemId: "${this.$stateParams.systemId}", query_string: null, filePath: '', directory: "${this.$stateParams.directory}"})`,
+                },
+            };
             this.DataBrowserService.apiParams.fileMgr = 'shared';
             this.DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
             this.DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
@@ -119,6 +131,21 @@ class DataViewCtrl {
             this.DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
             this.DataBrowserService.apiParams.directory = 'external-resources';
             this.breadcrumbParams.customRoot = { name: this.$stateParams.name, path: '' };
+        }
+        else if (this.options.name == 'Public Data' || this.options.directory == 'public') {
+            this.data = {
+                user: this.UserService.currentUser,
+                customRoot: {
+                    name: 'Public Data',
+                    path: this.$stateParams.filePath,
+                    route: `wb.data_depot.db({systemId: "${this.$stateParams.systemId}", query_string: null, filePath: '', directory: "${this.$stateParams.directory}"})`,
+                },
+            };
+
+            this.DataBrowserService.apiParams.fileMgr = 'public';
+            this.DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
+            this.DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
+            this.breadcrumbParams.customRoot = {name: 'Public Data', path: ''}
         }
     }
 }

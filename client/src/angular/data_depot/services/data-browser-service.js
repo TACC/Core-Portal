@@ -130,7 +130,7 @@ function DataBrowserService(
      * @param {FileListing[]} files FileListing objects to de-select
      */
     function deselect(files) {
-        _.each(files, function(f) {
+        _.each(files, function (f) {
             f._ui = f._ui || {};
             f._ui.selected = false;
         });
@@ -139,13 +139,12 @@ function DataBrowserService(
             currentState.selected);
     }
 
-
     /**
-     * Tests for the DataBrowser actions allowed on the given file(s) from the current listing.
-     *
-     * @param {FileListing|FileListing[]} files Files to test
-     * @return {{canDownload: {boolean}, canPreview: {boolean}, canViewMetadata: {boolean}, canShare: {boolean}, canCopy: {boolean}, canMove: {boolean}, canRename: {boolean}, canTrash: {boolean}, canDelete: {boolean}}}
-     */
+    * Tests for the DataBrowser actions allowed on the given file(s) from the current listing.
+    *
+    * @param {FileListing|FileListing[]} files Files to test
+    * @return {{canDownload: {boolean}, canPreview: {boolean}, canViewMetadata: {boolean}, canShare: {boolean}, canCopy: {boolean}, canMove: {boolean}, canRename: {boolean}, canTrash: {boolean}, canDelete: {boolean}}}
+    */
     function allowedActions(files) {
         if (!Array.isArray(files)) {
             files = [files];
@@ -153,24 +152,27 @@ function DataBrowserService(
         var tests = {};
         tests.canDownload = files.length >= 1 && hasPermission('READ', files) && !containsFolder(files);
         tests.canPreview = files.length === 1 && hasPermission('READ', files) && !containsFolder(files);
+        tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files);
         tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files);
         tests.canShare = files.length === 1 && $state.current.name === 'myData';
-        tests.canCopy = files.length >= 1 && hasPermission('READ', files);
-        tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && (apiParams.fileMgr !== 'shared') && (apiParams.directory !== 'external-resources');
-        tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && (apiParams.fileMgr !== 'shared') && (apiParams.directory !== 'external-resources');
+        tests.canCopy = files.length >= 1 && hasPermission('READ', files) && UserService.currentUser.username;
+        tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && (apiParams.fileMgr !== 'shared') && (apiParams.fileMgr !== 'public') && (apiParams.directory !== 'external-resources');
+        tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && (apiParams.fileMgr !== 'shared') && (apiParams.fileMgr !== 'public') && (apiParams.directory !== 'external-resources');
         tests.canViewCategories = files.length >= 1 && hasPermission('WRITE', files);
         tests.canCompress =
             files.length >= 1 &&
             !(files.length == 1 && files[0].name.endsWith(".zip")) &&
             hasPermission('WRITE', [currentState.listing].concat(files)) &&
             (apiParams.fileMgr !== 'shared') &&
+            (apiParams.fileMgr !== 'public') &&
             (apiParams.directory !== 'external-resources');
         tests.canExtract =
             files.length === 1 &&
             hasPermission('WRITE', [currentState.listing].concat(files)) &&
             files[0].name.endsWith(".zip") &&
             (apiParams.fileMgr !== 'shared') &&
-            (apiParams.directory !== 'external-resources');
+            (apiParams.fileMgr !== 'public') &&
+            (apiParams.directory !== 'external-resources');;
 
         tests.canTrash = canTrash($state.current.name, files);
 
@@ -180,26 +182,28 @@ function DataBrowserService(
         return tests;
     }
 
-    function canTrash(stateName, files) {
-        if (!currentState.listing) {
-            return false;
-        }
-        let notTrashPath = currentState.listing.path !== _trashPath();
-        let stateNameValid = stateName === 'wb.data_depot.db'
-            || stateName === 'db.projects.view.data'
-            || stateName === 'wb.data_depot.projects.listing';
-        let hasFiles = files.length >= 1;
-        let notProtected = !_.some(files, function(sel) { return isProtected(sel); });
-        let canWrite = hasPermission('WRITE', [currentState.listing]);
-        let notShared = apiParams.fileMgr !== 'shared';
-        return currentState.listing
-            && stateNameValid
-            && hasFiles
-            && notTrashPath
-            && notProtected
-            && notShared
-            && canWrite;
+  function canTrash(stateName, files) {
+    if (!currentState.listing) {
+      return false;
     }
+    let notTrashPath = currentState.listing.path !== _trashPath();
+    let stateNameValid = stateName === 'wb.data_depot.db' 
+        || stateName === 'db.projects.view.data'
+        || stateName === 'wb.data_depot.projects.listing';
+    let hasFiles = files.length >= 1;
+    let notProtected = !_.some(files, function(sel) { return isProtected(sel); });
+    let canWrite = hasPermission('WRITE', [currentState.listing]); 
+    let notShared = apiParams.fileMgr !== 'shared';
+    let notPublic = apiParams.fileMgr !== 'public';
+    return currentState.listing
+      && stateNameValid
+      && hasFiles
+      && notTrashPath
+      && notProtected
+      && notShared
+      && notPublic
+      && canWrite;
+  }
 
     function showListing() {
         currentState.showMainListing = true;
