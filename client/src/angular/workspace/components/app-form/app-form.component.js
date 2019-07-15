@@ -244,7 +244,7 @@ class ApplicationFormCtrl {
                     if (v.length === 0) {
                         delete jobData.parameters[k];
                     }
-                } else if (!v) {
+                } else if (v === null || v === undefined) {
                     delete jobData.parameters[k];
                 }
             });

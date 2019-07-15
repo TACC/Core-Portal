@@ -100,7 +100,19 @@ describe('AppFormComponent', function() {
             // input fields should be there now...
             expect(el.find('form').children.length > 0).toBe(true);
             ctrl.model.inputs.problem = inputFile;
+            ctrl.model.parameters = { 
+                "param1" : 0,
+                "param2" : "param",
+                "param3" : null,
+                "param4" : undefined
+            };
             ctrl.onSubmit({ $valid: true });
+            expect(jobSpy.calls.mostRecent().args[0].parameters).toEqual(
+                {
+                    "param1" : 0,
+                    "param2" : "param"
+                }
+            );
             expect(jobSpy.calls.mostRecent().args[0].inputs.problem).toBe(inputFile);
             expect(jobSpy.calls.mostRecent().args[0].appId).toBe(appDefn.id);
             expect(jobSpy.calls.mostRecent().args[0].name).toMatch(appDefn.name);
