@@ -53,8 +53,8 @@ class JobsWebhookView(BaseApiView):
             job_name = job['name']
 
             try:
-                job['submitTime'] = str(job['submitTime'])
-                job['endTime'] = str(job['endTime'])
+                job['remoteSubmitted'] = str(job['remoteSubmitted'])
+                job['ended'] = str(job['ended'])
             except KeyError as e:
                 pass
 

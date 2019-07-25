@@ -272,7 +272,7 @@ class JobsView(BaseApiView):
             job_post['notifications'] = [
                 {'url': jobs_wh_url,
                 'event': e}
-                for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED"]]
+                for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED", "BLOCKED"]]
 
             # Remove any params from job_post that are not in appDef
             for param, _ in job_post['parameters'].items():
