@@ -1,10 +1,14 @@
-<li class="list-group-item"
-    ng-class="{'list-group-item-danger': $ctrl.job.status==='FAILED',
-               'list-group-item-success': $ctrl.job.status==='FINISHED'}">
+<li class="list-group-item" ng-class="{
+        'list-group-item-danger': $ctrl.job.status==='FAILED' || $ctrl.job.status==='STOPPED' || $ctrl.job.status==='PAUSED',
+        'list-group-item-success': $ctrl.job.status==='FINISHED',
+        'list-group-item-warning': $ctrl.job.status==='ACCEPTED' || $ctrl.job.status==='PENDING' || $ctrl.job.status==='PROCESSING_INPUTS'
+                                    || $ctrl.job.status==='STAGING_INPUTS' || $ctrl.job.status==='STAGED' || $ctrl.job.status==='STAGING_$ctrl.job.
+                                    || $ctrl.job.status==='SUBMITTING' || $ctrl.job.status==='QUEUED' || $ctrl.job.status==='RUNNING'
+                                    || $ctrl.job.status==='CLEANING_UP' || $ctrl.job.status==='ARCHIVING' || $ctrl.job.status==='BLOCKED'
+    }">
     <h4>{{$ctrl.job.name}}</h4>
     <span>{{$ctrl.job.status}}</span>
-    <button class="btn btn-sm btn-default"
-            ng-click="$ctrl.jobDetails($ctrl.job)">
+    <button class="btn btn-sm btn-default" ng-click="$ctrl.jobDetails($ctrl.job)">
         <i class="fa fa-info-circle"></i>
         <span class="hidden-md"> More info</span>
     </button>
