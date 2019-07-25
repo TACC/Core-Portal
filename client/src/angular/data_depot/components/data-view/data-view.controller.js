@@ -32,7 +32,7 @@ class DataViewCtrl {
         $event.preventDefault();
         $event.stopPropagation();
         if (file.type === 'file') {
-            this.DataBrowserService.preview(file, this.browser.listing);
+            this.DataBrowserService.preview(file, this.DataBrowserService.currentState.listing);
         } else if (this.$stateParams.directory == 'external-resources') {
             // wait for fileId before browsing external resource
             if (file.path == '') {
@@ -85,7 +85,6 @@ class DataViewCtrl {
             directory: this.$stateParams.directory,
         };
 
-        this.browser = this.DataBrowserService.state();
 
         this.breadcrumbParams = {
             filePath: this.$stateParams.filePath,
@@ -93,9 +92,9 @@ class DataViewCtrl {
             directory: this.$stateParams.directory,
         };
 
-        this.$scope.$watch(() => this.browser.listing, () => {
-            if (this.options.directory == 'external-resources' && this.browser.listing && ('trail' in this.browser.listing) && !this.browser.busyListing) {
-                this.breadcrumbParams.trail = this.browser.listing.trail;
+        this.$scope.$watch(() => this.DataBrowserService.currentState.listing, () => {
+            if (this.options.directory == 'external-resources' && this.DataBrowserService.currentState.listing && ('trail' in this.DataBrowserService.currentState.listing) && !this.DataBrowserService.currentState.busyListing) {
+                this.breadcrumbParams.trail = this.DataBrowserService.currentState.listing.trail;
             }
         });
 

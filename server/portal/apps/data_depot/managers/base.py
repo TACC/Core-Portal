@@ -421,6 +421,7 @@ class AgaveFileManager(AbstractFileManager):
         :returns: A file object.
         :rtype: obj
         """
+
         _file = self.get_file(file_id)
         parent = _file.trail[-1] or BaseFile(self._ac,
                                              system=_file.system,

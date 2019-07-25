@@ -47,7 +47,7 @@ describe('DataViewCtrl', () => {
     });
 
     it('should initialize controller', () => {
-        expect(controller.browser).toBeDefined();
+        expect(controller.DataBrowserService).toBeDefined();
     });
 
     it('should set apiParams correctly on init', () => {
@@ -150,12 +150,11 @@ describe('DataViewCtrl', () => {
     });
 
     it('should set breadcrumbParams trail when dir is external-resource and browser has listing', () => {
-        spyOn(controller.DataBrowserService, 'state').and.returnValue(
-            {
-                listing: undefined,
-                busyListing: false,
-            }
-        );
+        controller.DataBrowserService.currentState = {
+            listing: undefined,
+            busyListing: false,
+        }
+        
 
         controller.$stateParams.name = 'Google Drive';
         controller.$stateParams.directory = 'external-resources';
@@ -163,7 +162,7 @@ describe('DataViewCtrl', () => {
         controller.$onInit();
         expect(controller.breadcrumbParams.trail).toBeUndefined();
 
-        controller.browser.listing = { trail: [] };
+        controller.DataBrowserService.currentState.listing = { trail: [] };
         $scope.$digest();
         expect(controller.breadcrumbParams.trail).toBeDefined();
         expect(controller.breadcrumbParams.trail).toEqual([]);

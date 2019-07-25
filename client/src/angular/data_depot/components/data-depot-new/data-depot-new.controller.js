@@ -21,15 +21,13 @@ class DataDepotNewCtrl {
             createProject: (this.UserService.currentUser.oauth && true) || false,
         };
 
-        this.browser = this.DataBrowserService.state();
-
-        this.$scope.$watch(() => this.browser.listing, () => {
+        this.$scope.$watch(() => this.DataBrowserService.currentState.listing, () => {
             this.test.createFiles = false;
-            if (this.browser.listing) {
-                this.browser.listing.listPermissions().then((res) => {
-                    this.res = res;
+            if (this.DataBrowserService.currentState.listing) {
+                this.DataBrowserService.currentState.listing.listPermissions().then( (res) => {
+                    this.res = res
                     let pems = res.response;
-                    this.test.createFiles = pems.find((pem) => {
+                    this.test.createFiles = pems.find(pem => {
                         return pem.username == this.UserService.currentUser.username;
                     }).permission.write;
                 });

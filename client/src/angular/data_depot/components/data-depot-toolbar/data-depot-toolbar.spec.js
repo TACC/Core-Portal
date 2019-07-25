@@ -52,9 +52,9 @@ describe('DataDepotToolbarCtrl', () => {
                 canViewCategories: true
 
             });
-            spyOn(controller.DataBrowserService, 'apiParameters').and.returnValue({
+            controller.DataBrowserService.apiParams ={
                 searchState: 'test.state'
-            });
+            };
             spyOn(controller.DataBrowserService, 'toolbarOptions');
             controller.$onInit();
             $scope.$digest();

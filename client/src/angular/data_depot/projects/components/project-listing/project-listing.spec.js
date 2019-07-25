@@ -55,7 +55,6 @@ describe('ProjectListingCtrl', ()=>{
     });
 
     it('should initialize controller', () => {
-        expect(controller.browser).toBeDefined();
         expect(controller.DataBrowserService.apiParams.fileMgr).toEqual('my-projects');
     });
     it('should go to correct state when browsing', () => {

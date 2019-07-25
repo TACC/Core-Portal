@@ -1,9 +1,9 @@
-describe("DataBrowserService", function() {
+describe("DataBrowserService", function () {
     var DataBrowserService, $httpBackend, $uibModal,
         $q, FileListing, options;
     beforeEach(angular.mock.module("portal"));
     beforeEach(() => {
-        angular.mock.inject(function(
+        angular.mock.inject(function (
             _$httpBackend_, _DataBrowserService_, _Jobs_, _$uibModal_, _$q_, _FileListing_,
             _$mdToast_, _SystemsService_, _$rootScope_) {
             DataBrowserService = _DataBrowserService_;
@@ -22,8 +22,7 @@ describe("DataBrowserService", function() {
         });
     });
 
-    it("Should have a state", function() {
-        expect(DataBrowserService.state).toBeDefined();
+    it("Should have a state", function () {
         expect(DataBrowserService.browse).toBeDefined();
         expect(DataBrowserService.search).toBeDefined();
         expect(DataBrowserService.download).toBeDefined();
@@ -61,7 +60,7 @@ describe("DataBrowserService", function() {
         DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
         DataBrowserService.browse(options);
         $httpBackend.flush();
-        let state = DataBrowserService.state();
+        let state = DataBrowserService.currentState;
         // The listing should be a Listing() object with some methods
         expect(state.listing.uuid).toBeDefined();
         expect(state.listing.copy).toBeDefined();
@@ -94,7 +93,7 @@ describe("DataBrowserService", function() {
         DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
         DataBrowserService.browse(options);
         $httpBackend.flush();
-        let state = DataBrowserService.state();
+        let state = DataBrowserService.currentState;
 
         // Error should have a message and status
         expect(state.error.message).toEqual(error_message);

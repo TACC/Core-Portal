@@ -1,77 +1,80 @@
-import _ from 'underscore';
 import angular from 'angular';
 import $ from 'jquery';
 
-// import previewModalTemplate from '../modals/data-browser-service-preview.html';
-// import uploadModalTemplate from '../modals/data-browser-service-upload.html';
+class DataBrowserService {
+    constructor($rootScope, $http, $q, $timeout, $uibModal, $state,
+        $translate, $mdToast, UserService, FileListing) {
+        'ngInject';
 
-// var $ = require('jquery');
+        this.$rootScope = $rootScope;
+        this.$http = $http;
+        this.$q = $q;
+        this.$timeout = $timeout;
+        this.$uibModal = $uibModal;
+        this.$state = $state;
+        this.$translate = $translate;
+        this.$mdToast = $mdToast;
+        this.UserService = UserService;
+        this.FileListing = FileListing;
 
-function DataBrowserService(
-    $rootScope, $http, $q, $timeout, $uibModal, $state,
-    $translate, $mdToast, UserService, FileListing) {
-    'ngInject';
+        this.currentState = {
+            busy: false,
+            busyListing: false,
+            loadingMore: false,
+            error: null,
+            listing: null,
+            selected: [],
+            reachedEnd: false,
+            page: 0,
+            showMainListing: true,
+            showPreviewListing: false,
+            ui: {
+                message: {}
+            }
+        };
 
-    /**
-     * @type {{busy: boolean, listing: FileListing, selected: Array}}
-     */
-    var currentState = {
-        busy: false,
-        busyListing: false,
-        loadingMore: false,
-        error: null,
-        listing: null,
-        selected: [],
-        reachedEnd: false,
-        page: 0,
-        showMainListing: true,
-        showPreviewListing: false,
-        ui: {
-            message: {}
-        }
-    };
+        this.apiParams = {
+            fileMgr: 'my-data',
+            baseUrl: '/api/data-depot/files'
+        };
 
-    var apiParams = {
-        fileMgr: 'my-data',
-        baseUrl: '/api/data-depot/files'
-    };
+        this.toolbarOpts = {};
+        this.currentBrowseRequest = null;
+        /**
+         * Enumeration of event `DataBrowserService::Event` types
+         *
+         * @readonly
+         * @enum {string}
+         */
+        this.FileEvents = {
+            FILE_ADDED: 'FileAdded',
+            FILE_COPIED: 'FileCopied',
+            FILE_MOVED: 'FileMoved',
+            FILE_REMOVED: 'FileRemoved',
+            FILE_SELECTION: 'FileSelection',
+            FILE_META_UPDATED: 'MetadataUpdated'
+        };
 
-    var toolbarOpts = {};
-    var currentBrowseRequest = null;
-    /**
-     * Enumeration of event `DataBrowserService::Event` types
-     *
-     * @readonly
-     * @enum {string}
-     */
-    var FileEvents = {
-        FILE_ADDED: 'FileAdded',
-        FILE_COPIED: 'FileCopied',
-        FILE_MOVED: 'FileMoved',
-        FILE_REMOVED: 'FileRemoved',
-        FILE_SELECTION: 'FileSelection',
-        FILE_META_UPDATED: 'MetadataUpdated'
-    };
-
-    /**
-     * Enumeration of event `DataBrowserService::EventMessage` strings
-     *
-     * @readonly
-     * @enum {string}
-     */
-    var FileEventsMsg = {
-        FILE_ADDED: 'Your file was added.',
-        FILE_COPIED: 'Your file was copied.',
-        FILE_MOVED: 'Your file was moved.',
-        FILE_REMOVED: 'Your file was remove.',
-        FILE_SELECTION: 'Your file has been selected.',
-        FILE_META_UPDATED: 'Metadata object updated.',
-    };
+        /**
+         * Enumeration of event `DataBrowserService::EventMessage` strings
+         *
+         * @readonly
+         * @enum {string}
+         */
+        this.FileEventsMsg = {
+            FILE_ADDED: 'Your file was added.',
+            FILE_COPIED: 'Your file was copied.',
+            FILE_MOVED: 'Your file was moved.',
+            FILE_REMOVED: 'Your file was removed.',
+            FILE_SELECTION: 'Your file has been selected.',
+            FILE_META_UPDATED: 'Metadata object updated.',
+        };
+    }
 
     // TODO figure out how to make this more programmatic. Just hacking for now.
-    function toolbarOptions() {
-        $http.get('/api/data-depot/toolbar/params')
-            .then(function(resp) {
+    toolbarOptions() {
+        this.$http.get('/api/data-depot/toolbar/params')
+            .then( (resp) => {
                 var toolbarOpts = {
                     trash_enabled: resp.data.response.trash_enabled,
                     share_enabled: resp.data.response.share_enabled,
@@ -84,59 +87,41 @@ function DataBrowserService(
                 };
                 return toolbarOpts;
             },
-                function(error) {
-                    return $q.reject(error);
+                (error) => {
+                    return this.$q.reject(error);
                 });
     }
-
+    
     /**
-     * Gets the apiParams of the DataBrowserService.
-     */
-    function apiParameters() {
-        return apiParams;
-    }
-
-    /**
-     * Gets the state of the DataBrowserService.
-     *
-     * @return {{busy: boolean, listing: FileListing, selected: Array}}
-     */
-    function state() {
-        return currentState;
-    }
-
-
-    /**
-     *
-     * @param {FileListing[]} files FileListing objects to select
-     * @param {boolean} [reset] If true, clears current selection before selecting the passed files.
-     */
-    function select(files, reset) {
+    *
+    * @param {FileListing[]} files FileListing objects to select
+    * @param {boolean} [reset] If true, clears current selection before selecting the passed files.
+    */
+    select(files, reset) {
         if (reset) {
-            deselect(currentState.selected);
+            this.deselect(this.currentState.selected);
         }
-        _.each(files, function(f) {
+        files.forEach( (f) => {
             f._ui = f._ui || {};
             f._ui.selected = true;
         });
-        currentState.selected = _.union(currentState.selected, files);
-        notify(FileEvents.FILE_SELECTION, FileEventsMsg.FILE_SELECTION,
-            currentState.selected);
+        const fileSet = new Set([...this.currentState.selected, ...files]);
+        this.currentState.selected = [...fileSet];
+        this.notify(this.FileEvents.FILE_SELECTION, this.FileEventsMsg.FILE_SELECTION,
+            this.currentState.selected);
     }
-
-
     /**
-     *
-     * @param {FileListing[]} files FileListing objects to de-select
-     */
-    function deselect(files) {
-        _.each(files, function (f) {
+    *
+    * @param {FileListing[]} files FileListing objects to de-select
+    */
+    deselect(files) {
+        files.forEach( (f) => {
             f._ui = f._ui || {};
             f._ui.selected = false;
         });
-        currentState.selected = _.difference(currentState.selected, files);
-        notify(FileEvents.FILE_SELECTION, FileEventsMsg.FILE_SELECTION,
-            currentState.selected);
+        this.currentState.selected = this.currentState.selected.filter( (x) => !files.includes(x));
+        this.notify(this.FileEvents.FILE_SELECTION, this.FileEventsMsg.FILE_SELECTION,
+            this.currentState.selected);
     }
 
     /**
@@ -145,74 +130,74 @@ function DataBrowserService(
     * @param {FileListing|FileListing[]} files Files to test
     * @return {{canDownload: {boolean}, canPreview: {boolean}, canViewMetadata: {boolean}, canShare: {boolean}, canCopy: {boolean}, canMove: {boolean}, canRename: {boolean}, canTrash: {boolean}, canDelete: {boolean}}}
     */
-    function allowedActions(files) {
+    allowedActions(files) {
         if (!Array.isArray(files)) {
             files = [files];
         }
         var tests = {};
-        tests.canDownload = files.length >= 1 && hasPermission('READ', files) && !containsFolder(files);
-        tests.canPreview = files.length === 1 && hasPermission('READ', files) && !containsFolder(files);
-        tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files);
-        tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files);
-        tests.canShare = files.length === 1 && $state.current.name === 'myData';
-        tests.canCopy = files.length >= 1 && hasPermission('READ', files) && UserService.currentUser.username;
-        tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && (apiParams.fileMgr !== 'shared') && (apiParams.fileMgr !== 'public') && (apiParams.directory !== 'external-resources');
-        tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && (apiParams.fileMgr !== 'shared') && (apiParams.fileMgr !== 'public') && (apiParams.directory !== 'external-resources');
-        tests.canViewCategories = files.length >= 1 && hasPermission('WRITE', files);
+        tests.canDownload = files.length >= 1 && this.hasPermission('READ', files) && !this.containsFolder(files);
+        tests.canPreview = files.length === 1 && this.hasPermission('READ', files) && !this.containsFolder(files);
+        tests.canPreviewImages = files.length >= 1 && this.hasPermission('READ', files);
+        tests.canViewMetadata = files.length >= 1 && this.hasPermission('READ', files);
+        tests.canShare = files.length === 1 && this.$state.current.name === 'myData';
+        tests.canCopy = files.length >= 1 && this.hasPermission('READ', files) && this.UserService.currentUser.username;
+        tests.canMove = files.length >= 1 && this.hasPermission('WRITE', [this.currentState.listing].concat(files)) && (this.apiParams.fileMgr !== 'shared') && (this.apiParams.fileMgr !== 'public') && (this.apiParams.directory !== 'external-resources');
+        tests.canRename = files.length === 1 && this.hasPermission('WRITE', [this.currentState.listing].concat(files)) && (this.apiParams.fileMgr !== 'shared') && (this.apiParams.fileMgr !== 'public') && (this.apiParams.directory !== 'external-resources');
+        tests.canViewCategories = files.length >= 1 && this.hasPermission('WRITE', files);
         tests.canCompress =
             files.length >= 1 &&
             !(files.length == 1 && files[0].name.endsWith(".zip")) &&
-            hasPermission('WRITE', [currentState.listing].concat(files)) &&
-            (apiParams.fileMgr !== 'shared') &&
-            (apiParams.fileMgr !== 'public') &&
-            (apiParams.directory !== 'external-resources');
+            this.hasPermission('WRITE', [this.currentState.listing].concat(files)) &&
+            (this.apiParams.fileMgr !== 'shared') &&
+            (this.apiParams.fileMgr !== 'public') &&
+            (this.apiParams.directory !== 'external-resources');
         tests.canExtract =
             files.length === 1 &&
-            hasPermission('WRITE', [currentState.listing].concat(files)) &&
+            this.hasPermission('WRITE', [this.currentState.listing].concat(files)) &&
             files[0].name.endsWith(".zip") &&
-            (apiParams.fileMgr !== 'shared') &&
-            (apiParams.fileMgr !== 'public') &&
-            (apiParams.directory !== 'external-resources');;
+            (this.apiParams.fileMgr !== 'shared') &&
+            (this.apiParams.fileMgr !== 'public') &&
+            (this.apiParams.directory !== 'external-resources');;
 
-        tests.canTrash = canTrash($state.current.name, files);
+        tests.canTrash = this.canTrash(this.$state.current.name, files);
 
-        let trashPath = _trashPath();
-        tests.canDelete = $state.current.name === 'wb.data_depot.db' && files.length >= 1 && currentState.listing.path === trashPath && (apiParams.fileMgr !== 'shared');
+        let trashPath = this._trashPath();
+        tests.canDelete = this.$state.current.name === 'wb.data_depot.db' && files.length >= 1 && this.currentState.listing.path === trashPath && (this.apiParams.fileMgr !== 'shared');
 
         return tests;
     }
 
-  function canTrash(stateName, files) {
-    if (!currentState.listing) {
-      return false;
-    }
-    let notTrashPath = currentState.listing.path !== _trashPath();
-    let stateNameValid = stateName === 'wb.data_depot.db' 
-        || stateName === 'db.projects.view.data'
-        || stateName === 'wb.data_depot.projects.listing';
-    let hasFiles = files.length >= 1;
-    let notProtected = !_.some(files, function(sel) { return isProtected(sel); });
-    let canWrite = hasPermission('WRITE', [currentState.listing]); 
-    let notShared = apiParams.fileMgr !== 'shared';
-    let notPublic = apiParams.fileMgr !== 'public';
-    return currentState.listing
-      && stateNameValid
-      && hasFiles
-      && notTrashPath
-      && notProtected
-      && notShared
-      && notPublic
-      && canWrite;
-  }
-
-    function showListing() {
-        currentState.showMainListing = true;
-        currentState.showPreviewListing = false;
+    canTrash(stateName, files) {
+        if (!this.currentState.listing) {
+            return false;
+        }
+        let notTrashPath = this.currentState.listing.path !== this._trashPath();
+        let stateNameValid = stateName === 'wb.data_depot.db'
+            || stateName === 'db.projects.view.data'
+            || stateName === 'wb.data_depot.projects.listing';
+        let hasFiles = files.length >= 1;
+        let notProtected = !files.some( (sel) => { return this.isProtected(sel); });
+        let canWrite = this.hasPermission('WRITE', [this.currentState.listing]);
+        let notShared = this.apiParams.fileMgr !== 'shared';
+        let notPublic = this.apiParams.fileMgr !== 'public';
+        return this.currentState.listing
+            && stateNameValid
+            && hasFiles
+            && notTrashPath
+            && notProtected
+            && notShared
+            && notPublic
+            && canWrite;
     }
 
-    function showPreview() {
-        currentState.showMainListing = false;
-        currentState.showPreviewListing = true;
+    showListing() {
+        this.currentState.showMainListing = true;
+        this.currentState.showPreviewListing = false;
+    }
+
+    showPreview() {
+        this.currentState.showMainListing = false;
+        this.currentState.showPreviewListing = true;
     }
 
     /**
@@ -221,100 +206,99 @@ function DataBrowserService(
     * @param options.system
     * @param options.path
     */
-    function browse(options) {
+    browse(options) {
         // debugger
-        if (currentBrowseRequest) {
-            currentBrowseRequest.stopper.resolve();
-            currentBrowseRequest = null;
+        if (this.currentBrowseRequest) {
+            this.currentBrowseRequest.stopper.resolve();
+            this.currentBrowseRequest = null;
             // $timeout.cancel(currentBrowseRequest);
         }
 
-        currentState.busy = true;
-        currentState.busyListing = true;
-        currentState.error = null;
-        //currentState.loadingMore = true;
-        currentState.reachedEnd = false;
-        currentState.busyListingPage = false;
-        currentState.page = 0;
-        currentBrowseRequest = FileListing.get(options, apiParams, {
+        this.currentState.busy = true;
+        this.currentState.busyListing = true;
+        this.currentState.error = null;
+        //this.currentState.loadingMore = true;
+        this.currentState.reachedEnd = false;
+        this.currentState.busyListingPage = false;
+        this.currentState.page = 0;
+        this.currentBrowseRequest = this.FileListing.get(options, this.apiParams, {
             queryString: options.queryString,
             system: options.system,
             offset: options.offset,
             limit: options.limit
         });
 
-        currentBrowseRequest.then(function(listing) {
-            select([], true);
-            currentState.busy = false;
-            currentState.busyListing = false;
-            //currentState.loadingMore = false;
-            currentState.reachedEnd = false;
-            currentState.listing = listing;
+        this.currentBrowseRequest.then( (listing) => {
+            this.select([], true);
+            this.currentState.busy = false;
+            this.currentState.busyListing = false;
+            //this.currentState.loadingMore = false;
+            this.currentState.reachedEnd = false;
+            this.currentState.listing = listing;
             if (listing.children.length < options.limit) {
-                currentState.reachedEnd = true
+                this.currentState.reachedEnd = true
             }
             return listing;
-        }, function(err) {
+        }, (err) => {
             // This is for a cancelled promise...
             if (err.status == -1) {
-                currentState.busyListing = true;
-                currentState.busy = true;
+                this.currentState.busyListing = true;
+                this.currentState.busy = true;
             } else {
-                currentState.busy = false;
-                currentState.busyListing = false;
+                this.currentState.busy = false;
+                this.currentState.busyListing = false;
             }
-            currentState.listing = null;
-            currentState.error = err.data;
-            currentState.error.status = err.status;
-            //currentState.loadingMore = false;
-            currentState.reachedEnd = false;
+            this.currentState.listing = null;
+            this.currentState.error = err.data;
+            this.currentState.error.status = err.status;
+            //this.currentState.loadingMore = false;
+            this.currentState.reachedEnd = false;
             return err;
         });
-        return currentBrowseRequest;
+        return this.currentBrowseRequest;
     }
 
     /**
-     *
-     * @param options
-     * @param options.system
-     * @param options.path
-     * @param options.page
-     */
-    function browsePage(options) {
-        //currentState.busy = true;
-        currentState.busyListingPage = true;
-        currentState.error = null;
+    *
+    * @param options
+    * @param options.system
+    * @param options.path
+    * @param options.page
+    */
+    browsePage(options) {
+        //this.currentState.busy = true;
+        this.currentState.busyListingPage = true;
+        this.currentState.error = null;
         var limit = options.limit;
         var offset = options.offset;
         if (options.page) {
             offset += limit * options.page;
         }
         var params = { limit: limit, offset: offset, queryString: options.queryString };
-        return FileListing.get(options, apiParams, params).then(function(listing) {
-            select([], true);
-            //currentState.busy = false;
-            currentState.busyListingPage = false;
-            currentState.listing.children = currentState.listing.children.concat(listing.children);
+        return this.FileListing.get(options, this.apiParams, params).then( (listing) => {
+            this.select([], true);
+            //this.currentState.busy = false;
+            this.currentState.busyListingPage = false;
+            this.currentState.listing.children = this.currentState.listing.children.concat(listing.children);
             return listing;
-        }, function(err) {
-            //currentState.busy = false;
-            currentState.busyListingPage = false;
+        }, (err) => {
+            //this.currentState.busy = false;
+            this.currentState.busyListingPage = false;
             return err
         });
     }
 
-
     /**
-     *
-     * @param {FileListing|FileListing[]} files
-     * @return {*}
-     */
-    function copy(files) {
+    *
+    * @param {FileListing|FileListing[]} files
+    * @return {*}
+    */
+    copy(files) {
         if (!Array.isArray(files)) {
             files = [files];
         }
 
-        var modal = $uibModal.open({
+        var modal = this.$uibModal.open({
             component: 'modalMoveCopyComponent',
             resolve: {
                 files: () => { return files; },
@@ -322,59 +306,50 @@ function DataBrowserService(
             }
         });
 
-        return modal.result.then(
-            function(result) {
-                currentState.busy = true;
-                var copyPromises = _.map(files, function(f) {
+        return modal.result.then( (result) => {
+            this.currentState.busy = true;
+            var copyPromises = files.map( (f) => {
 
-                    return f.copy({ system: result.target.system, path: result.target.path, resource: result.target.resource }).then(function(result) {
-                        //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
-                        $mdToast.show($mdToast.simple()
-                            .content($translate.instant('success_copy_file'))
-                            .toastClass('success')
-                            .parent($("#toast-container")));
-                        return result;
-                    }, function(err) {
-                        currentState.busy = false;
-                        $mdToast.show($mdToast.simple()
-                            .content($translate.instant('error_copy_file'))
-                            .toastClass('error')
-                            .parent($("#toast-container")));
-                        return $q.reject(err.data);
-                    });
+                return f.copy({ system: result.target.system, path: result.target.path, resource: result.target.resource }).then( (result) => {
+                    //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
+                    this.currentState.busy = false;
+                    this.$mdToast.show($mdToast.simple()
+                        .content(this.$translate.instant('success_copy_file'))
+                        .toastClass('success')
+                        .parent($("#toast-container")));
+                    return result;
+                }, (err) => {
+                    this.currentState.busy = false;
+                    this.$mdToast.show(this.$mdToast.simple()
+                        .content(this.$translate.instant('error_copy_file'))
+                        .toastClass('error')
+                        .parent($("#toast-container")));
+                    return this.$q.reject(err.data);
                 });
-                return $q.all(copyPromises).then(function(results) {
-                    currentState.busy = false;
-                    browse(currentState.listing, apiParams);
-                    return results;
-                });
-            }
+            });
+            return this.$q.all(copyPromises).then( (results) => {
+                this.currentState.busy = false;
+                this.browse(this.currentState.listing, this.apiParams);
+                return results;
+            });
+        }
         );
     }
 
-
-    // /**
-    //  *
-    //  */
-    // function details () {
-    //   throw new Error('not implemented')
-    // }
-
-
     /**
-     * Download files. Returns a promise that is resolved when all downloads have been
-     * _started_. Resolved with the download URL for each file.
-     *
-     * @param {FileListing|FileListing[]} files
-     * @return {Promise}
-     */
-    function download(files) {
-        currentState.busy = true;
+    * Download files. Returns a promise that is resolved when all downloads have been
+    * _started_. Resolved with the download URL for each file.
+    *
+    * @param {FileListing|FileListing[]} files
+    * @return {Promise}
+    */
+    download(files) {
+        this.currentState.busy = true;
         if (!Array.isArray(files)) {
             files = [files];
         }
-        var download_promises = _.map(files, function(file) {
-            return file.download().then(function(resp) {
+        var download_promises = files.map( (file) => {
+            return file.download().then( (resp) => {
                 // TODO: This opens each download in a new tab
                 // and closes once the download is started. We
                 // need to zip these selected files and download
@@ -389,48 +364,48 @@ function DataBrowserService(
                 link.click();
                 document.body.removeChild(link);
 
-                currentState.busy = false;
+                this.currentState.busy = false;
                 return resp;
             });
         });
 
-        return $q.all(download_promises);
+        return this.$q.all(download_promises);
     }
 
-
     /**
-     * TODO
-     *
-     * @returns {*}
-     */
-    function getFileManagers() {
-        return $http.get('/api/files/file-managers/').then(function(resp) {
+    * TODO
+    *
+    * @returns {*}
+    */
+    getFileManagers() {
+        return this.$http.get('/api/files/file-managers/').then( (resp) => {
             return resp.data;
         });
     }
 
-
     /**
-     *
-     * @param {FileListing|FileListing[]} files
-     */
-    function containsFolder(files) {
+    *
+    * @param {FileListing|FileListing[]} files
+    */
+    containsFolder(files) {
         if (!Array.isArray(files)) {
             files = [files];
         }
+
         let folders = files.filter((f) => { return ['dir', 'folder'].includes(f.type); });
         return (folders.length > 0);
     }
+
     /**
-     *
-     * @param {string} permission
-     * @param {FileListing|FileListing[]} files
-     */
-    function hasPermission(permission, files) {
+    *
+    * @param {string} permission
+    * @param {FileListing|FileListing[]} files
+    */
+    hasPermission(permission, files) {
         if (!Array.isArray(files)) {
             files = [files];
         }
-        return _.reduce(files, function(memo, file) {
+        return files.reduce( (memo, file) => {
             var pem = file.permissions === 'ALL' || file.permissions.indexOf(permission) > -1;
             if (memo !== null) {
                 pem = memo && pem;
@@ -439,12 +414,11 @@ function DataBrowserService(
         }, null);
     }
 
-
     /**
-     * This is not a great implementation, need to be more extensible...
-     * @param {FileListing} file
-     */
-    function isProtected(file) {
+    * This is not a great implementation, need to be more extensible...
+    * @param {FileListing} file
+    */
+    isProtected(file) {
         if (file.system === 'designsafe.storage.default') {
             if (file.trail.length === 3 && file.name === '.Trash') {
                 return true;
@@ -453,111 +427,107 @@ function DataBrowserService(
         return false;
     }
 
-
     /**
-     * Create a directory in the current listing directory.
-     *
-     * @returns {Promise}
-     */
-    function mkdir() {
-        var modal = $uibModal.open({
+    * Create a directory in the current listing directory.
+    *
+    * @returns {Promise}
+    */
+    mkdir() {
+        var modal = this.$uibModal.open({
             component: 'modalMakeDirComponent'
         });
 
-        return modal.result.then((folderName) => {
-            currentState.busy = true;
-            currentState.listing.mkdir({
+        return modal.result.then( (folderName) => {
+            this.currentState.busy = true;
+            this.currentState.listing.mkdir({
                 name: folderName
-            }).then((newDir) => {
-                currentState.busy = false;
+            }).then( (newDir) => {
+                this.currentState.busy = false;
                 //notify(FileEvents.FILE_ADDED, FileEventsMsg.FILE_ADDED, newDir);
-                $mdToast.show($mdToast.simple()
-                    .content($translate.instant('success_mkdir'))
+                this.$mdToast.show(this.$mdToast.simple()
+                    .content(this.$translate.instant('success_mkdir'))
                     .toastClass('success')
                     .parent($("#toast-container")));
             }, (err) => {
                 // TODO better error handling
-                currentState.busy = false;
-                $mdToast.show($mdToast.simple()
-                    .content($translate.instant('error_mkdir'))
+                this.currentState.busy = false;
+                this.$mdToast.show(this.$mdToast.simple()
+                    .content(this.$translate.instant('error_mkdir'))
                     .toastClass('error')
                     .parent($("#toast-container")));
-                return $q.reject(err.data);
+                return this.$q.reject(err.data);
             });
         });
     }
 
-
     /**
-     *
-     * @param {FileListing|FileListing[]} files
-     * @param {FileListing} initialDestination
-     * @returns {Promise}
-     */
-    function move(files, initialDestination) {
+    *
+    * @param {FileListing|FileListing[]} files
+    * @param {FileListing} initialDestination
+    * @returns {Promise}
+    */
+    move(files, initialDestination) {
         if (!Array.isArray(files)) {
             files = [files];
         }
 
-        var modal = $uibModal.open({
+        var modal = this.$uibModal.open({
             component: 'modalMoveCopyComponent',
             resolve: {
                 files: () => { return files; },
                 action: () => { return 'MOVE'; }
             }
         });
-        return modal.result.then(
-            function(result) {
-                currentState.busy = true;
+        return modal.result.then( (result) => {
+                this.currentState.busy = true;
                 //if (result.system !== files[0].system){
                 //  return $q.when(files);
                 //}
-                var movePromises = _.map(files, function(f) {
-                    return f.move({ system: result.target.system, path: result.target.path }).then(function(result) {
+                var movePromises = files.map( (f) => {
+                    return f.move({ system: result.target.system, path: result.target.path }).then( (result) => {
                         deselect([f]);
                         //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
-                        $mdToast.show($mdToast.simple()
-                            .content($translate.instant('success_move_file'))
+                        this.$mdToast.show(this.$mdToast.simple()
+                            .content(this.$translate.instant('success_move_file'))
                             .toastClass('success')
                             .parent($("#toast-container")));
-                        currentState.busy = false;
+                        this.currentState.busy = false;
                         return result;
-                    }, function(err) {
-                        currentState.busy = false;
-                        $mdToast.show($mdToast.simple()
-                            .content($translate.instant('error_move_file'))
+                    }, (err) => {
+                        this.currentState.busy = false;
+                        this.$mdToast.show(this.$mdToast.simple()
+                            .content(this.$translate.instant('error_move_file'))
                             .toastClass('error')
                             .parent($("#toast-container")));
-                        return $q.reject(err.data);
+                        return this.$q.reject(err.data);
                     });
                 });
-                return $q.all(movePromises).then(function(results) {
-                    currentState.busy = false;
+                return this.$q.all(movePromises).then( (results) =>{
+                    this.currentState.busy = false;
                     return results;
                 });
             }
         );
     }
 
-
     /**
-     *
-     * @param {FileListing} file
-     * @return {Promise}
-     */
-    function preview(file, listing) {
-        var modal = $uibModal.open({
+    *
+    * @param {FileListing} file
+    * @return {Promise}
+    */
+    preview(file, listing) {
+        var modal = this.$uibModal.open({
             component: 'modalPreviewComponent',
             size: 'lg',
             resolve: {
                 file: file,
-                listing: currentState.listing,
+                listing: this.currentState.listing,
             }
         });
     }
 
-    function publicUrl(file) {
-        var modal = $uibModal.open({
+    publicUrl(file) {
+        var modal = this.$uibModal.open({
             component: 'modalPublicUrlComponent',
             size: 'lg',
             resolve: {
@@ -567,109 +537,108 @@ function DataBrowserService(
     }
 
     /**
-     *
-     * @param {FileListing} file
-     * @return {Promise}
-     */
-    function rename(file) {
-        var modal = $uibModal.open({
+    *
+    * @param {FileListing} file
+    * @return {Promise}
+    */
+    rename(file) {
+        var modal = this.$uibModal.open({
             component: 'modalRenameComponent',
             resolve: {
                 file: file
             }
         });
 
-        return modal.result.then((result) => {
-            currentState.busy = true;
+        return modal.result.then( (result) => {
+            this.currentState.busy = true;
             return result.file.rename({ name: result.renameTo })
                 .then(
                     (result) => {
-                        currentState.busy = false;
-                        $mdToast.show($mdToast.simple()
-                            .content($translate.instant('success_rename_file'))
+                        this.currentState.busy = false;
+                        this.$mdToast.show(this.$mdToast.simple()
+                            .content(this.$translate.instant('success_rename_file'))
                             .toastClass('success')
                             .parent($("#toast-container")));
                     },
                     (err) => {
-                        currentState.busy = false;
-                        $mdToast.show($mdToast.simple()
-                            .content($translate.instant('error_rename_file'))
+                        this.currentState.busy = false;
+                        this.$mdToast.show(this.$mdToast.simple()
+                            .content(this.$translate.instant('error_rename_file'))
                             .toastClass('error')
                             .parent($("#toast-container")));
-                        return $q.reject(err.data);
-                    });
+                        return this.$q.reject(err.data);
+                    }
+                );
         });
     }
 
-
     /**
-     * TODO
-     *
-     * @param options
-     */
-    function search(options) {
-        currentState.busy = true;
-        currentState.busyListing = true;
-        currentState.error = null;
-        return FileListing.search(options, apiParams).then(function(listing) {
+    * TODO
+    *
+    * @param options
+    */
+    search(options) {
+        this.currentState.busy = true;
+        this.currentState.busyListing = true;
+        this.currentState.error = null;
+        return this.FileListing.search(options, this.apiParams).then( (listing) => {
             select([], true);
-            currentState.busy = false;
-            currentState.busyListing = false;
-            currentState.listing = listing;
+            this.currentState.busy = false;
+            this.currentState.busyListing = false;
+            this.currentState.listing = listing;
             return listing;
-        }, function(err) {
-            currentState.busy = false;
-            currentState.busyListing = false;
-            currentState.listing = null;
-            currentState.error = err.data;
+        }, (err) => {
+            this.currentState.busy = false;
+            this.currentState.busyListing = false;
+            this.currentState.listing = null;
+            this.currentState.error = err.data;
         });
     }
 
     /**
-     *
-     * @param {FileListing|FileListing[]} files The files to move to Trash
-     * @return {Promise} A promise that is resolved with the trashed files when _all_ files have been
-     * successfully Trashed.
-     */
-    function trash(files) {
+    *
+    * @param {FileListing|FileListing[]} files The files to move to Trash
+    * @return {Promise} A promise that is resolved with the trashed files when _all_ files have been
+    * successfully Trashed.
+    */
+    trash(files) {
         if (!Array.isArray(files)) {
             files = [files];
         }
 
-        currentState.busy = true;
-        var trashPromises = _.map(files, function(file) {
-            return file.trash().then(function(trashed) {
+        this.currentState.busy = true;
+        var trashPromises = files.map( (file) => {
+            return file.trash().then( (trashed) => {
                 //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, trashed);
                 return trashed;
             });
         });
-        return $q.all(trashPromises).then(function(val) {
-            currentState.busy = false;
-            browse(currentState.listing, apiParams);
+        return this.$q.all(trashPromises).then( (val) => {
+            this.currentState.busy = false;
+            this.browse(this.currentState.listing, this.apiParams);
 
-            $mdToast.show($mdToast.simple()
-                .content($translate.instant('success_trash_file'))
+            this.$mdToast.show(this.$mdToast.simple()
+                .content(this.$translate.instant('success_trash_file'))
                 .toastClass('success')
                 .parent($("#toast-container")));
             return val;
-        }, function(err) {
-            currentState.busy = false;
-            $mdToast.show($mdToast.simple()
-                .content($translate.instant('error_trash_file'))
+        }, (err) => {
+            this.currentState.busy = false;
+            this.$mdToast.show(this.$mdToast.simple()
+                .content(this.$translate.instant('error_trash_file'))
                 .toastClass('error')
                 .parent($("#toast-container")));
-            return $q.reject(err.data);
+            return this.$q.reject(err.data);
         });
     }
 
-
-    function _trashPath() {
-        if (currentState.listing && currentState.listing.system) {
-            switch (currentState.listing.system) {
+    _trashPath() {
+        if (this.currentState.listing && this.currentState.listing.system) {
+            switch (this.currentState.listing.system) {
                 case 'designsafe.storage.default':
-                    return ['', UserService.currentUser.username, '.Trash'].join('/');
+                    return ['', this.UserService.currentUser.username, '.Trash'].join('/');
                 case 'designsafe.storage.projects':
-                    var projectDir = currentState.listing.path.split('/')[1];
+                    var projectDir = this.currentState.listing.path.split('/')[1];
                     return ['', projectDir, '.Trash'].join('/');
                 default:
                     return undefined;
@@ -678,133 +647,89 @@ function DataBrowserService(
         return undefined;
     }
 
-
     /**
-     * Upload files or folders to the currently listed destination
-     *
-     * @param {boolean} directoryUpload
-     * @param {FileList} [files] Initial selected file(s) to upload
-     */
-    function upload(directoryUpload, files) {
-        var modal = $uibModal.open({
+    * Upload files or folders to the currently listed destination
+    *
+    * @param {boolean} directoryUpload
+    * @param {FileList} [files] Initial selected file(s) to upload
+    */
+    upload(directoryUpload, files) {
+        var modal = this.$uibModal.open({
             component: 'modalUploadComponent',
             size: 'lg',
             resolve: {
                 directoryUpload: directoryUpload,
-                destination: currentState.listing,
+                destination: this.currentState.listing,
                 files: files,
-                currentState: currentState,
+                currentState: this.currentState,
             }
         });
     }
 
-
     /**
-     * @callback subscribeCallback
-     * @param {object} $event
-     * @param {object} eventData
-     * @param {FileEvents} eventData.type
-     * @param {object} eventData.context
-     */
+    * @callback subscribeCallback
+    * @param {object} $event
+    * @param {object} eventData
+    * @param {FileEvents} eventData.type
+    * @param {object} eventData.context
+    */
     /**
-     *
-     * @param {object} scope
-     * @param {subscribeCallback} callback
-     */
-    function subscribe(scope, callback) {
-        var handler = $rootScope.$on('DataBrowserService::Event', callback);
+    *
+    * @param {object} scope
+    * @param {subscribeCallback} callback
+    */
+    subscribe(scope, callback) {
+        var handler = this.$rootScope.$on('DataBrowserService::Event', callback);
         scope.$on('$destroy', handler);
     }
 
     /**
-     *
-     * @param {FileEvents} eventType The event
-     * @param {object} eventContext The object/context of the event. The value of this parameter depends on the `eventType`
-     */
-    function notify(eventType, eventMsg, eventContext) {
-        $rootScope.$emit('DataBrowserService::Event', {
+    *
+    * @param {FileEvents} eventType The event
+    * @param {object} eventContext The object/context of the event. The value of this parameter depends on the `eventType`
+    */
+    notify(eventType, eventMsg, eventContext) {
+        this.$rootScope.$emit('DataBrowserService::Event', {
             type: eventType,
             context: eventContext,
             msg: eventMsg
         });
     }
 
-    function scrollToTop() {
+    scrollToTop() {
         return;
     }
 
-    function scrollToBottom(options) {
-        if (currentState.loadingMore || currentState.reachedEnd) {
+    scrollToBottom(options) {
+        if (this.currentState.loadingMore || this.currentState.reachedEnd) {
             return;
         }
-        if (currentState.listing && currentState.listing.children &&
-            currentState.listing.children.length < options.limit) {
-            currentState.reachedEnd = true;
+        if (this.currentState.listing && this.currentState.listing.children &&
+            this.currentState.listing.children.length < options.limit) {
+            this.currentState.reachedEnd = true;
             return;
         }
-        currentState.page += 1;
-        currentState.loadingMore = true;
-        browsePage({
-            system: currentState.listing.system,
-            path: currentState.listing.path,
-            page: currentState.page,
+        this.currentState.page += 1;
+        this.currentState.loadingMore = true;
+        this.browsePage({
+            system: this.currentState.listing.system,
+            path: this.currentState.listing.path,
+            page: this.currentState.page,
             queryString: options.queryString,
             offset: options.offset,
             limit: options.limit
-        })
-            .then(function(listing) {
-                currentState.loadingMore = false;
-                if (listing.children.length < options.limit) {
-                    currentState.reachedEnd = true;
-                }
-            }, function(err) {
-                currentState.loadingMore = false;
-                currentState.reachedEnd = true;
-                currentState.error.message = err.data;
-                currentState.error.status = err.status;
-            });
+        }).then( (listing) => {
+            this.currentState.loadingMore = false;
+            if (listing.children.length < options.limit) {
+                this.currentState.reachedEnd = true;
+            }
+        }, (err) => {
+            this.currentState.loadingMore = false;
+            this.currentState.reachedEnd = true;
+            this.currentState.error.message = err.data;
+            this.currentState.error.status = err.status;
+        });
     }
-
-
-    return {
-        /* properties */
-        FileEvents: FileEvents,
-        state: state,
-        apiParameters: apiParameters,
-        toolbarOptions: toolbarOptions,
-
-        /* data/files functions */
-        allowedActions: allowedActions,
-        browse: browse,
-        browsePage: browsePage,
-        scrollToTop: scrollToTop,
-        scrollToBottom: scrollToBottom,
-        copy: copy,
-        deselect: deselect,
-        // details: details,
-        download: download,
-        getFileManagers: getFileManagers,
-        canTrash: canTrash,
-        hasPermission: hasPermission,
-        isProtected: isProtected,
-        mkdir: mkdir,
-        move: move,
-        preview: preview,
-        rename: rename,
-        search: search,
-        select: select,
-        trash: trash,
-        upload: upload,
-        publicUrl: publicUrl,
-
-        /* events */
-        subscribe: subscribe,
-        notify: notify,
-        apiParams: apiParams,
-        toolbarOpts: toolbarOpts,
-        showListing: showListing,
-        showPreview: showPreview,
-    };
 
 }
 

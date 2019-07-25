@@ -20,7 +20,6 @@ class ProjectListingCtrl {
         this.DataBrowserService.apiParams.fileMgr = 'my-projects';
         this.DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
         this.DataBrowserService.apiParams.searchState = 'wb.data_depot.projects.listing';
-        this.browser = this.DataBrowserService.state();
         this.searchState = this.DataBrowserService.apiParams.searchState;
 
         this.ProjectService.getBySystemId(
@@ -45,7 +44,7 @@ class ProjectListingCtrl {
         $event.preventDefault();
         $event.stopPropagation();
         if (file.type === 'file') {
-            this.DataBrowserService.preview(file, this.browser.listing);
+            this.DataBrowserService.preview(file, this.DataBrowserService.currentState.listing);
         } else {
           this.$state.go(
               this.params.browseState,

@@ -39,13 +39,13 @@ describe('DataDepotNewCtrl', ()=>{
             );
             controller.UserService.currentUser = {username: 'testUser', oauth: true}
             
-            spyOn(controller.DataBrowserService, 'state').and.returnValue(
+            controller.DataBrowserService.currentState = 
                 {listing: {
                     listPermissions() {
                         return deferred.promise
                     }
                 }}
-            ) 
+            
             controller.$onInit();
             $scope.$digest();
         });

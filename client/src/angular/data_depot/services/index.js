@@ -8,7 +8,7 @@ let mod = angular.module('portal.data_depot.services', []);
 
 mod.service('ZipService', ZipService);
 mod.factory('FileListing', FileListing);
-mod.factory('DataBrowserService', DataBrowserService);
 mod.factory('ProjectService', ProjectService);
+mod.service('DataBrowserService', DataBrowserService)
 
 export default mod;

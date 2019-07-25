@@ -10,7 +10,6 @@ class PublicDataViewCtrl {
         this.system = this.systems.find(sys => {
             return sys.name == 'Public Data';
         })
-        this.browser = this.DataBrowserService.state();
         this.DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
         this.DataBrowserService.apiParams.searchState = 'public_data';
         this.DataBrowserService.apiParams.fileMgr = 'public';
@@ -35,7 +34,7 @@ class PublicDataViewCtrl {
     }
     onBrowse($event, file) {
         if (file.type === 'file') {
-            this.DataBrowserService.preview(file, this.browser.listing);
+            this.DataBrowserService.preview(file, this.DataBrowserService.currentState.listing);
         } else {
           this.$state.go('public_data',
               {

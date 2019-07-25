@@ -44,9 +44,6 @@ describe('FileListingCtrl', () => {
         });
     });
 
-    it('should initialize controller', () => {
-        expect(controller.browser).toBeDefined();
-    });
     it('should browse onInit', () => {
         expect(controller.DataBrowserService.browse).toHaveBeenCalledWith({
             system: '',
@@ -59,17 +56,17 @@ describe('FileListingCtrl', () => {
     });
 
     it('should show/hide the Show More Files button depending on browser state', () => {
-        // hide button when listing.children is undefined, e.g. when an error occurs
-        controller.browser = { listing: {}, busyListing: false, busy: false, reachedEnd: false };
+        //hide button when listing.children is undefined, e.g. when an error occurs
+        controller.DataBrowserService.currentState = { listing: {}, busyListing: false, busy: false, reachedEnd: false };
         expect(controller.showMoreFilesButton()).toBe(false);
-        // hide button when a listing is completed and the reachedEnd flag has been set to true
-        controller.browser = { listing: { children: [] }, busyListing: false, busy: false, reachedEnd: true };
+        //hide button when a listing is completed and the reachedEnd flag has been set to true
+        controller.DataBrowserService.currentState = { listing: { children: [] }, busyListing: false, busy: false, reachedEnd: true };
         expect(controller.showMoreFilesButton()).toBe(false);
-        // hide button while initial listing is being retrieved
-        controller.browser = { listing: { children: [] }, busyListing: true, busy: true, reachedEnd: false };
+        //hide button while initial listing is being retrieved
+        controller.DataBrowserService.currentState = { listing: { children: [] }, busyListing: true, busy: true, reachedEnd: false };
         expect(controller.showMoreFilesButton()).toBe(false);
-        // show button when listing.children is defined but reachedEnd is still false
-        controller.browser = { listing: { children: [] }, busyListing: false, busy: false, reachedEnd: false };
+        //show button when listing.children is defined but reachedEnd is still false
+        controller.DataBrowserService.currentState = { listing: { children: [] }, busyListing: false, busy: false, reachedEnd: false };
         expect(controller.showMoreFilesButton()).toBe(true);
     });
 });
@@ -167,16 +164,14 @@ describe('FileListingCtrl file modal open', function() {
                 return deferred.promise;
             });
             spyOn(controller.DataBrowserService, 'preview');
-            spyOn(controller.DataBrowserService, 'state').and.returnValue(
-                {
+            controller.DataBrowserService.currentState = {
                     listing: {
                         type: 'file',
                     },
                     children: {
-                        length: 0,
-                    },
-                }
-            );
+                        length: 0
+                    }
+                };
             controller.$onInit();
             $scope.$digest();
         });
@@ -184,7 +179,6 @@ describe('FileListingCtrl file modal open', function() {
 
     it('should open a file preview modal', () => {
         expect(controller.DataBrowserService.browse).toHaveBeenCalled();
-        expect(controller.DataBrowserService.state).toHaveBeenCalled();
         expect(controller.DataBrowserService.preview).toHaveBeenCalled();
     });
 });

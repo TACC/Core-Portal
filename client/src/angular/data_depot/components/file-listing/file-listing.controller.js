@@ -7,7 +7,6 @@ class FileListingCtrl {
         this.SystemsService = SystemsService;
         this.$uibModal = $uibModal;
 
-        this.browser = DataBrowserService.state();
         // this.systemId and this.filePath are binded using
         // AngularJS binding from ui-router resolve.
     }
@@ -27,13 +26,13 @@ class FileListingCtrl {
             limit: this.options.limit,
             queryString: this.params.queryString,
             id: this.params.id,
-        }).then(() => {
-            this.browser = this.DataBrowserService.state();
-            if (this.browser.listing.type == 'file') {
-                this.DataBrowserService.preview(this.browser.listing);
+        })
+        .then((resp)=> {
+            if (this.DataBrowserService.currentState.listing.type == "file") {
+                this.DataBrowserService.preview(this.DataBrowserService.currentState.listing);
             }
-            if (this.browser.listing.children.length < this.options.limit) {
-                this.browser.reachedEnd = true;
+            if (this.DataBrowserService.currentState.listing.children.length < this.options.limit) {
+                this.DataBrowserService.currentState.reachedEnd = true
             }
         });
     }
@@ -41,23 +40,22 @@ class FileListingCtrl {
     onSelect($event, file) {
         $event.stopPropagation();
         if ($event.ctrlKey || $event.metaKey) {
-            let selectedIndex = this.browser.selected.indexOf(file);
+            let selectedIndex = this.DataBrowserService.currentState.selected.indexOf(file);
             if (selectedIndex > -1) {
                 this.DataBrowserService.deselect([file]);
             } else {
                 this.DataBrowserService.select([file]);
             }
-        } else if ($event.shiftKey && this.browser.selected.length > 0) {
-            let lastFile = this.browser.selected[
-                    this.browser.selected.length - 1
-                ],
-                lastIndex = this.browser.listing.children.indexOf(lastFile),
-                fileIndex = this.browser.listing.children.indexOf(file),
-                min = Math.min(lastIndex, fileIndex),
-                max = Math.max(lastIndex, fileIndex);
-
+        } else if ($event.shiftKey && this.DataBrowserService.currentState.selected.length > 0) {
+            let lastFile = this.DataBrowserService.currentState.selected[
+                this.DataBrowserService.currentState.selected.length - 1
+            ],
+            lastIndex = this.DataBrowserService.currentState.listing.children.indexOf(lastFile),
+            fileIndex = this.DataBrowserService.currentState.listing.children.indexOf(file),
+            min = Math.min(lastIndex, fileIndex),
+            max = Math.max(lastIndex, fileIndex);
             this.DataBrowserService.select(
-                this.browser.listing.children.slice(min, max + 1)
+                this.DataBrowserService.currentState.listing.children.slice(min, max + 1)
             );
         } else if (
             typeof file._ui !== 'undefined' &&
@@ -74,15 +72,15 @@ class FileListingCtrl {
     }
 
     showMoreFilesButton() {
-        return typeof (this.browser.listing || {}).children === 'object'
-            && !(this.browser.busyListing
-                || this.browser.busy
-                || this.browser.reachedEnd
-            );
+        return typeof (this.DataBrowserService.currentState.listing || {}).children === 'object'
+            && !(this.DataBrowserService.currentState.busyListing
+                || this.DataBrowserService.currentState.busy
+                || this.DataBrowserService.currentState.reachedEnd
+                )
     }
 
     openPushPublicKeyForm() {
-        this.browser.ui.pushKeyModalOpening = true;
+        this.DataBrowserService.currentState.ui.pushKeyModalOpening = true;
         this.SystemsService.get(this.options.system)
             .then((sys) => {
                 return this.$uibModal.open({
@@ -94,17 +92,16 @@ class FileListingCtrl {
                     },
                 }).result;
             }, (err) => {
-                this.browser.error.message = err.data;
-                this.browser.error.status = err.status;
+                this.DataBrowserService.currentState.error.message = err.data;
+                this.DataBrowserService.currentState.error.status = err.status;
             }).then(() => {
-                this.browser = this.DataBrowserService.state();
-                this.browser.error = null;
-                this.browser.ui.message.class = 'alert-success';
-                this.browser.ui.message.show = true;
-                this.browser.ui.message.content = 'Public key pushed ' +
+                this.DataBrowserService.currentState.error = null;
+                this.DataBrowserService.currentState.ui.message.class = 'alert-success';
+                this.DataBrowserService.currentState.ui.message.show = true;
+                this.DataBrowserService.currentState.ui.message.content = 'Public key pushed ' +
                     'successfully. Please click on My Data again';
             }).finally(() => {
-                this.browser.ui.pushKeyModalOpening = false;
+                this.DataBrowserService.currentState.ui.pushKeyModalOpening = false;
             });
     }
 }

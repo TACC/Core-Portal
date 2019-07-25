@@ -15,7 +15,6 @@ class DataDepotToolbarCtrl {
 
     $onInit() {
         this.searchQuery = { queryString: '' };
-        this.browser = this.DataBrowserService.state();
 
         this.DataBrowserService.subscribe(this.$scope, ($event, eventData) => {
             if (eventData.type === this.DataBrowserService.FileEvents.FILE_SELECTION) {
@@ -25,82 +24,81 @@ class DataDepotToolbarCtrl {
         this.tests = {};
         /* Set initial toolbar status */
         this.updateToolbar();
-        this.apiParams = this.DataBrowserService.apiParameters();
         this.toolbarOptions = this.DataBrowserService.toolbarOptions();
     }
     /**
     * Update the toolbar's status for various functions.
     */
     updateToolbar() {
-        this.tests = this.DataBrowserService.allowedActions(this.browser.selected);
+        this.tests = this.DataBrowserService.allowedActions(this.DataBrowserService.currentState.selected);
     }
     /* Map service functions to toolbar buttons */
     details() {
         // preview the last selected file or current listing if none selected
-        if (this.browser.selected.length > 0) {
-            this.DataBrowserService.preview(this.browser.selected.slice(-1)[0]);
+        if (this.DataBrowserService.currentState.selected.length > 0) {
+            this.DataBrowserService.preview(this.DataBrowserService.currentState.selected.slice(-1)[0]);
         } else {
-            this.ataBrowserService.preview(this.browser.listing);
+            this.ataBrowserService.preview(this.DataBrowserService.currentState.listing);
         }
     }
     download() {
-        this.DataBrowserService.download(this.browser.selected);
+        this.DataBrowserService.download(this.DataBrowserService.currentState.selected);
     }
     preview() {
-        this.DataBrowserService.preview(this.browser.selected[0], this.browser.listing);
+        this.DataBrowserService.preview(this.DataBrowserService.currentState.selected[0], this.DataBrowserService.currentState.listing);
     }
     previewImages() {
-        this.DataBrowserService.previewImages(this.browser.listing);
+        this.DataBrowserService.previewImages(this.DataBrowserService.currentState.listing);
     }
     viewMetadata() {
-        this.DataBrowserService.viewMetadata(this.browser.selected, this.browser.listing);
+        this.DataBrowserService.viewMetadata(this.DataBrowserService.currentState.selected, this.DataBrowserService.currentState.listing);
     }
     viewCategories() {
-        this.DataBrowserService.viewCategories(this.browser.selected, this.browser.listing);
+        this.DataBrowserService.viewCategories(this.DataBrowserService.currentState.selected, this.DataBrowserService.currentState.listing);
     }
     share() {
-        this.DataBrowserService.share(this.browser.selected[0]);
+        this.DataBrowserService.share(this.DataBrowserService.currentState.selected[0]);
     }
     copy() {
-        this.DataBrowserService.copy(this.browser.selected);
+        this.DataBrowserService.copy(this.DataBrowserService.currentState.selected);
     }
     move() {
-        this.DataBrowserService.move(this.browser.selected, this.browser.listing);
+        this.DataBrowserService.move(this.DataBrowserService.currentState.selected, this.DataBrowserService.currentState.listing);
     }
     rename() {
-        this.DataBrowserService.rename(this.browser.selected[0]);
+        this.DataBrowserService.rename(this.DataBrowserService.currentState.selected[0]);
     }
     trash() {
-        this.DataBrowserService.trash(this.browser.selected);
+        this.DataBrowserService.trash(this.DataBrowserService.currentState.selected);
     }
     rm() {
-        this.DataBrowserService.rm(this.browser.selected);
+        this.DataBrowserService.rm(this.DataBrowserService.currentState.selected);
     }
     publicUrl() {
-        this.DataBrowserService.publicUrl(this.browser.selected[0]);
+        this.DataBrowserService.publicUrl(this.DataBrowserService.currentState.selected[0]);
     }
     search() {
-        var state = this.apiParams.searchState;
+        var state = this.DataBrowserService.apiParams.searchState;
         this.$state.go(state, {
             'query_string': this.searchQuery.queryString,
-            'systemId': (this.browser.listing || {}).system,
+            'systemId': (this.DataBrowserService.currentState.listing || {}).system,
             'filePath': ''
         });
     }
 
     compress() {
-        this.ZipService.compress(this.browser.selected);
+        this.ZipService.compress(this.DataBrowserService.currentState.selected);
     }
 
     extract() {
-        this.ZipService.extract(this.browser.selected);
+        this.ZipService.extract(this.DataBrowserService.currentState.selected);
     }
 
     compressButtonDisabled() {
         return this.ZipService.compressing || 
                !this.tests.canCompress || 
-               this.browser.busy || 
-               this.browser.busyListing;
+               this.DataBrowserService.currentState.busy || 
+               this.DataBrowserService.currentState.busyListing;
     }
 
     compressButtonClass() {
@@ -112,8 +110,8 @@ class DataDepotToolbarCtrl {
     extractButtonDisabled() {
         return this.ZipService.extracting ||
                 !this.tests.canExtract || 
-                this.browser.busy || 
-                this.browser.busyListing;
+                this.DataBrowserService.currentState.busy || 
+                this.DataBrowserService.currentState.busyListing;
     }
 
     extractButtonClass() {
