@@ -18,7 +18,7 @@ describe('MemberListCtrl', ()=>{
                 scope = _$rootScope_.$new();
                 scope.mockMeta = {
                     teamMembers: []
-                }
+                };
                 scope.validator = ($user) => { return null };
                 scope.canEdit = true;
                 scope.$apply();
@@ -54,6 +54,11 @@ describe('MemberListCtrl', ()=>{
         expect(element.text()).toContain("mockButton");
     });
 
+    it('should display tooltips', () => {
+        expect(element.html()).toContain('uib-tooltip');
+        expect(element.html()).toContain('class="fa fa-question-circle');
+    });
+
     it("should disable editing", () => {
         scope.canEdit = false;
         scope.$apply();
@@ -81,6 +86,23 @@ describe('MemberListCtrl', ()=>{
         controller.addMember(mockUser);
         expect(ProjectService.addMember).toHaveBeenCalled();
    });
+
+    it("should display users' names and usernames", () => {
+        var deferred = $q.defer();
+        deferred.resolve({
+            response: {
+                teamMembers: [mockUser],
+                status: 200
+            }
+        });
+        spyOn(ProjectService, 'addMember').and.returnValue(deferred.promise);
+        controller.addMember(mockUser); 
+
+        element = $compile(element)(scope);
+        scope.$digest();
+
+        expect(element.text()).toContain('Name, Mock (mockuser)');
+    });
 
    it ("should remove members", () => {
         var deferred = $q.defer();

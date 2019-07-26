@@ -6,10 +6,16 @@
 <div class="modal-body">
     <!-- PI -->
     <div>
-        <h4>PI</h4>
-
+        <h4>PI/Primary Owner 
+            <i 
+                uib-tooltip="A designated steward of the project. PIs can read and write files, as well as change project membership." 
+                tooltip-placement="right" 
+                class="fa fa-question-circle">
+            </i>
+        </h4>
         <div ng-if="$ctrl.meta.pi">
             {{ $ctrl.meta.pi.fullName }}
+            ({{ $ctrl.meta.pi.username }})
         </div>
         <div ng-if="!$ctrl.meta.pi">
             This project currently does not have a PI.
@@ -48,7 +54,7 @@
             meta="$ctrl.meta"
             field="coPis"
             member-type="co_pi"
-            label="Co-PIs"
+            label="Co-PIs/Co-Owners or Admins" 
             button-text="Add a Co-PI"
             editable="$ctrl.canAddCoPI()"
             validator="$ctrl.coPIValidator($user)">

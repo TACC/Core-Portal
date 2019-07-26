@@ -45,7 +45,7 @@ describe('UserSearchCtrl', ()=>{
     it('formats a user object', () => {
         controller.data.member = user;
         const formatted = controller.formatSelection();
-        const expected = `${user.first_name} ${user.last_name} : (${user.email})`;
+        const expected = `${user.first_name} ${user.last_name} (${user.username}) : ${user.email}`;
         expect(formatted).toEqual(expected);
     });
 

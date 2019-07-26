@@ -1,10 +1,19 @@
 <div>
     <h4>
-        {{ $ctrl.label }}
+         {{ $ctrl.label }} <i 
+         ng-if="$ctrl.label==='Co-PIs/Co-Owners or Admins'" 
+         uib-tooltip="Co-PIs can read and write files, as well as change project membership." 
+         tooltip-placement="right" 
+         class="fa fa-question-circle"></i>
+         <i 
+         ng-if="$ctrl.label==='Team Members'" 
+         uib-tooltip="Team Members can read and write files." 
+         tooltip-placement="right" 
+         class="fa fa-question-circle"></i>
     </h4>
     <div ng-if="$ctrl.meta[$ctrl.field].length">
         <div ng-repeat="member in $ctrl.meta[$ctrl.field]" class="member-row">
-            <div>{{ member.fullName }}</div>
+            <div>{{ member.fullName }} ({{ member.username }})</div>
             <button class="btn btn-sm pull-right" 
                     ng-if="$ctrl.editable && !$ctrl.memberRemovingStates[member.username]" 
                     ng-click="$ctrl.removeMember(member)">

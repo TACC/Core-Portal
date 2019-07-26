@@ -12,11 +12,11 @@
                 </tr>
                 <tr ng-if="$ctrl.data.meta.pi">
                     <th>PI</th>
-                    <td><span class="member">{{ $ctrl.data.meta.pi.fullName }}</span></td>
+                    <td><span class="member">{{ $ctrl.data.meta.pi.fullName }} ({{ $ctrl.data.meta.pi.username }})</span></td>
                 </tr>
                 <tr ng-if="$ctrl.data.meta.coPis.length">
                     <th>Co-PIs</th>
-                    <td><span ng-repeat="coPI in $ctrl.data.meta.coPis" class="member">{{ coPI.fullName }}</span></td>
+                    <td><span ng-repeat="coPI in $ctrl.data.meta.coPis" class="member">{{ coPI.fullName }} ({{ coPI.username }})</span></td>
                 </tr>
             </table>
     

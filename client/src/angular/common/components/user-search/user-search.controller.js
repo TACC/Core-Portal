@@ -64,7 +64,7 @@ export default class UserSearchCtrl {
             return '';
         }
         return `${this.data.member.first_name}\
- ${this.data.member.last_name} : (${this.data.member.email})`;
+ ${this.data.member.last_name} (${this.data.member.username}) : ${this.data.member.email}`;
     }
 
 }

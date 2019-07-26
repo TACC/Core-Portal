@@ -117,9 +117,9 @@ describe('ProjectMetadataComponent', ()=>{
     it("should instantiate the UI and controller", () => {
         expect(element.text()).toContain("mockTitle");
         expect(element.text()).toContain("mockDescription");
-        expect(element.text()).toContain("mockPI");
+        expect(element.text()).toContain("mockPI (test_user)");
         // CSS will render visual space between names, but text of element will not be separated names
-        expect(element.text()).toContain("mockCoPIsecondCoPI");
+        expect(element.text()).toContain("mockCoPI (mcopi)secondCoPI (mcopi2)");
         expect(controller).toBeTruthy();
     });
 

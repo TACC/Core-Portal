@@ -1,8 +1,10 @@
 <script type="text/ng-template" id="userSearchTypeahead.html">
     <a href>
         <span ng-bind-html="match.label.last_name | uibTypeaheadHighlight:query"></span>,
-        <span ng-bind-html="match.label.first_name | uibTypeaheadHighlight:query"></span> :  
-        ( <span ng-bind-html="match.label.email | uibTypeaheadHighlight:query"></span> )
+        <span ng-bind-html="match.label.first_name | uibTypeaheadHighlight:query"></span>
+        (<span ng-bind-html="match.label.username | uibTypeaheadHighlight:query"></span>):  
+        <span ng-bind-html="match.label.email | uibTypeaheadHighlight:query"></span>
+        
     </a>
 </script>
 <div class="user-member-search">
