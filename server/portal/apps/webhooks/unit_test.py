@@ -58,6 +58,7 @@ class TestInteractiveWebhookView(TestCase):
         }
         self.agave_job_staging = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
         self.agave_job_running = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_running.json')))
+        self.agave_job_failed = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_failed.json')))
 
     def tearDown(self):
         self.mock_agave_patcher.stop()
@@ -103,7 +104,7 @@ class TestInteractiveWebhookView(TestCase):
         self.assertEqual(n.operation, 'web_link')
 
     def test_webhook_vnc_post_no_matching_job(self):
-        self.mock_agave_client.jobs.get.return_value = self.agave_job_staging
+        self.mock_agave_client.jobs.get.return_value = self.agave_job_failed
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.vnc_event),
@@ -113,7 +114,7 @@ class TestInteractiveWebhookView(TestCase):
         self.assertEqual(Notification.objects.count(), 0)
 
     def test_webhook_web_post_no_matching_job(self):
-        self.mock_agave_client.jobs.get.return_value = self.agave_job_staging
+        self.mock_agave_client.jobs.get.return_value = self.agave_job_failed
 
         response = self.client.post(reverse('webhooks:interactive_wh_handler'),
                                     urlencode(self.web_event),

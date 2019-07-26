@@ -247,7 +247,7 @@ class InteractiveWebhookView(BaseApiView):
             user = get_user_model().objects.get(username=job_owner)
             agave = user.agave_oauth.client
             job_data = agave.jobs.get(jobId=job_uuid)
-            if job_data['owner'] != job_owner or job_data["status"] != "RUNNING":
+            if job_data['owner'] != job_owner or job_data["status"] in [ 'FINISHED', 'FAILED', 'STOPPED' ]:
                 logger.error(
                     "Agave job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(job_data['owner'],
                                                                                                          job_data['status'],
