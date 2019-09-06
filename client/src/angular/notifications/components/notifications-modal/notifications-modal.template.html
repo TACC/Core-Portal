@@ -1,0 +1,42 @@
+<div class="modal-header">
+    <h3 class="modal-title">
+       Notification 
+    </h3>
+</div>
+<div class="modal-body">
+    <div>
+        <h4>{{ $ctrl.note.message }}</h4>
+        <table class="notifications-detail">
+            <tr ng-if="$ctrl.note.action_link">
+                <td>Link</td>
+                <td>
+                    Interactive session at <a ng-href="{{ $ctrl.note.action_link }}">
+                        {{ $ctrl.note.action_link }}
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td>Date</td>
+                <td>{{ $ctrl.localTime() }}</td>
+            </tr>
+            <tr>
+                <td>Status</td>
+                <td>{{ $ctrl.note.status }}</td>
+            </tr>
+            <tr ng-if="$ctrl.note.extra.id">
+                <td>Job ID</td>
+                <td>{{ $ctrl.note.extra.id }}</td>
+            </tr>
+            <tr ng-if="$ctrl.note.extra.error_message">
+                <td>Message</td>
+                <td>{{ $ctrl.note.extra.error_message }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default"
+            data-ng-click="$ctrl.close()">
+        Close
+    </button>
+</div>

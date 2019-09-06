@@ -1,0 +1,17 @@
+.top-spacing {
+    margin-top: 1em;
+}
+
+.pi-change-warning {
+    padding: 1em 1em 1em 1em;
+    border: 1px solid #DDD;
+}
+
+table.notifications-detail {
+    margin-top: 1em;
+    font-size: 1em;
+}
+
+table.notifications-detail td:first-child {
+    font-weight:bold;
+}
