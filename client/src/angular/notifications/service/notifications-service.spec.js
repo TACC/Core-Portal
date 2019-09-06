@@ -25,7 +25,7 @@ describe('Notifications', function() {
             _$uibModal_,
             _$rootScope_,
             _$q_,
-            _$httpBackend_
+            _$httpBackend_,
         ) => {
             Notifications = _Notifications_;
             $location = _$location_;
@@ -46,14 +46,6 @@ describe('Notifications', function() {
             total: 1,
             unread: 1,
         };
-        $httpBackend.whenGET('/api/notifications/').respond(200, notes);
-        spyOn(Notifications, 'list').and.callFake(() => {
-            return {
-                then: function(callback) {
-                    return callback(notes);
-                },
-            };
-        });
     });
 
     it('Should have right methods', function() {
@@ -62,6 +54,27 @@ describe('Notifications', function() {
         expect(Notifications.markRead).toBeDefined();
         expect(Notifications.processMessage).toBeDefined();
         expect(Notifications.showToast).toBeDefined();
+    });
+
+    it('should initialize by creating a websocket and listing notifications', () => {
+        spyOn(Notifications, 'createWebSocket').and.callFake(
+            () => {
+                Notifications.subject = {
+                    "subscribe": jasmine.createSpy("subscribe")
+                }
+            }
+        );
+        spyOn(Notifications, 'list');
+        Notifications.init();
+        expect(Notifications.subject.subscribe).toHaveBeenCalled();
+        expect(Notifications.list).toHaveBeenCalled();
+    });
+
+    it('should not initialize if a websocket is already created', () => {
+        Notifications.subject = { };
+        spyOn(Notifications, 'createWebSocket');
+        Notifications.init();
+        expect(Notifications.createWebSocket).not.toHaveBeenCalled();
     });
 
     it('should process a notification from websocket subscription', () => {

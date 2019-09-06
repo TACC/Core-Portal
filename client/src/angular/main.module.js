@@ -27,6 +27,7 @@ import {mod as notifications} from './notifications';
 import {mod as common} from './common';
 import {mod as onboarding} from './onboarding';
 import {mod as public_data} from './public_data';
+import {mod as jobs} from './jobs';
 
 //templates
 import homeTemplate from './workbench/templates/home.html';
@@ -102,6 +103,11 @@ function config($httpProvider, $locationProvider, $urlRouterProvider, $stateProv
                 // 'test': function () {console.log("help resolve");}
             }
         })
+        .state('wb.jobs', {
+            url: '/jobs',
+            component: 'jobsView',
+            abstract: true
+        })
         .state('wb.search', {
             url: '/search?query_string&type_filter&sortKey&sortOrder',
             template: searchTemplate,
@@ -165,7 +171,8 @@ let mod = angular
         'portal.notifications',
         'portal.common',
         'portal.onboarding',
-        'portal.public_data'
+        'portal.public_data',
+        'portal.jobs'
     ])
     .config(config)
     // .run(['UserService', function(UserService) {

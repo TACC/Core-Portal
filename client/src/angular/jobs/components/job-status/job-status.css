@@ -1,0 +1,23 @@
+.job-status-item.list-group-item {
+    cursor: pointer;
+    color: #222222;
+}
+
+.job-status-item.list-group-item:hover {
+    background-color: rgb(245, 245, 245) !important;
+    border-color: rgba(45, 45, 45, 0.5);
+    border-left-width: 0.5rem;
+}
+
+.job-status-item:focus, .job-status-item:active {
+    outline: none;
+}
+
+.job-status-item .status {
+    padding: 0.25em;
+    font-size: 1.25em;
+}
+
+.job-status-item.list-group-item:hover .status {
+    font-weight: bold;
+}

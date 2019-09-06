@@ -11,7 +11,15 @@ function config($interpolateProvider, $httpProvider, $urlRouterProvider, $stateP
             url: '/workspace',
             component: 'workspaceRoot',
             resolve: {}
-        });
+        })
+        .state('wb.workspace.apps', {
+            url: '/{appId}',
+            component: 'workspaceRoot',
+            resolve: {},
+            params: {
+                jobInfo: null
+            }
+        })
 
     $translateProvider.translations('en', {
         error_system_monitor: 'The execution system for this app is currently unavailable. Your job submission may fail.',

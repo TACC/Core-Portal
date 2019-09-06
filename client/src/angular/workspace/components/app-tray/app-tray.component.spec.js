@@ -14,20 +14,6 @@ describe('AppTrayCtrl', ()=>{
 
     beforeEach(angular.mock.module("portal"));
     beforeEach(angular.mock.module(function($provide) {
-        // Mock Notifications to prevent /api/notifications subscription call
-        let NotificationsMock = {
-            $get: function() {
-                return {
-                    list: jasmine.createSpy('list'),
-                    showToast: jasmine.createSpy('showToast')
-                }
-            }
-        }
-
-        $provide.provider('Notifications', function() {
-            return NotificationsMock;
-        });
-
         let SimpleListMock = {
             $get: function() {
                 return function() {
@@ -114,6 +100,62 @@ describe('AppTrayCtrl', ()=>{
     it('should display non-empty tabs and hide empty ones', () => {
         expect(element.text()).toContain('Utilities');
         expect(element.text()).not.toContain("Simulation");
+    });
+
+    it('should load an app from a state param', () => {
+        let deferred = $q.defer();
+        let meta = {
+            value: {
+                definition: {
+                    id: 'myapp',
+                    available: 'true'
+                }
+            }
+        }
+        let result = { 
+            data: {
+                response: meta
+            }
+        };
+        deferred.resolve(result);
+        Apps.getMeta.and.returnValue(deferred.promise);
+        spyOn(controller, 'launchApp');
+        controller.$stateParams.appId = 'myapp';
+        controller.loadStateApp();
+        $scope.$digest();
+        expect(controller.launchApp).toHaveBeenCalledWith(meta);
+    });
+
+    it('should load a private app from a state param', () => {
+        let rejection = $q.defer();
+        rejection.reject({ });
+        Apps.getMeta.and.returnValue(rejection.promise);
+
+        let appDef = {
+            id: 'myapp',
+            available: 'true'
+        }
+        let meta = {
+            value: {
+                type: "agave",
+                definition: appDef
+            }
+        }
+        let result = {
+            data: {
+                response: appDef
+            }
+        }
+
+        let appResolve = $q.defer();
+        appResolve.resolve(result);
+        spyOn(Apps, 'get').and.returnValue(appResolve.promise);
+        
+        spyOn(controller, 'launchApp');
+        controller.$stateParams.appId = 'myapp';
+        controller.loadStateApp();
+        $scope.$digest();
+        expect(controller.launchApp).toHaveBeenCalledWith(meta);
     });
 
 });

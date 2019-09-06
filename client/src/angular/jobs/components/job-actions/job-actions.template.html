@@ -1,0 +1,11 @@
+
+<span ng-if="$ctrl.jobFinished">
+    <button class="btn btn-primary" type="button" ng-click="$ctrl.launchApp()">Launch App</button>
+    <button class="btn btn-info" type="button" ng-click="$ctrl.resubmit()">Resubmit Job</button>
+    <button class="btn btn-danger" type="button" ng-click="$ctrl.deleteJob()">Delete Job Info</button>
+</span>
+<span ng-if="!$ctrl.jobFinished">
+    <a href="{{$ctrl.job.connection_address}}" ng-if="$ctrl.job.interactive" class="btn btn-primary" title="" target="_blank">Connect</a>
+    <button class="btn btn-warning" type="button" ng-click="$ctrl.cancelJob()">Cancel</button>
+    <button class="btn btn-danger" type="button" ng-click="$ctrl.deleteJob()">Delete</button>
+</span>

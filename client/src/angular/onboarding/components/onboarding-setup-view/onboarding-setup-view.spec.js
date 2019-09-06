@@ -4,27 +4,19 @@ import onboardingSetupStepListing from '../../fixtures/onboarding-setup-step-lis
 describe('OnboardingSetupViewStaff', ()=>{
     let element, controller, scope, $compile, $q;
     let UserService, OnboardingSetupService;
-    let mockNotifications;
+    let Notifications;
 
-    // Mock requirements.
-    beforeEach(
-        angular.mock.module(
-            "portal", 
-            ($provide) => {
-                mockNotifications = {
-                    subject: jasmine.createSpyObj('subject', ['subscribe'])
-                };
-
-                $provide.value('Notifications', mockNotifications);
-            }
-        )
-    );    
+    beforeEach(angular.mock.module("portal"));
     beforeEach( ()=> {
         angular.mock.inject(
             (_$q_, _$rootScope_, _$compile_, $componentController, 
-                _UserService_, _OnboardingSetupService_) => {
+                _UserService_, _OnboardingSetupService_, _Notifications_) => {
                 $q = _$q_;
                 $compile = _$compile_;
+                Notifications = _Notifications_;
+                Notifications.subject = {
+                    "subscribe": jasmine.createSpy("subscribe")
+                }
 
                 // Services that we will spy on later
                 UserService = _UserService_;
@@ -137,30 +129,23 @@ describe('OnboardingSetupViewSelf', ()=>{
     // Test UserSetupDetail control for when a user is viewing themselves
     let element, controller, scope, $compile, $q;
     let OnboardingSetupService, UserService;
-    let mockNotifications;
+    let Notifications;
 
     // Mock requirements.
-    beforeEach(
-        angular.mock.module(
-            "portal", 
-            ($provide) => {
-                mockNotifications = {
-                    subject: jasmine.createSpyObj('subject', ['subscribe'])
-                };
-
-                $provide.value('Notifications', mockNotifications);
-            }
-        )
-    );
+    beforeEach(angular.mock.module("portal"));
     beforeEach( ()=> {
         angular.mock.inject(
             (_$q_, _$rootScope_, _$compile_, $componentController, 
-                _UserService_, _OnboardingSetupService_) => {
+                _UserService_, _OnboardingSetupService_, _Notifications_) => {
                 $q = _$q_;
                 $compile = _$compile_;
 
                 OnboardingSetupService = _OnboardingSetupService_;
                 UserService = _UserService_;
+                Notifications = _Notifications_;
+                Notifications.subject = {
+                    "subscribe": jasmine.createSpy("subscribe")
+                }
 
                 scope = _$rootScope_.$new();
                 scope.$apply();
@@ -202,7 +187,7 @@ describe('OnboardingSetupViewSelf', ()=>{
     });
 
     it("should subscribe to notifications", () => {
-        expect(mockNotifications.subject.subscribe).toHaveBeenCalled()
+        expect(Notifications.subject.subscribe).toHaveBeenCalled()
     });
 
     it("should flag viewingSelf as true", () => {

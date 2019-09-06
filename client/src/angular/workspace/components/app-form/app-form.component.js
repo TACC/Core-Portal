@@ -24,8 +24,10 @@ class ApplicationFormCtrl {
             this.Apps.get(this.selectedApp.value.definition.id).then(
                 (resp)=> {
                     this.app = resp.data.response;
+                    this.jobInfo = this.selectedApp.jobInfo;
                     this.resetForm();
-                });
+                }
+            );
         } else if (this.selectedApp.value.type === 'html') {
             this.app = this.selectedApp.value.definition.html;
             /* Can be enabled if non-agave, i.e. html apps, will use licensing */
@@ -47,6 +49,7 @@ class ApplicationFormCtrl {
         this.submitting = false;
         this.model = {};
         this.form = [];
+        this.jobInfo = null;
         // TODO: this is heinous. For some reason have to use $timeout in order
         // to get the models / forms in sync
         this.$rootScope.$on('sf-render-finished', () => {
@@ -72,6 +75,36 @@ class ApplicationFormCtrl {
 
         this.model = {};
         this.schema = this.Apps.formSchema(this.app);
+
+        if (this.jobInfo) {
+            Object.keys(this.schema.properties.inputs.properties).forEach(
+                (property) => {
+                    if (property in this.jobInfo.inputs) {
+                        this.schema.properties.inputs.properties[property].default = 
+                            this.jobInfo.inputs[property];
+                    }
+                }
+            );
+            Object.keys(this.schema.properties.parameters.properties).forEach(
+                (property) => {
+                    if (property in this.jobInfo.parameters) {
+                        this.schema.properties.parameters.properties[property].default = 
+                            this.jobInfo.parameters[property];
+                    }
+                }
+            )
+            let properties = [ "archivePath", "maxRunTime", "nodeCount",
+                                "allocation", "name", "processorsPerNode" ];
+            properties.forEach(
+                (property) => {
+                    if (property in this.jobInfo && property in this.schema.properties) {
+                        this.schema.properties[property].default = this.jobInfo[property]
+                    }
+                }
+            )
+            this.jobInfo = null;
+        }
+        
         this.form = [];
         /* inputs */
         if (this.schema.properties.inputs) {

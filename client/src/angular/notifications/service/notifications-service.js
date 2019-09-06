@@ -9,25 +9,12 @@ export default class Notifications {
         this.$mdToast = $mdToast;
         this.$http = $http;
         this.$rootScope = $rootScope;
-        let host = this.$location.host(),
-            wsurl = 'wss://' + host + '/ws/notifications?subscribe-broadcast&subscribe-user';
-        this.subject = new WebSocketSubject(wsurl);
+        this.$location = $location;
         this.toasting = false;
         this.notes = {
             unread: 0,
             notifs: [],
         };
-        this.subject.subscribe(
-            (data) => {
-                this.processMessage(data);
-            },
-            (error) => {
-                console.log('Notifications Websocket error', error);
-            },
-            () => {
-                console.log('Notifications websocket ended');
-            }
-        );
 
         this.processors = {
             interactive: {
@@ -55,6 +42,30 @@ export default class Notifications {
                 }
             }
         };
+    }
+
+    createWebSocket() {
+        let wsurl = 'wss://' + this.$location.host() + '/ws/notifications?subscribe-broadcast&subscribe-user';
+        this.subject = new WebSocketSubject(wsurl);
+    }
+
+    init() {
+        // Init called by NotificationsBell UI component
+        if (this.subject) {
+            return;
+        }
+        this.createWebSocket();
+        this.subject.subscribe(
+            (data) => {
+                this.processMessage(data);
+            },
+            (error) => {
+                console.log('Notifications Websocket error', error);
+            },
+            () => {
+                console.log('Notifications websocket ended');
+            }
+        );
         this.list();
     }
 

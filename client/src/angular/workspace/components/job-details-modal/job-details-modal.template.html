@@ -1,51 +1,48 @@
 <div class="modal-header">
     <h3 class="modal-title">{{$ctrl.job.name}}</h3>
 </div>
-<div class="modal-body">
-    <div ng-if="$ctrl.job.lastStatusMessage && $ctrl.job.status !== 'FINISHED'" class="alert" ng-class="{
-        'alert-danger': $ctrl.job.status==='FAILED' || $ctrl.job.status==='STOPPED' || $ctrl.job.status==='PAUSED',
-        'alert-info' : $ctrl.job.status==='ACCEPTED' || $ctrl.job.status==='PENDING' || $ctrl.job.status==='PROCESSING_INPUTS'
-                                                || $ctrl.job.status==='STAGING_INPUTS' || $ctrl.job.status==='STAGED' || $ctrl.job.status==='STAGING_JOB'
-                                                || $ctrl.job.status==='SUBMITTING' || $ctrl.job.status==='QUEUED' || $ctrl.job.status==='RUNNING'
-                                                || $ctrl.job.status==='CLEANING_UP' || $ctrl.job.status==='ARCHIVING' || $ctrl.job.status==='BLOCKED'
-    }">
-        <h4>Job Status: {{$ctrl.job.status}}</h4>
-        <p>{{$ctrl.job.lastStatusMessage}}</p>
+<div class="modal-body job-details-modal">
+    <div ng-if="$ctrl.loading">
+        <i class="fa fa-spinner fa-spin"></i>&nbsp;Loading...
     </div>
-    <dl>
-        <dt>Application</dt>
-        <dd>{{$ctrl.job.appId}}</dd>
-
+    <dl ng-if="!$ctrl.loading" class="job-info">
         <dt>Job ID</dt>
-        <dd>{{$ctrl.job.id}}</dd>
-
-        <dt>Status</dt>
-        <dd>{{$ctrl.job.status}}</dd>
-
-        <dt>Submitted</dt>
-        <dd>{{$ctrl.job.created | date:'medium'}}</dd>
-
-        <dt>Finished</dt>
-        <dd>{{$ctrl.job.ended | date:'medium'}}</dd>
-
-        <dt ng-if="$ctrl.job.archiveSystem">Output</dt>
-        <dd ng-if="$ctrl.jobFinished && $ctrl.job.archiveSystem">
-            <a href="{{$ctrl.job.archiveUrl}}" target="_blank" class="btn btn-primary" title="">View in Data Files</a>&nbsp;
-            <a ng-href="{{$ctrl.job.jupyterUrl}}" class="btn btn-default" ng-if="$ctrl.job.jupyterUrl" target=_blank>View in JupyterHub</a>
+        <dd>{{ $ctrl.job.id }}</dd>
+        <dt>Application</dt>
+        <dd>{{ $ctrl.job.appId }}</dd>
+        <dt>Status (<a ui-sref="wb.jobs.job({ jobId: $ctrl.job.id })">View Job Details</a>)</dt>
+        <dd class="job-status">
+            <div>
+                Submitted<br />
+                <span class="timestamp">{{ $ctrl.convertDate($ctrl.job.created) }}</span>
+            </div>
+            <div>
+                <span ng-class="$ctrl.Jobs.getStatusClass($ctrl.job)">
+                    <b>&nbsp;{{ $ctrl.job.status }}&nbsp;</b>
+                </span><br />
+                <span class="timestamp">{{ $ctrl.convertDate($ctrl.job.ended) }}</span>
+            </div>
         </dd>
-        <dd ng-if="!$ctrl.jobFinished">
-            <button class="btn btn-default disabled" type="button">Output pending</button>
+        <dt></dt>
+        <dd>
+            <div ng-if="$ctrl.job.lastStatusMessage"
+                ng-class="$ctrl.Jobs.getStatusClass($ctrl.job)">
+                <span class="status-toggle" ng-click="$ctrl.statusToggle()">
+                    Status Report
+                    <i ng-if="!$ctrl.expandStatus" class="fa fa-chevron-circle-down"></i>
+                    <i ng-if="$ctrl.expandStatus" class="fa fa-chevron-circle-up"></i>
+                </span>
+            </div>
+            <div ng-if="$ctrl.expandStatus" class="status-message">
+                <p>{{$ctrl.job.lastStatusMessage}}</p>
+            </div>
         </dd>
-
-        <dt>Actions</dt>
-        <dd ng-if="$ctrl.jobFinished">
-            <button class="btn btn-danger" type="button" ng-click="$ctrl.deleteJob()">Delete</button>
-        </dd>
-        <dd ng-if="!$ctrl.jobFinished">
-            <a href="{{$ctrl.job.connection_address}}" ng-if="$ctrl.job.interactive" class="btn btn-primary" title="" target="_blank">Connect</a>
-            <button class="btn btn-warning" type="button" ng-click="$ctrl.cancelJob()">Cancel</button>
-            <button class="btn btn-danger" type="button" ng-click="$ctrl.deleteJob()">Delete</button>
-        </dd>
+        <dt>Output</dt>
+        <dd ng-if="!$ctrl.jobFinished"><i>Output pending</i></dd>
+        <dd><a href="{{ $ctrl.job.archiveUrl }}">View in Data Depot</a></dd>
+        <dd><a href="{{ $ctrl.job.jupyterUrl }}" ng-if="$ctrl.job.jupyterUrl" target=_blank>View in JupyterHub</a></dd>
+        <br />
+        <job-actions job="$ctrl.job" dismiss="$ctrl.close()"></job-actions>
     </dl>
 </div>
 <div class="modal-footer">

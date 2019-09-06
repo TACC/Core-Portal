@@ -9,6 +9,12 @@ describe('NotificationsBellCtrl', function() {
         });
     });
 
+    it('should initialize the Notifications service', () => {
+        spyOn(Notifications, 'init');
+        controller.$onInit();
+        expect(Notifications.init).toHaveBeenCalled();
+    });
+
     it('Should have a delete method', function() {
         expect(controller.delete).toBeDefined();
     });

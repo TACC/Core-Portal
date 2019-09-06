@@ -1,14 +1,18 @@
 import * as d3 from 'd3';
 
 class Jobs {
-    constructor($http) {
+    constructor($http, $state) {
         'ngInject';
         this.$http = $http;
+        this.$state = $state;
     }
 
     list(options) {
+        if (!options) {
+            options = { };
+        }
         options.limit = options.limit || 10;
-        options.offest = options.offest || 0;
+        options.offset = options.offset || 0;
         return this.$http.get('/api/workspace/jobs/', {
             params: options,
         }).then(function(resp) {
@@ -45,8 +49,14 @@ class Jobs {
 
     cancel(job) {
         return this.$http.post('/api/workspace/jobs/', {
-            job_id: job.id, params: { job_id: job.id, action: 'cancel', body: '{"action":"stop"}' },
+            job_id: job.id, action: 'stop'
         });
+    }
+
+    resubmit(job) {
+        return this.$http.post('/api/workspace/jobs/', {
+            job_id: job.id, action: 'resubmit',
+        }); 
     }
 
     jobsByDate(jobs) {
@@ -64,6 +74,39 @@ class Jobs {
             return a.key - b.key;
         });
         return nested;
+    }
+    
+    jobIsFinished(job) {
+        let finishedStatus = ['FAILED', 'STOPPED', 'FINISHED', 'KILLED'];
+        return (finishedStatus.some((e) => e === job.status));
+    }
+
+    getStatusClass(job) {
+        if (job.status==='FAILED' || job.status==='STOPPED' || job.status==='PAUSED') {
+            return "alert-danger";
+        }
+        if (job.status === 'FINISHED') {
+            return "alert-success";
+        }
+        if (job.status==='ACCEPTED' || job.status==='PENDING' || job.status==='PROCESSING_INPUTS' || 
+            job.status==='STAGING_INPUTS' || job.status==='STAGED' || job.status==='STAGING_JOB' ||
+            job.status==='SUBMITTING' || job.status==='QUEUED' || job.status === 'RUNNING' ||
+            job.status==='CLEANING_UP' || job.status==='ARCHIVING' || job.status==='BLOCKED') {
+            return "alert-warning";
+        }
+        return "alert-success";
+    }
+
+    updateJobFromNotification(job, msg) {
+        let result = JSON.parse(JSON.stringify(job));
+        if (msg.event_type === "job") {
+            if (result.id === msg.extra.id) {
+                result.status = msg.extra.status;
+                result.ended = parseInt(msg.datetime) * 1000;
+                result.lastStatusMessage = msg.extra.error_message;
+            }
+        }
+        return result;
     }
 }
 

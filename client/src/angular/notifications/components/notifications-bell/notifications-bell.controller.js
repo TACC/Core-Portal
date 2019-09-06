@@ -5,6 +5,10 @@ export default class NotificationsBellCtrl {
         this.service = Notifications;
     }
 
+    $onInit() {
+        this.service.init();
+    }
+
     delete(pk) {
         this.service.delete(pk).then(() => {
             this.service.list();

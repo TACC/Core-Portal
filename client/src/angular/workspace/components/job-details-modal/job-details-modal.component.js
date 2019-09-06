@@ -1,41 +1,7 @@
 import template from './job-details-modal.template.html';
-
-class JobDetailsModalCtrl {
-    constructor($http, Jobs, $rootScope) {
-        'ngInject';
-        this.Jobs = Jobs;
-        this.$rootScope = $rootScope;
-    }
-
-    $onInit() {
-        this.job = this.resolve.job;
-        this.jobFinished = this.jobIsFinished(this.job);
-    }
-
-    close() {
-        this.dismiss('cancel');
-    }
-
-    deleteJob() {
-        this.Jobs.delete(this.job).then(() => {
-            this.$rootScope.$broadcast('refresh-jobs-panel');
-            this.dismiss();
-        }, (err) => {
-        });
-    }
-
-    cancelJob() {
-        this.Jobs.cancel(this.job).then(() => {
-            this.dismiss();
-        });
-    }
-
-    jobIsFinished(job) {
-        let finishedStatus = ['FAILED', 'STOPPED', 'FINISHED', 'KILLED'];
-        return (finishedStatus.some((e) => e === job.status));
-    }
-}
-
+import './job-details-modal.css';
+import { trimHashVal } from '@uirouter/core';
+import JobDetailsModalCtrl from './job-details-modal.controller';
 
 const jobDetailsModal = {
     template: template,

@@ -49,6 +49,10 @@ workspace-data-browser, job-status-panel {
     top: 0;
 }
 
+.workspace-panel-toggle:focus, .workspace-panel-toggle:active {
+    outline: none;
+}
+
 .workspace-panel-sidebar-left .workspace-panel-toggle {
     right: 0;
 }

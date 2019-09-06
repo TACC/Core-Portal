@@ -4,11 +4,12 @@ import $ from 'jquery';
 
 class ApplicationTrayCtrl {
 
-    constructor($rootScope, $stateParams, $translate,
+    constructor($rootScope, $state, $stateParams, $translate,
         Apps, SimpleList, Notifications, $mdToast, UserService) {
         'ngInject';
         this.$rootScope = $rootScope;
         this.$stateParams = $stateParams;
+        this.$state = $state;
         this.$translate = $translate;
         this.Apps = Apps;
         this.SimpleList = SimpleList;
@@ -20,6 +21,7 @@ class ApplicationTrayCtrl {
     $onInit() {
         this.UserService.allocations().then( (resp)=>{
             this.allocations = resp;
+            this.loadStateApp();
         });
 
         this.tabs = [];
@@ -70,40 +72,51 @@ class ApplicationTrayCtrl {
         this.data.activeApp = null;
     }
 
-    refreshApps() {
-        this.error = '';
-        this.requesting = true;
-        this.tabs = [];
-
+    loadStateApp() {
         if (this.$stateParams.appId) {
             // TODO: Centralize these toasts into the Notifications Service
             this.Apps.getMeta(this.$stateParams.appId)
                 .then(
-                    function(response) {
-                        if (response.data.length > 0) {
-                            if (response.data[0].value.definition.available) {
-                                this.launchApp(response.data[0]);
+                    (response) => {
+                        if (response.data) {
+                            let meta = response.data.response;
+                            if (meta.value.definition.available) {
+                                this.launchApp(meta);
                             } else {
                                 this.$mdToast.show(this.$mdToast.simple()
                                     .content(this.$translate.instant('error_app_disabled'))
                                     .toastClass('warning')
                                     .parent($('#toast-container')));
                             }
-                        } else {
-                            this.$mdToast.show(this.$mdToast.simple()
+                        } 
+                    },
+                    (error) => {
+                        return this.Apps.get(this.$stateParams.appId).then(
+                            (response) => {
+                                let appMeta = {
+                                    value: {
+                                        type: "agave", 
+                                        definition: response.data.response
+                                    }
+                                }
+                                this.launchApp(appMeta);
+                            },
+                            (error) => {
+                                this.$mdToast.show(this.$mdToast.simple()
                                 .content(this.$translate.instant('error_app_run'))
                                 .toastClass('warning')
                                 .parent($('#toast-container')));
-                        }
-                    },
-                    function(response) {
-                        this.$mdToast.show(this.$mdToast.simple()
-                            .content(this.$translate.instant('error_app_run'))
-                            .toastClass('warning')
-                            .parent($('#toast-container')));
+                            }
+                        )
                     }
                 );
         }
+    }
+
+    refreshApps() {
+        this.error = '';
+        this.requesting = true;
+        this.tabs = [];
 
         this.addDefaultTabs()
             .then(() => {
@@ -124,6 +137,7 @@ class ApplicationTrayCtrl {
         this.data.activeApp = app;
         this.onAppSelect({ app });
         this.activeTab = null;
+        this.$state.transitionTo('wb.workspace.apps', { appId: app.value.definition.id });
     }
 
     closeTab () {
