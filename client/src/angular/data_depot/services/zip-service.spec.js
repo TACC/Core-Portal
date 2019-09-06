@@ -62,11 +62,29 @@ describe("ZipService", function() {
                     }
                 }
             )
+        );
+        spyOn(Apps, 'get').and.returnValue(
+            $q.resolve(
+                {
+                    data: {
+                        response: {
+                            parameters: [
+                                {
+                                    id: "compression_type"
+                                }
+                            ]
+                        }
+                    }
+                }
+            )
         )
         ZipService.init();
         $scope.$digest();
-        expect  (ZipService.zippyAppId).toEqual("zippy-0.1u6");
+        expect(Apps.getPublic).toHaveBeenCalled();
+        expect(Apps.get).toHaveBeenCalled();
+        expect(ZipService.zippyAppId).toEqual("zippy-0.1u6");
         expect(ZipService.extractAppId).toEqual("extract-0.1u3");
+        expect(ZipService.targzSupport).toEqual(true);
     });
 
     it("should resolve a working directory for a file object", () => {
@@ -225,7 +243,40 @@ describe("ZipService", function() {
             }
         }
         spyOn(ZipService, 'submitJobHelper').and.returnValue($q.resolve({}));
-        ZipService.submitCompressJob(files, "zipfile.zip");
+        ZipService.submitCompressJob(files, "zipfile.zip", "zip");
+        $scope.$digest();
+        expect(ZipService.submitJobHelper).toHaveBeenCalledWith(expectedJobData);
+    });
+
+    it("should submit a compress job with a compressionType if targzSupport is enabled", () => {
+        ZipService.zippyAppId = "zippy-0.1u1";
+        ZipService.targzSupport = true;
+        let files = [
+            {"name": "file1.txt", "path": "/folder/file1.txt", "system": "test-system"},
+            {"name": "file2.txt", "path" : "/folder/file2.txt", "system": "test-system"}
+        ];
+      
+        let expectedJobData = { 
+            allocation: "FORK",
+            appId: "zippy-0.1u1",
+            archive: true,
+            archivePath: "agave://test-system/folder/",
+            maxRunTime: "02:00:00",
+            name: "Compressing Files",
+            inputs: {
+                inputFiles: [ 
+                "agave://test-system/folder/file1.txt", 
+                "agave://test-system/folder/file2.txt" 
+                ]
+            },
+            parameters: {
+                zipfileName: "zipfile.zip",
+                filenames: '"file1.txt" "file2.txt" ',
+                compression_type: "zip"
+            }
+        }
+        spyOn(ZipService, 'submitJobHelper').and.returnValue($q.resolve({}));
+        ZipService.submitCompressJob(files, "zipfile.zip", "zip");
         $scope.$digest();
         expect(ZipService.submitJobHelper).toHaveBeenCalledWith(expectedJobData);
     });
@@ -255,18 +306,18 @@ describe("ZipService", function() {
 
     it("should load a modal and submit a compress job", () => {
         let mockModal = {
-            result: $q.resolve({ destination: "file.zip" }),
+            result: $q.resolve({ destination: "file.zip", compressionType: "zip" }),
         };
         spyOn($uibModal, 'open').and.returnValue(mockModal)
         spyOn(ZipService, 'submitCompressJob').and.returnValue($q.resolve({}));
         ZipService.compress("files");
         $scope.$digest();
-        expect(ZipService.submitCompressJob).toHaveBeenCalledWith("files", "file.zip");
+        expect(ZipService.submitCompressJob).toHaveBeenCalledWith("files", "file.zip", "zip");
     });
 
     it("should return success when compressing files", () => {
         let mockModal = {
-            result: $q.resolve({ destination: "file.zip" })
+            result: $q.resolve({ destination: "file.zip", compressionType: "zip" })
         };
         spyOn($uibModal, 'open').and.returnValue(mockModal);
         spyOn(ZipService, 'submitCompressJob').and.returnValue($q.resolve("success"));
@@ -282,7 +333,7 @@ describe("ZipService", function() {
 
     it("should toast failure when compressing files", () => {
         let mockModal = {
-            result: $q.resolve({ destination: "file.zip" })
+            result: $q.resolve({ destination: "file.zip", compressionType: "zip" })
         };
         spyOn($uibModal, 'open').and.returnValue(mockModal);
         spyOn(ZipService, 'submitCompressJob').and.returnValue($q.reject({}));
@@ -312,7 +363,7 @@ describe("ZipService", function() {
     });
 
     it("should toast on failure of submission of an extraction job", () => {
-        spyOn(ZipService, 'submitExtractJob').and.returnValue($q.reject());
+        spyOn(ZipService, 'submitExtractJob').and.returnValue($q.reject({ }));
         spyOn($mdToast, 'show');
         ZipService.extract("files");
         $scope.$digest();

@@ -1,23 +1,37 @@
 describe("ModalCompress", function() {
-    var ctrl,
-        $q,
-        file,
-        $componentController;
+    let ctrl;
+    let scope;
+    let element;
+    let $compile;
 
 
     // Mock only the necessary portal components
     beforeEach(angular.mock.module('portal'));
     beforeEach( ()=> {
-        angular.mock.inject(function(_$componentController_) {
-            $componentController = _$componentController_;
-            ctrl = $componentController(
-                'modalCompressComponent',
-                {},
-                {
-                    close: ()=>{},
-                    dismiss: ()=>{}
-                }
-            );
+        angular.mock.inject(function(_$componentController_,
+            _$rootScope_, _$q_, _$compile_) {
+            $compile = _$compile_;
+            scope = _$rootScope_.$new();
+
+            scope.mockResolve = { 
+                targzSupport: false
+            }
+            
+            scope.$apply();
+
+            let componentHtml = `
+                <modal-compress-component 
+                    resolve="mockResolve">
+                </modal-compress-component>
+            `;
+
+            element = angular.element(componentHtml);
+            element = $compile(element)(scope);
+
+            scope.$digest();
+            ctrl = element.controller('modal-compress-component');
+            ctrl.close = () => { };
+            ctrl.dismiss = () => { };
         });
     });
 
@@ -25,9 +39,32 @@ describe("ModalCompress", function() {
         expect(ctrl).toBeTruthy();
     });
 
-    it ('should append .zip to a destination if necessary', function() {
-        expect(ctrl.appendZipExtension("file")).toEqual("file.zip");
-        expect(ctrl.appendZipExtension("file.ZIP")).toEqual("file.ZIP");
+    it ('should selectively display .tar.gz options', () => {
+        expect(element.text()).not.toContain("Compression type");
+
+        scope.mockResolve = {
+            targzSupport: true
+        }
+        scope.$apply()
+        let componentHtml = `
+            <modal-compress-component 
+                resolve="mockResolve">
+            </modal-compress-component>
+        `;
+        let targzElement = angular.element(componentHtml);
+        targzElement = $compile(targzElement)(scope);
+        scope.$digest();
+
+        expect(targzElement.text()).toContain("Compression type");
+    });
+
+    it ('should append an extension to a destination if necessary', function() {
+        expect(ctrl.appendExtension("file")).toEqual("file.zip");
+        expect(ctrl.appendExtension("file.ZIP")).toEqual("file.ZIP");
+
+        ctrl.compressionType = "tgz";
+        expect(ctrl.appendExtension("file")).toEqual("file.tar.gz");
+        expect(ctrl.appendExtension("file.tar.GZ")).toEqual("file.tar.GZ");
     });
 
     it ('should close the modal with the zipfile name', function() {
@@ -36,7 +73,8 @@ describe("ModalCompress", function() {
         ctrl.targetName = 'test.zip';
         ctrl.doCompressFile();
         expect(ctrl.close).toHaveBeenCalledWith({$value: {
-            destination: 'test.zip'
+            destination: 'test.zip',
+            compressionType: 'zip'
         }});
     });
 

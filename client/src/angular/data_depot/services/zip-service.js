@@ -16,6 +16,7 @@ class ZipService {
         // in the data depot toolbar
         this.zippyAppId = null;
         this.extractAppId = null;
+        this.targzSupport = false;
         this.init();
     }
 
@@ -51,6 +52,13 @@ class ZipService {
                     }
                 )
                 this.extractAppId = this.getLatestApp(extractApps).id;
+                this.Apps.get(this.zippyAppId).then(
+                    (response) => {
+                        this.targzSupport = response.data.response.parameters.some(
+                            parameter => parameter.id == "compression_type"
+                        );
+                    }
+                )
             }
         );
     }
@@ -129,7 +137,7 @@ class ZipService {
         ) 
     }
     
-    submitCompressJob(files, destination) {
+    submitCompressJob(files, destination, compressionType) {
         let inputFiles = [ ];
         let filenames = "";
     
@@ -157,6 +165,10 @@ class ZipService {
                 filenames: filenames
             }
         }
+
+        if (this.targzSupport) {
+            jobData.parameters.compression_type = compressionType;
+        }
     
         return this.submitJobHelper(jobData);
     }
@@ -180,19 +192,33 @@ class ZipService {
     
     compress(files) {
         var modal = this.$uibModal.open({
-          component: 'modalCompressComponent',
+            component: 'modalCompressComponent',
+            resolve: {
+                targzSupport: () => {
+                    return this.targzSupport;
+                },
+                targetName: () => {
+                    if (files.length == 1) {
+                        return files[0].name + ".zip";
+                    }
+                    return "";
+                }
+            },
         });
     
         return modal.result.then( 
             (result)=> {
                 this.compressing = true;
-                return this.submitCompressJob(files, result.destination);
+                return this.submitCompressJob(files, result.destination, result.compressionType);
             }
         ).then(
             (result) => {
                 return result;
             },
             (error) => {
+                if (!error || error === "backdrop click") {
+                    return null;
+                }
                 return this.$mdToast.show(
                     this.$mdToast.simple()
                         .content("There was an error compressing your files")
@@ -214,6 +240,9 @@ class ZipService {
                 return result;
             },
             (error) => {
+                if (!error || error === "backdrop click") {
+                    return null;
+                }
                 return this.$mdToast.show(
                     this.$mdToast.simple()
                         .content("There was an error unzipping your files")
