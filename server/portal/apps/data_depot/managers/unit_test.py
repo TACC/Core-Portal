@@ -118,8 +118,9 @@ class TestPublicFileManager(TestCase):
             public_fm.copy('scr', 'dest')
 
     @patch('portal.apps.data_depot.managers.public.service_account')
-    @patch('portal.apps.data_depot.managers.public.FileManager.copy')
+    @patch('portal.apps.data_depot.managers.base.AgaveFileManager.copy')
     def test_public_file_mgr_copy_checks_auth_pass(self, mock_copy, mock_service_account):
+        mock_copy.return_value = "placeholder"
         mock_ac = MagicMock()
         mock_request = MagicMock()
         mock_service_account.return_value = mock_ac
@@ -127,8 +128,9 @@ class TestPublicFileManager(TestCase):
         mock_request.user.is_authenticated = True
         public_fm = PublicFileManager(mock_request)
 
-        public_fm.copy('source', 'dest')
+        result = public_fm.copy('source', 'dest')
         mock_copy.assert_called_with('source', 'dest')
+        self.assertEquals(result, mock_copy.return_value)
 
 class TestGoogleDriveFileManager(TestCase):
     fixtures = ['users', 'auth']

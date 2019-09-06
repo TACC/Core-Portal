@@ -75,6 +75,6 @@ class FileManager(AgaveFileManager):
 
     def copy(self, file_id_src, file_id_dest, **kwargs):
         if self.request and self.request.user.is_authenticated:
-            super(FileManager, self).copy(self, file_id_src, file_id_dest, **kwargs)
+            return super(FileManager, self).copy(file_id_src, file_id_dest, **kwargs)
         else:
             raise PermissionDenied
