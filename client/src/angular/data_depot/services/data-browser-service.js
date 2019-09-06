@@ -313,7 +313,7 @@ class DataBrowserService {
                 return f.copy({ system: result.target.system, path: result.target.path, resource: result.target.resource }).then( (result) => {
                     //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
                     this.currentState.busy = false;
-                    this.$mdToast.show($mdToast.simple()
+                    this.$mdToast.show(this.$mdToast.simple()
                         .content(this.$translate.instant('success_copy_file'))
                         .toastClass('success')
                         .parent($("#toast-container")));
@@ -329,7 +329,7 @@ class DataBrowserService {
             });
             return this.$q.all(copyPromises).then( (results) => {
                 this.currentState.busy = false;
-                this.browse(this.currentState.listing, this.apiParams);
+                this.browse(this.currentState.listing);
                 return results;
             });
         }
@@ -615,7 +615,7 @@ class DataBrowserService {
         });
         return this.$q.all(trashPromises).then( (val) => {
             this.currentState.busy = false;
-            this.browse(this.currentState.listing, this.apiParams);
+            this.browse(this.currentState.listing);
 
             this.$mdToast.show(this.$mdToast.simple()
                 .content(this.$translate.instant('success_trash_file'))
