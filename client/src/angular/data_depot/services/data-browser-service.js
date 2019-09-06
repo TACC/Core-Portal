@@ -485,7 +485,7 @@ class DataBrowserService {
                 //}
                 var movePromises = files.map( (f) => {
                     return f.move({ system: result.target.system, path: result.target.path }).then( (result) => {
-                        deselect([f]);
+                        this.deselect([f]);
                         //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
                         this.$mdToast.show(this.$mdToast.simple()
                             .content(this.$translate.instant('success_move_file'))
