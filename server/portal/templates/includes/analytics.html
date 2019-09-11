@@ -1,0 +1,47 @@
+{% if settings.GOOGLE_ANALYTICS_PROPERTY_ID %}
+  {% if settings.DEBUG %}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.GOOGLE_ANALYTICS_PROPERTY_ID }}"></script>
+    <script>
+      var dntStatus = 0;
+      // Check for Do Not Track settings.
+      function dntCheck() {
+        if (navigator.doNotTrack == "1" || window.doNotTrack == "1") {
+          dntStatus = 1;
+        }
+      }
+      dntCheck();
+      if (dntStatus == 1) {
+        // console.log("Do Not Track setting enabled. No metrics will be collected for this user.");
+      } else {
+        // Prep gtag data.
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('create', '{{ settings.GOOGLE_ANALYTICS_PROPERTY_ID }}', {'cookieDomain': 'none'});
+        gtag('config', '{{ settings.GOOGLE_ANALYTICS_PROPERTY_ID }}');
+      }
+    </script>
+  {% else %}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ settings.GOOGLE_ANALYTICS_PROPERTY_ID }}"></script>
+    <script>
+      var dntStatus = 0;
+      // Check for Do Not Track settings.
+      function dntCheck() {
+        if (navigator.doNotTrack == "1" || window.doNotTrack == "1") {
+          dntStatus = 1;
+        }
+      }
+      dntCheck();
+      if (dntStatus == 1) {
+        // console.log("Do Not Track setting enabled. No metrics will be collected for this user.");
+      } else {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ settings.GOOGLE_ANALYTICS_PROPERTY_ID }}');
+      }
+    </script>
+  {% endif %}
+{% endif %}

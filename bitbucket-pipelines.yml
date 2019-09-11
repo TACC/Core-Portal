@@ -1,0 +1,69 @@
+# This is a sample build configuration for Python.
+# Check our guides at https://confluence.atlassian.com/x/x4UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+options:
+  max-time: 10 # configure default 10 minute timeout
+
+pipelines:
+  default:
+    - parallel:
+      - step:
+          name: Server Side Unit Tests
+          image: python:2.7
+          caches:
+            - pip
+          script: # Modify the commands below to build your repository.
+            - cd server
+            - cp portal/templates/base.j2 portal/templates/base.html
+            - mkdir -p log/portal
+            - pip install -r requirements.txt
+            - coverage run --branch --source="portal" --omit "*/*unit_test.py" manage.py test
+              --pattern="*unit_test.py"
+              -v2 --settings="portal.settings.unit_test_settings"
+            - coverage xml -i
+            - bash <(curl -s https://codecov.io/bash) -cF python
+      - step:
+          name: Client Side Unit Tests
+          image: timbru31/node-chrome
+          caches:
+            - node
+          script: # Modify the commands below to build your repository.
+            - cd client
+            - npm install
+            - npm run test
+            - bash <(curl -s https://codecov.io/bash) -cF javascript
+
+  pull-requests:
+    '**':
+      - parallel:
+        - step:
+            name: Unit Tests
+            image: python:2.7
+            caches:
+              - pip
+            script: # Modify the commands below to build your repository.
+              - cd server
+              - cp portal/templates/base.j2 portal/templates/base.html
+              - mkdir -p log/portal
+              - pip install -r requirements.txt
+              - coverage run --branch --source="portal" --omit "*/*unit_test.py" manage.py test
+                --pattern="*unit_test.py"
+                -v2 --settings="portal.settings.unit_test_settings"
+              - coverage xml -i
+              - bash <(curl -s https://codecov.io/bash) -cF python
+        - step:
+            name: Client Side Unit Tests
+            image: timbru31/node-chrome
+            caches:
+              - node
+            script: # Modify the commands below to build your repository.
+              - cd client
+              - npm install
+              - npm run test
+              - bash <(curl -s https://codecov.io/bash) -cF javascript
+
+definitions:
+  caches:
+    node: ./client/node_modules
