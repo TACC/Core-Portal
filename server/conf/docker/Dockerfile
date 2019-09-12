@@ -12,8 +12,8 @@ RUN yum install -y python-pip python-setuptools gcc python-devel unzip wget git 
 RUN yum groupinstall -y 'Development Tools'
 
 #install nodejs
-RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
-RUN yum -y install nodejs
+# RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
+RUN yum -y install nodejs12
 
 #install uwsgi
 RUN pip install uwsgi

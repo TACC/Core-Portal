@@ -13,9 +13,9 @@ _DEBUG = True
 _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 
 # Namespace for portal
-_PORTAL_NAMESPACE = 'CEP'
-_PORTAL_DOMAIN = 'cep.dev'
-_WAGTAIL_SITE_NAME = 'cep.dev'
+_PORTAL_NAMESPACE = 'FRONTERA'
+_PORTAL_DOMAIN = 'frontera.dev'
+_WAGTAIL_SITE_NAME = 'frontera.dev'
 
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
@@ -26,7 +26,7 @@ _PORTAL_ADMIN_USERNAME = 'portal_admin'
 
 # Database.
 _DJANGO_DB_ENGINE= 'django.db.backends.postgresql'
-_DJANGO_DB_HOST= 'cep_prtl_postgres'
+_DJANGO_DB_HOST= 'frontera_prtl_postgres'
 _DJANGO_DB_PORT= '5432'
 _DJANGO_DB_NAME= 'dev'
 _DJANGO_DB_USER= 'dev'
@@ -77,13 +77,13 @@ _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
 
 _BROKER_URL_USERNAME = 'dev'
 _BROKER_URL_PWD = 'dev'
-_BROKER_URL_HOST = 'cep_prtl_rabbitmq'
+_BROKER_URL_HOST = 'frontera_prtl_rabbitmq'
 _BROKER_URL_PORT = '5672'
 _BROKER_URL_VHOST = 'dev'
 
 _RESULT_BACKEND_USERNAME = 'dev'
 _RESULT_BACKEND_PWD = 'dev'
-_RESULT_BACKEND_HOST = 'cep_prtl_redis'
+_RESULT_BACKEND_HOST = 'frontera_prtl_redis'
 _RESULT_BACKEND_PORT = '6379'
 _RESULT_BACKEND_DB = '0'
 
@@ -91,7 +91,7 @@ _RESULT_BACKEND_DB = '0'
 # ELASTICSEARCH SETTINGS
 ########################
 
-_ES_HOSTS = 'cep_prtl_elasticsearch'
+_ES_HOSTS = 'frontera_prtl_elasticsearch'
 
 ########################
 # CELERY SETTINGS
@@ -190,7 +190,7 @@ _SITE_ID=1
 _HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'cep_prtl_elasticsearch:9200/',
+        'URL': 'frontera_prtl_elasticsearch:9200/',
         'INDEX_NAME': 'cms',
     }
 }
