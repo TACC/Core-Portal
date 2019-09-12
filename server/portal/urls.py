@@ -51,19 +51,6 @@ urlpatterns += [
     url(r'^terms/', include('termsandconditions.urls')),
 
     # auth.
-    url(r'^accounts/', include('portal.apps.accounts.urls',
-                               namespace='portal_accounts')),
-    url(r'^api/accounts/',
-        include(
-            'portal.apps.accounts.api.urls',
-            namespace='portal_accounts_api'
-        )),
-
-    url(r'^register/$',
-        RedirectView.as_view(
-            pattern_name='portal_accounts:register',
-            permanent=True),
-        name='register'),
     url(r'^auth/', include('portal.apps.auth.urls',
                            namespace='portal_auth')),
     url(r'^logout/$', portal_logout,
