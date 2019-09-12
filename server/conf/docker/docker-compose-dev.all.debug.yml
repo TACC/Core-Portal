@@ -122,7 +122,7 @@ services:
       - 8.8.4.4
     stdin_open: true
     tty: true
-    command: ['python', './manage.py', 'runserver', '0.0.0.0:8000']
+    command: ['python3', './manage.py', 'runserver', '0.0.0.0:8000']
     container_name: frontera_prtl_django
     hostname: frontera_prtl_django
     networks:

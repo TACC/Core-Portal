@@ -25,7 +25,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
-from django.contrib.auth.views import logout as portal_logout
+from django.contrib.auth.views import LogoutView as portal_logout
 from portal.apps.auth.views import agave_oauth as login
 from portal.views.views import project_version as portal_version
 
@@ -42,7 +42,7 @@ admin.autodiscover()
 #         {'sitemaps': {'cmspages': CMSSitemap}}),
 # ]
 
-urlpatterns += [
+urlpatterns = [
 
     # admin.
     url(r'^admin/', admin.site.urls),

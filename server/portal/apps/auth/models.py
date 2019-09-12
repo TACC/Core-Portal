@@ -23,7 +23,7 @@ class AgaveOAuthToken(models.Model):
 
     Use this class to store login details as well as refresh a token.
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='agave_oauth')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='agave_oauth', on_delete=models.CASCADE)
     token_type = models.CharField(max_length=255)
     scope = models.CharField(max_length=255)
     access_token = models.CharField(max_length=255)

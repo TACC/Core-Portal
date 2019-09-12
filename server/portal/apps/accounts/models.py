@@ -20,7 +20,8 @@ class PortalProfile(models.Model):
     """
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        related_name='profile'
+        related_name='profile',
+        on_delete=models.CASCADE
     )
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)

@@ -127,7 +127,7 @@ TEMPLATES = [
         # 'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                # default processors
+                # Django core processors
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -140,8 +140,6 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.template.context_processors.static',
                 'django_settings_export.settings_export',
-                'cms.context_processors.cms_settings',      # Django CMS.
-                'sekizai.context_processors.sekizai',       # CMS Static Files.
                 'ws4redis.context_processors.default',
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',

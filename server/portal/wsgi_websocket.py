@@ -8,9 +8,7 @@ https://django-websocket-redis.readthedocs.org/en/latest/running.html#django-wit
 import os
 import gevent.socket
 import redis.connection
-from ws4redis.uwsgi_runserver import uWSGIWebsocketServer
-
-
 redis.connection.socket = gevent.socket
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "portal.settings.settings")
+os.environ.update(DJANGO_SETTINGS_MODULE='portal.settings.settings')
+from ws4redis.uwsgi_runserver import uWSGIWebsocketServer
 application = uWSGIWebsocketServer()
