@@ -5,6 +5,7 @@ import logging
 import os
 import time
 import requests
+import binascii
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -34,7 +35,7 @@ def agave_oauth(request):
     client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
 
     session = request.session
-    session['auth_state'] = os.urandom(24).encode('hex')
+    session['auth_state'] = str(binascii.hexlify(os.urandom(24)), 'ascii')
     next_page = request.GET.get('next')
     if next_page:
         session['next'] = next_page
@@ -110,13 +111,10 @@ def agave_oauth_callback(request):
 
             # Synchronously do the onboarding preparation
             # new_user_setup_check(user)
-            profile = PortalProfile.objects.get(user=user)
-            profile.setup_complete = True
-            profile.save()
 
             # Apply asynchronous long onboarding calls
-            # logger.info("Starting celery task for onboarding {username}".format(username=user.username))
-            # setup_user.apply_async(args=[user.username])
+            logger.info("Starting celery task for onboarding {username}".format(username=user.username))
+            setup_user.apply_async(args=[user.username])
         else:
             messages.error(
                 request,
