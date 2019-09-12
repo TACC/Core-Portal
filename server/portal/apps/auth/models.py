@@ -104,7 +104,7 @@ class AgaveOAuthToken(models.Model):
     def update(self, **kwargs):
         """Update and save.
         """
-        for key, val in kwargs.items()
+        for key, val in kwargs.items():
             setattr(self, key, val)
         self.save()
 

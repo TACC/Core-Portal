@@ -1,3 +1,22 @@
 Django==2.2.5
+PyJWT==1.7.1
+agavepy==0.9.3
+celery==4.3.0
+cryptography==2.7
+django-bootstrap4==1.0.1
+django-filer==1.5.0
+django-mptt==0.10.0
+django-recaptcha==2.0.5
+django-termsandconditions==1.2.15
+django-websocket-redis==0.5.2
+easy-thumbnails==2.6
+gevent==1.4.0
+kombu==4.6.4
+mock==3.0.5
+pycrypto==2.6.1
+-e git+https://bitbucket.org/taccaci/pytas.git@v1.4.0#egg=pytas
 pytz==2019.2
+redis==3.3.8
+requests==2.22.0
 sqlparse==0.3.0
+wagtail==2.6.1

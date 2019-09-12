@@ -75,7 +75,6 @@ INSTALLED_APPS = [
     'mptt',
     'bootstrap4',
     'termsandconditions',
-    'impersonate',
 
     # Websockets.
     'ws4redis',
