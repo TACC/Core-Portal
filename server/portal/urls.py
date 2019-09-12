@@ -23,9 +23,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.conf.urls.static import static
-from django.views.generic import RedirectView
 
-from django.contrib.auth.views import LogoutView as portal_logout
 from portal.apps.auth.views import agave_oauth as login
 from portal.views.views import project_version as portal_version
 
@@ -34,15 +32,13 @@ from django.urls import path, re_path, include
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.core import urls as wagtail_urls
+from wagtail.contrib.sitemaps.views import sitemap
 
 admin.autodiscover()
 
-# urlpatterns = [
-#     url(r'^sitemap\.xml$', sitemap,
-#         {'sitemaps': {'cmspages': CMSSitemap}}),
-# ]
-
 urlpatterns = [
+
+    url(r'^sitemap\.xml$', sitemap),
 
     # admin.
     url(r'^admin/', admin.site.urls),
@@ -50,11 +46,13 @@ urlpatterns = [
     # terms-and-conditions
     url(r'^terms/', include('termsandconditions.urls')),
 
+    # accounts.
+    url(r'^accounts/', include('portal.apps.accounts.urls',
+                               namespace='portal_accounts')),
+
     # auth.
     url(r'^auth/', include('portal.apps.auth.urls',
                            namespace='portal_auth')),
-    url(r'^logout/$', portal_logout,
-        {'next_page': '/auth/logged-out/'}, name='logout'),
     url(r'^login/$', login),
 
     # version check.

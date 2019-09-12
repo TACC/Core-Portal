@@ -121,7 +121,7 @@ def agave_oauth_callback(request):
                 'Authentication failed. Please try again. If this problem '
                 'persists please submit a support ticket.'
             )
-            return HttpResponseRedirect(reverse('portal_accounts:login'))
+            return HttpResponseRedirect(reverse('portal_accounts:logout'))
     else:
         if 'error' in request.GET:
             error = request.GET['error']
@@ -131,7 +131,7 @@ def agave_oauth_callback(request):
                        'Authentication failed! Did you forget your password? '
                        '<a href="%s">Click here</a> to reset your password.' %
                        reverse('portal_accounts:password_reset'))
-        return HttpResponseRedirect(reverse('portal_accounts:login'))
+        return HttpResponseRedirect(reverse('portal_accounts:logout'))
 
     if 'next' in request.session:
         next_uri = request.session.pop('next')

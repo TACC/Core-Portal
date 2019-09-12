@@ -1,6 +1,7 @@
 from portal.apps.accounts.models import PortalProfile
 from celery import shared_task
 import logging
+from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
 
@@ -10,6 +11,7 @@ def setup_user(self, username):
 
         Called asynchronously from portal.apps.auth.views.agave_oauth_callback
     """
+    user = get_user_model().objects.get(username=username)
     profile = PortalProfile.objects.get(user=user)
     profile.setup_complete = True
     profile.save()
