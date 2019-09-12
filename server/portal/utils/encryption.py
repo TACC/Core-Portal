@@ -2,7 +2,7 @@
 .. :module:: portal.utils.encryption
    :synopsis: Utilities to handle encryption and ssh keys
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 import base64
 from Crypto.PublicKey import RSA

@@ -1,18 +1,13 @@
 """Auth models
 """
-from __future__ import unicode_literals
-
 import logging
 import time
-import six
 import requests
 from requests import HTTPError
 from django.db import models
 from django.conf import settings
 from agavepy.agave import Agave
 from agavepy import agave
-
-# Create your models here.
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -109,15 +104,12 @@ class AgaveOAuthToken(models.Model):
     def update(self, **kwargs):
         """Update and save.
         """
-        for key, val in six.iteritems(kwargs):
+        for key, val in kwargs.items()
             setattr(self, key, val)
         self.save()
 
-    def __unicode__(self):
-        return '<{} - {}>'.format(self.user.username, self.token_type)
-
     def __str__(self):
-        return self.__unicode__()
+        return '<{} - {}>'.format(self.user.username, self.token_type)
 
     def __repr__(self):
         return 'AgaveOAuthToken(user={},token_type={},...)'.\
@@ -144,7 +136,7 @@ class AgaveServiceStatus(object):
             resp = requests.get('%s/status/%s' % (self.status_io_base_url, self.page_id))
             data = resp.json()
             if 'result' in data:
-                for k, v, in six.iteritems(data['result']):
+                for k, v, in data['result'].items():
                     setattr(self, k, v)
             else:
                 raise Exception(data)

@@ -18,25 +18,29 @@ Including another URLconf
     :synopsis: Main URLs
 """
 
-from cms.sitemaps import CMSSitemap
 from django.conf import settings
 from django.conf.urls import include, url
-from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
-from django.contrib.auth.views import logout as des_logout
+from django.contrib.auth.views import logout as portal_logout
 from portal.apps.auth.views import agave_oauth as login
-from portal.views.views import project_version as des_version
+from portal.views.views import project_version as portal_version
+
+from django.urls import path, re_path, include
+
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.documents import urls as wagtaildocs_urls
+from wagtail.core import urls as wagtail_urls
 
 admin.autodiscover()
 
-urlpatterns = [
-    url(r'^sitemap\.xml$', sitemap,
-        {'sitemaps': {'cmspages': CMSSitemap}}),
-]
+# urlpatterns = [
+#     url(r'^sitemap\.xml$', sitemap,
+#         {'sitemaps': {'cmspages': CMSSitemap}}),
+# ]
 
 urlpatterns += [
 
@@ -54,18 +58,7 @@ urlpatterns += [
             'portal.apps.accounts.api.urls',
             namespace='portal_accounts_api'
         )),
-    url(r'^onboarding/',
-        include(
-            'portal.apps.onboarding.urls',
-            namespace='portal_onboarding'
-        )
-        ),
-    url(r'^api/onboarding/',
-        include(
-            'portal.apps.onboarding.api.urls',
-            namespace='portal_onboarding_api'
-        )
-        ),
+
     url(r'^register/$',
         RedirectView.as_view(
             pattern_name='portal_accounts:register',
@@ -73,49 +66,15 @@ urlpatterns += [
         name='register'),
     url(r'^auth/', include('portal.apps.auth.urls',
                            namespace='portal_auth')),
-    url(r'^logout/$', des_logout,
+    url(r'^logout/$', portal_logout,
         {'next_page': '/auth/logged-out/'}, name='logout'),
     url(r'^login/$', login),
 
-    url(r'^api/data-depot/', include('portal.apps.data_depot.api.urls',
-                                     namespace='data_depot_api')),
-    url(r'^api/workspace/', include('portal.apps.workspace.api.urls',
-                                    namespace='workspace_api')),
-    url(r'^api/projects/', include('portal.apps.projects.urls',
-                                   namespace='projects_api')),
-    url(r'^api/search/', include('portal.apps.search.api.urls',
-                                 namespace='search')),
-    url(r'^api/users/', include('portal.apps.users.urls',
-                                namespace='users')),
-    url(r'^workbench/', include('portal.apps.workbench.urls',
-                                namespace='workbench')),
-    url(r'^public_data/', include('portal.apps.public_data.urls',
-                                  namespace='public_data')),
-    url(r'^tickets/', include('portal.apps.djangoRT.urls',
-                              namespace='tickets')),
-
-    # user setup
-    url(r'^api/onboarding/', include('portal.apps.onboarding.api.urls',
-                                     namespace='setup')),
-
-    # notifications
-    url(r'^api/notifications/', include('portal.apps.notifications.urls',
-                                        namespace='notifications')),
-
-    # webhooks
-    url(r'^webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
-
     # version check.
-    url(r'^version/', des_version),
+    url(r'^version/', portal_version),
 
-    # googledrive
-    url(r'^accounts/applications/googledrive/', include('portal.apps.googledrive_integration.urls',
-                                                        namespace='googledrive_integration')),
-
-    # cms forms.
-    url(r'^', include('djangocms_forms.urls')),
-
-    # cms handles everything else.
-    url(r'^', include('cms.urls')),
+    re_path(r'^cms/', include(wagtailadmin_urls)),
+    re_path(r'^documents/', include(wagtaildocs_urls)),
+    re_path(r'^pages/', include(wagtail_urls)),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

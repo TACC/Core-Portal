@@ -3,13 +3,8 @@ import logging
 import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
-#from django.contrib.auth.signals import user_logged_out
-#from django.contrib import messages
 from django.contrib.auth.backends import ModelBackend
-#from django.core.exceptions import ValidationError
-#from django.dispatch import receiver
 from portal.apps.accounts.models import PortalProfile
-from portal.apps.onboarding.execute import prepare_setup_steps
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)

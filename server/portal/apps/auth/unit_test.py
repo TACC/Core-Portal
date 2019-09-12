@@ -58,7 +58,7 @@ class TestAgaveOAuthBackend(TransactionTestCase):
             }
         }
         result = self.backend.authenticate(backend='agave', token='1234')
-        self.assertEquals(result.username, "testuser")
+        self.assertEqual(result.username, "testuser")
     
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
     def test_update_existing_user(self):
@@ -84,7 +84,7 @@ class TestAgaveOAuthBackend(TransactionTestCase):
         }
         result = self.backend.authenticate(backend='agave', token='1234')
         # Result user object should be the same
-        self.assertEquals(result, user)
+        self.assertEqual(result, user)
         # Existing user object should be updated
         user = get_user_model().objects.get(username="testuser")
-        self.assertEquals(user.email, "test@user.com")
+        self.assertEqual(user.email, "test@user.com")

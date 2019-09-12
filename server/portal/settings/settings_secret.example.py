@@ -15,6 +15,7 @@ _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
 _PORTAL_DOMAIN = 'cep.dev'
+_WAGTAIL_SITE_NAME = 'cep.dev'
 
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'

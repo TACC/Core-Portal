@@ -1,4 +1,4 @@
-{% load sd2e_nav_tags menu_tags cms_tags staticfiles %}
+{% load staticfiles %}
 {% if settings.PORTAL_NAVBAR_BACKGROUND_FILENAME %}
 <nav class="navbar navbar-default" style="background-image: url('{{ settings.PORTAL_NAVBAR_BACKGROUND_FILENAME }}');">
 {% else %}
@@ -32,7 +32,7 @@
     <div class="collapse navbar-collapse" id="main-navigation">
       <ul class="nav navbar-nav">
         <!-- All top nav elements handled here. -->
-        {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
+        <!-- {% show_menu 0 100 1 100 "includes/cms_menu.html" %} -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if user.is_authenticated %}

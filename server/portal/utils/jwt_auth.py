@@ -2,7 +2,7 @@
 .. module:: portal.utils.jwt_auth
    :synopsis: Utilities to process agave JWT.
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from base64 import b64decode
 from django.utils.six import text_type

@@ -14,7 +14,7 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.auth.tasks import setup_user
-from portal.apps.onboarding.execute import new_user_setup_check
+# from portal.apps.onboarding.execute import new_user_setup_check
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
 
 def logged_out(request):
-    return render(request, 'designsafe/apps/auth/logged_out.html')
+    return render(request, 'portal/apps/auth/logged_out.html')
 
 
 # Create your views here.
@@ -109,11 +109,14 @@ def agave_oauth_callback(request):
             # messages.success(request, msg_tmpl % (user.first_name, user.last_name))
 
             # Synchronously do the onboarding preparation
-            new_user_setup_check(user)
+            # new_user_setup_check(user)
+            profile = PortalProfile.objects.get(user=user)
+            profile.setup_complete = True
+            profile.save()
 
             # Apply asynchronous long onboarding calls
-            logger.info("Starting celery task for onboarding {username}".format(username=user.username))
-            setup_user.apply_async(args=[user.username])
+            # logger.info("Starting celery task for onboarding {username}".format(username=user.username))
+            # setup_user.apply_async(args=[user.username])
         else:
             messages.error(
                 request,

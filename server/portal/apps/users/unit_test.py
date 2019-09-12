@@ -119,4 +119,4 @@ class TestGetAllocations(TestCase):
             "ls5.tacc.utexas.edu": [ "myproject", "myotherproject" ]
         }
         result = get_allocations("username")
-        self.assertEquals(result, expected)
+        self.assertEqual(result, expected)
