@@ -4,7 +4,7 @@
 version: "3"
 services:
   redis:
-    image: redis:4.0
+    image: redis:5.0
     volumes:
       - frontera_prtl_redis_data:/data
     ports:
@@ -15,7 +15,7 @@ services:
       - frontera_prtl_net
 
   rabbitmq:
-    image: rabbitmq:3.6.10-management
+    image: rabbitmq:3.7.17-management
     volumes:
       - frontera_prtl_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@frontera_prtl_rabbitmq
     env_file: ../env_files/rabbitmq.env
@@ -37,7 +37,7 @@ services:
       - frontera_prtl_net
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
     ulimits:
       memlock: -1
     environment:
@@ -53,7 +53,7 @@ services:
       - frontera_prtl_net
 
   postgres:
-    image: postgres:10.3
+    image: postgres:11.5
     volumes:
       - frontera_prtl_postgres_data:/var/lib/postgresql/data/portal
     ports:
