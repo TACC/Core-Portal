@@ -1,6 +1,6 @@
 # TACC Core Experience Portal
 
-* v0.1.0
+* v2.0.0
 
 [![codecov](https://codecov.io/bb/taccaci/core-exp-portal/branch/master/graph/badge.svg?token=4KdoK5U2NV)](https://codecov.io/bb/taccaci/core-exp-portal)
 
@@ -8,8 +8,8 @@
 
 * Docker
 * Docker Compose
-* Python 2.7.15
-* Nodejs 8.x
+* Python 3.6.8
+* Nodejs 12.x
 
 The CEP Portal can be run using [Docker][1] and [Docker Compose][2]. You will
 need both Docker and Docker Compose pre-installed on the system you wish to run the portal
@@ -50,9 +50,9 @@ Create `server/portal/settings/settings_secret.py` containing what is in `secret
 #### Initialize the application in the `cep_prtl_django` container:
 
     docker exec -it cep_prtl_django /bin/bash
-    python manage.py migrate
-    python manage.py createsuperuser
-    python manage.py collectstatic
+    python3 manage.py migrate
+    python3 manage.py createsuperuser
+    python3 manage.py collectstatic
 
 
 ### Setup local accessing the portal:
