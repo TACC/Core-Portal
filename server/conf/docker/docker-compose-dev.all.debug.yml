@@ -42,6 +42,7 @@ services:
       memlock: -1
     environment:
       - ES_HEAP_SIZE:2g
+      - discovery.type=single-node
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - frontera_prtl_es_data:/usr/share/elasticsearch/data
