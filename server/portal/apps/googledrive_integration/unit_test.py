@@ -3,10 +3,11 @@
 .. :module:: portal.apps.googledrive_integration.unit_test
    :synopsis: Google Drive integration app unit tests.
 """
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth import get_user_model, signals
 from django.core.urlresolvers import reverse
 from portal.apps.googledrive_integration.models import GoogleDriveUserToken
+from portal.apps.googledrive_integration.views import get_client_config
 from mock import patch, MagicMock
 from google.oauth2.credentials import Credentials
 from requests import Response
@@ -192,3 +193,13 @@ class TestGoogleDriveUserTokenModel(TestCase):
         token.save()
 
         self.assertEquals(test_user.googledrive_user_token, token)
+
+class TestGoogleDriveConfig(TestCase):
+    def test_client_config(self):
+        config = get_client_config()
+        self.assertEqual(config['web']['client_secret'], 'test')
+
+    @override_settings(EXTERNAL_RESOURCE_SECRETS={})
+    def test_no_external_resource(self):
+        with self.assertRaises(Exception):
+            get_client_config()

@@ -18,14 +18,17 @@ from portal.apps.googledrive_integration.tasks import check_connection
 import logging
 logger = logging.getLogger(__name__)
 
-googledrive_secrets = settings.EXTERNAL_RESOURCE_SECRETS['google-drive']
-
-CLIENT_CONFIG = {'web': {
-    "client_id": googledrive_secrets['client_id'],
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://accounts.google.com/o/oauth2/token",
-    "client_secret": googledrive_secrets['client_secret']
-}}
+def get_client_config():
+    if 'google-drive' not in settings.EXTERNAL_RESOURCE_SECRETS:
+        raise Exception("Google Drive not configured")
+    googledrive_secrets = settings.EXTERNAL_RESOURCE_SECRETS['google-drive']
+    CLIENT_CONFIG = {'web': {
+        "client_id": googledrive_secrets['client_id'],
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://accounts.google.com/o/oauth2/token",
+        "client_secret": googledrive_secrets['client_secret']
+    }}
+    return CLIENT_CONFIG
 
 @login_required
 def index(request):
@@ -54,7 +57,7 @@ def index(request):
 def initialize_token(request):
     redirect_uri = reverse('googledrive_integration:oauth2_callback')
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
-        CLIENT_CONFIG,
+        get_client_config(),
         scopes=['https://www.googleapis.com/auth/drive',])
     flow.redirect_uri = request.build_absolute_uri(redirect_uri)
 
@@ -82,7 +85,7 @@ def oauth2_callback(request):
     try:
         redirect_uri = reverse('googledrive_integration:oauth2_callback')
         flow = google_auth_oauthlib.flow.Flow.from_client_config(
-            CLIENT_CONFIG,
+            get_client_config(),
             scopes=['https://www.googleapis.com/auth/drive',],
             state=state)
         flow.redirect_uri = request.build_absolute_uri(redirect_uri)
