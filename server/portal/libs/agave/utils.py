@@ -2,10 +2,9 @@
 
 .. module:: portal.libs.agave.utils
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from django.conf import settings
 from agavepy.agave import Agave
 
@@ -80,7 +79,7 @@ def walk(client, system, path, bottom_up=False, yield_base=True):
     """
     from portal.libs.agave.models.files import BaseFile
     files = client.files.list(systemId=system,
-                              filePath=urllib.quote(path))
+                              filePath=urllib.parse.quote(path))
     for json_file in files:
         json_file.pop('_links', None)
         if json_file['name'] == '.':
@@ -140,13 +139,13 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
     listing = []
     offset = 0
     page = client.files.list(systemId=system,
-                             filePath=urllib.quote(path),
+                             filePath=urllib.parse.quote(path),
                              offset=offset)
     while page:
         listing += page
         offset += 100
         page = client.files.list(systemId=system,
-                                 filePath=urllib.quote(path),
+                                 filePath=urllib.parse.quote(path),
                                  offset=offset)
 
     folders = []

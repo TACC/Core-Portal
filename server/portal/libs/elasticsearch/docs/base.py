@@ -2,7 +2,6 @@
 .. module: portal.libs.elasticsearch.docs.base
    :synopsis: Wrapper classes for ES different doc types.
 """
-from __future__ import unicode_literals, absolute_import
 from future.utils import python_2_unicode_compatible
 import logging
 import copy
@@ -70,9 +69,9 @@ class IndexedProject(DocType):
             'username': Keyword(),
             'fullName': Text()
         }
-    ) 
+    )
 
-    @classmethod 
+    @classmethod
     def from_id(cls, projectId):
         search = cls.search()
         search = search.query()
@@ -127,7 +126,7 @@ class IndexedFile(DocType):
             'execute': Boolean()
         })
     })
-   
+
     def save(self, **kwargs):
         self.lastUpdated = datetime.datetime.now()
         return super(IndexedFile, self).save(**kwargs)
@@ -195,7 +194,7 @@ class BaseESResource(object):
     """
     def __init__(self, wrapped_doc=None, **kwargs):
         self._wrap(wrapped_doc, **kwargs)
-        
+
     def to_dict(self):
         """Return wrapped doc as dict"""
         return self._wrapped.to_dict()
@@ -213,7 +212,7 @@ class BaseESResource(object):
         """
         _wrapped = object.__getattribute__(self, '_wrapped')
         if _wrapped and hasattr(_wrapped, name):
-            return getattr(_wrapped, name) 
+            return getattr(_wrapped, name)
 
     def __setattr__(self, name, value):
         _wrapped = object.__getattribute__(self, '_wrapped')

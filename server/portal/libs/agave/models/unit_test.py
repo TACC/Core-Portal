@@ -2,7 +2,6 @@
 .. :module:: portal.libs.agave.models.unit_test
    :synopsis: Unit tests for Agave model representation.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import os
 import json

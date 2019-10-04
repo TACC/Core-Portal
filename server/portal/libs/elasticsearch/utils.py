@@ -1,7 +1,6 @@
 """
 Utilities to help on elastic search implementations.
 """
-from __future__ import unicode_literals, absolute_import
 import json
 import os
 import logging
@@ -68,7 +67,7 @@ def index_agave(systemId, client, username, filePath='/', update_pems=False):
 
 def index_level(path, folders, files, systemId, username, reindex=False):
     """
-    Index a set of folders and files corresponding to the output from one 
+    Index a set of folders and files corresponding to the output from one
     iteration of walk_levels
     """
     from portal.libs.elasticsearch.docs.files import BaseESFile

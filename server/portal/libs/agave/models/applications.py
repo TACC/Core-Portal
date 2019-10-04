@@ -2,7 +2,6 @@
 .. :module:: portal.libs.agave.models.applications
    :synopsis: Classes to represent Agave Applications
 """
-from __future__ import unicode_literals, absolute_import
 from collections import namedtuple
 import logging
 import json
@@ -341,7 +340,7 @@ class Application(BaseAgaveResource):
 
     def save(self):
         """Save this app record.
-        
+
         .. note:: This is to be used when instantiating the app from the class, e.g. from_dict,
             and the app does not already exist.
         """
@@ -349,7 +348,7 @@ class Application(BaseAgaveResource):
         self._ac.apps.add(
             body=self.to_dict()
         )
-    
+
     def clone(self, client, depl_path=None, exec_sys=None, depl_sys=None, name=None, ver=None):
         """Clone this application record
         """

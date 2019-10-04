@@ -3,7 +3,6 @@
    :synopsis: Necessary classes to serialize a class which
     wrapps an agave object into a dict.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import json
 import datetime

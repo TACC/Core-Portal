@@ -2,7 +2,6 @@
 .. module: portal.libs.elasticsearch.docs.files
    :synopsis: Wrapper classes for ES ``files`` doc type.
 """
-from __future__ import unicode_literals, absolute_import
 from future.utils import python_2_unicode_compatible
 import logging
 import os
@@ -58,23 +57,23 @@ class BaseESFile(BaseESResource):
 
     def children(self, limit=100):
         """
-        Yield all children (i.e. documents whose basePath matches self.path) by 
+        Yield all children (i.e. documents whose basePath matches self.path) by
         paginating with the search_after api.
 
         """
         res, search_after = self._index_cls(self._reindex).children(
                                                 self.system,
-                                                self.path, 
+                                                self.path,
                                                 limit=limit)
         for doc in res:
                 yield BaseESFile(self._username, wrapped_doc=doc)
 
         while not len(res) < limit: # If the number or results doesn't match the limit, we're done paginating.
-            # Retrieve the sort key from the last element then use  
+            # Retrieve the sort key from the last element then use
             # search_after to get the next page of results
             res, search_after = self._index_cls(self._reindex).children(
                                                 self.system,
-                                                self.path, 
+                                                self.path,
                                                 limit=limit,
                                                 search_after=search_after)
             for doc in res:

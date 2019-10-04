@@ -2,12 +2,10 @@
 .. module: portal.libs.agave.models.files
    :synopsis: Models to represent resources pertaining to Agave Files
 """
-from __future__ import absolute_import
 import os
 import json
 import logging
-import urlparse
-import urllib
+import urllib.parse
 from requests.exceptions import HTTPError
 from agavepy.async import AgaveAsyncResponse, Error
 from future.utils import python_2_unicode_compatible
@@ -119,10 +117,10 @@ class BaseFile(BaseAgaveResource):
         self._wrapped['jupyter_url'] = None
 
     def __str__(self):
-        return u'agave://{}/{}'.format(self.system, self.path)
+        return 'agave://{}/{}'.format(self.system, self.path)
 
     def __repr__(self):
-        return u'<{}: {}/{}>'.format(self.__class__.__name__,
+        return '<{}: {}/{}>'.format(self.__class__.__name__,
                                      self.system, self.path)
 
     @property
@@ -132,7 +130,7 @@ class BaseFile(BaseAgaveResource):
         :returns: Agave URI
         :rtype: str
         """
-        return u'agave://{}/{}'.format(self.system, self.path)
+        return 'agave://{}/{}'.format(self.system, self.path)
 
     def children(self, offset=0, limit=100):
         """List of children
@@ -254,8 +252,8 @@ class BaseFile(BaseAgaveResource):
             self._populate_obj()
         try:
             metadata = self._links.metadata
-            href = urlparse.urlparse(metadata.href)
-            query = urlparse.parse_qs(href.query)
+            href = urllib.parse.urlparse(metadata.href)
+            query = urllib.parse.parse_qs(href.query)
             if 'q' in query:
                 meta = json.loads(query['q'][0])
                 return meta.get('associationIds')
@@ -287,7 +285,7 @@ class BaseFile(BaseAgaveResource):
         """
         if self._links is None:
             res = self._ac.files.list(systemId=self.system,
-                                      filePath=urllib.quote(self.path))
+                                      filePath=urllib.parse.quote(self.path))
             res[0]['name'] = os.path.basename(res[0].path)
             self._wrapped = res[0]
         return self
@@ -311,7 +309,7 @@ class BaseFile(BaseAgaveResource):
         if not remote_url:
             remote_url = 'agave://{}/{}'.format(
                 from_system,
-                urllib.quote(from_path)
+                urllib.parse.quote(from_path)
             )
         file_name = os.path.split(from_path)[1]
         _retries = retries
@@ -319,7 +317,7 @@ class BaseFile(BaseAgaveResource):
             try:
                 result = self._ac.files.importData(
                     systemId=self.system,
-                    filePath=urllib.quote(self.path),
+                    filePath=urllib.parse.quote(self.path),
                     fileName=str(file_name),
                     urlToIngest=remote_url
                 )
@@ -334,7 +332,7 @@ class BaseFile(BaseAgaveResource):
                 )
                 _retries -= 1
 
-        if unicode(async_status) == u'FAILED':
+        if str(async_status) == 'FAILED':
             logger.error(
                 'Import Data failed from: systemId=%s, filePath=%s. '
                 'to: systemId=%s, filePath=%s '
@@ -380,7 +378,7 @@ class BaseFile(BaseAgaveResource):
         body = {'action': 'copy',
                 'path': os.path.join(dest_path, file_name)}
         copy_result = self._ac.files.manage(systemId=self.system,
-                                            filePath=urllib.quote(self.path),
+                                            filePath=urllib.parse.quote(self.path),
                                             body=body)
         return BaseFile.listing(self._ac, self.system, copy_result['path'])
 
@@ -391,7 +389,7 @@ class BaseFile(BaseAgaveResource):
         :rtype: bool
         """
         self._ac.files.delete(systemId=self.system,
-                              filePath=urllib.quote(self.path))
+                              filePath=urllib.parse.quote(self.path))
 
         return True
 
@@ -438,7 +436,7 @@ class BaseFile(BaseAgaveResource):
         :rtype: list
         """
         return self._agave.files.getHistory(systemId=self.system,
-                                            filePath=urllib.quote(self.path))
+                                            filePath=urllib.parse.quote(self.path))
 
     # pylint: disable=too-many-arguments
     @classmethod
@@ -470,7 +468,7 @@ class BaseFile(BaseAgaveResource):
         """
 
         list_result = client.files.list(systemId=system,
-                                        filePath=urllib.quote(path),
+                                        filePath=urllib.parse.quote(path),
                                         offset=offset,
                                         limit=limit+1)
         if not list_result:
@@ -495,7 +493,7 @@ class BaseFile(BaseAgaveResource):
 
         """
         pems = self._ac.files.listPermissions(systemId=self.system,
-                                              filePath=urllib.quote(self.path))
+                                              filePath=urllib.parse.quote(self.path))
         return pems
 
     def download(self):
@@ -509,7 +507,7 @@ class BaseFile(BaseAgaveResource):
             raise ValueError('Cannot download a folder')
 
         resp = self._ac.files.download(systemId=self.system,
-                                       filePath=urllib.quote(self.path))
+                                       filePath=urllib.parse.quote(self.path))
         return resp.content
 
     def postit(self, force=True, max_uses=3, lifetime=600):
@@ -528,7 +526,7 @@ class BaseFile(BaseAgaveResource):
         self._populate_obj()
         # pylint: disable=protected-access
         args = {
-            'url': urllib.unquote(self._links._self.href),
+            'url': urllib.parse.unquote(self._links._self.href),
             'maxUses': max_uses,
             'method': 'GET',
             'lifetime': lifetime,
@@ -566,7 +564,7 @@ class BaseFile(BaseAgaveResource):
             'path': dir_name
         }
         result = self._ac.files.manage(systemId=self.system,
-                                       filePath=urllib.quote(self.path),
+                                       filePath=urllib.parse.quote(self.path),
                                        body=body)
         return BaseFile(system=result['systemId'],
                         path=result['path'],
@@ -598,7 +596,7 @@ class BaseFile(BaseAgaveResource):
         body = {'action': 'move',
                 'path': os.path.join(dest_path.strip('/'), file_name)}
         move_result = self._ac.files.manage(systemId=system,
-                                            filePath=urllib.quote(self.path),
+                                            filePath=urllib.parse.quote(self.path),
                                             body=body)
         self.path = move_result['path']
         self.name = move_result['name']
@@ -641,7 +639,7 @@ class BaseFile(BaseAgaveResource):
                 'recursive': recursive}
 
         self._ac.files.updatePermissions(systemId=self.system,
-                                         filePath=urllib.quote(self.path),
+                                         filePath=urllib.parse.quote(self.path),
                                          body=body)
         return self
 
@@ -677,7 +675,7 @@ class BaseFile(BaseAgaveResource):
             upload_path = self.parent_path
             upload_name = self.name
         resp = self._ac.files.importData(systemId=self.system,
-                                         filePath=urllib.quote(upload_path),
+                                         filePath=urllib.parse.quote(upload_path),
                                          fileName=str(upload_name),
                                          fileToUpload=upload_file)
         return BaseFile(client=self._ac,

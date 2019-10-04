@@ -2,8 +2,6 @@
 .. module: portal.libs.elasticsearch.docs.projects
    :synopsis: Wrapper classes for ES ``projects`` doc type.
 """
-
-from __future__ import unicode_literals, absolute_import
 from future.utils import python_2_unicode_compatible
 import logging
 import os

@@ -2,7 +2,6 @@
 .. module: portal.libs.agave.models.systems.base
    :synopsis: Models representing systems in Agave.
 """
-from __future__ import unicode_literals, absolute_import
 from collections import namedtuple
 import logging
 from future.utils import python_2_unicode_compatible

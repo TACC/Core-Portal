@@ -4,7 +4,6 @@
               Usually response from Agavepy which are dicts with
               jsonAttributes for keys.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import datetime
 import copy

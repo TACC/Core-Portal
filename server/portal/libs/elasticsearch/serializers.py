@@ -2,7 +2,6 @@
 .. module: portal.libs.elasticsearch.serializers
    :synopsis: serializers for elasticsearch classes
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import json
 from portal.libs.elasticsearch.docs.base import BaseESResource
