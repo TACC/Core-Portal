@@ -6,7 +6,7 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator 
+from django.utils.decorators import method_decorator
 from django.conf import settings
 from pytas.http import TASClient
 from portal.apps.users.utils import get_allocations
@@ -93,6 +93,6 @@ class AllocationsView(BaseApiView):
         : returns: {'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION}
         : rtype: dict
         """
-        allocations = get_allocations(request.user.username)
+        allocations, inactive = get_allocations(request.user.username)
 
-        return JsonResponse({'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION}, safe=False)
+        return JsonResponse({'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive}, safe=False)

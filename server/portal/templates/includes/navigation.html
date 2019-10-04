@@ -1,9 +1,9 @@
-{% load staticfiles %}
+{% load sd2e_nav_tags menu_tags cms_tags staticfiles %}
 {% if settings.PORTAL_NAVBAR_BACKGROUND_FILENAME %}
-<nav class="navbar navbar-default" style="background-image: url('{{ settings.PORTAL_NAVBAR_BACKGROUND_FILENAME }}');">
+<nav id="portal-top-nav" class="navbar navbar-dark" style="background-image: url('{{ settings.PORTAL_NAVBAR_BACKGROUND_FILENAME }}');">
 {% else %}
-<nav class="navbar navbar-default">
-  {% endif %}
+<nav id="portal-top-nav" class="navbar navbar-expand-lg navbar-dark bg-dark">
+{% endif %}
   <div class="container-fluid">
     <div class="navbar-header">
       <a href="/" class="navbar-left">
@@ -13,14 +13,11 @@
         <div class="text-info navbar-logo-text">{{ settings.PORTAL_NAMESPACE }}</div>
         {% endif %}
       </a>
-      <!-- Normal Navbar -->
-      <ul class="nav navbar-nav hidden-xs">
-        <!-- No navigation controlled by portal. All nav will be handled in the CMS. -->
-      </ul>
       {% if section_root %}
       <a class="navbar-brand">{{section_root.title}}</a>
       {% endif %}
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navigation" aria-expanded="false">
+      <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#main-navigation" aria-expanded="false">
+        <span class="navbar-toggler-icon"></span>
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -30,85 +27,72 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <!-- Collapsed Navbar -->
     <div class="collapse navbar-collapse" id="main-navigation">
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav mr-auto">
         <!-- All top nav elements handled here. -->
-        <!-- {% show_menu 0 100 1 100 "includes/cms_menu.html" %} -->
+        {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if user.is_authenticated %}
-        <div id="notifications-bell-container">
-          <notifications-bell></notifications-bell>
-        </div>
-        <div class="nav navbar-nav navbar-right">
-          <li class="dropdown right-nav-links">
-            <a class="dropdown-toggle" style="cursor: pointer;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <div class="nav navbar-nav">
+          <li class="nav-item dropdown active">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="fa fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
-              <span class="caret"></span>
               <span class="sr-only">Toggle Dropdown</span>
             </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a href="{% url 'workbench:index' %}">
-                  <i class="fa fa-desktop nav-icon"></i> My Dashboard
-                </a>
-              </li>
-              <li>
-                <a href="{% url 'portal_accounts:manage_profile' %}">
-                  <i class="fa fa-user-circle-o nav-icon"></i> My Account
-                </a>
-              </li>
-              <li>
-                <a href="{% url 'tickets:mytickets' %}">
-                  <i class="fa fa-ticket nav-icon"></i> My Tickets
-                </a>
-              </li>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="{% url 'workbench:index' %}">
+                <i class="fa fa-desktop nav-icon"></i> My Dashboard
+              </a>
+              <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
+                <i class="fa fa-user-circle-o nav-icon"></i> My Account
+              </a>
+              <a class="dropdown-item" href="{% url 'tickets:mytickets' %}">
+                <i class="fa fa-ticket nav-icon"></i> My Tickets
+              </a>
               {% if user.is_staff %}
-              <li>
-                <a href="{% url 'portal_onboarding:admin' %}">
-                  <i class="fa fa-users"></i> &nbsp;Onboarding
-                </a>
-              </li>
+              <a class="dropdown-item" href="{% url 'portal_onboarding:admin' %}">
+                <i class="fa fa-users"></i> &nbsp;Onboarding
+              </a>
               {% endif %}
-              <li>
-                <a href="{% url 'portal_accounts:logout' %}">
-                  <i class="fa fa-sign-out nav-icon"></i> Log Out
-                </a>
-              </li>
+              <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">
+                <i class="fa fa-sign-out nav-icon"></i> Log Out
+              </a>
               {% if user.is_impersonate %}
-              <li>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item">
                 <i class="fa fa-user-secret nav-icon"></i>
                 <a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a>
-              </li>
+              </div>
               {% endif %}
               <!-- end of impersonate -->
-            </ul>
+            </div>
           </li>
         </div>
-        </li>
-        {% else %} <!-- if user is not logged in -->
+        {% else %}
+        <!-- if user is not logged in -->
         {% if request_access %}
-        <li class="right-nav-links {% if request.get_full_path == '/about/' %} active {% endif %}">
-          <a href="/accounts/request-access/" class="btn btn-link-alt">
+        <li class="nav-item {% if request.get_full_path == '/about/' %} active {% endif %}">
+          <a class="nav-link" role="button" href="/accounts/request-access/">
+          <!-- <a class="nav-link btn btn-link-alt" role="button" href="/accounts/request-access/"> -->
             <i class="fa fa-group nav-icon"></i> Request Access
           </a>
         </li>
         {% endif %}
-        <li class="right-nav-links {% if request.get_full_path == '/accounts/login' %} active {% endif %}">
-          <a href="{% url 'portal_accounts:login' %}" class="btn btn-link-alt">
+        <li class="nav-item {% if request.get_full_path == '/accounts/login' %} active {% endif %}">
+          <a class="nav-link" role="button" href="/accounts/request-access/">
+          <!-- <a href="{% url 'portal_accounts:login' %}" class="btn btn-link-alt"> -->
             <i class="fa fa-sign-in nav-icon"></i> Log in
           </a>
         </li>
         <!-- Hidden until auth flow is properly implemented and MFA impact is determined.  -->
-        <!--
-        <li class="right-nav-links">
+        <!-- <li class="right-nav-links">
           <a href="{% url 'portal_accounts:register' %}" class="btn btn-link-alt">
             <i class="fa fa-user-plus nav-icon"></i> Register
           </a>
-        </li>
-        -->
+        </li> -->
         {% endif %}
         <!-- end of user logged in/not logged in if -->
       </ul>
-    </div><!-- /.navbar-collapse -->
+    </div>
   </div>
 </nav>

@@ -1,6 +1,6 @@
 FROM centos:7
 
-MAINTAINER TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>
+LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
 
 EXPOSE 8000
 
@@ -19,7 +19,7 @@ RUN yum groupinstall -y 'Development Tools' && yum clean all
 # RUN curl -SLO https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz \
 #     && tar xvf Python-${PYTHON_VERSION}.tgz \
 #     && cd Python-${PYTHON_VERSION} \
-#     && ./configure --prefix=/usr/local \ 
+#     && ./configure --prefix=/usr/local \
 #     #--enable-optimizations
 #     && make \
 #     && make altinstall \
@@ -35,7 +35,7 @@ COPY server/requirements.txt /tmp/requirements.txt
 
 RUN pip3 install --upgrade pip setuptools wheel \
     && pip3 install uwsgi \
-    && pip3 install uwsgitop==0.10 \
+    && pip3 install uwsgitop \
     && pip3 install -r /tmp/requirements.txt
 
 COPY . /srv/www/portal

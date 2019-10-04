@@ -54,6 +54,10 @@ ROOT_URLCONF = 'portal.urls'
 # Application definition
 
 INSTALLED_APPS = [
+
+    # django CMS admin style must be before django.contrib.admin
+    'djangocms_admin_style',
+
     # Core Django.
     'django.contrib.admin',
     'django.contrib.auth',
@@ -62,19 +66,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django.contrib.sites',
+    'django.contrib.sites', # also required for django CMS
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
     # Django recaptcha.
     'captcha',
 
-    # Pipeline.
-    'easy_thumbnails',
+    # Some django-filer/Pillow stuff
     'filer',
+    'easy_thumbnails',
     'mptt',
+
+    # Pipeline.
     'bootstrap4',
     'termsandconditions',
+    'impersonate',
 
     # Websockets.
     'ws4redis',
@@ -83,20 +90,21 @@ INSTALLED_APPS = [
     'portal.apps.accounts',
     'portal.apps.auth',
 
-    # Wagtail CMS
-    'wagtail.contrib.forms',
-    'wagtail.contrib.redirects',
-    'wagtail.embeds',
-    'wagtail.sites',
-    'wagtail.users',
-    'wagtail.snippets',
-    'wagtail.documents',
-    'wagtail.images',
-    'wagtail.search',
-    'wagtail.admin',
-    'wagtail.core',
-    'modelcluster',
-    'taggit',
+    # django CMS
+    'cms',
+    'menus',
+    'treebeard',
+    'sekizai',
+    'djangocms_text_ckeditor',
+    'djangocms_link',
+    'djangocms_file',
+    'djangocms_picture',
+    'djangocms_video',
+    'djangocms_googlemap',
+    'djangocms_snippet',
+    'djangocms_style',
+    'djangocms_column',
+
 ]
 
 MIDDLEWARE = [
@@ -110,14 +118,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',   # Custom Portal Auth Check.
-    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.locale.LocaleMiddleware',    # needed for django CMS
+    'impersonate.middleware.ImpersonateMiddleware', # must be AFTER django.contrib.auth
 
     # Throws an Error.
     # 'portal.middleware.PortalTermsMiddleware',
 
-    # Wagtail CMS
-    'wagtail.core.middleware.SiteMiddleware',
-    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+    # django CMS
+    'cms.middleware.user.CurrentUserMiddleware',
+    'cms.middleware.page.CurrentPageMiddleware',
+    'cms.middleware.toolbar.ToolbarMiddleware',
+    'cms.middleware.language.LanguageCookieMiddleware',
+    'cms.middleware.utils.ApphookReloadMiddleware',
 ]
 
 TEMPLATES = [
@@ -144,6 +156,11 @@ TEMPLATES = [
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
                 'portal.utils.contextprocessors.messages',
+
+                # django CMS
+                'sekizai.context_processors.sekizai',
+                'cms.context_processors.cms_settings',
+                'django.template.context_processors.i18n'
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
@@ -180,7 +197,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-IMPERSONATE_REQUIRE_SUPERUSER = True
+IMPERSONATE = {
+    'REQUIRE_SUPERUSER': True
+}
 
 LOGIN_REDIRECT_URL = getattr(settings_secret, '_LOGIN_REDIRECT_URL', '/')
 
@@ -199,7 +218,7 @@ USE_TZ = True
 
 LANGUAGES = (
     ## Customize this
-    ('en', gettext('en')),
+    ('en', 'English'),
 )
 
 # Static files (CSS, JavaScript, Images)
@@ -430,6 +449,7 @@ TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'sr
 
 TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
 
+# Django Filer settings
 THUMBNAIL_HIGH_RESOLUTION = True
 
 THUMBNAIL_PROCESSORS = (
@@ -491,13 +511,6 @@ DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
 # ]
 # Requires registering portal app on youtube: https://developers.google.com/youtube/registering_an_application
 # DJANGOCMS_YOUTUBE_API_KEY = '<youtube_data_api_server_key>'
-
-
-"""
-SETTINGS: WAGTAIL
-"""
-WAGTAIL_SITE_NAME = settings_secret._WAGTAIL_SITE_NAME
-WAGTAIL_FRONTEND_LOGIN_URL = '/login/'
 
 
 """
@@ -612,7 +625,7 @@ PORTAL_SEARCH_MANAGERS = {
     'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
     'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
     'my-projects': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
-    'public': 'portal.apps.search.api.managers.public_search.PublicSearchManager' 
+    'public': 'portal.apps.search.api.managers.public_search.PublicSearchManager'
 }
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
