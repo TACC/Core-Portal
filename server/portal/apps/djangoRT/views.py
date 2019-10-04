@@ -1,7 +1,7 @@
 import logging
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from portal.apps.djangoRT import rtUtil, forms, rtModels
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile

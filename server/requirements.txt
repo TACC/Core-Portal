@@ -33,4 +33,5 @@ pycrypto==2.6.1
 pytz==2019.2
 redis==3.3.8
 requests==2.22.0
+rt==1.0.11
 sqlparse==0.3.0

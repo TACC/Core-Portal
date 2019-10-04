@@ -5,7 +5,7 @@ import json
 import os
 import logging
 from portal.libs.agave.utils import walk_levels
-from portal.apps.projects.models import ProjectMetadata
+# from portal.apps.projects.models import ProjectMetadata
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -29,13 +29,13 @@ def to_camel_case(input_str):
     camel_case = ''.join(['_' * left_cnt, comps[0], right_side, '_' * right_cnt])
     return camel_case
 
-def index_project(projectId):
-    from portal.libs.elasticsearch.docs.projects import BaseESProject
-    project_meta = ProjectMetadata.objects.get(project_id=projectId)
-    project_meta_dict = project_meta.to_dict()
+# def index_project(projectId):
+#     from portal.libs.elasticsearch.docs.projects import BaseESProject
+#     project_meta = ProjectMetadata.objects.get(project_id=projectId)
+#     project_meta_dict = project_meta.to_dict()
 
-    doc = BaseESProject(**project_meta_dict)
-    doc.save()
+#     doc = BaseESProject(**project_meta_dict)
+#     doc.save()
 
 def index_agave(systemId, client, username, filePath='/', update_pems=False):
     from portal.libs.elasticsearch.docs.files import BaseESFile

@@ -12,7 +12,7 @@ from django.conf import settings
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import (Search, DocType, Date, Nested,
                                analyzer, Object, Text, Long,
-                               InnerObjectWrapper, Boolean, Keyword)
+                               Boolean, Keyword)
 from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError
 from portal.libs.elasticsearch import utils as ESUtils

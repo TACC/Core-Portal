@@ -25,6 +25,7 @@ from django.conf.urls.static import static
 
 from portal.apps.auth.views import agave_oauth as login
 from portal.views.views import project_version as portal_version
+from django.views.generic import RedirectView
 
 from django.urls import path, re_path, include
 
@@ -44,6 +45,8 @@ urlpatterns = [
 
     # accounts.
     path('accounts/', include('portal.apps.accounts.urls', namespace='portal_accounts')),
+    path('api/accounts/', include('portal.apps.accounts.api.urls', namespace='portal_accounts_api')),
+    path('register/', RedirectView.as_view(pattern_name='portal_accounts:register', permanent=True), name='register'),
 
     # auth.
     path('auth/', include('portal.apps.auth.urls', namespace='portal_auth')),
