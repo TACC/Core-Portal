@@ -146,9 +146,9 @@ def get_allocations(username):
         elif alloc['resource'] in systems:
             inactive.append(proj)
 
-    for k,v in allocations.iteritems():
+    for k,v in allocations.items():
         p = {'projectId': k}
-        for kk,vv in v.iteritems():
+        for kk,vv in v.items():
             p[kk] = vv
         alloc_list.append(p)
         # alloc_list.append({

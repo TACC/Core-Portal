@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 def get_jupyter_url(system, path, username, is_dir=False):
     """Translate file path and system to Jupyter URL
-    
+
     Requires PORTAL_JUPYTER_URL and PORTAL_JUPYTER_SYSTEM_MAP settings
     Args:
         system: agave system
@@ -52,7 +52,7 @@ def get_jupyter_url(system, path, username, is_dir=False):
     _ , ext = os.path.splitext(path)
     if ext == ".ipynb":
         action = "/notebooks"
-    
+
     if is_dir:
         action = "/tree"
 
