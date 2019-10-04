@@ -2,7 +2,7 @@
 .. :module:: apps.accounts.managers.abstract
    :synopsis: Abstract User Home Manager
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from abc import ABCMeta, abstractmethod
 from six import add_metaclass

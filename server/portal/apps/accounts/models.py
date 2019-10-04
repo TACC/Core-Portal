@@ -2,7 +2,7 @@
 .. :module:: apps.accounts.managers.models
    :synopsis: Account's models
 """
-from __future__ import unicode_literals
+
 import logging
 from django.core.mail import send_mail
 from django.conf import settings
@@ -61,21 +61,21 @@ class NotificationPreferences(models.Model):
              'Can view list of users subscribed to a notification type'),
         )
 
-    def __unicode__(self):
-        return unicode(self.user)
+    # def __unicode__(self):
+    #     return str(self.user)
 
 
 class PortalProfileNHInterests(models.Model):
     """Portal Profile NH Interests"""
     description = models.CharField(max_length=300)
 
-    def __unicode__(self):
-        return self.description
+    # def __unicode__(self):
+    #     return self.description
 
 
 class PortalProfileResearchActivities(models.Model):
     """Resesarch Activities"""
     description = models.CharField(max_length=300)
 
-    def __unicode__(self):
-        return self.description
+    # def __unicode__(self):
+    #     return self.description

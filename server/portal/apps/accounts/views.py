@@ -5,7 +5,7 @@ import re
 import logging
 import json
 import rt
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.generic.base import TemplateView, View
@@ -134,7 +134,7 @@ def request_access(request):
 
     context = {
         'access_form': access_form,
-        'rt_qn': urllib.quote(settings.RT_QUEUE),
+        'rt_qn': urllib.parse.quote(settings.RT_QUEUE),
     }
     return render(request, 'portal/apps/accounts/request_access.html', context)
 

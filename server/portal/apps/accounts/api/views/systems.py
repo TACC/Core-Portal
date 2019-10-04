@@ -38,10 +38,7 @@ class SystemsListView(BaseApiView):
             limit=limit
         )
 
-        storage_systems = filter(
-            lambda system: not system.id.startswith(settings.PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX),
-            storage_systems
-        )
+        storage_systems = [system for system in storage_systems if not system.id.startswith(settings.PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX)]
 
         response['storage'] = storage_systems
 

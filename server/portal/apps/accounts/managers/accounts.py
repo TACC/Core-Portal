@@ -2,7 +2,7 @@
 .. :module:: apps.accounts.managers.accounts
    :synopsis: Manager handling anything pertaining to accounts
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from inspect import isclass, isfunction
 from importlib import import_module
