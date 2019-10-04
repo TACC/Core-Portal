@@ -22,6 +22,7 @@ djangocms-style==2.2.0
 djangocms-text-ckeditor==3.8.0
 djangocms-video==2.1.1
 easy-thumbnails==2.6
+elasticsearch-dsl==7.0.0
 gevent==1.4.0
 ipython==7.8.0
 kombu==4.6.4

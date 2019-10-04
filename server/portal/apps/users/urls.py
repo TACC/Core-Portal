@@ -5,5 +5,6 @@ app_name = 'users'
 urlpatterns = [
     url(r'^$', SearchView.as_view(), name='user_search'),
     url(r'^auth/$', AuthenticatedView.as_view(), name='user_authenticated'),
+    url(r'^usage/$', UsageView.as_view(), name='user_usage'),
     url(r'^allocations/$', AllocationsView.as_view(), name='user_allocations')
 ]

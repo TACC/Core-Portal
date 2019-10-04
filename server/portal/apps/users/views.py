@@ -8,6 +8,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.conf import settings
+from elasticsearch_dsl import Q
+from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
 from portal.apps.users.utils import get_allocations
 
@@ -34,6 +36,25 @@ class AuthenticatedView(BaseApiView):
 
             return JsonResponse(out)
         return HttpResponse('Unauthorized', status=401)
+
+
+@method_decorator(login_required, name='dispatch')
+class UsageView(BaseApiView):
+
+    def get(self, request):
+        username = request.user.username
+        system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
+        search = IndexedFile.search()
+        # search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
+        search = search.filter(Q('term', **{"system._exact":system}))
+        search = search.extra(size=0)
+        search.aggs.metric('total_storage_bytes', 'sum', field="length")
+        resp = search.execute()
+        resp = resp.to_dict()
+        aggs = resp["aggregations"]["total_storage_bytes"]
+        out = {}
+        out["total_storage_bytes"] = aggs.get("value", 0.0)
+        return JsonResponse(out, safe=False)
 
 
 @method_decorator(login_required, name='dispatch')
