@@ -1,4 +1,4 @@
-{% load sd2e_nav_tags menu_tags cms_tags staticfiles %}
+{% load menu_tags cms_tags staticfiles %}
 {% if settings.PORTAL_NAVBAR_BACKGROUND_FILENAME %}
 <nav id="portal-top-nav" class="navbar navbar-dark" style="background-image: url('{{ settings.PORTAL_NAVBAR_BACKGROUND_FILENAME }}');">
 {% else %}
@@ -49,11 +49,11 @@
               <a class="dropdown-item" href="{% url 'tickets:mytickets' %}">
                 <i class="fa fa-ticket nav-icon"></i> My Tickets
               </a>
-              {% if user.is_staff %}
+              <!-- {% if user.is_staff %}
               <a class="dropdown-item" href="{% url 'portal_onboarding:admin' %}">
                 <i class="fa fa-users"></i> &nbsp;Onboarding
               </a>
-              {% endif %}
+              {% endif %} -->
               <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">
                 <i class="fa fa-sign-out nav-icon"></i> Log Out
               </a>

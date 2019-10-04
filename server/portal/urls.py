@@ -49,10 +49,17 @@ urlpatterns = [
     path('auth/', include('portal.apps.auth.urls', namespace='portal_auth')),
     re_path('login/$', login),
 
+    # api
+    path('api/users/', include('portal.apps.users.urls', namespace='users')),
+
+    # views
+    path('tickets/', include('portal.apps.djangoRT.urls', namespace='tickets')),
+    path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
+
     # version check.
     path('version/', portal_version),
 
-    # else handled by django CMS
+    # everything else handled by django CMS
     path('', include('cms.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
