@@ -41,7 +41,7 @@ services:
     ulimits:
       memlock: -1
     environment:
-      - ES_HEAP_SIZE:2g
+      - ES_HEAP_SIZE:1g
       - discovery.type=single-node
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml

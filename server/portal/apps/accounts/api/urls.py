@@ -10,6 +10,7 @@ from portal.apps.accounts.api.views.systems import (
     SystemRolesView
 )
 
+app_name = 'portal_accounts_api'
 urlpatterns = [
     url(r'^systems/list/?$', SystemsListView.as_view()),
     url(r'^systems/(?P<system_id>[\w.\-\/]+)/test/?$',

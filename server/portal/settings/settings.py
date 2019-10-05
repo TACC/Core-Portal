@@ -89,6 +89,8 @@ INSTALLED_APPS = [
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
+    'portal.apps.workbench',
+    'portal.apps.djangoRT',
 
     # django CMS
     'cms',
@@ -231,7 +233,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 
 STATICFILES_DIRS = [
-    # os.path.join(BASE_DIR, '../../', 'client'),
+    os.path.join(BASE_DIR, '../../', 'client'),
     ('build', os.path.join(BASE_DIR, '../../client/build')),
     ('css', os.path.join(BASE_DIR, '../../client/css')),
     ('img', os.path.join(BASE_DIR, '../../client/img')),
