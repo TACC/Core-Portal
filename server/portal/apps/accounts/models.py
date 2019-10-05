@@ -50,7 +50,8 @@ class NotificationPreferences(models.Model):
     all different kinds of preferences?
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                related_name='notification_preferences')
+                                related_name='notification_preferences',
+                                on_delete=models.CASCADE)
     announcements = models.BooleanField(
         default=True,
         verbose_name=_('Receive occasional announcements from {}'.format(settings.PORTAL_NAMESPACE)))

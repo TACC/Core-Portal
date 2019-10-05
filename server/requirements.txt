@@ -1,6 +1,7 @@
 Django==2.2.5
 PyJWT==1.7.1
 agavepy==0.9.3
+cached-property==1.5.1
 celery==4.3.0
 cryptography==2.7
 django-bootstrap4==1.0.1
