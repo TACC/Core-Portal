@@ -2,9 +2,66 @@ from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 from django.conf import settings
 from portal.apps.users.utils import get_allocations
+from pytas.http import TASClient
 import string
 
 class AllocationStep(AbstractStep):
+    pi_eligible_message = """
+        <p>
+            Thank you for using TACC. Prior to accessing this portal, it will require an
+            allocation on the HPC resources. To get an allocation, you will need to perform 
+            one of the following:
+        </p>
+        <ul>
+            <li>
+                Create a research project and a resource allocation request. Once the allocation request 
+                is approved and active you will be granted access to the requested resource.
+            </li>
+            <li>
+                Have another PI add you to their research project which has an active allocation.
+            </li>
+        </ul>
+        <p>
+            Please visit:
+        </p>
+        <ul>
+            <li>
+                <a href="https://portal.tacc.utexas.edu/allocations-overview" target="_blank">
+                    https://portal.tacc.utexas.edu/allocations-overview
+                </a>
+                <a href="https://portal.tacc.utexas.edu/tutorials/managing-allocations" target="_blank">
+                    https://portal.tacc.utexas.edu/tutorials/managing-allocations
+                </a>
+            </li>
+        </ul>
+        <a class="btn btn-primary" 
+           href="/tickets/ticket/new?subject=Requesting an Allocation">
+           Submit a Ticket
+        </a>
+    """
+
+    pi_ineligible_message = """
+        <p>
+            Thank you for using TACC. In order to access this portal, it will require an allocation
+            on the HPC resources. Please have your PI or advisor add your username to a project 
+            that has an active HPC allocation.
+        </p>
+        <p>
+            Please visit:
+        </p>
+        <ul>
+            <li>
+                <a href="https://portal.tacc.utexas.edu/new-user-information" target="_blank">
+                    https://portal.tacc.utexas.edu/new-user-information
+                </a>
+            </li>
+        </ul>
+         <a class="btn btn-primary" 
+           href="/tickets/ticket/new?subject=Requesting an Allocation">
+           Submit a Ticket
+        </a>
+    """
+
     def __init__(self, user):
         """
         Call super class constructor
@@ -17,7 +74,7 @@ class AllocationStep(AbstractStep):
     def prepare(self):
         self.state = SetupState.PENDING
         self.log("Awaiting allocation check")
-
+        
     def process(self):
         # Get "ALLOCATION_SYSTEMS" setting
         # This setting should be a list that specifies which
@@ -39,6 +96,7 @@ class AllocationStep(AbstractStep):
         except:
             self.state = SetupState.ERROR
             self.log("Unable to retrieve a list of projects")
+            return
 
         # If the intersection of the set of systems and resources has items,
         # the user has the necessary allocation
@@ -47,4 +105,23 @@ class AllocationStep(AbstractStep):
         if has_alloc:
             self.complete("You have the required systems for accessing this portal")
         else:
-            self.fail("You must have a project allocation with one of the required systems for this portal.")
+            tas_client = TASClient(
+                baseURL=settings.TAS_URL,
+                credentials={
+                    'username': settings.TAS_CLIENT_KEY,
+                    'password': settings.TAS_CLIENT_SECRET
+                }
+            )
+            tas_user = tas_client.get_user(username=self.user.username)
+            if tas_user['piEligibility'] == 'Eligible':
+                message = self.pi_eligible_message
+            else:
+                message = self.pi_ineligible_message
+
+            self.state = SetupState.USERWAIT
+            self.log(
+                "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
+                data={
+                    "more_info": message
+                }
+            )

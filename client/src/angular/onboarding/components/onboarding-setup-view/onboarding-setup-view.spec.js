@@ -4,16 +4,18 @@ import onboardingSetupStepListing from '../../fixtures/onboarding-setup-step-lis
 describe('OnboardingSetupViewStaff', ()=>{
     let element, controller, scope, $compile, $q;
     let UserService, OnboardingSetupService;
+    let $uibModal;
     let Notifications;
 
     beforeEach(angular.mock.module("portal"));
     beforeEach( ()=> {
         angular.mock.inject(
             (_$q_, _$rootScope_, _$compile_, $componentController, 
-                _UserService_, _OnboardingSetupService_, _Notifications_) => {
+                _UserService_, _OnboardingSetupService_, _Notifications_, _$uibModal_) => {
                 $q = _$q_;
                 $compile = _$compile_;
                 Notifications = _Notifications_;
+                $uibModal = _$uibModal_;
                 Notifications.subject = {
                     "subscribe": jasmine.createSpy("subscribe")
                 }
@@ -129,6 +131,7 @@ describe('OnboardingSetupViewSelf', ()=>{
     // Test UserSetupDetail control for when a user is viewing themselves
     let element, controller, scope, $compile, $q;
     let OnboardingSetupService, UserService;
+    let $uibModal;
     let Notifications;
 
     // Mock requirements.
@@ -136,9 +139,10 @@ describe('OnboardingSetupViewSelf', ()=>{
     beforeEach( ()=> {
         angular.mock.inject(
             (_$q_, _$rootScope_, _$compile_, $componentController, 
-                _UserService_, _OnboardingSetupService_, _Notifications_) => {
+                _UserService_, _OnboardingSetupService_, _Notifications_, _$uibModal_) => {
                 $q = _$q_;
                 $compile = _$compile_;
+                $uibModal = _$uibModal_;
 
                 OnboardingSetupService = _OnboardingSetupService_;
                 UserService = _UserService_;
@@ -200,6 +204,16 @@ describe('OnboardingSetupViewSelf', ()=>{
 
     it ("should show a Confirm button for userwait steps", () => {
         expect(element.text()).toContain("Confirm");
+    });
+
+    it ("should display a more info link", () => {
+        expect(element.text()).toContain("more info");
+    });
+
+    it ("clicking on the more info link should open a modal", () => {
+        spyOn($uibModal, 'open');
+        controller.openMoreInfo("step name", "more info");
+        expect($uibModal.open).toHaveBeenCalled();
     });
 
     it ("should not display the Continue to Dashboard button if setup is not complete", () => {

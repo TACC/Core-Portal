@@ -18,24 +18,34 @@ class AllocationStepTest(TestCase):
         self.mock_complete = self.mock_complete_patcher.start()
 
         # Mock the step's fail function so we can spy on it
-        self.mock_fail_patcher = patch(
-            'portal.apps.onboarding.steps.allocation_unit_test.AllocationStep.fail'
+        self.mock_log_patcher = patch(
+            'portal.apps.onboarding.steps.allocation_unit_test.AllocationStep.log'
         )
-        self.mock_fail = self.mock_fail_patcher.start()
+        self.mock_log = self.mock_log_patcher.start()
 
-        # Mock TAS
+        # Mock get allocations
         self.mock_get_allocations_patcher = patch(
             'portal.apps.onboarding.steps.allocation.get_allocations',
         )
         self.mock_get_allocations = self.mock_get_allocations_patcher.start()
+
+        # Mock TAS user lookup
+        self.mock_tas_patcher = patch(
+            'portal.apps.onboarding.steps.allocation.TASClient.get_user',
+            return_value={
+                'piEligibility': 'Eligible'
+            }
+        )
+        self.mock_tas_get_user = self.mock_tas_patcher.start()
 
         self.step = AllocationStep(self.user)
 
     def tearDown(self):
         super(AllocationStepTest, self).tearDown()
         self.mock_complete_patcher.stop()
-        self.mock_fail_patcher.stop()
+        self.mock_log_patcher.stop()
         self.mock_get_allocations_patcher.stop()
+        self.mock_tas_patcher.stop()
 
     @override_settings(ALLOCATION_SYSTEMS=[])
     def test_no_allocation_setting(self):
@@ -54,8 +64,11 @@ class AllocationStepTest(TestCase):
     def test_user_has_no_resources(self):
         self.mock_get_allocations.return_value = { }
         self.step.process()
-        self.mock_fail.assert_called_with(
-            "You must have a project allocation with one of the required systems for this portal."
+        self.mock_log.assert_called_with(
+            "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
+            data={
+                "more_info": self.step.pi_eligible_message
+            }
         )
 
     @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
@@ -64,8 +77,23 @@ class AllocationStepTest(TestCase):
             "ls5.tacc.utexas.edu" : [ ]
         }
         self.step.process()
-        self.mock_fail.assert_called_with(
-            "You must have a project allocation with one of the required systems for this portal."
+        self.mock_log.assert_called_with(
+            "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
+            data={
+                "more_info": self.step.pi_eligible_message
+            }
+        )
+
+    @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
+    def test_user_has_no_resources_pi_inelligible(self):
+        self.mock_get_allocations.return_value = { }
+        self.mock_tas_get_user.return_value['piEligibility'] = 'Ineligible'
+        self.step.process()
+        self.mock_log.assert_called_with(
+            "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
+            data={
+                "more_info": self.step.pi_ineligible_message
+            } 
         )
 
     @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
