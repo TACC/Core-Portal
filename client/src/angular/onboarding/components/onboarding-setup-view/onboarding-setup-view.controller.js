@@ -1,6 +1,6 @@
 class OnboardingSetupViewCtrl {
     constructor(UserService, OnboardingSetupService, Notifications, 
-                $scope, $window) {
+                $scope, $window, $uibModal) {
         'ngInject';
         this.UserService = UserService;
         this.OnboardingSetupService = OnboardingSetupService;
@@ -11,6 +11,7 @@ class OnboardingSetupViewCtrl {
         this.$scope = $scope;
         this.$window = $window;
         this.showAdmin = false;
+        this.$uibModal = $uibModal;
     }
 
     $onInit() {
@@ -162,6 +163,20 @@ class OnboardingSetupViewCtrl {
                 step.saving = false;
             }
         );
+    }
+
+    openMoreInfo(step, event) {
+        this.$uibModal.open({
+            component: 'OnboardingInfoModal',
+            resolve: {
+                event: () => {
+                    return event;
+                },
+                step: () => {
+                    return step;
+                }
+            },
+        });
     }
 };
 

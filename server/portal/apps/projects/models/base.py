@@ -237,6 +237,12 @@ class Project(object):
         root_folder = ProjectsUtils.root_folder()
         return root_folder.mkdir(project_id)
 
+    @staticmethod
+    def _delete_dir(project_id):
+        """Delete a project directory"""
+        root_folder = ProjectsUtils.root_folder()
+        return root_folder.delete(project_id)
+
     @classmethod
     def create(
             cls,
@@ -253,17 +259,22 @@ class Project(object):
         """
         cls._create_dir(project_id)
 
-        storage = cls._create_storage(
-            title,
-            ProjectsUtils.project_id_to_system_id(project_id),
-            project_id
-        )
+        try:
+            storage = cls._create_storage(
+                title,
+                ProjectsUtils.project_id_to_system_id(project_id),
+                project_id
+            )
 
-        meta = cls._create_metadata(
-            title,
-            project_id,
-            owner
-        )
+            meta = cls._create_metadata(
+                title,
+                project_id,
+                owner
+            )
+        except Exception as e:
+            cls._delete_dir(project_id)
+            raise e
+
         return cls(client, project_id, metadata=meta, storage=storage)
 
     @classmethod

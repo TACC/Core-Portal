@@ -333,6 +333,7 @@ RECAPTCHA_USE_SSL = settings_secret._RECAPTCHA_USE_SSL
 # Google Analytics.
 GOOGLE_ANALYTICS_PROPERTY_ID = settings_secret._GOOGLE_ANALYTICS_PROPERTY_ID
 GOOGLE_ANALYTICS_PRELOAD = settings_secret._GOOGLE_ANALYTICS_PRELOAD
+GOOGLE_SITE_VERIFICATION_ID = getattr(settings_secret, '_GOOGLE_SITE_VERIFICATION_ID', '')
 
 """
 SETTINGS: LOGGING
@@ -661,7 +662,7 @@ PORTAL_SEARCH_MANAGERS = {
     'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
     'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
     'my-projects': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
-    'public': 'portal.apps.search.api.managers.public_search.PublicSearchManager' 
+    'public': 'portal.apps.search.api.managers.public_search.PublicSearchManager'
 }
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
@@ -814,6 +815,7 @@ SETTINGS_EXPORT = [
     'DEBUG',
     'GOOGLE_ANALYTICS_PRELOAD',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
-    'PORTAL_NAMESPACE'
+    'PORTAL_NAMESPACE',
+    'GOOGLE_SITE_VERIFICATION_ID'
 ]
 

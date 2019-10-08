@@ -41,7 +41,14 @@
                     </div>
                     <div class="setup-event-log-event-container">
                         <div ng-repeat="event in step.events" class="user-setup-event" ng-if="$first || step.expanded">
-                            <div ng-class=" $first ? 'first-setup-event' : '' ">{{ event.message }}</div>
+                            <div ng-class=" $first ? 'first-setup-event' : '' ">
+                                {{ event.message }}
+                                <a 
+                                    ng-if="event.data.more_info" 
+                                    ng-click="$ctrl.openMoreInfo(step.displayName, event)">
+                                    Click here for more info.
+                                </a>
+                            </div>
                             <div ng-class="setup-event-timestamp">{{ event.time }}</div>
                         </div>
                     </div>

@@ -16,7 +16,10 @@
                     "step" : "AllocationStep",
                     "state" : "complete",
                     "message" : "Completed successfully",
-                    "time" : "12:00:00"
+                    "time" : "12:00:00",
+                    "data": {
+                        "more_info": "more info"
+                    }
                 },
                 {
                     "step" : "AllocationCheck",
