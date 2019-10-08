@@ -16,6 +16,7 @@ billiard==3.5.0.3
 cached-property==1.3.0
 captcha==0.3
 celery==4.0.2
+certifi==2019.9.11
 cffi==1.11.5
 cmsplugin-filer==1.1.3
 cmsplugin-iframe==0.1.5
@@ -60,8 +61,8 @@ djangocms-text-ckeditor==3.6.1
 djangocms-video==2.1.1
 djangocms-youtube==0.2.1
 easy-thumbnails==2.5
-elasticsearch==5.4.0
-elasticsearch-dsl==5.3.0
+elasticsearch==7.0.4
+elasticsearch-dsl==7.0.0
 enum34==1.1.6
 et-xmlfile==1.0.1
 fudge==1.1.1

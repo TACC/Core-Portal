@@ -66,7 +66,7 @@ def index_agave(systemId, client, username, filePath='/', update_pems=False):
             offset += limit
             page = [doc for doc in es_root.children(offset=offset, limit=limit)]
 
-def index_level(path, folders, files, systemId, username, reindex=False):
+def index_level(path, folders, files, systemId, reindex=False):
     """
     Index a set of folders and files corresponding to the output from one 
     iteration of walk_levels
@@ -75,7 +75,7 @@ def index_level(path, folders, files, systemId, username, reindex=False):
     for obj in folders + files:
             obj_dict = obj.to_dict()
             obj_dict['basePath'] = os.path.dirname(obj.path)
-            doc = BaseESFile(username, reindex=reindex, **obj_dict)
+            doc = BaseESFile(reindex=reindex, **obj_dict)
             saved = doc.save()
 
             #if update_pems:
@@ -83,7 +83,7 @@ def index_level(path, folders, files, systemId, username, reindex=False):
             #    doc._wrapped.update(**{'pems': pems})
 
     children_paths = [_file.path for _file in folders + files]
-    es_root = BaseESFile(username, systemId, path, reindex=reindex)
+    es_root = BaseESFile(systemId, path, reindex=reindex)
     for doc in es_root.children():
         if doc is not None and doc.path not in children_paths:
             doc.delete()

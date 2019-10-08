@@ -180,8 +180,7 @@ class SystemKeysView(BaseApiView):
         )
         if success and body['form']['type'] == 'STORAGE':
             # Index the user's home directory once keys are successfully pushed.
-            agave_indexer.apply_async(args=[system_id], 
-                                    kwargs={'username': request.user.username})
+            agave_indexer.apply_async(args=[system_id])
             return JsonResponse({
                 'systemId': system_id,
                 'message': 'OK'

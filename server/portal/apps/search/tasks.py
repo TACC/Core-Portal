@@ -20,15 +20,11 @@ logger = logging.getLogger(__name__)
 
 # Crawl and index agave files
 @shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="1/s")
-def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, update_pems = False, ignore_hidden=True, reindex=False):
+def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems = False, ignore_hidden=True, reindex=False):
 
     from portal.libs.elasticsearch.utils import index_level
     from portal.libs.agave.utils import walk_levels
 
-    if username != None:
-        pems_username = username
-    else:
-        pems_username = settings.PORTAL_ADMIN_USERNAME
     client = service_account()
 
     if not filePath.startswith('/'):
@@ -40,7 +36,7 @@ def agave_indexer(self, systemId, username=None, filePath='/', recurse=True, upd
         logger.debug(exc)
         raise self.retry(exc=exc)
 
-    index_level(filePath, folders, files, systemId, pems_username, reindex=reindex)
+    index_level(filePath, folders, files, systemId, reindex=reindex)
     if recurse:
         for child in folders:
             self.delay(systemId, filePath=child.path, reindex=reindex)
@@ -82,7 +78,7 @@ def index_project_files(self, reindex=False):
         systemId = project_id_to_system_id(projectId)
         agave_indexer.apply_async(
             args=[systemId],
-            kwargs={'username': uname, 'filePath': '/', 'reindex': reindex}
+            kwargs={'filePath': '/', 'reindex': reindex}
         )
 
 # Indexing task for My Data.
@@ -97,7 +93,7 @@ def index_my_data(self, reindex=False):
         # resp = s.delete()
         agave_indexer.apply_async(
             args=[systemId],
-            kwargs={'username': uname, 'filePath': '/', 'reindex': reindex}
+            kwargs={'filePath': '/', 'reindex': reindex}
         )
 
 @shared_task(bind=True, queue='indexing')

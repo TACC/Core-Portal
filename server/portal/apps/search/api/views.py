@@ -38,6 +38,12 @@ class SearchController(object):
             'cms': 'cms'
         }
 
+        doc_type_map = {
+            'private_files': 'files',
+            'public_files': 'files',
+            'cms': 'modelresult'
+        }
+
         searchmgr_cls = search_lookup_manager(lookup_keys[type_filter])
         searchmgr = searchmgr_cls(request)
         cls_search = searchmgr.search(offset, limit)
@@ -50,13 +56,13 @@ class SearchController(object):
         if (type_filter != 'publications'):
             for r in results:
                 d = r.to_dict()
-                d["doc_type"] = r.meta.doc_type
+                d["doc_type"] = doc_type_map[type_filter]
                 if hasattr(r.meta, 'highlight'):
                     highlight = r.meta.highlight.to_dict()
                     d["highlight"] = highlight
                 hits.append(d)
 
-        out['total_hits'] = res.hits.total
+        out['total_hits'] = res.hits.total.value
         out['hits'] = hits
         out['public_files_total'] = SharedSearchManager(
             request).search(offset, limit).count()

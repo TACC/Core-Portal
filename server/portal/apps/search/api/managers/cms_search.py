@@ -27,7 +27,7 @@ class CMSSearchManager(BaseSearchManager):
                 'username', settings.PORTAL_ADMIN_USERNAME)
             self._query_string = kwargs.get('queryString')
 
-        cms_index = Index('cms')
+        cms_index = Index("{}-cms".format(settings.ES_INDEX_PREFIX))
 
         self.sortFields = {
             'link': 'title_exact',

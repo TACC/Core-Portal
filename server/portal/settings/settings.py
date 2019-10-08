@@ -793,21 +793,9 @@ SETTINGS: ELASTICSEARCH
 """
 
 ES_HOSTS = settings_secret._ES_HOSTS
-ES_DEFAULT_INDEX = "files"
-ES_DEFAULT_INDEX_ALIAS = "default"
-ES_REINDEX_INDEX_ALIAS = "reindex"
+ES_AUTH = settings_secret._ES_AUTH
 
-ES_DEFAULT_PROJECT_INDEX = "projects"
-ES_DEFAULT_PROJECT_INDEX_ALIAS = "projects-default"
-ES_REINDEX_PROJECT_INDEX_ALIAS = "projects-reindex"
-
-ES_PUBLIC_INDEX = "publications"
-ES_PUBLIC_INDEX_ALIAS = "public"
-ES_FILES_DOC_TYPE = "files"
-ES_PROJECTS_DOC_TYPE = "projects"
-ES_PUBLICATIONS_INDEX = "publications"
-ES_METADATA_DOC_TYPE = "metadata"
-ES_CMS_INDEX = "cms"
+ES_INDEX_PREFIX = settings_secret._ES_INDEX_PREFIX
 
 HAYSTACK_CONNECTIONS = settings_secret._HAYSTACK_CONNECTIONS
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
@@ -828,3 +816,4 @@ SETTINGS_EXPORT = [
     'GOOGLE_ANALYTICS_PROPERTY_ID',
     'PORTAL_NAMESPACE'
 ]
+

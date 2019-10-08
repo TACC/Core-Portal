@@ -8,7 +8,7 @@ import logging
 from future.utils import python_2_unicode_compatible
 from portal.apps.search.api.managers.base import BaseSearchManager
 from portal.libs.elasticsearch.docs.base import IndexedFile
-from elasticsearch_dsl import Q
+from elasticsearch_dsl import Q, Index
 from django.conf import settings
 
 @python_2_unicode_compatible
@@ -41,11 +41,17 @@ class PublicSearchManager(BaseSearchManager):
     def search(self, offset, limit):
         """runs a search and returns an ES search object."""
 
+        ngram_query = Q("query_string", query=self._query_string,
+                        fields=["name"],
+                        minimum_should_match='80%',
+                        default_operator='or')
+        match_query = Q("query_string", query=self._query_string,
+                        fields=[
+                            "name._exact, name._pattern"],
+                        default_operator='and')
+
         self.filter(Q({'term': {'system._exact': self._system}}))
-        self.query("query_string", query=self._query_string,
-                   fields=["name", "name._exact", "name._pattern"],
-                   analyzer='file_query_analyzer',
-                   default_operator='and')
+        self.query(ngram_query | match_query)
 
         self.extra(from_=offset, size=limit)
 

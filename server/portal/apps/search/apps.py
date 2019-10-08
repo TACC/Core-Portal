@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.apps import AppConfig
+from django.conf import settings
 
 
 class SearchConfig(AppConfig):
@@ -12,7 +13,7 @@ class SearchConfig(AppConfig):
 
         HOSTS = settings.ES_HOSTS
 
-        connections.configure(default={"hosts": HOSTS},
+        connections.configure(default={"hosts": HOSTS, "http_auth": settings.ES_AUTH},
                               request_timeout=60,
                               sniff_on_start=True,
                               sniffer_timeout=60,
