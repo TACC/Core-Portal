@@ -19,6 +19,20 @@ from portal.libs.exceptions import PortalLibException
 
 logger = logging.getLogger(__name__)
 
+def validate_agave_job(job_uuid, job_owner, disallowed_states=[]):
+    """
+    Verifies that a job UUID is both visible to the owner and belongs to the owner
+    """
+    user = get_user_model().objects.get(username=job_owner)
+    agave = user.agave_oauth.client
+    job_data = agave.jobs.get(jobId=job_uuid)
+    if job_data['owner'] != job_owner or job_data["status"] in disallowed_states:
+        logger.error(
+            "Agave job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(job_data['owner'],
+                                                                                                    job_data['status'],
+                                                                                                    job_owner))
+        raise PortalLibException("Unable to find a related valid job for this notification.")
+    return job_data
 
 class JobsWebhookView(BaseApiView):
     """
@@ -71,6 +85,9 @@ class JobsWebhookView(BaseApiView):
 
             archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
             target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
+
+            # Verify the job UUID against the username
+            validate_agave_job(job_id, username)
 
             if job_status == 'FAILED':
                 logger.debug('JOB FAILED: id={} status={}'.format(job_id, job_status))
@@ -165,17 +182,9 @@ class JobsWebhookView(BaseApiView):
 
             return HttpResponse('OK')
 
-        except ObjectDoesNotExist:
-            logger.exception('Unable to locate local user account: {}'.format(username))
-            return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
-
-        except AgaveException as e:
-            logger.warning('Agave API error')
-            return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
-
-        except Exception as e:
+        except (ObjectDoesNotExist, AgaveException, PortalLibException) as e:
             logger.exception(e)
-            return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
+            return HttpResponse("ERROR", status=400)
 
 
 class InteractiveWebhookView(BaseApiView):
@@ -240,23 +249,15 @@ class InteractiveWebhookView(BaseApiView):
             }
 
         else:
-            return HttpResponse('Unexpected event_type', status=400)
+            logger.info("Unexpected event type")
+            return HttpResponse("ERROR", status=400)
 
         # confirm that there is a corresponding running agave job before sending notification
         try:
-            user = get_user_model().objects.get(username=job_owner)
-            agave = user.agave_oauth.client
-            job_data = agave.jobs.get(jobId=job_uuid)
-            if job_data['owner'] != job_owner or job_data["status"] in [ 'FINISHED', 'FAILED', 'STOPPED' ]:
-                logger.error(
-                    "Agave job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(job_data['owner'],
-                                                                                                         job_data['status'],
-                                                                                                         job_owner))
-                raise PortalLibException("Unable to find a related valid job for this interactive event.")
+            validate_agave_job(job_uuid, job_owner, [ 'FINISHED', 'FAILED', 'STOPPED' ])
         except (HTTPError, AgaveException, PortalLibException) as e:
-            logger.exception(
-                "Could not find valid corresponding Agave job for interactive event")
-            return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
+            logger.exception(str(e))
+            return HttpResponse("ERROR", status=400)
 
         n = Notification.objects.create(**event_data)
         n.save()
@@ -273,8 +274,7 @@ class InteractiveWebhookView(BaseApiView):
             agave.meta.addMetadata(body=json.dumps(agave_job_meta))
 
         except (HTTPError, AgaveException) as e:
-            logger.exception(
-                'Could not add interactive connection data to metadata')
-            return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
+            logger.exception(e)
+            return HttpResponse("ERROR", status=400)
 
         return HttpResponse('OK')

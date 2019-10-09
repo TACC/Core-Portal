@@ -1,14 +1,45 @@
 import json
 import os
 from urllib import urlencode
-from mock import patch
+from mock import patch, MagicMock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.db.models import signals
 from django.core.urlresolvers import reverse
 from portal.apps.notifications.models import Notification
 from portal.apps.signals.receivers import send_notification_ws
+from portal.libs.exceptions import PortalLibException
+from portal.apps.webhooks.views import validate_agave_job
 
+class TestGetAgaveJob(TestCase):
+    def setUp(self):
+        self.job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
+        mock_client = MagicMock()
+        mock_client.jobs.get.return_value = self.job_event
+        mock_user = MagicMock()
+        mock_user.agave_oauth.client = mock_client
+        mock_user_model = MagicMock()
+        mock_user_model.objects.get.return_value = mock_user
+        self.user_model_patcher = patch(
+            'portal.apps.webhooks.views.get_user_model', 
+            return_value=mock_user_model
+        )
+        self.user_model = self.user_model_patcher.start()
+    
+    def tearDown(self):
+        self.user_model_patcher.stop()
+        pass
+
+    def test_valid_job(self):
+        self.assertEqual(validate_agave_job("id", "sal"), self.job_event)
+
+    def test_valid_job_invalid_user(self):
+        with self.assertRaises(PortalLibException):
+            validate_agave_job("id", "wronguser")
+
+    def test_invalid_state(self):
+        with self.assertRaises(PortalLibException):
+            validate_agave_job("id", "sal", disallowed_states=['STAGING'])
 
 class TestJobsWebhookView(TestCase):
 
@@ -18,8 +49,10 @@ class TestJobsWebhookView(TestCase):
     def tearDown(self):
         signals.post_save.connect(send_notification_ws, sender=Notification, dispatch_uid="notification_msg")
 
-    def test_webhook_job_post(self):
+    @patch('portal.apps.webhooks.views.validate_agave_job')
+    def test_webhook_job_post(self, mock_validate_agave_job):
         job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
+        mock_validate_agave_job.return_value = job_event
         response = self.client.post(reverse('webhooks:jobs_wh_handler'), json.dumps(job_event), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
