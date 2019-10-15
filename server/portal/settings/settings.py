@@ -798,7 +798,14 @@ ES_AUTH = settings_secret._ES_AUTH
 
 ES_INDEX_PREFIX = settings_secret._ES_INDEX_PREFIX
 
-HAYSTACK_CONNECTIONS = settings_secret._HAYSTACK_CONNECTIONS
+_HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': ES_HOSTS,
+        'INDEX_NAME': '{}-cms'.format(ES_INDEX_PREFIX),
+        'KWARGS': {'http_auth': ES_AUTH }
+    }
+}
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
