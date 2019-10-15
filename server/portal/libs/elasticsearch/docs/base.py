@@ -87,7 +87,7 @@ class IndexedProject(Document):
             raise DocumentNotFound("No document found for project ID {}.".format(projectId))
     
     class Index:
-        name = '{}-projects'.format(settings.ES_INDEX_PREFIX)
+        name = settings.ES_INDEX_PREFIX.format('projects')
 
 @python_2_unicode_compatible
 class IndexedFile(Document):
@@ -165,13 +165,13 @@ class IndexedFile(Document):
             return [], None
 
     class Index:
-        name = '{}-files'.format(settings.ES_INDEX_PREFIX)
+        name = settings.ES_INDEX_PREFIX.format('files')
 
 
 @python_2_unicode_compatible
 class ReindexedFile(IndexedFile):
     class Index:
-        name = '{}-files-reindex'.format(settings.ES_INDEX_PREFIX)
+        name = settings.ES_INDEX_PREFIX.format('files-reindex')
 
 @python_2_unicode_compatible
 class BaseESResource(object):

@@ -33,8 +33,8 @@ class Command(BaseCommand):
         es_client = elasticsearch.Elasticsearch([{'host': settings.ES_HOSTS, 'http_auth': settings.ES_AUTH}], timeout=60)
         cleanup = options.get('cleanup')
         swap_only = options.get('swap-only')
-        default_index_alias = "{}-files".format(settings.ES_INDEX_PREFIX)
-        reindex_index_alias = "{}-files-reindex".format(settings.ES_INDEX_PREFIX)
+        default_index_alias = settings.ES_INDEX_PREFIX.format('files')
+        reindex_index_alias = settings.ES_INDEX_PREFIX.format('files-reindex')
 
         if not swap_only:
             confirm = input('This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(reindex_index_alias))

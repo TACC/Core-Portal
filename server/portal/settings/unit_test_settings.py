@@ -354,7 +354,7 @@ AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
 
 ES_HOSTS = ['test.com']
 ES_AUTH = "user:password"
-ES_INDEX_PREFIX = "test-staging"
+ES_INDEX_PREFIX = "test-staging-{}"
 
 HAYSTACK_CONNECTIONS = {
     'default': {

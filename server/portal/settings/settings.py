@@ -798,11 +798,11 @@ ES_AUTH = settings_secret._ES_AUTH
 
 ES_INDEX_PREFIX = settings_secret._ES_INDEX_PREFIX
 
-_HAYSTACK_CONNECTIONS = {
+HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
         'URL': ES_HOSTS,
-        'INDEX_NAME': '{}-cms'.format(ES_INDEX_PREFIX),
+        'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
         'KWARGS': {'http_auth': ES_AUTH }
     }
 }

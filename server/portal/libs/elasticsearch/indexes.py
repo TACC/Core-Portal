@@ -36,7 +36,7 @@ def setup_indexes(doc_type, reindex=False, force=False):
      - If an index does not exist under the provided alias, then create a new
        index with that alias and the provided name.
     """
-    baseName = '{}-{}'.format(settings.ES_INDEX_PREFIX, doc_type)
+    baseName = settings.ES_INDEX_PREFIX.format(doc_type)
     indexName = '{}-{}'.format(baseName, index_time_string())
     alias = baseName
     if reindex:
