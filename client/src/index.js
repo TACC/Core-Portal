@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import AppRouter from './routes/workbench';
+import AppRouter from './routes';
 import 'bootstrap'
 import './fontawesome';
 

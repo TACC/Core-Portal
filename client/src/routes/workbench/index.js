@@ -1,15 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Allocations from '../../components/allocations'
+import Applications from '../applications'
 import Sidebar from '../../components/sidebar'
 
 function DataFiles() {
     return <h2>DataFiles</h2>;
 }
 
-function Applications() {
-    return <h2>Applications</h2>;
-}
 
 function Publications() {
     return <h2>Publications</h2>;
@@ -40,19 +38,4 @@ function Workbench({ match }) {
     )
 }
 
-function AppRouter() {
-    return (
-        <Router>
-            <div>
-                <Switch>
-                    <Route
-                        path='/workbench'
-                        render={(props) => <Workbench {...props} />}
-                    />
-                </Switch>
-            </div>
-        </Router>
-    );
-}
-
-export default AppRouter;
+export default Workbench;
