@@ -1,0 +1,13 @@
+.job-history-expandable-toggle {
+    color: white;
+    background-color: black;
+}
+
+.history-list-item {
+    margin-bottom: 0.8em;
+}
+
+.history-description {
+    font-size: 0.8em;
+    font-style: italic;
+}

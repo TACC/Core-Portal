@@ -8,11 +8,17 @@ class JobDetailsModalCtrl {
         this.loading = false;
         this.expandStatus = false;
         this.Notifications = Notifications;
+        this.jobHistory = [ ];
     }
 
     $onInit() {
         this.job = this.resolve.job;
         this.loading = true;
+        this.Jobs.getJobHistory(this.job.id).then(
+            (resp) => {
+                this.jobHistory = resp;
+            }
+        )
         this.Jobs.get(this.job.id).then((resp) => {
             if (resp.status === 'RUNNING' && resp._embedded.metadata) {
                 for (let i = 0; i < resp._embedded.metadata.length; i++) {

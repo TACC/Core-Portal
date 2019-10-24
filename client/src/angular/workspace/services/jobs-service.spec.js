@@ -1,5 +1,7 @@
 import { jobResponse } from '../fixtures/jobResponse';
 import { jobListResponse } from '../fixtures/jobListResponse';
+import { jobHistoryResponse } from '../fixtures/jobHistoryResponse';
+import { jobHistory } from '../fixtures/jobHistory';
 
 describe('JobsService', function() {
     let $q, Apps, $httpBackend, $scope, $http;
@@ -28,6 +30,16 @@ describe('JobsService', function() {
         Jobs.list().then(
             (result) => {
                 expect(result[0].created).toEqual(new Date("2019-08-16T19:14:22.000Z"));
+            }
+        );
+        $httpBackend.flush();
+    });
+
+    it('should get a job history', () => {
+        $httpBackend.whenGET('/api/workspace/jobs/1234/history/').respond(200, jobHistoryResponse);
+        Jobs.getJobHistory("1234").then(
+            (result) => {
+                expect(result).toEqual(jobHistory);
             }
         );
         $httpBackend.flush();
@@ -107,11 +119,15 @@ describe('JobsService', function() {
         expect(Jobs.getStatusClass({ status: "STOPPED" })).toEqual("alert-danger");
         expect(Jobs.getStatusClass({ status: "PAUSED" })).toEqual("alert-danger");
         expect(Jobs.getStatusClass({ status: "FINISHED" })).toEqual("alert-success");
-        expect(Jobs.getStatusClass({ status: "ACCEPTED" })).toEqual("alert-warning");
-        expect(Jobs.getStatusClass({ status: "PENDING" })).toEqual("alert-warning");
-        expect(Jobs.getStatusClass({ status: "PROCESSING_INPUTS" })).toEqual("alert-warning");
-        expect(Jobs.getStatusClass({ status: "STAGING_INPUTS" })).toEqual("alert-warning");
-        expect(Jobs.getStatusClass({ status: "STAGED" })).toEqual("alert-warning");
+        expect(Jobs.getStatusClass({ status: "RUNNING" })).toEqual("alert-warning");
+        expect(Jobs.getStatusClass({ status: "CLEANING_UP" })).toEqual("alert-warning");
+        expect(Jobs.getStatusClass({ status: "ARCHIVING" })).toEqual("alert-warning");
+        expect(Jobs.getStatusClass({ status: "ACCEPTED" })).toEqual("alert-info");
+        expect(Jobs.getStatusClass({ status: "QUEUED" })).toEqual("alert-success");
+        expect(Jobs.getStatusClass({ status: "PENDING" })).toEqual("alert-info");
+        expect(Jobs.getStatusClass({ status: "PROCESSING_INPUTS" })).toEqual("alert-info");
+        expect(Jobs.getStatusClass({ status: "STAGING_INPUTS" })).toEqual("alert-info");
+        expect(Jobs.getStatusClass({ status: "STAGED" })).toEqual("alert-success");
     });
 
     it('should update job status from notification service messages', () => {

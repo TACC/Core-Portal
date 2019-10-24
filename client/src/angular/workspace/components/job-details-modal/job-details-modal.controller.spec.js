@@ -1,4 +1,5 @@
 import { job } from '../../../jobs/fixtures/job';
+import { jobHistory} from '../../fixtures/jobHistory';
 
 describe('JobDetailsModal', function() {
     let $q, controller, element, $rootScope, Jobs, scope, $componentController, $uibModal, $compile;
@@ -24,6 +25,10 @@ describe('JobDetailsModal', function() {
             let deferred = $q.defer();
             deferred.resolve(job);
             spyOn(Jobs, 'get').and.returnValue(deferred.promise);
+
+            let deferredJobHistoryGet = $q.defer();
+            deferredJobHistoryGet.resolve(jobHistory);
+            spyOn(Jobs, 'getJobHistory').and.returnValue(deferredJobHistoryGet.promise);
 
             let elementHtml = "<job-details-modal resolve='mockResolve'></jobs-details-modal>";
             element = angular.element(elementHtml)

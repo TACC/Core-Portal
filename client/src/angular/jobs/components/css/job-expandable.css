@@ -1,0 +1,19 @@
+
+.job-expandable-toggle {
+    padding-bottom: 0.25em;
+    padding-top: 0.25em;
+    outline: none;
+    font-weight: bold;
+}
+.job-expandable .job-expandable-padding {
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    outline: none;
+}
+
+.job-expandable .job-expandable-message.ng-enter {
+    -webkit-animation: fadeIn 0.5s;
+    animation: fadeIn 0.5s;
+}

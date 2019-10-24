@@ -1,11 +1,13 @@
 class JobDetailCtrl {
-    constructor(Jobs, $state, Notifications) {
+    constructor(Jobs, $state, Notifications, $scope) {
         'ngInject';
         this.Jobs = Jobs;
         this.job = null;
+        this.jobHistory = [ ];
         this.$state = $state;
         this.expandStatus = false;
         this.Notifications = Notifications;
+        this.$scope = $scope;
     }
 
     $onInit() {
@@ -23,6 +25,12 @@ class JobDetailCtrl {
             this.job = resp;
             this.jobFinished = this.Jobs.jobIsFinished(this.job);
         });
+        this.Jobs.getJobHistory(this.jobId).then(
+            (result) => {
+                this.jobHistory = result;
+                this.$scope.$digest();
+            }
+        );
         this.Notifications.subscribe(
             (msg) => {
                 this.job = this.Jobs.updateJobFromNotification(this.job, msg);
@@ -58,10 +66,6 @@ class JobDetailCtrl {
 
     convertDate(date) {
         return new Date(date).toLocaleString();
-    }
-
-    statusToggle() {
-        this.expandStatus = !this.expandStatus;
     }
 }
 

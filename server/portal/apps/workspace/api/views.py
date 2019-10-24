@@ -332,3 +332,10 @@ class SystemsView(BaseApiView):
         agc = service_account()
         data = agc.systems.updateRole(systemId=system_id, body=role_body)
         return JsonResponse({"response": data})
+
+@method_decorator(login_required, name='dispatch')
+class JobHistoryView(BaseApiView):
+    def get(self, request, job_uuid):
+        agave = request.user.agave_oauth.client
+        data = agave.jobs.getHistory(jobId=job_uuid)
+        return JsonResponse({"response": data})

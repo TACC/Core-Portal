@@ -1,0 +1,8 @@
+.job-datetime-time {
+    font-weight: bolder;
+}
+
+.job-datetime-date {
+    font-weight: lighter;
+    color: #444444;
+}

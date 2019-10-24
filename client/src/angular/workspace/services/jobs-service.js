@@ -34,6 +34,21 @@ class Jobs {
         });
     }
 
+    getJobHistory(uuid) {
+        return this.$http.get('/api/workspace/jobs/' + uuid + '/history/').then(
+            (resp) => {
+                let history = resp.data.response;
+                // Sort history by ascending date (most recent to later)
+                history.sort(
+                    (a, b) => {
+                        return new Date(a.created) - new Date(b.created);
+                    }
+                );
+                return history;
+            }
+        )
+    }
+
     submit(data) {
         return this.$http.post('/api/workspace/jobs/', data)
             .then((resp) => {
@@ -82,16 +97,19 @@ class Jobs {
     }
 
     getStatusClass(job) {
-        if (job.status==='FAILED' || job.status==='STOPPED' || job.status==='PAUSED') {
+        if (job.status==='FAILED' || job.status==='STOPPED' || job.status==='BLOCKED' ||
+            job.status==='PAUSED') {
             return "alert-danger";
+        }
+        if (job.status==="ACCEPTED" || job.status==="PENDING" || 
+            job.status==='PROCESSING_INPUTS' || job.status==='STAGING_INPUTS' || 
+            job.status==='STAGING_JOB' || job.status==='SUBMITTING') {
+            return "alert-info";
         }
         if (job.status === 'FINISHED') {
             return "alert-success";
         }
-        if (job.status==='ACCEPTED' || job.status==='PENDING' || job.status==='PROCESSING_INPUTS' || 
-            job.status==='STAGING_INPUTS' || job.status==='STAGED' || job.status==='STAGING_JOB' ||
-            job.status==='SUBMITTING' || job.status==='QUEUED' || job.status === 'RUNNING' ||
-            job.status==='CLEANING_UP' || job.status==='ARCHIVING' || job.status==='BLOCKED') {
+        if ( job.status === 'RUNNING' || job.status==='CLEANING_UP' || job.status==='ARCHIVING') {
             return "alert-warning";
         }
         return "alert-success";

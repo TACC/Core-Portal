@@ -24,29 +24,17 @@
             <b>Status</b>
             <div class="job-status-event">
                 <div>Submitted</div>
-                <div>{{ $ctrl.convertDate($ctrl.job.created) }}</div>
+                <job-datetime datetime="$ctrl.job.created"></job-datetime>
             </div>
             <div class="job-status-event">
                 <div>
-                    <span ng-class="$ctrl.Jobs.getStatusClass($ctrl.job)">
-                        <b>&nbsp;{{ $ctrl.job.status }}&nbsp;</b>
-                    </span>
+                    <job-status-label item="$ctrl.job"></job-status-label>
                 </div>
-                <div>{{ $ctrl.convertDate($ctrl.job.ended) }}</div>
+                <job-datetime datetime="$ctrl.job.ended"></job-datetime>
             </div>
         </div>
-        <div class="job-status-dropdown">
-            <div ng-class="$ctrl.Jobs.getStatusClass($ctrl.job)">
-                <span class="job-status-padding" ng-click="$ctrl.statusToggle()">
-                    Status Report&nbsp;
-                    <i ng-if="!$ctrl.expandStatus" class="fa fa-chevron-circle-down"></i>
-                    <i ng-if="$ctrl.expandStatus" class="fa fa-chevron-circle-up"></i>
-                </span>
-            </div>
-            <div ng-if="$ctrl.expandStatus" class="job-status-padding status-message">
-                <p>{{$ctrl.job.lastStatusMessage}}</p>
-            </div>
-        </div>
+        <job-message-expandable job="$ctrl.job"></job-message-expandable>
+        <job-history-expandable history="$ctrl.jobHistory"></job-history-expandable>
         <div ng-if="!$ctrl.summary" class="job-detail agave-info">
             <table class="agave-job">
                 <tr>

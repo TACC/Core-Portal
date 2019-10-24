@@ -1,4 +1,5 @@
 import { job } from '../../fixtures/job';
+import { jobHistory } from '../../../workspace/fixtures/jobHistory';
 
 describe('JobDetailCtrl', ()=>{
     let element, controller, scope, $compile, $q;
@@ -20,7 +21,7 @@ describe('JobDetailCtrl', ()=>{
                 Jobs = _Jobs_;
 
                 // Mock an interactive job response
-                let deferred = $q.defer();
+                let deferredJobGet = $q.defer();
                 job.status = "RUNNING";
                 job._embedded = {
                     metadata: [ 
@@ -32,8 +33,12 @@ describe('JobDetailCtrl', ()=>{
                         }
                     ]
                 }
-                deferred.resolve(job);
-                spyOn(Jobs, 'get').and.returnValue(deferred.promise);
+                deferredJobGet.resolve(job);
+                spyOn(Jobs, 'get').and.returnValue(deferredJobGet.promise);
+
+                let deferredJobHistoryGet = $q.defer();
+                deferredJobHistoryGet.resolve(jobHistory);
+                spyOn(Jobs, 'getJobHistory').and.returnValue(deferredJobHistoryGet.promise);
 
                 let elementHtml = "<job-detail jobId='jobId'></job-detail>";
                 element = angular.element(elementHtml)
@@ -76,12 +81,6 @@ describe('JobDetailCtrl', ()=>{
 
     it("should convert ISO dates to local strings", () => {
         expect(controller.convertDate('2019-08-12T16:01:56+0000')).toContain("8/12/2019");
-    });
-    
-    it("should toggle the job status dropdown", () => {
-        controller.statusToggle();
-        scope.$digest();
-        expect(element.text()).toContain("Transitioning from status ARCHIVING to FINISHED in phase ARCHIVING");
     });
 
     it("should update the job upon a notification", () => {

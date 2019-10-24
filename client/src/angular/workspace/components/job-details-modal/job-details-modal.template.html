@@ -14,28 +14,17 @@
         <dd class="job-status">
             <div>
                 Submitted<br />
-                <span class="timestamp">{{ $ctrl.convertDate($ctrl.job.created) }}</span>
+                <job-datetime datetime="$ctrl.job.created"></job-datetime>
             </div>
             <div>
-                <span ng-class="$ctrl.Jobs.getStatusClass($ctrl.job)">
-                    <b>&nbsp;{{ $ctrl.job.status }}&nbsp;</b>
-                </span><br />
-                <span class="timestamp">{{ $ctrl.convertDate($ctrl.job.ended) }}</span>
+                <job-status-label item="$ctrl.job"></job-status-label><br />
+                <job-datetime datetime="$ctrl.job.ended"></job-datetime>
             </div>
         </dd>
         <dt></dt>
         <dd>
-            <div ng-if="$ctrl.job.lastStatusMessage"
-                ng-class="$ctrl.Jobs.getStatusClass($ctrl.job)">
-                <span class="status-toggle" ng-click="$ctrl.statusToggle()">
-                    Status Report
-                    <i ng-if="!$ctrl.expandStatus" class="fa fa-chevron-circle-down"></i>
-                    <i ng-if="$ctrl.expandStatus" class="fa fa-chevron-circle-up"></i>
-                </span>
-            </div>
-            <div ng-if="$ctrl.expandStatus" class="status-message">
-                <p>{{$ctrl.job.lastStatusMessage}}</p>
-            </div>
+           <job-message-expandable job="$ctrl.job"></job-message-expandable> 
+           <job-history-expandable history="$ctrl.jobHistory"></job-history-expandable>
         </dd>
         <dt>Output</dt>
         <dd ng-if="!$ctrl.jobFinished"><i>Output pending</i></dd>
