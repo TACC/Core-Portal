@@ -14,7 +14,7 @@
     <div ng-if="$ctrl.meta[$ctrl.field].length">
         <div ng-repeat="member in $ctrl.meta[$ctrl.field]" class="member-row">
             <div>{{ member.fullName }} ({{ member.username }})</div>
-            <button class="btn btn-sm pull-right" 
+            <button class="btn btn-sm pull-right member-remove-button" 
                     ng-if="$ctrl.editable && !$ctrl.memberRemovingStates[member.username]" 
                     ng-click="$ctrl.removeMember(member)">
                 <i class="fa fa-times" ></i>&nbsp;
