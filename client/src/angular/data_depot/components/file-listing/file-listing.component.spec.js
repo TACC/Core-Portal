@@ -40,11 +40,11 @@ describe('FileListingCtrl', () => {
                 'browse'
             ).and.returnValue(browsePromise.promise);
 
-            controller.$onInit();
         });
     });
 
     it('should browse onInit', () => {
+        controller.$onInit();
         expect(controller.DataBrowserService.browse).toHaveBeenCalledWith({
             system: '',
             path: '/',
@@ -56,6 +56,7 @@ describe('FileListingCtrl', () => {
     });
 
     it('should show/hide the Show More Files button depending on browser state', () => {
+        controller.$onInit();
         //hide button when listing.children is undefined, e.g. when an error occurs
         controller.DataBrowserService.currentState = { listing: {}, busyListing: false, busy: false, reachedEnd: false };
         expect(controller.showMoreFilesButton()).toBe(false);
@@ -73,7 +74,8 @@ describe('FileListingCtrl', () => {
 
 
 describe('FileListingComponent', function() {
-    let $scope, $q, $compile, element, DataBrowserService, FileListing;
+    let $scope, $q, $compile, element, DataBrowserService, FileListing, UserService, SystemsService;
+    let controller;
 
     // Mock requirements.
     beforeEach(angular.mock.module('portal'));
@@ -86,18 +88,21 @@ describe('FileListingComponent', function() {
             _$stateParams_,
             $componentController,
             _$compile_,
-            _FileListing_
+            _FileListing_,
+            _UserService_,
+            _SystemsService_
         ) => {
             $q = _$q_;
             DataBrowserService = _DataBrowserService_;
             FileListing = _FileListing_;
+            UserService = _UserService_;
+            SystemsService = _SystemsService_;
             $compile = _$compile_;
             $scope = _$rootScope_.$new();
             $scope.onBrowse = (f) => { };
             $scope.listingParams = { systemId: 'test', limit: 100, offset: 0 };
             let componentHtml = '<file-listing-component params="listingParams" on-browse="onBrowse($event, file)"></file-listing-component>';
             element = angular.element(componentHtml);
-
         });
     });
 
@@ -110,6 +115,47 @@ describe('FileListingComponent', function() {
         element = $compile(element)($scope);
         $scope.$digest();
         expect(element.html()).toContain('No files to show!');
+    });
+
+
+    it('should generate a push keys message', () => {
+        UserService.currentUser = {
+            username: "username"
+        }
+        let deferred = $q.defer();
+        deferred.resolve(
+            [ { role: "OWNER", username: "username" } ]
+        );
+        spyOn(DataBrowserService, 'browse').and.returnValue($q.reject({}));
+        spyOn(SystemsService, 'listRoles').and.returnValue(deferred.promise);
+        DataBrowserService.currentState = {
+            error: {
+                status: 502
+            }
+        };
+        element = $compile(element)($scope);
+        $scope.$digest();
+        expect(element.text()).toContain("Authenticate with TACC Token");
+    });
+
+    it('should not show a push keys message for systems where the user is not the owner', () => {
+        UserService.currentUser = {
+            username: "username"
+        }
+        let deferred = $q.defer();
+        deferred.resolve(
+            [ { role: "OWNER", username: "other" } ]
+        );
+        spyOn(DataBrowserService, 'browse').and.returnValue($q.reject({}));
+        spyOn(SystemsService, 'listRoles').and.returnValue(deferred.promise);
+        DataBrowserService.currentState = {
+            error: {
+                status: 502
+            }
+        };
+        element = $compile(element)($scope);
+        $scope.$digest();
+        expect(element.text()).toContain("There appears to be a problem"); 
     });
 
     it('Should not have the no files message when there are files in a listing', () => {

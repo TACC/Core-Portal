@@ -1,11 +1,13 @@
 class FileListingCtrl {
-    constructor($state, $stateParams, DataBrowserService, SystemsService, $uibModal) {
+    constructor($state, $stateParams, DataBrowserService, SystemsService, UserService, $uibModal) {
         'ngInject';
         this.$state = $state;
         this.$stateParams = $stateParams;
         this.DataBrowserService = DataBrowserService;
         this.SystemsService = SystemsService;
+        this.UserService = UserService;
         this.$uibModal = $uibModal;
+        this.isOwner = false;
 
         // this.systemId and this.filePath are binded using
         // AngularJS binding from ui-router resolve.
@@ -35,6 +37,21 @@ class FileListingCtrl {
                 this.DataBrowserService.currentState.reachedEnd = true
             }
         });
+
+        if (this.UserService.currentUser.username) {
+            this.SystemsService.listRoles(this.params.systemId).then(
+                (roles) => {
+                    this.isOwner = roles.some(
+                        (role) => role.role === "OWNER" && role.username === this.UserService.currentUser.username
+                    )
+                },
+                (err) => {
+                    this.isOwner = false;   
+                }
+            )
+        }  else {
+            this.isOwner = false;
+        }
     }
 
     onSelect($event, file) {
