@@ -403,7 +403,11 @@ LOGGING = {
         'paramiko': {
             'handlers': ['console'],
             'level': 'DEBUG'
-        }
+        },
+        'celery': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
     },
 }
 
