@@ -76,12 +76,19 @@ notification-detail:hover > .notification {
     padding: 5px;
 }
 
-.clear-notifs {
-    cursor: pointer;
-    padding: 7px;
-    font-size: 13px;
-}
-
 .notifications-wrapper .notification:hover {
     background-color: #eeeeee;
+}
+
+.notifications-dropdown-header {
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    font-size: 1.25em;
+}
+
+.notifications-dropdown-header a {
+    color: white;
+}
+
+.notifications-dropdown-header .pull-right {
+    margin-left: 1em;
 }

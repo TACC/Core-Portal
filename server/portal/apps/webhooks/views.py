@@ -17,22 +17,37 @@ from portal.apps.search.tasks import agave_indexer
 from portal.views.base import BaseApiView
 from portal.libs.exceptions import PortalLibException
 
+from django.conf import settings
+
 logger = logging.getLogger(__name__)
 
 def validate_agave_job(job_uuid, job_owner, disallowed_states=[]):
     """
     Verifies that a job UUID is both visible to the owner and belongs to the owner
+
+    Throws PortalLibException if the job owner does not match the specified job ID
+    Returns:
+        False if the job state is disallowed for notifications
+        True if the job is validated
+
     """
     user = get_user_model().objects.get(username=job_owner)
     agave = user.agave_oauth.client
     job_data = agave.jobs.get(jobId=job_uuid)
-    if job_data['owner'] != job_owner or job_data["status"] in disallowed_states:
+
+    # Validate the job ID against the owner
+    if job_data['owner'] != job_owner:
         logger.error(
             "Agave job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(job_data['owner'],
                                                                                                     job_data['status'],
                                                                                                     job_owner))
         raise PortalLibException("Unable to find a related valid job for this notification.")
-    return job_data
+
+    # Check to see if the job state should generate a notification
+    if job_data["status"] in disallowed_states:
+        return False
+
+    return True
 
 class JobsWebhookView(BaseApiView):
     """
@@ -86,8 +101,21 @@ class JobsWebhookView(BaseApiView):
             archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
             target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
 
-            # Verify the job UUID against the username
-            validate_agave_job(job_id, username)
+            # Verify the job UUID against the username and that the state should
+            # generate a notification
+            valid_state = validate_agave_job(
+                job_id, username, settings.PORTAL_DISALLOWED_JOB_NOTIFICATION_STATES
+            )
+
+            # If the job state is not valid for generating a notification, 
+            # return an OK response
+            if not valid_state:
+                logger.debug(
+                    "Job ID {} for owner {} entered {} state (no notification sent)".format(
+                        job_id, username, job_status
+                    )
+                )
+                return HttpResponse("OK")
 
             if job_status == 'FAILED':
                 logger.debug('JOB FAILED: id={} status={}'.format(job_id, job_status))
@@ -254,9 +282,17 @@ class InteractiveWebhookView(BaseApiView):
 
         # confirm that there is a corresponding running agave job before sending notification
         try:
-            validate_agave_job(job_uuid, job_owner, [ 'FINISHED', 'FAILED', 'STOPPED' ])
+            valid_state = validate_agave_job(
+                job_uuid, job_owner, [ 'FINISHED', 'FAILED', 'STOPPED' ]
+            )
+            if not valid_state:
+                raise PortalLibException(
+                    "Interactive Job ID {} for user {} was in invalid state".format(
+                        job_uuid, job_owner
+                    )
+                )
         except (HTTPError, AgaveException, PortalLibException) as e:
-            logger.exception(str(e))
+            logger.exception(e)
             return HttpResponse("ERROR", status=400)
 
         n = Notification.objects.create(**event_data)

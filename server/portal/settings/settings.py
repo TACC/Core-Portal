@@ -775,6 +775,10 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
 
 PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
+PORTAL_DISALLOWED_JOB_NOTIFICATION_STATES = getattr(
+    settings_secret, "_PORTAL_DISALLOWED_JOB_NOTIFICATION_STATES", []
+)
+
 # "View in Jupyter Notebook" base URL
 PORTAL_JUPYTER_URL = getattr(settings_secret, '_PORTAL_JUPYTER_URL', None)
 # "View in Jupyter Notebook" mount map, i.e. "data-sd2e-community" -> "/sd2e-community" for SD2E

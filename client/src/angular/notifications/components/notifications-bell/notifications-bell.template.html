@@ -6,25 +6,22 @@
         </span>
     </a>
     <ul uib-dropdown-menu class="dropdown-menu notifications" aria-labelledby="dLabel">
-        <li>
-            <a href="/workbench/notifications">
-                Notifications
-                <span class="pull-right">
-                    View all
-                    <i class="fa fa-arrow-circle-right"></i>
-                </span>
+        <div class="notifications-dropdown-header">
+            Notifications
+            <a href="/workbench/notifications" class="pull-right">
+                View all
+                <i class="fa fa-arrow-circle-right"></i>
             </a>
-        </li>
+            <a ng-if="$ctrl.service.notes.total > 0" class="pull-right" ng-click="$ctrl.delete('all')">
+                Clear
+                <i class="fa fa-trash"></i>
+            </a>
+        </div>
         <div class="notifications-wrapper" ng-if="$ctrl.service.notes.total > 0">
             <notifications-detail ng-repeat="note in $ctrl.service.notes.notifs" note="note" delete="$ctrl.delete(note.pk)"></notifications-detail>
         </div>
         <div class="notifications-none" ng-if="$ctrl.service.notes.total == 0">
             <div class="text-center">Whew, no notifications!</div>
         </div>
-        <li ng-if="$ctrl.service.notes.total > 0">
-            <div class="clear-notifs text-center" ng-click="$ctrl.delete('all')">
-                Clear all notifications
-            </a>
-        </li>
    </ul>
 </div>

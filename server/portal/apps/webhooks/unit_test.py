@@ -11,7 +11,7 @@ from portal.apps.signals.receivers import send_notification_ws
 from portal.libs.exceptions import PortalLibException
 from portal.apps.webhooks.views import validate_agave_job
 
-class TestGetAgaveJob(TestCase):
+class TestValidateAgaveJob(TestCase):
     def setUp(self):
         self.job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
         mock_client = MagicMock()
@@ -31,15 +31,14 @@ class TestGetAgaveJob(TestCase):
         pass
 
     def test_valid_job(self):
-        self.assertEqual(validate_agave_job("id", "sal"), self.job_event)
+        self.assertEqual(validate_agave_job("id", "sal"), True)
 
     def test_valid_job_invalid_user(self):
         with self.assertRaises(PortalLibException):
             validate_agave_job("id", "wronguser")
 
     def test_invalid_state(self):
-        with self.assertRaises(PortalLibException):
-            validate_agave_job("id", "sal", disallowed_states=['STAGING'])
+        self.assertEqual(validate_agave_job("id", "sal", disallowed_states=['STAGING']), False)
 
 class TestJobsWebhookView(TestCase):
 
