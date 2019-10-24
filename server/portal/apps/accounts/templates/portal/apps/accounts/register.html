@@ -12,7 +12,7 @@
             <img style="max-width:300px" alt="TACC" src="{% static 'images/tacc-logo-outline.svg'%}">
           </p>
           <h3>
-            Already have an Account? <a href="{% url 'portal_auth:login' %}">Log in.</a>
+            Already have an Account? <a href="{% url 'portal_auth:agave_oauth' %}">Log in.</a>
           </h3>
           <p>
             If you already have a TACC account, simply
@@ -37,7 +37,7 @@
           {% bootstrap_form account_form %}
           <button class="btn btn-primary" type="submit">Register Account</button>
           <a class="btn btn-link" href="/">Cancel</a>
-          <a class="btn btn-link" href="{% url 'login' %}">Already have an account? Log in.</a>
+          <a class="btn btn-link" href="{% url 'portal_auth:agave_oauth' %}">Already have an account? Log in.</a>
         </form>
       </div>
     </div>

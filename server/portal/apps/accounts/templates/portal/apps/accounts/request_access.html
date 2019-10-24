@@ -19,7 +19,7 @@
         {% bootstrap_form access_form %}
         <button class="btn btn-primary" type="submit">Request Access</button>
         <a class="btn btn-link" href="/">Cancel</a>
-        <a class="btn btn-link pull-right" href="/accounts/login">Already have an account? Log in.</a>
+        <a class="btn btn-link pull-right" href="{% url 'portal_auth:agave_oauth' %}">Already have an account? Log in.</a>
       </form>
 
   </div>

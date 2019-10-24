@@ -21,7 +21,7 @@ class SetupCompleteMiddleware(object):
             return self.get_response(request)
     
         if not hasattr(request, "user") or not request.user.is_authenticated():
-            return HttpResponseRedirect(reverse('portal_accounts:login'))
+            return HttpResponseRedirect(reverse('portal_accounts:logout'))
 
         user = request.user
         portal_profile = None
@@ -33,7 +33,7 @@ class SetupCompleteMiddleware(object):
             # Log out the user if they somehow don't have a profile
             # It should be created by portal.apps.auth.backends.AgaveOAuthBackend.authenticate
             logout(request)
-            return HttpResponseRedirect(reverse('portal_accounts:login'))
+            return HttpResponseRedirect(reverse('portal_accounts:logout'))
 
         # check to see if user setup has finished
         if not portal_profile.setup_complete:

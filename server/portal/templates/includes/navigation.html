@@ -94,7 +94,7 @@
         </li>
         {% endif %}
         <li class="right-nav-links {% if request.get_full_path == '/accounts/login' %} active {% endif %}">
-          <a href="{% url 'portal_accounts:login' %}" class="btn btn-link-alt">
+          <a href="{% url 'portal_auth:agave_oauth' %}" class="btn btn-link-alt">
             <i class="fa fa-sign-in nav-icon"></i> Log in
           </a>
         </li>

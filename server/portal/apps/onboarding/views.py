@@ -26,7 +26,7 @@ class SetupStatusView(View):
             if request.user.username != username and not request.user.is_staff:
                 # The user must be staff to view another user
                 logout(request)
-                return HttpResponseRedirect(reverse('portal_accounts:login'))
+                return HttpResponseRedirect(reverse('portal_accounts:logout'))
 
             user = get_user_model().objects.get(username=username)
 

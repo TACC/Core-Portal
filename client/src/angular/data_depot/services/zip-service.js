@@ -17,7 +17,6 @@ class ZipService {
         this.zippyAppId = null;
         this.extractAppId = null;
         this.targzSupport = false;
-        this.init();
     }
 
     getLatestApp(apps) {

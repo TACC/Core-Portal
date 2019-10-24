@@ -44,25 +44,13 @@ class IndexView(TemplateView):
         context = super(IndexView, self).get_context_data(**kwargs)
         return context
 
-
-class LoginView(TemplateView):
-    """Login options view
-    """
-    template_name = 'portal/apps/accounts/login.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(LoginView, self).get_context_data(**kwargs)
-        context['request_access'] = settings.REQUEST_ACCESS
-        return context
-
-
 class LogoutView(View):
     """Logout view
     """
     def get(self, request):
         """GET"""
         logout(request)
-        return HttpResponseRedirect(settings.LOGIN_URL)
+        return HttpResponseRedirect('/')
 
 
 def request_access(request):
@@ -292,7 +280,7 @@ def manage_pro_profile(request):
         portal_profile = PortalProfile.objects.get(user__id=user.id)
     except PortalProfile.DoesNotExist:
         logout(request)
-        return HttpResponseRedirect(reverse('portal_auth:login'))
+        return HttpResponseRedirect(reverse('portal_accounts:logout'))
     context = {
         'title': 'Manage Professional Profile',
         'user': user,

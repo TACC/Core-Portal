@@ -4,6 +4,7 @@ class DataDepotToolbarCtrl {
         $state,
         $uibModal,
         DataBrowserService,
+        UserService,
         ZipService) {
         'ngInject';
         this.$scope = $scope;
@@ -11,6 +12,7 @@ class DataDepotToolbarCtrl {
         this.$uibModal = $uibModal;
         this.DataBrowserService = DataBrowserService;
         this.ZipService = ZipService;
+        this.UserService = UserService;
     }
 
     $onInit() {
@@ -25,6 +27,9 @@ class DataDepotToolbarCtrl {
         /* Set initial toolbar status */
         this.updateToolbar();
         this.toolbarOptions = this.DataBrowserService.toolbarOptions();
+        if (this.UserService.currentUser && this.UserService.currentUser.username) {
+            this.ZipService.init();
+        }
     }
     /**
     * Update the toolbar's status for various functions.
