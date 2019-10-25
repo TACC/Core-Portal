@@ -47,6 +47,7 @@ client/build/
 
 # no webpack compiled templates
 server/portal/templates/base.html
+server/portal/templates/base.html.gz
 
 # in case you leave that here
 datadump.json

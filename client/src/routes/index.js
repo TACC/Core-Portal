@@ -9,7 +9,8 @@ function AppRouter() {
         <Switch>
           <Route
             path='/workbench'
-            render={(props) => <Workbench {...props} />}
+            render={Workbench}
+            // render={(props) => <Workbench {...props} />}
           />
         </Switch>
       </div>

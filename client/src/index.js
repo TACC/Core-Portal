@@ -1,20 +1,14 @@
+import 'react-hot-loader';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import App from './components/workbench';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import AppRouter from './routes';
 import 'bootstrap'
 import './fontawesome';
 
-function App() {
-    return (
-        <div className="App">
-            <AppRouter />
-        </div>
-    );
-}
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('react-root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

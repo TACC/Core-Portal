@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Route, Switch } from 'react-router-dom';
+import PropTypes from "prop-types";
 import Allocations from '../../components/allocations'
 import Applications from '../applications'
 import Sidebar from '../../components/sidebar'
@@ -36,6 +37,10 @@ function Workbench({ match }) {
             </div>
         </div>
     )
+}
+
+Workbench.propTypes = {
+    match: PropTypes.shape.isRequired
 }
 
 export default Workbench;

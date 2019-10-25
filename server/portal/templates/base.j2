@@ -34,16 +34,8 @@
       {% block breadcrumb %}{% endblock %}
       {% block content %}{% endblock %}
     </div>
-    <div id="root"></div>
+    <div id="react-root"></div>
     {% include 'includes/footer.html' %}
-    <!-- scripts -->
-    <!-- Vendor base JS -->
-    {# <script src="<htmlWebpackPlugin.files.chunks.vendor.entry>"></script> #}
-    <!-- Custom base js -->
-
-      <!-- Extended templates JS -->
-    {% block scripts %}{% endblock %}
-    <!-- User Auth Check -->
     {% render_block "js" %}
   </body>
 </html>

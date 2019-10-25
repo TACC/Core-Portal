@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSun } from '@fortawesome/free-solid-svg-icons'
 import useFetch from '../../utils/useFetch';
 import './allocations.css';
 
@@ -10,7 +11,7 @@ function Allocations() {
   if (!res.response) {
     return (
       <div id='spin-sun'>
-        <FontAwesomeIcon icon={['fas', 'sun']} size="8x" spin />
+        <FontAwesomeIcon icon={faSun} size="8x" spin />
       </div>
     )
   }
