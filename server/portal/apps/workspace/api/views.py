@@ -8,7 +8,7 @@ import json
 import urllib
 import os
 from urlparse import urlparse
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -24,6 +24,7 @@ from agavepy.agave import Agave
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.utils.translations import url_parse_inputs
+from portal.apps.workspace.models import JobSubmission
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -188,7 +189,29 @@ class JobsView(BaseApiView):
         else:
             limit = request.GET.get('limit', 10)
             offset = request.GET.get('offset', 0)
+            period = request.GET.get('period', 'all')
+
             data = agave.jobs.list(limit=limit, offset=offset)
+            jobs = JobSubmission.objects.all().filter(user=request.user)
+
+            if period != "all":
+                enddate = datetime.now()
+                if period == "week":
+                    days = 7
+                elif period == "month":
+                    days = 30
+                startdate = enddate - timedelta(days=days)
+                jobs = jobs.filter(time__range=[startdate, enddate])
+
+            user_job_ids = [ 
+                job.jobId for job in jobs
+            ]
+            data = list(
+                filter(
+                    lambda job: job["id"] in user_job_ids,
+                    data
+                )
+            )
 
         return JsonResponse({"response": data})
 
@@ -281,6 +304,12 @@ class JobsView(BaseApiView):
                     del job_post['parameters'][param]
 
             response = agave.jobs.submit(body=job_post)
+            if "id" in response:
+                job = JobSubmission.objects.create(
+                    user=request.user,
+                    jobId=response["id"]
+                )
+                job.save()
             return JsonResponse({"response": response})
 
 

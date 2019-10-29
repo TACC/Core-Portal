@@ -4,6 +4,21 @@ class JobsListCtrl {
         this.Notifications = Notifications;
         this.JobsService = Jobs;
         this.$rootScope = $rootScope;
+        this.displayOptions = [
+            {
+                value: "week",
+                label: "This Week"
+            },
+            {
+                value: "month",
+                label: "This Month"
+            },
+            {
+                value: "all",
+                label: "All Jobs"
+            }
+        ]
+        this.display = this.displayOptions[0];
     }
 
     $onInit() {
@@ -19,6 +34,10 @@ class JobsListCtrl {
         this.$rootScope.$on('refresh-jobs-panel', () => {
             this.refresh();
         });
+    }
+
+    displayChange() {
+        this.refresh();
     }
 
     processNotification(event) {
@@ -45,7 +64,7 @@ class JobsListCtrl {
 
     refresh() {
         this.loading = true;
-        this.JobsService.list({ limit: this.limit })
+        this.JobsService.list({ limit: this.limit, period: this.display.value })
             .then((resp) => {
                 this.jobs = resp;
             })
