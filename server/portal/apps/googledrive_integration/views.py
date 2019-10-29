@@ -93,7 +93,7 @@ def oauth2_callback(request):
         # Use the authorization server's response to fetch the OAuth 2.0 tokens.
         authorization_response = request.build_absolute_uri()
         flow.fetch_token(authorization_response=authorization_response)
-            
+
         credentials = flow.credentials
         if not credentials.refresh_token:
             # Auth flow completed previously, and no refresh_token granted. Need to disconnect to get
@@ -154,9 +154,13 @@ def disconnect(request):
             logger.error('Disconnect Google Drive; GoogleDriveUserToken delete error.',
                          extra={'user': request.user})
             logger.exception('google drive delete error: {}'.format(e))
-            
+
         messages.success(request, 'Your Google Drive account has been disconnected from {}.'.format(settings.PORTAL_NAMESPACE))
 
         return HttpResponseRedirect(reverse('googledrive_integration:index'))
 
     return render(request, 'portal/apps/googledrive_integration/disconnect.html')
+
+
+def privacy_policy(request):
+    return render(request, 'portal/apps/googledrive_integration/privacy-policy.html')
