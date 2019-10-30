@@ -35,7 +35,6 @@ describe("UserService", function() {
             "last_name": 'test_lastname',
             "email": 'test@test.com',
             "oauth": {
-                "access_token": '123',
                 "expires_in": '12345',
                 "scope": 'scope',
             }
@@ -59,7 +58,6 @@ describe("UserService", function() {
             "last_name": 'test_lastname',
             "email": 'test@test.com',
             "oauth": {
-                "access_token": '123',
                 "expires_in": '12345',
                 "scope": 'scope',
             }
@@ -83,7 +81,6 @@ describe("UserService", function() {
             "last_name": 'test_lastname',
             "email": 'test@test.com',
             "oauth": {
-                "access_token": '123',
                 "expires_in": '12345',
                 "scope": 'scope',
             }
