@@ -307,7 +307,7 @@ PORTAL_SEARCH_MANAGERS = {
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
-PORTAL_DISALLOWED_JOB_NOTIFICATION_STATES = []
+PORTAL_JOB_NOTIFICATION_STATES = []
 
 EXTERNAL_RESOURCE_SECRETS = {
     "google-drive": {

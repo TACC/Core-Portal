@@ -2,7 +2,7 @@ import json
 import os
 from urllib import urlencode
 from mock import patch, MagicMock
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.contrib.auth import get_user_model
 from django.db.models import signals
 from django.core.urlresolvers import reverse
@@ -40,7 +40,7 @@ class TestValidateAgaveJob(TestCase):
     def test_invalid_state(self):
         self.assertEqual(validate_agave_job("id", "sal", disallowed_states=['STAGING']), False)
 
-class TestJobsWebhookView(TestCase):
+class TestJobsWebhookView(TransactionTestCase):
 
     def setUp(self):
         signals.post_save.disconnect(sender=Notification, dispatch_uid="notification_msg")
@@ -48,16 +48,26 @@ class TestJobsWebhookView(TestCase):
     def tearDown(self):
         signals.post_save.connect(send_notification_ws, sender=Notification, dispatch_uid="notification_msg")
 
+    @override_settings(PORTAL_JOB_NOTIFICATION_STATES=[ "STAGING" ])
     @patch('portal.apps.webhooks.views.validate_agave_job')
     def test_webhook_job_post(self, mock_validate_agave_job):
         job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
-        mock_validate_agave_job.return_value = job_event
+        mock_validate_agave_job.return_value = True
         response = self.client.post(reverse('webhooks:jobs_wh_handler'), json.dumps(job_event), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
         n = Notification.objects.last()
         n_status = n.to_dict()['extra']['status']
         self.assertEqual(n_status, job_event['status'])
+
+    @override_settings(PORTAL_JOB_NOTIFICATION_STATES=[ "RUNNING" ])
+    @patch('portal.apps.webhooks.views.validate_agave_job')
+    def test_webhook_job_post_invalid_state(self, mock_validate_agave_job):
+        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
+        mock_validate_agave_job.return_value = True
+        response = self.client.post(reverse('webhooks:jobs_wh_handler'), json.dumps(job_event), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(Notification.objects.all()), 0) 
 
 
 class TestInteractiveWebhookView(TestCase):

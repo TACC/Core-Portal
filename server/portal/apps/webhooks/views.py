@@ -101,11 +101,11 @@ class JobsWebhookView(BaseApiView):
             archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
             target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
 
-            # Verify the job UUID against the username and that the state should
-            # generate a notification
-            valid_state = validate_agave_job(
-                job_id, username, settings.PORTAL_DISALLOWED_JOB_NOTIFICATION_STATES
-            )
+            # Verify the job UUID against the username
+            valid_state = validate_agave_job(job_id, username)
+
+            # Verify that the job status should generate a notification
+            valid_state = valid_state and job_status in settings.PORTAL_JOB_NOTIFICATION_STATES
 
             # If the job state is not valid for generating a notification, 
             # return an OK response
