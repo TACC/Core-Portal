@@ -8,7 +8,7 @@ import logging
 from future.utils import python_2_unicode_compatible
 from portal.apps.search.api.managers.base import BaseSearchManager
 from portal.libs.elasticsearch.docs.base import IndexedProject
-from elasticsearch_dsl import Q
+from elasticsearch_dsl import Q, Index
 from django.conf import settings
 
 @python_2_unicode_compatible

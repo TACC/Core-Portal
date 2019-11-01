@@ -68,10 +68,10 @@ class TestSwapReindex(TestCase):
 
         mock_alias = {
             'actions': [
-                {'remove': {'index': 'DEFAULT_NAME', 'alias': 'default'}},
-                {'remove': {'index': 'REINDEX_NAME', 'alias': 'reindex'}},
-                {'add': {'index': 'DEFAULT_NAME', 'alias': 'reindex'}},
-                {'add': {'index': 'REINDEX_NAME', 'alias': 'default'}},
+                {'remove': {'index': 'DEFAULT_NAME', 'alias': 'test-staging-files'}},
+                {'remove': {'index': 'REINDEX_NAME', 'alias': 'test-staging-files-reindex'}},
+                {'add': {'index': 'DEFAULT_NAME', 'alias': 'test-staging-files-reindex'}},
+                {'add': {'index': 'REINDEX_NAME', 'alias': 'test-staging-files'}},
             ]
         }
         self.mock_elasticsearch.Elasticsearch().indices.update_aliases.assert_called_with(mock_alias)
@@ -81,7 +81,7 @@ class TestSwapReindex(TestCase):
     def test_cleanup(self, mock_input, mock_index):
         mock_input.return_value = 'Y'
 
-        mock_index.return_value.get_alias.return_value.keys.side_effect = [['DEFAULT_NAME'], ['REINDEX_NAME']]
+        mock_index.return_value.get_alias.return_value.keys.side_effect = [['DEFAULT_NAME'], ['REINDEX_NAME'], ['REINDEX_NAME']]
         opts = {'cleanup': True}
 
         call_command('reindex-files', **opts)

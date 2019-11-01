@@ -107,7 +107,7 @@ class TestSiteSearchView(TestCase):
         self.mock_search_lookup = self.mock_search_lookup_patcher.start()
 
         self.mock_privateSearch.return_value.search.return_value.count.return_value = 0
-        self.mock_search_lookup.return_value.return_value.search.return_value.execute.return_value.hits.total = 0
+        self.mock_search_lookup.return_value.return_value.search.return_value.execute.return_value.hits.total.value = 0
         self.mock_SharedSearch.return_value.search.return_value.count.return_value = 0
         self.mock_CMSSearch.return_value.search.return_value.count.return_value = 0
         #cls.mock_jsonResponse_patcher = patch('django.http.JsonResponse')
@@ -235,11 +235,17 @@ class TestPublicSearchManager(TestCase):
 
         sys_filter = (Q({'term': {'system._exact': 'test.public'}}))
 
+        ngram_query = Q("query_string", query='test_query',
+                        fields=["name"],
+                        minimum_should_match='80%',
+                        default_operator='or')
+        match_query = Q("query_string", query='test_query',
+                        fields=[
+                            "name._exact, name._pattern"],
+                        default_operator='and')
+
         mock_filter.assert_called_once_with(sys_filter)
-        mock_query.assert_called_once_with("query_string", query='test_query',
-                   fields=["name", "name._exact", "name._pattern"],
-                   analyzer='file_query_analyzer',
-                   default_operator='and')
+        mock_query.assert_called_once_with(ngram_query | match_query)
         mock_extra.assert_called_once_with(from_=0, size=100)
 
     @patch('portal.apps.search.api.managers.public_search.BaseSearchManager.filter')

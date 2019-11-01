@@ -36,35 +36,33 @@ class TestBaseESFile(TestCase):
     def test_class_init_with_wrap(self):
         wd = IndexedFile(
             **{'name': 'file1', 'system': 'test.system', 'path': '/path/to/file'})
-        base = BaseESFile('test_user', wrapped_doc=wd)
+        base = BaseESFile(wrapped_doc=wd)
         self.mock_base_init.assert_called_with(wd)
 
         self.mock_base_setattr.assert_has_calls([
-            call('_username', 'test_user'),
             call('_reindex', False)
         ])
 
     @patch('portal.libs.elasticsearch.docs.files.BaseESFile._populate')
     def test_class_init_no_wrap(self, mock_populate):
-        base = BaseESFile('test_user', system='test.system', wrapped_doc=None)
+        base = BaseESFile(system='test.system', wrapped_doc=None)
         self.mock_base_init.assert_called_with(None)
 
         mock_populate.assert_called_with('test.system', '/')
 
         self.mock_base_setattr.assert_has_calls([
-            call('_username', 'test_user'),
             call('_reindex', False)
         ])
 
     @patch('portal.libs.elasticsearch.docs.files.BaseESFile._index_cls')
     def test_populate_if_doc_exists(self, mock_index):
-        base = BaseESFile('test_user', system='test.system', wrapped_doc=None)
+        base = BaseESFile(system='test.system', wrapped_doc=None)
         mock_index().from_path.assert_called_with('test.system', '/')
 
     @patch('portal.libs.elasticsearch.docs.files.BaseESFile._index_cls')
     def test_populate_if_no_doc_exists(self, mock_index):
         mock_index.return_value.from_path.side_effect = DocumentNotFound
-        base = BaseESFile('test_user', system='test.system', wrapped_doc=None)
+        base = BaseESFile(system='test.system', wrapped_doc=None)
         mock_index().assert_called_with(system='test.system', path='/')
 
     def test_indexed_file_class_getter(self):
@@ -88,7 +86,7 @@ class TestBaseESFile(TestCase):
 
         wrapped_doc = IndexedFile(
             **{'name': 'file1', 'system': 'test.system', 'path': '/path/to/file'})
-        base = BaseESFile('test_user', system='test.system',
+        base = BaseESFile(system='test.system',
                           wrapped_doc=wrapped_doc)
 
         # Need to set attrs manually because the custom setter/getter in BaseESResource are mocked
@@ -113,7 +111,7 @@ class TestBaseESFile(TestCase):
     def test_save(self, mock_save):
         wrapped_doc = IndexedFile(
             **{'name': 'file1', 'system': 'test.system', 'path': '/path/to/file'})
-        base = BaseESFile('test_user', system='test.system',
+        base = BaseESFile(system='test.system',
                           wrapped_doc=wrapped_doc)
 
         # Need to set attrs manually because the custom setter/getter in BaseESResource are mocked
@@ -128,7 +126,7 @@ class TestBaseESFile(TestCase):
     def test_delete_no_dir(self, mock_delete):
         wrapped_doc = IndexedFile(
             **{'name': 'file1', 'system': 'test.system', 'path': '/path/to/file', 'format': 'file'})
-        base = BaseESFile('test_user', system='test.system',
+        base = BaseESFile(system='test.system',
                           wrapped_doc=wrapped_doc)
 
         object.__setattr__(base, '_wrapped', wrapped_doc)
@@ -141,14 +139,14 @@ class TestBaseESFile(TestCase):
     def test_delete_recursive(self, mock_children, mock_delete):
         wrapped_doc = IndexedFile(
             **{'name': 'folder1', 'system': 'test.system', 'path': '/path/to/folder', 'format': 'folder'})
-        base = BaseESFile('test_user', system='test.system',
+        base = BaseESFile(system='test.system',
                           wrapped_doc=wrapped_doc)
         object.__setattr__(base, '_wrapped', wrapped_doc)
         object.__setattr__(base, 'format', 'folder')
 
         child_doc = IndexedFile(
             **{'name': 'child1', 'system': 'test.system', 'path': '/path/to/child1', 'format': 'file'})
-        base_child = BaseESFile('test_user', system='test.system',
+        base_child = BaseESFile(system='test.system',
                           wrapped_doc=child_doc)
         object.__setattr__(base_child, '_wrapped', child_doc)
         object.__setattr__(base_child, 'format', 'file')
@@ -224,7 +222,7 @@ class TestIndexedFile(TestCase):
         self.assertTrue(hasattr(f, 'lastUpdated'))
         self.assertTrue(hasattr(f, 'pems'))
 
-    @patch('portal.libs.elasticsearch.docs.base.DocType.save')
+    @patch('portal.libs.elasticsearch.docs.base.Document.save')
     def test_save(self, mock_save):
         f = IndexedFile()
         f.save()
@@ -232,36 +230,39 @@ class TestIndexedFile(TestCase):
 
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.search')
     def test_from_path_with_404(self, mock_search):
-        mock_search().query().filter().execute.side_effect = TransportError(404)
+        mock_search().filter().filter().execute.side_effect = TransportError(404)
         with self.assertRaises(TransportError):
             IndexedFile.from_path('test.system', '/')
 
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.search')
     def test_from_path_raises_when_no_hits(self, mock_search):
-        mock_search().query().filter().execute.return_value.hits.total = 0
+        mock_search().filter().filter().execute.return_value.hits.total.value = 0
         with self.assertRaises(DocumentNotFound):
             IndexedFile.from_path('test.system', '/')
 
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.search')
-    def test_from_path_1_hit(self, mock_search):
+    @patch('portal.libs.elasticsearch.docs.base.IndexedFile.get')
+    def test_from_path_1_hit(self, mock_get, mock_search):
         search_res = IndexedFile(
             **{'name': 'res1', 'system': 'test.system', 'path': '/path/to/res1'})
 
         mock_res = MagicMock()
-        mock_res.hits.total = 1
-        mock_res.__getitem__.return_value = search_res
-        mock_search().query().filter().execute.return_value = mock_res
+        mock_res.hits.total.value = 1
+
+        mock_get.return_value = search_res
+        mock_search().filter().filter().execute.return_value = mock_res
 
         doc_from_path = IndexedFile.from_path('test.system', '/path/to/res1')
 
-        mock_search().query.assert_called_with('term', **{'path._exact': '/path/to/res1'})
-        mock_search().query().filter.assert_called_with('term', **{'system._exact': 'test.system'})
+        mock_search().filter.assert_called_with('term', **{'path._exact': '/path/to/res1'})
+        mock_search().filter().filter.assert_called_with('term', **{'system._exact': 'test.system'})
 
         self.assertEqual(doc_from_path, search_res)
 
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.delete')
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.search')
-    def test_from_path_multiple_hits(self, mock_search, mock_delete):
+    @patch('portal.libs.elasticsearch.docs.base.IndexedFile.get')
+    def test_from_path_multiple_hits(self, mock_get, mock_search, mock_delete):
         """
         When there are multiple files sharing a system and path, ensure we delete
         all but one and return the remaining document.
@@ -271,34 +272,37 @@ class TestIndexedFile(TestCase):
 
         # Need to mock either slicing the result or retrieving a single element.
         def mock_getitem(i):
+            mock_single_result = MagicMock()
             if type(i) is slice:
-                return [search_res, search_res]
+                return [mock_single_result, mock_single_result]
             else:
-                return search_res
+                return mock_single_result
 
         # mock a search result with 3 hits and the ability to get/slice.
         mock_res = MagicMock()
-        mock_res.hits.total = 3
+        mock_res.hits.total.value = 3
         mock_res.__getitem__.side_effect = mock_getitem
-        mock_search().query().filter().execute.return_value = mock_res
+        mock_search().filter().filter().execute.return_value = mock_res
+
+        mock_get.return_value = search_res
 
         doc_from_path = IndexedFile.from_path('test.system', '/path/to/res1')
 
-        mock_search().query.assert_called_with('term', **{'path._exact': '/path/to/res1'})
-        mock_search().query().filter.assert_called_with('term', **{'system._exact': 'test.system'})
+        mock_search().filter.assert_called_with('term', **{'path._exact': '/path/to/res1'})
+        mock_search().filter().filter.assert_called_with('term', **{'system._exact': 'test.system'})
 
-        self.assertEqual(mock_delete.call_count, 2)
+        self.assertEqual(mock_get().delete.call_count, 2)
         self.assertEqual(doc_from_path, search_res)
 
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.search')
     def test_children_raises_on_404(self, mock_search):
-        mock_search().query().filter().sort().extra().execute.side_effect = TransportError(404)
+        mock_search().filter().filter().sort().extra().execute.side_effect = TransportError(404)
         with self.assertRaises(TransportError):
             IndexedFile.children(system='test.system', path='/')
 
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.search')
     def test_children_returns_when_no_hits(self, mock_search):
-        mock_search().query().filter().sort().extra().execute.return_value.hits.__len__.return_value = 0
+        mock_search().filter().filter().sort().extra().execute.return_value.hits.__len__.return_value = 0
         children = IndexedFile.children(system='test.system', path='/')
         self.assertEqual(children, ([], None))
 
@@ -308,12 +312,12 @@ class TestIndexedFile(TestCase):
         
         search_res = IndexedFile(
             **{'name': 'res1', 'system': 'test.system', 'path': '/path/to/res1'})
+        mock_hit = MagicMock()
+        mock_hit.meta.id = 'MOCK ID'
 
-        search_res._id = 'MOCK ID'
-
-        mock_search().query().filter().sort().extra().execute.return_value.hits.__len__.return_value = 1
-        mock_search().query().filter().sort().extra().execute().__iter__.return_value = [search_res]
-        mock_search().query().filter().sort().extra().execute.return_value.hits.hits = [{'sort': 'MOCK SORTKEY'}]
+        mock_search().filter().filter().sort().extra().execute.return_value.hits.__len__.return_value = 1
+        mock_search().filter().filter().sort().extra().execute().__iter__.return_value = [mock_hit]
+        mock_search().filter().filter().sort().extra().execute.return_value.hits.hits = [{'sort': 'MOCK SORTKEY'}]
 
         mock_get.return_value = search_res
 

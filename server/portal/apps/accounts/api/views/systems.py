@@ -6,6 +6,7 @@ from __future__ import unicode_literals, absolute_import
 import logging
 import json
 from future.utils import python_2_unicode_compatible
+from datetime import datetime
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -180,8 +181,9 @@ class SystemKeysView(BaseApiView):
         )
         if success and body['form']['type'] == 'STORAGE':
             # Index the user's home directory once keys are successfully pushed.
-            agave_indexer.apply_async(args=[system_id], 
-                                    kwargs={'username': request.user.username})
+            # Schedule indexing for 11:59:59 today.
+            index_time = datetime.now().replace(hour=11, minute=59, second=59)
+            agave_indexer.apply_async(args=[system_id], eta=index_time)
             return JsonResponse({
                 'systemId': system_id,
                 'message': 'OK'

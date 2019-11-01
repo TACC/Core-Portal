@@ -7,7 +7,7 @@ from __future__ import unicode_literals, absolute_import
 import logging
 from portal.apps.search.api.managers.base import BaseSearchManager
 from portal.libs.elasticsearch.docs.base import IndexedFile
-from elasticsearch_dsl import Q
+from elasticsearch_dsl import Q, Index
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ class PrivateDataSearchManager(BaseSearchManager):
 
             if self._system is None:
                 self._system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(
-                self._username)
+                    self._username)
         else:
             self._username = kwargs.get(
                 'username', settings.PORTAL_ADMIN_USERNAME)
@@ -46,12 +46,19 @@ class PrivateDataSearchManager(BaseSearchManager):
 
     def search(self, offset, limit):
         """runs a search and returns an ES search object."""
-            
-        self.query("query_string", query=self._query_string,
-                   fields=["name", "name._exact", "name._pattern"], 
-                   analyzer='file_query_analyzer',
-                   default_operator='and')
+
+        ngram_query = Q("query_string", query=self._query_string,
+                        fields=["name"],
+                        minimum_should_match='80%',
+                        default_operator='or')
+        match_query = Q("query_string", query=self._query_string,
+                        fields=[
+                            "name._exact, name._pattern"],
+                        default_operator='and')
+
         self.filter(Q({'term': {'system._exact': self._system}}))
+        self.query(ngram_query | match_query)
+
         sort_arg = self.sortFields.get(self._sort_key, None)
         if sort_arg:
             self.sort({sort_arg: {'order': self._sort_order}})
@@ -61,5 +68,5 @@ class PrivateDataSearchManager(BaseSearchManager):
 
     def listing(self, ac):
         """Wraps the search result in a BaseFile object for serializtion."""
-        
+
         return self._listing(ac, self._system)

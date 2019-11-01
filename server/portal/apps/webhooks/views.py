@@ -175,7 +175,7 @@ class JobsWebhookView(BaseApiView):
                             logger.debug('Preparing to Index Job Output job={}'.format(job_name))
 
                             agave_indexer.apply_async(args=[archiveSystem],
-                                                      kwargs={'username': username, 'filePath': archivePath})
+                                                      kwargs={'filePath': archivePath})
                             logger.debug(
                                 'Finished Indexing Job Output job={}'.format(job_name))
                         except Exception as e:
