@@ -55,12 +55,12 @@ class GoogleDriveFile(object):
     def path(self):
         if self._parent:
             if self._parent.name == 'My Drive':
-                path = '/{}'.format(self.name)
+                path = '/{}'.format(self.name.encode('utf-8'))
             else:
-                path = '/'.join([self._parent.path, self.name])
+                path = '/'.join([self._parent.path, self.name.encode('utf-8')])
         elif 'parents' in self._item:
             parent = self
-            path = '{}'.format(self.name)
+            path = '{}'.format(self.name.encode('utf-8'))
             while True:
                 try:
                     self._path_collection.insert(
@@ -144,7 +144,7 @@ class GoogleDriveFile(object):
             'id': self.id,
             'type': self.type,
             'path': self.path,
-            'name': self.name,
+            'name': self.name.encode('utf-8'),
             'ext': self.ext,
             'length': self.length,
             'lastModified': self.last_modified,
