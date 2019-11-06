@@ -1,8 +1,9 @@
-Django==2.2.5
+Django==2.2.7
 PyJWT==1.7.1
--e git+https://github.com/rstijerina/agavepy#egg=agavepy
+agavepy==0.9.3
 cached-property==1.5.1
 celery==4.3.0
+certifi==2019.9.11
 cryptography==2.7
 django-bootstrap4==1.0.1
 django-cms==3.7.0
@@ -23,16 +24,19 @@ djangocms-style==2.2.0
 djangocms-text-ckeditor==3.8.0
 djangocms-video==2.1.1
 easy-thumbnails==2.6
+elasticsearch==7.0.4
 elasticsearch-dsl==7.0.0
 gevent==1.4.0
 ipython==7.8.0
 kombu==4.6.4
 mock==3.0.5
+paramiko==2.6.0
 psycopg2==2.8.3
-pycrypto==2.6.1
+pycryptodome==3.9.0
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.4.0#egg=pytas
 pytz==2019.2
 redis==3.3.8
 requests==2.22.0
 rt==1.0.11
 sqlparse==0.3.0
+uwsgi==2.0.18

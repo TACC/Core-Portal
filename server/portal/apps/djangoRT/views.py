@@ -39,7 +39,7 @@ def ticketcreate(request):
 	rt = rtUtil.DjangoRt()
 
 	data = {}
-	if request.user.is_authenticated():
+	if request.user.is_authenticated:
 		data = {'email': request.user.email, 'first_name': request.user.first_name, 'last_name': request.user.last_name}
 
 	subject = request.GET.get('subject', None)
@@ -72,7 +72,7 @@ def ticketcreate(request):
 			                         cc=form.cleaned_data['cc'], attachments=attachments)
 			ticket_id = rt.createTicket(ticket)
 
-			if ticket_id > -1:
+			if ticket_id and int(ticket_id) > -1:
 				return HttpResponseRedirect(reverse('tickets:detail', args=[ticket_id]))
 			else:
 				# make this cleaner probably

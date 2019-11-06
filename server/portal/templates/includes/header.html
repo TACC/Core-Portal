@@ -39,7 +39,7 @@
         </div>
       {% else %}
         <div class="btn-group">
-          <a href="{% url 'portal_accounts:login' %}" class="btn btn-link-alt">Log in</a>
+          <a href="{% url 'portal_auth:agave_oauth' %}" class="btn btn-link-alt">Log in</a>
           <a href="{% url 'portal_accounts:register' %}" class="btn btn-link-alt">Register</a>
         </div>
       {% endif %}

@@ -13,7 +13,7 @@ path_analyzer = analyzer('path_analyzer',
                          tokenizer=tokenizer('path_hierarchy'))
 
 file_analyzer = analyzer('file_analyzer',
-                         tokenizer=tokenizer('trigram', 'nGram', min_gram=2, max_gram=20),
+                         tokenizer=tokenizer('trigram', 'nGram', min_gram=3, max_gram=3, token_chars=["letter", "digit", "punctuation", "symbol"]),
                          filter='lowercase')
 
 file_query_analyzer = analyzer('file_query_analyzer',

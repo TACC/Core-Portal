@@ -3,9 +3,14 @@ FROM centos:7
 LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
 
 EXPOSE 8000
+ENV LC_ALL en_US.utf-8
+ENV LANG en_US.utf-8
 
 # upgrade
 RUN yum upgrade -y
+
+# RUN yum install -y centos-release-scl rh-python36
+# SHELL ["/usr/bin/scl", "enable", "rh-python36"]
 
 # add EPEL repo and install python3
 RUN yum install -y epel-release && yum install -y python36 python36-devel
@@ -31,19 +36,17 @@ RUN yum groupinstall -y 'Development Tools' && yum clean all
 RUN curl -sL https://rpm.nodesource.com/setup_12.x | bash -
 RUN yum -y install nodejs
 
+RUN pip3 install --upgrade pip setuptools wheel
+
 COPY server/requirements.txt /tmp/requirements.txt
 
-RUN pip3 install --upgrade pip setuptools wheel \
-    && pip3 install uwsgi \
-    && pip3 install uwsgitop \
-    && pip3 install -r /tmp/requirements.txt
+RUN python3 -m venv /srv/www/.portal_env \
+    && /srv/www/.portal_env/bin/pip install --upgrade pip setuptools wheel \
+    && /srv/www/.portal_env/bin/pip install pip-tools \
+    && /srv/www/.portal_env/bin/pip install -r /tmp/requirements.txt
 
 COPY . /srv/www/portal
 
 RUN mkdir -p /var/log/portal
 
 WORKDIR /srv/www/portal/server
-
-#RUN npm install
-
-#RUN python manage.py collectstatic -c --traceback --noinput

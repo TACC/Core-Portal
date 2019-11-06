@@ -1,14 +1,14 @@
 import 'react-hot-loader';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/workbench';
+import Workbench from './components/workbench';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap'
 import './fontawesome';
 
 
-ReactDOM.render(<App />, document.getElementById('react-root'));
+ReactDOM.render(<Workbench />, document.getElementById('react-root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

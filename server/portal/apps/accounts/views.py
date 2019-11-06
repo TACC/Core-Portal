@@ -11,16 +11,13 @@ from django.contrib import messages
 from django.views.generic.base import TemplateView, View
 from django.shortcuts import render, render_to_response
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-
-from future.utils import python_2_unicode_compatible
 from pytas.http import TASClient
-# from pytas.models import User as TASUser
 
 from portal.apps.accounts import forms, integrations
 from portal.apps.accounts.models import (PortalProfile,
@@ -59,12 +56,12 @@ class LogoutView(View):
     def get(self, request):
         """GET"""
         logout(request)
-        return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
+        return HttpResponseRedirect('/')
 
 
 def request_access(request):
     """ Request Access """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('index')
 
@@ -151,7 +148,7 @@ def register(request):
 
 
 def register_new(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('portal_version_accounts:index')
 
@@ -224,32 +221,6 @@ def registration_successful(request):
     return render_to_response(
         'portal_version/apps/accounts/registration_successful.html'
     )
-
-
-# @login_required
-# def test(request):
-#     # return HttpResponseRedirect(reverse('portal_accounts:manage_profile'))
-#     context = {
-#         'title': 'TEST'
-#     }
-#     return render(request, 'portal/apps/accounts/test.html', context)
-#
-#
-# @login_required
-# def profile_test(request):
-#     context = {
-#         'title': 'Profile Stuff'
-#     }
-#     return render(request, 'portal/apps/accounts/profile_test.html', context)
-#
-#
-# @login_required
-# def index(request):
-#     # return HttpResponseRedirect(reverse('portal_accounts:manage_profile'))
-#     context = {
-#         'title': 'Manage Profile'
-#     }
-#     return render(request, 'portal/apps/accounts/index.html', context)
 
 
 @login_required

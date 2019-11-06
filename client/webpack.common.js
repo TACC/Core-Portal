@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: ['core-js/stable', 'regenerator-runtime/runtime', './src/index.js'],
   output: {
     path: path.resolve(__dirname, 'build'),
   },
@@ -11,7 +11,15 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: ['babel-loader', 'eslint-loader']
+        use: [
+          'babel-loader',
+          {
+            loader: 'eslint-loader',
+            options: {
+              emitWarning: true
+            }
+          }
+        ]
       },
       {
         test: /\.html$/,

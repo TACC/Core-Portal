@@ -4,7 +4,6 @@
 """
 from collections import namedtuple
 import logging
-from future.utils import python_2_unicode_compatible
 import requests
 from requests.exceptions import HTTPError
 from cached_property import cached_property, cached_property_with_ttl
@@ -19,7 +18,7 @@ METRICS = logging.getLogger('metrics.{}'.format(__name__))
 # pylint: enable=invalid-name
 
 
-@python_2_unicode_compatible
+
 class BaseSystem(BaseAgaveResource):
     """Agave System representation
 
@@ -410,7 +409,7 @@ class BaseSystem(BaseAgaveResource):
         )
 
 
-@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class BaseSystemProxy(BaseAgaveResource):
     """`proxy` nested object representation
 
@@ -452,7 +451,7 @@ class BaseSystemProxy(BaseAgaveResource):
         return dict_obj
 
 
-@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class BaseSystemAuth(BaseAgaveResource):
     """`auth` nested object representation
 
@@ -500,7 +499,6 @@ class BaseSystemAuth(BaseAgaveResource):
 
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-instance-attributes
-@python_2_unicode_compatible
 class BaseSystemStorage(BaseAgaveResource):
     """`storage` nested object represntation
 
@@ -592,7 +590,7 @@ class BaseSystemStorage(BaseAgaveResource):
             )
 
 
-@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class BaseSystemLogin(BaseAgaveResource):
     """`login` nested object representation
 
@@ -655,7 +653,7 @@ class BaseSystemLogin(BaseAgaveResource):
             )
 
 
-@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class BaseSystemQueue(BaseAgaveResource):
     """Base System Queue"""
 
@@ -755,7 +753,7 @@ class BaseSystemQueue(BaseAgaveResource):
             )
 
 
-@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class BaseSystemQueues(object):
     """Base System Queues
 

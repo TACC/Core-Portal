@@ -2,7 +2,6 @@
 .. module: portal.libs.elasticsearch.docs.files
    :synopsis: Wrapper classes for ES ``files`` doc type.
 """
-from future.utils import python_2_unicode_compatible
 import logging
 import os
 from django.conf import settings
@@ -13,7 +12,7 @@ from portal.libs.elasticsearch.exceptions import DocumentNotFound
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
-@python_2_unicode_compatible
+
 class BaseESFile(BaseESResource):
     """Wrapper class for Elastic Search indexed file.
 
@@ -27,7 +26,7 @@ class BaseESFile(BaseESResource):
     we avoid the use of ``AttrDict`` and ``AttrList``.
 
     """
-    def __init__(self, username, system=settings.AGAVE_STORAGE_SYSTEM,
+    def __init__(self, system=settings.AGAVE_STORAGE_SYSTEM,
                  path='/', wrapped_doc=None, reindex=False, **kwargs):
         """Elastic Search File representation.
 
@@ -35,7 +34,6 @@ class BaseESFile(BaseESResource):
 
         """
         super(BaseESFile, self).__init__(wrapped_doc, **kwargs)
-        self._username = username
         self._reindex = reindex
 
         if not wrapped_doc:
@@ -66,7 +64,7 @@ class BaseESFile(BaseESResource):
                                                 self.path,
                                                 limit=limit)
         for doc in res:
-                yield BaseESFile(self._username, wrapped_doc=doc)
+                yield BaseESFile(wrapped_doc=doc)
 
         while not len(res) < limit: # If the number or results doesn't match the limit, we're done paginating.
             # Retrieve the sort key from the last element then use
@@ -77,7 +75,7 @@ class BaseESFile(BaseESResource):
                                                 limit=limit,
                                                 search_after=search_after)
             for doc in res:
-                yield BaseESFile(self._username, wrapped_doc=doc)
+                yield BaseESFile(wrapped_doc=doc)
 
     def save(self, using=None, index=None, validate=True, **kwargs):
         """Save document

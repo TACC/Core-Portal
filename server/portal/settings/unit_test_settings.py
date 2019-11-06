@@ -307,6 +307,8 @@ PORTAL_SEARCH_MANAGERS = {
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
+PORTAL_JOB_NOTIFICATION_STATES = []
+
 EXTERNAL_RESOURCE_SECRETS = {
     "google-drive": {
         "client_secret": "test",
@@ -353,17 +355,8 @@ AGAVE_JWT_ISSUER = 'wso2.org/products/am'
 AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
 
 ES_HOSTS = ['test.com']
-ES_DEFAULT_INDEX = "files"
-ES_DEFAULT_INDEX_ALIAS = "default"
-ES_REINDEX_INDEX_ALIAS = "reindex"
-ES_DEFAULT_PROJECT_INDEX = "projects"
-ES_DEFAULT_PROJECT_INDEX_ALIAS = "projects-default"
-ES_REINDEX_PROJECT_INDEX_ALIAS = "projects-reindex"
-ES_PUBLIC_INDEX = "publications"
-ES_PUBLIC_INDEX_ALIAS = "public"
-ES_FILES_DOC_TYPE = "files"
-ES_PROJECTS_DOC_TYPE = "projects"
-ES_METADATA_DOC_TYPE = "metadata"
+ES_AUTH = "user:password"
+ES_INDEX_PREFIX = "test-staging-{}"
 
 HAYSTACK_CONNECTIONS = {
     'default': {

@@ -1,1 +1,1 @@
-export { default } from './dashboard-view.js';
+export { default } from './dashboard-view';

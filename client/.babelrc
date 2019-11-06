@@ -3,9 +3,7 @@
         [
             "@babel/preset-env",
             {
-                "targets": {
-                    "node": "current"
-                }
+                "targets": "> 1%, not dead"
             }
         ],
         "@babel/preset-react"

@@ -4,11 +4,13 @@
 """
 import logging
 import json
+from datetime import datetime
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from portal.views.base import BaseApiView
 from portal.apps.accounts.managers import accounts as AccountsManager
+from portal.apps.search.tasks import agave_indexer
 from django.conf import settings
 import json
 
@@ -104,6 +106,78 @@ class SystemTestView(BaseApiView):
                 'status': 500
             },
             status=500
+        )
+
+
+@method_decorator(login_required, name='dispatch')
+class SystemKeysView(BaseApiView):
+    """Systems View
+
+    Main view for anything involving a system test
+    """
+
+    def put(self, request, system_id):
+        """PUT
+
+        :param request: Django's request object
+        :param str system_id: System id
+        """
+        body = json.loads(request.body)
+        action = body['action']
+        op = getattr(self, action)  # pylint: disable=invalid-name
+        return op(request, system_id, body)
+
+    # pylint: disable=no-self-use, unused-argument
+    def reset(self, request, system_id, body):
+        """Resets a system's set of keys
+
+        :param request: Django's request object
+        :param str system_id: System id
+        """
+        pub_key = AccountsManager.reset_system_keys(
+            request.user.username,
+            system_id
+        )
+        return JsonResponse({
+            'systemId': system_id,
+            'publicKey': pub_key
+        })
+
+    def push(self, request, system_id, body):
+        """Pushed public key to a system's host
+
+        :param request: Django's request object
+        :param str system_id: System id
+        """
+
+        AccountsManager.reset_system_keys(
+            request.user.username,
+            system_id
+        )
+
+        success, result, http_status = AccountsManager.add_pub_key_to_resource(
+            request.user.username,
+            password=body['form']['password'],
+            token=body['form']['token'],
+            system_id=system_id,
+            hostname=body['form']['hostname']
+        )
+        if success and body['form']['type'] == 'STORAGE':
+            # Index the user's home directory once keys are successfully pushed.
+            # Schedule indexing for 11:59:59 today.
+            index_time = datetime.now().replace(hour=11, minute=59, second=59)
+            agave_indexer.apply_async(args=[system_id], eta=index_time)
+            return JsonResponse({
+                'systemId': system_id,
+                'message': 'OK'
+            })
+
+        return JsonResponse(
+            {
+                'systemId': system_id,
+                'message': result
+            },
+            status=http_status
         )
 
 

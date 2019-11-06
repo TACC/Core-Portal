@@ -99,7 +99,7 @@ services:
       - 9000:9000
     container_name: frontera_prtl_websockets
     hostname: frontera_prtl_websockets
-    command: "uwsgi --chdir /srv/www/portal/server --gevent 1000 --workers=2 --http-websockets  --http-socket=:9000 --module portal.wsgi_websocket:application"
+    command: "/srv/www/.portal_env/bin/uwsgi --chdir /srv/www/portal/server --gevent 1000 --workers=2 --http-websockets  --http-socket=:9000 --module portal.wsgi_websocket:application"
     networks:
       - frontera_prtl_net
 
@@ -123,7 +123,7 @@ services:
       - 8.8.4.4
     stdin_open: true
     tty: true
-    command: ['python3', './manage.py', 'runserver', '0.0.0.0:8000']
+    command: ['/srv/www/.portal_env/bin/python', './manage.py', 'runserver', '0.0.0.0:8000']
     container_name: frontera_prtl_django
     hostname: frontera_prtl_django
     networks:
@@ -144,7 +144,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: "celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
+    command: "/srv/www/.portal_env/bin/celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
     container_name: frontera_prtl_workers
     hostname: frontera_prtl_workers
     networks:

@@ -8,7 +8,6 @@ import logging
 import urllib.parse
 from requests.exceptions import HTTPError
 from agavepy.async import AgaveAsyncResponse, Error
-from future.utils import python_2_unicode_compatible
 from django.conf import settings
 from cached_property import cached_property
 from .base import BaseAgaveResource
@@ -21,7 +20,6 @@ METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-many-public-methods
-@python_2_unicode_compatible
 class BaseFile(BaseAgaveResource):
     """Represents and Agave File
     """

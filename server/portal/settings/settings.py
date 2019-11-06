@@ -89,8 +89,12 @@ INSTALLED_APPS = [
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
-    'portal.apps.workbench',
     'portal.apps.djangoRT',
+    'portal.apps.licenses',
+    'portal.apps.onboarding',
+    'portal.apps.search',
+    'portal.apps.workbench',
+    'portal.apps.workspace',
 
     # django CMS
     'cms',
@@ -204,6 +208,7 @@ IMPERSONATE = {
 }
 
 LOGIN_REDIRECT_URL = getattr(settings_secret, '_LOGIN_REDIRECT_URL', '/')
+LOGIN_URL = '/auth/agave/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -368,7 +373,11 @@ LOGGING = {
         'paramiko': {
             'handlers': ['console'],
             'level': 'DEBUG'
-        }
+        },
+        'celery': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
     },
 }
 
@@ -736,6 +745,10 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
 
 PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
+PORTAL_JOB_NOTIFICATION_STATES = getattr(
+    settings_secret, "_PORTAL_JOB_NOTIFICATION_STATES", [ "PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED" ]
+)
+
 # "View in Jupyter Notebook" base URL
 PORTAL_JUPYTER_URL = getattr(settings_secret, '_PORTAL_JUPYTER_URL', None)
 # "View in Jupyter Notebook" mount map, i.e. "data-sd2e-community" -> "/sd2e-community" for SD2E
@@ -760,23 +773,18 @@ SETTINGS: ELASTICSEARCH
 """
 
 ES_HOSTS = settings_secret._ES_HOSTS
-ES_DEFAULT_INDEX = "files"
-ES_DEFAULT_INDEX_ALIAS = "default"
-ES_REINDEX_INDEX_ALIAS = "reindex"
+ES_AUTH = settings_secret._ES_AUTH
 
-ES_DEFAULT_PROJECT_INDEX = "projects"
-ES_DEFAULT_PROJECT_INDEX_ALIAS = "projects-default"
-ES_REINDEX_PROJECT_INDEX_ALIAS = "projects-reindex"
+ES_INDEX_PREFIX = settings_secret._ES_INDEX_PREFIX
 
-ES_PUBLIC_INDEX = "publications"
-ES_PUBLIC_INDEX_ALIAS = "public"
-ES_FILES_DOC_TYPE = "files"
-ES_PROJECTS_DOC_TYPE = "projects"
-ES_PUBLICATIONS_INDEX = "publications"
-ES_METADATA_DOC_TYPE = "metadata"
-ES_CMS_INDEX = "cms"
-
-HAYSTACK_CONNECTIONS = settings_secret._HAYSTACK_CONNECTIONS
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': ES_HOSTS,
+        'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
+        'KWARGS': {'http_auth': ES_AUTH }
+    }
+}
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'

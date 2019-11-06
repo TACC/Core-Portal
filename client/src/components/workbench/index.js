@@ -3,12 +3,12 @@ import React from 'react';
 import AppRouter from '../../routes';
 
 
-const App = () => {
+const Workbench = () => {
   return (
-    <div className="App">
+    <div className="Workbench">
       <AppRouter />
     </div>
   );
 }
 
-export default hot(App);
+export default hot(Workbench);

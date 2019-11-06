@@ -29,13 +29,14 @@ def to_camel_case(input_str):
     camel_case = ''.join(['_' * left_cnt, comps[0], right_side, '_' * right_cnt])
     return camel_case
 
-# def index_project(projectId):
+def index_project(projectId):
 #     from portal.libs.elasticsearch.docs.projects import BaseESProject
 #     project_meta = ProjectMetadata.objects.get(project_id=projectId)
 #     project_meta_dict = project_meta.to_dict()
 
 #     doc = BaseESProject(**project_meta_dict)
 #     doc.save()
+    pass
 
 def index_agave(systemId, client, username, filePath='/', update_pems=False):
     from portal.libs.elasticsearch.docs.files import BaseESFile
@@ -65,7 +66,7 @@ def index_agave(systemId, client, username, filePath='/', update_pems=False):
             offset += limit
             page = [doc for doc in es_root.children(offset=offset, limit=limit)]
 
-def index_level(path, folders, files, systemId, username, reindex=False):
+def index_level(path, folders, files, systemId, reindex=False):
     """
     Index a set of folders and files corresponding to the output from one
     iteration of walk_levels
@@ -74,7 +75,7 @@ def index_level(path, folders, files, systemId, username, reindex=False):
     for obj in folders + files:
             obj_dict = obj.to_dict()
             obj_dict['basePath'] = os.path.dirname(obj.path)
-            doc = BaseESFile(username, reindex=reindex, **obj_dict)
+            doc = BaseESFile(reindex=reindex, **obj_dict)
             saved = doc.save()
 
             #if update_pems:
@@ -82,7 +83,7 @@ def index_level(path, folders, files, systemId, username, reindex=False):
             #    doc._wrapped.update(**{'pems': pems})
 
     children_paths = [_file.path for _file in folders + files]
-    es_root = BaseESFile(username, systemId, path, reindex=reindex)
+    es_root = BaseESFile(systemId, path, reindex=reindex)
     for doc in es_root.children():
         if doc is not None and doc.path not in children_paths:
             doc.delete()
