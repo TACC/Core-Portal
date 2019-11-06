@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
 import os
 
+
 logger = logging.getLogger(__name__)
 
 

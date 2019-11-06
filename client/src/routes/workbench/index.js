@@ -10,11 +10,9 @@ function DataFiles() {
     return <h2>DataFiles</h2>;
 }
 
-
 function Publications() {
     return <h2>Publications</h2>;
 }
-
 
 function Workbench({ match }) {
     return (
