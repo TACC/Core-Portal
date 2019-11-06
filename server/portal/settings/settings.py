@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     'portal.apps.search',
     'portal.apps.workbench',
     'portal.apps.workspace',
+    'portal.apps.system_monitor',
 
     # django CMS
     'cms',

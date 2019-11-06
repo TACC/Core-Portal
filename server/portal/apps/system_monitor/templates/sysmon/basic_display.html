@@ -1,0 +1,38 @@
+{% load static %}
+<link rel="stylesheet" href="{% static "sysmon/css/sysmon.css" %}" type="text/css" />
+
+<div class="single-system">
+<table class="table table-dark sysmon-table">
+      <tr class="sysmon-header">
+        <th scope="col">STATUS</th>
+        <th scope="col">LOAD</th>
+        <th scope="col">RUNNING</th>
+        <th scope="col">QUEUED</th>
+      </tr>
+      {% for resource_status in statuses %}
+        <tr>
+          {% if resource_status.is_operational %}
+          <td scope="row">
+              <span class="label label-success label-system-status iconworks" style="font-weight: 400;"
+                data-icon="&#217;">&nbsp;&nbsp;Operational</span>
+          </td>
+          <td>
+            {{ resource_status.load_percentage }}%
+          </td>
+          <td>{{ resource_status.jobs.running }}</td>
+          <td>{{ resource_status.jobs.queued }}</td>
+          {% else %}
+          <td scope="row">
+            <span class="label label-warning label-system-status"  style="font-weight: 400;">Maintenance</span>
+          </td>
+          <td>
+            --
+          </td>
+          <td>--</td>
+          <td>--</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+  </table>
+</div>
+
