@@ -791,6 +791,8 @@ HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
+SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
+
 """
 SETTINGS: EXPORTS
 """

@@ -4,5 +4,5 @@ from portal.apps.system_monitor import views
 
 app_name = 'system_monitor'
 urlpatterns = [
-    url(r'^$',views.SysmonDataView.as_view(),name='system_monitor'),
+    path('', views.SysmonDataView.as_view(), name='system_monitor'),
 ]

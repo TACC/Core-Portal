@@ -14,11 +14,6 @@ import pytz
 
 logger = logging.getLogger(__name__)
 
-
-
-logger = logging.getLogger(__name__)
-
-
 @method_decorator(login_required, name='dispatch')
 class SysmonDataView(BaseApiView):
     def get(self, request):
@@ -30,7 +25,7 @@ class SysmonDataView(BaseApiView):
 def get_sysmon_data():
     systems = []
     requested_systems=\
-                getattr(settings, 'SYSMON_DEFAULT_SYSTEMS',['frontera.tacc.utexas.edu','stampede2.tacc.utexas.edu'])
+                getattr(settings, 'SYSTEM_MONITOR_DISPLAY_LIST',[])
     system_status_endpoint = getattr(settings,\
         'SYSMON_URL','https://portal.tacc.utexas.edu/commnq/index.json')
     systems_json = requests.get(system_status_endpoint).json()
@@ -41,7 +36,6 @@ def get_sysmon_data():
                 systems.append(system)
         except Exception as exc:
             logger.error(exc)
-    # systems = sorted(systems, key=lambda s: s.get('cpu_count'), reverse=True)
     return systems
 
 class System:
@@ -99,12 +93,11 @@ class System:
             return False
         last_updated = dateutil.parser.parse(last_updated)
         current_time = datetime.now()
-        ## if we want to change the update interval test, we can do it below
+        ## if we want to change the update interval, we can do it below
         expire_time = last_updated + timedelta(minutes=10)
         return pytz.UTC.localize(current_time) < expire_time
 
     def to_dict(self):
-        system_status = {}
         r = json.dumps(self.__dict__)
         return json.loads(r)
 
