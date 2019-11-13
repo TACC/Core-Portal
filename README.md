@@ -1,5 +1,5 @@
 # TACC Core Experience Portal
-
+https://xd.adobe.com/view/db2660cc-1011-4f26-5d31-019ce87c1fe8-ad17/
 * v2.0.0
 
 [![codecov](https://codecov.io/bb/taccaci/core-exp-portal/branch/master/graph/badge.svg?token=4KdoK5U2NV)](https://codecov.io/bb/taccaci/core-exp-portal)
@@ -44,7 +44,7 @@ Create `server/portal/settings/settings_secret.py` containing what is in `secret
     npm install
     npm run build
 
--  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 8.x and not an earlier version_ 
+-  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 8.x and not an earlier version_
 
 
 #### Initialize the application in the `cep_prtl_django` container:
