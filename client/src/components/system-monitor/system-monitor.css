@@ -1,11 +1,4 @@
-.multi-system .hr-left-margin { margin-left:15px }
-.multi-system .status-left-padding { padding-left:30px }
-.multi-system .label-system-status {font-size: inherit; padding: .25em 1em .45em 1em;}
-.multi-system .name-separator {
-  margin-top: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: thin;
-  border-bottom-color: lightgray;
-  margin-bottom: 21px;
+.multi-system .label-system-status {
+  font-size: inherit;
+  padding: 0.25em 1em 0.45em 1em;
 }
-.multi-system .system-separator {padding-top:2em;}

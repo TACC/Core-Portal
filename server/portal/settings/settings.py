@@ -40,6 +40,7 @@ SESSION_COOKIE_AGE = 24*60*60*7  # the number of seconds for only 7 for example
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # whether the session cookie should be secure (https:// only)
 SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'Strict'
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
@@ -445,8 +446,6 @@ CMS_PERMISSION = True
 
 CMS_PLACEHOLDER_CONF = {}
 
-CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
-CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.link')
 SELECT2_CSS = 'node_modules/select2/dist/css/select2.min.css'  # PATH?
 SELECT2_JS = 'node_modules/select2/dist/js/select2.min.js'     # PATH?
 
@@ -791,7 +790,7 @@ HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
-SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
+SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_secret, '_SYSTEM_MONITOR_DISPLAY_LIST', [])
 
 """
 SETTINGS: EXPORTS

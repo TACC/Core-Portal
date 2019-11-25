@@ -1,20 +1,18 @@
+import { hot } from 'react-hot-loader/root';
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Workbench from './workbench'
+
 
 function AppRouter() {
   return (
     <Router>
-      <div>
-        <Switch>
-          <Route
-            path='/workbench'
-            render={Workbench}
-          />
-        </Switch>
-      </div>
+      <Route
+        path='/workbench'
+        component={Workbench}
+      />
     </Router>
   );
 }
 
-export default AppRouter;
+export default hot(AppRouter);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import fetch from 'cross-fetch';
 
 const useFetch = (url, options) => {
   const [response, setResponse] = useState(null);
@@ -7,7 +8,7 @@ const useFetch = (url, options) => {
   useEffect(() => {
     const FetchData = async () => {
       try {
-        const res = await fetch(url, options);
+        const res = await fetch(url, { credentials: 'same-origin', ...options});
         const json = await res.json();
         setResponse(json);
       } catch (err) {

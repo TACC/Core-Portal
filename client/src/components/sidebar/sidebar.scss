@@ -1,0 +1,35 @@
+#sidebar {
+    width: 215px;
+    height: calc(100vh - 56px);
+    background: #f4f4f4;
+    border-right: #dfdfdf;
+    padding-top: 20px;
+}
+
+#sidebar .nav-link {
+  color: #707070;
+}
+
+#sidebar .nav-link.active {
+  background: #dfdaf5;
+}
+
+#sidebar .nav-content {
+  padding-left: 20px;
+}
+
+#sidebar .nav-text {
+  padding-left: 20px;
+  font-size: .78em;
+  font-weight: 500;
+}
+
+.nav-content .side-nav-icon {
+  width: 1em;
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+
+.side-nav {
+    border-right: 1px solid rgba(112, 112, 112, .25);
+}

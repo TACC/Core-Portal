@@ -1,6 +1,6 @@
 {% extends "portal/apps/accounts/index.html" %} {% block panel_content %}
-<div class="panel panel-default">
-    <div class="panel-body">
+<div class="card">
+    <div class="card-body">
         <h2>Software Licenses</h2>
 
         <p class="lead">
@@ -12,13 +12,13 @@
         <hr>
         <div class="license {% if license.current_user_license %}license-active{% endif %}">
             <h3>
-                {{license.license_type}} {% if license.current_user_license %}
-                <span class="label label-success"><i class="fa fa-check-circle"></i> ACTIVE </span> {% else %}
-                <span class="label label-danger"> NOT ACTIVE </span> {% endif %}
+                {{license.license_type}} {% if not license.current_user_license %}
+                <span class="badge badge-success"><i class="fas fa-check-circle"></i> ACTIVE </span> {% else %}
+                <span class="badge badge-danger"> NOT ACTIVE </span> {% endif %}
             </h3>
             {% include license.details_html %} {% if not license.current_user_license %}
             <p>
-                <a class="btn btn-lg btn-default" href="{% url 'tickets:create' %}?category=OTHER&subject={{license.license_type}}+license+activation+request{% if license.license_type == 'LS-DYNA' %}&problem_description=Department+Name%3A%0DInstitution+Name%3A{% endif %}"
+                <a class="btn btn-lg btn-primary" href="{% url 'tickets:create' %}?category=OTHER&subject={{license.license_type}}+license+activation+request{% if license.license_type == 'LS-DYNA' %}&problem_description=Department+Name%3A%0DInstitution+Name%3A{% endif %}"
                     target="_blank">
                             Request Activation
                         </a>

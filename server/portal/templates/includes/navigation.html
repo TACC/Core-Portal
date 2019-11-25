@@ -2,97 +2,89 @@
 {% if settings.PORTAL_NAVBAR_BACKGROUND_FILENAME %}
 <nav id="portal-top-nav" class="navbar navbar-dark" style="background-image: url('{{ settings.PORTAL_NAVBAR_BACKGROUND_FILENAME }}');">
 {% else %}
-<nav id="portal-top-nav" class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav id="portal-top-nav" class="navbar navbar-expand-lg navbar-dark" style="background-color: #222222">
 {% endif %}
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a href="/" class="navbar-left">
-        {% if settings.PORTAL_LOGO_FILENAME %}
-        <img src="{{ settings.PORTAL_LOGO_FILENAME }}" class="portal-branding nav-icon" style="height:45px;">
-        {% else %}
-        <div class="text-info navbar-logo-text">{{ settings.PORTAL_NAMESPACE }}</div>
-        {% endif %}
-      </a>
-      {% if section_root %}
-      <a class="navbar-brand">{{section_root.title}}</a>
-      {% endif %}
-      <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#main-navigation" aria-expanded="false">
-        <span class="navbar-toggler-icon"></span>
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <!-- Collapsed Navbar -->
-    <div class="collapse navbar-collapse" id="main-navigation">
-      <ul class="nav navbar-nav mr-auto">
-        <!-- All top nav elements handled here. -->
-        {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        {% if user.is_authenticated %}
-        <div class="nav navbar-nav">
-          <li class="nav-item dropdown active">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="fa fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
-              <span class="sr-only">Toggle Dropdown</span>
+  <a class="navbar-brand" href="/">
+    {% if settings.PORTAL_LOGO_FILENAME %}
+    <img src="{{ settings.PORTAL_LOGO_FILENAME }}" class="portal-branding nav-icon" style="height:45px;">
+    {% else %}
+    <div class="navbar-logo-text">{{ settings.PORTAL_NAMESPACE }}</div>
+    {% endif %}
+  </a>
+  {% if section_root %}
+  <a class="navbar-brand">{{section_root.title}}</a>
+  {% endif %}
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navigation" aria-controls="main-navigation" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <!-- Collapsed Navbar -->
+  <div class="collapse navbar-collapse" id="main-navigation">
+    <ul class="navbar-nav mr-auto">
+      <!-- All top nav elements handled here. -->
+      {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
+    </ul>
+    <ul class="navbar-nav navbar-right">
+      {% if user.is_authenticated %}
+      <div class="navbar-nav">
+        <li class="nav-item dropdown active">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
+            <span class="sr-only">Toggle Dropdown</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a class="dropdown-item" href="{% url 'workbench:index' %}">
+              <i class="fas fa-desktop nav-icon"></i> My Dashboard
             </a>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" href="{% url 'workbench:index' %}">
-                <i class="fa fa-desktop nav-icon"></i> My Dashboard
-              </a>
-              <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
-                <i class="fa fa-user-circle-o nav-icon"></i> My Account
-              </a>
-              <a class="dropdown-item" href="{% url 'tickets:mytickets' %}">
-                <i class="fa fa-ticket nav-icon"></i> My Tickets
-              </a>
-              {% if user.is_staff %}
-              <a class="dropdown-item" href="{ url 'portal_onboarding:admin' }">
-                <i class="fa fa-users"></i> &nbsp;Onboarding
-              </a>
-              {% endif %}
-              <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">
-                <i class="fa fa-sign-out nav-icon"></i> Log Out
-              </a>
-              {% if user.is_impersonate %}
-              <div class="dropdown-divider"></div>
-              <div class="dropdown-item">
-                <i class="fa fa-user-secret nav-icon"></i>
-                <a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a>
-              </div>
-              {% endif %}
-              <!-- end of impersonate -->
+            <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
+              <i class="fas fa-user-circle nav-icon"></i> My Account
+            </a>
+            <a class="dropdown-item" href="{% url 'tickets:mytickets' %}">
+              <i class="fas fa-ticket-alt nav-icon"></i> My Tickets
+            </a>
+            {% if user.is_staff %}
+            <a class="dropdown-item" href="{ url 'portal_onboarding:admin' }">
+              <i class="fas fa-users"></i> &nbsp;Onboarding
+            </a>
+            {% endif %}
+            <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">
+              <i class="fas fa-sign-out-alt nav-icon"></i> Log Out
+            </a>
+            {% if user.is_impersonate %}
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item">
+              <i class="fas fa-user-secret nav-icon"></i>
+              <a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a>
             </div>
-          </li>
-        </div>
-        {% else %}
-        <!-- if user is not logged in -->
-        {% if request_access %}
-        <li class="nav-item {% if request.get_full_path == '/about/' %} active {% endif %}">
-          <a class="nav-link" role="button" href="/accounts/request-access/">
-          <!-- <a class="nav-link btn btn-link-alt" role="button" href="/accounts/request-access/"> -->
-            <i class="fa fa-group nav-icon"></i> Request Access
-          </a>
+            {% endif %}
+            <!-- end of impersonate -->
+          </div>
         </li>
-        {% endif %}
-        <li class="nav-item {% if request.get_full_path == '/accounts/login' %} active {% endif %}">
-          <a class="nav-link" role="button" href="{% url 'portal_auth:agave_oauth' %}">
-          <!-- <a href="{% url 'portal_accounts:login' %}" class="btn btn-link-alt"> -->
-            <i class="fa fa-sign-in nav-icon"></i> Log in
-          </a>
-        </li>
-        <!-- Hidden until auth flow is properly implemented and MFA impact is determined.  -->
-        <!-- <li class="right-nav-links">
-          <a href="{% url 'portal_accounts:register' %}" class="btn btn-link-alt">
-            <i class="fa fa-user-plus nav-icon"></i> Register
-          </a>
-        </li> -->
-        {% endif %}
-        <!-- end of user logged in/not logged in if -->
-      </ul>
-    </div>
+      </div>
+      {% else %}
+      <!-- if user is not logged in -->
+      {% if request_access %}
+      <li class="nav-item {% if request.get_full_path == '/about/' %} active {% endif %}">
+        <a class="nav-link" role="button" href="/accounts/request-access/">
+        <!-- <a class="nav-link btn btn-link-alt" role="button" href="/accounts/request-access/"> -->
+          <i class="fas fa-users nav-icon"></i> Request Access
+        </a>
+      </li>
+      {% endif %}
+      <li class="nav-item {% if request.get_full_path == '/accounts/login' %} active {% endif %}">
+        <a class="nav-link" role="button" href="{% url 'portal_auth:agave_oauth' %}">
+        <!-- <a href="{% url 'portal_auth:agave_oauth' %}" class="btn btn-link-alt"> -->
+          <i class="fas fa-sign-in-alt nav-icon"></i> Log in
+        </a>
+      </li>
+      <!-- Hidden until auth flow is properly implemented and MFA impact is determined.  -->
+      <!-- <li class="right-nav-links">
+        <a href="{% url 'portal_accounts:register' %}" class="btn btn-link-alt">
+          <i class="fas fa-user-plus nav-icon"></i> Register
+        </a>
+      </li> -->
+      {% endif %}
+      <!-- end of user logged in/not logged in if -->
+    </ul>
   </div>
 </nav>

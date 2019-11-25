@@ -19,6 +19,8 @@ _PORTAL_DOMAIN = 'frontera.dev'
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
 
+_SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utexas.edu', 'lonestar5.tacc.utexas.edu']
+
 ########################
 # DJANGO SETTINGS LOCAL
 ########################

@@ -14,31 +14,29 @@ import pytz
 
 logger = logging.getLogger(__name__)
 
-@method_decorator(login_required, name='dispatch')
 class SysmonDataView(BaseApiView):
-    def get(self, request):
-        return JsonResponse(get_sysmon_data(), safe=False)
 
-'''
-    Pulls and parses data from TACC User Portal then populates and returns a list of Systems objects
-'''
-def get_sysmon_data():
-    systems = []
-    requested_systems=\
-                getattr(settings, 'SYSTEM_MONITOR_DISPLAY_LIST',[])
-    system_status_endpoint = getattr(settings,\
-        'SYSMON_URL','https://portal.tacc.utexas.edu/commnq/index.json')
-    systems_json = requests.get(system_status_endpoint).json()
-    for sys in systems_json:
-        try:
-            system = System(systems_json.get(sys)).to_dict()
-            if system.get('hostname') in requested_systems:
-                systems.append(system)
-        except Exception as exc:
-            logger.error(exc)
-    return systems
+    def get(self, request):
+        '''
+            Pulls and parses data from TACC User Portal then populates and returns a list of Systems objects
+        '''
+        systems = []
+        requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
+        system_status_endpoint = getattr(settings, 'SYSMON_URL', 'https://portal.tacc.utexas.edu/commnq/index.json')
+        systems_json = requests.get(system_status_endpoint).json()
+        for sys in systems_json:
+            try:
+                system = System(systems_json.get(sys)).to_dict()
+                if system.get('hostname') in requested_systems:
+                    systems.append(system)
+            except Exception as exc:
+                logger.error(exc)
+
+        return JsonResponse(systems, safe=False)
+
 
 class System:
+
     def __init__(self, system_dict):
         try:
             self.hostname = system_dict.get('hostname')
@@ -66,10 +64,11 @@ class System:
             self.is_operational = self.is_up()
         except Exception as exc:
             logger.error(exc)
-    '''
-    Checks each uptime metric to determine if the system is available
-    '''
+
     def is_up(self):
+        '''
+        Checks each uptime metric to determine if the system is available
+        '''
         if self.resource_type == 'compute':
             if not self.load_percentage or not self.jobs:
                     return False
@@ -84,11 +83,11 @@ class System:
             if not self.status_updated_recently(last_updated=test.get('timestamp')):
                 return False
         return True
-       
-    '''
-    Checks whether system availability metrics are being updated regularly
-    '''
+
     def status_updated_recently(self,last_updated=None):
+        '''
+        Checks whether system availability metrics are being updated regularly
+        '''
         if not last_updated:
             return False
         last_updated = dateutil.parser.parse(last_updated)
@@ -100,7 +99,3 @@ class System:
     def to_dict(self):
         r = json.dumps(self.__dict__)
         return json.loads(r)
-
-
-
-

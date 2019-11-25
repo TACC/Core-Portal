@@ -260,7 +260,7 @@ def manage_pro_profile(request):
         portal_profile = PortalProfile.objects.get(user__id=user.id)
     except PortalProfile.DoesNotExist:
         logout(request)
-        return HttpResponseRedirect(reverse('portal_auth:login'))
+        return HttpResponseRedirect(reverse('portal_auth:logout'))
     context = {
         'title': 'Manage Professional Profile',
         'user': user,

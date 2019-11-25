@@ -59,7 +59,7 @@ urlpatterns = [
     path('api/users/', include('portal.apps.users.urls', namespace='users')),
     path('api/workspace/', include('portal.apps.workspace.api.urls', namespace='workspace_api')),
     path('api/tickets/', include('portal.apps.djangoRT.api.urls', namespace='portal_tickets_api')),
-    path('^api/search/', include('portal.apps.search.api.urls', namespace='search')),
+    path('api/search/', include('portal.apps.search.api.urls', namespace='search')),
     path('api/system-monitor/', include('portal.apps.system_monitor.urls', namespace='system_monitor')),
 
     # views

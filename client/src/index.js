@@ -1,14 +1,19 @@
 import 'react-hot-loader';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Workbench from './components/workbench';
+import { Provider } from 'react-redux';
+import AppRouter from './routes';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import 'bootstrap'
-import './fontawesome';
+import store from './redux/store';
+import 'bootstrap';
 
-
-ReactDOM.render(<Workbench />, document.getElementById('react-root'));
+ReactDOM.render(
+  <Provider store={store}>
+    <AppRouter />
+  </Provider>,
+  document.getElementById('react-root')
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load bootstrap3 sekizai_tags staticfiles %}
+{% load bootstrap4 sekizai_tags staticfiles %}
 {% block title %} Registration {% endblock %}
 {% block content %}
   <div class="container">
@@ -12,7 +12,7 @@
             <img style="max-width:300px" alt="TACC" src="{% static 'images/tacc-logo-outline.svg'%}">
           </p>
           <h3>
-            Already have an Account? <a href="{% url 'portal_auth:login' %}">Log in.</a>
+            Already have an Account? <a href="{% url 'portal_auth:agave_oauth' %}">Log in.</a>
           </h3>
           <p>
             If you already have a TACC account, simply
@@ -41,10 +41,6 @@
         </form>
       </div>
     </div>
-
   </div>
-  {% addtoblock 'js' %}
-    <script type="text/javascript" src="{% static 'portal/apps/accounts/js/institution_departments.js' %}"></script>
-    <script type="text/javascript" src="{% static 'portal/apps/accounts/js/new_institution.js' %}"></script>
-  {% endaddtoblock %}
+
 {% endblock %}
