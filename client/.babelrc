@@ -6,7 +6,7 @@
                 "targets": "> 1%, not dead"
             }
         ],
-        "@babel/preset-react"
+        "babel-preset-react-app"
     ],
     "plugins": [
         "@babel/plugin-proposal-class-properties",
