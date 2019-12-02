@@ -99,6 +99,7 @@ class DataViewCtrl {
         });
 
         if (this.options.name == 'My Data' || this.options.directory == 'agave') {
+            this.DataBrowserService.apiParams.directory = 'agave';
             this.DataBrowserService.apiParams.fileMgr = 'my-data';
             this.DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
             this.DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
@@ -114,6 +115,7 @@ class DataViewCtrl {
                 },
             };
             this.DataBrowserService.apiParams.fileMgr = 'shared';
+            this.DataBrowserService.apiParams.directory = 'agave';
             this.DataBrowserService.apiParams.baseUrl = '/api/data-depot/files';
             this.DataBrowserService.apiParams.searchState = 'wb.data_depot.db';
             this.breadcrumbParams.customRoot = { name: 'Community Data', path: '' };
