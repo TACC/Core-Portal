@@ -345,15 +345,15 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'default': {
-            'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s '
+            'format': '[DJANGO] %(levelname)s %(asctime)s UTC %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'agave': {
-            'format': '[AGAVE] %(levelname)s %(asctime)s %(module)s '
+            'format': '[AGAVE] %(levelname)s %(asctime)s UTC %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(levelname)s %(module)s %(name)s.'
+            'format': '[METRICS] %(levelname)s %(asctime)s UTC %(module)s %(name)s.'
                       '%(funcName)s:%(lineno)s: %(message)s '
                       'user=%(user)s sessionId=%(sessionId)s '
                       'op=%(operation)s info=%(info)s'
