@@ -204,6 +204,14 @@ class FileMediaView(BaseApiView):
 
     def download(self, request, req_body, file_id, fmgr):
         """Download action"""
+        METRICS.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': 'agave_file_download',
+                         'info': {
+                             'path': file_id}
+                     })
         return fmgr.download(file_id, preview=False)
 
     def mkdir(self, request, req_body, file_id, fmgr):
@@ -225,6 +233,14 @@ class FileMediaView(BaseApiView):
 
     def preview(self, request, req_body, file_id, fmgr):
         """Preview a file"""
+        METRICS.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': 'agave_file_preview',
+                         'info': {
+                             'path': file_id}
+                     })
         return fmgr.download(file_id, preview=True)
 
     def public_url(self, request, req_body, file_id, fmgr):
