@@ -196,6 +196,8 @@ class JobsView(BaseApiView):
 
             if period != "all":
                 enddate = datetime.now()
+                if period == "day":
+                    days = 1
                 if period == "week":
                     days = 7
                 elif period == "month":

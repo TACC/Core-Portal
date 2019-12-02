@@ -12,18 +12,6 @@ class JobActionsCtrl {
         this.jobFinished = this.Jobs.jobIsFinished(this.job);
     }
 
-    deleteJob() {
-        this.Jobs.delete(this.job).then(
-            () => {
-                this.$rootScope.$broadcast('refresh-jobs-panel');
-            }
-        ).finally(
-            () => {
-                this.checkDismiss();
-            }
-        );
-    }
-
     cancelJob() {
         this.Jobs.cancel(this.job).finally(
             () => {

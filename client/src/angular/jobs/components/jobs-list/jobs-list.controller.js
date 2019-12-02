@@ -6,6 +6,10 @@ class JobsListCtrl {
         this.$rootScope = $rootScope;
         this.displayOptions = [
             {
+                value: "day",
+                label: "Today"
+            },
+            {
                 value: "week",
                 label: "This Week"
             },

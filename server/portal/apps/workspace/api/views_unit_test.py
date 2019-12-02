@@ -105,6 +105,12 @@ class TestJobsView(TransactionTestCase):
     def test_date_filter(self):
         test_time = datetime.now()
 
+        today_job = JobSubmission.objects.create(
+            user=self.user,
+            jobId="9876"
+        )
+        JobSubmission.objects.filter(jobId="9876").update(time=test_time)
+
         recent_job = JobSubmission.objects.create(
             user=self.user,
             jobId="1234",
@@ -124,6 +130,7 @@ class TestJobsView(TransactionTestCase):
         JobSubmission.objects.filter(jobId="3456").update(time=test_time - timedelta(days=120))
 
         self.mock_agave_client.jobs.list.return_value = [
+            { "id": "9876" },
             { "id": "1234" },
             { "id": "2345" },
             { "id": "3456" }
@@ -131,17 +138,21 @@ class TestJobsView(TransactionTestCase):
 
         # Test request for jobs with no period query param
         jobs = self.request_jobs()
-        self.assertEqual(len(jobs), 3)
+        self.assertEqual(len(jobs), 4)
 
         # Test request for jobs with query for all jobs
         jobs = self.request_jobs(query_params={ "period": "all" })
-        self.assertEqual(len(jobs), 3)
+        self.assertEqual(len(jobs), 4)
 
         # Test request for jobs within one month
         jobs = self.request_jobs(query_params={ "period": "month" })
-        self.assertEqual(len(jobs), 2)
+        self.assertEqual(len(jobs), 3)
 
         # Test request for jobs within one week
         jobs = self.request_jobs(query_params={ "period" : "week" })
+        self.assertEqual(len(jobs), 2)
+
+        # Test request for jobs from today
+        jobs = self.request_jobs(query_params={ "period" : "day" })
         self.assertEqual(len(jobs), 1)
         

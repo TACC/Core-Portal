@@ -28,7 +28,6 @@ describe('JobActionsCtrl', ()=>{
 
     it("should instantiate and have a controller", () => {
         expect(controller).toBeDefined();
-        expect(element.text()).toContain('Delete');
     });
 
     it("should display cancel actions", () => {
