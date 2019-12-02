@@ -103,3 +103,10 @@ class AllocationStepTest(TestCase):
         }
         self.step.process()
         self.mock_complete.assert_called_with("You have the required systems for accessing this portal")
+
+    @patch('portal.apps.onboarding.steps.allocation_unit_test.AllocationStep.prepare')
+    def test_client_action(self, mock_prepare):
+        request = RequestFactory().post("/api/onboarding/user/test")
+        request.user = self.user
+        self.step.client_action("user_confirm", {}, request)
+        mock_prepare.assert_called_with()

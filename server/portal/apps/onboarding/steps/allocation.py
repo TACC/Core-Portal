@@ -125,3 +125,7 @@ class AllocationStep(AbstractStep):
                     "more_info": message
                 }
             )
+    
+    def client_action(self, action, data, request):
+        if action == "user_confirm" and request.user.username == self.user.username:
+            self.prepare()
