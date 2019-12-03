@@ -29,6 +29,12 @@
     "parser": "babel-eslint",
     "rules": {
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/.test.js", "**/*.spec.js"]}]
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/.test.js", "**/*.spec.js"]}],
+        "semi": [1, "always"],
+        "react/jsx-props-no-spreading": [{
+            "html": "enforce" ,
+            "custom": "enforce",
+            "exceptions": ["Table", "table", "thead", "tbody", "th", "tr", "td"]
+        }]
     }
 }

@@ -1,17 +1,18 @@
-# TACC Core Experience Portal
-https://xd.adobe.com/view/db2660cc-1011-4f26-5d31-019ce87c1fe8-ad17/
-* v2.0.0
+# TACC Frontera Web Portal
 
-[![codecov](https://codecov.io/bb/taccaci/core-exp-portal/branch/master/graph/badge.svg?token=4KdoK5U2NV)](https://codecov.io/bb/taccaci/core-exp-portal)
+* v2.0.0
+* Working Design: https://xd.adobe.com/view/db2660cc-1011-4f26-5d31-019ce87c1fe8-ad17/
+
+[![codecov](https://codecov.io/bb/taccaci/frontera-portal/branch/master/graph/badge.svg?token=awjI9tRbqj)](https://codecov.io/bb/taccaci/frontera-portal)
 
 ## Prequisites for running the portal application
 
 * Docker
 * Docker Compose
 * Python 3.6.8
-* Nodejs 12.x
+* Nodejs 12.x (LTS)
 
-The CEP Portal can be run using [Docker][1] and [Docker Compose][2]. You will
+The Frontera Web Portal can be run using [Docker][1] and [Docker Compose][2]. You will
 need both Docker and Docker Compose pre-installed on the system you wish to run the portal
 on.
 
@@ -26,7 +27,7 @@ After you clone the repository locally, there are several configuration steps re
 
 #### Create settings_secret.py
 
-Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `CEP_portal_secrets` entry secured on [UT Stache](https://stache.security.utexas.edu)
+Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Frontera Web Settings Secret` entry secured on [UT Stache](https://stache.security.utexas.edu)
 
 #### Build the image for the portal's django container:
 
@@ -44,28 +45,28 @@ Create `server/portal/settings/settings_secret.py` containing what is in `secret
     npm install
     npm run build
 
--  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 8.x and not an earlier version_
+-  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 12.x and not an earlier version._
 
 
-#### Initialize the application in the `cep_prtl_django` container:
+#### Initialize the application in the `frontera_prtl_django` container:
 
-    docker exec -it cep_prtl_django /bin/bash
+    docker exec -it frontera_prtl_django /bin/bash
     python3 manage.py migrate
     python3 manage.py createsuperuser
     python3 manage.py collectstatic
 
 
-### Setup local accessing the portal:
+### Setup local access to the portal:
 
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.dev`
 
-    _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_agave.py` for `AGAVE_TENANT_ID`._
+    _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
 
     _Note: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
 
-  2. Direct your browser to `https://cep.dev` or `http://cep.dev:8000`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/accounts/login`.
+  2. Direct your browser to `https://cep.dev`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/login`.
 
-    _NOTE: When logging in, make sure that you are going through SSL (`https://cep.dev/accounts/login`). After succesful login, you can use the debug server at `http://cep.dev:8000`._
+    _NOTE: When logging in, make sure that you are going through SSL (`https://cep.dev/login`). After succesful login, you can use the debug server at `https://cep.dev`._
 
     _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
 
@@ -128,18 +129,20 @@ Follow the Confluence pages below to set up Projects, Notifications, and Elastic
 - ElasticSearch: https://confluence.tacc.utexas.edu/x/aARkAQ
 
 
-### TBD
+### Linting and Formatting Conventions
 
-- Update Ansible scripts to support CEP deployment to staging VM (currently still configured for SD2E deployment).
-- Choose either conf or env for config and eliminate the redundancy in setup (using ansible to inject env vars into containers).
-- Fix self-signed certificates issues.
-- Refactor app modules.
-- Enhance authentication workflow with abaco reactors.
-- Enhance user data storage setup with Celery task.
-- Enhance DevOps with CI (unit testing, integration testing,  deployment, etc.)
-- Generate documentation for portal source code (sphinx?)
+Client-side Javascript code is linted via eslint, and is enforced on commits to the repo. To see a list of linting issues, run `npm run lint` in the console under the `client` folder.
 
+Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 master | flake8 --diff` from the command line.
+This requires that you have a local python virtual environemnt setup with this project's dependencies installed:
+
+```
+python3 -m venv <path_to_local_venv_dir>
+. <path_to_local_venv_dir>/bin/activate
+pip install -r server/requirements.txt
+```
 
 ### Resources
 
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* [Tapis Project (Formerly Agave)](https://tacc-cloud.readthedocs.io/projects/agave/en/latest/)

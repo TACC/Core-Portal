@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-  entry: ['core-js/stable', 'regenerator-runtime/runtime', './src/index.js'],
+  entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'build'),
   },

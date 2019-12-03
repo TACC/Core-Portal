@@ -11,10 +11,10 @@ pipelines:
     - parallel:
       - step:
           name: Server Side Unit Tests
-          image: python:2.7
+          image: python:3.6
           caches:
             - pip
-          script: # Modify the commands below to build your repository.
+          script:
             - cd server
             - cp portal/templates/base.j2 portal/templates/base.html
             - mkdir -p log/portal
@@ -22,28 +22,30 @@ pipelines:
             - coverage run --branch --source="portal" --omit "*/*unit_test.py" manage.py test
               --pattern="*unit_test.py"
               -v2 --settings="portal.settings.unit_test_settings"
+            - git diff -U0 master | flake8 --diff
             - coverage xml -i
             - bash <(curl -s https://codecov.io/bash) -cF python
       - step:
           name: Client Side Unit Tests
-          image: timbru31/node-chrome
+          image: node:lts
           caches:
             - node
-          script: # Modify the commands below to build your repository.
+          script:
             - cd client
             - npm install
             - npm run test
+            - npm run lint
             - bash <(curl -s https://codecov.io/bash) -cF javascript
 
   pull-requests:
     '**':
       - parallel:
         - step:
-            name: Unit Tests
-            image: python:2.7
+            name: Server Side Unit Tests
+            image: python:3.6
             caches:
               - pip
-            script: # Modify the commands below to build your repository.
+            script:
               - cd server
               - cp portal/templates/base.j2 portal/templates/base.html
               - mkdir -p log/portal
@@ -51,17 +53,19 @@ pipelines:
               - coverage run --branch --source="portal" --omit "*/*unit_test.py" manage.py test
                 --pattern="*unit_test.py"
                 -v2 --settings="portal.settings.unit_test_settings"
+              - git diff -U0 master | flake8 --diff
               - coverage xml -i
               - bash <(curl -s https://codecov.io/bash) -cF python
         - step:
             name: Client Side Unit Tests
-            image: timbru31/node-chrome
+            image: node:lts
             caches:
               - node
-            script: # Modify the commands below to build your repository.
+            script:
               - cd client
               - npm install
               - npm run test
+              - npm run lint
               - bash <(curl -s https://codecov.io/bash) -cF javascript
 
 definitions:
