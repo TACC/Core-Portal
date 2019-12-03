@@ -1,1 +1,0 @@
-//the mapStateToProps, mapDispatchToProps, and connect functionality of Redux. If you use an alternative global state management tool

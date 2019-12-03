@@ -4,9 +4,12 @@ import {
   Switch,
   useRouteMatch
 } from 'react-router-dom';
-import Dashboard from '../../components/dashboard';
-import Allocations from '../../components/allocations';
-import Sidebar from '../../components/sidebar';
+import Dashboard from '../Dashboard';
+import Allocations from '../Allocations';
+import Sidebar from '../Sidebar';
+import * as ROUTES from '../../constants/routes';
+import './Workbench.scss';
+
 
 function Applications() {
   return <h2>Applications</h2>;
@@ -32,22 +35,22 @@ function Workbench() {
       <Sidebar />
       <div className="workbench-content">
         <Switch>
-          <Route path={`${match.path}/dashboard`}>
+          <Route path={`${match.path}${ROUTES.DASHBOARD}`}>
             <Dashboard />
           </Route>
-          <Route path={`${match.path}/data`}>
+          <Route path={`${match.path}${ROUTES.DATA}`}>
             <DataFiles />
           </Route>
-          <Route path={`${match.path}/applications`}>
+          <Route path={`${match.path}${ROUTES.APPLICATIONS}`}>
             <Applications />
           </Route>
-          <Route path={`${match.path}/allocations`}>
+          <Route path={`${match.path}${ROUTES.ALLOCATIONS}`}>
             <Allocations />
           </Route>
-          <Route path={`${match.path}/publications`}>
+          <Route path={`${match.path}${ROUTES.PUBLICATIONS}`}>
             <Publications />
           </Route>
-          <Route path={`${match.path}/history`}>
+          <Route path={`${match.path}${ROUTES.HISTORY}`}>
             <History />
           </Route>
         </Switch>

@@ -5,24 +5,26 @@ import { faSun } from '@fortawesome/free-solid-svg-icons';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import useFetch from '../../utils/useFetch';
-import './system-monitor.css';
+import './SystemMonitor.scss';
 
 function SystemsList() {
   const res = useFetch(`/api/system-monitor/`, {});
 
   if (!res.response) {
     return (
-      <div id='spin-sun'>
+      <div id="spin-sun">
         <FontAwesomeIcon icon={faSun} size="8x" spin />
       </div>
-    )
+    );
   }
 
   const columns = [
     {
       accessor: 'display_name',
       Cell: el => (
-        <span className="wb-text-primary wb-bold" id={`sysmonID${el.index}`}>{el.value}</span>
+        <span className="wb-text-primary wb-bold" id={`sysmonID${el.index}`}>
+          {el.value}
+        </span>
       )
     },
     {
@@ -56,11 +58,8 @@ function SystemsList() {
   );
 }
 
-function SystemMonitor() {
-
-  return (
-    <SystemsList id="systems" />
-  );
+function SystemMonitorView() {
+  return <SystemsList id="systems" />;
 }
 
-export default SystemMonitor;
+export default SystemMonitorView;

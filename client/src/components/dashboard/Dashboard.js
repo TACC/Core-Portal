@@ -1,11 +1,10 @@
-// stateless view Component.
 import React from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
-// import Dashboard from "./dashboard-container";
-import Jobs from '../jobs';
-import Tickets from '../tickets';
-import Sysmon from '../system-monitor';
-import './dashboard.css';
+import JobsView from '../Jobs';
+import Tickets from '../Tickets';
+import Sysmon from '../SystemMonitor';
+import './Dashboard.scss';
+
 
 function Dashboard() {
   return (
@@ -27,7 +26,7 @@ function Dashboard() {
                     <h6>View History</h6>
                   </Button>
                 </div>
-                <Jobs />
+                <JobsView />
               </div>
             </Col>
             <Col lg="4">
