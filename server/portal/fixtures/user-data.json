@@ -1,0 +1,19 @@
+[
+  {
+    "model": "auth.user",
+    "fields": {
+      "password": "password",
+      "last_login": "2018-09-10T19:56:35.919Z",
+      "is_superuser": false,
+      "username": "username",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "username@server.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2018-09-10T19:56:35.899Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

@@ -4,11 +4,9 @@
 """
 import logging
 import json
-import urllib.request, urllib.parse, urllib.error
-import os
 from urllib.parse import urlparse
 from datetime import datetime, timedelta
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -26,10 +24,9 @@ from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
 
 
-#pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
-#pylint: enable=invalid-name
+
 
 def get_manager(request, file_mgr_name):
     """Lookup Manager to handle call"""
@@ -44,6 +41,7 @@ def _app_license_type(app_id):
     app_lic_type = app_id.replace('-{}'.format(app_id.split('-')[-1]), '').upper()
     lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
     return lic_type
+
 
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
@@ -85,13 +83,14 @@ class AppsView(BaseApiView):
                 data = agave.apps.list(privateOnly=True)
         return JsonResponse({"response": data})
 
+
 @method_decorator(login_required, name='dispatch')
 class MonitorsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         target = request.GET.get('target')
         logger.info(request.GET)
         admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
-                token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+                             token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
         data = admin_client.monitors.list(target=target)
         return JsonResponse({"response": data})
 
@@ -169,7 +168,7 @@ class JobsView(BaseApiView):
             job_meta = agave.meta.listMetadata(q=json.dumps(q))
             data['_embedded'] = {"metadata": job_meta}
 
-            #TODO: Decouple this from front end somehow!
+            # TODO: Decouple this from front end somehow!
             archiveSystem = data.get('archiveSystem', None)
             if archiveSystem:
                 archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])
@@ -196,7 +195,9 @@ class JobsView(BaseApiView):
 
             if period != "all":
                 enddate = datetime.now()
-                if period == "week":
+                if period == "day":
+                    days = 1
+                elif period == "week":
                     days = 7
                 elif period == "month":
                     days = 30
@@ -230,7 +231,7 @@ class JobsView(BaseApiView):
 
         # cancel job / stop job
         if job_id and job_action:
-            data = agave.jobs.manage(jobId=job_id, body={"action":job_action})
+            data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
             return JsonResponse({"response": data})
         # submit job
         elif job_post:
@@ -295,13 +296,13 @@ class JobsView(BaseApiView):
             job_post['parameters']['_webhook_base_url'] = wh_base_url
             job_post['notifications'] = [
                 {'url': jobs_wh_url,
-                'event': e}
-                for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED", "BLOCKED"]]
+                 'event': e}
+                for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
             # Remove any params from job_post that are not in appDef
-            for param in job_post['parameters'].keys():
-                if not any(p['id'] == param for p in app.parameters):
-                    del job_post['parameters'][param]
+            job_post['parameters'] = {param: job_post['parameters'][param]
+                                      for param in job_post['parameters']
+                                      if param in [p['id'] for p in app.parameters]}
 
             response = agave.jobs.submit(body=job_post)
             if "id" in response:

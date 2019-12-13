@@ -15,11 +15,12 @@ import logging
 from kombu import Exchange, Queue
 from portal.settings import settings_secret
 
-# pylint: disable=protected-access
-# pylint: disable=invalid-name
+
 logger = logging.getLogger(__file__)
-gettext = lambda s: s  # noqa:E731
-# pylint: enable=invalid-name
+
+
+def gettext(s): return s  # noqa:E731
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -46,9 +47,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
-PORTAL_ICON_FILENAME=settings_secret._PORTAL_ICON_FILENAME
-PORTAL_LOGO_FILENAME=settings_secret._PORTAL_LOGO_FILENAME
-PORTAL_NAVBAR_BACKGROUND_FILENAME=settings_secret._PORTAL_NAVBAR_BACKGROUND_FILENAME
+PORTAL_ICON_FILENAME = settings_secret._PORTAL_ICON_FILENAME
+PORTAL_LOGO_FILENAME = settings_secret._PORTAL_LOGO_FILENAME
+PORTAL_NAVBAR_BACKGROUND_FILENAME = settings_secret._PORTAL_NAVBAR_BACKGROUND_FILENAME
 
 ROOT_URLCONF = 'portal.urls'
 
@@ -67,7 +68,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django.contrib.sites', # also required for django CMS
+    'django.contrib.sites',  # also required for django CMS
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
@@ -92,8 +93,10 @@ INSTALLED_APPS = [
     'portal.apps.auth',
     'portal.apps.djangoRT',
     'portal.apps.licenses',
+    'portal.apps.notifications',
     'portal.apps.onboarding',
     'portal.apps.search',
+    'portal.apps.signals',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
@@ -127,7 +130,7 @@ MIDDLEWARE = [
 
     'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',   # Custom Portal Auth Check.
     'django.middleware.locale.LocaleMiddleware',    # needed for django CMS
-    'impersonate.middleware.ImpersonateMiddleware', # must be AFTER django.contrib.auth
+    'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
 
     # Throws an Error.
     # 'portal.middleware.PortalTermsMiddleware',
@@ -138,6 +141,9 @@ MIDDLEWARE = [
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
     'cms.middleware.utils.ApphookReloadMiddleware',
+
+    # Onboarding
+    'portal.apps.onboarding.middleware.SetupCompleteMiddleware'
 ]
 
 TEMPLATES = [
@@ -168,7 +174,6 @@ TEMPLATES = [
                 # django CMS
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
-                'django.template.context_processors.i18n'
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
@@ -226,7 +231,7 @@ USE_TZ = True
 # ]
 
 LANGUAGES = (
-    ## Customize this
+    # Customize this
     ('en', 'English'),
 )
 
@@ -240,12 +245,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')
 
 STATICFILES_DIRS = [
-    # os.path.join(BASE_DIR, '../../', 'client'),
     ('build', os.path.join(BASE_DIR, '../../client/build')),
-    # ('css', os.path.join(BASE_DIR, '../../client/css')),
-    # ('img', os.path.join(BASE_DIR, '../../client/img')),
-    # ('src', os.path.join(BASE_DIR, '../../client/src')),
-    # ('node_modules/bootstrap', os.path.join(BASE_DIR, '../../client/node_modules/bootstrap')),
 ]
 
 STATICFILES_FINDERS = [
@@ -316,15 +316,15 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'default': {
-            'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s '
+            'format': '[DJANGO] %(levelname)s %(asctime)s UTC %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'agave': {
-            'format': '[AGAVE] %(levelname)s %(asctime)s %(module)s '
+            'format': '[AGAVE] %(levelname)s %(asctime)s UTC %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(levelname)s %(module)s %(name)s.'
+            'format': '[METRICS] %(levelname)s %(asctime)s UTC %(module)s %(name)s.'
                       '%(funcName)s:%(lineno)s: %(message)s '
                       'user=%(user)s sessionId=%(sessionId)s '
                       'op=%(operation)s info=%(info)s'
@@ -418,10 +418,10 @@ SETTINGS: DJANGO CMS
 SITE_ID = settings_secret._SITE_ID
 FILER_DEBUG = True
 FILER_ENABLE_LOGGING = True
-DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
+DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', )}
 
 CMS_LANGUAGES = {
-    ## Customize this
+    # Customize this
     'default': {
         'public': True,
         'hide_untranslated': False,
@@ -446,9 +446,6 @@ CMS_PERMISSION = True
 
 CMS_PLACEHOLDER_CONF = {}
 
-SELECT2_CSS = 'node_modules/select2/dist/css/select2.min.css'  # PATH?
-SELECT2_JS = 'node_modules/select2/dist/js/select2.min.js'     # PATH?
-
 
 CMSPLUGIN_FILER_IMAGE_STYLE_CHOICES = (
     ('default', 'Default'),
@@ -459,7 +456,7 @@ CMSPLUGIN_FILER_IMAGE_DEFAULT_STYLE = 'default'
 TEXT_ADDITIONAL_TAGS = ('iframe',)
 TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'src', 'height', 'width')
 
-TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
+TEXT_SAVE_IMAGE_FUNCTION = 'cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
 
 # Django Filer settings
 THUMBNAIL_HIGH_RESOLUTION = True
@@ -492,8 +489,6 @@ CKEDITOR_SETTINGS = {
     'toolbar': 'CMS',
 }
 
-# CMS Forms.
-ALDRYN_BOILERPLATE_NAME='bootstrap3'
 
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = RECAPTCHA_PUBLIC_KEY
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = RECAPTCHA_PRIVATE_KEY
@@ -515,7 +510,7 @@ DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
 #     ('feature', _('Featured Version')),
 # ]
 
-#DJANGOCMS_EMBED_API_KEY = ""    # Requires an embed.ly account to use.
+# DJANGOCMS_EMBED_API_KEY = ""    # Requires an embed.ly account to use.
 
 DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
 # DJANGOCMS_VIDEO_TEMPLATES = [
@@ -615,7 +610,7 @@ CELERY_QUEUES = (
             'x-max-priority': 10
         }
     ),
-    )
+)
 CELERY_TASK_DEFAULT_QUEUE = 'default'
 CELERY_TASK_DEFAULT_EXCHANGE = 'default'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
@@ -746,7 +741,8 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
 PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
 PORTAL_JOB_NOTIFICATION_STATES = getattr(
-    settings_secret, "_PORTAL_JOB_NOTIFICATION_STATES", [ "PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED" ]
+    settings_secret, "_PORTAL_JOB_NOTIFICATION_STATES", [
+        "PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
 )
 
 # "View in Jupyter Notebook" base URL
@@ -782,7 +778,7 @@ HAYSTACK_CONNECTIONS = {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
         'URL': ES_HOSTS,
         'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
-        'KWARGS': {'http_auth': ES_AUTH }
+        'KWARGS': {'http_auth': ES_AUTH}
     }
 }
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]

@@ -55,4 +55,4 @@ module.exports = {
       tv4: 'tv4'
     })
   ]
-}
+};

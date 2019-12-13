@@ -1,0 +1,150 @@
+{
+  "maxSystemJobs" : 50,
+  "_links" : {
+    "owner" : {
+      "href" : "https://api.tacc.utexas.edu/profiles/v2/username"
+    },
+    "metadata" : {
+      "href" : "https://api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%229222624225968975384-242ac116-0001-006%22%7D"
+    },
+    "credentials" : {
+      "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc/credentials"
+    },
+    "roles" : {
+      "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc/roles"
+    },
+    "self" : {
+      "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc"
+    },
+    "history" : {
+      "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc/history"
+    }
+  },
+  "executionType" : "HPC",
+  "available" : true,
+  "description" : "Mock storage system for an hpc resource.",
+  "storage" : {
+    "proxy" : null,
+    "protocol" : "SFTP",
+    "mirror" : false,
+    "port" : 22,
+    "auth" : {
+      "type" : "PASSWORD"
+    },
+    "host" : "stampede2.tacc.utexas.edu",
+    "rootDir" : "/",
+    "homeDir" : "/scratch/04957/username/scratch/"
+  },
+  "type" : "EXECUTION",
+  "login" : {
+    "proxy" : null,
+    "protocol" : "SSH",
+    "port" : 22,
+    "auth" : {
+      "type" : "PASSWORD"
+    },
+    "host" : "stampede2.tacc.utexas.edu"
+  },
+  "uuid" : "9222624225968975384-242ac116-0001-006",
+  "startupScript" : "./bashrc",
+  "scheduler" : "SLURM",
+  "default" : false,
+  "public" : false,
+  "maxSystemJobsPerUser" : 4,
+  "id" : "portal.exec.hpc",
+  "workDir" : "/work/04957/username/hpc/work/",
+  "owner" : "username",
+  "revision" : 1,
+  "site" : "tacc.utexas.edu",
+  "environment" : null,
+  "queues" : [ {
+    "maxJobs" : 4,
+    "maxMemoryPerNode" : 96,
+    "default" : false,
+    "maxRequestedTime" : "48:00:00",
+    "name" : "flat-quadrant",
+    "description" : null,
+    "maxNodes" : 32,
+    "maxProcessorsPerNode" : 2176,
+    "mappedName" : null,
+    "maxUserJobs" : -1,
+    "customDirectives" : "-A TACC-ACI"
+  }, {
+    "maxJobs" : 1,
+    "maxMemoryPerNode" : 192,
+    "default" : false,
+    "maxRequestedTime" : "02:00:00",
+    "name" : "skx-dev",
+    "description" : null,
+    "maxNodes" : 4,
+    "maxProcessorsPerNode" : 192,
+    "mappedName" : null,
+    "maxUserJobs" : -1,
+    "customDirectives" : "-A TACC-ACI"
+  }, {
+    "maxJobs" : 5,
+    "maxMemoryPerNode" : 96,
+    "default" : false,
+    "maxRequestedTime" : "48:00:00",
+    "name" : "large",
+    "description" : null,
+    "maxNodes" : 2046,
+    "maxProcessorsPerNode" : 139264,
+    "mappedName" : null,
+    "maxUserJobs" : -1,
+    "customDirectives" : "-A TACC-ACI"
+  }, {
+    "maxJobs" : 25,
+    "maxMemoryPerNode" : 192,
+    "default" : false,
+    "maxRequestedTime" : "48:00:00",
+    "name" : "skx-normal",
+    "description" : null,
+    "maxNodes" : 128,
+    "maxProcessorsPerNode" : 6144,
+    "mappedName" : null,
+    "maxUserJobs" : -1,
+    "customDirectives" : "-A TACC-ACI"
+  }, {
+    "maxJobs" : 1,
+    "maxMemoryPerNode" : 96,
+    "default" : false,
+    "maxRequestedTime" : "02:00:00",
+    "name" : "development",
+    "description" : null,
+    "maxNodes" : 4,
+    "maxProcessorsPerNode" : 272,
+    "mappedName" : null,
+    "maxUserJobs" : 1,
+    "customDirectives" : "-A TACC-ACI"
+  }, {
+    "maxJobs" : 50,
+    "maxMemoryPerNode" : 96,
+    "default" : true,
+    "maxRequestedTime" : "48:00:00",
+    "name" : "normal",
+    "description" : null,
+    "maxNodes" : 256,
+    "maxProcessorsPerNode" : 17048,
+    "mappedName" : null,
+    "maxUserJobs" : 5,
+    "customDirectives" : "-A TACC-ACI"
+  }, {
+    "maxJobs" : 3,
+    "maxMemoryPerNode" : 192,
+    "default" : false,
+    "maxRequestedTime" : "48:00:00",
+    "name" : "skx-large",
+    "description" : null,
+    "maxNodes" : 865,
+    "maxProcessorsPerNode" : 41664,
+    "mappedName" : null,
+    "maxUserJobs" : -1,
+    "customDirectives" : "-A TACC-ACI"
+  } ],
+  "globalDefault" : false,
+  "name" : "Stampede2 SLURM Execution Host",
+  "lastModified" : "2018-07-19T16:29:47.000-05:00",
+  "status" : "UP",
+  "scratchDir" : "/scratch/04957/username/scratch/"
+}

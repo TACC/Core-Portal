@@ -1,0 +1,25 @@
+{
+    "name": ".",
+    "path": "/parent_folder/sub_folder",
+    "lastModified": "2018-09-11T11:39:53.000-05:00",
+    "length": 22,
+    "permissions": "ALL",
+    "format": "folder",
+    "mimeType": "text/directory",
+    "type": "dir",
+    "system": "portal.home.username",
+    "_links": {
+      "self": {
+        "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder/sub_folder"
+      },
+      "system": {
+        "href": "https://api.tacc.utexas.edu/systems/v2/portal.home.username"
+      },
+      "metadata": {
+        "href": "https://api.tacc.utexas.edu/meta/v2/data?q=%7B%22associationIds%22%3A%222513457404145701352-242ac113-0001-002%22%7D"
+      },
+      "history": {
+        "href": "https://api.tacc.utexas.edu/files/v2/history/system/portal.home.username//parent_folder/sub_folder"
+      }
+    }
+}

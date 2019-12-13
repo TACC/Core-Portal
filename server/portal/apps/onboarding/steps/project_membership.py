@@ -53,7 +53,7 @@ class ProjectMembershipStep(AbstractStep):
             projects = tas_client.projects_for_user(username=self.user.username)
 
         except Exception as e:
-            logger.error('Unable to get projects for using pytas for {}: {}'.format(self.user.username, e.message))
+            logger.error('Unable to get projects for using pytas for {}: {}'.format(self.user.username, e.msg))
             self.fail("Unable to get projects for user")
             return
 

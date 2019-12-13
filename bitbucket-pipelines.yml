@@ -22,52 +22,22 @@ pipelines:
             - coverage run --branch --source="portal" --omit "*/*unit_test.py" manage.py test
               --pattern="*unit_test.py"
               -v2 --settings="portal.settings.unit_test_settings"
-            - git diff -U0 master | flake8 --diff
             - coverage xml -i
             - bash <(curl -s https://codecov.io/bash) -cF python
+            - git fetch origin "+refs/heads/master:refs/remotes/origin/master"
+            - git diff -U0 origin/master..HEAD | flake8 --diff
       - step:
           name: Client Side Unit Tests
           image: node:lts
           caches:
-            - node
+            - client-node
           script:
             - cd client
             - npm install
             - npm run test
-            - npm run lint
             - bash <(curl -s https://codecov.io/bash) -cF javascript
-
-  pull-requests:
-    '**':
-      - parallel:
-        - step:
-            name: Server Side Unit Tests
-            image: python:3.6
-            caches:
-              - pip
-            script:
-              - cd server
-              - cp portal/templates/base.j2 portal/templates/base.html
-              - mkdir -p log/portal
-              - pip install -r requirements.txt
-              - coverage run --branch --source="portal" --omit "*/*unit_test.py" manage.py test
-                --pattern="*unit_test.py"
-                -v2 --settings="portal.settings.unit_test_settings"
-              - git diff -U0 master | flake8 --diff
-              - coverage xml -i
-              - bash <(curl -s https://codecov.io/bash) -cF python
-        - step:
-            name: Client Side Unit Tests
-            image: node:lts
-            caches:
-              - node
-            script:
-              - cd client
-              - npm install
-              - npm run test
-              - npm run lint
-              - bash <(curl -s https://codecov.io/bash) -cF javascript
+            - npm run lint
 
 definitions:
   caches:
-    node: ./client/node_modules
+    client-node: client/node_modules

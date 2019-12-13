@@ -12,24 +12,21 @@ Class-based views
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-"""
+
 .. :module:: portal.urls
     :synopsis: Main URLs
 """
+
+
 from cms.sitemaps import CMSSitemap
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.conf.urls.static import static
-
 from portal.apps.auth.views import agave_oauth as login
 from portal.views.views import project_version as portal_version
 from django.views.generic import RedirectView
-
 from django.urls import path, re_path, include
-
-
 admin.autodiscover()
 
 urlpatterns = [
@@ -61,6 +58,10 @@ urlpatterns = [
     path('api/tickets/', include('portal.apps.djangoRT.api.urls', namespace='portal_tickets_api')),
     path('api/search/', include('portal.apps.search.api.urls', namespace='search')),
     path('api/system-monitor/', include('portal.apps.system_monitor.urls', namespace='system_monitor')),
+    path('api/notifications/', include('portal.apps.notifications.urls', namespace='notifications')),
+
+    # webhooks
+    path('webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
 
     # views
     path('tickets/', include('portal.apps.djangoRT.urls', namespace='tickets')),

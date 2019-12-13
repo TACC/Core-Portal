@@ -1,49 +1,36 @@
-FROM centos:7
+FROM python:3.6-buster
 
 LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 EXPOSE 8000
+
+# install locales for en_us.utf-8
+RUN apt-get update && apt-get install -y \
+    dialog \
+    apt-utils \
+    locales \
+    && rm -rf /var/lib/apt/lists/* \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+
 ENV LC_ALL en_US.utf-8
 ENV LANG en_US.utf-8
 
-# upgrade
-RUN yum upgrade -y
+RUN apt-get update &&  apt-get install -y --no-install-recommends \
+    sqlite3 \
+    postgresql \
+    postgresql-client
 
-# RUN yum install -y centos-release-scl rh-python36
-# SHELL ["/usr/bin/scl", "enable", "rh-python36"]
-
-# add EPEL repo and install python3
-RUN yum install -y epel-release && yum install -y python36 python36-devel
-# install pip3
-RUN python3 -m ensurepip
-
-RUN yum install -y gcc unzip wget git vim nfs-utils libsemanage-python postgresql-devel --enablerepo=epel
-RUN yum groupinstall -y 'Development Tools' && yum clean all
-
-# ENV PYTHON_VERSION "3.7.4"
-# RUN curl -SLO https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz \
-#     && tar xvf Python-${PYTHON_VERSION}.tgz \
-#     && cd Python-${PYTHON_VERSION} \
-#     && ./configure --prefix=/usr/local \
-#     #--enable-optimizations
-#     && make \
-#     && make altinstall \
-#     && cd / \
-#     && rm -rf Python-${PYTHON_VERSION}*
-# ENV PATH "/usr/local/bin:${PATH}"
-
-# install nodejs
-RUN curl -sL https://rpm.nodesource.com/setup_12.x | bash -
-RUN yum -y install nodejs
+# install node 12.x
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN apt-get install -y nodejs
 
 RUN pip3 install --upgrade pip setuptools wheel
 
+# install python packages
 COPY server/requirements.txt /tmp/requirements.txt
-
-RUN python3 -m venv /srv/www/.portal_env \
-    && /srv/www/.portal_env/bin/pip install --upgrade pip setuptools wheel \
-    && /srv/www/.portal_env/bin/pip install pip-tools \
-    && /srv/www/.portal_env/bin/pip install -r /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt
 
 COPY . /srv/www/portal
 

@@ -3,7 +3,7 @@ from portal.apps.onboarding.state import SetupState
 from django.conf import settings
 from portal.apps.users.utils import get_allocations
 from pytas.http import TASClient
-import string
+
 
 class AllocationStep(AbstractStep):
     pi_eligible_message = """
@@ -90,7 +90,7 @@ class AllocationStep(AbstractStep):
             self.complete("No systems are required for access to this portal")
             return
 
-        resources = [ ]
+        resources = []
         try:
             resources = get_allocations(self.user.username).keys()
         except:
@@ -125,3 +125,7 @@ class AllocationStep(AbstractStep):
                     "more_info": message
                 }
             )
+
+    def client_action(self, action, data, request):
+        if action == "user_confirm" and request.user.username == self.user.username:
+            self.prepare()

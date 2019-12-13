@@ -6,7 +6,7 @@ function* getJobs(action) {
   yield put({ type: 'FLUSH_JOBS' });
   yield put({ type: 'SHOW_SPINNER' });
   const url = new URL('/api/workspace/jobs', window.location.origin);
-  Object.keys(action.params).forEach(key => url.searchParams.append(key, action.params[key]))
+  Object.keys(action.params).forEach(key => url.searchParams.append(key, action.params[key]));
   try {
     const res = yield call(
       fetch,
@@ -29,5 +29,5 @@ export function* watchJobs() {
 export default function* rootSaga() {
   yield all([
     watchJobs(),
-  ])
+  ]);
 }

@@ -1,0 +1,43 @@
+[ {
+    "id" : "portal.work.username",
+    "name" : "portal.work.username",
+    "type" : "STORAGE",
+    "description" : "Home system for user: username",
+    "status" : "UP",
+    "public" : false,
+    "lastUpdated" : "2018-09-10T14:56:40.000-05:00",
+    "default" : false,
+    "_links" : {
+      "self" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.work.username"
+      }
+    }
+  }, {
+    "id" : "portal.exec.hpc",
+    "name" : "portal.exec.hpc",
+    "type" : "EXECUTION",
+    "description" : null,
+    "status" : "UP",
+    "public" : false,
+    "lastUpdated" : "2018-07-17T17:07:48.000-05:00",
+    "default" : false,
+    "_links" : {
+      "self" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc"
+      }
+    }
+  }, {
+    "id" : "portal.home.username",
+    "name" : "portal.home.username",
+    "type" : "STORAGE",
+    "description" : "Home system for user: username",
+    "status" : "UP",
+    "public" : false,
+    "lastUpdated" : "2018-08-24T10:13:15.000-05:00",
+    "default" : false,
+    "_links" : {
+      "self" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.home.username"
+      }
+    }
+} ]

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSun } from '@fortawesome/free-solid-svg-icons'
+import { faSun } from '@fortawesome/free-solid-svg-icons';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import useFetch from '../../utils/useFetch';
@@ -16,7 +16,7 @@ function TicketsView() {
       <div id='spin-sun'>
         <FontAwesomeIcon icon={faSun} size="8x" spin />
       </div>
-    )
+    );
   }
 
   const columns = [

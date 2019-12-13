@@ -4,7 +4,6 @@
 """
 from collections import namedtuple
 import logging
-import json
 from cached_property import cached_property_with_ttl
 from portal.libs.agave.exceptions import (
     ValidationError,
@@ -14,7 +13,6 @@ from portal.libs.agave.exceptions import (
 )
 from portal.libs.agave.models.base import BaseAgaveResource
 from portal.libs.agave.models.permissions import ApplicationPermissions
-from requests.exceptions import HTTPError
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -82,7 +80,6 @@ class Application(BaseAgaveResource):
         CONDOR='CONDOR',
         CLI='CLI'
     )
-
 
     def __init__(self, client, id=None, load=True, ignore_error=404, **kwargs):
         """Agave application definition representation.
@@ -154,12 +151,12 @@ class Application(BaseAgaveResource):
     def __str__(self):
         return '{id}'.format(id=self.id)
 
-    def __repr__(self):
-        return '{class_name}(id={id}, label={label})'.format(
-            class_name=self.__class__.__name__,
-            id=self.id,
-            label=self.label
-        )
+    # def __repr__(self):
+    #     return '{class_name}(id={id}, label={label})'.format(
+    #         class_name=self.__class__.str(__name__),
+    #         id=self.id,
+    #         label=self.label
+    #     )
 
     def _populate_obj(self):
         """Populate Object.

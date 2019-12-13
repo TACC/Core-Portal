@@ -15,6 +15,7 @@ from portal.apps.users.utils import get_allocations
 
 logger = logging.getLogger(__name__)
 
+
 class AuthenticatedView(BaseApiView):
 
     def get(self, request):
@@ -45,7 +46,7 @@ class UsageView(BaseApiView):
         system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
         search = IndexedFile.search()
         # search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
-        search = search.filter(Q('term', **{"system._exact":system}))
+        search = search.filter(Q('term', **{"system._exact": system}))
         search = search.extra(size=0)
         search.aggs.metric('total_storage_bytes', 'sum', field="length")
         resp = search.execute()
@@ -67,7 +68,7 @@ class SearchView(BaseApiView):
         if q:
             try:
                 user = model.objects.get(username=q)
-            except ObjectDoesNotExist as err:
+            except ObjectDoesNotExist:
                 return HttpResponseNotFound()
             res_dict = {
                 'first_name': user.first_name,
@@ -80,7 +81,7 @@ class SearchView(BaseApiView):
                 res_dict['profile'] = {
                     'institution': user_tas['institution']
                 }
-            except Exception as err:
+            except Exception:
                 logger.info('No Profile.')
 
             return JsonResponse(res_dict)

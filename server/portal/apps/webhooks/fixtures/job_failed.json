@@ -1,0 +1,66 @@
+{
+    "id": "3432975745362629096-242ac11b-0001-007",
+    "name": "matlab_large_test",
+    "owner": "sal",
+    "appId": "matlab-9.3",
+    "executionSystem": "cep.community.exec.stampede2.nores",
+    "batchQueue": "normal",
+    "nodeCount": 2,
+    "processorsPerNode": 136,
+    "memoryPerNode": 92,
+    "maxRunTime": "00:30:00",
+    "archive": true,
+    "retries": 0,
+    "localId": null,
+    "created": "2018-06-15T16:00:57.000-05:00",
+    "lastUpdated": "2018-06-15T16:01:17.000-05:00",
+    "archivePath": "archive",
+    "archiveSystem": "cep.home.sal",
+    "outputPath": null,
+    "status": "FAILED",
+    "message": "FAILED",
+    "submitTime": "2018-06-15T16:00:57.000-05:00",
+    "startTime": null,
+    "endTime": "2018-06-15T16:01:17.000-05:00",
+    "inputs": {
+        "workingDirectory": [
+            "agave://cep.storage.default/sal"
+        ]
+    },
+    "parameters": {
+        "_license": "LICENSE",
+        "desktop_resolution": "1280x800"
+    },
+    "_links": {
+        "self": {
+            "href": "https://api.tacc.utexas.edu/jobs/v2/3432975745362629096-242ac11b-0001-007"
+        },
+        "app": {
+            "href": "https://api.tacc.utexas.edu/apps/v2/matlab-9.3"
+        },
+        "executionSystem": {
+            "href": "https://api.tacc.utexas.edu/systems/v2/cep.community.exec.stampede2.nores"
+        },
+        "archiveSystem": {
+            "href": "https://api.tacc.utexas.edu/systems/v2/docking.storage"
+        },
+        "archiveData": {
+            "href": "https://api.tacc.utexas.edu/files/v2/listings/system/docking.storage/wma_prtl"
+        },
+        "owner": {
+            "href": "https://api.tacc.utexas.edu/profiles/v2/wma_prtl"
+        },
+        "permissions": {
+            "href": "https://api.tacc.utexas.edu/jobs/v2/3432975745362629096-242ac11b-0001-007/pems"
+        },
+        "history": {
+            "href": "https://api.tacc.utexas.edu/jobs/v2/3432975745362629096-242ac11b-0001-007/history"
+        },
+        "metadata": {
+            "href": "https://api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%223432975745362629096-242ac11b-0001-007%22%7D"
+        },
+        "notifications": {
+            "href": "https://api.tacc.utexas.edu/notifications/v2/?associatedUuid=3432975745362629096-242ac11b-0001-007"
+        }
+    }
+}

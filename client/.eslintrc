@@ -2,7 +2,8 @@
     "root": true,
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "jest": true
     },
     "extends": [
         "airbnb",
@@ -24,12 +25,13 @@
     },
     "plugins": [
         "react",
-        "prettier"
+        "prettier",
+        "jest"
     ],
     "parser": "babel-eslint",
     "rules": {
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/.test.js", "**/*.spec.js"]}],
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/*.test.js", "**/*.spec.js"]}],
         "semi": [1, "always"],
         "react/jsx-props-no-spreading": [2, {
             "html": "enforce" ,

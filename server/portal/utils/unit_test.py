@@ -186,7 +186,7 @@ class TestAgaveJWTAuth(TestCase):
         mock_login.assert_called_with(mock_request, user)
 
     @override_settings(
-        AGAVE_JWT_PUBKEY='pub-key',
+        AGAVE_JWT_PUBKEY='pub-key==',
         AGAVE_JWT_HEADER='x_agave_header'
     )
     @patch('portal.utils.jwt_auth.login')
@@ -202,7 +202,7 @@ class TestAgaveJWTAuth(TestCase):
 
 
     @override_settings(
-        AGAVE_JWT_PUBKEY='pub-key',
+        AGAVE_JWT_PUBKEY='pub-key==',
         AGAVE_JWT_HEADER='x_agave_header'
     )
     @patch('portal.utils.jwt_auth.login')

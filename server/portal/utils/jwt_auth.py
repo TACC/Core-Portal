@@ -31,7 +31,7 @@ def _decode_jwt(jwt):
     try:
         key_der = b64decode(pubkey)
         key = load_der_public_key(key_der, backend=default_backend())
-    except (TypeError, ValueError, UnsupportedAlgorithm) as exc:
+    except (TypeError, ValueError, UnsupportedAlgorithm):
         LOGGER.exception('Could not load public key.')
         return {}
 
