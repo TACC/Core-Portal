@@ -58,7 +58,7 @@ def initialize_token(request):
     redirect_uri = reverse('googledrive_integration:oauth2_callback')
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
         get_client_config(),
-        scopes=['https://www.googleapis.com/auth/drive',])
+        scopes=['https://www.googleapis.com/auth/drive.readonly',])
     flow.redirect_uri = request.build_absolute_uri(redirect_uri)
 
     auth_url, state = flow.authorization_url(access_type='offline')
@@ -86,7 +86,7 @@ def oauth2_callback(request):
         redirect_uri = reverse('googledrive_integration:oauth2_callback')
         flow = google_auth_oauthlib.flow.Flow.from_client_config(
             get_client_config(),
-            scopes=['https://www.googleapis.com/auth/drive',],
+            scopes=['https://www.googleapis.com/auth/drive.readonly',],
             state=state)
         flow.redirect_uri = request.build_absolute_uri(redirect_uri)
 

@@ -6,7 +6,7 @@
                 "client_id": "test",
                 "client_secret": "test",
                 "refresh_token": "asdf1234",
-                "scopes": ["https://www.googleapis.com/auth/drive"],
+                "scopes": ["https://www.googleapis.com/auth/drive.readonly"],
                 "token": "100000"
             }
         },
@@ -21,7 +21,7 @@
                 "client_secret": "test",
                 "refresh_token": "1234asdf",
                 "scopes": [
-                    "https://www.googleapis.com/auth/drive"
+                    "https://www.googleapis.com/auth/drive.readonly"
                 ],
                 "token": "200000"
             }
