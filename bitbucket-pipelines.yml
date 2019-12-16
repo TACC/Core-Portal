@@ -25,6 +25,7 @@ pipelines:
             - coverage xml -i
             - bash <(curl -s https://codecov.io/bash) -cF python
             - git fetch origin "+refs/heads/master:refs/remotes/origin/master"
+            - cd ..
             - git diff -U0 origin/master..HEAD | flake8 --diff
       - step:
           name: Client Side Unit Tests
