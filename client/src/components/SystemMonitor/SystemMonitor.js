@@ -2,8 +2,8 @@ import React from 'react';
 import { Badge } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSun } from '@fortawesome/free-solid-svg-icons';
-import ReactTable from 'react-table';
-import 'react-table/react-table.css';
+import ReactTable from 'react-table-6';
+import 'react-table-6/react-table.css';
 import useFetch from '../../utils/useFetch';
 import './SystemMonitor.scss';
 

@@ -1,1 +1,1 @@
-export { default } from './Allocations';
+export { default } from './AllocationsRoutes';

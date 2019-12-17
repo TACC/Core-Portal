@@ -37,7 +37,11 @@ export default function Sidebar() {
           </NavLink>
         </NavItem>
         <NavItem>
-          <NavLink tag={RRNavLink} exact to="/workbench/allocations/" activeClassName="active">
+          <NavLink 
+            tag={RRNavLink}  
+            to="/workbench/allocations/" 
+            activeClassName="active"
+          >
             <div className="nav-content">
               <FontAwesomeIcon icon={faCog} size="1x" className="side-nav-icon" />
               <span className="nav-text">Allocations</span>

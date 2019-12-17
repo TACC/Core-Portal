@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  BrowserRouter as Route,
+  Route,
   Switch,
   useRouteMatch
 } from 'react-router-dom';
@@ -44,9 +44,7 @@ function Workbench() {
           <Route path={`${match.path}${ROUTES.APPLICATIONS}`}>
             <Applications />
           </Route>
-          <Route path={`${match.path}${ROUTES.ALLOCATIONS}`}>
-            <Allocations />
-          </Route>
+          <Route path={`${match.path}${ROUTES.ALLOCATIONS}`} component={Allocations} />
           <Route path={`${match.path}${ROUTES.PUBLICATIONS}`}>
             <Publications />
           </Route>

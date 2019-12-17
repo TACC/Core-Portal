@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSatellite } from '@fortawesome/free-solid-svg-icons';
-import ReactTable from 'react-table';
-import 'react-table/react-table.css';
+import ReactTable from 'react-table-6';
+import 'react-table-6/react-table.css';
 import './Jobs.scss';
 
 function JobsView() {
