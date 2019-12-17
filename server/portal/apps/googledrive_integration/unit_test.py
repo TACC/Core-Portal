@@ -119,7 +119,7 @@ class TestGoogleDriveDisconnect(TestCase):
 
         # confirm disconnect request
         response = self.client.post(reverse('googledrive_integration:disconnect'), follow=True)
-        mock_revoke_post.called_once()
+        self.assertEqual(mock_revoke_post.call_count, 1)
 
         # confirm redirects to index template
         self.assertRedirects(response, reverse('googledrive_integration:index'),
@@ -138,14 +138,14 @@ class TestGoogleDriveDisconnect(TestCase):
             response = self.client.post(reverse('googledrive_integration:disconnect'), follow=False)
 
             mock_warn.assert_called_once_with('Disconnect Google Drive; GoogleDriveUserToken does not exist.',
-                                                        extra={'user': self.user})
+                                              extra={'user': self.user})
             self.assertRedirects(response, reverse('googledrive_integration:index'),
-                                fetch_redirect_response=False)
+                                 fetch_redirect_response=False)
 
     @patch('requests.post')
     def test_disconnect_exception(self, mock_revoke_post):
         token = GoogleDriveUserToken(user=self.user, credentials=Credentials(
-            token='asdf', refresh_token='1234'))
+                                     token='asdf', refresh_token='1234'))
         token.save()
 
         mock_revoke_post.side_effect = Exception('Mock Unknown Exception')
@@ -154,13 +154,13 @@ class TestGoogleDriveDisconnect(TestCase):
             response = self.client.post(reverse('googledrive_integration:disconnect'), follow=False)
             mock_exception.assert_called_once_with('google drive delete error: Mock Unknown Exception')
             self.assertRedirects(response, reverse('googledrive_integration:index'),
-                                fetch_redirect_response=False)
+                                 fetch_redirect_response=False)
             token.delete()
 
     @patch('requests.post')
     def test_disconnect_bad_status_code(self, mock_revoke_post):
         token = GoogleDriveUserToken(user=self.user, credentials=Credentials(
-            token='asdf', refresh_token='1234'))
+                                     token='asdf', refresh_token='1234'))
         token.save()
 
         resp = Response()
@@ -171,14 +171,14 @@ class TestGoogleDriveDisconnect(TestCase):
             response = self.client.post(
                 reverse('googledrive_integration:disconnect'), follow=False)
 
-            mock_revoke_post.called_once()
+            self.assertEqual(mock_revoke_post.call_count, 1)
             mock_debug.assert_called_once_with('status code:{}'.format(resp.status_code))
 
             self.assertRedirects(response, reverse('googledrive_integration:index'),
-                                fetch_redirect_response=False)
+                                 fetch_redirect_response=False)
 
             self.assertRaises(GoogleDriveUserToken.DoesNotExist,
-                                    GoogleDriveUserToken.objects.get, user=self.user)
+                              GoogleDriveUserToken.objects.get, user=self.user)
         
 
 class TestGoogleDriveUserTokenModel(TestCase):

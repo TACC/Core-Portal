@@ -25,6 +25,8 @@ METRICS = logging.getLogger('metrics.{}'.format(__name__))
 def logged_out(request):
     return render(request, 'designsafe/apps/auth/logged_out.html')
 
+def _get_auth_state():
+    return os.urandom(24).encode('hex')
 
 # Create your views here.
 def agave_oauth(request):
@@ -34,7 +36,7 @@ def agave_oauth(request):
     client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
 
     session = request.session
-    session['auth_state'] = os.urandom(24).encode('hex')
+    session['auth_state'] = _get_auth_state()
     next_page = request.GET.get('next')
     if next_page:
         session['next'] = next_page
@@ -68,10 +70,6 @@ def agave_oauth_callback(request):
 
     if 'code' in request.GET:
         # obtain a token for the user
-        # Using http for dev.
-        #redirect_uri = 'http://{}{}'.format(request.get_host(),
-        #                                    reverse('portal_auth:agave_oauth_callback'))
-        # Use https for prod.
         redirect_uri = 'https://{}{}'.format(request.get_host(),
                                              reverse('portal_auth:agave_oauth_callback'))
         code = request.GET['code']

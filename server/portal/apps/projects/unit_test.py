@@ -269,9 +269,10 @@ class TestProjectsModels(TestCase):
 
         can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.add.assert_called_with(username, 'USER')
-        mock_storage.roles.save.called_once()
+        self.assertEqual(mock_storage.roles.save.call_count, 1)
         mock_meta.team_members.add.assert_called_with(user)
-        save_metadata.called_once()
+        self.assertEqual(save_metadata.call_count, 1)
+
 
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
     def test_add_member_unauthorized(self, can_edit_member):
@@ -308,9 +309,9 @@ class TestProjectsModels(TestCase):
 
         can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.delete_for_user.assert_called_with(username)
-        mock_storage.roles.save.called_once()
+        self.assertEqual(mock_storage.roles.save.call_count, 1)
         mock_meta.team_members.remove.called_once_with(user)
-        save_metadata.called_once()
+        self.assertEqual(save_metadata.call_count, 1)
 
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
     def test_remove_member_unauthorized(self, can_edit_member):
@@ -347,9 +348,10 @@ class TestProjectsModels(TestCase):
 
         can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.add.assert_called_with(username, 'ADMIN')
-        mock_storage.roles.save.called_once()
+        self.assertEqual(mock_storage.roles.save.call_count, 1)
         mock_meta.co_pis.add.assert_called_with(user)
-        save_metadata.called_once()
+        self.assertEqual(save_metadata.call_count, 1)
+
 
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
     def test_add_co_pi_unauthorized(self, can_edit_member):
@@ -386,9 +388,9 @@ class TestProjectsModels(TestCase):
 
         can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.delete_for_user.assert_called_with(username)
-        mock_storage.roles.save.called_once()
+        self.assertEqual(mock_storage.roles.save.call_count, 1)
         mock_meta.co_pis.remove.called_once_with(user)
-        save_metadata.called_once()
+        self.assertEqual(save_metadata.call_count, 1)
 
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
     def test_remove_co_pi_unauthorized(self, can_edit_member):
@@ -425,9 +427,9 @@ class TestProjectsModels(TestCase):
 
         can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.add.assert_called_with(username, 'OWNER')
-        mock_storage.roles.save.called_once()
+        self.assertEqual(mock_storage.roles.save.call_count, 1)
         self.assertEqual(mock_meta.pi, user)
-        save_metadata.called_once()
+        self.assertEqual(save_metadata.call_count, 1)
 
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
     def test_add_pi_unauthorized(self, can_edit_member):
@@ -464,9 +466,9 @@ class TestProjectsModels(TestCase):
 
         can_edit_member.assert_called_with(self.magave.token.token_username)
         mock_storage.roles.delete_for_user.assert_called_with(username)
-        mock_storage.roles.save.called_once()
+        self.assertEqual(mock_storage.roles.save.call_count, 1)
         self.assertIs(mock_meta.pi, None)
-        save_metadata.called_once()
+        self.assertEqual(save_metadata.call_count, 1)
 
     @patch('portal.apps.projects.models.base.Project._can_edit_member')
     def test_remove_pi_unauthorized(self, can_edit_member):
