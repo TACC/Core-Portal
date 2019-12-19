@@ -2,10 +2,11 @@ from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from mock import patch, ANY, MagicMock
 from portal.apps.onboarding.steps.mfa import MFAStep
-from unittest import skip
+import pytest
+
+pytestmark = pytest.mark.django_db
 
 
-@skip('foreign key error; not using onboarding yet')
 class MFAStepTest(TestCase):
     def setUp(self):
         super(MFAStepTest, self).setUp()
@@ -64,12 +65,12 @@ class MFAStepTest(TestCase):
 
     def test_mfa_check(self):
         result = self.step.mfa_check()
-        self.assertEquals(result, True)
+        self.assertEqual(result, True)
 
     def test_mfa_check_failure(self):
         self.mock_response.json.return_value["result"] = []
         result = self.step.mfa_check()
-        self.assertEquals(result, False)
+        self.assertEqual(result, False)
 
     @patch('portal.apps.onboarding.steps.mfa_unit_test.MFAStep.prepare')
     def test_client_action(self, mock_prepare):

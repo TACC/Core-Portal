@@ -8,7 +8,10 @@ const useFetch = (url, options) => {
   useEffect(() => {
     const FetchData = async () => {
       try {
-        const res = await fetch(url, { credentials: 'same-origin', ...options});
+        const res = await fetch(url, {
+          credentials: 'same-origin',
+          ...options
+        });
         const json = await res.json();
         setResponse(json);
       } catch (err) {

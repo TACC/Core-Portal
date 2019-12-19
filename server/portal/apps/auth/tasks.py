@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
 
+
 @shared_task(bind=True, max_retries=None)
 def setup_user(self, username):
     """Setup workflow for each user
@@ -15,6 +16,7 @@ def setup_user(self, username):
     profile = PortalProfile.objects.get(user=user)
     profile.setup_complete = True
     profile.save()
+    # TODO: REENABLE USER SYSTEM SETUP
     # from portal.apps.accounts.managers.accounts import setup
     # logger.info("Async setup task for {username} launched".format(username=username))
     # setup(username)

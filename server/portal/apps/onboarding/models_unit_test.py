@@ -4,6 +4,11 @@ from portal.apps.onboarding.models import SetupEvent
 from django.contrib.auth import get_user_model
 from django.db.models import signals
 from django.test import TestCase
+import pytest
+
+
+pytestmark = pytest.mark.django_db
+
 
 class TestSetupEvent(TestCase):
     def setUp(self):

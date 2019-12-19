@@ -4,9 +4,10 @@ from requests.exceptions import RequestException, HTTPError
 from django.contrib import auth
 import logging
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 def get_user(request):
     if not hasattr(request, '_cached_user'):
@@ -31,8 +32,8 @@ class AgaveTokenRefreshMiddleware(object):
                                          extra={'user': user.username})
                         logout(request)
             except ObjectDoesNotExist:
-                logger.warn('Authenticated user missing Agave API Token',
-                            extra={'user': user.username})
+                logger.warning('Authenticated user missing Agave API Token',
+                               extra={'user': user.username})
                 logout(request)
             except RequestException:
                 logger.exception('Agave Token refresh failed. Forcing logout',

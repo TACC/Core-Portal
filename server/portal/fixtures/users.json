@@ -1,6 +1,7 @@
 [
 {
   "model": "auth.user",
+  "pk": 1,
   "fields": {
     "password": "password",
     "last_login": "2018-09-10T19:56:35.919Z",
@@ -18,6 +19,7 @@
 },
 {
   "model": "auth.user",
+  "pk": 2,
   "fields": {
     "password": "password",
     "last_login": "2018-09-11T21:07:21.954Z",
@@ -35,6 +37,7 @@
 },
 {
   "model": "auth.user",
+  "pk": 3,
   "fields": {
     "password": "password",
     "last_login": "2018-09-11T21:08:05.200Z",

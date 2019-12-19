@@ -43,13 +43,13 @@ module.exports = merge(common, {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin(
-      {
-        template: '../server/portal/templates/base.j2',
-        filename: '../../server/portal/templates/base.html',
-        jsExtension: '.gz'
-      }
-    ),
+    new HtmlWebpackPlugin({
+      template:
+        '../server/portal/apps/workbench/templates/portal/apps/workbench/index.j2',
+      filename:
+        '../../server/portal/apps/workbench/templates/portal/apps/workbench/index.html',
+      jsExtension: '.gz'
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].[hash].css',
       chunkFilename: '[id].css'
@@ -65,6 +65,6 @@ module.exports = merge(common, {
     new HtmlWebpackChangeAssetsExtensionPlugin()
   ],
   optimization: {
-    minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+    minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})]
   }
 });

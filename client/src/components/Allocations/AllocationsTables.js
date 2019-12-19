@@ -1,7 +1,7 @@
-import React, { useMemo } from "react";
-import PropTypes from "prop-types";
-import { useTable } from "react-table";
-import { Team, Systems, Awarded, Remaining, Expires } from "./AllocationsCells";
+import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
+import { useTable } from 'react-table';
+import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 
 const TableTemplate = ({ columns, data }) => {
   const {
@@ -21,7 +21,7 @@ const TableTemplate = ({ columns, data }) => {
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                <th key={column.Header}>{column.render("Header")}</th>
+                <th key={column.Header}>{column.render('Header')}</th>
               ))}
             </tr>
           ))}
@@ -32,7 +32,7 @@ const TableTemplate = ({ columns, data }) => {
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map(cell => (
-                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                 ))}
               </tr>
             );
@@ -55,39 +55,40 @@ export const ActiveTable = ({ allocations }) => {
   const columns = useMemo(
     () => [
       {
-        Header: "Title",
-        accessor: "projectId"
+        Header: 'Title',
+        accessor: 'projectId'
       },
       {
-        Header: "Principal Investigator",
-        accessor: "pi"
+        Header: 'Principal Investigator',
+        accessor: 'pi'
       },
       {
-        Header: "Team",
+        Header: 'Team',
         Cell: Team
       },
       {
-        Header: "Systems",
+        Header: 'Systems',
         accessor: ({ systems }) =>
           systems.map(({ name, allocation: { id } }) => ({
-            name, id
+            name,
+            id
           })),
-        id: "name",
+        id: 'name',
         Cell: Systems
       },
       {
-        Header: "Awarded",
+        Header: 'Awarded',
         accessor: ({ systems }) =>
           systems.map(({ allocation: { computeAllocated, id }, type }) => ({
             awarded: Math.round(computeAllocated),
             type,
             id
           })),
-        id: "awarded",
+        id: 'awarded',
         Cell: Awarded
       },
       {
-        Header: "Remaining",
+        Header: 'Remaining',
         accessor: ({ systems }) =>
           systems.map(
             ({ allocation: { id, computeAllocated, computeUsed }, type }) => {
@@ -101,17 +102,17 @@ export const ActiveTable = ({ allocations }) => {
               };
             }
           ),
-        id: "remaining",
+        id: 'remaining',
         Cell: Remaining
       },
       {
-        Header: "Expires",
+        Header: 'Expires',
         accessor: ({ systems }) =>
           systems.map(({ allocation: { end, id } }) => ({
             id,
             date: new Date(end).toDateString()
           })),
-        id: "expires",
+        id: 'expires',
         Cell: Expires
       }
     ],
@@ -127,25 +128,25 @@ ActiveTable.defaultProps = { allocations: [] };
 export const InactiveTable = ({ allocations }) => {
   const columns = useMemo(() => [
     {
-      Header: "Alloc ID",
+      Header: 'Alloc ID',
       accessor: ({ allocations }) =>
         allocations.map(allocation => `${allocation.id}`)
     },
     {
-      Header: "Title",
-      accessor: "title"
+      Header: 'Title',
+      accessor: 'title'
     },
     {
-      Header: "PI",
+      Header: 'PI',
       accessor: ({ pi }) => `${pi.lastName}, ${pi.firstName}`
     },
     {
-      Header: "Project ID",
+      Header: 'Project ID',
       accessor: ({ allocations }) =>
         allocations.map(allocation => `${allocation.projectId}`)
     },
     {
-      Header: "Project Name",
+      Header: 'Project Name',
       accessor: ({ allocations }) =>
         allocations.map(allocation => `${allocation.project}`)
     }

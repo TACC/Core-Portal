@@ -6,17 +6,16 @@ from django.test import (
 )
 from django.contrib.auth import get_user_model
 from django.db.models import signals
-from django.db import transaction
-from portal.apps.auth.models import AgaveOAuthToken
-from mock import Mock, patch, MagicMock, ANY
+from mock import patch, MagicMock
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.steps.abaco import AbacoStep
 import json
-from unittest import skip
+import pytest
+
+pytestmark = pytest.mark.django_db
 
 
-@skip('foreign key error; not using onboarding yet')
 class TestAbacoStep(TestCase):
     def setUp(self):
         super(TestAbacoStep, self).setUp()
@@ -62,7 +61,7 @@ class TestAbacoStep(TestCase):
         mock_user.agave_oauth.client = mock_client
         request.user = mock_user
 
-        mock_data = { "key": "value" }
+        mock_data = {"key": "value"}
 
         # Perform the "staff_confirm" action
         step.client_action("staff_confirm", mock_data, request)
@@ -70,10 +69,10 @@ class TestAbacoStep(TestCase):
             actorId="3rN0bMyYj3meD",
             message={
                 "username": "test",
-                "step" : "portal.apps.onboarding.steps.abaco.AbacoStep",
-                "callback_url" : "http://testserver/webhooks/onboarding/",
-                "callback_secret" : "dev",
-                "data" : mock_data
+                "step": "portal.apps.onboarding.steps.abaco.AbacoStep",
+                "callback_url": "http://testserver/webhooks/onboarding/",
+                "callback_secret": "dev",
+                "data": mock_data
             }
         )
 
@@ -108,21 +107,21 @@ class TestAbacoStep(TestCase):
     @patch('portal.apps.onboarding.steps.abaco.AbacoStep.log')
     def test_webhook_callback(self, mock_log):
         webhook_data = {
-            "state" : "completed",
-            "message" : "message",
-            "data" : "data"
+            "state": "completed",
+            "message": "message",
+            "data": "data"
         }
         step = AbacoStep(self.user)
         step.webhook_callback(webhook_data=webhook_data)
         mock_log.assert_called_with("message", "data")
 
 
-@skip('foreign key error; not using onboarding yet')
 class TestAbacoStepTransaction(TransactionTestCase):
     """
     A separate test case that allows DB transactions to be tested on
     AbacoStep
     """
+
     def setUp(self):
         super(TestAbacoStepTransaction, self).setUp()
         signals.post_save.disconnect(sender=SetupEvent, dispatch_uid="setup_event")
@@ -151,12 +150,12 @@ class TestAbacoStepTransaction(TransactionTestCase):
         step.log("Waiting for webhook")
 
         abaco_message = {
-            "username" : "test",
-            "step" : "portal.apps.onboarding.steps.abaco.AbacoStep",
-            "callback_url" : "http://testserver/webhooks/onboarding/",
-            "callback_secret" : "dev",
-            "data" : {
-                "key" : "value"
+            "username": "test",
+            "step": "portal.apps.onboarding.steps.abaco.AbacoStep",
+            "callback_url": "http://testserver/webhooks/onboarding/",
+            "callback_secret": "dev",
+            "data": {
+                "key": "value"
             }
         }
 
@@ -166,12 +165,12 @@ class TestAbacoStepTransaction(TransactionTestCase):
         result_data = None
 
         response_message = {
-            "username" : abaco_message["username"],
-            "step" : abaco_message["step"],
-            "webhook_data" : {
+            "username": abaco_message["username"],
+            "step": abaco_message["step"],
+            "webhook_data": {
                 "state": result_state,
-                "message" : result_message,
-                "data" : result_data
+                "message": result_message,
+                "data": result_data
             }
         }
 
@@ -194,7 +193,7 @@ class TestAbacoStepTransaction(TransactionTestCase):
             "/webhooks/onboarding/",
             content_type="application/json",
             data=json.dumps(response_message),
-            **{ "HTTP_AUTHORIZATION" : "Basic: ZGV2OmRldg==" }
+            **{"HTTP_AUTHORIZATION": "Basic: ZGV2OmRldg=="}
         )
 
         # Test that the webhook_call went all the way through

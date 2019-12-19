@@ -3,10 +3,11 @@ from django.contrib.auth import get_user_model
 from mock import patch
 from pytas.http import TASClient
 from portal.apps.onboarding.steps.project_membership import ProjectMembershipStep
-from unittest import skip
+import pytest
+
+pytestmark = pytest.mark.django_db
 
 
-@skip('foreign key error; not using onboarding yet')
 class ProjectMembershipStepTest(TestCase):
     fixtures = ['users', 'auth']
 

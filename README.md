@@ -133,6 +133,13 @@ Follow the Confluence pages below to set up Projects, Notifications, and Elastic
 
 Client-side Javascript code is linted via eslint, and is enforced on commits to the repo. To see a list of linting issues, run `npm run lint` in the console under the `client` folder.
 
+You may need to globally install eslint for these to work: `npm install -g eslint`
+
+You may auto-fix your linting errors to conform with Prettier standards via:
+```
+eslint ./client --fix
+```
+
 Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 master | flake8 --diff` from the command line.
 This requires that you have a local python virtual environemnt setup with this project's dependencies installed:
 
@@ -141,6 +148,16 @@ python3 -m venv <path_to_local_venv_dir>
 . <path_to_local_venv_dir>/bin/activate
 pip install -r server/requirements.txt
 ```
+
+### Testing
+
+Server-side python testing is run through pytest. Run `pytest -ra server` to run backend tests and display a report at the bottom of the output.
+
+Client-side javascript testing is run through Jest. Run `npm run test` from the `client` folder to ensure tests are running correctly.
+
+#### Test Coverage
+
+Coverage is sent to codecov on commits to the repo (see bitbucket pipeline for branch to see branch coverage). Ideally we only merge positive code coverage changes to master.
 
 ### Resources
 

@@ -2,10 +2,11 @@ from django.test import TestCase, RequestFactory, override_settings
 from django.contrib.auth import get_user_model
 from mock import patch
 from portal.apps.onboarding.steps.allocation import AllocationStep
-from unittest import skip
+import pytest
+
+pytestmark = pytest.mark.django_db
 
 
-@skip('foreign key error; not using onboarding yet')
 class AllocationStepTest(TestCase):
     def setUp(self):
         super(AllocationStepTest, self).setUp()

@@ -2,8 +2,8 @@ from abc import ABCMeta, abstractmethod
 from six import add_metaclass
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
-from django.conf import settings
 from django.urls import reverse
+
 
 @add_metaclass(ABCMeta)
 class AbstractStep:
@@ -16,7 +16,7 @@ class AbstractStep:
         self.state = None
         self.user = user
         self.last_event = None
-        self.events = [ ]
+        self.events = []
 
         try:
             # Restore event history
@@ -30,7 +30,6 @@ class AbstractStep:
             self.state = self.last_event.state
         except Exception:
             pass
-
 
     def log(self, message, data=None):
         """

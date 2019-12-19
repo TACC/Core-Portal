@@ -1,18 +1,18 @@
-
 from portal.apps.workspace.models import JobSubmission
 from django.contrib.auth import get_user_model
-from django.test import TransactionTestCase
-from django.test import RequestFactory
+from django.test import RequestFactory, TestCase
 from mock import patch, MagicMock
 from django.conf import settings
 from portal.apps.workspace.api.views import JobsView
 from portal.apps.auth.models import AgaveOAuthToken
 import json
 import os
+import pytest
 from datetime import datetime, timedelta
 
 
-class TestJobsView(TransactionTestCase):
+@pytest.mark.django_db(transaction=True)
+class TestJobsView(TestCase):
 
     @classmethod
     def setUpClass(cls):

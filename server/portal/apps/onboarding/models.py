@@ -3,11 +3,11 @@
    :synopsis: Onboarding models
 """
 
-import logging
 from django.db import models
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.core.serializers.json import DjangoJSONEncoder
+
 
 class SetupEvent(models.Model):
     """Setup Events
@@ -51,10 +51,11 @@ class SetupEvent(models.Model):
             "step": self.step,
             "username": self.user.username,
             "state": self.state,
-            "time" : str(self.time),
+            "time": str(self.time),
             "message": self.message,
             "data": self.data,
         }
+
 
 class SetupEventEncoder(DjangoJSONEncoder):
     def default(self, obj):  # pylint: disable=method-hidden, arguments-differ

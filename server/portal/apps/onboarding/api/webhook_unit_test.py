@@ -1,8 +1,7 @@
-from django.test import TestCase, Client, RequestFactory, override_settings
-from mock import Mock, patch, MagicMock, ANY
+from django.test import TestCase, RequestFactory
+from mock import patch
 from django.contrib.auth import get_user_model
 from django.http import (
-    HttpResponse,
     HttpResponseBadRequest,
     HttpResponseForbidden
 )
@@ -10,13 +9,13 @@ from django.db.models import signals
 from portal.apps.onboarding.api.webhook import SetupStepWebhookView
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
-from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.steps.test_steps import MockWebhookStep
-from unittest import skip
 import json
+import pytest
+
+pytestmark = pytest.mark.django_db
 
 
-@skip('foreign key error; not using onboarding yet')
 class SetupStepWebhookTest(TestCase):
     def setUp(self):
         super(SetupStepWebhookTest, self).setUp()
@@ -29,15 +28,15 @@ class SetupStepWebhookTest(TestCase):
         self.user = User.objects.create_user("test", "test@user.com", "test")
 
         self.request_data = {
-            "username" : "test",
-            "step" : self.webhook_step_name,
-            "webhook_data" : { "key" : "value" }
+            "username": "test",
+            "step": self.webhook_step_name,
+            "webhook_data": {"key": "value"}
         }
 
         SetupEvent.objects.all().delete()
         ev = SetupEvent.objects.create(
             user=self.user,
-            step = "portal.apps.onboarding.steps.test_steps.MockWebhookStep",
+            step="portal.apps.onboarding.steps.test_steps.MockWebhookStep",
             state=SetupState.WEBHOOK
         )
         ev.save()
@@ -71,7 +70,7 @@ class SetupStepWebhookTest(TestCase):
             "/webhooks/onboarding/",
             content_type="application/json",
             data=json.dumps(self.request_data),
-            **{ "HTTP_AUTHORIZATION" : "Basic: ZGV2OmRldg==" }
+            **{"HTTP_AUTHORIZATION": "Basic: ZGV2OmRldg=="}
         )
         self.assertEqual(response.status_code, 200)
 
@@ -95,9 +94,9 @@ class SetupStepWebhookTest(TestCase):
     def test_step_wrong_state(self):
         # If the webhook calls a step for a user that is not in the PROCESSING
         # state, it should fail
-        ev = SetupEvent.objects.create(
+        SetupEvent.objects.create(
             user=self.user,
-            step = self.webhook_step_name,
+            step=self.webhook_step_name,
             state=SetupState.COMPLETED
         )
         request = self.generate_request()

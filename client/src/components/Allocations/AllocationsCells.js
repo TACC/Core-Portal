@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { object, shape, array } from "prop-types";
-import { Button, Badge } from "reactstrap";
-import { TeamView } from "./AllocationsModals";
+import React, { useState } from 'react';
+import { object, shape, array } from 'prop-types';
+import { Button, Badge } from 'reactstrap';
+import { TeamView } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
   cell: shape({
@@ -28,9 +28,9 @@ export const Team = () => {
 
 export const Systems = ({ cell }) => (
   <div className="sub-table-row">
-    {cell.value.map(({ name, id}) => (
+    {cell.value.map(({ name, id }) => (
       <div key={id} className="sub-table-cell">
-        <span style={{ marginLeft: "1em" }}>{name}</span>
+        <span style={{ marginLeft: '1em' }}>{name}</span>
       </div>
     ))}
   </div>
@@ -41,7 +41,7 @@ export const Awarded = ({ cell }) => (
   <div className="sub-table-row">
     {cell.value.map(({ awarded, type, id }) => (
       <div key={id} className="sub-table-cell">
-        {awarded} {type === "HPC" ? "SU" : "GB"}
+        {awarded} {type === 'HPC' ? 'SU' : 'GB'}
       </div>
     ))}
   </div>
@@ -51,10 +51,10 @@ Awarded.propTypes = CELL_PROPTYPES;
 export const Remaining = ({ cell }) => {
   const getColor = val => {
     if (val > 0.33) {
-      if (val > 0.66) return "success";
-      return "warning";
+      if (val > 0.66) return 'success';
+      return 'warning';
     }
-    return "danger";
+    return 'danger';
   };
   return (
     <div className="sub-table-row">
@@ -62,7 +62,7 @@ export const Remaining = ({ cell }) => {
         <div key={id} className="sub-table-cell">
           <span>
             <Badge className="alloc-badge" color={getColor(ratio)}>
-              {remaining} {type === "HPC" ? "SU" : "GB"}
+              {remaining} {type === 'HPC' ? 'SU' : 'GB'}
             </Badge>
           </span>
         </div>

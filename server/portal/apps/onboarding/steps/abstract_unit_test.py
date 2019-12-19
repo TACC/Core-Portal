@@ -4,10 +4,11 @@ from portal.apps.onboarding.state import SetupState
 from django.db.models import signals
 from django.contrib.auth import get_user_model
 from portal.apps.onboarding.steps.test_steps import MockStep
-from unittest import skip
+import pytest
+
+pytestmark = pytest.mark.django_db
 
 
-@skip('foreign key error; not using onboarding yet')
 class TestAbstractStep(TestCase):
     def setUp(self):
         super(TestAbstractStep, self).setUp()
@@ -48,7 +49,7 @@ class TestAbstractStep(TestCase):
         mock_step.state = SetupState.PENDING
         mock_step.log("test event")
         events = SetupEvent.objects.all().filter(user=self.user)
-        self.assertEqual(events[0].message, "test event" )
+        self.assertEqual(events[0].message, "test event")
         self.assertEqual(events[0].state, SetupState.PENDING)
 
     def test_init_with_event(self):

@@ -1,13 +1,13 @@
 from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from mock import patch, ANY
-from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.steps.access import RequestAccessStep
-from unittest import skip
+import pytest
+
+pytestmark = pytest.mark.django_db
 
 
-@skip('foreign key error; not using onboarding yet')
 class TestRequestAccessStep(TestCase):
     def setUp(self):
         super(TestRequestAccessStep, self).setUp()

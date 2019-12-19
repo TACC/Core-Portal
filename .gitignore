@@ -46,8 +46,8 @@ client/build/
 /portal/static/build/
 
 # no webpack compiled templates
-server/portal/templates/base.html
-server/portal/templates/base.html.gz
+server/portal/apps/workbench/templates/portal/apps/workbench/index.html
+server/portal/apps/workbench/templates/portal/apps/workbench/index.html.gz
 
 # in case you leave that here
 datadump.json
@@ -73,7 +73,6 @@ htmlcov/
 .tox/
 .coverage
 .coverage.*
-.coverage*
 .cache
 nosetests.xml
 coverage.xml

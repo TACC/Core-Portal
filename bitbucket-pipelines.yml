@@ -11,22 +11,27 @@ pipelines:
     - parallel:
       - step:
           name: Server Side Unit Tests
-          image: python:3.6
+          image: python:3.6-buster
           caches:
             - pip
           script:
             - cd server
-            - cp portal/templates/base.j2 portal/templates/base.html
+            - cp server/portal/apps/workbench/templates/portal/apps/workbench/index.j2 server/portal/apps/workbench/templates/portal/apps/workbench/index.html
             - mkdir -p log/portal
             - pip install -r requirements.txt
-            - coverage run --branch --source="portal" --omit "*/*unit_test.py" manage.py test
-              --pattern="*unit_test.py"
-              -v2 --settings="portal.settings.unit_test_settings"
-            - coverage xml -i
+            - pytest --cov-config=.coveragerc --cov=portal --cov-report xml -ra
             - bash <(curl -s https://codecov.io/bash) -cF python
+      - step:
+          name: Server Side Linting
+          image: python:3.6-buster
+          caches:
+            - pip
+          script:
+            - pip install -r server/requirements.txt
             - git fetch origin "+refs/heads/master:refs/remotes/origin/master"
-            - cd ..
             - git diff -U0 origin/master..HEAD | flake8 --diff
+            # disable pylint pipeline testing for now
+            # - pylint --rcfile=server/.pylintrc $(git diff origin/master..HEAD --name-only "*.py")
       - step:
           name: Client Side Unit Tests
           image: node:lts
@@ -37,6 +42,14 @@ pipelines:
             - npm install
             - npm run test
             - bash <(curl -s https://codecov.io/bash) -cF javascript
+      - step:
+          name: Client Side Linting
+          image: node:lts
+          caches:
+            - client-node
+          script:
+            - cd client
+            - npm install
             - npm run lint
 
 definitions:

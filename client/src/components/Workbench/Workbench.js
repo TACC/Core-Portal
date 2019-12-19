@@ -1,15 +1,10 @@
 import React from 'react';
-import {
-  Route,
-  Switch,
-  useRouteMatch
-} from 'react-router-dom';
+import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import Dashboard from '../Dashboard';
 import Allocations from '../Allocations';
 import Sidebar from '../Sidebar';
 import * as ROUTES from '../../constants/routes';
 import './Workbench.scss';
-
 
 function Applications() {
   return <h2>Applications</h2>;
@@ -44,7 +39,10 @@ function Workbench() {
           <Route path={`${match.path}${ROUTES.APPLICATIONS}`}>
             <Applications />
           </Route>
-          <Route path={`${match.path}${ROUTES.ALLOCATIONS}`} component={Allocations} />
+          <Route
+            path={`${match.path}${ROUTES.ALLOCATIONS}`}
+            component={Allocations}
+          />
           <Route path={`${match.path}${ROUTES.PUBLICATIONS}`}>
             <Publications />
           </Route>

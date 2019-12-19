@@ -3,14 +3,10 @@ import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Workbench from './Workbench';
 
-
 function AppRouter() {
   return (
     <Router>
-      <Route
-        path='/workbench'
-        component={Workbench}
-      />
+      <Route path="/workbench" component={Workbench} />
     </Router>
   );
 }

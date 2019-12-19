@@ -1,14 +1,11 @@
-from django.test import TestCase, Client, RequestFactory, override_settings
-from mock import Mock, patch, MagicMock, ANY
+from django.test import TestCase, RequestFactory, override_settings
+from mock import patch, MagicMock, ANY
 from django.contrib.auth import get_user_model
 from django.db.models import signals
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied
 from django.http import (
-    Http404,
     JsonResponse,
-    HttpResponse,
-    HttpResponseBadRequest,
-    HttpResponseForbidden
+    HttpResponseBadRequest
 )
 
 import json
@@ -16,24 +13,21 @@ import json
 from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.accounts.models import PortalProfile
 from portal.apps.onboarding.models import SetupEvent
-from portal.apps.onboarding.steps.test_steps import (
-    MockStep,
-    MockProcessingCompleteStep,
-    MockProcessingFailStep,
-    MockStaffStep,
-    MockUserStep,
-    MockWebhookStep
-)
+from portal.apps.onboarding.steps.test_steps import MockStep
 
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.api.views import (
     SetupStepView,
     SetupAdminView
 )
-from unittest import skip
+import pytest
+import logging
+
+logger = logging.getLogger(__name__)
+
+pytestmark = pytest.mark.django_db
 
 
-@skip('foreign key error; not using onboarding yet')
 class TestSetupStepView(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -139,8 +133,8 @@ class TestSetupStepView(TestCase):
         request.user = self.user
 
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
-            'portal.apps.onboarding.steps.test_steps.MockStep'
-        ]
+        'portal.apps.onboarding.steps.test_steps.MockStep'
+    ]
     )
     def test_get_user_as_user(self):
         # A user should be able to retrieve their own setup event info
@@ -170,8 +164,8 @@ class TestSetupStepView(TestCase):
         self.assertEqual(len(result["steps"][0]["events"]), 2)
 
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
-            'portal.apps.onboarding.steps.test_steps.MockStep'
-        ]
+        'portal.apps.onboarding.steps.test_steps.MockStep'
+    ]
     )
     def test_get_user_as_staff(self):
         self.client.login(username='staff', password='staff')
@@ -200,7 +194,7 @@ class TestSetupStepView(TestCase):
         request = self.rf.post(
             "/api/onboarding/user/test",
             content_type="application/json",
-            data=json.dumps({ "action" : "user_confirm" })
+            data=json.dumps({"action": "user_confirm"})
         )
         request.user = self.user
         response = self.view.post(request, "test")
@@ -209,7 +203,7 @@ class TestSetupStepView(TestCase):
         request = self.rf.post(
             "/api/onboarding/user/test",
             content_type="application/json",
-            data=json.dumps({ "step" : "setupstep" })
+            data=json.dumps({"step": "setupstep"})
         )
         request.user = self.user
         response = self.view.post(request, "test")
@@ -266,15 +260,15 @@ class TestSetupStepView(TestCase):
             "/api/onboarding/user/test",
             content_type='application/json',
             data=json.dumps({
-                "action" : "complete",
-                "step" : "portal.apps.onboarding.steps.test_steps.MockStep"
+                "action": "complete",
+                "step": "portal.apps.onboarding.steps.test_steps.MockStep"
             })
         )
         request.user = self.staff
         response = self.view.post(request, "test")
 
         # set_state should have put MockStep in COMPLETED, as per request
-        events = [ event for event in SetupEvent.objects.all() ]
+        events = [event for event in SetupEvent.objects.all()]
         self.assertEqual(
             events[-1].step,
             "portal.apps.onboarding.steps.test_steps.MockStep"
@@ -282,12 +276,11 @@ class TestSetupStepView(TestCase):
         self.assertEqual(events[-1].state, SetupState.COMPLETED)
 
         # execute_setup_steps should have been run
-        self.mock_execute.apply_async.assert_called_with(args=[ self.user.username ])
+        self.mock_execute.apply_async.assert_called_with(args=[self.user.username])
         last_event = json.loads(response.content)
         self.assertEqual(last_event["state"], SetupState.COMPLETED)
 
 
-@skip('foreign key error; not using onboarding yet')
 class TestSetupAdminViews(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -314,14 +307,14 @@ class TestSetupAdminViews(TestCase):
         c_user = cls.User.objects.create_user("c_user", "c@user.com", "cpassword")
         c_user.last_name = "c"
         c_user.first_name = "user"
-        c_user_profile = PortalProfile(user=c_user)
+        PortalProfile(user=c_user)
         c_user.profile.save()
         c_user.save()
 
         b_user = cls.User.objects.create_user("b_user", "b@user.com", "bpassword")
         b_user.last_name = "b"
         b_user.first_name = "user"
-        b_user_profile = PortalProfile(user=b_user)
+        PortalProfile(user=b_user)
         b_user.profile.save()
         b_user.save()
 
@@ -359,7 +352,12 @@ class TestSetupAdminViews(TestCase):
         # Integration test for route
         # If the user is authenticated and is_staff, then the route should
         # return a JsonResponse
-        resp = self.client.get("/api/onboarding/admin/", follow=False)
+        request = self.factory.get("/api/onboarding/admin")
+        request.user = self.admin_user
+
+        # Get the JsonResponse from SetupAdminView.get
+        resp = self.view.get(request)
+        logger.debug(resp)
         self.assertEqual(type(resp), JsonResponse)
 
     def test_admin_route_is_protected(self):
@@ -380,7 +378,7 @@ class TestSetupAdminViews(TestCase):
         self.assertEqual(user_result['email'], "b@user.com")
 
         # Test with an event
-        mock_event = SetupEvent.objects.create(
+        SetupEvent.objects.create(
             user=b_user,
             step="portal.apps.onboarding.steps.test_steps.MockStep",
             state="complete"
@@ -402,14 +400,14 @@ class TestSetupAdminViews(TestCase):
         response_data = json.loads(response.content)
 
         # d_user should not be in the list of users returned
-        d_user_result = [ user for user in response_data['users'] if user['username'] == 'd_user' ]
+        d_user_result = [user for user in response_data['users'] if user['username'] == 'd_user']
         self.assertEqual(len(d_user_result), 0)
 
     def test_get(self):
         # Create an event for user b
         User = get_user_model()
         b_user = User.objects.get(username="b_user")
-        mock_event = SetupEvent.objects.create(
+        SetupEvent.objects.create(
             user=b_user,
             step="portal.apps.onboarding.steps.test_steps.MockStep",
             state="complete"
@@ -440,11 +438,10 @@ class TestSetupAdminViews(TestCase):
         self.assertGreater(len(users), 2)
 
         # There should be two users that do not have setupComplete
-        matches = [ user for user in users if user['setupComplete'] == False ]
+        matches = [user for user in users if user['setupComplete'] is False]
         self.assertEqual(len(matches), 2)
 
         # Users with no profile should not be returned
-        matches = [ user for user in users if user['lastName'] == 'no' ]
+        matches = [user for user in users if user['lastName'] == 'no']
         self.assertEqual(len(matches), 0)
-
 

@@ -5,9 +5,5 @@
   <base href="{% url 'workbench:index' %}">
 {% endblock %}
 {% block content %}
-  <div class="page-content">
-    <div ui-view class=""></div>
-  </div>
-  {% addtoblock "css" %}
-  {% endaddtoblock %}
+  <div id="react-root"></div>
 {% endblock %}

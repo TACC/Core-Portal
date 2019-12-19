@@ -7,13 +7,12 @@ import 'react-table-6/react-table.css';
 import useFetch from '../../utils/useFetch';
 import './Tickets.scss';
 
-
 function TicketsView() {
   const res = useFetch(`/api/tickets/`, {});
 
   if (!res.response) {
     return (
-      <div id='spin-sun'>
+      <div id="spin-sun">
         <FontAwesomeIcon icon={faSun} size="8x" spin />
       </div>
     );

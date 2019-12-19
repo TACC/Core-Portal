@@ -1,9 +1,5 @@
-from django.shortcuts import render
-from django.views.generic import TemplateView
 from django.conf import settings
 from datetime import datetime, timedelta
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from portal.views.base import BaseApiView
 from django.http import JsonResponse
 import dateutil.parser
@@ -13,6 +9,7 @@ import logging
 import pytz
 
 logger = logging.getLogger(__name__)
+
 
 class SysmonDataView(BaseApiView):
 
@@ -52,8 +49,8 @@ class System:
                 self.jobs = system_dict.get('jobs')
                 self.load_percentage = system_dict.get('load')
                 if isinstance(self.load_percentage, float) or \
-                    isinstance(self.load_percentage, int):
-                        self.load_percentage = int(( self.load_percentage * 100))
+                        isinstance(self.load_percentage, int):
+                    self.load_percentage = int((self.load_percentage * 100))
                 else:
                     self.load_percentage = None
                 self.cpu_count = system_dict.get('totalCpu')
@@ -71,20 +68,20 @@ class System:
         '''
         if self.resource_type == 'compute':
             if not self.load_percentage or not self.jobs:
-                    return False
+                return False
             if self.load_percentage > 99 and self.jobs.get('running', 0) < 1:
                 return False
-        #let's check each test:
+        # let's check each test:
         for st in self.status_tests:
             test = self.status_tests.get(st)
             if not test.get('status'):
                 return False
-             # now, let's check that the status has been updated recently
+            # now, let's check that the status has been updated recently
             if not self.status_updated_recently(last_updated=test.get('timestamp')):
                 return False
         return True
 
-    def status_updated_recently(self,last_updated=None):
+    def status_updated_recently(self, last_updated=None):
         '''
         Checks whether system availability metrics are being updated regularly
         '''
@@ -92,9 +89,9 @@ class System:
             return False
         last_updated = dateutil.parser.parse(last_updated)
         current_time = datetime.now()
-        ## if we want to change the update interval, we can do it below
+        # if we want to change the update interval, we can do it below
         expire_time = last_updated + timedelta(minutes=10)
-        return pytz.UTC.localize(current_time) < expire_time
+        return pytz.utc.localize(current_time) < expire_time
 
     def to_dict(self):
         r = json.dumps(self.__dict__)

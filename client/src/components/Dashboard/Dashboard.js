@@ -5,7 +5,6 @@ import Tickets from '../Tickets';
 import Sysmon from '../SystemMonitor';
 import './Dashboard.scss';
 
-
 function Dashboard() {
   return (
     <div className="workbench-dashboard">

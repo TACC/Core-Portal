@@ -182,7 +182,7 @@ class JobsWebhookView(BaseApiView):
                                 'Finished Indexing Job Output job={}'.format(job_name))
                         except Exception as e:
                             logger.exception('Error indexing job output: {}'.format(e))
-                            return HttpResponse(json.dumps(e.msg), content_type='application/json', status=400)
+                            return HttpResponse(json.dumps(e), content_type='application/json', status=400)
 
             else:
                 # notify

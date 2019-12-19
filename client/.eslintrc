@@ -37,6 +37,7 @@
             "html": "enforce" ,
             "custom": "enforce",
             "exceptions": ["Table", "table", "thead", "tbody", "th", "tr", "td"]
-        }]
+        }],
+        "prettier/prettier": ["error", { "singleQuote": true }]
     }
 }

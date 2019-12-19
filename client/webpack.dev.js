@@ -24,8 +24,12 @@ module.exports = merge.smart(common, {
     hot: true,
     host: 'cep.dev',
     https: {
-      key: fs.readFileSync('../server/conf/nginx/certificates/frontera.dev.key'),
-      cert: fs.readFileSync('../server/conf/nginx/certificates/frontera.dev.crt')
+      key: fs.readFileSync(
+        '../server/conf/nginx/certificates/frontera.dev.key'
+      ),
+      cert: fs.readFileSync(
+        '../server/conf/nginx/certificates/frontera.dev.crt'
+      )
     },
     open: false
   },
@@ -54,13 +58,13 @@ module.exports = merge.smart(common, {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin(
-      {
-        template: '../server/portal/templates/base.j2',
-        filename: '../../server/portal/templates/base.html',
-        alwaysWriteToDisk: true
-      }
-    ),
+    new HtmlWebpackPlugin({
+      template:
+        '../server/portal/apps/workbench/templates/portal/apps/workbench/index.j2',
+      filename:
+        '../../server/portal/apps/workbench/templates/portal/apps/workbench/index.html',
+      alwaysWriteToDisk: true
+    }),
     new HtmlWebpackHarddiskPlugin(),
     new webpack.HotModuleReplacementPlugin()
   ]

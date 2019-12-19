@@ -12,7 +12,7 @@ from portal.views.base import BaseApiView
 from portal.apps.accounts.managers import accounts as AccountsManager
 from portal.apps.search.tasks import agave_indexer
 from django.conf import settings
-import json
+
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
