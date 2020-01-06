@@ -44,6 +44,7 @@ module.exports = merge(common, {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
+      inject: false,
       template:
         '../server/portal/apps/workbench/templates/portal/apps/workbench/index.j2',
       filename:

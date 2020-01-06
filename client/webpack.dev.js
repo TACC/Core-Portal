@@ -59,6 +59,7 @@ module.exports = merge.smart(common, {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      inject: false,
       template:
         '../server/portal/apps/workbench/templates/portal/apps/workbench/index.j2',
       filename:

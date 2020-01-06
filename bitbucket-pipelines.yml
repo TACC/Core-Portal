@@ -16,7 +16,7 @@ pipelines:
             - pip
           script:
             - cd server
-            - cp server/portal/apps/workbench/templates/portal/apps/workbench/index.j2 server/portal/apps/workbench/templates/portal/apps/workbench/index.html
+            - cp portal/apps/workbench/templates/portal/apps/workbench/index.j2 portal/apps/workbench/templates/portal/apps/workbench/index.html
             - mkdir -p log/portal
             - pip install -r requirements.txt
             - pytest --cov-config=.coveragerc --cov=portal --cov-report xml -ra

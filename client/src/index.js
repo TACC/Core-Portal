@@ -6,7 +6,6 @@ import AppRouter from './components/Workbench';
 import './index.scss';
 import * as serviceWorker from './serviceWorker';
 import store from './redux/store';
-import 'bootstrap';
 
 ReactDOM.render(
   <Provider store={store}>

@@ -151,7 +151,7 @@ pip install -r server/requirements.txt
 
 ### Testing
 
-Server-side python testing is run through pytest. Run `pytest -ra server` to run backend tests and display a report at the bottom of the output.
+Server-side python testing is run through pytest. Run `pytest -ra` from the `server` folder to run backend tests and display a report at the bottom of the output.
 
 Client-side javascript testing is run through Jest. Run `npm run test` from the `client` folder to ensure tests are running correctly.
 
