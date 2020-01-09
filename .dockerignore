@@ -1,0 +1,9 @@
+.git
+.cache
+**/settings_secret.py
+**/node_modules/*
+**/client/build/*
+server/cms
+server/static
+server/media
+devops

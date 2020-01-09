@@ -13,7 +13,7 @@ module.exports = merge(common, {
   mode: 'production',
   output: {
     path: path.resolve(__dirname, 'build'),
-    publicPath: '/static/build',
+    publicPath: '/core/static/build',
     filename: '[name].[hash].bundle.js',
     chunkFilename: '[name].[hash].bundle.js'
   },
@@ -48,8 +48,8 @@ module.exports = merge(common, {
       template:
         '../server/portal/apps/workbench/templates/portal/apps/workbench/index.j2',
       filename:
-        '../../server/portal/apps/workbench/templates/portal/apps/workbench/index.html',
-      jsExtension: '.gz'
+        '../../server/portal/apps/workbench/templates/portal/apps/workbench/index.html'
+      // jsExtension: '.gz'
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[hash].css',

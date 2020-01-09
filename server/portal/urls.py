@@ -34,7 +34,7 @@ urlpatterns = [
     path('sitemap.xml', sitemap, {'sitemaps': {'cmspages': CMSSitemap}}),
 
     # admin.
-    path('admin/', admin.site.urls),
+    path('core/admin/', admin.site.urls),
     path('impersonate/', include('impersonate.urls')),
 
     # terms-and-conditions

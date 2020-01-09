@@ -32,7 +32,7 @@ FIXTURE_DIRS = [
 SECRET_KEY = settings_secret._SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 # Cookie name. this can be whatever you want
-SESSION_COOKIE_NAME = 'sessionid'  # use the sessionid in your views code
+SESSION_COOKIE_NAME = 'coresessionid'  # use the sessionid in your views code
 # the module to store sessions data
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # age of cookie in seconds (default: 2 weeks)
@@ -239,8 +239,8 @@ LANGUAGES = (
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+STATIC_URL = '/core/static/'
+MEDIA_URL = '/core/media/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')

@@ -36,4 +36,7 @@ COPY . /srv/www/portal
 
 RUN mkdir -p /var/log/portal
 
+ARG build_client=build_client
+RUN chmod u+x /srv/www/portal/client/build_client.sh && /srv/www/portal/client/build_client.sh $build_client
+
 WORKDIR /srv/www/portal/server

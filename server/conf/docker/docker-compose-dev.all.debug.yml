@@ -3,38 +3,32 @@
 ---
 version: "3"
 services:
+  cms:
+    image: taccwma/frontera-cms:latest
+    volumes:
+      - ../cms/secrets.py:/code/taccsite_cms/secrets.py
+      - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
+      - ../../cms/static:/code/static
+      - ../../cms/media:/code/media
+    command: ["uwsgi", "--ini", "uwsgi.ini"]
+    container_name: frontera_prtl_cms
+
   redis:
     image: redis:5.0
     volumes:
       - frontera_prtl_redis_data:/data
-    ports:
-      - 6379:6379
     container_name: frontera_prtl_redis
-    hostname: frontera_prtl_redis
-    networks:
-      - frontera_prtl_net
 
   rabbitmq:
     image: rabbitmq:3.7.17-management
     volumes:
       - frontera_prtl_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@frontera_prtl_rabbitmq
     env_file: ../env_files/rabbitmq.env
-    ports:
-      - 5672:5672
-      - 5673:5673
-      - 15673:15673
-      - 15672:15672
     container_name: frontera_prtl_rabbitmq
-    hostname: frontera_prtl_rabbitmq
-    networks:
-      - frontera_prtl_net
 
   memcached:
     image: memcached:latest
     container_name: frontera_prtl_memcached
-    hostname: frontera_prtl_memcached
-    networks:
-      - frontera_prtl_net
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
@@ -46,23 +40,24 @@ services:
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - frontera_prtl_es_data:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
     container_name: frontera_prtl_elasticsearch
-    hostname: frontera_prtl_elasticsearch
-    networks:
-      - frontera_prtl_net
 
   postgres:
     image: postgres:11.5
     volumes:
       - frontera_prtl_postgres_data:/var/lib/postgresql/data/portal
-    ports:
-      - 5432:5432
     container_name: frontera_prtl_postgres
-    hostname: frontera_prtl_postgres
-    networks:
-      - frontera_prtl_net
+    environment:
+      - POSTGRES_PASSWORD=dev
+      - POSTGRES_USER=dev
+      - POSTGRES_DB=dev
+      - PGDATA=/var/lib/postgresql/data/portal
+
+  postgrescms:
+    image: postgres:11.5
+    volumes:
+      - frontera_cms_postgres_data:/var/lib/postgresql/data/portal
+    container_name: frontera_cms_postgres
     environment:
       - POSTGRES_PASSWORD=dev
       - POSTGRES_USER=dev
@@ -78,84 +73,47 @@ services:
       - ../nginx/certificates/frontera.dev.key:/etc/ssl/frontera.dev.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
       - ../../../.:/srv/www/portal
-    links:
-      - django:django
-      - websockets:websockets
     ports:
       - 80:80
       - 443:443
     container_name: frontera_prtl_nginx
-    hostname: frontera_prtl_nginx
-    networks:
-      - frontera_prtl_net
 
   websockets:
-    image: frontera-portal/portal:local
-    links:
-      - redis:redis
+    image: taccwma/frontera-portal:local
     volumes:
       - ../../../.:/srv/www/portal
-    ports:
-      - 9000:9000
     container_name: frontera_prtl_websockets
-    hostname: frontera_prtl_websockets
     command: "uwsgi --chdir /srv/www/portal/server --gevent 1000 --workers=2 --http-websockets  --http-socket=:9000 --module portal.wsgi_websocket:application"
-    networks:
-      - frontera_prtl_net
 
   django:
-    image: frontera-portal/portal:local
-    links:
-      - memcached:memcached
-      - postgres:postgres
-      - rabbitmq:rabbitmq
-      - redis:redis
-      - elasticsearch:elasticsearch
+    image: taccwma/frontera-portal:local
     volumes:
       - ../../../.:/srv/www/portal
-      - ../../data/static:/var/www/portal/server/static
-      - ../../data/media:/var/www/portal/server/media
-    ports:
-      - 8000:8000
-      - 5555:5555
+      - ../../static:/var/www/portal/server/static
+      - ../../media:/var/www/portal/server/media
     dns:
       - 8.8.8.8
       - 8.8.4.4
     stdin_open: true
     tty: true
-    command: ['python', './manage.py', 'runserver', '0.0.0.0:8000']
+    command: ['python', './manage.py', 'runserver', '0.0.0.0:6000']
     container_name: frontera_prtl_django
-    hostname: frontera_prtl_django
-    networks:
-      - frontera_prtl_net
 
   workers:
-    image: frontera-portal/portal:local
-    links:
-      - memcached:memcached
-      - postgres:postgres
-      - rabbitmq:rabbitmq
-      - redis:redis
-      - elasticsearch:elasticsearch
+    image: taccwma/frontera-portal:local
     volumes:
       - ../../../.:/srv/www/portal
-      - ../../data/static:/var/www/portal/server/static
-      - ../../data/media:/var/www/portal/server/media
+      - ../../static:/var/www/portal/server/static
+      - ../../media:/var/www/portal/server/media
     dns:
       - 8.8.8.8
       - 8.8.4.4
     command: "celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
     container_name: frontera_prtl_workers
-    hostname: frontera_prtl_workers
-    networks:
-      - frontera_prtl_net
 
 volumes:
   frontera_prtl_redis_data:
   frontera_prtl_es_data:
   frontera_prtl_rabbitmq_data:
   frontera_prtl_postgres_data:
-
-networks:
-  frontera_prtl_net:
-    driver: bridge
+  frontera_cms_postgres_data:

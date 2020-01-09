@@ -25,9 +25,11 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 After you clone the repository locally, there are several configuration steps required to prepare the project.
 
 
-#### Create settings_secret.py
+#### Create settings_secret.py and secrets.py
 
 Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Frontera Web Settings Secret` entry secured on [UT Stache](https://stache.security.utexas.edu)
+
+Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
 
 #### Build the image for the portal's django container:
 
@@ -54,6 +56,15 @@ Create `server/portal/settings/settings_secret.py` containing what is in `secret
     python3 manage.py migrate
     python3 manage.py createsuperuser
     python3 manage.py collectstatic
+
+#### Initialize the CMS in the `frontera_prtl_cms` container:
+
+    docker exec -it frontera_prtl_cms /bin/bash
+    python3 manage.py migrate
+    python3 manage.py createsuperuser
+    python3 manage.py collectstatic
+    TACC VPN or physical connection to the TACC network is required To log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
+    Create a home page in the CMS
 
 
 ### Setup local access to the portal:
@@ -158,6 +169,24 @@ Client-side javascript testing is run through Jest. Run `npm run test` from the 
 #### Test Coverage
 
 Coverage is sent to codecov on commits to the repo (see bitbucket pipeline for branch to see branch coverage). Ideally we only merge positive code coverage changes to master.
+
+
+#### Production Deployment
+
+The Core Portal runs in a Docker container as part of a set of services managed with Docker Compose.
+
+Portal images are built by [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Portal/) and published to the [Docker Hub repo](https://hub.docker.com/repository/docker/taccwma/frontera-portal).
+
+To update the portal in production or dev, the corresponding [Camino](https://bitbucket.org/taccaci/camino/) compose file should be updated with a tag matching an image previously built and published to the taccwma/frontera-portal repo.
+
+Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Deployments/) and orchestrated, tracked, and directed by [Camino](https://bitbucket.org/taccaci/camino/) on the target server.
+
+### Deployment Steps
+
+1. Build and publish portal image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Portal/)
+2. Update compose file in [Camino](https://bitbucket.org/taccaci/camino/) with new tag name
+3. Deploy new image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Deployments/)
+
 
 ### Resources
 
