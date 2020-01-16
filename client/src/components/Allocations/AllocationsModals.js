@@ -6,6 +6,7 @@ import {
   ModalBody as Body,
   Table
 } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 const modalPropTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -14,18 +15,21 @@ const modalPropTypes = {
 
 export const NewAllocReq = ({ isOpen, toggle }) => (
   <Modal isOpen={isOpen} toggle={() => toggle()}>
-    <Header toggle={toggle} charCode="X">
+    <Header toggle={toggle} charCode="x" className="allocations-modal-header">
       <span>Request New Allocation</span>
     </Header>
-    <Body>Request New Allocation Form</Body>
+    <Body className="allocations-request-body" data-testid="request-body">
+      To request a new allocation, please submit a ticket{' '}
+      <Link to="/workbench/dashboard">here</Link>.
+    </Body>
   </Modal>
 );
 NewAllocReq.propTypes = modalPropTypes;
 
 export const TeamView = ({ isOpen, toggle }) => (
   <Modal isOpen={isOpen} toggle={toggle}>
-    <Header toggle={toggle} charCode="X">
-      Team View
+    <Header toggle={toggle} charCode="x" className="allocations-modal-header">
+      <span>Team View</span>
     </Header>
     <Body>
       <Table striped>

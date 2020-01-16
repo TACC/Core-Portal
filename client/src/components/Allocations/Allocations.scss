@@ -132,3 +132,17 @@
 #pending {
     @extend #allocations-table;
 }
+.allocations-modal-header {
+    background-color: #F4F4F4;
+    padding: 1rem;
+    span {
+        color: #484848;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+}
+.allocations-request-body {
+    color: #484848;
+    font-size: 0.75rem;
+}
+
