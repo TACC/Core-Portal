@@ -1,11 +1,21 @@
 .workbench-wrapper {
     display: flex;
+    flex-direction: row;
+
     color: #484848;
 }
-
 .workbench-content {
-  box-sizing: content-box;
-  width: -webkit-fill-available;
+    /* Styles as a flex child */
+    flex-grow: 1;
+
+    /* Styles as a flex parent */
+    display: flex;
+    flex-direction: column;
+}
+/* FAQ: If the workbench content has only a single child,
+        then it should be the same height as the app root */
+.workbench-content > :only-child {
+    height: 100%;
 }
 
 .workbench-content .wb-text-primary {
@@ -123,4 +133,24 @@
   -webkit-transform: none;
   left: auto;
   top: auto;
+}
+
+/* Align content tables to the left by undoing some Bootstrap */
+.workbench-content .container {
+    margin-left: 0; /* override `margin-left: auto;` (Bootstrap Grid) */
+}
+/* Prevent width constraint for Extra Large breakpoint */
+/* TODO: Support Bootstrap mixins, or find another why to make this DRY */
+/* SEE: https://getbootstrap.com/docs/4.0/layout/grid/#example-usage */
+@media (min-width: 1200px) {
+    .workbench-content .container {
+        max-width: none;
+    }
+}
+/* Mimic `.container { max-width: … }` (Bootstrap Grid) for "Extra Extra Large" breakpoint */
+/* WARN: Non-standard un-documented first-party breakpoint */
+@media (min-width: 1700px) {
+    .workbench-content .container {
+        max-width: 1645px;
+    }
 }

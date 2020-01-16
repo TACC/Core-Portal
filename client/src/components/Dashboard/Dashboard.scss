@@ -1,16 +1,30 @@
-.workbench-dashboard {
-    padding: 22px 40px 30px 25px;
+.dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px 40px 0 20px;
 }
 .dashboard-items {
+    /* Styles as a flex child */
+    flex-grow: 1;
+
+    /* Styles as a flex parent */
     display: flex;
-    height: -webkit-fill-available;
+    flex-direction: column;
+}
+/* Make bottom item fill up remaining vertical space */
+.dashboard-items > :last-child {
+    flex-grow: 1;
 }
 
+/* FAQ: Inner wraps of specific `.dash-grid-items` */
+/* RFC: Implement `max-height: …` in a modular manner */
+/* SEE: https://tacc-team.slack.com/archives/GQW4Q8HLG/p1578514280032300?thread_ts=1578511498.030900&cid=GQW4Q8HLG */
 .jobs-wrapper {
     max-height: 50vh;
+    /* RFC: Implement `margin-bottom: 38px` independent of `.jobs-wrapper` */
     margin-bottom: 38px;
 }
-
 .tickets-wrapper {
     max-height: 25vh;
 }
@@ -29,18 +43,8 @@
     font-weight: 400;
 }
 
-@media (min-width: 1700px) {
-    .wb-grid-container {
-        max-width: 1645px;;
-    }
-}
-
-@media (min-width: 1400px) {
-    .wb-grid-container {
-        max-width: none;
-    }
-}
-
+/* FAQ: Indirect child element of `.dashboard-items` */
+/* RFC: Class name `.dashboard-item` (to coincide with `.dashboard-items`) */
 .dash-grid-item {
     margin-top: 20px;
 }
