@@ -111,8 +111,7 @@ class FileMediaView(BaseApiView):
     ALLOWED_FILE_ACTIONS = [
                             'copy', 'download',
                             'mkdir', 'move', 'rename',
-                            'trash', 'preview', 'public_url', 'coord_frame',
-                            'neurodata_preview', 'neurodata_save'
+                            'trash', 'preview', 'public_url'
                            ]
 
     def get(self, request, file_mgr_name, file_id, **kwargs):
@@ -247,15 +246,6 @@ class FileMediaView(BaseApiView):
     def public_url(self, request, req_body, file_id, fmgr):
         """Generate a public URL for use with 3rd party apps"""
         return fmgr.public_url(file_id, refresh=req_body['refresh'])
-
-    def coord_frame(self, request, req_body, file_id, fmgr):
-        return fmgr.coord_frame(file_id)
-
-    def neurodata_preview(self, request, req_body, file_id, fmgr):
-        return fmgr.download(file_id, req_body, preview=True)
-
-    def neurodata_save(self, request, req_body, file_id, fmgr):
-        return fmgr.upload(file_id, req_body)
 
 class FilePemsView(BaseApiView):
     """View to handle permissions operations"""

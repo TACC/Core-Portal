@@ -8,6 +8,7 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 
 _SECRET_KEY = 'CHANGE ME !'
 _DEBUG = True
+
 #_WSGI_APPLICATION = 'ws4redis.django_runserver.application'  # DEV
 _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 
@@ -16,7 +17,7 @@ _PORTAL_NAMESPACE = 'CEP'
 _PORTAL_DOMAIN = 'cep.dev'
 
 # Admin account
-_PORTAL_ADMIN_USERNAME = 'portal_admin'  # 'wma_admin'
+_PORTAL_ADMIN_USERNAME = 'portal_admin'
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -31,7 +32,7 @@ _DJANGO_DB_USER= 'dev'
 _DJANGO_DB_PASSWORD= 'dev'
 
 # TAS Authentication.
-_TAS_URL='https://tas.tacc.utexas.edu/api'
+_TAS_URL='https://tas-dev.tacc.utexas.edu/api'
 _TAS_CLIENT_KEY='key'
 _TAS_CLIENT_SECRET='secret'
 
@@ -89,7 +90,7 @@ _RESULT_BACKEND_DB = '0'
 # ELASTICSEARCH SETTINGS
 ########################
 
-_ES_HOSTS = 'PORTALPREFIX_prtl_elasticsearch'
+_ES_HOSTS = 'cep_prtl_elasticsearch'
 
 ########################
 # CELERY SETTINGS

@@ -1,6 +1,6 @@
 
 [staging]
-3dem04.tacc.utexas.edu
+cep-web-staging-01.tacc.utexas.edu
 
-[production]
-3dem02.tacc.utexas.edu
+[local]
+192.168.33.10 ansible_user=vagrant ansible_private_key_file="../../vagrant/.vagrant/machines/default/virtualbox/private_key"

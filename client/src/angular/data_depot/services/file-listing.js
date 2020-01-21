@@ -438,27 +438,6 @@ function FileListing($http, $q) {
     });
   };
 
-  Listing.prototype.neurodataPreview = function (options) {
-    var body = {
-      "action": "neurodata_preview",
-      "options": options
-    };
-    return $http.put(this.mediaUrl(), body).then(function (resp) {
-      return resp.data.response;
-    }, function (err) {
-      return $q.reject(err.data);
-    });
-  };
-
-  Listing.prototype.neurodataSave = function (options) {
-    var body = {
-      "action": "neurodata_save",
-      "options": options
-    };
-    
-    return $http.put(this.mediaUrl(), body)
-  }
-
   /**
    * Rename a file. Implicitly, this is a move operation with the same path and a new
    * name.
@@ -572,19 +551,7 @@ function FileListing($http, $q) {
       return $q.reject(err.data);
     });
   };
-
-  Listing.prototype.coordFrame = function() {
-    var body = {
-      "action": "coord_frame",
-    };
-    console.log(this.mediaUrl())
-    return $http.put(this.mediaUrl(), body).then(function (resp) {
-      return resp.data.response;
-    }, function (err) {
-      return $q.reject(err.data);
-    });
-  };
-
+  
 
   // function FilePermission(json) {
   //   angular.extend(this, json);

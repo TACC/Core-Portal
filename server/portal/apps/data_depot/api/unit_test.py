@@ -60,24 +60,7 @@ class TestFileMediaView(TestCase):
             content_type='application/json', 
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         mock_get().download.assert_called_with('cep.test//testfile.txt', preview=True)
-
-        resp = self.client.put("/api/data-depot/files/media/my-data/channel.preview/channel1", 
-            data=json.dumps({'action': 'coord_frame'}), 
-            content_type='application/json', 
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        mock_get().coord_frame.assert_called_with('channel.preview/channel1')
-
-        resp = self.client.put("/api/data-depot/files/media/my-data/channel.preview/channel1", 
-            data=json.dumps({'action': 'neurodata_preview'}), 
-            content_type='application/json', 
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        mock_get().download.assert_called_with('channel.preview/channel1', {'action': 'neurodata_preview'}, preview=True)
-
-        resp = self.client.put("/api/data-depot/files/media/my-data/channel.preview/channel1", 
-            data=json.dumps({'action': 'neurodata_save'}), 
-            content_type='application/json', 
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        mock_get().upload.assert_called_with('channel.preview/channel1', {'action': 'neurodata_save'})
+        
     
 
     

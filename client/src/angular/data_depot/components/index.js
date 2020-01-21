@@ -13,10 +13,8 @@ import modalUploadComponent from './modal-upload/modal-upload.component';
 import modalPreviewComponent from './modal-preview/modal-preview.component';
 import modalCompressComponent from './modal-compress/modal-compress.component';
 import modalPublicUrlComponent from './modal-public-url/modal-public-url.component';
-import './neurodata';
 
 const ddComponents = angular.module('portal.data_depot.components', [
-    'portal.data_depot.components.neurodata',
     'portal.data_depot.services',
     'ui.router',
 ]);

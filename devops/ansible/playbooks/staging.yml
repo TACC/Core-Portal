@@ -4,13 +4,14 @@
 # Apply common configuration to all hosts
 - hosts: staging
   roles:
-    - {role: common, tags: ['provision']}
-    - {role: users, tags: ['provision']}
-    - {role: elasticsearch, tags: ['provision']}
-    - {role: rabbitmq, tags: ['provision']}
-    - {role: redis, tags: ['provision']}
-    - {role: git, tags: ['provision']}
-    - {role: newrelic, tags: ['provision']}
+    - common
+    - users
+    - elasticsearch
+    - rabbitmq
+    - redis
+    - git
+    - {role: postgres, tags: ['postgres']}
+    - {role: newrelic, tags: ['deploy']}
     - {role: nginx, tags: ['deploy']}
     - {role: git, tags: ['deploy']}
     - {role: project_setup, tags: ['deploy']}

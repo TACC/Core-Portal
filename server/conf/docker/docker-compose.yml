@@ -6,6 +6,6 @@ services:
       build:
         context: ../../../.
         dockerfile: server/conf/docker/Dockerfile
-      image: neuronex-3dem-portal/portal:local
+      image: cep-portal/portal:local
       command: /bin/bash
       container_name: cep_prtl_django
