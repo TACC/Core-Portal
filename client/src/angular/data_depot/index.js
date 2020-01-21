@@ -84,7 +84,33 @@ function config(
                     browseState: 'wb.data_depot.external_resources',
                 },
             }
-        );
+        )
+        .state('wb.data_depot.neurodata', {
+            url: '/neurodata',
+            abstract: true,
+        })
+        .state('wb.data_depot.neurodata.collections', {
+            url: '/collections',
+            component: 'neurodataCollectionsComponent',
+            params: {
+                path: 'collections'
+            }
+        })
+        .state('wb.data_depot.neurodata.experiments', {
+            url: '/collections/{collection}',
+            component: 'neurodataExperimentsComponent',
+            params: {
+                collection: null,
+            }
+        })
+        .state('wb.data_depot.neurodata.channels', {
+            url: '/collections/{collection}/{experiment}',
+            component: 'neurodataChannelsComponent',
+            params: {
+                collection: null,
+                channel: null
+            }
+        });
 }
 
 mod.config(config);

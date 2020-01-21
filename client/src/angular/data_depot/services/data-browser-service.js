@@ -526,6 +526,36 @@ class DataBrowserService {
         });
     }
 
+    neurodataPreview(file, listing) {
+        var modal = this.$uibModal.open({
+            component: 'neurodataPreviewComponent',
+            size: 'lg',
+            resolve: {
+                file: file,
+                listing: this.currentState.listing
+            }
+        });
+    }
+    
+    neurodataHelp() {
+        var modal = this.$uibModal.open({
+          component: 'neurodataHelpModalComponent',
+          size: 'md'
+        })
+      }
+      
+
+    neurodataSave(file, params, listing) {
+        var modal = this.$uibModal.open({
+            component: 'neurodataSaveComponent',
+            resolve: {
+                file: file,
+                params: params,
+                listing: this.currentState.listing
+            }
+        });
+    }
+
     publicUrl(file) {
         var modal = this.$uibModal.open({
             component: 'modalPublicUrlComponent',

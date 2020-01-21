@@ -1,5 +1,11 @@
 ---
 
+- name: Install new relic repo
+  command: "sudo curl -o /etc/yum.repos.d/newrelic-infra.repo https://download.newrelic.com/infrastructure_agent/linux/yum/el/7/x86_64/newrelic-infra.repo"
+
+- name: Install newrelic-infra
+  yum: name=newrelic-infra state=present
+
 - name: Newrelic infra template
   template: src=newrelic-infra.yml.j2 dest=/etc/newrelic-infra.yml
 

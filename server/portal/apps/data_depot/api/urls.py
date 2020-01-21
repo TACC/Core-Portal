@@ -6,9 +6,9 @@ from portal.apps.data_depot.api import views
 urlpatterns = [
     url(r'^files/listing/(?P<file_mgr_name>[\w.-]+)/?$',
         views.FileListingView.as_view()),
-    url(r'^files/listing/(?P<file_mgr_name>[\w.-]+)/(?P<file_id>[\w.\- \/\(\)]+)/?',
+    url(r'^files/listing/(?P<file_mgr_name>[\w.-]+)/(?P<file_id>[\w.\- \/\(\)\:]+)/?',
         views.FileListingView.as_view()),
-    url(r'^files/media/(?P<file_mgr_name>[\w.-]+)/(?P<file_id>[\w.\- \/\(\)]+)/?',
+    url(r'^files/media/(?P<file_mgr_name>[\w.-]+)/(?P<file_id>[\w.\- \/\(\)\:]+)/?',
         views.FileMediaView.as_view()),
     url(r'^files/pems/(?P<file_mgr_name>[\w.-]+)/(?P<file_id>[\w.\- \/\(\)]+)/?',
         views.FilePemsView.as_view()),

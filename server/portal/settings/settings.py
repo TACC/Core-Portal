@@ -659,7 +659,8 @@ PORTAL_DATA_DEPOT_MANAGERS = {
     'shared': 'portal.apps.data_depot.managers.shared.FileManager',
     'my-projects': 'portal.apps.data_depot.managers.projects.FileManager',
     'public': 'portal.apps.data_depot.managers.public.FileManager',
-    'google-drive': 'portal.apps.data_depot.managers.google_drive.FileManager'
+    'google-drive': 'portal.apps.data_depot.managers.google_drive.FileManager',
+    'neurodata': 'portal.apps.data_depot.managers.neurodata.FileManager'
 }
 
 PORTAL_SEARCH_MANAGERS = {
@@ -835,3 +836,4 @@ SETTINGS_EXPORT = [
     'GOOGLE_SITE_VERIFICATION_ID'
 ]
 
+NEURODATA_SUPER_TOKEN = settings_secret._NEURODATA_SUPER_TOKEN

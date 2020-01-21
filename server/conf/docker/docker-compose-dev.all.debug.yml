@@ -9,8 +9,8 @@ services:
       - cep_prtl_redis_data:/data
     ports:
       - 6379:6379
-    container_name: cep_prtl_redis
-    hostname: cep_prtl_redis
+    container_name: 3dem_prtl_redis
+    hostname: 3dem_prtl_redis
     networks:
       - cep_prtl_net
 
@@ -24,15 +24,15 @@ services:
       - 5673:5673
       - 15673:15673
       - 15672:15672
-    container_name: cep_prtl_rabbitmq
-    hostname: cep_prtl_rabbitmq
+    container_name: 3dem_prtl_rabbitmq
+    hostname: 3dem_prtl_rabbitmq
     networks:
       - cep_prtl_net
 
   memcached:
     image: memcached:latest
-    container_name: cep_prtl_memcached
-    hostname: cep_prtl_memcached
+    container_name: 3dem_prtl_memcached
+    hostname: 3dem_prtl_memcached
     networks:
       - cep_prtl_net
 
@@ -47,8 +47,8 @@ services:
       - cep_prtl_es_data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-    container_name: cep_prtl_elasticsearch
-    hostname: cep_prtl_elasticsearch
+    container_name: 3dem_prtl_elasticsearch
+    hostname: 3dem_prtl_elasticsearch
     networks:
       - cep_prtl_net
 
@@ -58,8 +58,8 @@ services:
       - cep_prtl_postgres_data:/var/lib/postgresql/data/portal
     ports:
       - 5432:5432
-    container_name: cep_prtl_postgres
-    hostname: cep_prtl_postgres
+    container_name: 3dem_prtl_postgres
+    hostname: 3dem_prtl_postgres
     networks:
       - cep_prtl_net
     environment:
@@ -73,8 +73,8 @@ services:
     volumes:
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf
       - ../nginx/gzip.conf:/etc/nginx/gzip.conf
-      - ../nginx/certificates/cep.dev.crt:/etc/ssl/cep.dev.crt
-      - ../nginx/certificates/cep.dev.key:/etc/ssl/cep.dev.key
+      - ../nginx/certificates/3dem.dev.crt:/etc/ssl/3dem.dev.crt
+      - ../nginx/certificates/3dem.dev.key:/etc/ssl/3dem.dev.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
       - ../../../.:/srv/www/portal
     links:
@@ -83,27 +83,28 @@ services:
     ports:
       - 80:80
       - 443:443
-    container_name: cep_prtl_nginx
-    hostname: cep_prtl_nginx
+    container_name: 3dem_prtl_nginx
+    hostname: 3dem_prtl_nginx
     networks:
       - cep_prtl_net
 
   websockets:
-    image: cep-portal/portal:local
+    image: neuronex-3dem-portal/portal:local
     links:
       - redis:redis
     volumes:
       - ../../../.:/srv/www/portal
     ports:
       - 9000:9000
-    container_name: cep_prtl_websockets
+    container_name: 3dem_prtl_websockets
     hostname: cep_prtl_websockets
     command: "uwsgi --chdir /srv/www/portal/server --gevent 1000 --workers=2 --http-websockets  --http-socket=:9000 --module portal.wsgi_websocket:application"
     networks:
       - cep_prtl_net
 
   django:
-    image: cep-portal/portal:local
+    image: neuronex-3dem-portal/portal:local
+    # env_file: ../env_files/portal.env
     links:
       - memcached:memcached
       - postgres:postgres
@@ -123,13 +124,14 @@ services:
     stdin_open: true
     tty: true
     command: ['python', './manage.py', 'runserver', '0.0.0.0:8000']
-    container_name: cep_prtl_django
-    hostname: cep_prtl_django
+    container_name: 3dem_prtl_django
+    hostname: 3dem_prtl_django
     networks:
       - cep_prtl_net
 
   workers:
-    image: cep-portal/portal:local
+    image: neuronex-3dem-portal/portal:local
+    # env_file: ../env_files/portal.env
     links:
       - memcached:memcached
       - postgres:postgres
@@ -144,7 +146,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     command: "celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
-    container_name: cep_prtl_workers
+    container_name: 3dem_prtl_workers
     hostname: cep_prtl_workers
     networks:
       - cep_prtl_net

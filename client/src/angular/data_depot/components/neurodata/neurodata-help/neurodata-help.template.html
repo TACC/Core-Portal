@@ -1,0 +1,31 @@
+<div class="modal-header">
+    <h3 class="modal-title">Search Help</h3>
+</div>
+<div class="modal-body">
+    <p>The Neurodata browser can be used to preview data sets and save cutouts
+        to a project or personal storage system for further processing.
+        The hierarchy of collections, experiments, and channels can be browsed
+        analogously to file systems in the other panes of the Data Browser.
+        Selecting a channel opens a popup with information about that
+        channel and utilities for managing cutouts.</p>
+
+    <p>The coordinate table in the top right of the channel display window shows
+        allowable coordinates for generating a cutout as well as the metric used
+        to define voxels.</p>
+
+    <p>To generate a cutout, enter the desired x, y, and z coordinates into the
+        provided form fields and click the “Preview Cutout” or “Save to Data Files”
+        button. If the channel supports JPEG visualization, selecting “Preview
+        cutout” will display the image in your browser window.</p>
+
+    <p>To save the cutout for further analysis, enter a filename in the provided
+        field (or leave blank to use an auto-generated filename) and select the
+        preferred file type (JPG, blosc, or blosc-python) from the attached
+        pull-down menu. Clicking “Save to Data Files” will then allow you to select
+        a folder in My Data or My Projects to download the cutout to. This saved
+        file can be accessed through any application in the Applications section of
+        3DEM.</p>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="$ctrl.dismiss()">Close</button>
+</div>

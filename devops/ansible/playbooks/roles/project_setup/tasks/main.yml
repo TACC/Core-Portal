@@ -65,18 +65,7 @@
   command: "npm run build"
   args:
     chdir: "{{project_home_dir}}/{{project_name}}/client"
-  become_user: portal
 
 - name: Django Collect static
   command: "{{ project_home_dir }}/.envs/{{project_name}}/bin/python2 {{project_home_dir}}/{{project_name}}/server/manage.py collectstatic --no-input"
   become_user: portal
-
-- name: Fixing Django log permissions
-  file:
-    path: "/var/log/{{project_name}}"
-    owner: portal
-    group: portal
-    recurse: yes
-
-# - name: restart uwsgi
-#   service: name=uwsgi.service state=restarted enabled=yes

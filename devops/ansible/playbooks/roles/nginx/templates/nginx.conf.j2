@@ -46,8 +46,8 @@ http {
         merge_slashes off;
         charset  utf-8;
 
-        ssl_certificate             {{ server.ssl_cert_path }}/{{ nginx_cert_file }};
-        ssl_certificate_key         {{ server.ssl_key_path }}/{{ nginx_key_file }};
+        ssl_certificate             /etc/pki/tls/certs/cert.cer;
+        ssl_certificate_key         /etc/pki/tls/private/cert.key;
         ssl_dhparam                 /etc/ssl/dhparam.pem;
         ssl_prefer_server_ciphers   on;
         ssl_protocols               TLSv1 TLSv1.1 TLSv1.2;
