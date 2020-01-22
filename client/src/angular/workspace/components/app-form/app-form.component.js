@@ -2,7 +2,8 @@ import template from './app-form.template.html';
 import angular from 'angular';
 
 class ApplicationFormCtrl {
-    constructor($rootScope, Apps, Jobs, $timeout, UserService, $uibModal, SystemsService, $q, ProjectService) {
+    constructor($rootScope, Apps, Jobs, $timeout, UserService, $uibModal, 
+                SystemsService, $q, ProjectService, $window) {
         'ngInject';
         this.$rootScope =$rootScope;
         this.Apps = Apps;
@@ -13,6 +14,7 @@ class ApplicationFormCtrl {
         this.SystemsService = SystemsService;
         this.$q = $q;
         this.ProjectService = ProjectService;
+        this.$window = $window;
     }
 
     $onChanges() {
@@ -321,6 +323,7 @@ class ApplicationFormCtrl {
                     header: 'Job Submitted Successfully',
                     body: 'Your job <em>' + resp.name + '</em> has been submitted. Monitor its status on the right.',
                 });
+                this.$window.scrollTo(0, 0);
             },
             (err) => {
                 this.submitting = false;
@@ -335,6 +338,7 @@ class ApplicationFormCtrl {
                 if (err.status == 412) {
                     this.app.clonedSysId = err.data.message.match('Unable to authenticate to (.*) with the default credential')[1];
                 }
+                this.$window.scrollTo(0, 0);
             });
     }
 
