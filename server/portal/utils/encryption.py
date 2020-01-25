@@ -44,7 +44,7 @@ def export_key(key, format='PEM'):  # pylint: disable=redefined-builtin
         Use `format='PEM'` for exporting private keys
         and `format='OpenSSH' for exporting public keys
     """
-    return key.exportKey(format)
+    return key.exportKey(format).decode('utf-8')
 
 
 def encrypt(raw):

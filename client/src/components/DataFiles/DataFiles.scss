@@ -1,0 +1,48 @@
+.data-files-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px 40px 0 20px;
+}
+.data-files-items {
+    /* Styles as a flex child */
+    flex-grow: 1;
+
+    /* Styles as a flex parent */
+    display: flex;
+    flex-direction: row;
+}
+/* Make right-most item fill up remaining vertical space */
+.data-files-items > :last-child {
+    flex-grow: 1;
+}
+
+.data-files-header {
+  border-bottom: 1px solid black;
+  margin-top: 0px;
+  margin-left: -20px !important;
+  padding-bottom: 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.data-files-table {
+  padding-top: 20px;
+  padding-left: 20px;
+}
+
+/* Overrides */
+
+/* Override Bootstrap `.row`, because we need to
+   "undo" one horizontal instance of Bootstrap `.row`'s. */
+/* The (Bootstrap) problem `Workbench.css` solves is different from DataFiles,
+   because they have two different layouts (fault of inconsistent UI designs).
+   See https://tacc-team.slack.com/archives/CQUA4D5KJ/p1576532637009700 */
+.workbench-content .row {
+  /* Override `.workbench-content .row` in `Workbench.css` */
+  margin-right: 0 !important;
+  /* Override `.workbench-content .row` in `Workbench.css` */
+  margin-left: 0 !important;
+}

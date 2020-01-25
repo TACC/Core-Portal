@@ -1,0 +1,44 @@
+$data-files-wrapper-horizontal-padding: 20px;
+
+.data-files-sidebar {
+    width: 165px;
+    height: 100%;
+    background: #ffffff;
+    border-right: #dfdfdf;
+    padding-top: 10px;
+    border-right: 1px solid rgba(112, 112, 112, 0.25);
+  }
+  
+  .toolbar-button-text {
+    padding-left: 5px;
+    font: Bold 15px/25px Roboto;
+  }
+  
+  .data-files-sidebar .nav-link {
+    padding-left: $data-files-wrapper-horizontal-padding;
+    color: #707070;
+  }
+  .data-files-sidebar .nav-link.active {
+    background: #dfdaf5;
+  }
+  .data-files-sidebar .nav-text {
+    padding-left: 15px;
+    font-size: 0.78em;
+    font-weight: 500;
+  }
+
+  
+  #data-files-add {
+    width: 140px;
+
+    background-color: #9D85EF;
+    border-color: #9D85EF;
+    border-radius: 0;
+  }
+
+.data-files-nav {
+  padding-top: 20px;
+  /* Pull back sidebar to the left, so it can use (as UI design dictactes)
+      the negative space created from `data-files-wrapper`'s `padding` */
+  margin-left: -$data-files-wrapper-horizontal-padding;
+}

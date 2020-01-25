@@ -3,6 +3,7 @@
     flex-direction: row;
 
     color: #484848;
+    height: 100%;
 }
 .workbench-content {
     /* Styles as a flex child */
@@ -98,6 +99,8 @@
   border-right: none;
 }
 
+/* Overrides Bootstrap `.row`, because we need to
+   "undo" two horizontal instances of Bootstrap `.row`'s. */
 .workbench-content .row {
   margin-right: -30px;
   margin-left: -30px;

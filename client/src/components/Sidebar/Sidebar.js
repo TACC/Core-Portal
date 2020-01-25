@@ -7,7 +7,7 @@ import { faBell, faFolder } from '@fortawesome/free-regular-svg-icons';
 import './Sidebar.scss';
 
 /** A navigation list for the application */
-export default function Sidebar() {
+export function Sidebar() {
   return (
     <Nav id="sidebar" className="side-nav" vertical>
       <NavItem>
@@ -28,12 +28,7 @@ export default function Sidebar() {
         </NavLink>
       </NavItem>
       <NavItem>
-        <NavLink
-          tag={RRNavLink}
-          exact
-          to="/workbench/data/"
-          activeClassName="active"
-        >
+        <NavLink tag={RRNavLink} to="/workbench/data/" activeClassName="active">
           <div className="nav-content">
             <FontAwesomeIcon
               icon={faFolder}
@@ -107,3 +102,5 @@ export default function Sidebar() {
     </Nav>
   );
 }
+
+export default Sidebar;

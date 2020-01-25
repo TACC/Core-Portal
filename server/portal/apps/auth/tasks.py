@@ -16,7 +16,6 @@ def setup_user(self, username):
     profile = PortalProfile.objects.get(user=user)
     profile.setup_complete = True
     profile.save()
-    # TODO: REENABLE USER SYSTEM SETUP
-    # from portal.apps.accounts.managers.accounts import setup
+    from portal.apps.accounts.managers.accounts import setup
     # logger.info("Async setup task for {username} launched".format(username=username))
-    # setup(username)
+    setup(username)

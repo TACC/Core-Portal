@@ -149,18 +149,21 @@ class SystemKeysView(BaseApiView):
         :param request: Django's request object
         :param str system_id: System id
         """
-
         AccountsManager.reset_system_keys(
             request.user.username,
             system_id
         )
+
+        hostname = request.user.agave_oauth.client.systems.get(
+            systemId=system_id
+        )['storage']['host']
 
         success, result, http_status = AccountsManager.add_pub_key_to_resource(
             request.user.username,
             password=body['form']['password'],
             token=body['form']['token'],
             system_id=system_id,
-            hostname=body['form']['hostname']
+            hostname=hostname
         )
         if success and body['form']['type'] == 'STORAGE':
             # Index the user's home directory once keys are successfully pushed.

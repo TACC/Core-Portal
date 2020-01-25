@@ -29,16 +29,19 @@
         "jest"
     ],
     "parser": "babel-eslint",
+    "ignorePatterns": ["*.test.js"],
     "rules": {
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
         "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/*.test.js", "**/*.spec.js"]}],
         "semi": [1, "always"],
+        "no-underscore-dangle": 0,
         "react/jsx-props-no-spreading": [2, {
             "html": "enforce" ,
             "custom": "enforce",
-            "exceptions": ["Table", "table", "thead", "tbody", "th", "tr", "td"],
+            "exceptions": ["Table", "table", "thead", "tbody", "th", "tr", "td", "div"],
             "explicitSpread": "ignore"
         }],
-        "prettier/prettier": ["error", { "singleQuote": true }]
+        "prettier/prettier": ["error", { "singleQuote": true }],
+        "jsx-a11y/anchor-is-valid": 0
     }
 }

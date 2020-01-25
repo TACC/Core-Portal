@@ -1,17 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Dashboard from '../Dashboard';
 import Allocations from '../Allocations';
 import Sidebar from '../Sidebar';
+import DataFiles from '../DataFiles';
 import * as ROUTES from '../../constants/routes';
 import './Workbench.scss';
 
 function Applications() {
   return <h2>Applications</h2>;
-}
-
-function DataFiles() {
-  return <h2>Data Files</h2>;
 }
 
 function Publications() {
@@ -23,6 +21,11 @@ function History() {
 }
 
 function Workbench() {
+  const dispatch = useDispatch();
+  // Get systems and any other initial data we need from the backend
+  useEffect(() => {
+    dispatch({ type: 'FETCH_SYSTEMS' });
+  }, []);
   const match = useRouteMatch();
 
   return (
