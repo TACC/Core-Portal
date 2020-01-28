@@ -75,7 +75,7 @@ Remaining.propTypes = CELL_PROPTYPES;
 export const Expires = ({ row: { values } }) => (
   <div className="sub-table-row">
     {values.expires.map(({ id, date }) => (
-      <div key={id} className="sub-table-cell">
+      <div key={id} className="sub-table-cell" data-testid="expiration-date">
         <span>{date}</span>
       </div>
     ))}

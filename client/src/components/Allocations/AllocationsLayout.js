@@ -85,7 +85,7 @@ export const Loading = () => (
     <FontAwesomeIcon icon={faSun} size="8x" spin />
   </div>
 );
-export const Pending = () => <div id="pending" />;
+export const Pending = () => <div id="pending" data-testid="pending-view" />;
 
 export const ContentWrapper = ({ page }) => {
   const loading = useSelector(state => state.spinner);

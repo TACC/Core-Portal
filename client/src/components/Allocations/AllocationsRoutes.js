@@ -12,20 +12,16 @@ const AllocationsRoutes = ({ match: { path } }) => {
   }, [dispatch]);
 
   return (
-    <div id="allocations-wrapper">
-      <Route
-        exact
-        path={[`${path}`, `${path}/approved`]}
-        render={() => <Layout filter="Approved" />}
-      />
-      <Route
-        path={`${path}/pending`}
-        render={() => <Layout filter="Pending" />}
-      />
-      <Route
-        path={`${path}/expired`}
-        render={() => <Layout filter="Expired" />}
-      />
+    <div id="allocations-wrapper" data-testid="allocations-router">
+      <Route exact path={[`${path}`, `${path}/approved`]}>
+        <Layout filter="Approved" />
+      </Route>
+      <Route path={`${path}/pending`}>
+        <Layout filter="Pending" />
+      </Route>
+      <Route path={`${path}/expired`}>
+        <Layout filter="Expired" />
+      </Route>
     </div>
   );
 };

@@ -2,8 +2,9 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useTable } from 'react-table';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
+import systemAccessor from './AllocationsUtils';
 
-const TableTemplate = ({ columns, data }) => {
+export const TableTemplate = ({ columns, data }) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -68,50 +69,25 @@ export const ActiveTable = ({ allocations }) => {
       },
       {
         Header: 'Systems',
-        accessor: ({ systems }) =>
-          systems.map(({ name, allocation: { id } }) => ({
-            name,
-            id
-          })),
+        accessor: ({ systems }) => systemAccessor(systems, 'Systems'),
         id: 'name',
         Cell: Systems
       },
       {
         Header: 'Awarded',
-        accessor: ({ systems }) =>
-          systems.map(({ allocation: { computeAllocated, id }, type }) => ({
-            awarded: Math.round(computeAllocated),
-            type,
-            id
-          })),
+        accessor: ({ systems }) => systemAccessor(systems, 'Awarded'),
         id: 'awarded',
         Cell: Awarded
       },
       {
         Header: 'Remaining',
-        accessor: ({ systems }) =>
-          systems.map(
-            ({ allocation: { id, computeAllocated, computeUsed }, type }) => {
-              const remaining = Math.round(computeAllocated - computeUsed);
-              const ratio = remaining / computeAllocated || 0;
-              return {
-                id,
-                remaining,
-                ratio,
-                type
-              };
-            }
-          ),
+        accessor: ({ systems }) => systemAccessor(systems, 'Remaining'),
         id: 'remaining',
         Cell: Remaining
       },
       {
         Header: 'Expires',
-        accessor: ({ systems }) =>
-          systems.map(({ allocation: { end, id } }) => ({
-            id,
-            date: new Date(end).toDateString()
-          })),
+        accessor: ({ systems }) => systemAccessor(systems, 'Expires'),
         id: 'expires',
         Cell: Expires
       }
