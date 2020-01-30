@@ -15,10 +15,10 @@
           <a class="nav-link {% if item_url in request.path %}active {% endif %}" href="{{item_url}}">Account Profile</a>
         </li>
 
-        {% url 'portal_accounts:manage_onboarding' as item_url %}
+        <!-- {% url 'portal_accounts:manage_onboarding' as item_url %}
         <li class="nav-item">
           <a class="nav-link {% if item_url in request.path %}active {% endif %}" href="{{item_url}}">Account Setup</a>
-        </li>
+        </li> -->
 
         {% url 'portal_accounts:manage_authentication' as item_url %}
         <li class="nav-item">
