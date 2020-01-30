@@ -16,6 +16,7 @@ import pytest
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.django_db(transaction=True)
 class TestAbacoStep(TestCase):
     def setUp(self):
         super(TestAbacoStep, self).setUp()
@@ -116,6 +117,7 @@ class TestAbacoStep(TestCase):
         mock_log.assert_called_with("message", "data")
 
 
+@pytest.mark.django_db(transaction=True)
 class TestAbacoStepTransaction(TransactionTestCase):
     """
     A separate test case that allows DB transactions to be tested on

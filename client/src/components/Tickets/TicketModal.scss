@@ -1,0 +1,94 @@
+.ticket-detailed-view-container, .ticket-detailed-view-container .row{
+  height: 100%;
+}
+
+.ticket-history {
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
+.ticket-history-header {
+  padding-right: 1em;
+}
+
+.ticket-reply-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-reply-group{
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-reply-text-area {
+  resize: none;
+  flex-grow: 1;
+  min-height: 3em;
+}
+
+.ticket-reply-button, toggle-icon {
+  text-align: right;
+}
+
+.modal-content {
+  color: #484848;
+  font-size: 0.75rem;
+  height: 90vh;
+  min-height: 535px;
+}
+
+.modal-content .btn-primary {
+  border: none;
+  background-color: #9d85ef;
+  min-width: 100px;
+  min-height: 25px;
+  font-size: 0.75rem;
+}
+
+.modal-header {
+  background-color: #F4F4F4;
+}
+
+/* Ensure that modal title takes up space but allows room for close button */
+.modal-header{
+  width: 100%
+}
+.modal-title{
+ width: 90%
+}
+.modal-header-title {
+  width: 100%
+}
+
+
+.card-header {
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-body {
+  white-space: pre-wrap;
+}
+
+.ticket-creator {
+  color: #9d85ef
+}
+
+.form-text {
+  font-size: 0.75rem;
+}
+
+.ticket-history-loading-icon {
+  text-align: center;
+}
+
+/* make bootstrap dialog wider */
+@media (min-width: 1200px) {
+  .modal-dialog {
+    max-width: 1000px;
+  }
+}

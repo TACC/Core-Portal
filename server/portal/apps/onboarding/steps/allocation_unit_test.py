@@ -4,9 +4,8 @@ from mock import patch
 from portal.apps.onboarding.steps.allocation import AllocationStep
 import pytest
 
-pytestmark = pytest.mark.django_db
 
-
+@pytest.mark.django_db(transaction=True)
 class AllocationStepTest(TestCase):
     def setUp(self):
         super(AllocationStepTest, self).setUp()

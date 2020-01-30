@@ -4,9 +4,8 @@ from mock import patch, ANY, MagicMock
 from portal.apps.onboarding.steps.mfa import MFAStep
 import pytest
 
-pytestmark = pytest.mark.django_db
 
-
+@pytest.mark.django_db(transaction=True)
 class MFAStepTest(TestCase):
     def setUp(self):
         super(MFAStepTest, self).setUp()

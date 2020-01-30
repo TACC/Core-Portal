@@ -1,6 +1,5 @@
 from django.test import (
     TestCase,
-    TransactionTestCase,
     override_settings
 )
 from django.contrib.auth import get_user_model
@@ -24,9 +23,7 @@ from unittest import skip
 import pytest
 
 
-pytestmark = pytest.mark.django_db
-
-
+@pytest.mark.django_db(transaction=True)
 class TestLogSetupState(TestCase):
     def setUp(self):
         super(TestLogSetupState, self).setUp()
@@ -96,6 +93,7 @@ class TestPrepareSteps(TestCase):
         self.assertEqual(setup_events[0].state, SetupState.PENDING)
 
 
+@pytest.mark.django_db(transaction=True)
 class TestStepLoader(TestCase):
     def setUp(self):
         super(TestStepLoader, self).setUp()
@@ -143,6 +141,7 @@ class TestStepLoader(TestCase):
             )
 
 
+@pytest.mark.django_db(transaction=True)
 class TestExecuteSteps(TestCase):
     def setUp(self):
         super(TestExecuteSteps, self).setUp()
@@ -335,7 +334,7 @@ class TestExecuteSteps(TestCase):
 
 
 @pytest.mark.django_db(transaction=True)
-class TestNewUserSetup(TransactionTestCase):
+class TestNewUserSetup(TestCase):
     def setUp(self):
         super(TestNewUserSetup, self).setUp()
         self.user = get_user_model().objects.create_user(

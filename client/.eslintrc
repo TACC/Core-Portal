@@ -38,7 +38,7 @@
         "react/jsx-props-no-spreading": [2, {
             "html": "enforce" ,
             "custom": "enforce",
-            "exceptions": ["Table", "table", "thead", "tbody", "th", "tr", "td", "div"],
+            "exceptions": ["input", "Input", "Table", "table", "thead", "tbody", "th", "tr", "td", "div"],
             "explicitSpread": "ignore"
         }],
         "prettier/prettier": ["error", { "singleQuote": true }],

@@ -6,9 +6,8 @@ from django.contrib.auth import get_user_model
 from portal.apps.onboarding.steps.test_steps import MockStep
 import pytest
 
-pytestmark = pytest.mark.django_db
 
-
+@pytest.mark.django_db(transaction=True)
 class TestAbstractStep(TestCase):
     def setUp(self):
         super(TestAbstractStep, self).setUp()

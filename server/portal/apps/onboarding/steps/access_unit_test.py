@@ -5,9 +5,8 @@ from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.steps.access import RequestAccessStep
 import pytest
 
-pytestmark = pytest.mark.django_db
 
-
+@pytest.mark.django_db(transaction=True)
 class TestRequestAccessStep(TestCase):
     def setUp(self):
         super(TestRequestAccessStep, self).setUp()

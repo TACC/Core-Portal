@@ -5,9 +5,8 @@ from pytas.http import TASClient
 from portal.apps.onboarding.steps.project_membership import ProjectMembershipStep
 import pytest
 
-pytestmark = pytest.mark.django_db
 
-
+@pytest.mark.django_db(transaction=True)
 class ProjectMembershipStepTest(TestCase):
     fixtures = ['users', 'auth']
 

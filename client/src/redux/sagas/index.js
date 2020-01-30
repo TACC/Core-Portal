@@ -14,6 +14,7 @@ import {
   watchTrash
 } from './datafiles.sagas';
 import { watchAllocations } from './allocations.sagas';
+import { watchFetchTicketHistory, watchPostTicketReply } from './tickets.sagas';
 
 export default function* rootSaga() {
   yield all([
@@ -29,6 +30,9 @@ export default function* rootSaga() {
     watchMkdir(),
     watchDownload(),
     watchTrash(),
-    watchAllocations()
+    watchAllocations(),
+    watchAllocations(),
+    watchFetchTicketHistory(),
+    watchPostTicketReply()
   ]);
 }

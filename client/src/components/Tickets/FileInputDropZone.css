@@ -1,0 +1,32 @@
+.dropzone-area {
+    text-align: center;
+    background-color: #f4f4f4;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    min-height: 220px;
+}
+
+.select-files-button {
+    border: 2px solid;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.ticket-reply-button, toggle-icon {
+    text-align: right;
+}
+.attachment-list {
+    overflow-y: auto;
+    max-height: 210px;
+}
+
+.attachment-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.attachment-remove {
+    font-size: 0.75rem;
+}
