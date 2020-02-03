@@ -14,7 +14,13 @@ describe('Allocations Page Layout', () => {
   const mockStore = configureStore();
   it('renders the Allocations Page Layout with identifying components', () => {
     const { getByText, getAllByText, getByTestId } = render(
-      <Provider store={mockStore({})}>
+      <Provider
+        store={mockStore({
+          allocations: {
+            loading: false
+          }
+        })}
+      >
         <BrowserRouter>
           <AllocationsLayout filter="Pending" />
         </BrowserRouter>

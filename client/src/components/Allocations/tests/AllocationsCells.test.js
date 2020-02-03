@@ -1,5 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 import { toBeInTheDocument } from '@testing-library/jest-dom/dist/matchers';
 import {
   Team,
@@ -48,22 +50,41 @@ const fixture = {
   pi: 'Test PI'
 };
 
+const mockStore = configureStore();
+const mockInitialState = {
+  active: [],
+  inactive: [],
+  loading: true,
+  teams: {},
+  pages: {},
+  userDirectory: {},
+  loadingUsernames: true
+};
+const Wrapper = ({ store, children }) => (
+  <Provider store={store}>{children}</Provider>
+);
+
 expect.extend({ toBeInTheDocument });
 describe('Allocations Table Cells', () => {
   const { systems } = fixture;
   it('should have a team view link in a cell', () => {
-    const { getByText } = render(<Team />);
+    const { getByText } = render(
+      <Wrapper store={mockStore({ allocations: mockInitialState })}>
+        <Team cell={{ value: 23881 }} />
+      </Wrapper>
+    );
     expect(getByText(/View Team/)).toBeInTheDocument();
   });
   it('should have Systems cells', () => {
     const value = systems;
-    const { getByText } = render(
+    const { getByText, debug } = render(
       <Systems
         cell={{
           value
         }}
       />
     );
+    debug()
     expect(getByText(/Test System/)).toBeInTheDocument();
   });
   it('should show Awarded allocations', () => {

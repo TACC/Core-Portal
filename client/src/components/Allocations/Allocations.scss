@@ -81,7 +81,7 @@
         background: rgba(#9d85ef, 0.25);
     }
 }
-#allocations-table {
+.allocations-table {
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -130,7 +130,7 @@
     }
 }
 #pending {
-    @extend #allocations-table;
+    @extend .allocations-table;
 }
 .allocations-modal-header {
     background-color: #F4F4F4;
@@ -144,5 +144,26 @@
 .allocations-request-body {
     color: #484848;
     font-size: 0.75rem;
+}
+.team-view-modal-wrapper {
+    .modal-body {
+        overflow-y: initial !important;
+    }
+    .modal-left {
+        height: 250px;
+        overflow-y: scroll;
+        padding-left: 0;
+    }
+    .modal-right {
+        padding: 1em;
+        .contact-card {
+            display: flex;
+            flex-direction: column;
+            font: 14px Roboto;
+        }
+    }
+    .user-name {
+        margin-left: 0.5rem;
+    }
 }
 

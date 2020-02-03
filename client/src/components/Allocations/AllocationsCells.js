@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { object, shape, array } from 'prop-types';
+import { object, shape, array, number } from 'prop-types';
 import { Button, Badge } from 'reactstrap';
+import { useDispatch } from 'react-redux';
 import { TeamView } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
@@ -9,27 +10,40 @@ const CELL_PROPTYPES = {
   }).isRequired
 };
 
-export const Team = () => {
+export const Team = ({ cell: { value } }) => {
+  const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
   return (
     <>
       <Button
         className="btn btn-sm"
         color="link"
-        onClick={() => setOpenModal(true)}
+        onClick={() => {
+          dispatch({ type: 'GET_TEAMS', payload: { id: value } });
+          setOpenModal(true);
+        }}
         disabled={openModal}
       >
         View Team
       </Button>
-      <TeamView isOpen={openModal} toggle={() => setOpenModal(!openModal)} />
+      <TeamView
+        isOpen={openModal}
+        pid={value}
+        toggle={() => setOpenModal(!openModal)}
+      />
     </>
   );
+};
+Team.propTypes = {
+  cell: shape({
+    value: number.isRequired
+  }).isRequired
 };
 
 export const Systems = ({ cell }) => (
   <div className="sub-table-row">
     {cell.value.map(({ name, id }) => (
-      <div key={id} className="sub-table-cell">
+      <div key={`${name}${id}`} className="sub-table-cell">
         <span style={{ marginLeft: '1em' }}>{name}</span>
       </div>
     ))}

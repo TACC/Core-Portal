@@ -88,12 +88,12 @@ export const Loading = () => (
 export const Pending = () => <div id="pending" data-testid="pending-view" />;
 
 export const ContentWrapper = ({ page }) => {
-  const loading = useSelector(state => state.spinner);
+  const loading = useSelector(state => state.allocations.loading);
   const allocations = useSelector(state => state.allocations);
   const showTable = p => {
     switch (p) {
       case 'Approved':
-        return <ActiveTable allocations={allocations.allocs} />;
+        return <ActiveTable allocations={allocations.active} />;
       case 'Pending':
         return <Pending />;
       default:

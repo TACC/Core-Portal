@@ -16,7 +16,7 @@ export const TableTemplate = ({ columns, data }) => {
     data
   });
   return (
-    <div id="allocations-table">
+    <div className="allocations-table">
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map(headerGroup => (
@@ -57,7 +57,7 @@ export const ActiveTable = ({ allocations }) => {
     () => [
       {
         Header: 'Title',
-        accessor: 'projectId'
+        accessor: 'projectName'
       },
       {
         Header: 'Principal Investigator',
@@ -65,6 +65,7 @@ export const ActiveTable = ({ allocations }) => {
       },
       {
         Header: 'Team',
+        accessor: 'projectId',
         Cell: Team
       },
       {

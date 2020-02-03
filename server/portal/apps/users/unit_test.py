@@ -93,6 +93,7 @@ class TestGetAllocations(TestCase):
             {
                 "title": "Big Project",
                 "chargeCode": "Big-Proj",
+                "id": "Test-ID",
                 "pi": {
                     "firstName": "Test",
                     "lastName": "User"
@@ -121,6 +122,7 @@ class TestGetAllocations(TestCase):
             {
                 "title": "A Proj",
                 "chargeCode": "Proj-Code",
+                "id": "Test-ID",
                 "pi": {
                     "firstName": "Another",
                     "lastName": "User"
@@ -135,7 +137,8 @@ class TestGetAllocations(TestCase):
         ]
         active_expected = [
             {
-                "projectId": "Big-Proj",
+                "projectName": "Big-Proj",
+                "projectId": "Test-ID",
                 "systems": [
                     {
                         'allocation': {'resource': 'Frontera', 'status': 'Active'},
@@ -148,7 +151,8 @@ class TestGetAllocations(TestCase):
                 "pi": "Test User"
             },
             {
-                "projectId": "Proj-Code",
+                "projectName": "Proj-Code",
+                "projectId": "Test-ID",
                 "systems": [
                     {
                         'allocation': {'resource': 'Rodeo2', 'status': 'Active'},

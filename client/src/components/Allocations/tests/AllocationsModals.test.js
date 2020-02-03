@@ -22,3 +22,9 @@ describe('Allocations Request Form', () => {
     expect(getByTestId('request-body')).toBeDefined();
   });
 });
+
+describe('View Team Modal', () => {
+  it.todo(
+    'assert that the components of view team modal are showing relevant information for the user'
+  );
+});

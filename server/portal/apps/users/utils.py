@@ -150,13 +150,14 @@ def get_allocations(username):
                 allocations[project] = {
                     'systems': [resource],
                     'title': proj['title'],
+                    'projectId': proj['id'],
                     'pi': '{} {}'.format(proj['pi']['firstName'], proj['pi']['lastName'])
                 }
         elif alloc['resource'] in systems:
             inactive.append(proj)
 
     for k, v in allocations.items():
-        p = {'projectId': k}
+        p = {'projectName': k}
         for kk, vv in v.items():
             p[kk] = vv
         alloc_list.append(p)
@@ -171,3 +172,29 @@ def get_allocations(username):
         # })
 
     return alloc_list, inactive
+
+
+def get_usernames(project_id):
+
+    tas_client = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            'username': settings.TAS_CLIENT_KEY,
+            'password': settings.TAS_CLIENT_SECRET
+        }
+    )
+    usernames = tas_client.get_project_users(project_id=project_id)
+    return usernames
+
+
+def get_user_data(username):
+
+    tas_client = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            'username': settings.TAS_CLIENT_KEY,
+            'password': settings.TAS_CLIENT_SECRET
+            }
+    )
+    user_data = tas_client.get_user(username=username)
+    return user_data
