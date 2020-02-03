@@ -33,62 +33,59 @@
   text-align: right;
 }
 
-.modal-content {
+.ticket-model-content {
+
   color: #484848;
   font-size: 0.75rem;
   height: 90vh;
   min-height: 535px;
-}
 
-.modal-content .btn-primary {
-  border: none;
-  background-color: #9d85ef;
-  min-width: 100px;
-  min-height: 25px;
-  font-size: 0.75rem;
-}
+  .card-header {
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+  }
 
-.modal-header {
-  background-color: #F4F4F4;
-}
+  .card-body {
+    white-space: pre-wrap;
+  }
 
-/* Ensure that modal title takes up space but allows room for close button */
-.modal-header{
-  width: 100%
-}
-.modal-title{
- width: 90%
-}
-.modal-header-title {
-  width: 100%
-}
+  .ticket-creator {
+    color: #9d85ef
+  }
 
+  .ticket-history-loading-icon {
+    text-align: center;
+  }
 
-.card-header {
-  background-color: white;
-  display: flex;
-  justify-content: space-between;
-}
+  .btn-primary {
+    border: none;
+    background-color: #9d85ef;
+    min-width: 100px;
+    min-height: 25px;
+    font-size: 0.75rem;
+  }
 
-.card-body {
-  white-space: pre-wrap;
-}
+  .form-text {
+    font-size: 0.75rem;
+  }
 
-.ticket-creator {
-  color: #9d85ef
-}
+  .modal-header {
+    background-color: #F4F4F4;
+  }
 
-.form-text {
-  font-size: 0.75rem;
-}
+  /* Ensure that modal title takes up space but allows room for close button */
+  .modal-title{
+    width: 90%
+  }
+  .modal-header-title {
+    width: 100%
+  }
 
-.ticket-history-loading-icon {
-  text-align: center;
-}
-
-/* make bootstrap dialog wider */
-@media (min-width: 1200px) {
-  .modal-dialog {
-    max-width: 1000px;
+  /* make bootstrap dialog wider */
+  @media (min-width: 1200px) {
+    .modal-dialog {
+      max-width: 1000px;
+    }
   }
 }

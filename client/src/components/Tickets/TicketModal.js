@@ -262,7 +262,7 @@ const TicketModal = ({ ticketId, ticketSubject, toggle, showModal }) => {
 
   return (
     <Modal
-      className="model-content"
+      className="ticket-model-content"
       isOpen={showModal}
       toggle={toggle}
       size="lg"
