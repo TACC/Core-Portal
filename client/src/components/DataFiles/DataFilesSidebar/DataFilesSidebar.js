@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Nav,
   NavItem,
@@ -26,7 +26,7 @@ const DataFilesSidebar = () => {
       payload: { operation: 'upload', props: {} }
     });
   };
-
+  const err = useSelector(state => state.files.error.FilesListing);
   const toggleMkdirModal = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -39,7 +39,13 @@ const DataFilesSidebar = () => {
       <div className="data-files-sidebar">
         <div id="add-button-wrapper">
           <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-            <DropdownToggle id="data-files-add">+ Add</DropdownToggle>
+            <DropdownToggle
+              id="data-files-add"
+              className="data-files-btn"
+              disabled={err !== false}
+            >
+              + Add
+            </DropdownToggle>
             <DropdownMenu>
               <DropdownItem onClick={toggleMkdirModal}>
                 <FontAwesomeIcon

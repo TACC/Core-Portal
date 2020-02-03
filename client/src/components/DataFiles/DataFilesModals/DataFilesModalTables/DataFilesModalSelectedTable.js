@@ -4,18 +4,20 @@ import { useSelector, shallowEqual } from 'react-redux';
 
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 
-const DataFilesSelectedStatusCell = ({ row }) => {
-  const moveStatus = useSelector(
-    state => state.files.operationStatus.move,
+const DataFilesSelectedStatusCell = ({ row, operation }) => {
+  const status = useSelector(
+    state => state.files.operationStatus[operation],
     shallowEqual
   );
-  return <div>{moveStatus[row.index] || 'not moving'}</div>;
+  return <div>{status[row.original.id]}</div>;
 };
 DataFilesSelectedStatusCell.propTypes = {
-  row: PropTypes.shape({ index: PropTypes.number }).isRequired
+  row: PropTypes.shape({ original: PropTypes.shape({ id: PropTypes.string }) })
+    .isRequired,
+  operation: PropTypes.string.isRequired
 };
 
-const DataFilesSelectedTable = ({ data }) => {
+const DataFilesSelectedTable = ({ data, operation }) => {
   const rowSelectCallback = () => {};
   const scrollBottomCallback = () => {};
 
@@ -23,12 +25,12 @@ const DataFilesSelectedTable = ({ data }) => {
     () => [
       { Header: 'Name', accessor: 'name', width: 0.8 },
       {
-        Header: 'moving?',
+        id: 'status',
         width: 0.2,
-        Cell: DataFilesSelectedStatusCell
+        Cell: ({ row }) => DataFilesSelectedStatusCell({ row, operation })
       }
     ],
-    [data]
+    [data, operation]
   );
   return (
     <DataFilesTable
@@ -41,7 +43,8 @@ const DataFilesSelectedTable = ({ data }) => {
   );
 };
 DataFilesSelectedTable.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape({})).isRequired
+  data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  operation: PropTypes.string.isRequired
 };
 
 export default DataFilesSelectedTable;

@@ -98,7 +98,7 @@ export function* fetchFiles(action) {
         api: action.payload.api,
         scheme: action.payload.scheme,
         system: action.payload.system,
-        path: action.payload.path
+        path: action.payload.path || ''
       }
     }
   });
@@ -197,13 +197,6 @@ export function* renameFile(action) {
     payload: { section: 'RenameModal', set: false }
   });
   yield call(action.payload.reloadCallback);
-  yield put({
-    type: 'DATA_FILES_TOGGLE_MODAL',
-    payload: {
-      operation: 'rename',
-      props: {}
-    }
-  });
 }
 
 export async function moveFileUtil(
@@ -232,6 +225,10 @@ export function* watchMove() {
 }
 
 export function* moveFile(src, dest, index) {
+  yield put({
+    type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+    payload: { status: 'MOVING', key: index, operation: 'move' }
+  });
   try {
     yield call(
       moveFileUtil,
@@ -256,17 +253,77 @@ export function* moveFile(src, dest, index) {
 }
 export function* moveFiles(action) {
   const { dest } = action.payload;
-  const status = {};
-  const moveCalls = action.payload.src.map((file, index) => {
-    status[index] = 'MOVING';
-    return call(moveFile, file, dest, index);
+  const moveCalls = action.payload.src.map(file => {
+    return call(moveFile, file, dest, file.id);
   });
-  yield put({
-    type: 'DATA_FILES_SET_OPERATION_STATUS',
-    payload: { status, operation: 'move' }
-  });
+
   yield race({
     result: all(moveCalls),
+    cancel: take('DATA_FILES_MODAL_CLOSE')
+  });
+
+  yield call(action.payload.reloadCallback);
+}
+
+export async function copyFileUtil(
+  api,
+  scheme,
+  system,
+  path,
+  destSystem,
+  destPath
+) {
+  const url = `/api/datafiles/${api}/copy/${scheme}/${system}${path}/`;
+  const request = await fetch(url, {
+    method: 'PUT',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    credentials: 'same-origin',
+    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath })
+  });
+  if (!request.ok) {
+    throw new Error(request.status);
+  }
+  return request.data;
+}
+
+export function* watchCopy() {
+  yield takeLeading('DATA_FILES_COPY', copyFiles);
+}
+
+export function* copyFile(src, dest, index) {
+  yield put({
+    type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+    payload: { status: 'COPYING', key: index, operation: 'copy' }
+  });
+  try {
+    yield call(
+      copyFileUtil,
+      'tapis',
+      'private',
+      src.system,
+      src.path,
+      dest.system,
+      dest.path,
+      index
+    );
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'SUCCESS', key: index, operation: 'copy' }
+    });
+  } catch (e) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'ERROR', key: index, operation: 'copy' }
+    });
+  }
+}
+export function* copyFiles(action) {
+  const { dest } = action.payload;
+  const copyCalls = action.payload.src.map(file => {
+    return call(copyFile, file, dest, file.id);
+  });
+  yield race({
+    result: all(copyCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
   yield call(action.payload.reloadCallback);
@@ -298,22 +355,16 @@ export function* watchUpload() {
 }
 
 export function* uploadFiles(action) {
-  const status = {};
-  const uploadCalls = action.payload.files.map((file, index) => {
-    status[index] = 'UPLOADING';
+  const uploadCalls = action.payload.files.map(file => {
     return call(
       uploadFile,
       'tapis',
       'private',
       action.payload.system,
       action.payload.path,
-      file,
-      index
+      file.data,
+      file.id
     );
-  });
-  yield put({
-    type: 'DATA_FILES_SET_OPERATION_STATUS',
-    payload: { status, operation: 'upload' }
   });
 
   yield race({
@@ -325,6 +376,10 @@ export function* uploadFiles(action) {
 }
 
 export function* uploadFile(api, scheme, system, path, file, index) {
+  yield put({
+    type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+    payload: { status: 'UPLOADING', key: index, operation: 'upload' }
+  });
   try {
     yield call(uploadFileUtil, api, scheme, system, path, file);
     yield put({

@@ -48,7 +48,11 @@ const DataFilesPreviewModal = () => {
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggle}>
+          <Button
+            color="secondary"
+            className="data-files-btn-cancel"
+            onClick={toggle}
+          >
             Cancel
           </Button>
         </ModalFooter>

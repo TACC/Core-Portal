@@ -150,7 +150,7 @@ describe("DataFilesListing", () => {
       history
     );
 
-    expect(getByText("no files to show")).toBeDefined();
+    expect(getByText("No files to show.")).toBeDefined();
   });
   
 });

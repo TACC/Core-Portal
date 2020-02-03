@@ -103,6 +103,19 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     if file_name is None:
         file_name = src_path.strip('/').split('/')[-1]
 
+    try:
+        client.files.list(systemId=dest_system,
+                          filePath="{}/{}".format(dest_path, file_name))
+
+        # Trash path exists, must make it unique.
+        _ext = os.path.splitext(file_name)[1].lower()
+        _name = os.path.splitext(file_name)[0]
+        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
+        file_name = '{}_{}{}'.format(_name, now, _ext)
+    except HTTPError as err:
+        if err.response.status_code != 404:
+            raise
+
     if src_system == dest_system:
         body = {'action': 'move',
                 'path': os.path.join(dest_path.strip('/'), file_name)}
@@ -149,10 +162,22 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None):
     if file_name is None:
         file_name = src_path.strip('/').split('/')[-1]
 
+    try:
+        client.files.list(systemId=dest_system,
+                          filePath="{}/{}".format(dest_path, file_name))
+
+        # Trash path exists, must make it unique.
+        _ext = os.path.splitext(file_name)[1].lower()
+        _name = os.path.splitext(file_name)[0]
+        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
+        file_name = '{}_{}{}'.format(_name, now, _ext)
+    except HTTPError as err:
+        if err.response.status_code != 404:
+            raise
+
     if src_system == dest_system:
         body = {'action': 'copy',
                 'path': os.path.join(dest_path.strip('/'), file_name)}
-
         copy_result = client.files.manage(systemId=src_system,
                                           filePath=urllib.parse.quote(
                                               src_path),

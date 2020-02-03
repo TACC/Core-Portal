@@ -5,7 +5,8 @@ import {
   CheckboxCell,
   FileNavCell,
   FileLengthCell,
-  LastModifiedCell
+  LastModifiedCell,
+  FileIconCell
 } from './DataFilesListingCells';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 
@@ -62,10 +63,19 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
 
   const columns = useMemo(() => [
     {
-      Header: '',
-      accessor: '_',
-      width: 0.1,
+      id: 'checkbox',
+      width: 0.05,
+      minWidth: 20,
+      maxWidth: 50,
       Cell: checkboxCellCallback
+    },
+    {
+      id: 'icon',
+      accessor: 'format',
+      width: 0.05,
+      minWidth: 20,
+      maxWidth: 30,
+      Cell: FileIconCell
     },
     {
       Header: 'Name',

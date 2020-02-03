@@ -6,7 +6,11 @@ import {
   faCheckSquare,
   faSquare as filledSquare
 } from '@fortawesome/free-solid-svg-icons';
-import { faSquare } from '@fortawesome/free-regular-svg-icons';
+import {
+  faSquare,
+  faFolder,
+  faFile
+} from '@fortawesome/free-regular-svg-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
 
@@ -106,5 +110,15 @@ export const LastModifiedCell = ({ cell }) => {
   );
 };
 LastModifiedCell.propTypes = {
+  cell: PropTypes.shape({ value: PropTypes.string }).isRequired
+};
+
+export const FileIconCell = ({ cell }) => {
+  if (cell.value === 'folder') {
+    return <FontAwesomeIcon icon={faFolder} />;
+  }
+  return <FontAwesomeIcon icon={faFile} />;
+};
+FileIconCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired
 };

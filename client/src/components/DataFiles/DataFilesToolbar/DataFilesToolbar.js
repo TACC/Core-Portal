@@ -68,6 +68,12 @@ const DataFilesToolbar = ({ scheme }) => {
       payload: { operation: 'move', props: { selectedFiles } }
     });
 
+  const toggleCopyModal = () =>
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'copy', props: { selectedFiles } }
+    });
+
   const download = () => {
     dispatch({
       type: 'DATA_FILES_DOWNLOAD',
@@ -84,6 +90,7 @@ const DataFilesToolbar = ({ scheme }) => {
 
   const canRename = selectedFiles.length === 1 && scheme === 'private';
   const canMove = selectedFiles.length > 0 && scheme === 'private';
+  const canCopy = selectedFiles.length > 0 && scheme === 'private';
   const canDownload =
     selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
   const canTrash = selectedFiles.length === 1 && scheme === 'private';
@@ -103,7 +110,12 @@ const DataFilesToolbar = ({ scheme }) => {
           onClick={toggleMoveModal}
           disabled={!canMove}
         />
-        <ToolbarButton text="Copy" icon={faCopy} />
+        <ToolbarButton
+          text="Copy"
+          icon={faCopy}
+          onClick={toggleCopyModal}
+          disabled={!canCopy}
+        />
         <ToolbarButton
           text="Download"
           icon={faCloudDownloadAlt}

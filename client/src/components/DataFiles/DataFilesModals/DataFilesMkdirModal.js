@@ -54,10 +54,14 @@ const DataFilesMkdirModal = () => {
           />
         </ModalBody>
         <ModalFooter>
-          <Button id="data-files-add" color="primary" onClick={mkdir}>
+          <Button className="data-files-btn" color="primary" onClick={mkdir}>
             Create Folder{' '}
           </Button>
-          <Button color="secondary" onClick={toggle}>
+          <Button
+            color="secondary"
+            className="data-files-btn-cancel"
+            onClick={toggle}
+          >
             Cancel
           </Button>
         </ModalFooter>

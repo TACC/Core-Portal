@@ -57,13 +57,13 @@ const DataFilesRenameModal = () => {
         />
       </ModalBody>
       <ModalFooter>
-        <Button id="data-files-add" color="primary" onClick={rename}>
+        <Button className="data-files-btn" color="primary" onClick={rename}>
           Rename{' '}
           {loading ? <FontAwesomeIcon spin icon={faCog} size="sm" /> : ''}
         </Button>{' '}
         <Button
           color="secondary"
-          style={{ borderRadius: '0' }}
+          className="data-files-btn-cancel"
           onClick={toggle}
         >
           Cancel

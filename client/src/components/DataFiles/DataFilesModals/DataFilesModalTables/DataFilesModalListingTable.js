@@ -25,7 +25,7 @@ const DataFilesModalListingNameCell = ({
   if (format === 'folder') {
     return (
       <span className="data-files-name">
-        <a href="" onClick={onClick}>
+        <a href="" onClick={onClick} className="data-files-nav-link">
           {' '}
           {name}{' '}
         </a>
@@ -54,7 +54,7 @@ const DataFilesModalButtonCell = ({
   return (
     format === 'folder' && (
       <span>
-        <Button className="float-right" onClick={onClick}>
+        <Button className="float-right data-files-btn" onClick={onClick}>
           {operationName}
         </Button>
       </span>

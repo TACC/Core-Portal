@@ -8,7 +8,7 @@ import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
 import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
 
-const DataFilesMoveModal = React.memo(() => {
+const DataFilesCopyModal = React.memo(() => {
   const history = useHistory();
   const location = useLocation();
   const reloadPage = () => {
@@ -25,7 +25,9 @@ const DataFilesMoveModal = React.memo(() => {
     shallowEqual
   );
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
-  const isOpen = useSelector(state => state.files.modals.move);
+  const isOpen = useSelector(state => state.files.modals.copy);
+  const status = useSelector(state => state.files.operationStatus.copy);
+
   const selectedFiles = useSelector(
     state =>
       state.files.selected.FilesListing.map(i => ({
@@ -35,12 +37,11 @@ const DataFilesMoveModal = React.memo(() => {
     () => true
   );
   const selected = useMemo(() => selectedFiles, [isOpen]);
-  const status = useSelector(state => state.files.operationStatus.move);
 
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'move', props: {} }
+      payload: { operation: 'copy', props: {} }
     });
 
   const onOpened = () => {
@@ -54,15 +55,15 @@ const DataFilesMoveModal = React.memo(() => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'move', status: {} }
+      payload: { operation: 'copy', status: {} }
     });
   };
 
-  const moveCallback = useCallback(
+  const copyCallback = useCallback(
     (system, path) => {
       const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
       dispatch({
-        type: 'DATA_FILES_MOVE',
+        type: 'DATA_FILES_COPY',
         payload: {
           dest: { system, path },
           src: filteredSelected,
@@ -98,7 +99,7 @@ const DataFilesMoveModal = React.memo(() => {
               />
             </div>
             <div style={{ paddingTop: '0px', flexGrow: '1' }}>
-              <DataFilesModalSelectedTable data={selected} operation="move" />
+              <DataFilesModalSelectedTable data={selected} operation="copy" />
             </div>
           </div>
           <div className="col-md-6 d-flex flex-column">
@@ -114,8 +115,8 @@ const DataFilesMoveModal = React.memo(() => {
             <div style={{ paddingTop: '0px', flexGrow: '1' }}>
               <DataFilesModalListingTable
                 data={files}
-                operationName="Move"
-                operationCallback={moveCallback}
+                operationName="Copy"
+                operationCallback={copyCallback}
               />
             </div>
           </div>
@@ -123,10 +124,10 @@ const DataFilesMoveModal = React.memo(() => {
       </ModalBody>
       <ModalFooter>
         <Button
-          onClick={() => moveCallback(modalParams.system, modalParams.path)}
+          onClick={() => copyCallback(modalParams.system, modalParams.path)}
           className="data-files-btn"
         >
-          Move to {modalParams.path || '/'}
+          Copy to {modalParams.path || '/'}
         </Button>
         <Button
           color="secondary"
@@ -140,4 +141,4 @@ const DataFilesMoveModal = React.memo(() => {
   );
 });
 
-export default DataFilesMoveModal;
+export default DataFilesCopyModal;

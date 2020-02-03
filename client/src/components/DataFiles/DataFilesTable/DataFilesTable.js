@@ -49,7 +49,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     );
   }
   if (filesLength === 0) {
-    return <div>no files to show</div>;
+    return <div>No files to show.</div>;
   }
   return <></>;
 };

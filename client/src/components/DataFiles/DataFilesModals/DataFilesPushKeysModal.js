@@ -68,7 +68,11 @@ const DataFilesPushKeysModal = () => {
           <Button color="primary" onClick={pushKeys}>
             Authenticate
           </Button>
-          <Button color="secondary" onClick={toggle}>
+          <Button
+            color="secondary"
+            className="data-files-btn-cancel"
+            onClick={toggle}
+          >
             Cancel
           </Button>
         </ModalFooter>

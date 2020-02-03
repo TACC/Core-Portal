@@ -21,6 +21,7 @@ const initialFilesState = {
   operationStatus: {
     rename: null,
     move: {},
+    copy: {},
     upload: {}
   },
   loadingScroll: {
@@ -49,6 +50,7 @@ const initialFilesState = {
   modals: {
     preview: false,
     move: false,
+    copy: false,
     upload: false,
     mkdir: false,
     rename: false,
@@ -57,6 +59,7 @@ const initialFilesState = {
   modalProps: {
     preview: {},
     move: {},
+    copy: {},
     upload: {},
     mkdir: {},
     rename: {},
