@@ -27,7 +27,6 @@ function Workbench() {
     dispatch({ type: 'FETCH_SYSTEMS' });
   }, []);
   const match = useRouteMatch();
-
   return (
     <div className="workbench-wrapper">
       <Sidebar />

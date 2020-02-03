@@ -1,65 +1,91 @@
-import React from 'react';
-import { Badge } from 'reactstrap';
+import React, { useMemo, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useTable } from 'react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSun } from '@fortawesome/free-solid-svg-icons';
-import ReactTable from 'react-table-6';
-import 'react-table-6/react-table.css';
-import useFetch from '../../utils/useFetch';
+import { string } from 'prop-types';
+import { Display, Operational } from './SystemMonitorCells';
 import './SystemMonitor.scss';
 
-function SystemsList() {
-  const res = useFetch(`/api/system-monitor/`, {});
+const SystemsList = ({ id }) => {
+  const systems = useSelector(state => state.systemMonitor.list);
+  const data = useMemo(() => systems, []);
+  const columns = useMemo(
+    () => [
+      {
+        accessor: 'display_name',
+        Cell: Display
+      },
+      {
+        accessor: 'is_operational',
+        Cell: Operational,
+        className: 'operational-cell'
+      }
+    ],
+    []
+  );
+  const { getTableProps, getTableBodyProps, rows, prepareRow } = useTable({
+    columns,
+    data
+  });
+  return (
+    <table
+      id={id}
+      {...getTableProps({
+        className: 'multi-system'
+      })}
+    >
+      <tbody {...getTableBodyProps()}>
+        {rows.length ? (
+          rows.map((row, idx) => {
+            prepareRow(row);
+            const className = idx % 2 === 0 ? 'odd-row' : null;
+            return (
+              <tr
+                {...row.getRowProps({
+                  className
+                })}
+              >
+                {row.cells.map(cell => (
+                  <td
+                    {...cell.getCellProps({
+                      className: cell.column.className,
+                      test: cell.column.testProp
+                    })}
+                  >
+                    {cell.render('Cell')}
+                  </td>
+                ))}
+              </tr>
+            );
+          })
+        ) : (
+          <tr>
+            <td>No rows found</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  );
+};
+SystemsList.propTypes = {
+  id: string.isRequired
+};
 
-  if (!res.response) {
+const SystemMonitorView = () => {
+  const { loading } = useSelector(state => state.systemMonitor);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch({ type: 'GET_SYSTEM_MONITOR' });
+  }, [dispatch]);
+  if (loading) {
     return (
       <div id="spin-sun">
         <FontAwesomeIcon icon={faSun} size="8x" spin />
       </div>
     );
   }
-
-  const columns = [
-    {
-      accessor: 'display_name',
-      Cell: el => (
-        <span className="wb-text-primary wb-bold" id={`sysmonID${el.index}`}>
-          {el.value}
-        </span>
-      )
-    },
-    {
-      accessor: 'is_operational',
-      Cell: el => (
-        <>
-          {el.value ? (
-            <Badge color="success" className="label-system-status">
-              Operational
-            </Badge>
-          ) : (
-            <Badge color="warning" className="label-system-status">
-              Maintenance
-            </Badge>
-          )}
-        </>
-      ),
-      width: 115
-    }
-  ];
-
-  return (
-    <ReactTable
-      keyField="id"
-      data={res.response}
-      columns={columns}
-      resolveData={data => data.map(row => row)}
-      pageSize={res.response.length}
-      className="multi-system -striped -highlight"
-    />
-  );
-}
-
-function SystemMonitorView() {
   return <SystemsList id="systems" />;
-}
+};
 
 export default SystemMonitorView;

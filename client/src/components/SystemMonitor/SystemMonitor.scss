@@ -2,3 +2,24 @@
     font-size: inherit;
     padding: .25em 1em .45em 1em;
 }
+
+$table-border: 1px solid black;
+
+#systems {
+    border-top: $table-border;
+    border-bottom: $table-border;
+    margin: 0;
+    width: 100%;
+    tr:hover {
+        background-color: rgba(0,0,0,.05);
+    }
+    td {
+        padding: 5px 8px;
+    }
+    .operational-cell {
+        width: 115px;
+    }
+    .odd-row {
+        background-color: rgba(#c6c6c6, 0.1);
+    }
+}
