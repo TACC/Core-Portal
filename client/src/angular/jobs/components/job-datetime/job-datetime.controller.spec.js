@@ -24,4 +24,10 @@ describe('JobDatetimeCtrl', ()=>{
         expect(controller).toBeDefined();
         expect(element.text()).toContain("2019");
     });
+
+    it("should check for zero value dates", () => {
+        controller.date = new Date("1969-12-31T16:00:00.000-08:00");
+        scope.$digest()
+        expect(element.text()).toEqual("");
+    });
 });
