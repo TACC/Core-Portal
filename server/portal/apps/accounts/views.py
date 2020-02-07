@@ -229,6 +229,7 @@ def manage_profile(request):
     The default accounts view. Provides user settings for managing profile,
     authentication, notifications, identities, and applications.
     """
+    # TODO: Turn this function in to JSON.
     django_user = request.user
     tas = TASClient(
         baseURL=settings.TAS_URL,

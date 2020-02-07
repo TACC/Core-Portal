@@ -6,6 +6,12 @@ import Workbench from './Workbench';
 function AppRouter() {
   return (
     <Router>
+      <Route
+        path="/accounts/profile"
+        render={() => {
+          return <div>Manage your account!</div>;
+        }}
+      />
       <Route path="/workbench" component={Workbench} />
     </Router>
   );
