@@ -20,8 +20,11 @@ urlpatterns = [
 
     # Endpoints for React based profile-page
     url(r'^profile/$', ReactView.as_view(), name='manage_profile'),
-    url(r'^profile/data/', views.get_profile_data, name='get_profile_data'),
+    url(r'^api/profile/', views.get_profile_data, name='get_profile_data'),
+    url(r'^api/licenses/', views.manage_licenses, name='manage_licenses'),
+    url(r'^api/applications/$', views.manage_applications, name='manage_applications'),
 
+    # TODO: Make a front-end route
     url(r'^profile/edit/$', views.profile_edit, name='profile_edit'),
 
     url(r'^professional-profile/$', views.manage_pro_profile, name='manage_pro_profile'),
@@ -30,9 +33,7 @@ urlpatterns = [
     url(r'^authentication/$', views.manage_authentication, name='manage_authentication'),
     url(r'^identities/$', views.manage_identities, name='manage_identities'),
 
-    url(r'^licenses/$', views.manage_licenses, name='manage_licenses'),
     url(r'^onboarding/$', views.manage_onboarding, name='manage_onboarding'),
-    url(r'^applications/$', views.manage_applications, name='manage_applications'),
 
     url(r'^notifications/settings/$', views.manage_notifications, name='manage_notifications'),
 

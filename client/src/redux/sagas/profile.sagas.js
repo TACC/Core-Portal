@@ -1,23 +1,23 @@
-import { put, takeLatest, call } from 'redux-saga/effects';
+import { put, takeLatest, call, all } from 'redux-saga/effects';
 import 'cross-fetch';
 
 export function* getProfileData(action) {
-  try {
-    const res = yield call(fetch, '/accounts/profile/data/', {
-      credentials: 'same-origin',
-      ...action.options
-    });
-    const json = yield res.json();
-    const payload = yield Object.values(json).reduce(
-      (obj, val) => ({ ...obj, ...val }),
-      {}
-    );
-    yield put({ type: 'ADD_PROFILE_DATA', payload });
-  } catch (error) {
-    // TODO: Add error to state
-    const payload = yield error;
-    yield put({ type: 'ADD_PROFILE_ERROR', payload });
-  }
+  const endpoints = [
+    '/accounts/api/profile/',
+    '/accounts/api/licenses/',
+    '/accounts/api/applications/'
+  ];
+  const responses = yield all(
+    endpoints.map(slug =>
+      call(fetch, slug, {
+        credentials: 'same-origin',
+        ...action.options
+      })
+    )
+  );
+  const json = yield all(responses.map(res => res.json()));
+  const payload = yield json.reduce((obj, val) => ({ ...obj, ...val }), {});
+  yield put({ type: 'ADD_DATA', payload });
 }
 
 export function* watchProfileData() {

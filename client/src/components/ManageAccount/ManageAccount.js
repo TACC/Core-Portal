@@ -1,25 +1,19 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Spinner } from 'reactstrap';
 import Sidebar from '../Sidebar';
 import {
   RequiredInformation,
   ChangePassword,
   Licenses,
-  ThirdPartyApps
+  ThirdPartyApps,
+  OptionalInformation
 } from './ManageAccountTables';
+import ManageAccountModals from './ManageAccountModals';
 import './ManageAccount.scss';
 
-const ManageAccountHeader = () => {
-  return (
-    <div className="manage-account-header">
-      <h5>Manage Account</h5>
-      <Link to="/workbench/dashboard">Back to Dashboard</Link>
-    </div>
-  );
-};
-
-const ManageAccountLayout = () => {
+const ManageAccountView = () => {
   const { isLoading } = useSelector(state => state.profile);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -29,10 +23,21 @@ const ManageAccountLayout = () => {
     <div className="manage-account-wrapper">
       <Sidebar />
       <div className="manage-account-content">
-        <ManageAccountHeader />
+        <div className="manage-account-header">
+          <h5>Manage Account</h5>
+          <Link to="/workbench/dashboard">Back to Dashboard</Link>
+        </div>
         <div className="user-profile">
           <div className="user-profile-main">
-            {isLoading ? 'Loading' : <RequiredInformation />}
+            {isLoading ? (
+              <Spinner />
+            ) : (
+              <>
+                <RequiredInformation />
+                <OptionalInformation />
+                <ManageAccountModals />
+              </>
+            )}
           </div>
           <div className="user-profile-side">
             <Licenses />
@@ -43,10 +48,6 @@ const ManageAccountLayout = () => {
       </div>
     </div>
   );
-};
-
-const ManageAccountView = () => {
-  return <ManageAccountLayout />;
 };
 
 export default ManageAccountView;

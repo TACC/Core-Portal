@@ -9,7 +9,7 @@
   }
 }
 // Page Wrapper
-.manage-account-content {  
+.manage-account-content {
   flex-grow: 1;
 }
 .manage-account-header {
@@ -27,15 +27,21 @@
 // Content Wrapper
 .user-profile {
   display: flex;
+  flex-grow: 1;
+  flex-flow: row wrap;
   margin-top: 1.5rem;
   padding-left: 1rem;
+  align-items: stretch;
   .user-profile-main {
-    width: 60%;
+    width: 70%;
     border-right: 1px solid;
     padding-right: 1rem;
+    div:not(:first-child) {
+      margin-top: 2rem;
+    }
   }
   .user-profile-side {
-    width: 40%;
+    width: 30%;
     padding: 0 1rem;
   }
 }

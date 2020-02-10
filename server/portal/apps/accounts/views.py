@@ -247,9 +247,8 @@ def get_profile_data(request):
     except ObjectDoesNotExist as e:
         demographics = {}
         logger.info('exception e:{} {}'.format(type(e), e))
-
+    demographics.update(user_profile)
     context = {
-        'profile': user_profile,
         'demographics': demographics
     }
 
@@ -386,28 +385,16 @@ def manage_licenses(request):
     for l, m in zip(licenses, license_models):
         if m.objects.filter(user=request.user).exists():
             l['current_user_license'] = True
-    context = {
-        'title': 'Manage Software Licenses',
-        'licenses': licenses
-    }
-    return render(
-        request,
-        'portal/apps/accounts/manage_licenses.html',
-        context
-    )
+    context = {'licenses': licenses}
+    return JsonResponse(context)
 
 
 @login_required
 def manage_applications(request):
     context = {
-        'title': 'Manage 3rd Party Applications',
         'integrations': integrations.get_integrations()
     }
-    return render(
-        request,
-        'portal/apps/accounts/manage_applications.html',
-        context
-    )
+    return JsonResponse(context)
 
 
 @login_required
