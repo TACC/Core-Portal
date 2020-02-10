@@ -1,19 +1,14 @@
 import React from 'react';
 import { useTable } from 'react-table';
+import { useSelector } from 'react-redux';
 
 export const RequiredInformation = () => {
-  const testUser = [
-    {
-      name: 'Owais',
-      email: 'owais@mail.com',
-      institution: 'University of Texas'
-    }
-  ];
+  const profile = useSelector(state => state.profile);
   const columns = React.useMemo(
     () => [
       {
         Header: 'Full Name',
-        accessor: 'name'
+        accessor: ({ firstName, lastName }) => `${firstName} ${lastName}`
       },
       {
         Header: 'Email',
@@ -22,11 +17,16 @@ export const RequiredInformation = () => {
       {
         Header: 'Institution',
         accessor: 'institution'
-      }
+      },
+      { Header: 'Title', accessor: 'title' },
+      { Header: 'Country of Residence', accessor: 'country' },
+      { Header: 'Country of Citizenship', accessor: 'citizenship' },
+      { Header: 'Ethnicity', accessor: 'ethnicity' },
+      { Header: 'Gender', accessor: 'gender' }
     ],
     []
   );
-  const data = React.useMemo(() => testUser, {});
+  const data = React.useMemo(() => [profile.data], []);
   const { getTableProps, headerGroups, rows, prepareRow } = useTable({
     columns,
     data
@@ -37,24 +37,26 @@ export const RequiredInformation = () => {
         className: 'manage-account-table'
       })}
     >
-      {headerGroups.map(headerGroup => (
-        <tr {...headerGroup.getHeaderGroupProps()}>
-          {headerGroup.headers.map(column => (
-            <th key={column.Header}>{column.render('Header')}</th>
-          ))}
-        </tr>
-      ))}
-
-      {rows.map(row => {
-        prepareRow(row);
-        return (
-          <tr {...row.getRowProps()}>
-            {row.cells.map(cell => (
-              <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+      <tbody>
+        {headerGroups.map(headerGroup => (
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map(column => (
+              <th key={column.Header}>{column.render('Header')}</th>
             ))}
           </tr>
-        );
-      })}
+        ))}
+
+        {rows.map(row => {
+          prepareRow(row);
+          return (
+            <tr {...row.getRowProps()}>
+              {row.cells.map(cell => (
+                <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+              ))}
+            </tr>
+          );
+        })}
+      </tbody>
     </table>
   );
 };

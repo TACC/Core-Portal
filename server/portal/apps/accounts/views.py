@@ -5,13 +5,16 @@ import re
 import logging
 import json
 import rt
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
+from django.forms.models import model_to_dict
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.generic.base import TemplateView, View
 from django.shortcuts import render, render_to_response
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.exceptions import ObjectDoesNotExist
@@ -95,7 +98,7 @@ def request_access(request):
                     )
                     if tracker.login():
                         tracker.create_ticket(
-                            #Queue='Web & Mobile Apps',
+                            # Queue='Web & Mobile Apps',
                             Queue=settings.RT_QUEUE,
                             Subject='New User Access Request',
                             Text=('User {username} is requesting '
@@ -224,12 +227,10 @@ def registration_successful(request):
 
 
 @login_required
-def manage_profile(request):
+def get_profile_data(request):
     """
-    The default accounts view. Provides user settings for managing profile,
-    authentication, notifications, identities, and applications.
+    JSON profile data
     """
-    # TODO: Turn this function in to JSON.
     django_user = request.user
     tas = TASClient(
         baseURL=settings.TAS_URL,
@@ -238,20 +239,21 @@ def manage_profile(request):
             'password': settings.TAS_CLIENT_SECRET
         }
     )
+
     user_profile = tas.get_user(username=request.user.username)
 
     try:
-        demographics = django_user.profile
+        demographics = model_to_dict(django_user.profile)
     except ObjectDoesNotExist as e:
         demographics = {}
         logger.info('exception e:{} {}'.format(type(e), e))
 
     context = {
-        'title': 'Manage Profile',
         'profile': user_profile,
         'demographics': demographics
     }
-    return render(request, 'portal/apps/accounts/profile.html', context)
+
+    return JsonResponse(context)
 
 
 @login_required
@@ -332,6 +334,7 @@ def manage_identities(request):
         context
     )
 
+
 @login_required
 def manage_onboarding(request):
     context = {
@@ -342,6 +345,7 @@ def manage_onboarding(request):
         'portal/apps/accounts/manage_onboarding.html',
         context
     )
+
 
 @login_required
 def manage_notifications(request):

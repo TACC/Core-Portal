@@ -18,7 +18,10 @@ urlpatterns = [
     url(r'^register/?', RegisterView.as_view(), name='register'),
     url(r'^request-access/?', view=views.request_access, name='request-access'),
 
+    # Endpoints for React based profile-page
     url(r'^profile/$', ReactView.as_view(), name='manage_profile'),
+    url(r'^profile/data/', views.get_profile_data, name='get_profile_data'),
+
     url(r'^profile/edit/$', views.profile_edit, name='profile_edit'),
 
     url(r'^professional-profile/$', views.manage_pro_profile, name='manage_pro_profile'),

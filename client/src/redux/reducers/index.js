@@ -4,6 +4,7 @@ import { systems, files } from './datafiles.reducers';
 import systemMonitor from './systemMonitor.reducers';
 import ticketHistory from './tickets.reducers';
 import allocations from './allocations.reducers';
+import profile from './profile.reducers';
 
 export default combineReducers({
   spinner,
@@ -12,5 +13,6 @@ export default combineReducers({
   systemMonitor,
   files,
   allocations,
-  ticketHistory
+  ticketHistory,
+  profile
 });
