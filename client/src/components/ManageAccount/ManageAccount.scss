@@ -1,25 +1,51 @@
+// Wrapper for entire Route
 .manage-account-wrapper {
   display: flex;
   flex-direction: row;
   width: 100%;
-}
-.manage-account-content {
-  border-left: 1px solid black;
-  width: 100%;
-  .user-profile {
-    padding: 1rem;
-    border-top: 1px solid black;
-    .user-profile-main {
-      width: 60%;
-    }
+  height: 100%;
+  a {
+    color: #9d85ef;
   }
 }
-.manage-account-header {
-  font: 20px Roboto;
-  margin: 1.5rem 0 0.5rem 1rem;
+// Page Wrapper
+.manage-account-content {  
+  flex-grow: 1;
 }
+.manage-account-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 20px 20px;
+  height: 2rem;
+  border-bottom: 1px solid #707070;
+  h5 {
+    font-weight: 400;
+    color: #484848;
+  }
+}
+// Content Wrapper
+.user-profile {
+  display: flex;
+  margin-top: 1.5rem;
+  padding-left: 1rem;
+  .user-profile-main {
+    width: 60%;
+    border-right: 1px solid;
+    padding-right: 1rem;
+  }
+  .user-profile-side {
+    width: 40%;
+    padding: 0 1rem;
+  }
+}
+/*
+  Component Selectors
+*/
 .manage-account-table {
   width: 100%;
+  color: #707070;
+  font-size: 14px;
   tbody {
     display: flex;
   }
@@ -28,10 +54,33 @@
     flex-direction: column;
     width: 100%;
     :nth-child(odd) {
-      background-color: rgba(#c6c6c6, 0.5);
+      background-color: rgba(#c6c6c6, 0.1);
     }
   }
   td, th {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
     height: 2rem;
+    padding-left: 1rem;
   }
+}
+
+.profile-component-wrapper-side {
+  margin-bottom: 1.5rem;
+}
+.profile-component-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  // TODO: Refactor this block
+  border-bottom: solid 1px #707070;
+  padding: 0 0.5rem 0.5rem;
+  margin-bottom: 1rem;
+}
+.profile-component-body {
+  padding: 0 0.5rem;
+  font-size: 14px;
+  margin-bottom: 1rem;
 }

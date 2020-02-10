@@ -95,7 +95,6 @@ export const ActiveTable = ({ allocations }) => {
     ],
     []
   );
-  console.log(allocations);
   const data = useMemo(() => allocations, []);
   return <TableTemplate columns={columns} data={data} />;
 };

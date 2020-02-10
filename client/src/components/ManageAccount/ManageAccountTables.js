@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTable } from 'react-table';
 import { useSelector } from 'react-redux';
 
@@ -32,37 +33,64 @@ export const RequiredInformation = () => {
     data
   });
   return (
-    <table
-      {...getTableProps({
-        className: 'manage-account-table'
-      })}
-    >
-      <tbody>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
-              <th key={column.Header}>{column.render('Header')}</th>
-            ))}
-          </tr>
-        ))}
-
-        {rows.map(row => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map(cell => (
-                <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+    <div className="required-information-wrapper">
+      <div className="profile-component-header">
+        <span>Required Information</span>
+        <Link to="/accounts/profile">Edit Required Information</Link>
+      </div>
+      <table
+        {...getTableProps({
+          className: 'manage-account-table'
+        })}
+      >
+        <tbody>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <td key={column.Header}>{column.render('Header')}</td>
               ))}
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
+          ))}
+
+          {rows.map(row => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <th {...cell.getCellProps()}>{cell.render('Cell')}</th>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
 // TODO: Make these tables
 export const OptionalInformation = () => <div>Optional Information</div>;
-export const Licenses = () => <div>Licenses</div>;
-export const ThirdPartyApps = () => <div>3rd Party Apps</div>;
-export const ChangePassword = () => <div>Change Password</div>;
+export const Licenses = () => (
+  <div className="profile-component-wrapper">
+    <div className="profile-component-header">Licenses</div>
+    <div className="profile-component-body">
+      <b>License Table</b>
+    </div>
+  </div>
+);
+export const ThirdPartyApps = () => (
+  <div className="profile-component-wrapper">
+    <div className="profile-component-header">3rd Party Apps</div>
+    <div className="profile-component-body">
+      <b>3rd Party Apps Table</b>
+    </div>
+  </div>
+);
+export const ChangePassword = () => (
+  <div className="profile-component-wrapper">
+    <div className="profile-component-header">Change Password</div>
+    <div className="profile-component-body">
+      <b>Change Password Button and Last Changed Date</b>
+    </div>
+  </div>
+);
