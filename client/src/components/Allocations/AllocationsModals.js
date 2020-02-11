@@ -75,7 +75,7 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
   const pages = useSelector(state => state.allocations.pages);
   const loading = useSelector(state => state.allocations.loadingUsernames);
   if (loading) return <div />;
-  const visible = chunk(teams[pid] || [], 10 * pages[pid]);
+  const visible = chunk(teams[pid] || [], 20 * pages[pid]);
   const handleScroll = ({ target }) => {
     const bottom =
       target.scrollHeight - target.scrollTop === target.clientHeight;
