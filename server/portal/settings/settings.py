@@ -554,6 +554,7 @@ DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
 # Requires registering portal app on youtube: https://developers.google.com/youtube/registering_an_application
 # DJANGOCMS_YOUTUBE_API_KEY = '<youtube_data_api_server_key>'
 
+CSRF_COOKIE_SAMESITE = 'Strict' 
 
 """
 SETTINGS: CELERY
