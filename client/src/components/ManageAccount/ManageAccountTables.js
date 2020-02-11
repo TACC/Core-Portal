@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useTable } from 'react-table';
 import { Button } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { shape, array } from 'prop-types';
 
@@ -68,9 +69,9 @@ export const RequiredInformation = () => {
     <div className="profile-component-wrapper">
       <div className="profile-component-header">
         <span>Required Information</span>
-        <Button color="link" onClick={openModal}>
+        <Link to="/accounts/profile" onClick={openModal}>
           Edit Required Information
-        </Button>
+        </Link>
       </div>
       <TableTemplate attributes={{ columns, data }} />
     </div>
@@ -143,9 +144,9 @@ export const OptionalInformation = () => {
     <div className="profile-component-wrapper">
       <div className="profile-component-header">
         <span>Optional Information</span>
-        <Button color="link" onClick={openModal}>
+        <Link to="/accounts/profile" onClick={openModal}>
           Edit Optional Information
-        </Button>
+        </Link>
       </div>
       <TableTemplate attributes={{ columns, data }} />
     </div>

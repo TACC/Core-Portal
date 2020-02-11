@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
+import { RequiredInformationForm } from './ManageAccountForms';
 
 export const EditRequiredInformation = () => {
   const { editRequired: open } = useSelector(state => state.profile.modals);
@@ -9,7 +10,9 @@ export const EditRequiredInformation = () => {
   return (
     <Modal isOpen={open} toggle={closeModal}>
       <ModalHeader>Edit Required Information</ModalHeader>
-      <ModalBody>Required Information Form</ModalBody>
+      <ModalBody>
+        <RequiredInformationForm />
+      </ModalBody>
     </Modal>
   );
 };

@@ -21,7 +21,7 @@ import {
 } from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
 import { watchFetchTicketHistory, watchPostTicketReply } from './tickets.sagas';
-import { watchProfileData } from './profile.sagas';
+import { watchProfileData, watchFormFields } from './profile.sagas';
 
 export default function* rootSaga() {
   yield all([
@@ -44,6 +44,7 @@ export default function* rootSaga() {
     watchSystemMonitor(),
     watchFetchTicketHistory(),
     watchPostTicketReply(),
-    watchProfileData()
+    watchProfileData(),
+    watchFormFields()
   ]);
 }

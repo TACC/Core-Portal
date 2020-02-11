@@ -644,6 +644,34 @@ def departments_json(request):
     )
 
 
+def get_form_fields(request):
+    # Institutions
+    tas = TASClient(
+            baseURL=settings.TAS_URL,
+            credentials={
+                'username': settings.TAS_CLIENT_KEY,
+                'password': settings.TAS_CLIENT_SECRET
+            }
+        )
+    institution_dict = tas.institutions()
+    institutions = []
+    for inst in institution_dict:
+        institutions.append(inst['name'])
+
+    # Titles
+    titles = set()
+    for title in forms.USER_PROFILE_TITLES:
+        for value in title:
+            titles.add(value)
+
+    # Countries
+    countries = []
+    for country in tas.countries():
+        countries.append(country['name'])
+
+    return JsonResponse({'institutions': institutions, 'titles': list(titles), 'countries': countries})
+
+
 # Throws Bad Gateway 502 Error.
 #
 # @permission_required('portal_accounts.view_notification_subscribers',

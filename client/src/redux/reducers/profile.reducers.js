@@ -5,6 +5,7 @@ export const initialState = {
     licenses: [],
     integrations: []
   },
+  fields: {},
   modals: {
     editRequired: false,
     editOptional: false,
@@ -19,6 +20,8 @@ export default function profile(state = initialState, action) {
         isLoading: false,
         data: { ...state.data, ...action.payload }
       };
+    case 'POPULATE_FIELDS':
+      return { ...state, fields: action.payload };
     case 'OPEN_EDIT_REQUIRED':
       return {
         ...state,
