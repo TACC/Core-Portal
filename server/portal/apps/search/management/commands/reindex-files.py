@@ -29,7 +29,6 @@ class Command(BaseCommand):
         parser.add_argument('--swap-only', help='Only swap index aliases without reindexing.', default=False, action='store_true')
 
     def handle(self, *args, **options):
-        connections.configure(default={'hosts': settings.ES_HOSTS, 'http_auth': settings.ES_AUTH})
         es_client = elasticsearch.Elasticsearch([{'host': settings.ES_HOSTS, 'http_auth': settings.ES_AUTH}], timeout=60)
         cleanup = options.get('cleanup')
         swap_only = options.get('swap-only')
@@ -45,8 +44,8 @@ class Command(BaseCommand):
             setup_files_index(reindex=True, force=True)
 
         try:
-            default_index_name = Index(default_index_alias).get_alias().keys()[0]
-            reindex_index_name = Index(reindex_index_alias).get_alias().keys()[0]
+            default_index_name = Index(default_index_alias, using=es_client).get_alias().keys()[0]
+            reindex_index_name = Index(reindex_index_alias, using=es_client).get_alias().keys()[0]
         except Exception as e:
             self.stdout.write('Unable to lookup required indices by alias. Have you set up both a default and a reindexing index?')
             raise SystemExit
@@ -68,5 +67,5 @@ class Command(BaseCommand):
 
         # Re-initialize the new reindexing index to save space.
         if cleanup:
-            reindex_index_name = Index(reindex_index_alias).get_alias().keys()[0]
-            Index(reindex_index_name).delete(ignore=404)
+            reindex_index_name = Index(reindex_index_alias, using=es_client).get_alias().keys()[0]
+            Index(reindex_index_name, using=es_client).delete(ignore=404)
