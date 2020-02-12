@@ -146,7 +146,7 @@ class DataBrowserService {
         tests.canViewCategories = files.length >= 1 && this.hasPermission('WRITE', files);
         tests.canCompress =
             files.length >= 1 &&
-            !(files.length == 1 && files[0].name.endsWith(".zip")) &&
+            !(files.length == 1 && (files[0].name.endsWith(".zip") || files[0].name.endsWith(".tar.gz"))) &&
             this.hasPermission('WRITE', [this.currentState.listing].concat(files)) &&
             (this.apiParams.fileMgr !== 'shared') &&
             (this.apiParams.fileMgr !== 'public') &&
@@ -154,7 +154,7 @@ class DataBrowserService {
         tests.canExtract =
             files.length === 1 &&
             this.hasPermission('WRITE', [this.currentState.listing].concat(files)) &&
-            files[0].name.endsWith(".zip") &&
+            (files[0].name.endsWith(".zip") || files[0].name.endsWith(".tar.gz")) &&
             (this.apiParams.fileMgr !== 'shared') &&
             (this.apiParams.fileMgr !== 'public') &&
             (this.apiParams.directory !== 'external-resources');;
