@@ -7,6 +7,9 @@ from portal.apps.accounts.managers.accounts import get_user_home_system_id
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+channel_layer = get_channel_layer()
 # Create your views here.
 
 logger = logging.getLogger(__name__)
@@ -38,6 +41,14 @@ class TapisFilesView(BaseApiView):
 
         response = tapis_get_handler(
             client, scheme, system, path, operation, **request.GET.dict())
+
+        async_to_sync(channel_layer.group_send)(
+            request.user.username,
+            {
+                'type': 'test_message',
+                'message': 'sent from group'
+            }
+        )
         return JsonResponse({'data': response})
 
     def put(self, request, operation=None, scheme=None,

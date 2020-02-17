@@ -2,6 +2,7 @@ import { all } from 'redux-saga/effects';
 import { watchJobs } from './jobs.sagas';
 import watchApps from './apps.sagas';
 import watchSystems from './systems.sagas';
+import { watchSocket } from './notifications.sagas';
 
 import {
   watchFetchSystems,
@@ -62,6 +63,7 @@ export default function* rootSaga() {
     watchTicketDetailedViewFetchSubject(),
     watchPostTicketReply(),
     watchPostTicketCreate(),
-    watchAuthenticatedUser()
+    watchAuthenticatedUser(),
+    watchSocket()
   ]);
 }

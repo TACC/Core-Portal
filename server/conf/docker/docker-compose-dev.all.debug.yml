@@ -83,7 +83,7 @@ services:
     volumes:
       - ../../../.:/srv/www/portal
     container_name: frontera_prtl_websockets
-    command: "uwsgi --chdir /srv/www/portal/server --gevent 1000 --workers=2 --http-websockets  --http-socket=:9000 --module portal.wsgi_websocket:application"
+    command: ['python', './manage.py', 'runserver', '0.0.0.0:9000']
 
   django:
     image: taccwma/frontera-portal:local
