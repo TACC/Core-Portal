@@ -56,7 +56,7 @@ ROOT_URLCONF = 'portal.urls'
 # Application definition
 
 INSTALLED_APPS = [
-
+    'channels',
     # django CMS admin style must be before django.contrib.admin
     'djangocms_admin_style',
 
@@ -849,3 +849,15 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
                                 SUPPORTED_IPYNB_PREVIEW_EXTS)
+
+
+# Channels
+ASGI_APPLICATION = 'portal.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}
