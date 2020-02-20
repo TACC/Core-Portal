@@ -128,6 +128,7 @@ class TestAuthView(TestCase):
             "expires_in": 12457,
             "refresh_token": "d6ede1effb7be9c3efd7feba5f5af6"
         }
+        mock_agave_token_post.return_value.status_code = 200
 
         mock_authenticate.return_value = get_user_model().objects.get(username="username")
 

@@ -86,6 +86,20 @@ def agave_oauth_callback(request):
         response = requests.post('%s/token' % tenant_base_url,
                                  data=body,
                                  auth=(client_key, client_sec))
+        
+        # Agave OAuth token redemption will fail occassionally for some users due
+        # to a bug in WSO2. Log this error and render a "Submit a ticket" page for the end user
+        if response.status_code != 200:
+            logger.error(
+                "Agave Tenant error while trying to redeem state {}, code {} for an agave token".format(
+                    state, code
+                )
+            )
+            context = {
+                "state": state
+            }
+            return render(request, 'portal/apps/auth/autherror.html', context)
+
         token_data = response.json()
         token_data['created'] = int(time.time())
         # log user in
