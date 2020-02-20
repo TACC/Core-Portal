@@ -8,6 +8,7 @@ import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
 import History from '../History';
 import * as ROUTES from '../../constants/routes';
+import Notifications from '../Notifications/Notifications';
 import './Workbench.scss';
 
 function Workbench() {
@@ -25,6 +26,7 @@ function Workbench() {
 
   return (
     <div className="workbench-wrapper">
+      <Notifications />
       <Sidebar />
       <div className="workbench-content">
         <Switch>
