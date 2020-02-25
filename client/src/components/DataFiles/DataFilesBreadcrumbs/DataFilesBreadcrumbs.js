@@ -82,7 +82,7 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
   })();
 
   return (
-    <span className="breadcrumbs">
+    <div className="breadcrumbs">
       <BreadcrumbLink
         api={api}
         scheme={scheme}
@@ -94,10 +94,11 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
       </BreadcrumbLink>
       {pathComps.map((pathComp, i) =>
         i < paths.length - 2 ? (
-          '/...'
+          ' /... '
         ) : (
           <React.Fragment key={pathComp}>
-            /
+            {' '}
+            /{' '}
             <BreadcrumbLink
               api={api}
               scheme={scheme}
@@ -110,7 +111,7 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
           </React.Fragment>
         )
       )}
-    </span>
+    </div>
   );
 };
 DataFilesBreadcrumbs.propTypes = {

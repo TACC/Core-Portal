@@ -41,7 +41,13 @@ const DataFilesMkdirModal = () => {
 
   return (
     <>
-      <Modal size="lg" isOpen={isOpen} toggle={toggle} onClosed={onClosed}>
+      <Modal
+        size="lg"
+        isOpen={isOpen}
+        toggle={toggle}
+        onClosed={onClosed}
+        className="dataFilesModal"
+      >
         <ModalHeader toggle={toggle}>
           Creating folder in: {params.path}
         </ModalHeader>
@@ -62,7 +68,7 @@ const DataFilesMkdirModal = () => {
             className="data-files-btn-cancel"
             onClick={toggle}
           >
-            Cancel
+            Close
           </Button>
         </ModalFooter>
       </Modal>

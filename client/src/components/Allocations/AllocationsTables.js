@@ -1,63 +1,22 @@
 import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
-import { useTable } from 'react-table';
+import { useTable, useSortBy } from 'react-table';
+import { useSelector } from 'react-redux';
+import { string } from 'prop-types';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
-export const TableTemplate = ({ columns, data }) => {
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow
-  } = useTable({
-    columns,
-    data
+/** Custom hook to get columns and data for table */
+export const useAllocations = page => {
+  const allocations = useSelector(state => {
+    if (page === 'expired') return state.allocations.inactive;
+    return state.allocations.active;
   });
-  return (
-    <div className="allocations-table">
-      <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <th key={column.Header}>{column.render('Header')}</th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map(row => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => (
-                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                ))}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-TableTemplate.propTypes = {
-  columns: PropTypes.instanceOf(Array),
-  data: PropTypes.instanceOf(Array)
-};
-TableTemplate.defaultProps = {
-  columns: [],
-  data: []
-};
-
-export const ActiveTable = ({ allocations }) => {
   const columns = useMemo(
     () => [
       {
         Header: 'Title',
-        accessor: 'projectName'
+        accessor: 'projectName',
+        sortType: 'alphanumeric'
       },
       {
         Header: 'Principal Investigator',
@@ -93,44 +52,70 @@ export const ActiveTable = ({ allocations }) => {
         Cell: Expires
       }
     ],
-    []
+    [allocations]
   );
-  const data = useMemo(() => allocations, []);
-  return <TableTemplate columns={columns} data={data} />;
-};
-ActiveTable.propTypes = { allocations: PropTypes.instanceOf(Array) };
-ActiveTable.defaultProps = { allocations: [] };
-
-/* eslint-disable no-shadow */
-export const InactiveTable = ({ allocations }) => {
-  const columns = useMemo(() => [
+  const data = useMemo(() => allocations, [allocations]);
+  return [
     {
-      Header: 'Alloc ID',
-      accessor: ({ allocations }) =>
-        allocations.map(allocation => `${allocation.id}`)
+      columns,
+      data,
+      initialState: { sortBy: [{ id: 'projectName' }] }
     },
-    {
-      Header: 'Title',
-      accessor: 'title'
-    },
-    {
-      Header: 'PI',
-      accessor: ({ pi }) => `${pi.lastName}, ${pi.firstName}`
-    },
-    {
-      Header: 'Project ID',
-      accessor: ({ allocations }) =>
-        allocations.map(allocation => `${allocation.projectId}`)
-    },
-    {
-      Header: 'Project Name',
-      accessor: ({ allocations }) =>
-        allocations.map(allocation => `${allocation.project}`)
-    }
-  ]);
-  const data = React.useMemo(() => allocations, []);
-  return <TableTemplate columns={columns} data={data} />;
+    useSortBy
+  ];
 };
 
-InactiveTable.propTypes = { allocations: PropTypes.instanceOf(Array) };
-InactiveTable.defaultProps = { allocations: [] };
+export const AllocationsTable = ({ page }) => {
+  const tableAttributes = useAllocations(page);
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow
+  } = useTable(...tableAttributes);
+  return (
+    <div className="allocations-table">
+      <table {...getTableProps()}>
+        <thead>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  {column.render('Header')}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.length ? (
+            rows.map(row => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map(cell => (
+                    <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  ))}
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan={headerGroups[0].headers.length}>
+                <center>
+                  You have no {`${page[0].toLocaleUpperCase()}${page.slice(1)}`}
+                  {'  '}
+                  allocations.
+                </center>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+AllocationsTable.propTypes = {
+  page: string.isRequired
+};

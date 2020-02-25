@@ -541,7 +541,7 @@ def _process_password_reset_request(request, form):
             )
             resp = tas.request_password_reset(
                 user['username'],
-                source=settings.PORTAL_NAMESPACE
+                source=settings.PORTAL_DOMAIN
             )
             logger.debug(resp)
         except Exception as e:
@@ -605,7 +605,7 @@ def email_confirmation(request, code=None):
                     messages.success(
                         request,
                         'Congratulations, your account has been activated! '
-                        'You can now log in to {}.'.format(settings.PORTAL_NAMESPACE)
+                        'You can now log in to {}.'.format(settings.PORTAL_DOMAIN)
                     )
                     return HttpResponseRedirect(
                         reverse('portal_accounts:manage_profile'))

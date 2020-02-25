@@ -3,6 +3,7 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
+import { FileIconCell } from '../../DataFilesListing/DataFilesListingCells';
 
 const DataFilesModalListingNameCell = ({
   api,
@@ -111,15 +112,23 @@ const DataFilesModalListingTable = ({
         operationCallback={operationCallback}
       />
     ),
-    [params]
+    [params, operationName, operationCallback]
   );
 
   const columns = useMemo(
     () => [
       {
+        id: 'icon',
+        accessor: 'format',
+        width: 0.05,
+        minWidth: 20,
+        maxWidth: 30,
+        Cell: FileIconCell
+      },
+      {
         Header: 'Name',
         accessor: 'name',
-        width: 0.7,
+        width: 0.65,
         Cell: NameCell
       },
       {

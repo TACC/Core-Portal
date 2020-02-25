@@ -1,37 +1,29 @@
-import React, { useEffect } from 'react';
-import { Route } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import React, { useEffect, memo } from 'react';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Layout } from './AllocationsLayout';
+import * as ROUTES from '../../constants/routes';
 import './Allocations.scss';
 
-const AllocationsRoutes = ({ match: { path } }) => {
+const AllocationsRoutes = () => {
+  const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}`;
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch({ type: 'GET_ALLOCATIONS' });
   }, [dispatch]);
-
   return (
     <div id="allocations-wrapper" data-testid="allocations-router">
-      <Route exact path={[`${path}`, `${path}/approved`]}>
-        <Layout filter="Approved" />
-      </Route>
-      <Route path={`${path}/pending`}>
-        <Layout filter="Pending" />
-      </Route>
-      <Route path={`${path}/expired`}>
-        <Layout filter="Expired" />
-      </Route>
+      <Switch>
+        <Route exact path={`${root}/approved`}>
+          <Layout page="approved" />
+        </Route>
+        <Route exact path={`${root}/expired`}>
+          <Layout page="expired" />
+        </Route>
+        <Redirect from={root} to={`${root}/approved`} />
+      </Switch>
     </div>
   );
 };
-AllocationsRoutes.propTypes = {
-  match: PropTypes.instanceOf(Object)
-};
-AllocationsRoutes.defaultProps = {
-  match: {
-    path: 'workbench'
-  }
-};
 
-export default AllocationsRoutes;
+export default memo(AllocationsRoutes);

@@ -1,0 +1,27 @@
+.dataFilesModalColHeader {
+    font-weight: bold;
+}
+
+.dataFilesModal {
+    color: #484848;
+    padding: 20px;
+    .h-100 {
+        padding: 0 10px 0 10px;
+    }
+    .modal-header {
+        background-color: #F4F4F4;
+        padding: 1.3rem;
+    }
+    .breadcrumbs {
+      padding: 0px 0 10px 0;
+      color: #707070;
+    }
+    .filesListing {
+      flex-grow: 1;
+      outline: 1px solid #707070;
+      padding-top: 10px;
+    }
+    .tr-header {
+        border-bottom-color: #C6C6C6;
+    }
+}

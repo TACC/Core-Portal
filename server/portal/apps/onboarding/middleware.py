@@ -1,16 +1,12 @@
-
-from django.contrib import messages
-from django.conf import settings
 from django.contrib.auth import logout
-from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from portal.apps.accounts.models import PortalProfile
-from portal.apps.notifications.models import Notification
 
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 class SetupCompleteMiddleware(object):
     def __init__(self, get_response):

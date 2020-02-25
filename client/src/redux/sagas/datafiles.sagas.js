@@ -43,14 +43,15 @@ export async function pushKeysUtil(system, form) {
 }
 
 export function* watchPushKeys() {
-  yield takeLeading('SYSTEMS_PUSH_KEYS', pushKeys);
+  yield takeLeading('DATA_FILES_PUSH_KEYS', pushKeys);
 }
 
 export function* pushKeys(action) {
   const form = {
     password: action.payload.password,
     token: action.payload.token,
-    type: action.payload.type
+    type: action.payload.type,
+    hostname: null
   };
 
   yield call(pushKeysUtil, action.payload.system, form);
@@ -165,13 +166,18 @@ export function* scrollFiles(action) {
 
 export async function renameFileUtil(api, scheme, system, path, newName) {
   const url = `/api/datafiles/${api}/rename/${scheme}/${system}${path}/`;
-  const request = await fetch(url, {
+  const response = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
     body: JSON.stringify({ new_name: newName })
   });
-  return request;
+  if (!response.ok) {
+    throw new Error(response.status);
+  }
+
+  const responseJson = await response.json();
+  return responseJson.data;
 }
 
 export function* watchRename() {
@@ -181,22 +187,29 @@ export function* watchRename() {
 export function* renameFile(action) {
   const file = action.payload.selectedFile;
   yield put({
-    type: 'DATA_FILES_SET_LOADING',
-    payload: { section: 'RenameModal', set: true }
+    type: 'DATA_FILES_SET_OPERATION_STATUS',
+    payload: { status: 'RUNNING', operation: 'rename' }
   });
-  yield call(
-    renameFileUtil,
-    action.payload.api,
-    action.payload.scheme,
-    file.system,
-    file.path,
-    action.payload.newName
-  );
-  yield put({
-    type: 'DATA_FILES_SET_LOADING',
-    payload: { section: 'RenameModal', set: false }
-  });
-  yield call(action.payload.reloadCallback);
+  try {
+    const response = yield call(
+      renameFileUtil,
+      action.payload.api,
+      action.payload.scheme,
+      file.system,
+      file.path,
+      action.payload.newName
+    );
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'SUCCESS', operation: 'rename' }
+    });
+    yield call(action.payload.reloadCallback, response.name, response.path);
+  } catch (e) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'ERROR', operation: 'rename' }
+    });
+  }
 }
 
 export async function moveFileUtil(
@@ -227,7 +240,7 @@ export function* watchMove() {
 export function* moveFile(src, dest, index) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-    payload: { status: 'MOVING', key: index, operation: 'move' }
+    payload: { status: 'RUNNING', key: index, operation: 'move' }
   });
   try {
     yield call(
@@ -293,7 +306,7 @@ export function* watchCopy() {
 export function* copyFile(src, dest, index) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-    payload: { status: 'COPYING', key: index, operation: 'copy' }
+    payload: { status: 'RUNNING', key: index, operation: 'copy' }
   });
   try {
     yield call(
@@ -488,7 +501,7 @@ export async function downloadUtil(api, scheme, system, path, href) {
   link.style.display = 'none';
   link.setAttribute('href', postitUrl);
   link.setAttribute('type', '');
-  link.setAttribute('target', '_blank');
+  link.setAttribute('target', '_self');
   link.setAttribute('download', 'null');
   document.body.appendChild(link);
   link.click();
@@ -520,20 +533,43 @@ export async function trashUtil(api, scheme, system, path) {
     body: JSON.stringify({})
   });
 
+  if (!request.ok) {
+    throw new Error(request.status);
+  }
   return request;
 }
 
 export function* watchTrash() {
-  yield takeLeading('DATA_FILES_TRASH', trash);
+  yield takeLeading('DATA_FILES_TRASH', trashFiles);
 }
 
-export function* trash(action) {
-  yield call(
-    trashUtil,
-    'tapis',
-    'private',
-    action.payload.file.system,
-    action.payload.file.path
-  );
+export function* trashFiles(action) {
+  const trashCalls = action.payload.src.map(file => {
+    return call(trashFile, file.system, file.path, file.id);
+  });
+  yield race({
+    result: all(trashCalls),
+    cancel: take('DATA_FILES_MODAL_CLOSE')
+  });
   yield call(action.payload.reloadCallback);
+}
+
+export function* trashFile(system, path, id) {
+  yield put({
+    type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+    payload: { status: 'RUNNING', key: id, operation: 'trash' }
+  });
+  try {
+    yield call(trashUtil, 'tapis', 'private', system, path);
+
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'SUCCESS', key: id, operation: 'trash' }
+    });
+  } catch (e) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'ERROR', key: id, operation: 'trash' }
+    });
+  }
 }

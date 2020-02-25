@@ -1,40 +1,35 @@
 import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
-import { NavLink as RRNavLink } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop, faCog } from '@fortawesome/free-solid-svg-icons';
-import { faBell, faFolder } from '@fortawesome/free-regular-svg-icons';
+import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
+import * as ROUTES from '../../constants/routes';
 import './Sidebar.scss';
 
 /** A navigation list for the application */
-export function Sidebar() {
+const Sidebar = () => {
+  const { path } = useRouteMatch();
   return (
     <Nav id="sidebar" className="side-nav" vertical>
       <NavItem>
         <NavLink
           tag={RRNavLink}
           exact
-          to="/workbench/dashboard/"
+          to={`${path}${ROUTES.DASHBOARD}`}
           activeClassName="active"
         >
           <div className="nav-content">
-            <FontAwesomeIcon
-              icon={faDesktop}
-              className="side-nav-icon"
-              size="1x"
-            />
+            <i className="icon-nav icon-nav-dashboard" />
             <span className="nav-text">Dashboard</span>
           </div>
         </NavLink>
       </NavItem>
       <NavItem>
-        <NavLink tag={RRNavLink} to="/workbench/data/" activeClassName="active">
+        <NavLink
+          tag={RRNavLink}
+          to={`${path}${ROUTES.DATA}`}
+          activeClassName="active"
+        >
           <div className="nav-content">
-            <FontAwesomeIcon
-              icon={faFolder}
-              className="side-nav-icon"
-              size="1x"
-            />
+            <i className="icon-nav icon-nav-folder" />
             <span className="nav-text">Data Files</span>
           </div>
         </NavLink>
@@ -42,12 +37,11 @@ export function Sidebar() {
       <NavItem>
         <NavLink
           tag={RRNavLink}
-          exact
-          to="/workbench/applications/"
+          to={`${path}${ROUTES.APPLICATIONS}`}
           activeClassName="active"
         >
           <div className="nav-content">
-            <FontAwesomeIcon icon={faCog} className="side-nav-icon" size="1x" />
+            <i className="icon-nav icon-nav-application" />
             <span className="nav-text">Applications</span>
           </div>
         </NavLink>
@@ -55,52 +49,17 @@ export function Sidebar() {
       <NavItem>
         <NavLink
           tag={RRNavLink}
-          exact
-          to="/workbench/allocations/"
+          to={`${path}${ROUTES.ALLOCATIONS}`}
           activeClassName="active"
         >
           <div className="nav-content">
-            <FontAwesomeIcon icon={faCog} size="1x" className="side-nav-icon" />
+            <i className="icon-nav icon-nav-allocation" />
             <span className="nav-text">Allocations</span>
-          </div>
-        </NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink
-          tag={RRNavLink}
-          exact
-          to="/workbench/publications/"
-          activeClassName="active"
-        >
-          <div className="nav-content">
-            <FontAwesomeIcon
-              icon={faFolder}
-              className="side-nav-icon"
-              size="1x"
-            />
-            <span className="nav-text">Publications</span>
-          </div>
-        </NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink
-          tag={RRNavLink}
-          exact
-          to="/workbench/history/"
-          activeClassName="active"
-        >
-          <div className="nav-content">
-            <FontAwesomeIcon
-              icon={faBell}
-              className="side-nav-icon"
-              size="1x"
-            />
-            <span className="nav-text">History</span>
           </div>
         </NavLink>
       </NavItem>
     </Nav>
   );
-}
+};
 
 export default Sidebar;

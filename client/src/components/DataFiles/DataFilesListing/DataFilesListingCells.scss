@@ -26,5 +26,10 @@
   background: linear-gradient( to top,
     rgba(255, 255, 255, 0.7) 20%, rgba(255, 255, 255, 0) 95%
   );
-  pointer-events: none; 
+  pointer-events: none;
+}
+.icon-filetype {
+  font-size: 1.1em;
+  color: #707070;
+  display: flex;
 }

@@ -1,12 +1,13 @@
 .multi-system .label-system-status {
-    font-size: inherit;
-    padding: .25em 1em .45em 1em;
+    font-size: 13px;
+    font-weight: 500;
+    width: 100%;
+    padding: .4em 0 .4em 0;
 }
 
 $table-border: 1px solid black;
 
-#systems {
-    border-top: $table-border;
+.system-monitor {
     border-bottom: $table-border;
     margin: 0;
     width: 100%;
@@ -16,8 +17,14 @@ $table-border: 1px solid black;
     td {
         padding: 5px 8px;
     }
+    .system-monitor-header {
+        border-bottom: $table-border;
+    }
+    .left-aligned {
+        padding-left: 0;
+    }
     .operational-cell {
-        width: 115px;
+        width: 100px;
     }
     .odd-row {
         background-color: rgba(#c6c6c6, 0.1);

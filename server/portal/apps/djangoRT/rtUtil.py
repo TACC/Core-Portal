@@ -57,6 +57,15 @@ class DjangoRt:
                                           Cc=",".join(ticket.cc),
                                           CF_resource=settings.RT_TAG)
 
+    def create_ticket(self, attachments, subject, problem_description, requestor, cc):
+        return self.tracker.create_ticket(Queue=self.rtQueue,
+                                          files=attachments,
+                                          Subject=subject,
+                                          Text=problem_description,
+                                          Requestors=requestor,
+                                          Cc=cc,
+                                          CF_resource=settings.RT_TAG)
+
     def replyToTicket(self, ticket_id, reply_text, files=[]):
         return self.tracker.reply(ticket_id=ticket_id, text=reply_text, files=files)
 

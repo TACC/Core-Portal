@@ -62,16 +62,16 @@ module.exports = {
   // maxWorkers: "50%",
 
   // An array of directory names to be searched recursively up from the requiring module's location
-  // moduleDirectories: [
-  //   "node_modules"
-  // ],
+  // moduleDirectories: ['node_modules'],
 
   // An array of file extensions your modules use
   moduleFileExtensions: ['js', 'json', 'jsx', 'ts', 'tsx', 'node'],
 
   // A map from regular expressions to module names that allow to stub out resources with a single module
   moduleNameMapper: {
-    '.*\\.(css|scss|sass)$': '<rootDir>/__mocks__/styleMock.js'
+    '.*\\.(css|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
+    '^_common(.*)$': '<rootDir>/src/components/_common$1',
+    '^utils(.*)$': '<rootDir>/src/utils$1'
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader

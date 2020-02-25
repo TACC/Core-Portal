@@ -2,7 +2,6 @@
 Auth views.
 """
 import logging
-import os
 import time
 import requests
 import secrets
@@ -17,10 +16,8 @@ from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.auth.tasks import setup_user
 from portal.apps.onboarding.execute import new_user_setup_check
 
-#pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
-#pylint: enable=invalid-name
 
 
 def logged_out(request):
@@ -70,7 +67,7 @@ def agave_oauth_callback(request):
     if 'code' in request.GET:
         # obtain a token for the user
         # Using http for dev.
-        #redirect_uri = 'http://{}{}'.format(request.get_host(),
+        # redirect_uri = 'http://{}{}'.format(request.get_host(),
         #                                    reverse('portal_auth:agave_oauth_callback'))
         # Use https for prod.
         redirect_uri = 'https://{}{}'.format(request.get_host(),
@@ -139,6 +136,7 @@ def agave_oauth_callback(request):
     else:
         login_url = getattr(settings, 'LOGIN_REDIRECT_URL')
         return HttpResponseRedirect(login_url)
+
 
 def agave_session_error(request):
     """Agave token error handler.

@@ -40,7 +40,7 @@
 /* The (Bootstrap) problem `Workbench.css` solves is different from DataFiles,
    because they have two different layouts (fault of inconsistent UI designs).
    See https://tacc-team.slack.com/archives/CQUA4D5KJ/p1576532637009700 */
-.workbench-content .row {
+.workbench-content .data-files-wrapper .row {
   /* Override `.workbench-content .row` in `Workbench.css` */
   margin-right: 0 !important;
   /* Override `.workbench-content .row` in `Workbench.css` */

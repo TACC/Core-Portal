@@ -91,4 +91,4 @@ def decrypt(raw):
     if data[-padding:] != bytes([padding]) * padding:
         raise ValueError("Invalid padding...")
     # remove the padding
-    return data[:-padding]
+    return data[:-padding].decode('utf-8')

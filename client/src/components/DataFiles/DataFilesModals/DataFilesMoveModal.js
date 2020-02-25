@@ -70,7 +70,7 @@ const DataFilesMoveModal = React.memo(() => {
         }
       });
     },
-    [selected, reloadPage]
+    [selected, reloadPage, status]
   );
 
   return (
@@ -80,40 +80,39 @@ const DataFilesMoveModal = React.memo(() => {
       onClosed={onClosed}
       toggle={toggle}
       size="xl"
+      className="dataFilesModal"
     >
       <ModalHeader toggle={toggle}>
         Moving {selected.length} File(s)
       </ModalHeader>
-      <ModalBody style={{ paddingTop: '0px', height: '70vh' }}>
+      <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-6 d-flex flex-column">
             {/* Table of selected files */}
-            <div>
-              <DataFilesBreadcrumbs
-                api={params.api}
-                scheme={params.scheme}
-                system={params.system}
-                path={params.path || '/'}
-                section=""
-              />
-            </div>
-            <div style={{ paddingTop: '0px', flexGrow: '1' }}>
+            <div className="dataFilesModalColHeader">Source</div>
+            <DataFilesBreadcrumbs
+              api={params.api}
+              scheme={params.scheme}
+              system={params.system}
+              path={params.path || '/'}
+              section=""
+            />
+            <div className="filesListing">
               <DataFilesModalSelectedTable data={selected} operation="move" />
             </div>
           </div>
           <div className="col-md-6 d-flex flex-column">
-            <div>
-              <DataFilesBreadcrumbs
-                api={modalParams.api}
-                scheme={modalParams.scheme}
-                system={modalParams.system}
-                path={modalParams.path || '/'}
-                section="modal"
-              />
-            </div>
-            <div style={{ paddingTop: '0px', flexGrow: '1' }}>
+            <div className="dataFilesModalColHeader">Destination</div>
+            <DataFilesBreadcrumbs
+              api={modalParams.api}
+              scheme={modalParams.scheme}
+              system={modalParams.system}
+              path={modalParams.path || '/'}
+              section="modal"
+            />
+            <div className="filesListing">
               <DataFilesModalListingTable
-                data={files}
+                data={files.filter(f => f.format === 'folder')}
                 operationName="Move"
                 operationCallback={moveCallback}
               />
@@ -133,7 +132,7 @@ const DataFilesMoveModal = React.memo(() => {
           className="data-files-btn-cancel"
           onClick={toggle}
         >
-          Cancel
+          Close
         </Button>
       </ModalFooter>
     </Modal>

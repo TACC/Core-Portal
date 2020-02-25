@@ -1,21 +1,22 @@
 import { put, takeEvery, takeLatest, call } from 'redux-saga/effects';
+import { flatten } from 'lodash';
 import 'cross-fetch';
 
 export function* getAllocations(action) {
-  yield put({ type: 'LOADING_ALLOCATIONS' });
+  yield put({ type: 'START_ADD_ALLOCATIONS' });
   try {
-    const res = yield call(fetch, '/api/users/allocations', {
+    const response = yield call(fetch, '/api/users/allocations', {
       credentials: 'same-origin',
       ...action.options
     });
-    const json = yield res.json();
-    const payload = { active: json.allocs, inactive: json.inactive };
+    const json = yield response.json();
+    const payload = { ...json.response };
     yield put({ type: 'ADD_ALLOCATIONS', payload });
-    const teams = yield payload.active.reduce(
+    const teams = yield flatten(Object.values(payload)).reduce(
       (obj, item) => ({ ...obj, [item.projectId]: {} }),
       {}
     );
-    const pages = yield payload.active.reduce(
+    const pages = yield flatten(Object.values(payload)).reduce(
       (obj, item) => ({ ...obj, [item.projectId]: 1 }),
       {}
     );
@@ -31,7 +32,6 @@ function* getUsernames(action) {
     credentials: 'same-origin',
     ...action.options
   });
-
   const json = yield response.json();
   const payload = yield {
     [action.payload.id]: json.usernames.sort((a, b) =>
@@ -49,6 +49,7 @@ function* getUserData(action) {
   );
   const payload = yield response.json();
   yield put({ type: 'ADD_USER_TO_DIRECTORY', payload });
+  yield put({ type: 'PAGE_LOADED' });
 }
 
 export function* watchAllocations() {

@@ -21,6 +21,7 @@ def mock_rt(mocker, rt_tickets, rt_ticket_history):
     mock_rt.getUserTickets.return_value = rt_tickets
     mock_rt.getTicketHistory.return_value = rt_ticket_history
     mock_rt.replyToTicket.return_value = True
+    mock_rt.create_ticket.return_value = 1
     mock_rt.hasAccess.return_value = True
     yield mock_rt
 
@@ -48,6 +49,44 @@ def mock_get_matching_history_entry(mocker, rt_ticket_history):
 def test_tickets_get(client, authenticated_user, mock_rtutil):
     response = client.get('/api/tickets/')
     assert response.status_code == 200
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_tickets_create(client, authenticated_user, mock_rtutil):
+    response = client.post('/api/tickets/',
+                           data={"problem_description": "problem_description",
+                                 "email": "email@test.com",
+                                 "subject": "subject",
+                                 "first_name": "first_name",
+                                 "last_name": "last_name"})
+    assert response.status_code == 200
+    result = json.loads(response.content)
+    assert result['ticket_id'] == 1
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_tickets_create_with_attachments(client, authenticated_user, mock_rtutil):
+    attachment = (io.BytesIO(b"abcdef"), 'test.jpg')
+    response = client.post('/api/tickets/',
+                           data={"problem_description": "problem_description",
+                                 "email": "email@test.com",
+                                 "cc": "cc@test.com",
+                                 "subject": "subject",
+                                 "first_name": "firstName",
+                                 "last_name": "lastName",
+                                 'attachments': attachment},
+                           format="multipart")
+    assert response.status_code == 200
+    result = json.loads(response.content)
+    assert result['ticket_id'] == 1
+    _, kwargs = mock_rtutil.create_ticket.call_args
+    assert len(kwargs['attachments']) == 1
+    assert kwargs['problem_description'].startswith("problem_description")
+    assert kwargs['requestor'] == "email@test.com"
+    assert kwargs['subject'] == "subject"
+    assert kwargs['cc'] == "cc@test.com"
+    assert "firstName" in kwargs['problem_description']
+    assert "lastName" in kwargs['problem_description']
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)

@@ -29,7 +29,7 @@ const DataFilesPushKeysModal = () => {
   };
   const pushKeys = () => {
     dispatch({
-      type: 'SYSTEMS_PUSH_KEYS',
+      type: 'DATA_FILES_PUSH_KEYS',
       payload: {
         system,
         password,
@@ -47,6 +47,7 @@ const DataFilesPushKeysModal = () => {
         onOpened={onOpen}
         onClosed={onClosed}
         toggle={toggle}
+        className="dataFilesModal"
       >
         <ModalHeader toggle={toggle}>Push Keys</ModalHeader>
         <ModalBody>
@@ -73,7 +74,7 @@ const DataFilesPushKeysModal = () => {
             className="data-files-btn-cancel"
             onClick={toggle}
           >
-            Cancel
+            Close
           </Button>
         </ModalFooter>
       </Modal>

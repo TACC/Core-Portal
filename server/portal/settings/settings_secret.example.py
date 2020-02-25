@@ -9,12 +9,11 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 _SECRET_KEY = 'CHANGE ME !'
 _DEBUG = True
 
-#_WSGI_APPLICATION = 'ws4redis.django_runserver.application'  # DEV
 _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 
 # Namespace for portal
-_PORTAL_NAMESPACE = 'FRONTERA'
-_PORTAL_DOMAIN = 'frontera.dev'
+_PORTAL_NAMESPACE = 'Frontera'
+_PORTAL_DOMAIN = 'Frontera Portal'
 
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
@@ -26,32 +25,32 @@ _SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utex
 ########################
 
 # Database.
-_DJANGO_DB_ENGINE= 'django.db.backends.postgresql'
-_DJANGO_DB_HOST= 'frontera_prtl_postgres'
-_DJANGO_DB_PORT= '5432'
-_DJANGO_DB_NAME= 'dev'
-_DJANGO_DB_USER= 'dev'
-_DJANGO_DB_PASSWORD= 'dev'
+_DJANGO_DB_ENGINE = 'django.db.backends.postgresql'
+_DJANGO_DB_HOST = 'frontera_prtl_postgres'
+_DJANGO_DB_PORT = '5432'
+_DJANGO_DB_NAME = 'dev'
+_DJANGO_DB_USER = 'dev'
+_DJANGO_DB_PASSWORD = 'dev'
 
 # TAS Authentication.
-_TAS_URL='https://tas-dev.tacc.utexas.edu/api'
-_TAS_CLIENT_KEY='key'
-_TAS_CLIENT_SECRET='secret'
+_TAS_URL = 'https://tas-dev.tacc.utexas.edu/api'
+_TAS_CLIENT_KEY = 'key'
+_TAS_CLIENT_SECRET = 'secret'
 
 # Redmine Tracker Authentication.
-_RT_HOST='https://consult.tacc.utexas.edu/REST/1.0'
-_RT_UN='username'
-_RT_PW='password'
+_RT_HOST = 'https://consult.tacc.utexas.edu/REST/1.0'
+_RT_UN = 'username'
+_RT_PW = 'password'
 _RT_QUEUE = 'QUEUE'
 _RT_TAG = 'CEP_portal'
 
 # Recaptcha Authentication.
-_RECAPTCHA_PUBLIC_KEY='public_key'
-_RECAPTCHA_PRIVATE_KEY='private_key'
-_RECAPTCHA_USE_SSL='True'
-_NOCAPTCHA='True'
+_RECAPTCHA_PUBLIC_KEY = 'public_key'
+_RECAPTCHA_PRIVATE_KEY = 'private_key'
+_RECAPTCHA_USE_SSL = 'True'
+_NOCAPTCHA = 'True'
 
-_REQUEST_ACCESS=False
+_REQUEST_ACCESS = False
 
 ########################
 # AGAVE SETTINGS
@@ -112,6 +111,7 @@ _ES_HOSTS = 'frontera_prtl_elasticsearch'
 
 _PORTAL_APPS_METADATA_NAMES = ['portal_apps']
 _PORTAL_ALLOCATION = 'TACC-ACI'
+_PORTAL_APPS_DEFAULT_TAB = 'Data Processing'
 
 # NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
 _WH_BASE_URL = ''
@@ -133,12 +133,12 @@ _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home.{}'
 _PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 _PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
-_PORTAL_USER_ACCOUNT_SETUP_STEPS = [ ]
+_PORTAL_USER_ACCOUNT_SETUP_STEPS = []
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'EXECUTION_SYSTEM'
 _PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
 _PORTAL_JUPYTER_SYSTEM_MAP = {
-    "cep.home.{username}" : "/tacc-work",
+    "cep.home.{username}": "/tacc-work",
 }
 
 #######################
@@ -186,7 +186,7 @@ _EXTERNAL_RESOURCE_SECRETS = {
 ########################
 
 # CMS Site (allows for multiple sites on a single CMS)
-_SITE_ID=1
+_SITE_ID = 1
 
 _HAYSTACK_CONNECTIONS = {
     'default': {
@@ -204,20 +204,9 @@ _COMMUNITY_INDEX_SCHEDULE = None
 # {% static %} won't work in conjunction with {{ VARIABLE }} so use full paths.
 ########################
 
-# No Art.
-#_PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
-_PORTAL_LOGO_FILENAME=''                  # Empty string yields text 'CEP'.
-#_PORTAL_NAVBAR_BACKGROUND_FILENAME=''    # Empty string yields NO bg art.
-
-# Defaul Art.
-_PORTAL_ICON_FILENAME='/static/img/favicon.ico'
-#_PORTAL_LOGO_FILENAME='/static/img/TACC.A.png'
-_PORTAL_NAVBAR_BACKGROUND_FILENAME=''
-
-# Custom Art (example using old CEP art).
-#_PORTAL_ICON_FILENAME='/static/img/favicon.cep.png'
-#_PORTAL_LOGO_FILENAME='/static/img/logo.cep.png'
-#_PORTAL_NAVBAR_BACKGROUND_FILENAME='/static/img/network-Header.jpg'
+_PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
+_PORTAL_NAVBAR_BACKGROUND_FILENAME = ''
+_PORTAL_LOGO_FILENAME = ''
 
 ########################
 # GOOGLE ANALYTICS

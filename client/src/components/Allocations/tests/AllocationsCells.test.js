@@ -77,14 +77,13 @@ describe('Allocations Table Cells', () => {
   });
   it('should have Systems cells', () => {
     const value = systems;
-    const { getByText, debug } = render(
+    const { getByText } = render(
       <Systems
         cell={{
           value
         }}
       />
     );
-    debug()
     expect(getByText(/Test System/)).toBeInTheDocument();
   });
   it('should show Awarded allocations', () => {

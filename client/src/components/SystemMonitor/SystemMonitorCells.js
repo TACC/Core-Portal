@@ -1,6 +1,6 @@
 import React from 'react';
 import { Badge } from 'reactstrap';
-import { shape, string, bool } from 'prop-types';
+import { shape, string, bool, number } from 'prop-types';
 
 const CELL_PROPTYPES = {
   cell: shape({
@@ -16,19 +16,11 @@ Display.propTypes = CELL_PROPTYPES;
 export const Operational = ({ cell: { value } }) => (
   <>
     {value ? (
-      <Badge
-        color="success"
-        className="label-system-status"
-        style={{ width: '100%', fontSize: '14px' }}
-      >
+      <Badge color="success" className="label-system-status">
         Operational
       </Badge>
     ) : (
-      <Badge
-        color="warning"
-        className="label-system-status"
-        style={{ width: '100%', fontSize: '14px' }}
-      >
+      <Badge color="warning" className="label-system-status">
         Maintenance
       </Badge>
     )}
@@ -39,3 +31,8 @@ Operational.propTypes = {
     value: bool.isRequired
   }).isRequired
 };
+
+export const Load = ({ cell: { value } }) => (
+  <span>{value ? `${value}%` : '--'}</span>
+);
+Load.propTypes = { cell: shape({ value: number.isRequired }).isRequired };

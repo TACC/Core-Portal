@@ -111,12 +111,12 @@ class AllocationsView(BaseApiView):
     def get(self, request):
         """Returns active user allocations on TACC resources
 
-        : returns: {'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION}
+        : returns: {'response': {'active': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive, 'hosts': hosts}}
         : rtype: dict
         """
-        allocations, inactive = get_allocations(request.user.username)
+        data = get_allocations(request.user.username)
 
-        return JsonResponse({'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive}, safe=False)
+        return JsonResponse({"response": data, "status": 200})
 
 
 @method_decorator(login_required, name='dispatch')
