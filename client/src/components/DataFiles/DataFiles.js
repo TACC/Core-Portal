@@ -1,5 +1,5 @@
-import React from 'react';
-import { Switch, Route, useRouteMatch, Redirect } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 
 import './DataFiles.scss';
@@ -10,15 +10,52 @@ import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
 import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
 
-const DataFiles = () => {
+const PrivateDataRedirect = () => {
   const systems = useSelector(state => state.systems, shallowEqual);
+  const history = useHistory();
+  useEffect(() => {
+    history.push(`/workbench/data/tapis/private/${systems.private}/`);
+  }, [systems]);
+  return <></>;
+};
+
+const DataFilesSwitch = React.memo(() => {
+  const dispatch = useDispatch();
+  const { path } = useRouteMatch();
+  return (
+    <Switch>
+      <Route
+        path={`${path}/:api/:scheme/:system/:path*`}
+        render={({ match: { params } }) => {
+          dispatch({
+            type: 'FETCH_FILES',
+            payload: {
+              ...params,
+              section: 'FilesListing'
+            }
+          });
+          return (
+            <DataFilesListing
+              api={params.api}
+              scheme={params.scheme}
+              system={params.system}
+              path={params.path || '/'}
+            />
+          );
+        }}
+      />
+      <Route path={`${path}`}>
+        <PrivateDataRedirect />
+      </Route>
+    </Switch>
+  );
+});
+
+const DataFiles = () => {
   const listingParams = useSelector(
     state => state.files.params.FilesListing,
     shallowEqual
   );
-  const dispatch = useDispatch();
-
-  const { path } = useRouteMatch();
 
   return (
     <div className="data-files-wrapper">
@@ -41,31 +78,7 @@ const DataFiles = () => {
       <div className="data-files-items">
         <DataFilesSidebar />
         <div className="data-files-table">
-          <Switch>
-            <Route
-              path={`${path}/:api/:scheme/:system/:path*`}
-              render={({ match: { params } }) => {
-                dispatch({
-                  type: 'FETCH_FILES',
-                  payload: {
-                    ...params,
-                    section: 'FilesListing'
-                  }
-                });
-                return (
-                  <DataFilesListing
-                    api={params.api}
-                    scheme={params.scheme}
-                    system={params.system}
-                    path={params.path || '/'}
-                  />
-                );
-              }}
-            />
-            <Route path={`${path}`}>
-              <Redirect to={`${path}/tapis/private/${systems.private}/`} />
-            </Route>
-          </Switch>
+          <DataFilesSwitch />
         </div>
       </div>
       <DataFilesModals />

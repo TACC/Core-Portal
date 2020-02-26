@@ -49,13 +49,18 @@ const DataFilesModalButtonCell = ({
   path,
   format,
   operationName,
-  operationCallback
+  operationCallback,
+  disabled
 }) => {
   const onClick = () => operationCallback(system, path);
   return (
     format === 'folder' && (
       <span>
-        <Button className="float-right data-files-btn" onClick={onClick}>
+        <Button
+          disabled={disabled}
+          className="float-right data-files-btn"
+          onClick={onClick}
+        >
           {operationName}
         </Button>
       </span>
@@ -67,13 +72,15 @@ DataFilesModalButtonCell.propTypes = {
   path: PropTypes.string.isRequired,
   format: PropTypes.string.isRequired,
   operationName: PropTypes.string.isRequired,
-  operationCallback: PropTypes.func.isRequired
+  operationCallback: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired
 };
 
 const DataFilesModalListingTable = ({
   data,
   operationName,
-  operationCallback
+  operationCallback,
+  disabled
 }) => {
   const dispatch = useDispatch();
   const params = useSelector(state => state.files.params.modal, shallowEqual);
@@ -110,9 +117,10 @@ const DataFilesModalListingTable = ({
         format={format}
         operationName={operationName}
         operationCallback={operationCallback}
+        disabled={disabled}
       />
     ),
-    [params, operationName, operationCallback]
+    [params, operationName, operationCallback, disabled]
   );
 
   const columns = useMemo(
@@ -165,7 +173,8 @@ const DataFilesModalListingTable = ({
 DataFilesModalListingTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   operationName: PropTypes.string.isRequired,
-  operationCallback: PropTypes.func.isRequired
+  operationCallback: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired
 };
 
 export default DataFilesModalListingTable;

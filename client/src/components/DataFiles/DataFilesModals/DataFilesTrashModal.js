@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -31,7 +31,7 @@ const DataFilesTrashModal = React.memo(() => {
   );
   const selected = useMemo(() => selectedFiles, [isOpen]);
   const status = useSelector(state => state.files.operationStatus.trash);
-
+  const [disabled, setDisabled] = useState(false);
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -39,6 +39,7 @@ const DataFilesTrashModal = React.memo(() => {
     });
 
   const onClosed = () => {
+    setDisabled(false);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -47,6 +48,7 @@ const DataFilesTrashModal = React.memo(() => {
   };
 
   const trashCallback = useCallback(() => {
+    setDisabled(true);
     const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
     dispatch({
       type: 'DATA_FILES_TRASH',
@@ -86,7 +88,11 @@ const DataFilesTrashModal = React.memo(() => {
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={trashCallback} className="data-files-btn">
+        <Button
+          disabled={disabled}
+          onClick={trashCallback}
+          className="data-files-btn"
+        >
           Trash
         </Button>
         <Button

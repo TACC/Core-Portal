@@ -60,6 +60,20 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       </div>
     );
   }
+  if (err === '404') {
+    return (
+      <div className="h-100 listing-placeholder">
+        <span style={{ color: '#9d85ef' }}>
+          <FontAwesomeIcon
+            icon={faExclamationTriangle}
+            style={{ marginRight: '10px' }}
+            color="#9d85ef"
+          />
+          The file or folder that you are attempting to access does not exist.
+        </span>
+      </div>
+    );
+  }
   if (filesLength === 0) {
     return (
       <div className="h-100 listing-placeholder">

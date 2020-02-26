@@ -70,6 +70,10 @@ export function* watchFetchFiles() {
   yield takeLatest('FETCH_FILES', fetchFiles);
 }
 
+export function* watchFetchFilesModal() {
+  yield takeLatest('FETCH_FILES_MODAL', fetchFiles);
+}
+
 export async function fetchFilesUtil(
   api,
   scheme,

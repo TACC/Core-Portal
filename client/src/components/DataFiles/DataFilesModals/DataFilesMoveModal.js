@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -11,9 +11,6 @@ import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSe
 const DataFilesMoveModal = React.memo(() => {
   const history = useHistory();
   const location = useLocation();
-  const reloadPage = () => {
-    history.push(location.pathname);
-  };
 
   const dispatch = useDispatch();
   const params = useSelector(
@@ -24,6 +21,15 @@ const DataFilesMoveModal = React.memo(() => {
     state => state.files.params.modal,
     shallowEqual
   );
+
+  const reloadPage = () => {
+    history.push(location.pathname);
+    dispatch({
+      type: 'FETCH_FILES_MODAL',
+      payload: { ...modalParams, section: 'modal' }
+    });
+  };
+
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
   const isOpen = useSelector(state => state.files.modals.move);
   const selectedFiles = useSelector(
@@ -35,7 +41,11 @@ const DataFilesMoveModal = React.memo(() => {
     () => true
   );
   const selected = useMemo(() => selectedFiles, [isOpen]);
-  const status = useSelector(state => state.files.operationStatus.move);
+  const status = useSelector(
+    state => state.files.operationStatus.move,
+    shallowEqual
+  );
+  const [disabled, setDisabled] = useState(false);
 
   const toggle = () =>
     dispatch({
@@ -45,7 +55,7 @@ const DataFilesMoveModal = React.memo(() => {
 
   const onOpened = () => {
     dispatch({
-      type: 'FETCH_FILES',
+      type: 'FETCH_FILES_MODAL',
       payload: { ...params, section: 'modal' }
     });
   };
@@ -56,10 +66,12 @@ const DataFilesMoveModal = React.memo(() => {
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { operation: 'move', status: {} }
     });
+    setDisabled(false);
   };
 
   const moveCallback = useCallback(
     (system, path) => {
+      setDisabled(true);
       const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
       dispatch({
         type: 'DATA_FILES_MOVE',
@@ -115,6 +127,7 @@ const DataFilesMoveModal = React.memo(() => {
                 data={files.filter(f => f.format === 'folder')}
                 operationName="Move"
                 operationCallback={moveCallback}
+                disabled={disabled}
               />
             </div>
           </div>
@@ -122,6 +135,7 @@ const DataFilesMoveModal = React.memo(() => {
       </ModalBody>
       <ModalFooter>
         <Button
+          disabled={disabled}
           onClick={() => moveCallback(modalParams.system, modalParams.path)}
           className="data-files-btn"
         >

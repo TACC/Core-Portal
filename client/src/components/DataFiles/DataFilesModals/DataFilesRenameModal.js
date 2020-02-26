@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '_common/LoadingSpinner';
 
 const DataFilesRenameStatus = ({ status }) => {
@@ -33,6 +35,8 @@ const DataFilesRenameModal = () => {
   const [newName, setNewName] = useState(selectedFile.name || '');
   useEffect(() => setNewName(selectedFile.name || ''), [selectedFile.name]);
 
+  const [validated, setValidated] = useState(true);
+
   const { api, scheme } = useSelector(state => state.files.params.FilesListing);
 
   const dispatch = useDispatch();
@@ -50,6 +54,16 @@ const DataFilesRenameModal = () => {
   const reloadPage = (name, newPath) => {
     history.push(location.pathname);
     updateSelected({ ...selectedFile, name, path: `/${newPath}` });
+  };
+
+  const validate = e => {
+    setNewName(e.target.value);
+    const regexp = new RegExp(/["'/\\]/);
+    try {
+      setValidated(!regexp.test(e.target.value));
+    } catch {
+      setValidated(false);
+    }
   };
 
   const onClosed = () => {
@@ -83,7 +97,7 @@ const DataFilesRenameModal = () => {
         Enter the new name for this file:
         <div className="input-group mb-3">
           <input
-            onChange={e => setNewName(e.target.value)}
+            onChange={validate}
             className="form-control"
             value={newName}
             placeholder={newName}
@@ -96,9 +110,26 @@ const DataFilesRenameModal = () => {
             </div>
           )}
         </div>
+        <div
+          hidden={newName === '' || validated}
+          style={{ paddingTop: '10px' }}
+        >
+          <span style={{ color: '#9d85ef' }}>
+            <FontAwesomeIcon
+              icon={faExclamationTriangle}
+              style={{ marginRight: '10px' }}
+              color="#9d85ef"
+            />
+            Valid characters are <b>A-Z a-z 0-9 . _ -</b>
+          </span>
+        </div>
       </ModalBody>
       <ModalFooter>
-        <Button className="data-files-btn" onClick={rename}>
+        <Button
+          disabled={!newName || !validated}
+          className="data-files-btn"
+          onClick={rename}
+        >
           Rename{' '}
         </Button>{' '}
         <Button

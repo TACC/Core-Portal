@@ -6,6 +6,7 @@ import watchSystems from './systems.sagas';
 import {
   watchFetchSystems,
   watchFetchFiles,
+  watchFetchFilesModal,
   watchPushKeys,
   watchScrollFiles,
   watchRename,
@@ -39,6 +40,7 @@ export default function* rootSaga() {
     watchFetchSystems(),
     watchPushKeys(),
     watchFetchFiles(),
+    watchFetchFilesModal(),
     watchScrollFiles(),
     watchRename(),
     watchMove(),
