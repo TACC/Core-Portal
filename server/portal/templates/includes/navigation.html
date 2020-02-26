@@ -91,16 +91,9 @@ They seem useful, and would be re-incoprorated when their usage is necessary.
       {% else %}
       <li class="nav-item">
         <a class="nav-link" role="button" href="{% url 'portal_auth:agave_oauth' %}">
-        <!-- <a href="{% url 'portal_auth:agave_oauth' %}" class="btn btn-link-alt"> -->
           <i class="fas fa-sign-in-alt nav-icon"></i> Log in
         </a>
       </li>
-      <!-- Hidden until auth flow is properly implemented and MFA impact is determined.  -->
-      <!-- <li class="right-nav-links">
-        <a href="{% url 'portal_accounts:register' %}" class="btn btn-link-alt">
-          <i class="fas fa-user-plus nav-icon"></i> Register
-        </a>
-      </li> -->
       {% endif %}
       <!-- end of user logged in/not logged in if -->
     </ul>

@@ -28,9 +28,6 @@
             <span class="sr-only">Toggle Dropdown</span>
           </button>
           <ul class="dropdown-menu">
-            <!--
-            <li><a href="{% url 'portal_accounts:logout' %}">Log out</a></li>
-            -->
             <li><a href="{% url 'portal_accounts:logout' %}">Log out</a></li>
             {% if user.is_impersonate %}
               <li><a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a></li>
@@ -40,7 +37,6 @@
       {% else %}
         <div class="btn-group">
           <a href="{% url 'portal_auth:agave_oauth' %}" class="btn btn-link-alt">Log in</a>
-          <a href="{% url 'portal_accounts:register' %}" class="btn btn-link-alt">Register</a>
         </div>
       {% endif %}
     </div>
