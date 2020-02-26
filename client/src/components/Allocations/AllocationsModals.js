@@ -94,8 +94,10 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
   }));
   const visible = chunk(teams[pid] || [], 20 * pages[pid]);
   const handleScroll = ({ target }) => {
+    const heightDiff = target.scrollHeight - target.scrollTop;
     const bottom =
-      target.scrollHeight - target.scrollTop === target.clientHeight;
+      heightDiff <= target.clientHeight + 2 &&
+      heightDiff >= target.clientHeight - 2;
     if (bottom && visible[0].length < (teams[pid].length || 0)) {
       dispatch({
         type: 'ADD_PAGE',
