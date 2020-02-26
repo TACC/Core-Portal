@@ -7,6 +7,7 @@ import './FileInputDropZone.scss';
 function FileInputDropZone({ files, onAddFile, onRemoveFile }) {
   const { getRootProps, open, getInputProps } = useDropzone({
     noClick: true,
+    maxSize: 3145728,
     onDrop: accepted => {
       accepted.forEach(file => onAddFile(file));
     }
@@ -28,7 +29,7 @@ function FileInputDropZone({ files, onAddFile, onRemoveFile }) {
           <strong>or</strong>
           <strong>Drag and Drop</strong>
           <br />
-          Max File Size: 100MB
+          Max File Size: 3MB
         </div>
       )}
       {hasFiles && (
