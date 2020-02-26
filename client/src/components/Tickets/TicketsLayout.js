@@ -20,6 +20,8 @@ export function getStatusText(status) {
       return 'In Progress';
     case 'user_wait':
       return 'Reply Required';
+    case 'internal_wait':
+      return 'Reply Sent';
     default:
       throw new RangeError('no defined text for this status');
   }
