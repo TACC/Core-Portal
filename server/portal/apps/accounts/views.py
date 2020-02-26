@@ -5,7 +5,9 @@ import re
 import logging
 import json
 import rt
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.generic.base import TemplateView, View
@@ -53,6 +55,7 @@ class LoginView(TemplateView):
 class LogoutView(View):
     """Logout view
     """
+
     def get(self, request):
         """GET"""
         logout(request)
@@ -95,13 +98,13 @@ def request_access(request):
                     )
                     if tracker.login():
                         tracker.create_ticket(
-                            #Queue='Web & Mobile Apps',
+                            # Queue='Web & Mobile Apps',
                             Queue=settings.RT_QUEUE,
                             Subject='New User Access Request',
                             Text=('User {username} is requesting '
                                   'access to Portal.').format(
                                       username=username
-                                  ),
+                            ),
                             Requestors=user['email'],
                             CF_resource=settings.RT_TAG
                         )
@@ -331,6 +334,7 @@ def manage_identities(request):
         context
     )
 
+
 @login_required
 def manage_onboarding(request):
     context = {
@@ -341,6 +345,7 @@ def manage_onboarding(request):
         'portal/apps/accounts/manage_onboarding.html',
         context
     )
+
 
 @login_required
 def manage_notifications(request):
@@ -446,7 +451,7 @@ def profile_edit(request):
                     user=user
                     # ethnicity=data['ethnicity'],
                     # gender=data['gender']
-                    )
+                )
                 portal_profile.save()
 
             return HttpResponseRedirect(
@@ -533,7 +538,7 @@ def _process_password_reset_request(request, form):
             username
         )
         try:
-            tas = TASClient()
+            tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
             user = tas.get_user(username=username)
             logger.info(
                 'Processing password reset request for username: "%s"',
@@ -560,7 +565,7 @@ def _process_password_reset_confirm(request, form):
     if form.is_valid():
         data = form.cleaned_data
         try:
-            tas = TASClient()
+            tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
             return tas.confirm_password_reset(
                 data['username'],
                 data['code'],
@@ -598,7 +603,7 @@ def email_confirmation(request, code=None):
             username = data['username']
             password = data['password']
             try:
-                tas = TASClient()
+                tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
                     # check_or_create_agave_home_dir.apply_async(args=(user["username"],))
@@ -642,7 +647,7 @@ def email_confirmation(request, code=None):
 def departments_json(request):
     institution_id = request.GET.get('institutionId')
     if institution_id:
-        tas = TASClient()
+        tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
         departments = tas.get_departments(institution_id)
     else:
         departments = {}
@@ -652,8 +657,15 @@ def departments_json(request):
     )
 
 
+def load_departments(request):
+    institution_id = request.GET.get('institutionId')
+    if institution_id:
+        tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+        departments = tas.get_departments(institution_id)
+    else:
+        departments = {}
+    return render(request, 'portal/apps/accounts/department_dropdown_options.html', {'departments': departments})
 # Throws Bad Gateway 502 Error.
-#
 # @permission_required('portal_accounts.view_notification_subscribers',
 #                      raise_exception=True)
 # def mailing_list_subscription(request, list_name):

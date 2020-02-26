@@ -3,11 +3,12 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.conf import settings
+# TODO: Re-implement captcha
 # from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 # from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from .models import (PortalProfile, NotificationPreferences,
-    PortalProfileNHInterests, PortalProfileResearchActivities)
+                     PortalProfileNHInterests, PortalProfileResearchActivities)
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
 import re
@@ -219,7 +220,7 @@ class PasswordResetConfirmForm(forms.Form):
 
         try:
             user = tas.get_user(username=username)
-        except:
+        except Exception:
             msg = 'The username provided does not match an existing user.'
             self.add_error('username', msg)
             raise forms.ValidationError(msg)
@@ -248,6 +249,8 @@ class UserProfileForm(forms.Form):
         label='Country of residence', choices=(),
         error_messages={'invalid': 'Please select your Country of residence'})
     citizenshipId = forms.ChoiceField(
+        disabled=True,
+        required=False,
         label='Country of citizenship', choices=(),
         error_messages={'invalid': 'Please select your Country of citizenship'})
     # ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
@@ -258,8 +261,9 @@ class UserProfileForm(forms.Form):
         self.fields['institutionId'].choices = get_institution_choices()
         data = self.data or self.initial
         if data is not None and 'institutionId' in data and data['institutionId']:
-            self.fields['departmentId'].choices = get_department_choices(
-                data['institutionId'])
+            choices = get_department_choices(data['institutionId'])
+            self.fields['departmentId'].choices = choices
+            self.fields['departmentId'].disabled = len(choices) <= 1
 
         self.fields['countryId'].choices = get_country_choices()
         self.fields['citizenshipId'].choices = get_country_choices()
@@ -277,19 +281,20 @@ class TasUserProfileAdminForm(forms.Form):
     piEligibility = forms.ChoiceField(
         choices=PI_ELIGIBILITY,
         label="PI Eligibility"
-        )
+    )
     reset_password = forms.BooleanField(
         required=False,
         label="Reset user's password",
         help_text="Check this box to reset the user's password. The user will be "
         "notified via email with instructions to complete the password reset."
-        )
+    )
 
 
 class RequestAccessForm(forms.Form):
     username = forms.CharField(label='TACC Username', required=True)
     password = forms.CharField(label='TACC Password', widget=forms.PasswordInput, required=True)
     # captcha = ReCaptchaField(widget=ReCaptchaWidget)
+
 
 class UserRegistrationForm(forms.Form):
     """
@@ -310,7 +315,7 @@ class UserRegistrationForm(forms.Form):
         help_text='If your institution is not listed, please provide the name of the '
         'institution as it should be shown here.',
         required=False,
-        )
+    )
     title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
     countryId = forms.ChoiceField(
         label='Country of residence', choices=(),
@@ -403,10 +408,10 @@ class UserRegistrationForm(forms.Form):
             # ds_profile.gender = data['gender']
         except PortalProfile.DoesNotExist:
             ds_profile = PortalProfile(
-                user=user #,
+                user=user  # ,
                 # ethnicity=data['ethnicity'],
                 # gender=data['gender']
-                )
+            )
         ds_profile.save()
 
         # terms of use
@@ -416,7 +421,7 @@ class UserRegistrationForm(forms.Form):
             terms = TermsAndConditions.get_active()
             user_terms = UserTermsAndConditions(user=user, terms=terms)
             user_terms.save()
-        except:
+        except Exception:
             logger.exception('Error saving UserTermsAndConditions for user=%s', user)
 
         return tas_user
