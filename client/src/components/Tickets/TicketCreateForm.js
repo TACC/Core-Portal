@@ -44,7 +44,7 @@ function validateRequiredText(value) {
   return false;
 }
 
-function UploadFilesField() {
+function UploadFilesField({ isSubmitted }) {
   const { value, pushValue, removeValue } = useField('attachments');
 
   return (
@@ -52,9 +52,14 @@ function UploadFilesField() {
       files={value}
       onAddFile={pushValue}
       onRemoveFile={removeValue}
+      isSubmitted={isSubmitted}
     />
   );
 }
+
+UploadFilesField.propTypes = {
+  isSubmitted: PropTypes.bool.isRequired
+};
 
 function CreatedTicketInformation({ isAuthenticated, ticketId }) {
   if (!ticketId) {
@@ -110,14 +115,15 @@ function TicketCreateForm({ authenticatedUser }) {
       last_name: authenticatedUser ? authenticatedUser.last_name : '',
       email: authenticatedUser ? authenticatedUser.email : '',
       cc: '',
-      attachments: []
+      attachments: [],
+      rejected_attachments: []
     }),
     [authenticatedUser]
   );
   const {
     Form,
     reset,
-    meta: { canSubmit }
+    meta: { canSubmit, isSubmitted }
   } = useForm({
     defaultValues,
     onSubmit: async (values, instance) => {
@@ -189,7 +195,7 @@ function TicketCreateForm({ authenticatedUser }) {
       </FormGroup>
       <FormGroup>
         <Label>Upload Files</Label>
-        <UploadFilesField />
+        <UploadFilesField isSubmitted={isSubmitted} />
         <FormText>
           Error reports and screenshots can be helpful for diagnostics
         </FormText>
