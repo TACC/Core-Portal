@@ -526,7 +526,10 @@ def _process_password_reset_request(request, form):
             username
         )
         try:
-            tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+            tas = TASClient(
+                baseURL=settings.TAS_URL,
+                credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET}
+            )
             user = tas.get_user(username=username)
             logger.info(
                 'Processing password reset request for username: "%s"',
@@ -553,7 +556,10 @@ def _process_password_reset_confirm(request, form):
     if form.is_valid():
         data = form.cleaned_data
         try:
-            tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+            tas = TASClient(
+                baseURL=settings.TAS_URL,
+                credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET}
+            )
             return tas.confirm_password_reset(
                 data['username'],
                 data['code'],

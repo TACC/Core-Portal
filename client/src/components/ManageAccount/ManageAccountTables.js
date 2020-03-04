@@ -122,7 +122,9 @@ export const ChangePassword = () => {
     <div className="profile-component-wrapper">
       <div className="profile-component-header">Change Password</div>
       <div className="profile-component-body">
-        <Button onClick={openModal}>Change Password</Button>
+        <Button onClick={openModal} className="change-pw-button">
+          Change Password
+        </Button>
       </div>
     </div>
   );

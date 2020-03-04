@@ -10,7 +10,10 @@
 }
 // Page Wrapper
 .manage-account-content {
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
+  max-height: 100%;
 }
 .manage-account-header {
   display: flex;
@@ -27,14 +30,13 @@
 // Content Wrapper
 .user-profile {
   display: flex;
-  flex-grow: 1;
   flex-flow: row wrap;
+  height: calc(100% - 2rem);
   margin-top: 1.5rem;
   padding-left: 1rem;
-  align-items: stretch;
   .user-profile-main {
     width: 70%;
-    border-right: 1px solid;
+    border-right: 1px solid rgba(112, 112, 112, .25);
     padding-right: 1rem;
     div:not(:first-child) {
       margin-top: 2rem;
@@ -90,3 +92,11 @@
   font-size: 14px;
   margin-bottom: 1rem;
 }
+.change-pw-button {
+  border-radius: 0;
+  border: 0;
+  font: Bold 12px Roboto;
+  background-color: #9D85EF;
+  padding: 0.5rem 1rem;
+}
+
