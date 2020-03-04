@@ -103,11 +103,18 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     if file_name is None:
         file_name = src_path.strip('/').split('/')[-1]
 
+    dest_path_full = os.path.join(dest_path.strip('/'), file_name)
+    src_path_full = urllib.parse.quote(src_path)
+
+    # Handle attempt to move a file into its current path.
+    if src_system == dest_system and src_path_full == dest_path_full:
+        return {'system': src_system, 'path': src_path_full, 'name': file_name}
+
     try:
         client.files.list(systemId=dest_system,
                           filePath="{}/{}".format(dest_path, file_name))
 
-        # Trash path exists, must make it unique.
+        # Destination path exists, must make it unique.
         _ext = os.path.splitext(file_name)[1].lower()
         _name = os.path.splitext(file_name)[0]
         now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')

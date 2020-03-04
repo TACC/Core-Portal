@@ -3,6 +3,7 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
+import { FileIconCell } from '../../DataFilesListing/DataFilesListingCells';
 
 const DataFilesModalListingNameCell = ({
   api,
@@ -48,13 +49,18 @@ const DataFilesModalButtonCell = ({
   path,
   format,
   operationName,
-  operationCallback
+  operationCallback,
+  disabled
 }) => {
   const onClick = () => operationCallback(system, path);
   return (
     format === 'folder' && (
       <span>
-        <Button className="float-right data-files-btn" onClick={onClick}>
+        <Button
+          disabled={disabled}
+          className="float-right data-files-btn"
+          onClick={onClick}
+        >
           {operationName}
         </Button>
       </span>
@@ -66,13 +72,15 @@ DataFilesModalButtonCell.propTypes = {
   path: PropTypes.string.isRequired,
   format: PropTypes.string.isRequired,
   operationName: PropTypes.string.isRequired,
-  operationCallback: PropTypes.func.isRequired
+  operationCallback: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired
 };
 
 const DataFilesModalListingTable = ({
   data,
   operationName,
-  operationCallback
+  operationCallback,
+  disabled
 }) => {
   const dispatch = useDispatch();
   const params = useSelector(state => state.files.params.modal, shallowEqual);
@@ -109,17 +117,26 @@ const DataFilesModalListingTable = ({
         format={format}
         operationName={operationName}
         operationCallback={operationCallback}
+        disabled={disabled}
       />
     ),
-    [params]
+    [params, operationName, operationCallback, disabled]
   );
 
   const columns = useMemo(
     () => [
       {
+        id: 'icon',
+        accessor: 'format',
+        width: 0.05,
+        minWidth: 20,
+        maxWidth: 30,
+        Cell: FileIconCell
+      },
+      {
         Header: 'Name',
         accessor: 'name',
-        width: 0.7,
+        width: 0.65,
         Cell: NameCell
       },
       {
@@ -156,7 +173,8 @@ const DataFilesModalListingTable = ({
 DataFilesModalListingTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   operationName: PropTypes.string.isRequired,
-  operationCallback: PropTypes.func.isRequired
+  operationCallback: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired
 };
 
 export default DataFilesModalListingTable;

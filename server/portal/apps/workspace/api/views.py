@@ -5,7 +5,8 @@
 import logging
 import json
 from urllib.parse import urlparse
-from datetime import datetime, timedelta
+from datetime import timedelta
+from django.utils import timezone
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -57,13 +58,6 @@ class AppsView(BaseApiView):
             data['resource'] = exec_sys.login.host
             data['scheduler'] = exec_sys.scheduler
             data['exec_sys'] = exec_sys.to_dict()
-
-            # set maxNodes from system queue for app
-            if (data['parallelism'] == 'PARALLEL') and ('defaultQueue' in data):
-                for queue in exec_sys.queues.all():
-                    if queue.name == data['defaultQueue']:
-                        data['maxNodes'] = queue.maxNodes
-                        break
 
             lic_type = _app_license_type(app_id)
             data['license'] = {
@@ -133,7 +127,7 @@ class MetadataView(BaseApiView):
                     ]
                 })
             data = agave.meta.listMetadata(q=query)
-        return JsonResponse({'response': data})
+        return JsonResponse({'response': {'listing': data, 'default_tab': settings.PORTAL_APPS_DEFAULT_TAB}})
 
     def post(self, request, *args, **kwargs):
         agave = request.user.agave_oauth.client
@@ -194,7 +188,7 @@ class JobsView(BaseApiView):
             jobs = JobSubmission.objects.all().filter(user=request.user)
 
             if period != "all":
-                enddate = datetime.now()
+                enddate = timezone.now()
                 if period == "day":
                     days = 1
                 elif period == "week":
@@ -237,7 +231,7 @@ class JobsView(BaseApiView):
         elif job_post:
 
             # cleaning archive path value
-            if 'archivePath' in job_post:
+            if job_post.get('archivePath'):
                 parsed = urlparse(job_post['archivePath'])
                 if parsed.path.startswith('/') and len(parsed.path) > 1:
                     # strip leading '/'
@@ -259,7 +253,7 @@ class JobsView(BaseApiView):
             else:
                 job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
-                        datetime.now().strftime('%Y-%m-%d'))
+                        timezone.now().strftime('%Y-%m-%d'))
                 job_post['archiveSystem'] = \
                     settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(request.user.username)
 
@@ -272,7 +266,6 @@ class JobsView(BaseApiView):
                 job_post['parameters']['_license'] = lic.license_as_str()
 
             # url encode inputs
-            # TODO: PUll this out of here and make it a utility
             if job_post['inputs']:
                 job_post = url_parse_inputs(job_post)
 
@@ -280,8 +273,8 @@ class JobsView(BaseApiView):
             apps_mgr = UserApplicationsManager(request.user)
             app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
-            if app._new_exec_sys:
-                return JsonResponse({"response": {"execSys": app._new_exec_sys.to_dict()}})
+            if app.exec_sys:
+                return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
 
             job_post['appId'] = app.id
             del job_post['allocation']
@@ -305,6 +298,7 @@ class JobsView(BaseApiView):
                                       if param in [p['id'] for p in app.parameters]}
 
             response = agave.jobs.submit(body=job_post)
+
             if "id" in response:
                 job = JobSubmission.objects.create(
                     user=request.user,

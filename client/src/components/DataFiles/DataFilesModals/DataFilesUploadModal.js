@@ -11,17 +11,18 @@ import {
   ModalFooter,
   Table
 } from 'reactstrap';
+import LoadingSpinner from '_common/LoadingSpinner';
 import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
 
 const DataFilesUploadStatus = ({ i, removeCallback }) => {
   const status = useSelector(state => state.files.operationStatus.upload[i]);
   switch (status) {
     case 'UPLOADING':
-      return <span>UPLOADING</span>;
+      return <LoadingSpinner placement="inline" />;
     case 'SUCCESS':
-      return <span>SUCCESS</span>;
+      return <span className="badge badge-success">SUCCESS</span>;
     case 'ERROR':
-      return <span>ERROR</span>;
+      return <span className="badge badge-danger">ERROR</span>;
     default:
       return (
         <button
@@ -99,7 +100,13 @@ const DataFilesUploadModal = () => {
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} onClosed={onClosed} size="lg">
+    <Modal
+      isOpen={isOpen}
+      toggle={toggle}
+      onClosed={onClosed}
+      size="xl"
+      className="dataFilesModal"
+    >
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
       <ModalBody>
         <input
@@ -109,50 +116,91 @@ const DataFilesUploadModal = () => {
           multiple
           onChange={selectFiles}
         />
-        <div>
-          <Button onClick={() => uploadRef.current.click()}>
-            Select File(s)
-          </Button>
+
+        <div
+          style={{
+            display: 'flex',
+            height: '100px',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#F4F4F4'
+          }}
+        >
+          <div>
+            <Button
+              onClick={() => uploadRef.current.click()}
+              style={{
+                borderRadius: '0px',
+                paddingLeft: '25px',
+                paddingRight: '25px',
+                border: '1px solid black',
+                backgroundColor: '#F4F4F4',
+                color: 'black'
+              }}
+            >
+              Select File(s)
+            </Button>
+          </div>
         </div>
-        <div>Uploading to {params.path || 'My Data/'}</div>
-        <div className="row">
-          <Table striped hidden={uploadedFiles.length === 0}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Size</th>
-                <th aria-label="null" />
-              </tr>
-            </thead>
-            <tbody>
-              {uploadedFiles.map((file, i) => (
-                <tr key={file.id}>
-                  <td style={{ verticalAlign: 'middle' }}>{file.data.name}</td>
-                  <td style={{ verticalAlign: 'middle' }}>
-                    <FileLengthCell cell={{ value: file.data.size }} />
-                  </td>
-                  <td>
-                    <DataFilesUploadStatus
-                      i={file.id}
-                      removeCallback={removeFile}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+
+        <div hidden={uploadedFiles.length === 0} style={{ marginTop: '10px' }}>
+          <span style={{ fontSize: '20px' }}>
+            Uploading to {params.path || 'My Data/'}
+          </span>
+
+          <div>
+            <div
+              style={{
+                border: '1px solid black',
+                width: '100%',
+                marginTop: '5px',
+                height: '300px',
+                overflow: 'auto'
+              }}
+            >
+              <Table striped>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <th aria-label="null" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {uploadedFiles.map((file, i) => (
+                    <tr key={file.id}>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {file.data.name}
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        <FileLengthCell cell={{ value: file.data.size }} />
+                      </td>
+                      <td>
+                        <span className="float-right">
+                          <DataFilesUploadStatus
+                            i={file.id}
+                            removeCallback={removeFile}
+                          />
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          </div>
         </div>
       </ModalBody>
       <ModalFooter>
         <Button className="data-files-btn" onClick={uploadStart}>
-          Upload
+          Upload Selected
         </Button>{' '}
         <Button
           color="secondary"
           className="data-files-btn-cancel"
           onClick={toggle}
         >
-          Cancel
+          Close
         </Button>
       </ModalFooter>
     </Modal>

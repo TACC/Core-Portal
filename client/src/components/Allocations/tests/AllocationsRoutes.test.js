@@ -11,7 +11,11 @@ describe('Allocations Routes', () => {
   it('should render a wrapper for the allocations routes', () => {
     const { getByTestId } = render(
       <BrowserRouter>
-        <Provider store={mockStore({})}>
+        <Provider
+          store={mockStore({
+            allocations: { loading: true }
+          })}
+        >
           <AllocationsRoutes />
         </Provider>
       </BrowserRouter>

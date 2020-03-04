@@ -31,12 +31,27 @@
   font-weight: 500;
 }
 
-#spin-sun {
-    text-align: center;
+.spin-sun {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
 }
 
 .workbench-content .btn-link, .workbench-content .wb-link {
   color: #9d85ef;
+}
+
+.workbench-content .btn-secondary {
+  background-color: #F4F4F4;
+  color: #484848;
+  border: 1px solid #AFAFAF;
+}
+
+.workbench-content .btn-primary {
+  background-color: #9d85ef;
+  color: white;
+  border: none;
 }
 
 .workbench-content .badge-success {
@@ -45,6 +60,11 @@
 
 .workbench-content .badge-warning {
   background-color: #C7CE1D;
+  color: white;
+}
+
+.workbench-content .badge-danger {
+  background-color: #EB6E6E;
   color: white;
 }
 
@@ -63,7 +83,7 @@
 }
 
 .workbench-content .ReactTable .rt-thead .rt-th.-sort-asc:after, .ReactTable .rt-thead .rt-td.-sort-asc:after {
-  margin-left: 10px;
+  margin-left: 5px;
   font-family: "Font Awesome 5 Free";
   content: "\f0dd";
   display: inline-block;
@@ -79,7 +99,7 @@
 }
 
 .workbench-content .ReactTable .rt-thead .rt-th.-sort-desc:after, .ReactTable .rt-thead .rt-td.-sort-desc:after {
-  margin-left: 10px;
+  margin-left: 5px;
   font-family: "Font Awesome 5 Free";
   content: "\f0de";
   display: inline-block;
@@ -156,4 +176,13 @@
     .workbench-content .container {
         max-width: 1645px;
     }
+}
+
+.modal-dialog {
+  height: 100vh;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }

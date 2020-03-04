@@ -37,8 +37,7 @@ describe("DataFilesBreadcrumbs", () => {
         .closest("a")
         .getAttribute("href")
     ).toEqual("/workbench/data/tapis/private/test.system/");
-    expect(getByText(/\/...\/...\//)).toBeDefined()
-    expect(
+  expect(
       getByText(/the/)
         .closest("a")
         .getAttribute("href")

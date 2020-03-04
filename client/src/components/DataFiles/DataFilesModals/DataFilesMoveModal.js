@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -11,9 +11,6 @@ import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSe
 const DataFilesMoveModal = React.memo(() => {
   const history = useHistory();
   const location = useLocation();
-  const reloadPage = () => {
-    history.push(location.pathname);
-  };
 
   const dispatch = useDispatch();
   const params = useSelector(
@@ -24,6 +21,15 @@ const DataFilesMoveModal = React.memo(() => {
     state => state.files.params.modal,
     shallowEqual
   );
+
+  const reloadPage = () => {
+    history.push(location.pathname);
+    dispatch({
+      type: 'FETCH_FILES_MODAL',
+      payload: { ...modalParams, section: 'modal' }
+    });
+  };
+
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
   const isOpen = useSelector(state => state.files.modals.move);
   const selectedFiles = useSelector(
@@ -35,7 +41,11 @@ const DataFilesMoveModal = React.memo(() => {
     () => true
   );
   const selected = useMemo(() => selectedFiles, [isOpen]);
-  const status = useSelector(state => state.files.operationStatus.move);
+  const status = useSelector(
+    state => state.files.operationStatus.move,
+    shallowEqual
+  );
+  const [disabled, setDisabled] = useState(false);
 
   const toggle = () =>
     dispatch({
@@ -45,7 +55,7 @@ const DataFilesMoveModal = React.memo(() => {
 
   const onOpened = () => {
     dispatch({
-      type: 'FETCH_FILES',
+      type: 'FETCH_FILES_MODAL',
       payload: { ...params, section: 'modal' }
     });
   };
@@ -56,10 +66,12 @@ const DataFilesMoveModal = React.memo(() => {
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { operation: 'move', status: {} }
     });
+    setDisabled(false);
   };
 
   const moveCallback = useCallback(
     (system, path) => {
+      setDisabled(true);
       const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
       dispatch({
         type: 'DATA_FILES_MOVE',
@@ -70,7 +82,7 @@ const DataFilesMoveModal = React.memo(() => {
         }
       });
     },
-    [selected, reloadPage]
+    [selected, reloadPage, status]
   );
 
   return (
@@ -80,42 +92,42 @@ const DataFilesMoveModal = React.memo(() => {
       onClosed={onClosed}
       toggle={toggle}
       size="xl"
+      className="dataFilesModal"
     >
       <ModalHeader toggle={toggle}>
         Moving {selected.length} File(s)
       </ModalHeader>
-      <ModalBody style={{ paddingTop: '0px', height: '70vh' }}>
+      <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-6 d-flex flex-column">
             {/* Table of selected files */}
-            <div>
-              <DataFilesBreadcrumbs
-                api={params.api}
-                scheme={params.scheme}
-                system={params.system}
-                path={params.path || '/'}
-                section=""
-              />
-            </div>
-            <div style={{ paddingTop: '0px', flexGrow: '1' }}>
+            <div className="dataFilesModalColHeader">Source</div>
+            <DataFilesBreadcrumbs
+              api={params.api}
+              scheme={params.scheme}
+              system={params.system}
+              path={params.path || '/'}
+              section=""
+            />
+            <div className="filesListing">
               <DataFilesModalSelectedTable data={selected} operation="move" />
             </div>
           </div>
           <div className="col-md-6 d-flex flex-column">
-            <div>
-              <DataFilesBreadcrumbs
-                api={modalParams.api}
-                scheme={modalParams.scheme}
-                system={modalParams.system}
-                path={modalParams.path || '/'}
-                section="modal"
-              />
-            </div>
-            <div style={{ paddingTop: '0px', flexGrow: '1' }}>
+            <div className="dataFilesModalColHeader">Destination</div>
+            <DataFilesBreadcrumbs
+              api={modalParams.api}
+              scheme={modalParams.scheme}
+              system={modalParams.system}
+              path={modalParams.path || '/'}
+              section="modal"
+            />
+            <div className="filesListing">
               <DataFilesModalListingTable
-                data={files}
+                data={files.filter(f => f.format === 'folder')}
                 operationName="Move"
                 operationCallback={moveCallback}
+                disabled={disabled}
               />
             </div>
           </div>
@@ -123,6 +135,7 @@ const DataFilesMoveModal = React.memo(() => {
       </ModalBody>
       <ModalFooter>
         <Button
+          disabled={disabled}
           onClick={() => moveCallback(modalParams.system, modalParams.path)}
           className="data-files-btn"
         >
@@ -133,7 +146,7 @@ const DataFilesMoveModal = React.memo(() => {
           className="data-files-btn-cancel"
           onClick={toggle}
         >
-          Cancel
+          Close
         </Button>
       </ModalFooter>
     </Modal>

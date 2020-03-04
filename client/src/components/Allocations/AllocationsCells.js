@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { object, shape, array, number } from 'prop-types';
 import { Button, Badge } from 'reactstrap';
 import { useDispatch } from 'react-redux';
+import uuid from 'uuid';
 import { TeamView } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
@@ -19,7 +20,10 @@ export const Team = ({ cell: { value } }) => {
         className="btn btn-sm"
         color="link"
         onClick={() => {
-          dispatch({ type: 'GET_TEAMS', payload: { id: value } });
+          dispatch({
+            type: 'GET_TEAMS',
+            payload: { id: value }
+          });
           setOpenModal(true);
         }}
         disabled={openModal}
@@ -42,8 +46,8 @@ Team.propTypes = {
 
 export const Systems = ({ cell }) => (
   <div className="sub-table-row">
-    {cell.value.map(({ name, id }) => (
-      <div key={`${name}${id}`} className="sub-table-cell">
+    {cell.value.map(({ name }) => (
+      <div key={uuid()} className="sub-table-cell">
         <span style={{ marginLeft: '1em' }}>{name}</span>
       </div>
     ))}
@@ -53,8 +57,8 @@ Systems.propTypes = CELL_PROPTYPES;
 
 export const Awarded = ({ cell }) => (
   <div className="sub-table-row">
-    {cell.value.map(({ awarded, type, id }) => (
-      <div key={id} className="sub-table-cell">
+    {cell.value.map(({ awarded, type }) => (
+      <div key={uuid()} className="sub-table-cell">
         {awarded} {type === 'HPC' ? 'SU' : 'GB'}
       </div>
     ))}
@@ -73,7 +77,7 @@ export const Remaining = ({ cell }) => {
   return (
     <div className="sub-table-row">
       {cell.value.map(({ remaining, ratio, type, id }) => (
-        <div key={id} className="sub-table-cell">
+        <div key={uuid()} className="sub-table-cell">
           <span>
             <Badge className="alloc-badge" color={getColor(ratio)}>
               {remaining} {type === 'HPC' ? 'SU' : 'GB'}
@@ -88,8 +92,12 @@ Remaining.propTypes = CELL_PROPTYPES;
 
 export const Expires = ({ row: { values } }) => (
   <div className="sub-table-row">
-    {values.expires.map(({ id, date }) => (
-      <div key={id} className="sub-table-cell" data-testid="expiration-date">
+    {values.expires.map(({ date }) => (
+      <div
+        key={uuid()}
+        className="sub-table-cell"
+        data-testid="expiration-date"
+      >
         <span>{date}</span>
       </div>
     ))}

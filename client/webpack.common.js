@@ -38,7 +38,9 @@ module.exports = {
   resolve: {
     extensions: ['*', '.js', '.jsx'],
     alias: {
-      'react-dom': '@hot-loader/react-dom'
+      'react-dom': '@hot-loader/react-dom',
+      utils: path.resolve(__dirname, 'src/utils/'),
+      _common: path.resolve(__dirname, 'src/components/_common/')
     }
   },
   optimization: {

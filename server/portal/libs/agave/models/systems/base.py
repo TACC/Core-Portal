@@ -12,11 +12,9 @@ from portal.libs.agave.exceptions import ValidationError
 from portal.libs.agave.models.base import BaseAgaveResource
 from portal.libs.agave.models.systems.roles import Roles
 
-# pylint: disable=invalid-name
+
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
-# pylint: enable=invalid-name
-
 
 
 class BaseSystem(BaseAgaveResource):
@@ -365,18 +363,18 @@ class BaseSystem(BaseAgaveResource):
         """
         result = 'FAIL'
         success = True
-        if self.type == self.TYPES.STORAGE:
-            try:
-                self._ac.files.list(
-                    systemId=self.id,
-                    filePath=''
-                )
-                result = 'SUCCESS'
-            except HTTPError as err:
-                success = False
-                result = err.response.json()
-        elif self.type == self.TYPES.STORAGE:
+        # if self.type == self.TYPES.STORAGE:
+        try:
+            self._ac.files.list(
+                systemId=self.id,
+                filePath=''
+            )
             result = 'SUCCESS'
+        except HTTPError as err:
+            success = False
+            result = err.response.json()
+        # elif self.type == self.TYPES.EXECUTION:
+        #     result = 'SUCCESS'
 
         return success, result
 
@@ -391,7 +389,6 @@ class BaseSystem(BaseAgaveResource):
         self._ac.systems.manage(body=clone_body, systemId=self.id)
         self.available = True
         return self
-
 
     def __str__(self):
         """String -> self.id: self.type"""
@@ -476,11 +473,11 @@ class BaseSystemAuth(BaseAgaveResource):
             None,
             **kwargs
         )
-        self.type = kwargs.get('type')
-        self.username = kwargs.get('username')
-        self.public_key = kwargs.get('publicKey')
-        self.private_key = kwargs.get('privateKey')
-        self.password = kwargs.get('password')
+        self.type = kwargs.get('type', BaseSystem.AUTH_TYPES.SSHKEYS)
+        self.username = kwargs.get('username', '')
+        self.public_key = kwargs.get('publicKey', '')
+        self.private_key = kwargs.get('privateKey', '')
+        self.password = kwargs.get('password', '')
 
     def _populate_obj(self):
         """No need to populate this obj"""

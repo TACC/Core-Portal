@@ -14,20 +14,68 @@ from portal.exceptions.api import ApiException
 logger = logging.getLogger(__name__)
 
 ALLOWED_HISTORY_TYPES = ["Correspond", "Create", "Status"]
+METADATA_HEADER = "*** Ticket Metadata ***"
 
 
-@method_decorator(login_required, name='dispatch')
 class TicketsView(BaseApiView):
-    def get(self, request):
+    def get(self, request, ticket_id=None):
         """GET
 
-        Returns a list of all tickets for a user.
+        Returns a list of all tickets for a user or a single ticket
 
         """
-        rt = rtUtil.DjangoRt()
-        user_tickets = rt.getUserTickets(request.user.email)
+        if not request.user.is_authenticated:
+            raise PermissionDenied
 
-        return JsonResponse({'tickets': user_tickets})
+        rt = rtUtil.DjangoRt()
+        if ticket_id:
+            if not rt.hasAccess(ticket_id, request.user.email):
+                raise PermissionDenied
+            ticket = rt.getTicket(ticket_id)
+            return JsonResponse({'tickets': [ticket]})
+        else:
+            user_tickets = rt.getUserTickets(request.user.email)
+            return JsonResponse({'tickets': user_tickets})
+
+    def post(self, request):
+        rt = rtUtil.DjangoRt()
+
+        data = request.POST.copy()
+        subject = data.get('subject')
+        problem_description = data.get('problem_description')
+        email = data.get('email')
+        cc = data.get('cc')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        attachments = [(f.name, ContentFile(f.read()), f.content_type) for f in request.FILES.getlist('attachments')]
+
+        if subject is None or email is None or problem_description is None:
+            return HttpResponseBadRequest()
+
+        metadata = "{}\n\n".format(METADATA_HEADER)
+        metadata += "Client info:\n{}\n\n".format(request.GET.get('info', "None"))
+
+        for meta in ['HTTP_REFERER', 'HTTP_USER_AGENT', 'SERVER_NAME']:
+            metadata += "{}:\n{}\n\n".format(meta, request.META.get(meta, "None"))
+
+        metadata += "user_first_name:\n{}\n\n".format(first_name)
+        metadata += "user_last_name:\n{}\n\n".format(last_name)
+
+        if request.user.is_authenticated:
+            metadata += "authenticated_user:\n{}\n\n".format(request.user.username)
+            metadata += "authenticated_user_email:\n{}\n\n".format(request.user.email)
+            metadata += "authenticated_user_first_name:\n{}\n\n".format(request.user.first_name)
+            metadata += "authenticated_user_last_name:\n{}\n\n".format(request.user.last_name)
+
+        problem_description += "\n\n" + metadata
+
+        ticket_id = rt.create_ticket(subject=subject,
+                                     problem_description=problem_description,
+                                     requestor=email,
+                                     cc=cc,
+                                     attachments=attachments)
+
+        return JsonResponse({'ticket_id': ticket_id})
 
 
 def has_access_to_ticket(function):
@@ -64,13 +112,24 @@ class TicketsHistoryView(BaseApiView):
             if entry['Type'] == "Status":
                 entry['Content'] = entry['Description']
 
+            # Determine who created this message using portal
             if entry['Creator'] == "portal":
-                # Check if submitted on behalf of a user
+                # Check if its a reply submitted on behalf of a user
                 submitted_for_user = re.search(r'\[Reply submitted on behalf of (.*?)\]',
                                                entry['Content'].splitlines()[-1]) if entry['Content'] else False
                 if submitted_for_user:
                     entry['Creator'] = submitted_for_user.group(1)
                     entry["Content"] = entry['Content'][:entry['Content'].rfind('\n')]
+
+                # if user info is in the ticket metadata
+                if not submitted_for_user and entry['Type'] == "Create":
+                    submitted_for_user = re.findall(r'authenticated_user:[\r\n]+([^\r\n]+)',
+                                                    entry['Content'], re.MULTILINE) if entry['Content'] else False
+                    if submitted_for_user:
+                        entry['Creator'] = submitted_for_user[-1]
+
+            if entry['Type'] == "Create":
+                entry["Content"] = entry['Content'][:entry['Content'].rfind(METADATA_HEADER)]
 
             entry["IsCreator"] = True if requesting_username == entry['Creator'] else False
 

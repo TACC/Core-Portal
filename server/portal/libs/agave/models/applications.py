@@ -133,7 +133,7 @@ class Application(BaseAgaveResource):
         self.outputs = getattr(self, 'outputs', [])
         self._links = getattr(self, '_links', {})
 
-        self._new_exec_sys = None
+        self.exec_sys = None
 
     @cached_property_with_ttl(ttl=60 * 15)
     def permissions(self):

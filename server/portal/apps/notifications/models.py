@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
-import datetime
+from django.utils import timezone
 import logging
 import json
 import six
@@ -14,7 +14,7 @@ class BaseNotify(models.Model):
     These are the base fields that every notification should have.
     """
     event_type = models.CharField(max_length=50)
-    datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    datetime = models.DateTimeField(default=timezone.now, blank=True)
     # Status should be SUCCESS, INFO, ERROR, WARNING,
     status = models.CharField(max_length=255)
     jobId = models.CharField(max_length=255, blank=True)

@@ -12,17 +12,22 @@
   font-size: 16px;
   border-bottom: 1px solid #e0e0e0;
 }
+.tr-even {
+  background: #F4F4F4;
+}
 .tr-header {
   border-bottom: 1px solid #000000;
   padding-bottom: 0px;
   font-weight: bold;
 }
 
+
+
 .scroll {
   display: flex;
   justify-content: center;
 }
-.tr:not(.scroll):not(.tr-header):hover {
+.tr-selected:not(.scroll):not(.tr-header) {
   background: #9d85ef40;
 }
 
@@ -31,4 +36,10 @@
 }
 .tr-header .td {
   padding-top: 0;
+}
+
+.listing-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

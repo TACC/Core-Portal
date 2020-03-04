@@ -2,10 +2,11 @@
 .. module:: portal.apps.accounts.urls
    :synopsis: Accounts URLs
 """
-from django.conf.urls import url
+from django.urls import re_path
 from portal.apps.workbench.views import IndexView
 
 app_name = 'workbench'
 urlpatterns = [
-    url(r'^', IndexView.as_view(), name='index'),
+    re_path('dashboard', IndexView.as_view(), name='dashboard'),
+    re_path('', IndexView.as_view(), name='index'),
 ]

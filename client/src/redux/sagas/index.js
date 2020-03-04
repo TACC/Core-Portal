@@ -1,8 +1,12 @@
 import { all } from 'redux-saga/effects';
 import { watchJobs } from './jobs.sagas';
+import watchApps from './apps.sagas';
+import watchSystems from './systems.sagas';
+
 import {
   watchFetchSystems,
   watchFetchFiles,
+  watchFetchFilesModal,
   watchPushKeys,
   watchScrollFiles,
   watchRename,
@@ -20,8 +24,16 @@ import {
   watchUsers
 } from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
-import { watchFetchTicketHistory, watchPostTicketReply } from './tickets.sagas';
 import { watchProfileData, watchFormFields } from './profile.sagas';
+import {
+  watchTicketListFetch,
+  watchTicketDetailedView,
+  watchTicketDetailedViewFetchHistory,
+  watchTicketDetailedViewFetchSubject,
+  watchPostTicketReply,
+  watchPostTicketCreate
+} from './tickets.sagas';
+import { watchAuthenticatedUser } from './authenticated_user.sagas';
 
 export default function* rootSaga() {
   yield all([
@@ -29,6 +41,7 @@ export default function* rootSaga() {
     watchFetchSystems(),
     watchPushKeys(),
     watchFetchFiles(),
+    watchFetchFilesModal(),
     watchScrollFiles(),
     watchRename(),
     watchMove(),
@@ -39,12 +52,20 @@ export default function* rootSaga() {
     watchDownload(),
     watchTrash(),
     watchAllocations(),
+    watchApps(),
+    watchSystems(),
     watchUsers(),
     watchUserData(),
     watchSystemMonitor(),
-    watchFetchTicketHistory(),
     watchPostTicketReply(),
     watchProfileData(),
-    watchFormFields()
+    watchFormFields(),
+    watchTicketListFetch(),
+    watchTicketDetailedView(),
+    watchTicketDetailedViewFetchHistory(),
+    watchTicketDetailedViewFetchSubject(),
+    watchPostTicketReply(),
+    watchPostTicketCreate(),
+    watchAuthenticatedUser()
   ]);
 }

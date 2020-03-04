@@ -144,7 +144,7 @@ MIDDLEWARE = [
     'cms.middleware.utils.ApphookReloadMiddleware',
 
     # Onboarding
-    'portal.apps.onboarding.middleware.SetupCompleteMiddleware'
+    # 'portal.apps.onboarding.middleware.SetupCompleteMiddleware'
 ]
 
 TEMPLATES = [
@@ -740,6 +740,8 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
     _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM
 
 PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
+
+PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '')
 
 PORTAL_JOB_NOTIFICATION_STATES = getattr(
     settings_secret, "_PORTAL_JOB_NOTIFICATION_STATES", [

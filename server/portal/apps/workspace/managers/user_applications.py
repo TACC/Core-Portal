@@ -158,9 +158,9 @@ class UserApplicationsManager(AbstractApplicationsManager):
         cloned_app.tags.append('cloneRevision:{}'.format(host_app.revision))
         cloned_app.update()
 
-        # if system is new, pass system along with app object to instantiate push keys modal
-        if hasattr(cloned_exec_sys, 'is_new'):
-            cloned_app._new_exec_sys = cloned_exec_sys
+        # if system needs keys, pass system along with app object to instantiate push keys modal
+        if hasattr(cloned_exec_sys, 'needs_keys'):
+            cloned_app.exec_sys = cloned_exec_sys
 
         return cloned_app
 
@@ -205,7 +205,6 @@ class UserApplicationsManager(AbstractApplicationsManager):
                 else:
                     logger.debug('Cloned app is current with host!')
 
-            # cloned_app._new_exec_sys = ExecutionSystem(self.client, id=cloned_app.execution_system)
             return cloned_app
 
         except HTTPError as exc:
@@ -234,11 +233,21 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
         # if app is owned by user, no need to clone
         if app.owner == self.user.username:
-            logger.debug('User is app owner, no need to clone. Returning original app.')
-            return app
+            logger.info('User is app owner, no need to clone. Returning original app.')
 
         else:
-            return self.get_or_create_cloned_app(app, allocation)
+            app = self.get_or_create_cloned_app(app, allocation)
+
+        # Check if app's execution system needs keys reset and pushed
+        if not app.exec_sys:
+            exec_sys = ExecutionSystem(self.client, app.execution_system, ignore_error=None)
+            sys_ok, res = exec_sys.test()
+            if not sys_ok and (exec_sys.roles.for_user(self.user.username).value == 'OWNER'):
+                logger.debug(res)
+                logger.info('System {} needs new keys.'.format(exec_sys.id))
+                app.exec_sys = exec_sys
+
+        return app
 
     def clone_execution_system(self, host_system_id, new_system_id, alloc):
         """Clone execution system for user.
@@ -302,8 +311,11 @@ class UserApplicationsManager(AbstractApplicationsManager):
         system.login.auth.type = system.AUTH_TYPES.SSHKEYS
 
         scratch_hosts = ['data', 'stampede2', 'lonestar5']
+        scratch1_hosts = ['frontera']
         if system.storage.host in [s + '.tacc.utexas.edu' for s in scratch_hosts]:
             system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch')
+        elif system.storage.host in [s + '.tacc.utexas.edu' for s in scratch1_hosts]:
+            system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch1')
         else:
             system.scratch_dir = system.storage.home_dir
         system.work_dir = system.storage.home_dir
@@ -330,28 +342,17 @@ class UserApplicationsManager(AbstractApplicationsManager):
         )
 
         # NOTE: Check if host keys already exist for user for both login and storage hosts
-        for host_type in [system.login, system.storage]:
+        for auth_block in [system.login, system.storage]:
             try:
-                keys = self.user.ssh_keys.for_hostname(hostname=host_type.host)
+                keys = self.user.ssh_keys.for_hostname(hostname=auth_block.host)
                 priv_key_str = keys.private_key()
                 publ_key_str = keys.public
+                auth_block.auth.public_key = publ_key_str
+                auth_block.auth.private_key = priv_key_str
             except ObjectDoesNotExist:
-                private_key = EncryptionUtil.create_private_key()
-                priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
-                public_key = EncryptionUtil.create_public_key(private_key)
-                publ_key_str = EncryptionUtil.export_key(public_key, 'OpenSSH')
-
-                SSHKeys.objects.update_hostname_keys(
-                    self.user,
-                    hostname=host_type.host,
-                    priv_key=priv_key_str,
-                    pub_key=publ_key_str
-                )
-
-                system.is_new = True
-
-            host_type.auth.public_key = publ_key_str
-            host_type.auth.private_key = priv_key_str
+                system.needs_keys = True
+                auth_block.auth.public_key = 'public_key'
+                auth_block.auth.private_key = 'private_key'
 
         system.update()
 

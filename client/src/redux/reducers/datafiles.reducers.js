@@ -16,13 +16,14 @@ export function systems(state = initialSystemState, action) {
 const initialFilesState = {
   loading: {
     FilesListing: false,
-    RenameModal: false
+    modal: false
   },
   operationStatus: {
     rename: null,
     move: {},
     copy: {},
-    upload: {}
+    upload: {},
+    trash: {}
   },
   loadingScroll: {
     FilesListing: false,
@@ -43,6 +44,9 @@ const initialFilesState = {
   selected: {
     FilesListing: []
   },
+  selectAll: {
+    FilesListing: false
+  },
   reachedEnd: {
     FilesListing: true,
     modal: true
@@ -54,7 +58,8 @@ const initialFilesState = {
     upload: false,
     mkdir: false,
     rename: false,
-    pushKeys: false
+    pushKeys: false,
+    trash: false
   },
   modalProps: {
     preview: {},
@@ -85,6 +90,10 @@ export function files(state = initialFilesState, action) {
         selected: {
           ...state.selected,
           [action.payload.section]: []
+        },
+        selectAll: {
+          ...state.selectAll,
+          [action.payload.section]: false
         }
       };
     case 'FETCH_FILES_SUCCESS':
@@ -171,6 +180,26 @@ export function files(state = initialFilesState, action) {
         selected: {
           ...state.selected,
           [action.payload.section]: [...selectedSet.values()]
+        }
+      };
+    case 'DATA_FILES_TOGGLE_SELECT_ALL':
+      setValue = !state.selectAll[action.payload.section];
+
+      if (setValue) {
+        selectedSet = new Set(state.listing.FilesListing.map((f, i) => i));
+      } else {
+        selectedSet = new Set([]);
+      }
+
+      return {
+        ...state,
+        selected: {
+          ...state.selected,
+          [action.payload.section]: [...selectedSet.values()]
+        },
+        selectAll: {
+          ...state.selectAll,
+          [action.payload.section]: setValue
         }
       };
     case 'DATA_FILES_SET_LOADING':

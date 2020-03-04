@@ -1,8 +1,8 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
-import { Router, Route } from "react-router-dom";
+import { render } from '@testing-library/react';
+import { toHaveClass } from '@testing-library/jest-dom/dist/matchers';
+import { Router } from "react-router-dom";
 import DataFilesToolbar, { ToolbarButton } from "./DataFilesToolbar";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { createMemoryHistory } from "history";
@@ -16,17 +16,23 @@ function renderComponent(component, store, history) {
 }
 
 const mockStore = configureStore();
-
+expect.extend({ toHaveClass });
 describe("ToolbarButton", () => {
   const store = mockStore({})
   it("render button with correct text", () => {
-    const { getByText, getByRole } = renderComponent(
-      <ToolbarButton text="Test Button" icon={faPen} onClick={() => {}} />,
+    const { getByText, getByRole, getByTestId } = renderComponent(
+      <ToolbarButton
+        text="Rename"
+        icon={{ prefix: 'icon-action', iconName: 'rename' }}
+        onClick={() => {}}
+      />,
       store,
       createMemoryHistory()
     );
-    expect(getByText(/Test Button/)).toBeDefined();
+
+    expect(getByText(/Rename/)).toBeDefined();
     expect(getByRole("button")).toBeDefined();
+    expect(getByTestId('toolbar-icon')).toHaveClass('icon-action icon-action-rename');
   });
 });
 

@@ -108,6 +108,7 @@ class TestGetAllocations(TestCase):
             {
                 "title": "Old Proj",
                 "chargeCode": "Proj-Old",
+                "id": "Test-ID",
                 "pi": {
                     "firstName": "Old",
                     "lastName": "User"
@@ -168,21 +169,33 @@ class TestGetAllocations(TestCase):
 
         inactive_expected = [
             {
-                "title": "Old Proj",
-                "chargeCode": "Proj-Old",
-                "pi": {
-                    "firstName": "Old",
-                    "lastName": "User"
-                },
-                "allocations": [
+                "projectName": "Proj-Old",
+                "projectId": "Test-ID",
+                "systems": [
                     {
-                        "status": "Inactive",
-                        "resource": "Stampede4"
+                        'allocation': {'resource': 'Stampede4', 'status': 'Inactive'},
+                        'host': 'stampede2.tacc.utexas.edu',
+                        'name': 'Stampede 2',
+                        'type': 'HPC'
                     }
-                ]
+                ],
+                "title": "Old Proj",
+                "pi": "Old User"
             }
         ]
 
-        active_result, inactive_result = get_allocations("username")
-        self.assertEqual(active_result, active_expected)
-        self.assertEqual(inactive_result, inactive_expected)
+        hosts_expected = {
+            'stampede2.tacc.utexas.edu': ['Proj-Old'],
+            'rodeo.tacc.utexas.edu': ['Proj-Code'],
+            'frontera.tacc.utexas.edu': ['Big-Proj']
+        }
+
+        data_expected = {
+            'active': active_expected,
+            'inactive': inactive_expected,
+            'hosts': hosts_expected,
+            'portal_alloc': 'test'
+        }
+
+        data = get_allocations("username")
+        self.assertEqual(data, data_expected)

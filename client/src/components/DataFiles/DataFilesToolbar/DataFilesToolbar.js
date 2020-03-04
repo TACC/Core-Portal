@@ -1,15 +1,7 @@
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faPen,
-  faArrowsAlt,
-  faCloudDownloadAlt
-} from '@fortawesome/free-solid-svg-icons';
-import { faCopy, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, icon, onClick, disabled }) => {
@@ -19,7 +11,10 @@ export const ToolbarButton = ({ text, icon, onClick, disabled }) => {
       onClick={onClick}
       className="data-files-toolbar-button"
     >
-      <FontAwesomeIcon icon={icon} size="sm" />
+      <i
+        className={`${icon.prefix} ${icon.prefix}-${icon.iconName}`}
+        data-testid="toolbar-icon"
+      />
       <span className="toolbar-button-text">{text}</span>
     </Button>
   );
@@ -46,12 +41,6 @@ const DataFilesToolbar = ({ scheme }) => {
       i => state.files.listing.FilesListing[i]
     )
   );
-
-  const history = useHistory();
-  const location = useLocation();
-  const reloadCallback = () => {
-    history.push(location.pathname);
-  };
 
   const toggleRenameModal = () =>
     dispatch({
@@ -83,8 +72,8 @@ const DataFilesToolbar = ({ scheme }) => {
 
   const trash = () => {
     dispatch({
-      type: 'DATA_FILES_TRASH',
-      payload: { file: selectedFiles[0], reloadCallback }
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'trash', props: { selectedFiles } }
     });
   };
 
@@ -93,7 +82,7 @@ const DataFilesToolbar = ({ scheme }) => {
   const canCopy = selectedFiles.length > 0 && scheme === 'private';
   const canDownload =
     selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
-  const canTrash = selectedFiles.length === 1 && scheme === 'private';
+  const canTrash = selectedFiles.length > 0 && scheme === 'private';
 
   return (
     <>
@@ -101,30 +90,30 @@ const DataFilesToolbar = ({ scheme }) => {
         <ToolbarButton
           text="Rename"
           onClick={toggleRenameModal}
-          icon={faPen}
+          icon={{ prefix: 'icon-action', iconName: 'rename' }}
           disabled={!canRename}
         />
         <ToolbarButton
           text="Move"
-          icon={faArrowsAlt}
           onClick={toggleMoveModal}
+          icon={{ prefix: 'icon-action', iconName: 'move' }}
           disabled={!canMove}
         />
         <ToolbarButton
           text="Copy"
-          icon={faCopy}
           onClick={toggleCopyModal}
+          icon={{ prefix: 'icon-action', iconName: 'copy' }}
           disabled={!canCopy}
         />
         <ToolbarButton
           text="Download"
-          icon={faCloudDownloadAlt}
+          icon={{ prefix: 'icon-action', iconName: 'download' }}
           onClick={download}
           disabled={!canDownload}
         />
         <ToolbarButton
           text="Trash"
-          icon={faTrashAlt}
+          icon={{ prefix: 'icon-action', iconName: 'rename' }}
           onClick={trash}
           disabled={!canTrash}
         />

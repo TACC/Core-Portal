@@ -1,20 +1,40 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, shallowEqual } from 'react-redux';
-
+import LoadingSpinner from '_common/LoadingSpinner';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
+import {
+  FileLengthCell,
+  FileIconCell
+} from '../../DataFilesListing/DataFilesListingCells';
 
 const DataFilesSelectedStatusCell = ({ row, operation }) => {
   const status = useSelector(
     state => state.files.operationStatus[operation],
     shallowEqual
   );
-  return <div>{status[row.original.id]}</div>;
+  switch (status[row.original.id]) {
+    case 'RUNNING':
+      return <LoadingSpinner placement="inline" />;
+    case 'SUCCESS':
+      return <span className="badge badge-success">SUCCESS</span>;
+    case 'ERROR':
+      return <span className="badge badge-danger">ERROR</span>;
+    default:
+      return <></>;
+  }
 };
 DataFilesSelectedStatusCell.propTypes = {
   row: PropTypes.shape({ original: PropTypes.shape({ id: PropTypes.string }) })
     .isRequired,
   operation: PropTypes.string.isRequired
+};
+
+const DataFilesSelectedNameCell = ({ cell: { value } }) => {
+  return <span className="data-files-name">{value}</span>;
+};
+DataFilesSelectedNameCell.propTypes = {
+  cell: PropTypes.shape({ value: PropTypes.string }).isRequired
 };
 
 const DataFilesSelectedTable = ({ data, operation }) => {
@@ -23,7 +43,21 @@ const DataFilesSelectedTable = ({ data, operation }) => {
 
   const columns = useMemo(
     () => [
-      { Header: 'Name', accessor: 'name', width: 0.8 },
+      {
+        id: 'icon',
+        accessor: 'format',
+        width: 0.05,
+        minWidth: 20,
+        maxWidth: 30,
+        Cell: FileIconCell
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+        width: 0.55,
+        Cell: DataFilesSelectedNameCell
+      },
+      { Header: 'Size', accessor: 'length', Cell: FileLengthCell, width: 0.2 },
       {
         id: 'status',
         width: 0.2,

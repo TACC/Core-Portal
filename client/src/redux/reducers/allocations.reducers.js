@@ -5,10 +5,15 @@ const initialState = {
   teams: {},
   pages: {},
   userDirectory: {},
-  loadingUsernames: true
+  loadingUsernames: true,
+  hosts: {},
+  portal_alloc: '',
+  loadingPage: false
 };
 function allocations(state = initialState, action) {
   switch (action.type) {
+    case 'START_ADD_ALLOCATIONS':
+      return { ...state, loading: true };
     case 'ADD_ALLOCATIONS':
       return { ...state, ...action.payload, loading: false };
     case 'POPULATE_TEAMS':
@@ -31,8 +36,11 @@ function allocations(state = initialState, action) {
     case 'ADD_PAGE':
       return {
         ...state,
+        loadingPage: true,
         pages: { ...state.pages, ...action.payload }
       };
+    case 'PAGE_LOADED':
+      return { ...state, loadingPage: false };
     default:
       return state;
   }

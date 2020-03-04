@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
 
-    padding: 20px 40px 0 20px;
+    padding: 20px 40px 0 25px;
 }
 .dashboard-items {
     /* Styles as a flex child */
@@ -21,12 +21,13 @@
 /* RFC: Implement `max-height: …` in a modular manner */
 /* SEE: https://tacc-team.slack.com/archives/GQW4Q8HLG/p1578514280032300?thread_ts=1578511498.030900&cid=GQW4Q8HLG */
 .jobs-wrapper {
-    max-height: 50vh;
+    max-height: 45vh;
     /* RFC: Implement `margin-bottom: 38px` independent of `.jobs-wrapper` */
     margin-bottom: 38px;
 }
 .tickets-wrapper {
-    max-height: 25vh;
+    max-height: 27vh;
+    margin-bottom: 38px;
 }
 
 .dashboard-header, .dashboard-item-header {
@@ -41,6 +42,10 @@
 
 .dashboard-header h5 {
     font-weight: 400;
+}
+
+.dashboard-item-header .btn {
+    padding: 0;
 }
 
 /* FAQ: Indirect child element of `.dashboard-items` */

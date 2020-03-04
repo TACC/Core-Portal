@@ -12,8 +12,7 @@ import {
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop, faFileUpload } from '@fortawesome/free-solid-svg-icons';
-import { faFolder } from '@fortawesome/free-regular-svg-icons';
+import { faDesktop } from '@fortawesome/free-solid-svg-icons';
 import './DataFilesSidebar.scss';
 
 const DataFilesSidebar = () => {
@@ -40,6 +39,7 @@ const DataFilesSidebar = () => {
         <div id="add-button-wrapper">
           <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
             <DropdownToggle
+              color="primary"
               id="data-files-add"
               className="data-files-btn"
               disabled={err !== false}
@@ -48,20 +48,10 @@ const DataFilesSidebar = () => {
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem onClick={toggleMkdirModal}>
-                <FontAwesomeIcon
-                  icon={faFolder}
-                  size="1x"
-                  className="side-nav-icon"
-                />{' '}
-                Add Folder
+                <i className="icon-nav-folder" /> Add Folder
               </DropdownItem>
               <DropdownItem onClick={toggleUploadModal}>
-                <FontAwesomeIcon
-                  icon={faFileUpload}
-                  size="1x"
-                  className="side-nav-icon"
-                />{' '}
-                Upload File
+                <i className="icon-action-upload" /> Upload File
               </DropdownItem>
             </DropdownMenu>
           </ButtonDropdown>

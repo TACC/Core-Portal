@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -22,13 +23,11 @@ import {
 } from 'reactstrap';
 import { useForm, useField } from 'react-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faSun,
-  faChevronCircleDown,
-  faChevronCircleUp,
-  faExclamationCircle
-} from '@fortawesome/free-solid-svg-icons';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import LoadingSpinner from '_common/LoadingSpinner';
+import { formatDateTime } from 'utils/timeFormat';
 import FileInputDropZone from './FileInputDropZone';
+import * as ROUTES from '../../constants/routes';
 import './TicketModal.scss';
 
 async function validateReply(reply, instance) {
@@ -55,16 +54,27 @@ function ReplyField() {
         className="ticket-reply-text-area"
         {...getInputProps()}
       />{' '}
-      {hasError && <em>{error}</em>}
+      {hasError && <span className="form-validation-error">{error}</span>}
     </>
   );
 }
 
-function UploadFilesField() {
-  const { setValue } = useField('attachments');
+function UploadFilesField({ isSubmitted }) {
+  const { value, pushValue, removeValue } = useField('attachments');
 
-  return <FileInputDropZone onFilesChanged={setValue} />;
+  return (
+    <FileInputDropZone
+      files={value}
+      onAddFile={pushValue}
+      onRemoveFile={removeValue}
+      isSubmitted={isSubmitted}
+    />
+  );
 }
+
+UploadFilesField.propTypes = {
+  isSubmitted: PropTypes.bool.isRequired
+};
 
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
@@ -77,7 +87,7 @@ function TicketHistoryReply({ ticketId }) {
   const {
     Form,
     reset,
-    meta: { canSubmit }
+    meta: { canSubmit, isSubmitted }
   } = useForm({
     defaultValues,
     onSubmit: async (values, instance) => {
@@ -97,7 +107,7 @@ function TicketHistoryReply({ ticketId }) {
     }
 
     dispatch({
-      type: 'REPLY_TICKET_HISTORY',
+      type: 'TICKET_DETAILED_VIEW_REPLY',
       payload: {
         ticketId,
         formData,
@@ -107,22 +117,29 @@ function TicketHistoryReply({ ticketId }) {
   };
 
   const gettingTicketHistory = useSelector(
-    state => state.ticketHistory.loading
+    state => state.ticketDetailedView.loading
   );
-  const loadingError = useSelector(state => state.ticketHistory.loadingError);
-  const isReplying = useSelector(state => state.ticketHistory.replying);
-  const replyingError = useSelector(state => state.ticketHistory.replyingError);
+  const loadingError = useSelector(
+    state => state.ticketDetailedView.loadingError
+  );
+  const isReplying = useSelector(state => state.ticketDetailedView.replying);
+  const replyingError = useSelector(
+    state => state.ticketDetailedView.replyingError
+  );
   return (
     <Form className="ticket-reply-form">
       <FormGroup className="ticket-reply-group">
-        <Label>
-          Reply <Badge color="danger">Required</Badge>
+        <Label className="ticket-reply-form-label">
+          Reply
+          <Badge className="required-badge" color="danger">
+            Required
+          </Badge>
         </Label>
         <ReplyField />
       </FormGroup>
       <FormGroup>
         <Label>Upload Files</Label>
-        <UploadFilesField />
+        <UploadFilesField isSubmitted={isSubmitted} />
         <FormText>
           Error reports and screenshots can be helpful for diagnostics
         </FormText>
@@ -158,14 +175,14 @@ const TicketHistoryCard = ({
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
-    state.ticketHistory.showItems.includes(historyId)
+    state.ticketDetailedView.showItems.includes(historyId)
   );
 
   let toggleIcon;
   if (isOpen) {
-    toggleIcon = <FontAwesomeIcon icon={faChevronCircleUp} />;
+    toggleIcon = <i className="icon-action icon-action-collapse" />;
   } else {
-    toggleIcon = <FontAwesomeIcon icon={faChevronCircleDown} />;
+    toggleIcon = <i className="icon-action icon-action-expand" />;
   }
 
   return (
@@ -173,7 +190,7 @@ const TicketHistoryCard = ({
       <CardHeader
         onClick={() =>
           dispatch({
-            type: 'TICKET_HISTORY_TOGGLE_SHOW_ITEM',
+            type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
             payload: { index: historyId }
           })
         }
@@ -185,8 +202,7 @@ const TicketHistoryCard = ({
             ) : (
               creator
             )}{' '}
-            | {created.getMonth() + 1}/{created.getDate()}/
-            {created.getFullYear()} {created.getHours()}:{created.getMinutes()}
+            | {`${formatDateTime(created)}`}
           </strong>{' '}
           {isOpen ? '' : content}
         </span>
@@ -207,11 +223,12 @@ TicketHistoryCard.propTypes = {
   content: PropTypes.string.isRequired
 };
 
-const TicketHistory = ({ ticketId }) => {
-  const dispatch = useDispatch();
-  const loading = useSelector(state => state.ticketHistory.loading);
-  const history = useSelector(state => state.ticketHistory.content);
-  const loadingError = useSelector(state => state.ticketHistory.loadingError);
+const TicketHistory = () => {
+  const loading = useSelector(state => state.ticketDetailedView.loading);
+  const history = useSelector(state => state.ticketDetailedView.content);
+  const loadingError = useSelector(
+    state => state.ticketDetailedView.loadingError
+  );
   const ticketHistoryEndRef = useRef();
 
   const scrollToBottom = () => {
@@ -219,23 +236,14 @@ const TicketHistory = ({ ticketId }) => {
   };
   useEffect(scrollToBottom, [history]);
 
-  useEffect(() => {
-    dispatch({
-      type: 'GET_TICKET_HISTORY',
-      payload: {
-        ticketId
-      }
-    });
-  }, [dispatch, ticketId]);
-
   return (
     <>
-      <div className="ticket-history-loading-icon">
-        {loading && <FontAwesomeIcon icon={faSun} size="8x" spin />}
-        {loadingError && (
+      {loading && <LoadingSpinner />}
+      {loadingError && (
+        <div className="ticket-history-loading-icon">
           <FontAwesomeIcon icon={faExclamationCircle} size="8x" />
-        )}
-      </div>
+        </div>
+      )}
       {history.map(d => (
         <TicketHistoryCard
           key={d.id}
@@ -251,23 +259,25 @@ const TicketHistory = ({ ticketId }) => {
   );
 };
 
-TicketHistory.propTypes = {
-  ticketId: PropTypes.number.isRequired
-};
+function TicketModal({ history }) {
+  const modalAlwaysOpen = true;
+  const ticketId = useSelector(state => state.ticketDetailedView.ticketId);
+  const ticketSubject = useSelector(
+    state => state.ticketDetailedView.ticketSubject
+  );
 
-const TicketModal = ({ ticketId, ticketSubject, toggle, showModal }) => {
-  if (!showModal) {
-    return null;
-  }
+  const close = () => {
+    history.push(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
+  };
 
   return (
     <Modal
       className="ticket-model-content"
-      isOpen={showModal}
-      toggle={toggle}
+      isOpen={modalAlwaysOpen}
+      toggle={close}
       size="lg"
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader toggle={close}>
         <span className="modal-header-title d-inline-block text-truncate">
           {ticketSubject}
         </span>
@@ -276,7 +286,7 @@ const TicketModal = ({ ticketId, ticketSubject, toggle, showModal }) => {
         <Container className="ticket-detailed-view-container">
           <Row className="ticket-detailed-view-row">
             <Col lg="7" className="ticket-history">
-              <TicketHistory ticketId={ticketId} />
+              <TicketHistory />
             </Col>
             <Col lg="5">
               <TicketHistoryReply ticketId={ticketId} />
@@ -286,13 +296,11 @@ const TicketModal = ({ ticketId, ticketSubject, toggle, showModal }) => {
       </ModalBody>
     </Modal>
   );
-};
+}
 
 TicketModal.propTypes = {
-  ticketId: PropTypes.number.isRequired,
-  ticketSubject: PropTypes.string.isRequired,
-  toggle: PropTypes.func.isRequired,
-  showModal: PropTypes.bool.isRequired
+  // eslint-disable-next-line react/forbid-prop-types
+  history: PropTypes.object.isRequired
 };
 
-export default TicketModal;
+export default withRouter(TicketModal);

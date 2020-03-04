@@ -11,7 +11,7 @@ describe('Allocations Request Form', () => {
         <NewAllocReq isOpen toggle={() => !isOpen} />
       </Wrapper>
     );
-    expect(getByText('Request New Allocation')).toBeDefined();
+    expect(getByText('Manage Allocations')).toBeDefined();
   });
   it('have a body with content for the user', () => {
     const { getByTestId } = render(

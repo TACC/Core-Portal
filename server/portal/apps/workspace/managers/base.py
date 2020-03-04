@@ -6,9 +6,8 @@ import logging
 from abc import ABCMeta, abstractmethod, abstractproperty
 from six import add_metaclass
 
-#pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+
 
 @add_metaclass(ABCMeta)
 class AbstractWorkspaceManager:
@@ -23,7 +22,7 @@ class AbstractWorkspaceManager:
     standardize this by creating a small abstraction layer.
     """
 
-    def __init__(self, request, **kwargs):#pylint: disable=unused-argument
+    def __init__(self, request, **kwargs):
         """Inspect the request object to initialize manager.
 
         :param request: Django request object.

@@ -149,31 +149,28 @@ class SystemKeysView(BaseApiView):
         :param request: Django's request object
         :param str system_id: System id
         """
+
         AccountsManager.reset_system_keys(
             request.user.username,
             system_id
         )
-
-        hostname = request.user.agave_oauth.client.systems.get(
-            systemId=system_id
-        )['storage']['host']
 
         success, result, http_status = AccountsManager.add_pub_key_to_resource(
             request.user.username,
             password=body['form']['password'],
             token=body['form']['token'],
             system_id=system_id,
-            hostname=hostname
+            hostname=body['form']['hostname']
         )
-        if success and body['form']['type'] == 'STORAGE':
-            # Index the user's home directory once keys are successfully pushed.
-            # Schedule indexing for 11:59:59 today.
-            index_time = datetime.now().replace(hour=11, minute=59, second=59)
-            agave_indexer.apply_async(args=[system_id], eta=index_time)
-            return JsonResponse({
-                'systemId': system_id,
-                'message': 'OK'
-            })
+        # if success and body['form']['type'] == 'STORAGE':
+        #     # Index the user's home directory once keys are successfully pushed.
+        #     # Schedule indexing for 11:59:59 today.
+        #     index_time = datetime.now().replace(hour=11, minute=59, second=59)
+        #     agave_indexer.apply_async(args=[system_id], eta=index_time)
+        #     return JsonResponse({
+        #         'systemId': system_id,
+        #         'message': 'OK'
+        #     })
 
         return JsonResponse(
             {

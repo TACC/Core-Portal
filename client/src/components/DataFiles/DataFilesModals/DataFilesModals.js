@@ -6,6 +6,8 @@ import DataFilesMkdirModal from './DataFilesMkdirModal';
 import DataFilesRenameModal from './DataFilesRenameModal';
 import DataFilesPushKeysModal from './DataFilesPushKeysModal';
 import DataFilesCopyModal from './DataFilesCopyModal';
+import DataFilesTrashModal from './DataFilesTrashModal';
+import './DataFilesModals.scss';
 
 export default function DataFilesModals() {
   return (
@@ -17,6 +19,7 @@ export default function DataFilesModals() {
       <DataFilesMkdirModal />
       <DataFilesRenameModal />
       <DataFilesPushKeysModal />
+      <DataFilesTrashModal />
     </>
   );
 }

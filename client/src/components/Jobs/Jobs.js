@@ -1,30 +1,23 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-// import { useParams, useLocation } from 'react-router-dom'
-import { Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSatellite } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
+import LoadingSpinner from '_common/LoadingSpinner';
 import './Jobs.scss';
+import * as ROUTES from '../../constants/routes';
 
 function JobsView() {
-  // let { id } = useParams();
-  // let location = useLocation();
   const dispatch = useDispatch();
   const spinnerState = useSelector(state => state.spinner);
-  const jobs = useSelector(state => state.jobs);
+  const jobs = useSelector(state => state.jobs.list);
 
   useEffect(() => {
     dispatch({ type: 'GET_JOBS', params: { limit: 100 } });
   }, [dispatch]);
 
   if (spinnerState) {
-    return (
-      <div id="spin-sun">
-        <FontAwesomeIcon icon={faSatellite} size="8x" spin />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   const columns = [
@@ -41,17 +34,21 @@ function JobsView() {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
-      Cell: el => (
-        <Button color="link" className="jobsList" id={`jobLocation${el.index}`}>
-          <span title={el.value}>
-            {el.value
-              .split('/')
-              .slice(7)
-              .filter(Boolean)
-              .join('/')}
-          </span>
-        </Button>
-      )
+      Cell: el => {
+        const outputPath = el.value
+          .split('/')
+          .slice(7)
+          .filter(Boolean)
+          .join('/');
+        return outputPath !== 'listings' ? (
+          <Link
+            to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
+            className="wb-link"
+          >
+            {outputPath}
+          </Link>
+        ) : null;
+      }
     },
     {
       Header: 'Date Submitted',
@@ -59,9 +56,19 @@ function JobsView() {
       accessor: d => new Date(d.created),
       Cell: el => (
         <span id={`jobDate${el.index}`}>
-          {`${el.value.getMonth() +
-            1}/${el.value.getDate()}/${el.value.getFullYear()}
-          ${el.value.getHours()}:${el.value.getMinutes()}:${el.value.getSeconds()}`}
+          {`${el.value.toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric',
+            timeZone: 'America/Chicago'
+          })}
+          ${el.value.toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: 'America/Chicago'
+          })}`}
         </span>
       ),
       id: 'jobDateCol',
@@ -82,16 +89,20 @@ function JobsView() {
       keyField="id"
       data={jobs}
       columns={columns}
+      resizable={false}
       resolveData={data => data.map(row => row)}
       pageSize={jobs.length}
       className="jobsList -striped -highlight"
-      defaultSorted={[{ id: 'name' }]}
+      defaultSorted={[{ id: 'jobDateCol', desc: true }]}
       noDataText={
         <>
           No recent jobs. You can submit jobs from the{' '}
-          <a className="wb-link" href="/workbench/applications">
+          <Link
+            to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
+            className="wb-link"
+          >
             Applications Page
-          </a>
+          </Link>
           .
         </>
       }

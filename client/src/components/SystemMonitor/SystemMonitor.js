@@ -1,40 +1,72 @@
 import React, { useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTable } from 'react-table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSun } from '@fortawesome/free-solid-svg-icons';
-import { string } from 'prop-types';
-import { Display, Operational } from './SystemMonitorCells';
+import LoadingSpinner from '_common/LoadingSpinner';
+import { Display, Operational, Load } from './SystemMonitorCells';
 import './SystemMonitor.scss';
 
-const SystemsList = ({ id }) => {
-  const systems = useSelector(state => state.systemMonitor.list);
-  const data = useMemo(() => systems, []);
+const SystemsList = () => {
+  const systemList = useSelector(state => state.systemMonitor.list);
+  const data = useMemo(() => systemList, []);
   const columns = useMemo(
     () => [
       {
         accessor: 'display_name',
-        Cell: Display
+        Header: 'Name',
+        Cell: Display,
+        className: 'left-aligned'
       },
       {
         accessor: 'is_operational',
+        Header: 'Status',
         Cell: Operational,
-        className: 'operational-cell'
+        className: 'operational-cell left-aligned'
+      },
+      {
+        accessor: 'load_percentage',
+        Header: 'Load',
+        Cell: Load
+      },
+      {
+        accessor: ({ jobs }) => (jobs ? jobs.running : '--'),
+        Header: 'Running'
+      },
+      {
+        accessor: ({ jobs }) => (jobs ? jobs.queued : '--'),
+        Header: 'Queued'
       }
     ],
     []
   );
-  const { getTableProps, getTableBodyProps, rows, prepareRow } = useTable({
+  const {
+    getTableProps,
+    getTableBodyProps,
+    rows,
+    prepareRow,
+    headerGroups
+  } = useTable({
     columns,
     data
   });
   return (
     <table
-      id={id}
       {...getTableProps({
-        className: 'multi-system'
+        className: 'multi-system system-monitor'
       })}
     >
+      <thead>
+        {headerGroups.map(headerGroup => (
+          <tr
+            {...headerGroup.getHeaderGroupProps({
+              className: 'system-monitor-header'
+            })}
+          >
+            {headerGroup.headers.map(column => (
+              <th key={column.Header}>{column.render('Header')}</th>
+            ))}
+          </tr>
+        ))}
+      </thead>
       <tbody {...getTableBodyProps()}>
         {rows.length ? (
           rows.map((row, idx) => {
@@ -68,9 +100,6 @@ const SystemsList = ({ id }) => {
     </table>
   );
 };
-SystemsList.propTypes = {
-  id: string.isRequired
-};
 
 const SystemMonitorView = () => {
   const { loading } = useSelector(state => state.systemMonitor);
@@ -79,13 +108,9 @@ const SystemMonitorView = () => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
   if (loading) {
-    return (
-      <div id="spin-sun">
-        <FontAwesomeIcon icon={faSun} size="8x" spin />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
-  return <SystemsList id="systems" />;
+  return <SystemsList />;
 };
 
 export default SystemMonitorView;

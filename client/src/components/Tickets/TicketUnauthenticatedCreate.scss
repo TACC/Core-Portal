@@ -1,0 +1,13 @@
+.ticket-unauthenticated-create-form {
+  width: 800px;
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-unauthenticated-title {
+  font-size: 1.25rem !important;
+  background-color: #F4F4F4 !important;
+  border-bottom: 1px solid #dee2e6;
+}

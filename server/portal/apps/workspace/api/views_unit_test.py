@@ -8,7 +8,8 @@ from portal.apps.auth.models import AgaveOAuthToken
 import json
 import os
 import pytest
-from datetime import datetime, timedelta
+from datetime import timedelta
+from django.utils import timezone
 
 
 @pytest.mark.django_db(transaction=True)
@@ -59,7 +60,7 @@ class TestJobsView(TestCase):
         # Patch the User Applications Manager to return a fake cloned app
         mock_app = MagicMock()
         mock_app.id = "mock_app"
-        mock_app._new_exec_sys = False
+        mock_app.exec_sys = False
         self.mock_apps_manager.return_value.get_or_create_app.return_value = mock_app
 
         # Send a job submission request
@@ -102,7 +103,7 @@ class TestJobsView(TestCase):
         self.assertEqual(jobs[0]["id"], "1234")
 
     def test_date_filter(self):
-        test_time = datetime.now()
+        test_time = timezone.now()
 
         # today_job
         JobSubmission.objects.create(

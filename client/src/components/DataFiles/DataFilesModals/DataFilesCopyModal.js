@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -11,9 +11,6 @@ import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSe
 const DataFilesCopyModal = React.memo(() => {
   const history = useHistory();
   const location = useLocation();
-  const reloadPage = () => {
-    history.push(location.pathname);
-  };
 
   const dispatch = useDispatch();
   const params = useSelector(
@@ -24,9 +21,20 @@ const DataFilesCopyModal = React.memo(() => {
     state => state.files.params.modal,
     shallowEqual
   );
+  const reloadPage = () => {
+    history.push(location.pathname);
+    dispatch({
+      type: 'FETCH_FILES_MODAL',
+      payload: { ...modalParams, section: 'modal' }
+    });
+  };
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
   const isOpen = useSelector(state => state.files.modals.copy);
-  const status = useSelector(state => state.files.operationStatus.copy);
+  const status = useSelector(
+    state => state.files.operationStatus.copy,
+    shallowEqual
+  );
+  const [disabled, setDisabled] = useState(false);
 
   const selectedFiles = useSelector(
     state =>
@@ -46,7 +54,7 @@ const DataFilesCopyModal = React.memo(() => {
 
   const onOpened = () => {
     dispatch({
-      type: 'FETCH_FILES',
+      type: 'FETCH_FILES_MODAL',
       payload: { ...params, section: 'modal' }
     });
   };
@@ -57,10 +65,12 @@ const DataFilesCopyModal = React.memo(() => {
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { operation: 'copy', status: {} }
     });
+    setDisabled(false);
   };
 
   const copyCallback = useCallback(
     (system, path) => {
+      setDisabled(true);
       const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
       dispatch({
         type: 'DATA_FILES_COPY',
@@ -71,7 +81,7 @@ const DataFilesCopyModal = React.memo(() => {
         }
       });
     },
-    [selected, reloadPage]
+    [selected, reloadPage, status]
   );
 
   return (
@@ -81,42 +91,42 @@ const DataFilesCopyModal = React.memo(() => {
       onClosed={onClosed}
       toggle={toggle}
       size="xl"
+      className="dataFilesModal"
     >
       <ModalHeader toggle={toggle}>
-        Moving {selected.length} File(s)
+        Copying {selected.length} File(s)
       </ModalHeader>
-      <ModalBody style={{ paddingTop: '0px', height: '70vh' }}>
+      <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-6 d-flex flex-column">
             {/* Table of selected files */}
-            <div>
-              <DataFilesBreadcrumbs
-                api={params.api}
-                scheme={params.scheme}
-                system={params.system}
-                path={params.path || '/'}
-                section=""
-              />
-            </div>
-            <div style={{ paddingTop: '0px', flexGrow: '1' }}>
+            <div className="dataFilesModalColHeader">Source</div>
+            <DataFilesBreadcrumbs
+              api={params.api}
+              scheme={params.scheme}
+              system={params.system}
+              path={params.path || '/'}
+              section=""
+            />
+            <div className="filesListing">
               <DataFilesModalSelectedTable data={selected} operation="copy" />
             </div>
           </div>
           <div className="col-md-6 d-flex flex-column">
-            <div>
-              <DataFilesBreadcrumbs
-                api={modalParams.api}
-                scheme={modalParams.scheme}
-                system={modalParams.system}
-                path={modalParams.path || '/'}
-                section="modal"
-              />
-            </div>
-            <div style={{ paddingTop: '0px', flexGrow: '1' }}>
+            <div className="dataFilesModalColHeader">Destination</div>
+            <DataFilesBreadcrumbs
+              api={modalParams.api}
+              scheme={modalParams.scheme}
+              system={modalParams.system}
+              path={modalParams.path || '/'}
+              section="modal"
+            />
+            <div className="filesListing">
               <DataFilesModalListingTable
-                data={files}
+                data={files.filter(f => f.format === 'folder')}
                 operationName="Copy"
                 operationCallback={copyCallback}
+                disabled={disabled}
               />
             </div>
           </div>
@@ -124,6 +134,7 @@ const DataFilesCopyModal = React.memo(() => {
       </ModalBody>
       <ModalFooter>
         <Button
+          disabled={disabled}
           onClick={() => copyCallback(modalParams.system, modalParams.path)}
           className="data-files-btn"
         >
@@ -134,7 +145,7 @@ const DataFilesCopyModal = React.memo(() => {
           className="data-files-btn-cancel"
           onClick={toggle}
         >
-          Cancel
+          Close
         </Button>
       </ModalFooter>
     </Modal>

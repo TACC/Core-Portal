@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import {
   CheckboxCell,
+  CheckboxHeaderCell,
   FileNavCell,
   FileLengthCell,
   LastModifiedCell,
@@ -66,7 +67,8 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
       id: 'checkbox',
       width: 0.05,
       minWidth: 20,
-      maxWidth: 50,
+      maxWidth: 40,
+      Header: CheckboxHeaderCell,
       Cell: checkboxCellCallback
     },
     {
@@ -74,7 +76,7 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
       accessor: 'format',
       width: 0.05,
       minWidth: 20,
-      maxWidth: 30,
+      maxWidth: 25,
       Cell: FileIconCell
     },
     {

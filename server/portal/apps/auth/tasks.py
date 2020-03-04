@@ -17,5 +17,5 @@ def setup_user(self, username):
     profile.setup_complete = True
     profile.save()
     from portal.apps.accounts.managers.accounts import setup
-    # logger.info("Async setup task for {username} launched".format(username=username))
+    logger.info("Async setup task for {username} launched".format(username=username))
     setup(username)

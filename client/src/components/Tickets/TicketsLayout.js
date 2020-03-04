@@ -1,34 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSun } from '@fortawesome/free-solid-svg-icons';
 import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
-import useFetch from '../../utils/useFetch';
-import TicketModal from './TicketModal';
+import LoadingSpinner from '_common/LoadingSpinner';
+import { formatDate } from 'utils/timeFormat';
+import * as ROUTES from '../../constants/routes';
 import './TicketsLayout.scss';
 
+export function getStatusText(status) {
+  switch (status) {
+    case 'new':
+      return 'New';
+    case 'closed':
+    case 'resolved':
+      return 'Resolved';
+    case 'open':
+      return 'In Progress';
+    case 'user_wait':
+      return 'Reply Required';
+    case 'internal_wait':
+      return 'Reply Sent';
+    default:
+      throw new RangeError('no defined text for this status');
+  }
+}
+
 function TicketsView() {
-  const [ticketModal, setTicketModal] = useState(false);
-  const [activeTicketId, setActiveTicketId] = useState(0);
-  const [activeTicketSubject, setActiveTicketSubject] = useState('');
+  const dispatch = useDispatch();
+  const loading = useSelector(state => state.ticketList.loading);
+  const tickets = useSelector(state => state.ticketList.content);
 
-  const toggleTicketModal = () => setTicketModal(!ticketModal);
+  useEffect(() => {
+    dispatch({ type: 'TICKET_LIST_FETCH' });
+  }, [dispatch]);
 
-  const openTicketModal = (ticketId, ticketSubject) => {
-    setActiveTicketId(ticketId);
-    setActiveTicketSubject(ticketSubject);
-    setTicketModal(true);
-  };
-
-  const res = useFetch(`/api/tickets/`, {});
-
-  if (!res.response) {
-    return (
-      <div id="spin-sun">
-        <FontAwesomeIcon icon={faSun} size="8x" spin />
-      </div>
-    );
+  if (loading) {
+    return <LoadingSpinner />;
   }
 
   const columns = [
@@ -36,19 +45,20 @@ function TicketsView() {
       Header: 'Ticket Number',
       accessor: 'id',
       Cell: el => <span id={`ticketID${el.index}`}>{el.value}</span>,
-      maxWidth: 125
+      width: 115,
+      maxWidth: 115
     },
     {
       Header: 'Subject',
       accessor: 'Subject',
       Cell: el => (
-        <Button
-          color="link"
-          id={`ticketSubject${el.index}`}
-          onClick={() => openTicketModal(Number(el.original.id), el.value)}
+        <Link
+          to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/${el.original.id}`}
         >
-          <span title={el.value}>{el.value}</span>
-        </Button>
+          <Button color="link" id={`ticketSubject${el.index}`}>
+            <span title={el.value}>{el.value}</span>
+          </Button>
+        </Link>
       )
     },
     {
@@ -56,10 +66,7 @@ function TicketsView() {
       headerStyle: { textAlign: 'left' },
       accessor: d => new Date(d.Created),
       Cell: el => (
-        <span id={`ticketDate${el.index}`}>
-          {`${el.value.getMonth() +
-            1}/${el.value.getDate()}/${el.value.getFullYear()}`}
-        </span>
+        <span id={`ticketDate${el.index}`}>{`${formatDate(el.value)}`}</span>
       ),
       id: 'ticketDateCol',
       width: 100
@@ -67,40 +74,61 @@ function TicketsView() {
     {
       Header: 'Ticket Status',
       headerStyle: { textAlign: 'left' },
-      accessor: d =>
-        d.Status.substr(0, 1).toUpperCase() + d.Status.substr(1).toLowerCase(),
+      accessor: d => {
+        try {
+          return { text: getStatusText(d.Status), unknownStatusText: false };
+        } catch {
+          return { text: d.Status, unknownStatusText: true };
+        }
+      },
+      Cell: el => (
+        <span
+          className={el.value.unknownStatusText ? 'ticket-unknown-status' : ''}
+        >
+          {el.value.text}
+        </span>
+      ),
       id: 'ticketStatusCol',
-      width: 100
+      width: 105
     }
   ];
 
   return (
-    <div>
+    <>
       <ReactTable
         keyField="id"
-        data={res.response.tickets}
+        data={tickets}
         columns={columns}
+        resizable={false}
         resolveData={data => data.map(row => row)}
-        pageSize={res.response.tickets.length}
+        pageSize={tickets.length}
         className="ticketsList -striped -highlight"
-        defaultSorted={[{ id: 'id' }]}
+        defaultSorted={[{ id: 'ticketDateCol', desc: true }]}
+        getTrProps={(state, rowInfo, instance) => {
+          if (rowInfo) {
+            return {
+              className:
+                rowInfo.original.Status === 'user_wait'
+                  ? 'ticket-reply-required'
+                  : ''
+            };
+          }
+          return {};
+        }}
         noDataText={
           <>
-            No tickets. You can create tickets from the{' '}
-            <a className="wb-link" href="/tickets">
-              Tickets Page
-            </a>
+            No tickets. You can add a ticket{' '}
+            <Link
+              className="wb-link"
+              to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create/`}
+            >
+              here
+            </Link>
             .
           </>
         }
       />
-      <TicketModal
-        showModal={ticketModal}
-        ticketId={activeTicketId}
-        ticketSubject={activeTicketSubject}
-        toggle={toggleTicketModal}
-      />
-    </div>
+    </>
   );
 }
 

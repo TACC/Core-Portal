@@ -1,34 +1,27 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { Link, NavLink as RRNavLink } from 'react-router-dom';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faSun,
-  faClipboard,
-  faClock,
-  faDesktop
-} from '@fortawesome/free-solid-svg-icons';
-import { ActiveTable, InactiveTable } from './AllocationsTables';
+import { faClipboard, faDesktop } from '@fortawesome/free-solid-svg-icons';
+import { string } from 'prop-types';
+import LoadingSpinner from '_common/LoadingSpinner';
+import { AllocationsTable } from './AllocationsTables';
 import { NewAllocReq } from './AllocationsModals';
+import * as ROUTES from '../../constants/routes';
 
-export const Header = ({ title }) => {
+export const Header = ({ page }) => {
   const [openModal, setOpenModal] = React.useState(false);
   return (
     <div id="allocations-header">
       <div id="header-text">
-        <Link to="/workbench/allocations">Allocations</Link>
-        {title ? (
-          <>
-            <span>&nbsp;/&nbsp;</span>
-            <span>{title[0].toUpperCase() + title.substring(1)}</span>
-          </>
-        ) : (
-          ''
-        )}
+        <Link to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}`}>Allocations</Link>
+        <span>&nbsp;/&nbsp;</span>
+        <span>{page[0].toUpperCase() + page.substring(1)}</span>
       </div>
-      <Button onClick={() => setOpenModal(true)}>Request New Allocation</Button>
+      <Button color="primary" onClick={() => setOpenModal(true)}>
+        Manage Allocations
+      </Button>
       {openModal && (
         <NewAllocReq
           isOpen={openModal}
@@ -38,19 +31,14 @@ export const Header = ({ title }) => {
     </div>
   );
 };
-Header.propTypes = {
-  title: PropTypes.string
-};
-Header.defaultProps = {
-  title: ''
-};
+Header.propTypes = { page: string.isRequired };
 
-export const Sidebar = props => (
+export const Sidebar = () => (
   <Nav id="allocations-sidebar" vertical>
     <NavItem>
       <NavLink
         tag={RRNavLink}
-        to="/workbench/allocations/approved"
+        to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/approved`}
         activeClassName="active"
       >
         <FontAwesomeIcon icon={faClipboard} size="1x" className="link-icon" />
@@ -60,17 +48,7 @@ export const Sidebar = props => (
     <NavItem>
       <NavLink
         tag={RRNavLink}
-        to="/workbench/allocations/pending"
-        activeClassName="active"
-      >
-        <FontAwesomeIcon icon={faClock} size="1x" className="link-icon" />
-        <span className="link-text">Pending</span>
-      </NavLink>
-    </NavItem>
-    <NavItem>
-      <NavLink
-        tag={RRNavLink}
-        to="/workbench/allocations/expired"
+        to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/expired`}
         activeClassName="active"
       >
         <FontAwesomeIcon icon={faDesktop} size="1x" className="link-icon" />
@@ -80,54 +58,28 @@ export const Sidebar = props => (
   </Nav>
 );
 
-export const Loading = () => (
-  <div id="loading">
-    <FontAwesomeIcon icon={faSun} size="8x" spin />
-  </div>
-);
-export const Pending = () => <div id="pending" data-testid="pending-view" />;
-
-export const ContentWrapper = ({ page }) => {
+export const Layout = ({ page }) => {
   const loading = useSelector(state => state.allocations.loading);
-  const allocations = useSelector(state => state.allocations);
-  const showTable = p => {
-    switch (p) {
-      case 'Approved':
-        return <ActiveTable allocations={allocations.active} />;
-      case 'Pending':
-        return <Pending />;
-      default:
-        return <InactiveTable allocations={allocations.inactive} />;
-    }
-  };
   if (loading)
     return (
-      <div id="allocations-container">
-        <Sidebar />
-        <Loading />
-      </div>
+      <>
+        <Header page={page} />
+        <div id="allocations-container">
+          <Sidebar />
+          <LoadingSpinner />
+        </div>
+      </>
     );
   return (
-    <div id="allocations-container">
-      <Sidebar />
-      {showTable(page)}
-    </div>
+    <>
+      <Header page={page} />
+      <div id="allocations-container">
+        <Sidebar />
+        <AllocationsTable page={page} />
+      </div>
+    </>
   );
 };
-ContentWrapper.propTypes = { page: PropTypes.string };
-ContentWrapper.defaultProps = { page: 'Approved' };
-
-export const Layout = ({ filter, children }) => (
-  <>
-    <Header title={filter} />
-    <ContentWrapper page={filter} />
-    {children}
-  </>
-);
 Layout.propTypes = {
-  filter: PropTypes.string.isRequired,
-  children: PropTypes.node
-};
-Layout.defaultProps = {
-  children: <div />
+  page: string.isRequired
 };

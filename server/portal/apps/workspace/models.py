@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from datetime import datetime
+from django.utils import timezone
 
 
 class JobSubmission(models.Model):
@@ -15,7 +15,7 @@ class JobSubmission(models.Model):
     )
 
     # Timestamp for event
-    time = models.DateTimeField(default=datetime.now)
+    time = models.DateTimeField(default=timezone.now)
 
     # ID of job returned from Agave
     jobId = models.CharField(max_length=300)

@@ -6,13 +6,43 @@ import {
   faCheckSquare,
   faSquare as filledSquare
 } from '@fortawesome/free-solid-svg-icons';
-import {
-  faSquare,
-  faFolder,
-  faFile
-} from '@fortawesome/free-regular-svg-icons';
+import { faSquare, faFile } from '@fortawesome/free-regular-svg-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
+
+export const CheckboxHeaderCell = () => {
+  const selected = useSelector(state => state.files.selectAll.FilesListing);
+  const listingLength = useSelector(
+    state => state.files.listing.FilesListing.length
+  );
+  const dispatch = useDispatch();
+  const toggleSelect = () => {
+    listingLength &&
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_SELECT_ALL',
+        payload: { section: 'FilesListing' }
+      });
+  };
+  const handleKeyPress = e => e.key === 'enter' && toggleSelect();
+  return (
+    <>
+      <span
+        role="button"
+        tabIndex={-1}
+        className="fa-layers fa-fw"
+        onClick={toggleSelect}
+        onKeyDown={handleKeyPress}
+      >
+        <FontAwesomeIcon icon={filledSquare} color="white" />
+        <FontAwesomeIcon
+          icon={selected ? faCheckSquare : faSquare}
+          color="#9D85EF"
+        />
+        <FontAwesomeIcon icon={faSquare} color="#707070" />
+      </span>
+    </>
+  );
+};
 
 export const CheckboxCell = React.memo(({ index }) => {
   const selected = useSelector(state =>
@@ -21,12 +51,12 @@ export const CheckboxCell = React.memo(({ index }) => {
   return (
     <>
       <span className="fa-layers fa-fw">
-        <FontAwesomeIcon icon={filledSquare} size="lg" color="white" />
+        <FontAwesomeIcon icon={filledSquare} color="white" />
         <FontAwesomeIcon
           icon={selected ? faCheckSquare : faSquare}
-          size="lg"
           color="#9D85EF"
         />
+        <FontAwesomeIcon icon={faSquare} color="#707070" />
       </span>
     </>
   );
@@ -115,9 +145,9 @@ LastModifiedCell.propTypes = {
 
 export const FileIconCell = ({ cell }) => {
   if (cell.value === 'folder') {
-    return <FontAwesomeIcon icon={faFolder} />;
+    return <i className="icon-filetype icon-nav-folder" />;
   }
-  return <FontAwesomeIcon icon={faFile} />;
+  return <FontAwesomeIcon icon={faFile} color="#707070" />;
 };
 FileIconCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired

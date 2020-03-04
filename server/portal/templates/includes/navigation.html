@@ -1,87 +1,102 @@
 {% load menu_tags cms_tags staticfiles %}
-{% if settings.PORTAL_NAVBAR_BACKGROUND_FILENAME %}
-<nav id="portal-top-nav" class="navbar navbar-dark" style="background-image: url('{{ settings.PORTAL_NAVBAR_BACKGROUND_FILENAME }}');">
-{% else %}
-<nav id="portal-top-nav" class="navbar navbar-expand-lg navbar-dark" style="background-color: #222222">
-{% endif %}
-  <a class="navbar-brand" href="/">
-    {% if settings.PORTAL_LOGO_FILENAME %}
-    <img src="{{ settings.PORTAL_LOGO_FILENAME }}" class="portal-branding nav-icon" style="height:45px;">
-    {% else %}
-    <div class="navbar-logo-text">{{ settings.PORTAL_NAMESPACE }}</div>
-    {% endif %}
+
+{% comment %}
+Unused Settings
+===
+These settings were used before 2020-01 consolidation of Portal & CMS header.
+They seem useful, and would be re-incoprorated when their usage is necessary.
+
+- settings.PORTAL_NAVBAR_BACKGROUND_FILENAME
+- settings.PORTAL_LOGO_FILENAME
+- settings.PORTAL_NAMESPACE
+{% endcomment %}
+
+<!-- Sponsor Logos -->
+<div class="branding-header">
+  <a href="https://www.nsf.gov/" target="_blank">
+    <img class="nav-logo-header nav-logo-nsf-double" src="/static/site_cms/images/org_logos/nsf-white.png" crossorigin="anonymous">
   </a>
-  {% if section_root %}
-  <a class="navbar-brand">{{section_root.title}}</a>
-  {% endif %}
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navigation" aria-controls="main-navigation" aria-expanded="false" aria-label="Toggle navigation">
+  <a href="https://www.tacc.utexas.edu/" target="_blank">
+    <img class="nav-logo-header nav-logo-border-left nav-logo-tacc-double" src="/static/site_cms/images/org_logos/tacc-white.png" crossorigin="anonymous">
+  </a>
+  <a href="https://www.utexas.edu/">
+    <img class="nav-logo-header nav-logo-border-left nav-logo-utaustin-double" src="/static/site_cms/images/org_logos/utaustin-white.png" crossorigin="anonymous">
+  </a>
+</div>
+
+<!-- Navigation Bar -->
+<nav id="s-header" class="s-header  navbar navbar-expand-lg navbar-dark">
+  <!-- Branding Logos -->
+  <a class="navbar-brand" href="/">
+    <img class="nav-logo-double nav-logo-frontera-double" src="/static/site_cms/images/org_logos/frontera-white-solo.png" crossorigin="anonymous">
+  </a>
+  <!-- Navbar Accordian Toggle on Small Screens  -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <!-- Collapsed Navbar -->
-  <div class="collapse navbar-collapse" id="main-navigation">
-    <ul class="navbar-nav mr-auto">
-      <!-- All top nav elements handled here. -->
-      {% show_menu 0 100 1 100 "includes/cms_menu.html" %}
+  <!-- Navbar Links -->
+  <div class="collapse navbar-collapse" id="navbarsExpandTarget">
+    <ul class="s-cms-nav  navbar-nav">
+      <!-- All top-level CMS controlled nav elements handled here. -->
+      {# TEMP: Manual markup #}
+      <li class="nav-item">
+        <a class="nav-link" href="/"><span>Home</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/training/"><span>Training</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/user-guide/"><span>User Guide</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/allocations/"><span>Allocations</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/fellowship/"><span>Fellowships</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/news/"><span>News</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/about/"><span>About</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/help/"><span>Help</span></a>
+      </li>
     </ul>
-    <ul class="navbar-nav navbar-right">
+
+    {# Duplicated at https://gitlab.tacc.utexas.edu/wma-cms/frontera-cms/blob/master/taccsite_cms/templates/nav_branding_partials/nav.branding.frontera.v2.html #}
+    {# Duplicated at https://bitbucket.org/taccaci/frontera-tech-docs/src/staging/frontera_theme/header.html #}
+    <ul class="s-portal-nav  navbar-nav navbar-right  ml-auto">
       {% if user.is_authenticated %}
       <div class="navbar-nav">
-        <li class="nav-item dropdown active">
+        <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
             <span class="sr-only">Toggle Dropdown</span>
           </a>
           <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="{% url 'workbench:index' %}">
+            <a class="dropdown-item" href="{% url 'workbench:dashboard' %}">
               <i class="fas fa-desktop nav-icon"></i> My Dashboard
             </a>
             <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
               <i class="fas fa-user-circle nav-icon"></i> My Account
             </a>
-            {% if user.is_staff %}
-            <a class="dropdown-item" href="{ url 'portal_onboarding:admin' }">
-              <i class="fas fa-users"></i> &nbsp;Onboarding
-            </a>
-            {% endif %}
             <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">
               <i class="fas fa-sign-out-alt nav-icon"></i> Log Out
             </a>
-            {% if user.is_impersonate %}
-            <div class="dropdown-divider"></div>
-            <div class="dropdown-item">
-              <i class="fas fa-user-secret nav-icon"></i>
-              <a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a>
-            </div>
-            {% endif %}
-            <!-- end of impersonate -->
           </div>
         </li>
       </div>
       {% else %}
-      <!-- if user is not logged in -->
-      {% if request_access %}
-      <li class="nav-item {% if request.get_full_path == '/about/' %} active {% endif %}">
-        <a class="nav-link" role="button" href="/accounts/request-access/">
-        <!-- <a class="nav-link btn btn-link-alt" role="button" href="/accounts/request-access/"> -->
-          <i class="fas fa-users nav-icon"></i> Request Access
-        </a>
-      </li>
-      {% endif %}
-      <li class="nav-item {% if request.get_full_path == '/accounts/login' %} active {% endif %}">
+      <li class="nav-item">
         <a class="nav-link" role="button" href="{% url 'portal_auth:agave_oauth' %}">
-        <!-- <a href="{% url 'portal_auth:agave_oauth' %}" class="btn btn-link-alt"> -->
           <i class="fas fa-sign-in-alt nav-icon"></i> Log in
         </a>
       </li>
-      <!-- Hidden until auth flow is properly implemented and MFA impact is determined.  -->
-      <!-- <li class="right-nav-links">
-        <a href="{% url 'portal_accounts:register' %}" class="btn btn-link-alt">
-          <i class="fas fa-user-plus nav-icon"></i> Register
-        </a>
-      </li> -->
       {% endif %}
       <!-- end of user logged in/not logged in if -->
     </ul>
+
   </div>
 </nav>
