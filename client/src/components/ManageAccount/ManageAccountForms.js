@@ -10,9 +10,9 @@ import {
 } from 'reactstrap';
 import { Formik, Field } from 'formik';
 import { object as obj, string as str } from 'yup';
-import { instanceOf, object } from 'prop-types';
-import { startCase } from 'lodash';
-import { singular } from 'pluralize';
+import { isEmpty } from 'lodash';
+import { instanceOf, object, string } from 'prop-types';
+import LoadingSpinner from '../_common/LoadingSpinner';
 
 export const Input = ({ field, form: { touched, errors } }) => {
   const { name } = field;
@@ -31,11 +31,44 @@ Input.propTypes = {
   form: instanceOf(object).isRequired
 };
 
+export const SelectField = ({ name }) => {
+  const { fields } = useSelector(state => state.profile);
+  console.log(fields);
+  const [label, options] = React.useMemo(() => {
+    switch (name) {
+      case 'institution':
+        return ['Institution', fields.institutions];
+      case 'country':
+        return ['Country of Residence', fields.countries];
+      case 'citizenship':
+        return ['Country of Citizenship', fields.countries];
+      case 'ethnicity':
+        return ['Ethnicity', fields.ethnicities];
+      case 'gender':
+        return ['Gender', fields.genders];
+      default:
+        return ['Loading', []];
+    }
+  }, [fields]);
+  if (isEmpty(fields)) return <LoadingSpinner />;
+  return (
+    <FormGroup>
+      <Label>{label}</Label>
+      <Field as="select" name={name} className="form-control">
+        {options.map(item => (
+          <option key={item}>{item}</option>
+        ))}
+      </Field>
+    </FormGroup>
+  );
+};
+SelectField.propTypes = { name: string.isRequired };
+
 export const RequiredInformationForm = () => {
   const {
-    data: { demographics: initialValues },
-    fields
+    data: { demographics: initialValues }
   } = useSelector(state => state.profile);
+  console.log(initialValues);
   const validationSchema = obj().shape({
     firstName: str()
       .min(2, 'Too Short!')
@@ -73,16 +106,9 @@ export const RequiredInformationForm = () => {
           <Label>Phone No.</Label>
           <Field type="number" name="phone" component={Input} />
         </FormGroup>
-        {Object.keys(fields).map(field => (
-          <FormGroup key={field}>
-            <Label>{startCase(singular(field))}</Label>
-            <BootstrapInput type="select">
-              {fields[field].map(item => (
-                <option key={item}>{item}</option>
-              ))}
-            </BootstrapInput>
-          </FormGroup>
-        ))}
+        <SelectField name="institution" />
+        <SelectField name="country" />
+        <SelectField name="citizenship" />
       </Form>
     </Formik>
   );

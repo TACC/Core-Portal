@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { RequiredInformationForm } from './ManageAccountForms';
 
@@ -10,9 +10,18 @@ export const EditRequiredInformation = () => {
   return (
     <Modal isOpen={open} toggle={closeModal}>
       <ModalHeader>Edit Required Information</ModalHeader>
-      <ModalBody>
+      <ModalBody
+        style={{
+          height: '50vh',
+          overflowY: 'auto'
+        }}
+      >
         <RequiredInformationForm />
       </ModalBody>
+      <ModalFooter>
+        <Button color="primary">Submit</Button>
+        <Button color="danger">Close</Button>
+      </ModalFooter>
     </Modal>
   );
 };

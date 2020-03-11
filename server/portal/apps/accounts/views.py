@@ -661,6 +661,7 @@ def get_form_fields(request):
             }
         )
     institution_dict = tas.institutions()
+    # TODO: List comprehensions
     institutions = []
     for inst in institution_dict:
         institutions.append(inst['name'])
@@ -676,7 +677,24 @@ def get_form_fields(request):
     for country in tas.countries():
         countries.append(country['name'])
 
-    return JsonResponse({'institutions': institutions, 'titles': list(titles), 'countries': countries})
+    # Ethnicities
+    ethnicities = []
+    for ethnicity in forms.ETHNICITY_OPTIONS:
+        for v in ethnicity:
+            ethnicities.append(v)
+    # Genders
+    genders = set()
+    for gender in forms.GENDER_OPTIONS:
+        for v in gender:
+            genders.add(v)
+
+    return JsonResponse({
+        'institutions': institutions,
+        'titles': list(titles),
+        'countries': countries,
+        'ethnicities': ethnicities,
+        'genders': list(genders)
+    })
 
 
 def load_departments(request):

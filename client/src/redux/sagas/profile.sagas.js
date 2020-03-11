@@ -2,6 +2,7 @@ import { put, takeLatest, call, all } from 'redux-saga/effects';
 import 'cross-fetch';
 
 export function* getProfileData(action) {
+  yield put({ type: 'GET_FORM_FIELDS' });
   const endpoints = [
     '/accounts/api/profile/',
     '/accounts/api/licenses/',
@@ -18,7 +19,7 @@ export function* getProfileData(action) {
   const json = yield all(responses.map(res => res.json()));
   const payload = yield json.reduce((obj, val) => ({ ...obj, ...val }), {});
   yield put({ type: 'ADD_DATA', payload });
-  yield put({ type: 'GET_FORM_FIELDS' });
+  yield console.log(payload);
 }
 
 export function* getFormFields(action) {
