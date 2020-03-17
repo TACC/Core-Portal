@@ -1,4 +1,5 @@
 import { put, takeLatest, call, all } from 'redux-saga/effects';
+import Cookies from 'js-cookie';
 import 'cross-fetch';
 
 export function* getProfileData(action) {
@@ -19,7 +20,24 @@ export function* getProfileData(action) {
   const json = yield all(responses.map(res => res.json()));
   const payload = yield json.reduce((obj, val) => ({ ...obj, ...val }), {});
   yield put({ type: 'ADD_DATA', payload });
-  yield console.log(payload);
+}
+
+export function* changePassword(action) {
+  const options = {
+    credentials: 'same-origin',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    ...action.options
+  };
+  yield put({ type: 'CHECKING_PASSWORD' });
+  const response = yield call(fetch, '/accounts/api/check/', options);
+  const { verified } = yield response.json();
+  yield put({ type: 'CHECKED_PASSWORD', payload: verified });
+  if (verified) {
+    yield call(fetch, '/accounts/change-password/', options);
+  }
+}
+export function* watchChangePassword() {
+  yield takeLatest('CHANGE_PASSWORD', changePassword);
 }
 
 export function* getFormFields(action) {

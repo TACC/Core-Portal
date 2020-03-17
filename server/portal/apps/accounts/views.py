@@ -275,6 +275,32 @@ def manage_pro_profile(request):
         context
     )
 
+# TODO: Change Password logic
+@login_required
+def authenticate_user(request):
+    username = str(request.user)
+    body = json.loads(request.body)
+    password = body['currentPW']
+
+    tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+    auth = tas.authenticate(username, password)
+    if auth:
+        return JsonResponse({'verified': True})
+    else:
+        return JsonResponse({'verified': False})
+
+
+@login_required
+def change_password(request):
+    username = str(request.user)
+    body = json.loads(request.body)
+    current_password = body['currentPW']
+    new_password = body['newPW']
+
+    tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+    tas.change_password(username, current_password, new_password)
+    return JsonResponse({'completed': True})
+
 
 @login_required
 def pro_profile_edit(request):

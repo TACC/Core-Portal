@@ -1,5 +1,6 @@
 export const initialState = {
   isLoading: true,
+  checkingPassword: false,
   data: {
     demographics: {},
     licenses: [],
@@ -51,6 +52,16 @@ export default function profile(state = initialState, action) {
       return {
         ...state,
         modals: { ...state.modals, changePW: false }
+      };
+    case 'CHECKING_PASSWORD':
+      return {
+        ...state,
+        checkingPassword: true
+      };
+    case 'CHECKED_PASSWORD':
+      return {
+        ...state,
+        checkingPassword: false
       };
     default:
       return state;

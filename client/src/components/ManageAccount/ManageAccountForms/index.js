@@ -12,9 +12,10 @@ import { Formik, Field } from 'formik';
 import { object as obj, string as str } from 'yup';
 import { isEmpty } from 'lodash';
 import { instanceOf, object, string } from 'prop-types';
-import LoadingSpinner from '../_common/LoadingSpinner';
+import ChangePasswordForm from './ChangePasswordForm';
+import LoadingSpinner from '../../_common/LoadingSpinner';
 
-export const Input = ({ field, form: { touched, errors } }) => {
+const Input = ({ field, form: { touched, errors } }) => {
   const { name } = field;
   return (
     <>
@@ -33,7 +34,6 @@ Input.propTypes = {
 
 export const SelectField = ({ name }) => {
   const { fields } = useSelector(state => state.profile);
-  console.log(fields);
   const [label, options] = React.useMemo(() => {
     switch (name) {
       case 'institution':
@@ -64,11 +64,10 @@ export const SelectField = ({ name }) => {
 };
 SelectField.propTypes = { name: string.isRequired };
 
-export const RequiredInformationForm = () => {
+const RequiredInformationForm = () => {
   const {
     data: { demographics: initialValues }
   } = useSelector(state => state.profile);
-  console.log(initialValues);
   const validationSchema = obj().shape({
     firstName: str()
       .min(2, 'Too Short!')
@@ -113,3 +112,5 @@ export const RequiredInformationForm = () => {
     </Formik>
   );
 };
+
+export { ChangePasswordForm, RequiredInformationForm, Input };

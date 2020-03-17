@@ -1,7 +1,10 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { RequiredInformationForm } from './ManageAccountForms';
+import {
+  RequiredInformationForm,
+  ChangePasswordForm
+} from './ManageAccountForms';
 
 export const EditRequiredInformation = () => {
   const { editRequired: open } = useSelector(state => state.profile.modals);
@@ -43,7 +46,9 @@ export const ChangePassword = () => {
   return (
     <Modal isOpen={open} toggle={closeModal}>
       <ModalHeader>Change Password</ModalHeader>
-      <ModalBody>Change Password Form</ModalBody>
+      <ModalBody>
+        <ChangePasswordForm />
+      </ModalBody>
     </Modal>
   );
 };
