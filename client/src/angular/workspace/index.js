@@ -36,6 +36,9 @@ function config($interpolateProvider, $httpProvider, $urlRouterProvider, $stateP
         success_trash_file: 'File/folder has been moved to trash.',
         error_mkdir: 'There was an error creating the file.',
         success_mkdir: 'Directory created.',
+        info_move_file: 'File/folder move has started.',
+        info_copy_file: 'File/folder copy has started.',
+        info_trash_file: 'File/folder trash operation has started.'
     });
     $translateProvider.preferredLanguage('en');
 }

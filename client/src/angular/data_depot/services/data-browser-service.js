@@ -307,7 +307,10 @@ class DataBrowserService {
         });
 
         return modal.result.then( (result) => {
-            this.currentState.busy = true;
+            this.$mdToast.show(this.$mdToast.simple()
+                        .content(this.$translate.instant('info_copy_file'))
+                        .toastClass('into')
+                        .parent($("#toast-container")));
             var copyPromises = files.map( (f) => {
 
                 return f.copy({ system: result.target.system, path: result.target.path, resource: result.target.resource }).then( (result) => {
@@ -319,7 +322,6 @@ class DataBrowserService {
                         .parent($("#toast-container")));
                     return result;
                 }, (err) => {
-                    this.currentState.busy = false;
                     this.$mdToast.show(this.$mdToast.simple()
                         .content(this.$translate.instant('error_copy_file'))
                         .toastClass('error')
@@ -328,7 +330,6 @@ class DataBrowserService {
                 });
             });
             return this.$q.all(copyPromises).then( (results) => {
-                this.currentState.busy = false;
                 this.browse(this.currentState.listing);
                 return results;
             });
@@ -479,10 +480,13 @@ class DataBrowserService {
             }
         });
         return modal.result.then( (result) => {
-                this.currentState.busy = true;
                 //if (result.system !== files[0].system){
                 //  return $q.when(files);
                 //}
+                this.$mdToast.show(this.$mdToast.simple()
+                            .content(this.$translate.instant('info_move_file'))
+                            .toastClass('info')
+                            .parent($("#toast-container")));
                 var movePromises = files.map( (f) => {
                     return f.move({ system: result.target.system, path: result.target.path }).then( (result) => {
                         this.deselect([f]);
@@ -606,7 +610,10 @@ class DataBrowserService {
             files = [files];
         }
 
-        this.currentState.busy = true;
+        this.$mdToast.show(this.$mdToast.simple()
+                .content(this.$translate.instant('info_trash_file'))
+                .toastClass('info')
+                .parent($("#toast-container")));
         var trashPromises = files.map( (file) => {
             return file.trash().then( (trashed) => {
                 //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, trashed);
@@ -614,7 +621,6 @@ class DataBrowserService {
             });
         });
         return this.$q.all(trashPromises).then( (val) => {
-            this.currentState.busy = false;
             this.browse(this.currentState.listing);
 
             this.$mdToast.show(this.$mdToast.simple()
