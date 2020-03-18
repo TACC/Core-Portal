@@ -22,6 +22,7 @@ urlpatterns = [
     # Endpoints for React based profile-page
     url(r'^profile/$', ReactView.as_view(), name='manage_profile'),
     url(r'^change-password/', views.change_password, name='change_password'),
+    url(r'^edit-profile/', views.edit_profile, name='edit_profile'),
     url(r'^api/profile/', views.get_profile_data, name='get_profile_data'),
     url(r'^api/licenses/', views.manage_licenses, name='manage_licenses'),
     url(r'^api/applications/$', views.manage_applications, name='manage_applications'),

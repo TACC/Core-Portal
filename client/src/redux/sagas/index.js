@@ -24,11 +24,7 @@ import {
   watchUsers
 } from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
-import {
-  watchProfileData,
-  watchFormFields,
-  watchChangePassword
-} from './profile.sagas';
+import watchProfile from './profile.sagas';
 import {
   watchTicketListFetch,
   watchTicketDetailedView,
@@ -62,9 +58,7 @@ export default function* rootSaga() {
     watchUserData(),
     watchSystemMonitor(),
     watchPostTicketReply(),
-    watchProfileData(),
-    watchFormFields(),
-    watchChangePassword(),
+    ...watchProfile,
     watchTicketListFetch(),
     watchTicketDetailedView(),
     watchTicketDetailedViewFetchHistory(),

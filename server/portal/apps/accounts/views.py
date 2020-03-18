@@ -276,6 +276,7 @@ def manage_pro_profile(request):
     )
 
 # TODO: Change Password logic
+# For React
 @login_required
 def authenticate_user(request):
     username = str(request.user)
@@ -290,6 +291,7 @@ def authenticate_user(request):
         return JsonResponse({'verified': False})
 
 
+# For React
 @login_required
 def change_password(request):
     username = str(request.user)
@@ -422,6 +424,17 @@ def manage_applications(request):
         'integrations': integrations.get_integrations()
     }
     return JsonResponse(context)
+
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        body = json.loads(request.body)
+        portal_profile = user.profile
+        portal_profile.ethnicity = body['ethnicity']
+        portal_profile.gender = body['gender']
+        portal_profile.save()
 
 
 @login_required
@@ -677,49 +690,14 @@ def departments_json(request):
     )
 
 
+# For React
 def get_form_fields(request):
-    # Institutions
-    tas = TASClient(
-            baseURL=settings.TAS_URL,
-            credentials={
-                'username': settings.TAS_CLIENT_KEY,
-                'password': settings.TAS_CLIENT_SECRET
-            }
-        )
-    institution_dict = tas.institutions()
-    # TODO: List comprehensions
-    institutions = []
-    for inst in institution_dict:
-        institutions.append(inst['name'])
-
-    # Titles
-    titles = set()
-    for title in forms.USER_PROFILE_TITLES:
-        for value in title:
-            titles.add(value)
-
-    # Countries
-    countries = []
-    for country in tas.countries():
-        countries.append(country['name'])
-
-    # Ethnicities
-    ethnicities = []
-    for ethnicity in forms.ETHNICITY_OPTIONS:
-        for v in ethnicity:
-            ethnicities.append(v)
-    # Genders
-    genders = set()
-    for gender in forms.GENDER_OPTIONS:
-        for v in gender:
-            genders.add(v)
-
     return JsonResponse({
-        'institutions': institutions,
-        'titles': list(titles),
-        'countries': countries,
-        'ethnicities': ethnicities,
-        'genders': list(genders)
+        'institutions': [list(i) for i in forms.get_institution_choices()],
+        'countries': [list(c) for c in forms.get_country_choices()],
+        'titles': [list(t) for t in forms.USER_PROFILE_TITLES],
+        'ethnicities': [list(e) for e in forms.ETHNICITY_OPTIONS],
+        'genders': [list(g) for g in forms.GENDER_OPTIONS]
     })
 
 
