@@ -428,13 +428,20 @@ def manage_applications(request):
 
 @login_required
 def edit_profile(request):
-    if request.method == 'POST':
-        user = request.user
-        body = json.loads(request.body)
-        portal_profile = user.profile
+    user = request.user
+    body = json.loads(request.body)
+    portal_profile = user.profile
+    if body['flag'] == 'Required':
+        # TODO: update tas portion of profile
         portal_profile.ethnicity = body['ethnicity']
         portal_profile.gender = body['gender']
-        portal_profile.save()
+    elif body['flag'] == 'Optional':
+        portal_profile.website = body['website']
+        portal_profile.professional_level = body['professional_level']
+        portal_profile.bio = body['bio']
+        portal_profile.orcid_id = body['orcid_id']
+    portal_profile.save()
+    return JsonResponse(model_to_dict(portal_profile))
 
 
 @login_required
@@ -697,7 +704,8 @@ def get_form_fields(request):
         'countries': [list(c) for c in forms.get_country_choices()],
         'titles': [list(t) for t in forms.USER_PROFILE_TITLES],
         'ethnicities': [list(e) for e in forms.ETHNICITY_OPTIONS],
-        'genders': [list(g) for g in forms.GENDER_OPTIONS]
+        'genders': [list(g) for g in forms.GENDER_OPTIONS],
+        'professionalLevels': [list(p) for p in forms.PROFESSIONAL_LEVEL_OPTIONS]
     })
 
 

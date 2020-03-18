@@ -130,17 +130,19 @@ export const ChangePassword = () => {
   );
 };
 export const OptionalInformation = () => {
+  const { demographics } = useSelector(state => state.profile.data);
+
   const dispatch = useDispatch();
   const columns = useMemo(
     () => [
-      { Header: 'My Website' },
-      { Header: 'Orcid ID' },
-      { Header: 'Professional Level' },
-      { Header: 'Research Bio' }
+      { Header: 'My Website', accessor: 'website' },
+      { Header: 'Orcid ID', accessor: 'orcid_id' },
+      { Header: 'Professional Level', accessor: 'professional_level' },
+      { Header: 'Research Bio', accessor: 'bio' }
     ],
     []
   );
-  const data = [];
+  const data = useMemo(() => [demographics], []);
   const openModal = () => dispatch({ type: 'OPEN_EDIT_OPTIONAL' });
   return (
     <div className="profile-component-wrapper">

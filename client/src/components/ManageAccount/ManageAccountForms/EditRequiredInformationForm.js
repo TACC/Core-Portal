@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button } from 'reactstrap';
+import { Button, Label } from 'reactstrap';
 import { Formik, Field, Form } from 'formik';
 import { object as obj, string as str } from 'yup';
 import LoadingSpinner from '../../_common/LoadingSpinner';
@@ -32,6 +32,7 @@ export default function() {
     >
       <Form>
         <div className="form-group">
+          <Label>Ethnicity</Label>
           <Field as="select" name="ethnicity" className="form-control">
             {fields.ethnicities.map(([value, label]) => (
               <option key={label} {...{ value, label }} />
@@ -40,6 +41,7 @@ export default function() {
         </div>
 
         <div className="form-group">
+          <Label>Gender</Label>
           <Field as="select" name="gender" className="form-control">
             {fields.genders.map(([value, label]) => (
               <option key={label} {...{ value, label }} />

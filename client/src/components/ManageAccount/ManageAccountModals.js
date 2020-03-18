@@ -3,7 +3,8 @@ import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   EditRequiredInformationForm,
-  ChangePasswordForm
+  ChangePasswordForm,
+  EditOptionalInformationForm
 } from './ManageAccountForms';
 
 export const EditRequiredInformation = () => {
@@ -31,7 +32,9 @@ export const EditOptionalInformation = () => {
   return (
     <Modal isOpen={open} toggle={closeModal}>
       <ModalHeader>Edit Optional Information</ModalHeader>
-      <ModalBody>Optional Information Form</ModalBody>
+      <ModalBody>
+        <EditOptionalInformationForm />
+      </ModalBody>
     </Modal>
   );
 };

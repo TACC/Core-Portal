@@ -52,16 +52,39 @@ export function* editRequiredInformation(action) {
   yield call(fetch, '/accounts/edit-profile/', {
     credentials: 'same-origin',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    method: 'POST',
-    body: JSON.stringify({ ethnicity, gender }),
+    method: 'PUT',
+    body: JSON.stringify({ flag: 'Required', ethnicity, gender }),
     ...action.options
   });
   yield put({ type: 'CLOSE_EDIT_REQUIRED' });
   yield put({ type: 'GET_PROFILE_DATA' });
 }
 
+export function* editOptionalInformation(action) {
+  const { professionalLevel, website, orcidId, bio } = yield action.values;
+  yield call(fetch, '/accounts/edit-profile/', {
+    credentials: 'same-origin',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    method: 'PUT',
+    body: JSON.stringify({
+      flag: 'Optional',
+      professional_level: professionalLevel,
+      orcid_id: orcidId,
+      website,
+      bio
+    }),
+    ...action.options
+  });
+  yield put({ type: 'CLOSE_EDIT_OPTIONAL' });
+  yield put({ type: 'GET_PROFILE_DATA' });
+}
+
 export function* watchEditRequired() {
   yield takeLatest('EDIT_REQUIRED_INFORMATION', editRequiredInformation);
+}
+
+export function* watchEditOptional() {
+  yield takeLatest('EDIT_OPTIONAL_INFORMATION', editOptionalInformation);
 }
 
 export function* watchChangePassword() {
@@ -76,6 +99,7 @@ export function* watchProfileData() {
 
 export default [
   watchEditRequired(),
+  watchEditOptional(),
   watchChangePassword(),
   watchFormFields(),
   watchProfileData()
