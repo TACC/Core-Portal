@@ -53,6 +53,7 @@ export const RequiredInformation = () => {
         Header: 'Full Name',
         accessor: ({ firstName, lastName }) => `${firstName} ${lastName}`
       },
+      { Header: 'Phone No.', accessor: 'phone' },
       { Header: 'Email', accessor: 'email' },
       { Header: 'Institution', accessor: 'institution' },
       { Header: 'Title', accessor: 'title' },

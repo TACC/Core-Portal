@@ -1,6 +1,12 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { FormGroup, Label, Input as BootstrapInput, Button } from 'reactstrap';
+import {
+  FormGroup,
+  Label,
+  Input as BootstrapInput,
+  Button,
+  FormText
+} from 'reactstrap';
 import * as Yup from 'yup';
 import { Formik, useField, Form } from 'formik';
 import { string } from 'prop-types';
@@ -10,13 +16,13 @@ import LoadingSpinner from '_common/LoadingSpinner';
 const Input = ({ label, ...props }) => {
   const [field, meta] = useField(props);
   return (
-    <>
-      <FormGroup>
-        <Label>{label}</Label>
-        <BootstrapInput {...field} {...props} />
-        {meta.touched && meta.error ? <span>{meta.error}</span> : null}
-      </FormGroup>
-    </>
+    <FormGroup>
+      <Label>{label}</Label>
+      <BootstrapInput {...field} {...props} bsSize="sm" />
+      {meta.touched && meta.error ? (
+        <FormText color="danger">{meta.error}</FormText>
+      ) : null}
+    </FormGroup>
   );
 };
 Input.propTypes = {

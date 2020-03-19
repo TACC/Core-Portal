@@ -3,7 +3,6 @@ import Cookies from 'js-cookie';
 import 'cross-fetch';
 
 export function* getProfileData(action) {
-  yield put({ type: 'START_FETCH' });
   yield put({ type: 'GET_FORM_FIELDS' });
   const endpoints = [
     '/accounts/api/profile/',
@@ -48,16 +47,27 @@ export function* changePassword(action) {
 }
 
 export function* editRequiredInformation(action) {
-  const { ethnicity, gender } = yield action.values;
-  yield call(fetch, '/accounts/edit-profile/', {
+  yield call(action.callback);
+  const response = yield call(fetch, '/accounts/edit-profile/', {
     credentials: 'same-origin',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: 'PUT',
-    body: JSON.stringify({ flag: 'Required', ethnicity, gender }),
+    body: JSON.stringify({
+      flag: 'Required',
+      ...action.values
+    }),
     ...action.options
   });
+  const json = yield response.json();
+  const payload = yield {
+    demographics: Object.values(json).reduce(
+      (obj, val) => ({ ...obj, ...val }),
+      {}
+    )
+  };
   yield put({ type: 'CLOSE_EDIT_REQUIRED' });
-  yield put({ type: 'GET_PROFILE_DATA' });
+  yield put({ type: 'LOAD_DATA' });
+  yield put({ type: 'ADD_DATA', payload });
 }
 
 export function* editOptionalInformation(action) {

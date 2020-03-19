@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Spinner } from 'reactstrap';
 import Sidebar from '../Sidebar';
 import {
   RequiredInformation,
@@ -11,6 +10,7 @@ import {
   OptionalInformation
 } from './ManageAccountTables';
 import ManageAccountModals from './ManageAccountModals';
+import LoadingSpinner from '../_common/LoadingSpinner';
 import './ManageAccount.scss';
 
 const ManageAccountView = () => {
@@ -18,7 +18,7 @@ const ManageAccountView = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch({ type: 'GET_PROFILE_DATA' });
-  }, [dispatch]);
+  }, [dispatch, isLoading]);
   return (
     <div className="manage-account-wrapper">
       <Sidebar />
@@ -30,7 +30,7 @@ const ManageAccountView = () => {
         <div className="user-profile">
           <div className="user-profile-main">
             {isLoading ? (
-              <Spinner />
+              <LoadingSpinner />
             ) : (
               <>
                 <RequiredInformation />
@@ -50,4 +50,4 @@ const ManageAccountView = () => {
   );
 };
 
-export default ManageAccountView;
+export default React.memo(ManageAccountView);

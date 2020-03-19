@@ -15,7 +15,7 @@ export const initialState = {
 };
 export default function profile(state = initialState, action) {
   switch (action.type) {
-    case 'START_FETCH':
+    case 'LOAD_DATA':
       return { ...state, isLoading: true };
     case 'ADD_DATA':
       return {

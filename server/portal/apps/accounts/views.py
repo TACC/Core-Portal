@@ -275,8 +275,7 @@ def manage_pro_profile(request):
         context
     )
 
-# TODO: Change Password logic
-# For React
+
 @login_required
 def authenticate_user(request):
     username = str(request.user)
@@ -428,20 +427,32 @@ def manage_applications(request):
 
 @login_required
 def edit_profile(request):
+    tas = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            'username': settings.TAS_CLIENT_KEY,
+            'password': settings.TAS_CLIENT_SECRET
+        }
+    )
     user = request.user
     body = json.loads(request.body)
     portal_profile = user.profile
     if body['flag'] == 'Required':
-        # TODO: update tas portion of profile
+
         portal_profile.ethnicity = body['ethnicity']
         portal_profile.gender = body['gender']
+
+        tas_user = tas.get_user(username=user)
+        body['piEligibility'] = tas_user['piEligibility']
+        body['source'] = tas_user['source']
+        tas.save_user(tas_user['id'], body)
     elif body['flag'] == 'Optional':
         portal_profile.website = body['website']
         portal_profile.professional_level = body['professional_level']
         portal_profile.bio = body['bio']
         portal_profile.orcid_id = body['orcid_id']
     portal_profile.save()
-    return JsonResponse(model_to_dict(portal_profile))
+    return JsonResponse({'portal': model_to_dict(portal_profile), 'tas': tas.get_user(username=user)})
 
 
 @login_required
@@ -697,7 +708,6 @@ def departments_json(request):
     )
 
 
-# For React
 def get_form_fields(request):
     return JsonResponse({
         'institutions': [list(i) for i in forms.get_institution_choices()],
