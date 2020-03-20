@@ -5,7 +5,7 @@ import 'cross-fetch';
 export function* getAllocations(action) {
   yield put({ type: 'START_ADD_ALLOCATIONS' });
   try {
-    const response = yield call(fetch, '/api/users/allocations', {
+    const response = yield call(fetch, '/api/users/allocations/', {
       credentials: 'same-origin',
       ...action.options
     });
