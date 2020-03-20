@@ -1,9 +1,9 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Label } from 'reactstrap';
-import { Formik, Field, Form } from 'formik';
+import { Button } from 'reactstrap';
+import { Formik, Form } from 'formik';
 import { object as obj, string as str } from 'yup';
+import { ManageAccountInput } from './ManageAccountFields';
 import LoadingSpinner from '../../_common/LoadingSpinner';
 
 export default function() {
@@ -13,7 +13,8 @@ export default function() {
   } = useSelector(state => state.profile);
   const dispatch = useDispatch();
   const formSchema = obj().shape({
-    professionalLevel: str(),
+    orcidId: str(),
+    bio: str(),
     website: str().url('Please enter a valid URL')
   });
 
@@ -33,26 +34,14 @@ export default function() {
       }}
     >
       <Form>
-        <div className="form-group">
-          <Label>Professional Level</Label>
-          <Field as="select" name="professionalLevel" className="form-control">
-            {fields.professionalLevels.map(([value, label]) => (
-              <option key={label} {...{ value, label }} />
-            ))}
-          </Field>
-        </div>
-        <div className="form-group">
-          <Label>Website</Label>
-          <Field name="website" className="form-control" />
-        </div>
-        <div className="form-group">
-          <Label>Orcid ID</Label>
-          <Field name="orcidId" className="form-control" />
-        </div>
-        <div className="form-group">
-          <Label>Bio</Label>
-          <Field name="bio" as="textarea" className="form-control" />
-        </div>
+        <ManageAccountInput label="Website" name="website" />
+        <ManageAccountInput label="Orcid ID" name="orcidId" />
+        <ManageAccountInput
+          label="Professional Level"
+          name="professionalLevel"
+          type="select"
+        />
+        <ManageAccountInput label="Bio" name="bio" type="textarea" />
         <Button type="submit">Submit</Button>
       </Form>
     </Formik>

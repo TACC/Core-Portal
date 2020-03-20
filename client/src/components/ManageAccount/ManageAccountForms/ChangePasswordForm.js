@@ -1,33 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  FormGroup,
-  Label,
-  Input as BootstrapInput,
-  Button,
-  FormText
-} from 'reactstrap';
-import * as Yup from 'yup';
-import { Formik, useField, Form } from 'formik';
-import { string } from 'prop-types';
+import { Button } from 'reactstrap';
+import { object as obj, string as str, ref } from 'yup';
+import { Formik, Form } from 'formik';
 import LoadingSpinner from '_common/LoadingSpinner';
-
-/* eslint-disable react/jsx-props-no-spreading */
-const Input = ({ label, ...props }) => {
-  const [field, meta] = useField(props);
-  return (
-    <FormGroup>
-      <Label>{label}</Label>
-      <BootstrapInput {...field} {...props} bsSize="sm" />
-      {meta.touched && meta.error ? (
-        <FormText color="danger">{meta.error}</FormText>
-      ) : null}
-    </FormGroup>
-  );
-};
-Input.propTypes = {
-  label: string.isRequired
-};
+import { ManageAccountInput } from './ManageAccountFields';
 
 export default function() {
   const { checking } = useSelector(({ profile }) => {
@@ -35,15 +12,12 @@ export default function() {
     return { ...demographics, checking: profile.checkingPassword };
   });
   const dispatch = useDispatch();
-  const formSchema = Yup.object({
-    currentPW: Yup.string().required('Please enter your current password'),
-    newPW: Yup.string()
+  const formSchema = obj().shape({
+    currentPW: str().required('Please enter your current password'),
+    newPW: str()
       .min(8, 'Must be a minimum of 8 characters in length')
       .required('Required'),
-    confirmNewPW: Yup.string().oneOf(
-      [Yup.ref('newPW')],
-      'Passwords do not match'
-    )
+    confirmNewPW: str().oneOf([ref('newPW')], 'Passwords do not match')
   });
   return (
     <Formik
@@ -76,19 +50,20 @@ export default function() {
           flexDirection: 'column'
         }}
       >
-        <Input
+        <ManageAccountInput
           label="Current Password"
           name="currentPW"
           type="password"
           placeholder="Current Password"
         />
-        <Input
+
+        <ManageAccountInput
           label="New Password"
           name="newPW"
           type="password"
           placeholder="New Password"
         />
-        <Input
+        <ManageAccountInput
           label="Confirm New Password"
           name="confirmNewPW"
           type="password"

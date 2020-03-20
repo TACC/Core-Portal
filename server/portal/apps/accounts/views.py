@@ -250,7 +250,9 @@ def get_profile_data(request):
         logger.info('exception e:{} {}'.format(type(e), e))
     demographics.update(user_profile)
     context = {
-        'demographics': demographics
+        'demographics': demographics,
+        'licenses': manage_licenses(request),
+        'integrations': manage_applications(request),
     }
 
     return JsonResponse(context)
@@ -413,16 +415,12 @@ def manage_licenses(request):
     for l, m in zip(licenses, license_models):
         if m.objects.filter(user=request.user).exists():
             l['current_user_license'] = True
-    context = {'licenses': licenses}
-    return JsonResponse(context)
+    return licenses
 
 
 @login_required
 def manage_applications(request):
-    context = {
-        'integrations': integrations.get_integrations()
-    }
-    return JsonResponse(context)
+    return integrations.get_integrations()
 
 
 @login_required

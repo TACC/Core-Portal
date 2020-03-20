@@ -21,15 +21,13 @@ urlpatterns = [
 
     # Endpoints for React based profile-page
     url(r'^profile/$', ReactView.as_view(), name='manage_profile'),
-    url(r'^change-password/', views.change_password, name='change_password'),
-    url(r'^edit-profile/', views.edit_profile, name='edit_profile'),
-    url(r'^api/profile/', views.get_profile_data, name='get_profile_data'),
-    url(r'^api/licenses/', views.manage_licenses, name='manage_licenses'),
-    url(r'^api/applications/$', views.manage_applications, name='manage_applications'),
-    url(r'^api/fields/', views.get_form_fields, name='get_form_fields'),
-    url(r'^api/check/', views.authenticate_user, name='authenticate_user'),
+    url(r'^api/profile/data/', views.get_profile_data, name='get_profile_data'),
+    url(r'^api/profile/fields/', views.get_form_fields, name='get_form_fields'),
+    url(r'^api/profile/change-password/', views.change_password, name='change_password'),
+    url(r'^api/profile/edit-profile/', views.edit_profile, name='edit_profile'),
+    url(r'^api/profile/check/', views.authenticate_user, name='authenticate_user'),
 
-    # TODO: Make a front-end route
+    # TODO: Open Edit Profile Modal
     url(r'^profile/edit/$', views.profile_edit, name='profile_edit'),
 
     # url(r'^professional-profile/$', views.manage_pro_profile, name='manage_pro_profile'),
