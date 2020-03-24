@@ -17,16 +17,8 @@ server/media
 server/cms
 
 # Ignore local Django settings
-#server/portal/settings/settings_local.py
-server/portal/settings/settings_secret.py
-#server/portal/settings/settings_agave.py
-#server/portal/settings/settings_celery.py
-#server/portal/settings/elasticsearch.py
-
 *secrets.py
-*.secret
 *settings_secret.py
-# *nginx.conf
 
 docker_repo.var
 server/src
@@ -92,9 +84,6 @@ docs/_build/
 target/
 
 /server/conf/docker/logs.txt
-
-package-lock.json
-
 
 ###############################
 # Ansible .gitignores content.
@@ -179,10 +168,5 @@ playbooks/hosts
 # Gitcrypt key
 portal_crypt.key
 
-# docker-compose file with pgadmin.
-server/conf/docker/docker-compose-dev.all.debug.utils.yml
-
 # vim stuff
 *.swp
-server/conf/nginx/certificates/wma_prtl.key
-server/conf/nginx/certificates/wma_prtl.pub
