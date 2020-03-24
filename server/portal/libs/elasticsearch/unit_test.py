@@ -3,9 +3,9 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from portal.apps.auth.models import AgaveOAuthToken
 from django.conf import settings
-from portal.libs.elasticsearch.docs.files import BaseESFile
 from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_indexes
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
+
 
 class TestESSetupMethods(TestCase):
     def setUp(self):

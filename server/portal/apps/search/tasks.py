@@ -1,6 +1,8 @@
 
 import logging
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import os
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -10,8 +12,6 @@ from agavepy.agave import Agave
 from elasticsearch_dsl import Q, Search
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
-from portal.libs.elasticsearch.docs.files import BaseESFile
-from portal.libs.elasticsearch.utils import index_agave, index_project
 # from portal.apps.projects.utils import project_id_to_system_id
 # from portal.apps.projects.models import ProjectMetadata
 from portal.libs.agave.models.files import BaseFile
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 # Crawl and index agave files
 @shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="6/m")
-def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems = False, ignore_hidden=True, reindex=False):
+def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
 
     from portal.libs.elasticsearch.utils import index_level
     from portal.libs.agave.utils import walk_levels
@@ -40,6 +40,7 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems = Fals
     if recurse:
         for child in folders:
             self.delay(systemId, filePath=child.path, reindex=reindex)
+
 
 @shared_task(bind=True, queue='indexing')
 def index_community_data(self, reindex=False):
@@ -81,6 +82,7 @@ def index_community_data(self, reindex=False):
 #             kwargs={'filePath': '/', 'reindex': reindex}
 #         )
 
+
 # Indexing task for My Data.
 @shared_task(bind=True, queue='indexing')
 def index_my_data(self, reindex=False):
@@ -95,6 +97,7 @@ def index_my_data(self, reindex=False):
             args=[systemId],
             kwargs={'filePath': '/', 'reindex': reindex}
         )
+
 
 @shared_task(bind=True, queue='indexing')
 def index_cms(self):

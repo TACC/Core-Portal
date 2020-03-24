@@ -9,17 +9,11 @@ class SearchConfig(AppConfig):
 
     def ready(self):
         from elasticsearch_dsl.connections import connections
-        from django.conf import settings
-
         HOSTS = settings.ES_HOSTS
 
-        connections.configure(default={"hosts": HOSTS, "http_auth": settings.ES_AUTH},
-                              request_timeout=60,
-                              sniff_on_start=True,
-                              sniffer_timeout=60,
-                              sniff_on_connection_fail=True,
-                              sniff_timeout=10,
-                              max_retries=3,
-                              retry_on_timeout=True)
-
-        
+        connections.create_connection('default',
+                                      hosts=HOSTS,
+                                      http_auth=settings.ES_AUTH,
+                                      max_retries=3,
+                                      retry_on_timeout=True,
+                                      )

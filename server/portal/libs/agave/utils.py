@@ -4,7 +4,9 @@
 """
 import logging
 import os
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 from django.conf import settings
 from agavepy.agave import Agave
 
@@ -102,6 +104,28 @@ def walk(client, system, path, bottom_up=False, yield_base=True):
             yield _file
 
 
+def iterate_level(client, system, path, limit=100):
+    """Iterate over a filesystem level yielding an attrdict for each file/folder
+        on the level.
+        :param str client: an Agave client
+        :param str system: system
+        :param str path: path to walk
+        :param int limit: Number of docs to retrieve per API call
+
+        :rtype agavepy.agave.AttrDict
+    """
+    offset = 0
+    page = True
+
+    while page and (page is True or len(page) == limit):
+        page = client.files.list(systemId=system,
+                                 filePath=urllib.parse.quote(path),
+                                 offset=offset,
+                                 limit=limit)
+        yield from page
+        offset += limit
+
+
 # pylint: disable=too-many-locals
 def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
     """Walk a pth in an Agave storgae system.
@@ -135,33 +159,20 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
     ...         del folders[:]
 
     """
-    from portal.libs.agave.models.files import BaseFile
-    listing = []
-    offset = 0
-    page = client.files.list(systemId=system,
-                             filePath=urllib.parse.quote(path),
-                             offset=offset)
-    while page:
-        listing += page
-        offset += 100
-        page = client.files.list(systemId=system,
-                                 filePath=urllib.parse.quote(path),
-                                 offset=offset)
 
     folders = []
     files = []
-    for json_file in listing:
-        if json_file['name'] == '.':
+    for agave_file in iterate_level(client, system, path):
+        if agave_file['name'] == '.':
             continue
-        if ignore_hidden and json_file['name'][0] == '.':
+        if ignore_hidden and agave_file['name'][0] == '.':
             continue
-        _file = BaseFile(client, **json_file)
-        if _file.format == 'folder':
-            folders.append(_file)
+        if agave_file['format'] == 'folder':
+            folders.append(agave_file)
         else:
-            files.append(_file)
+            files.append(agave_file)
     if not bottom_up:
-        yield (path, folders, files)
+        yield (path, folders, files)    
     for child in folders:
         for (
                 child_path,
@@ -170,7 +181,7 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
         ) in walk_levels(
             client,
             system,
-            child.path,
+            child['path'],
             bottom_up=bottom_up
         ):
             yield (child_path, child_folders, child_files)

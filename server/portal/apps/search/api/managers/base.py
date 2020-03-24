@@ -1,4 +1,4 @@
-from portal.libs.elasticsearch.docs.files import BaseESFile
+
 
 from elasticsearch import TransportError, ConnectionTimeout
 

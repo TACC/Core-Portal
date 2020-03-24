@@ -281,9 +281,7 @@ class TestAgaveUtils(TestCase):
         sub_root['name'] = '.'
         listings = [
             self.agave_listing,
-            [],
             [sub_root, self.agave_file],
-            []
         ]
         listings_check = [
             self.agave_listing,
@@ -305,22 +303,18 @@ class TestAgaveUtils(TestCase):
             [call(
                 systemId=self.agave_listing[0]['system'],
                 filePath=self.agave_listing[0]['path'],
-                offset=0),
-             call(
-                 systemId=self.agave_listing[0]['system'],
-                 filePath=self.agave_listing[0]['path'],
-                 offset=100),
+                offset=0,
+                limit=100),
              call(
                  systemId=agave_dir['system'],
                  filePath=agave_dir['path'],
-                 offset=0),
-             call(
-                 systemId=agave_dir['system'],
-                 filePath=agave_dir['path'],
-                 offset=100)]
+                 offset=0,
+                 limit=100)
+             ]
         )
 
         for index, level in enumerate(levels_visited):
+            print(index)
             listing = listings_check[index]
             root = listing[0]['path']
             folders = [f['path'] for f in listing
@@ -334,9 +328,9 @@ class TestAgaveUtils(TestCase):
             )
             self.assertEqual(
                 folders,
-                [f.path for f in level[1]]
+                [f['path'] for f in level[1]]
             )
             self.assertEqual(
                 files,
-                [f.path for f in level[2]]
+                [f['path'] for f in level[2]]
             )
