@@ -2,7 +2,7 @@
 .. :module: apps.workspace.views
    :synopsis: Views to handle Workspace
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from django.views.generic.base import TemplateView
 from django.utils.decorators import method_decorator

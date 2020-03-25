@@ -2,7 +2,6 @@
 .. :module:: portal.libs.exceptions
     :synopsis: Exceptions defined for custom libs.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 
 # pylint: disable=invalid-name

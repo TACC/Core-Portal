@@ -3,18 +3,18 @@ from portal.apps.onboarding.state import SetupState
 from django.conf import settings
 from portal.apps.users.utils import get_allocations
 from pytas.http import TASClient
-import string
+
 
 class AllocationStep(AbstractStep):
     pi_eligible_message = """
         <p>
             Thank you for using TACC. Prior to accessing this portal, it will require an
-            allocation on the HPC resources. To get an allocation, you will need to perform 
+            allocation on the HPC resources. To get an allocation, you will need to perform
             one of the following:
         </p>
         <ul>
             <li>
-                Create a research project and a resource allocation request. Once the allocation request 
+                Create a research project and a resource allocation request. Once the allocation request
                 is approved and active you will be granted access to the requested resource.
             </li>
             <li>
@@ -34,7 +34,7 @@ class AllocationStep(AbstractStep):
                 </a>
             </li>
         </ul>
-        <a class="btn btn-primary" 
+        <a class="btn btn-primary"
            href="/tickets/ticket/new?subject=Requesting an Allocation">
            Submit a Ticket
         </a>
@@ -43,7 +43,7 @@ class AllocationStep(AbstractStep):
     pi_ineligible_message = """
         <p>
             Thank you for using TACC. In order to access this portal, it will require an allocation
-            on the HPC resources. Please have your PI or advisor add your username to a project 
+            on the HPC resources. Please have your PI or advisor add your username to a project
             that has an active HPC allocation.
         </p>
         <p>
@@ -56,7 +56,7 @@ class AllocationStep(AbstractStep):
                 </a>
             </li>
         </ul>
-         <a class="btn btn-primary" 
+         <a class="btn btn-primary"
            href="/tickets/ticket/new?subject=Requesting an Allocation">
            Submit a Ticket
         </a>
@@ -74,7 +74,7 @@ class AllocationStep(AbstractStep):
     def prepare(self):
         self.state = SetupState.PENDING
         self.log("Awaiting allocation check")
-        
+
     def process(self):
         # Get "ALLOCATION_SYSTEMS" setting
         # This setting should be a list that specifies which
@@ -90,7 +90,7 @@ class AllocationStep(AbstractStep):
             self.complete("No systems are required for access to this portal")
             return
 
-        resources = [ ]
+        resources = []
         try:
             resources = get_allocations(self.user.username).keys()
         except:
@@ -125,7 +125,7 @@ class AllocationStep(AbstractStep):
                     "more_info": message
                 }
             )
-    
+
     def client_action(self, action, data, request):
         if action == "user_confirm" and request.user.username == self.user.username:
             self.prepare()

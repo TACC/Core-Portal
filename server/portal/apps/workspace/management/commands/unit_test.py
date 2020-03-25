@@ -1,11 +1,13 @@
-from mock import Mock, patch, MagicMock, PropertyMock, call
+from mock import patch
 from django.test import TransactionTestCase
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from portal.apps.workspace.models import JobSubmission
 
+
 class TestImportJobs(TransactionTestCase):
-    fixtures = [ 'users' ]
+    fixtures = ['users']
+
     def setUp(self):
         self.mock_client_patcher = patch('portal.apps.workspace.management.commands.import-jobs.service_account')
         self.mock_client = self.mock_client_patcher.start()
@@ -14,14 +16,9 @@ class TestImportJobs(TransactionTestCase):
     def tearDown(self):
         self.mock_client_patcher.stop()
 
-    @patch('portal.apps.workspace.management.commands.import-jobs.Command.handle')
-    def test_working(self, mock_handle):
-        call_command('import-jobs')
-        self.assertEqual(mock_handle.call_count, 1)
-
     @patch('portal.apps.workspace.management.commands.import-jobs.get_user_model')
     def test_import(self, mock_user_model):
-        mock_user_model.return_value.objects.all.return_value = [ self.user ]
+        mock_user_model.return_value.objects.all.return_value = [self.user]
         existing = JobSubmission(
             jobId="1234",
             user=self.user

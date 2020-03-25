@@ -2,7 +2,7 @@
 .. :module:: apps.accounts.managers.ssh_keys
    :synopsis: Manager handling anything pertaining to accounts
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 # from django.conf import settings
 import paramiko

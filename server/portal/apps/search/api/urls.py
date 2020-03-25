@@ -1,8 +1,10 @@
 """Search API Urls
 """
-from django.conf.urls import url
+from django.urls import path
 from portal.apps.search.api import views
 
+
+app_name = 'search'
 urlpatterns = [
-    url(r'^$', views.SearchApiView.as_view())
+    path('', views.SearchApiView.as_view())
 ]

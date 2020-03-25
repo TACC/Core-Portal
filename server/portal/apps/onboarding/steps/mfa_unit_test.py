@@ -1,10 +1,11 @@
-from django.test import TestCase, RequestFactory, override_settings
+from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from mock import patch, ANY, MagicMock
-from portal.apps.onboarding.models import SetupEvent
-from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.steps.mfa import MFAStep
+import pytest
 
+
+@pytest.mark.django_db(transaction=True)
 class MFAStepTest(TestCase):
     def setUp(self):
         super(MFAStepTest, self).setUp()
@@ -25,8 +26,8 @@ class MFAStepTest(TestCase):
         self.mock_response = MagicMock(
             json=MagicMock(
                 return_value={
-                    "result" : [
-                        { "type" : "tacc-soft-token" }
+                    "result": [
+                        {"type": "tacc-soft-token"}
                     ]
                 }
             )
@@ -60,15 +61,15 @@ class MFAStepTest(TestCase):
         mock_mfa_check.return_value = False
         self.step.process()
         self.mock_log.assert_called_with(ANY, data=ANY)
-    
+
     def test_mfa_check(self):
         result = self.step.mfa_check()
-        self.assertEquals(result, True)
+        self.assertEqual(result, True)
 
     def test_mfa_check_failure(self):
-        self.mock_response.json.return_value["result"] = [ ]
+        self.mock_response.json.return_value["result"] = []
         result = self.step.mfa_check()
-        self.assertEquals(result, False)
+        self.assertEqual(result, False)
 
     @patch('portal.apps.onboarding.steps.mfa_unit_test.MFAStep.prepare')
     def test_client_action(self, mock_prepare):

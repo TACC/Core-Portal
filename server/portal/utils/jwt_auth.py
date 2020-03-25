@@ -2,7 +2,7 @@
 .. module:: portal.utils.jwt_auth
    :synopsis: Utilities to process agave JWT.
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from base64 import b64decode
 from django.utils.six import text_type
@@ -31,7 +31,7 @@ def _decode_jwt(jwt):
     try:
         key_der = b64decode(pubkey)
         key = load_der_public_key(key_der, backend=default_backend())
-    except (TypeError, ValueError, UnsupportedAlgorithm) as exc:
+    except (TypeError, ValueError, UnsupportedAlgorithm):
         LOGGER.exception('Could not load public key.')
         return {}
 

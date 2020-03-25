@@ -2,8 +2,6 @@
 .. module: portal.libs.elasticsearch.docs.base
    :synopsis: Wrapper classes for ES different doc types.
 """
-from __future__ import unicode_literals, absolute_import
-from future.utils import python_2_unicode_compatible
 import logging
 import copy
 import json
@@ -25,7 +23,6 @@ logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
 
-@python_2_unicode_compatible
 class IndexedProject(Document):
     title = Text(fields={'_exact': Keyword()})
     description = Text()
@@ -57,9 +54,9 @@ class IndexedProject(Document):
             'username': Keyword(),
             'fullName': Text()
         }
-    ) 
+    )
 
-    @classmethod 
+    @classmethod
     def from_id(cls, projectId):
         search = cls.search()
         search = search.query('term', **{'projectId': projectId})
@@ -77,11 +74,11 @@ class IndexedProject(Document):
             return cls.get(res[0].meta.id)
         else:
             raise DocumentNotFound("No document found for project ID {}.".format(projectId))
-    
+
     class Index:
         name = settings.ES_INDEX_PREFIX.format('projects')
 
-@python_2_unicode_compatible
+
 class IndexedFile(Document):
     name = Text(analyzer=file_analyzer, fields={
         '_exact': Keyword(),
@@ -112,7 +109,7 @@ class IndexedFile(Document):
             'execute': Boolean()
         })
     })
-   
+
     def save(self, **kwargs):
         self.lastUpdated = datetime.datetime.now()
         return super(IndexedFile, self).save(**kwargs)
@@ -160,12 +157,11 @@ class IndexedFile(Document):
         name = settings.ES_INDEX_PREFIX.format('files')
 
 
-@python_2_unicode_compatible
 class ReindexedFile(IndexedFile):
     class Index:
         name = settings.ES_INDEX_PREFIX.format('files-reindex')
 
-@python_2_unicode_compatible
+
 class BaseESResource(object):
     """Base class used to represent an Elastic Search resource.
 
@@ -177,7 +173,7 @@ class BaseESResource(object):
     """
     def __init__(self, wrapped_doc=None, **kwargs):
         self._wrap(wrapped_doc, **kwargs)
-        
+
     def to_dict(self):
         """Return wrapped doc as dict"""
         return self._wrapped.to_dict()
@@ -195,7 +191,7 @@ class BaseESResource(object):
         """
         _wrapped = object.__getattribute__(self, '_wrapped')
         if _wrapped and hasattr(_wrapped, name):
-            return getattr(_wrapped, name) 
+            return getattr(_wrapped, name)
 
     def __setattr__(self, name, value):
         _wrapped = object.__getattribute__(self, '_wrapped')

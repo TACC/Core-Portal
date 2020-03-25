@@ -8,6 +8,8 @@ from portal.apps.onboarding.api.views import (
     SetupAdminView
 )
 
+
+app_name = 'portal_onboarding_api'
 urlpatterns = [
     url(r'^user/(?P<username>[\w]+)/?$', SetupStepView.as_view(), name='user_view'),
     url(r'^admin/$', SetupAdminView.as_view(), name='user_admin')

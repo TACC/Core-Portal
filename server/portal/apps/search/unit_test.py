@@ -17,6 +17,8 @@ from portal.apps.search.tasks import index_community_data
 from django.http import HttpRequest
 from django.contrib.sessions.models import Session
 
+from unittest import skip
+
 class AttrDict(dict):
 
     def __getattr__(self, key):
@@ -37,6 +39,8 @@ class TestLookupManager(TestCase):
         lookup_cms = search_lookup_manager('cms')
         self.assertEqual(lookup_cms,CMSSearchManager)
 
+
+@skip("No Data Depot yet")
 class TestDataDepotSearchView(TestCase):
 
     @classmethod
@@ -178,7 +182,7 @@ class TestProjectSearchManager(TestCase):
     def test_mgr_init(self):
         mgr = ProjectSearchManager(**{'username': 'test_user', 'query_string': 'test_query'})
         self.assertEqual(mgr._username, 'test_user')
-        self.assertEqual(mgr._query_string, 'test_query') 
+        self.assertEqual(mgr._query_string, 'test_query')
 
     @patch('portal.apps.search.api.managers.project_search.BaseSearchManager.filter')
     @patch('portal.apps.search.api.managers.project_search.BaseSearchManager.query')
@@ -189,7 +193,7 @@ class TestProjectSearchManager(TestCase):
 
         owner_query = Q({'term': {'owner.username': 'test_user'}})
         pi_query = Q({'term': {'pi.username': 'test_user'}})
-        team_query = Q({'term': {'teamMembers.username': 'test_user'}}) 
+        team_query = Q({'term': {'teamMembers.username': 'test_user'}})
 
         mock_filter.assert_called_once_with(owner_query | pi_query | team_query)
         mock_extra.assert_called_once_with(from_=0, size=100)
@@ -218,13 +222,13 @@ class TestPublicSearchManager(TestCase):
             'queryString': 'test_query',
         }
         mgr = PublicSearchManager(mock_request)
-        self.assertEqual(mgr._query_string, 'test_query') 
-        self.assertEqual(mgr._system, 'test.public') 
+        self.assertEqual(mgr._query_string, 'test_query')
+        self.assertEqual(mgr._system, 'test.public')
 
     def test_mgr_init_no_request(self):
         mgr = PublicSearchManager(**{'query_string': 'test_query'})
-        self.assertEqual(mgr._query_string, 'test_query') 
-        self.assertEqual(mgr._system, 'test.public') 
+        self.assertEqual(mgr._query_string, 'test_query')
+        self.assertEqual(mgr._system, 'test.public')
 
     @patch('portal.apps.search.api.managers.public_search.BaseSearchManager.filter')
     @patch('portal.apps.search.api.managers.public_search.BaseSearchManager.query')

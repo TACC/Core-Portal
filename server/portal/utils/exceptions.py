@@ -2,9 +2,8 @@
 .. module:: portal.utils.exceptions
    :synopsis: Exceptions used across the portal
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
-from future.utils import python_2_unicode_compatible
 from requests.exceptions import RequestException
 from requests.models import Response
 
@@ -12,7 +11,6 @@ from requests.models import Response
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
-@python_2_unicode_compatible
 class PortalException(RequestException):
     """Base Exception to use across the portal.
 
@@ -47,7 +45,6 @@ class PortalException(RequestException):
         self.response = response
         self.extra = extra
 
-@python_2_unicode_compatible
 class ApiMethodNotAllowed(PortalException):
     """Custom 405 Method Not Allowed Exception"""
     def __init__(self, extra=None, *args, **kwargs):

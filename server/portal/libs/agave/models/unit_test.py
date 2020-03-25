@@ -2,7 +2,6 @@
 .. :module:: portal.libs.agave.models.unit_test
    :synopsis: Unit tests for Agave model representation.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import os
 import json
@@ -115,9 +114,9 @@ class TestAgaveFile(TestCase):
 
     def test_copy(self):
         """Test file copy."""
+        self.magave.files.manage.return_value = {'path': 'path/to/destiny'}
         afl = BaseFile(self.magave, **self.agave_file)
         afl.copy('path/to/destiny')
-        self.magave.files.manage.return_value = {'path': 'path/to/destiny'}
         self.magave.files.manage.assert_called_with(
             systemId=afl.system,
             filePath=afl.path,

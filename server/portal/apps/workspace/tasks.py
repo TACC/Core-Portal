@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
@@ -48,7 +47,7 @@ def submit_job(request, username, job_post):
         return response
 
     except ConnectionError as e:
-        logger.error('ConnectionError while submitting job: %s' % e.message,
+        logger.error('ConnectionError while submitting job: %s' % e,
                      extra={'job': job_post})
         raise JobSubmitError(status='error',
                              status_code=500,
@@ -56,7 +55,7 @@ def submit_job(request, username, job_post):
                                      'to a Job Service Interruption. Please try again later.')
 
     except HTTPError as e:
-        logger.error('HTTPError while submitting job: %s' % e.message,
+        logger.error('HTTPError while submitting job: %s' % e,
                        extra={'job': job_post})
         if e.response.status_code >= 500:
             raise JobSubmitError(

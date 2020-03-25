@@ -1,11 +1,10 @@
-from mock import Mock, patch, MagicMock, PropertyMock
-from django.test import TestCase, Client, RequestFactory
+from mock import patch
+from django.test import TestCase
 from django.contrib.auth import get_user_model
 from portal.apps.auth.models import AgaveOAuthToken
-from django.http import JsonResponse
-from django.http.response import HttpResponseRedirect
 from pytas.http import TASClient
 from portal.apps.users.utils import get_allocations
+
 
 class AttrDict(dict):
 
@@ -75,6 +74,7 @@ class TestUserApiViews(TestCase):
         resp = self.client.get("/api/users/usage/")
         self.assertTrue(resp.status_code == 302)
 
+
 class TestGetAllocations(TestCase):
     def setUp(self):
         super(TestGetAllocations, self).setUp()
@@ -91,32 +91,111 @@ class TestGetAllocations(TestCase):
     def test_allocations_returned(self):
         self.mock_tas.return_value.projects_for_user.return_value = [
             {
-                "allocations" : [
+                "title": "Big Project",
+                "chargeCode": "Big-Proj",
+                "id": "Test-ID",
+                "pi": {
+                    "firstName": "Test",
+                    "lastName": "User"
+                },
+                "allocations": [
                     {
-                        "resource": "Lonestar5",
                         "status": "Active",
-                        "project": "myproject"
-                    },
+                        "resource": "Frontera"
+                    }
+                ]
+            },
+            {
+                "title": "Old Proj",
+                "chargeCode": "Proj-Old",
+                "id": "Test-ID",
+                "pi": {
+                    "firstName": "Old",
+                    "lastName": "User"
+                },
+                "allocations": [
                     {
-                        "resource": "Lonestar5",
-                        "status": "Not Active",
-                        "project": "myoldproject"
-                    },
+                        "status": "Inactive",
+                        "resource": "Stampede4"
+                    }
+                ]
+            },
+            {
+                "title": "A Proj",
+                "chargeCode": "Proj-Code",
+                "id": "Test-ID",
+                "pi": {
+                    "firstName": "Another",
+                    "lastName": "User"
+                },
+                "allocations": [
                     {
-                        "resource": "Lonestar5",
                         "status": "Active",
-                        "project": "myotherproject"
-                    },
-                    {
-                        "resource": "Lonestar4",
-                        "status": "Not Active",
-                        "project": "mysuperoldproject"
+                        "resource": "Rodeo2"
                     }
                 ]
             }
         ]
-        expected = {
-            "ls5.tacc.utexas.edu": [ "myproject", "myotherproject" ]
+        active_expected = [
+            {
+                "projectName": "Big-Proj",
+                "projectId": "Test-ID",
+                "systems": [
+                    {
+                        'allocation': {'resource': 'Frontera', 'status': 'Active'},
+                        'host': 'frontera.tacc.utexas.edu',
+                        'name': 'Frontera',
+                        'type': 'HPC'
+                    }
+                ],
+                "title": "Big Project",
+                "pi": "Test User"
+            },
+            {
+                "projectName": "Proj-Code",
+                "projectId": "Test-ID",
+                "systems": [
+                    {
+                        'allocation': {'resource': 'Rodeo2', 'status': 'Active'},
+                        'host': 'rodeo.tacc.utexas.edu',
+                        'name': 'Rodeo',
+                        'type': 'STORAGE'
+                    }
+                ],
+                "title": "A Proj",
+                "pi": "Another User"
+            }
+        ]
+
+        inactive_expected = [
+            {
+                "projectName": "Proj-Old",
+                "projectId": "Test-ID",
+                "systems": [
+                    {
+                        'allocation': {'resource': 'Stampede4', 'status': 'Inactive'},
+                        'host': 'stampede2.tacc.utexas.edu',
+                        'name': 'Stampede 2',
+                        'type': 'HPC'
+                    }
+                ],
+                "title": "Old Proj",
+                "pi": "Old User"
+            }
+        ]
+
+        hosts_expected = {
+            'stampede2.tacc.utexas.edu': ['Proj-Old'],
+            'rodeo.tacc.utexas.edu': ['Proj-Code'],
+            'frontera.tacc.utexas.edu': ['Big-Proj']
         }
-        result = get_allocations("username")
-        self.assertEquals(result, expected)
+
+        data_expected = {
+            'active': active_expected,
+            'inactive': inactive_expected,
+            'hosts': hosts_expected,
+            'portal_alloc': 'test'
+        }
+
+        data = get_allocations("username")
+        self.assertEqual(data, data_expected)

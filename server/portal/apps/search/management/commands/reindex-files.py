@@ -1,4 +1,4 @@
-import logging 
+import logging
 from django.core.management import BaseCommand, CommandError
 from django.utils.six.moves import input
 from django.conf import settings
@@ -10,16 +10,16 @@ from portal.libs.elasticsearch.indexes import setup_files_index
 
 class Command(BaseCommand):
     """
-    This command reindexes all documents in the default files index in order to 
+    This command reindexes all documents in the default files index in order to
     apply new mappings/analyzers. It does NOT crawl Agave for file metadata, it
-    only uses data that already exists in the file index. Usage is as simple as 
-    running `./manage.py reindex-files`. 
+    only uses data that already exists in the file index. Usage is as simple as
+    running `./manage.py reindex-files`.
 
     This works by resetting the index aliased as settings.ES_REINDEX_INDEX_ALIAS
     (applying any new mappings/analyzers defined in the portal.libs.elasticsearch.docs.base.IndexedFile
-     class) and reindexing from the default files index to this new index. The 
-     aliases are then swapped so that any Elasticsearch queries on the backend now 
-     target the reindexed documents. 
+     class) and reindexing from the default files index to this new index. The
+     aliases are then swapped so that any Elasticsearch queries on the backend now
+     target the reindexed documents.
     """
 
     help = "Reindex all files into a fresh index, then swap aliases with the current default index."
@@ -53,7 +53,7 @@ class Command(BaseCommand):
         if not swap_only:
             # Reindex file metadata from the default index to the reindexing index
             elasticsearch.helpers.reindex(es_client, default_index_name, reindex_index_name)
-            
+
         alias_body = {
             'actions': [
                 {'remove': {'index': default_index_name, 'alias': default_index_alias}},

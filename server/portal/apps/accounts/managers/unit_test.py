@@ -1,12 +1,10 @@
 from django.test import (
-    TestCase, 
+    TestCase,
     override_settings
 )
-import mock
 from mock import MagicMock, patch, ANY
 from django.core.exceptions import ObjectDoesNotExist
 from portal.apps.accounts.managers.accounts import add_pub_key_to_resource, setup
-from portal.apps.accounts.managers.user_work_home import UserWORKHomeManager
 from portal.apps.accounts.managers.ssh_keys import KeysManager
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -18,13 +16,15 @@ from paramiko.ssh_exception import (
 )
 
 # Create your tests here.
+
+
 class AddPubKeyTests(TestCase):
 
     # Setup fresh mocks before each test
     def setUp(self):
         # Patch _lookup_keys_manager function to return a mocked KeysManager class
         self.patch_lookup_keys_manager = patch(
-            'portal.apps.accounts.managers.accounts._lookup_keys_manager', 
+            'portal.apps.accounts.managers.accounts._lookup_keys_manager',
             return_value=MagicMock(
                 spec=KeysManager
             )
@@ -32,17 +32,16 @@ class AddPubKeyTests(TestCase):
         self.mock_lookup_keys_manager = self.patch_lookup_keys_manager.start()
 
         # Patch check_user to return a mocked User model
-        self.patch_check_user = patch('portal.apps.accounts.managers.accounts.check_user', 
-            return_value=MagicMock(
-                spec=User
-            )
-        )
+        self.patch_check_user = patch('portal.apps.accounts.managers.accounts.check_user',
+                                      return_value=MagicMock(
+                                          spec=User
+                                      )
+                                      )
         self.mock_check_user = self.patch_check_user.start()
 
         # Teardown mocks after each test
         self.addCleanup(self.patch_lookup_keys_manager.stop)
         self.addCleanup(self.patch_check_user.stop)
-
 
     def run_add_pub_key_to_resource(self):
         username = "testuser"
@@ -95,7 +94,8 @@ class AddPubKeyTests(TestCase):
 
     # KeyCannotBeAdded exception occurs when authorized_keys file cannot be modified
     def test_KeyCannotBeAdded_exception(self):
-        self.mock_lookup_keys_manager.return_value.add_public_key = MagicMock(side_effect=KeyCannotBeAdded("MockKeyCannotBeAdded", "MockOutput", "MockErrorOutput"))
+        self.mock_lookup_keys_manager.return_value.add_public_key = MagicMock(
+            side_effect=KeyCannotBeAdded("MockKeyCannotBeAdded", "MockOutput", "MockErrorOutput"))
         result, message, status = self.run_add_pub_key_to_resource()
         self.assertFalse(result)
         self.assertEqual(status, 503)
@@ -108,6 +108,7 @@ class AddPubKeyTests(TestCase):
             result, message, status = self.run_add_pub_key_to_resource()
         except Exception as exc:
             self.assertEqual(str(exc), exception_message)
+
 
 class TestUserSetup(TestCase):
 
@@ -124,22 +125,18 @@ class TestUserSetup(TestCase):
         self.mock_home_manager = MagicMock()
         self.mock_home_manager.get_or_create_dir = MagicMock()
         self.mock_home_manager.get_or_create_system = MagicMock()
-        self.mock_lookup_user_home_manager_patcher = patch('portal.apps.accounts.managers.accounts._lookup_user_home_manager', return_value=self.mock_home_manager)
+        self.mock_lookup_user_home_manager_patcher = patch(
+            'portal.apps.accounts.managers.accounts._lookup_user_home_manager', return_value=self.mock_home_manager)
         self.mock_lookup_user_home_manager = self.mock_lookup_user_home_manager_patcher.start()
 
         # Mock execute_setup_steps
         self.mock_execute_patcher = patch('portal.apps.accounts.managers.accounts.execute_setup_steps')
         self.mock_execute = self.mock_execute_patcher.start()
 
-        # Mock prepare_setup_steps
-        self.mock_new_user_setup_patcher = patch('portal.apps.accounts.managers.accounts.new_user_setup_check')
-        self.mock_new_user_setup = self.mock_new_user_setup_patcher.start()
-
         self.addCleanup(self.mock_check_user_patcher.stop)
         self.addCleanup(self.mock_lookup_user_home_manager_patcher.stop)
         self.addCleanup(self.mock_execute_patcher.stop)
-        self.addCleanup(self.mock_new_user_setup_patcher.stop)
-   
+
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
     def test_setup(self):
         # If the user is already setup_complete, steps should

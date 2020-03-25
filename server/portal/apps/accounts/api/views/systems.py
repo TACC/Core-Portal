@@ -2,10 +2,8 @@
 .. :module:: portal.apps.accounts.api.views.systems
    :synopsis: Account's systems views
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import json
-from future.utils import python_2_unicode_compatible
 from datetime import datetime
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -14,7 +12,7 @@ from portal.views.base import BaseApiView
 from portal.apps.accounts.managers import accounts as AccountsManager
 from portal.apps.search.tasks import agave_indexer
 from django.conf import settings
-import json
+
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -22,7 +20,6 @@ METRICS = logging.getLogger('metrics.{}'.format(__name__))
 # pylint: enable=invalid-name
 
 
-@python_2_unicode_compatible
 @method_decorator(login_required, name='dispatch')
 class SystemsListView(BaseApiView):
     """Systems View
@@ -34,7 +31,6 @@ class SystemsListView(BaseApiView):
         """ GET """
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
-        public_keys = request.GET.get('publicKeys', None)
         filter_prefix = json.loads(request.GET.get('filterPrefix', '{}'))
         response = {}
 
@@ -44,10 +40,7 @@ class SystemsListView(BaseApiView):
             limit=limit
         )
 
-        storage_systems = filter(
-            lambda system: not system.id.startswith(settings.PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX),
-            storage_systems
-        )
+        storage_systems = [system for system in storage_systems if not system.id.startswith(settings.PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX)]
 
         response['storage'] = storage_systems
 
@@ -58,13 +51,6 @@ class SystemsListView(BaseApiView):
             filter_prefix=getattr(filter_prefix, 'execution', False)
         )
         response['execution'] = exec_systems
-        if public_keys is not None:
-            sys_ids = [sys.id for sys in storage_systems]
-            sys_ids += [sys.id for sys in exec_systems]
-            pub_keys = AccountsManager.public_key_for_systems(
-                sys_ids
-            )
-            response['publicKeys'] = pub_keys
 
         return JsonResponse(
             {
@@ -75,7 +61,6 @@ class SystemsListView(BaseApiView):
         )
 
 
-@python_2_unicode_compatible
 @method_decorator(login_required, name='dispatch')
 class SystemView(BaseApiView):
     """Systems View
@@ -95,7 +80,6 @@ class SystemView(BaseApiView):
         )
 
 
-@python_2_unicode_compatible
 @method_decorator(login_required, name='dispatch')
 class SystemTestView(BaseApiView):
     """Systems View
@@ -125,7 +109,6 @@ class SystemTestView(BaseApiView):
         )
 
 
-@python_2_unicode_compatible
 @method_decorator(login_required, name='dispatch')
 class SystemKeysView(BaseApiView):
     """Systems View
@@ -179,15 +162,15 @@ class SystemKeysView(BaseApiView):
             system_id=system_id,
             hostname=body['form']['hostname']
         )
-        if success and body['form']['type'] == 'STORAGE':
-            # Index the user's home directory once keys are successfully pushed.
-            # Schedule indexing for 11:59:59 today.
-            index_time = datetime.now().replace(hour=11, minute=59, second=59)
-            agave_indexer.apply_async(args=[system_id], eta=index_time)
-            return JsonResponse({
-                'systemId': system_id,
-                'message': 'OK'
-            })
+        # if success and body['form']['type'] == 'STORAGE':
+        #     # Index the user's home directory once keys are successfully pushed.
+        #     # Schedule indexing for 11:59:59 today.
+        #     index_time = datetime.now().replace(hour=11, minute=59, second=59)
+        #     agave_indexer.apply_async(args=[system_id], eta=index_time)
+        #     return JsonResponse({
+        #         'systemId': system_id,
+        #         'message': 'OK'
+        #     })
 
         return JsonResponse(
             {
@@ -198,7 +181,6 @@ class SystemKeysView(BaseApiView):
         )
 
 
-@python_2_unicode_compatible
 @method_decorator(login_required, name='dispatch')
 class SystemRolesView(BaseApiView):
     """Systems Roles View

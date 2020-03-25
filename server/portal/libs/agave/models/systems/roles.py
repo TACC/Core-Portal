@@ -3,7 +3,6 @@
 .. :module:: portal.libs.agave.models.systems.roles
    :synopsis: Classes representing system's roles.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 from portal.libs.agave.exceptions import CreationError
 

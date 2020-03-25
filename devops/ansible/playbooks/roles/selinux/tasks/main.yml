@@ -1,6 +1,0 @@
----
-- name: Ensure SELinux does not block Nginx
-  seboolean: name=httpd_can_network_connect state=yes persistent=yes
-
-- name: SELinux httpd_t permissive
-  selinux: policy=httpd_t state=permissive

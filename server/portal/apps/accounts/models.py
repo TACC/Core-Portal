@@ -2,19 +2,13 @@
 .. :module:: apps.accounts.managers.models
    :synopsis: Account's models
 """
-from __future__ import unicode_literals
 import logging
 from django.core.mail import send_mail
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.serializers.json import DjangoJSONEncoder
 from portal.utils import encryption as EncryptionUtil
-from django.contrib.postgres.fields import JSONField
-
-import json
-# Create your models here.
 
 
 # pylint: disable=invalid-name
@@ -29,15 +23,16 @@ class PortalProfile(models.Model):
     """
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        related_name='profile'
+        related_name='profile',
+        on_delete=models.CASCADE
     )
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)
-    
+
     # Default to False. If PORTAL_USER_ACCOUNT_SETUP_STEPS is empty,
     # setup_complete will be set to True on first login
     setup_complete = models.BooleanField(default=False)
-    
+
     def send_mail(self, subject, body=None):
         """Send mail to user"""
         send_mail(subject,
@@ -45,9 +40,6 @@ class PortalProfile(models.Model):
                   settings.DEFAULT_FROM_EMAIL,
                   [self.user.email],
                   html_message=body)
-
-    def __unicode__(self):
-        return unicode(self.user)
 
 
 class NotificationPreferences(models.Model):
@@ -57,7 +49,8 @@ class NotificationPreferences(models.Model):
     all different kinds of preferences?
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                related_name='notification_preferences')
+                                related_name='notification_preferences',
+                                on_delete=models.CASCADE)
     announcements = models.BooleanField(
         default=True,
         verbose_name=_('Receive occasional announcements from {}'.format(settings.PORTAL_NAMESPACE)))
@@ -68,24 +61,15 @@ class NotificationPreferences(models.Model):
              'Can view list of users subscribed to a notification type'),
         )
 
-    def __unicode__(self):
-        return unicode(self.user)
-
 
 class PortalProfileNHInterests(models.Model):
     """Portal Profile NH Interests"""
     description = models.CharField(max_length=300)
 
-    def __unicode__(self):
-        return self.description
-
 
 class PortalProfileResearchActivities(models.Model):
     """Resesarch Activities"""
     description = models.CharField(max_length=300)
-
-    def __unicode__(self):
-        return self.description
 
 
 class SSHKeysManager(models.Manager):
@@ -283,7 +267,8 @@ class SSHKeys(models.Model):
     """
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        related_name='ssh_keys')
+        related_name='ssh_keys',
+        on_delete=models.CASCADE)
     objects = SSHKeysManager()
 
     def for_system(self, system_id):
@@ -339,8 +324,8 @@ class SSHKeys(models.Model):
         keys = HostKeys.objects.get(ssh_keys=self, hostname=hostname)
         return keys
 
-    def __unicode__(self):
-        return unicode(self.user)
+    def __str__(self):
+        return str(self.user)
 
 
 class Keys(models.Model):
@@ -351,7 +336,7 @@ class Keys(models.Model):
          if it changed. If it did then the save method will encrypt the key
          before saving it into the DB.
     """
-    ssh_keys = models.ForeignKey(SSHKeys, related_name='+')
+    ssh_keys = models.ForeignKey(SSHKeys, related_name='+', on_delete=models.CASCADE)
     system = models.TextField(unique=True)
     private = models.TextField()
     public = models.TextField()
@@ -377,7 +362,7 @@ class Keys(models.Model):
         super(Keys, self).save(*args, **kwargs)
         self._private = self.private
 
-    def __unicode__(self):
+    def __str__(self):
         return '{username}: {system}'.format(
             username=self.ssh_keys.user.username,
             system=self.system
@@ -393,7 +378,7 @@ class HostKeys(models.Model):
     """
 
     hostname = models.TextField()
-    ssh_keys = models.ForeignKey(SSHKeys, related_name='+')
+    ssh_keys = models.ForeignKey(SSHKeys, related_name='+', on_delete=models.CASCADE)
     private = models.TextField()
     public = models.TextField()
 
@@ -421,7 +406,7 @@ class HostKeys(models.Model):
         super(HostKeys, self).save(*args, **kwargs)
         self._private = self.private
 
-    def __unicode__(self):
+    def __str__(self):
         return '{username}: {host}'.format(
             username=self.ssh_keys.user.username,
             host=self.hostname

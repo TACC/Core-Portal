@@ -1,16 +1,13 @@
 """
-WSGI config for portal project.
+WSGI config for server project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/1.10/howto/deployment/wsgi/
+https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 """
 
 import os
-
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'portal.settings.settings')
 from django.core.wsgi import get_wsgi_application
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "portal.settings.settings")
-
 application = get_wsgi_application()

@@ -2,8 +2,8 @@ from abc import ABCMeta, abstractmethod
 from six import add_metaclass
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
-from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+
 
 @add_metaclass(ABCMeta)
 class AbstractStep:
@@ -16,11 +16,11 @@ class AbstractStep:
         self.state = None
         self.user = user
         self.last_event = None
-        self.events = [ ]
+        self.events = []
 
         try:
             # Restore event history
-            self.events = [ 
+            self.events = [
                 event for event in SetupEvent.objects.filter(
                     user=user,
                     step=self.step_name()
@@ -30,7 +30,6 @@ class AbstractStep:
             self.state = self.last_event.state
         except Exception:
             pass
-
 
     def log(self, message, data=None):
         """
@@ -77,7 +76,7 @@ class AbstractStep:
     def step_name(self):
         return "{module}.{classname}".format(
             module=self.__module__,
-            classname=self.__class__.__name__ 
+            classname=self.__class__.__name__
         )
 
     @abstractmethod
@@ -93,7 +92,7 @@ class AbstractStep:
         """
         Called during profile setup in portal.apps.accounts.managers.accounts.setup
         if no log data exists for this step. Child implementations should perform
-        any pre-processing, then set state to PENDING, USERWAIT or STAFFWAIT and 
+        any pre-processing, then set state to PENDING, USERWAIT or STAFFWAIT and
         call self.log with a message to save this state.
 
         Also called when a staff user invokes the reset action from the client
@@ -116,7 +115,7 @@ class AbstractStep:
     def webhook_action(self, webhook_data=None):
         """
         Called by portal.apps.onboarding.api.webhook.SetupStepWebhookView.post
-        
+
         Child implementations should override this to handle webhook callbacks
         """
         pass

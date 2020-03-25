@@ -1,3 +1,0 @@
----
-- name: restart uwsgi
-  service: name=uwsgi.service state=restarted enabled=yes

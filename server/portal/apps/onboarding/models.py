@@ -2,12 +2,12 @@
 .. :module:: apps.onboarding.models
    :synopsis: Onboarding models
 """
-from __future__ import unicode_literals
-import logging
+
 from django.db import models
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.core.serializers.json import DjangoJSONEncoder
+
 
 class SetupEvent(models.Model):
     """Setup Events
@@ -16,7 +16,8 @@ class SetupEvent(models.Model):
     """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name="+"
+        related_name="+",
+        on_delete=models.CASCADE
     )
 
     # Auto increment auto add timestamp for event
@@ -35,7 +36,7 @@ class SetupEvent(models.Model):
     # JSON Data
     data = JSONField(null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '<SetupEvent: {username} {time} {step} ({state}) - {message} ({data})>'.format(
             username=self.user.username,
             time=self.time,
@@ -50,10 +51,11 @@ class SetupEvent(models.Model):
             "step": self.step,
             "username": self.user.username,
             "state": self.state,
-            "time" : str(self.time),
+            "time": str(self.time),
             "message": self.message,
             "data": self.data,
         }
+
 
 class SetupEventEncoder(DjangoJSONEncoder):
     def default(self, obj):  # pylint: disable=method-hidden, arguments-differ

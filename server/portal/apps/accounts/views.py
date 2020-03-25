@@ -5,33 +5,29 @@ import re
 import logging
 import json
 import rt
-import urllib
+import urllib.request
+import urllib.parse
+import urllib.error
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.generic.base import TemplateView, View
 from django.shortcuts import render, render_to_response
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from portal.apps.notifications.models import Notification
-from future.utils import python_2_unicode_compatible
 from pytas.http import TASClient
-# from pytas.models import User as TASUser
 
 from portal.apps.accounts import forms, integrations
 from portal.apps.accounts.models import (PortalProfile,
                                          NotificationPreferences)
 
-# from portal.apps.auth.tasks import check_or_create_agave_home_dir
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
-
-# Create your views here.
 
 
 @method_decorator(login_required, name='dispatch')
@@ -44,9 +40,22 @@ class IndexView(TemplateView):
         context = super(IndexView, self).get_context_data(**kwargs)
         return context
 
+
+class LoginView(TemplateView):
+    """Login options view
+    """
+    template_name = 'portal/apps/accounts/login.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(LoginView, self).get_context_data(**kwargs)
+        context['request_access'] = settings.REQUEST_ACCESS
+        return context
+
+
 class LogoutView(View):
     """Logout view
     """
+
     def get(self, request):
         """GET"""
         logout(request)
@@ -55,7 +64,7 @@ class LogoutView(View):
 
 def request_access(request):
     """ Request Access """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('index')
 
@@ -89,14 +98,14 @@ def request_access(request):
                     )
                     if tracker.login():
                         tracker.create_ticket(
-                            #Queue='Web & Mobile Apps',
+                            # Queue='Web & Mobile Apps',
                             Queue=settings.RT_QUEUE,
                             Subject='New User Access Request',
                             Text=('User {username} is requesting '
                                   'access to Portal.').format(
                                       username=username
-                                  ),
-                            Requestors=user['email'], 
+                            ),
+                            Requestors=user['email'],
                             CF_resource=settings.RT_TAG
                         )
                         tracker.logout()
@@ -125,7 +134,7 @@ def request_access(request):
 
     context = {
         'access_form': access_form,
-        'rt_qn': urllib.quote(settings.RT_QUEUE),
+        'rt_qn': urllib.parse.quote(settings.RT_QUEUE),
     }
     return render(request, 'portal/apps/accounts/request_access.html', context)
 
@@ -142,7 +151,7 @@ def register(request):
 
 
 def register_new(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('portal_version_accounts:index')
 
@@ -217,32 +226,6 @@ def registration_successful(request):
     )
 
 
-# @login_required
-# def test(request):
-#     # return HttpResponseRedirect(reverse('portal_accounts:manage_profile'))
-#     context = {
-#         'title': 'TEST'
-#     }
-#     return render(request, 'portal/apps/accounts/test.html', context)
-#
-#
-# @login_required
-# def profile_test(request):
-#     context = {
-#         'title': 'Profile Stuff'
-#     }
-#     return render(request, 'portal/apps/accounts/profile_test.html', context)
-#
-#
-# @login_required
-# def index(request):
-#     # return HttpResponseRedirect(reverse('portal_accounts:manage_profile'))
-#     context = {
-#         'title': 'Manage Profile'
-#     }
-#     return render(request, 'portal/apps/accounts/index.html', context)
-
-
 @login_required
 def manage_profile(request):
     """
@@ -280,7 +263,7 @@ def manage_pro_profile(request):
         portal_profile = PortalProfile.objects.get(user__id=user.id)
     except PortalProfile.DoesNotExist:
         logout(request)
-        return HttpResponseRedirect(reverse('portal_accounts:logout'))
+        return HttpResponseRedirect(reverse('portal_auth:logout'))
     context = {
         'title': 'Manage Professional Profile',
         'user': user,
@@ -351,6 +334,7 @@ def manage_identities(request):
         context
     )
 
+
 @login_required
 def manage_onboarding(request):
     context = {
@@ -361,6 +345,7 @@ def manage_onboarding(request):
         'portal/apps/accounts/manage_onboarding.html',
         context
     )
+
 
 @login_required
 def manage_notifications(request):
@@ -466,7 +451,7 @@ def profile_edit(request):
                     user=user
                     # ethnicity=data['ethnicity'],
                     # gender=data['gender']
-                    )
+                )
                 portal_profile.save()
 
             return HttpResponseRedirect(
@@ -553,7 +538,7 @@ def _process_password_reset_request(request, form):
             username
         )
         try:
-            tas = TASClient()
+            tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
             user = tas.get_user(username=username)
             logger.info(
                 'Processing password reset request for username: "%s"',
@@ -561,7 +546,7 @@ def _process_password_reset_request(request, form):
             )
             resp = tas.request_password_reset(
                 user['username'],
-                source=settings.PORTAL_NAMESPACE
+                source=settings.PORTAL_DOMAIN
             )
             logger.debug(resp)
         except Exception as e:
@@ -580,7 +565,7 @@ def _process_password_reset_confirm(request, form):
     if form.is_valid():
         data = form.cleaned_data
         try:
-            tas = TASClient()
+            tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
             return tas.confirm_password_reset(
                 data['username'],
                 data['code'],
@@ -618,14 +603,14 @@ def email_confirmation(request, code=None):
             username = data['username']
             password = data['password']
             try:
-                tas = TASClient()
+                tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
                     # check_or_create_agave_home_dir.apply_async(args=(user["username"],))
                     messages.success(
                         request,
                         'Congratulations, your account has been activated! '
-                        'You can now log in to {}.'.format(settings.PORTAL_NAMESPACE)
+                        'You can now log in to {}.'.format(settings.PORTAL_DOMAIN)
                     )
                     return HttpResponseRedirect(
                         reverse('portal_accounts:manage_profile'))
@@ -662,7 +647,7 @@ def email_confirmation(request, code=None):
 def departments_json(request):
     institution_id = request.GET.get('institutionId')
     if institution_id:
-        tas = TASClient()
+        tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
         departments = tas.get_departments(institution_id)
     else:
         departments = {}
@@ -672,8 +657,15 @@ def departments_json(request):
     )
 
 
+def load_departments(request):
+    institution_id = request.GET.get('institutionId')
+    if institution_id:
+        tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+        departments = tas.get_departments(institution_id)
+    else:
+        departments = {}
+    return render(request, 'portal/apps/accounts/department_dropdown_options.html', {'departments': departments})
 # Throws Bad Gateway 502 Error.
-#
 # @permission_required('portal_accounts.view_notification_subscribers',
 #                      raise_exception=True)
 # def mailing_list_subscription(request, list_name):

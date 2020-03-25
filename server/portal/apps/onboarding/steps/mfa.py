@@ -4,6 +4,7 @@ from django.conf import settings
 from requests.auth import HTTPBasicAuth
 import requests
 
+
 class MFAStep(AbstractStep):
     mfa_message = """
         <p>
@@ -21,7 +22,7 @@ class MFAStep(AbstractStep):
             button in the onboarding page to continue.
         </p>
     """
-    
+
     def __init__(self, user):
         super(MFAStep, self).__init__(user)
 
@@ -48,13 +49,13 @@ class MFAStep(AbstractStep):
         else:
             self.state = SetupState.USERWAIT
             self.log(
-                """We were unable to verify your multi-factor authentication pairing. Please try again, 
+                """We were unable to verify your multi-factor authentication pairing. Please try again,
                 then click the Confirm button.""",
                 data={
                     "more_info": self.mfa_message
                 }
             )
-    
+
     def client_action(self, action, data, request):
         if action == "user_confirm" and request.user.username == self.user.username:
             self.prepare()

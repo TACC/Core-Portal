@@ -1,10 +1,7 @@
-from __future__ import unicode_literals
-
 from django.db import models
 from django.conf import settings
-from datetime import datetime
+from django.utils import timezone
 
-# Create your models here.
 
 class JobSubmission(models.Model):
     """Job Submission
@@ -13,11 +10,12 @@ class JobSubmission(models.Model):
     """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name="+"
+        related_name="+",
+        on_delete=models.CASCADE
     )
 
     # Timestamp for event
-    time = models.DateTimeField(default=datetime.now)
+    time = models.DateTimeField(default=timezone.now)
 
     # ID of job returned from Agave
     jobId = models.CharField(max_length=300)

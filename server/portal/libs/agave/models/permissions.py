@@ -2,7 +2,6 @@
 .. :module:: portal.libs.agave.models.permissions
    :synopsis: Classes representing Agave permissions for different resources.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 from portal.libs.agave.exceptions import CreationError
 

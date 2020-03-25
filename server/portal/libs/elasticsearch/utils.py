@@ -1,12 +1,11 @@
 """
 Utilities to help on elastic search implementations.
 """
-from __future__ import unicode_literals, absolute_import
 import json
 import os
 import logging
 from portal.libs.agave.utils import walk_levels
-from portal.apps.projects.models import ProjectMetadata
+# from portal.apps.projects.models import ProjectMetadata
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -31,12 +30,13 @@ def to_camel_case(input_str):
     return camel_case
 
 def index_project(projectId):
-    from portal.libs.elasticsearch.docs.projects import BaseESProject
-    project_meta = ProjectMetadata.objects.get(project_id=projectId)
-    project_meta_dict = project_meta.to_dict()
+#     from portal.libs.elasticsearch.docs.projects import BaseESProject
+#     project_meta = ProjectMetadata.objects.get(project_id=projectId)
+#     project_meta_dict = project_meta.to_dict()
 
-    doc = BaseESProject(**project_meta_dict)
-    doc.save()
+#     doc = BaseESProject(**project_meta_dict)
+#     doc.save()
+    pass
 
 def index_agave(systemId, client, username, filePath='/', update_pems=False):
     from portal.libs.elasticsearch.docs.files import BaseESFile
@@ -68,7 +68,7 @@ def index_agave(systemId, client, username, filePath='/', update_pems=False):
 
 def index_level(path, folders, files, systemId, reindex=False):
     """
-    Index a set of folders and files corresponding to the output from one 
+    Index a set of folders and files corresponding to the output from one
     iteration of walk_levels
     """
     from portal.libs.elasticsearch.docs.files import BaseESFile

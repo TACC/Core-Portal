@@ -2,10 +2,8 @@
 .. module: portal.libs.agave.models.systems.base
    :synopsis: Models representing systems in Agave.
 """
-from __future__ import unicode_literals, absolute_import
 from collections import namedtuple
 import logging
-from future.utils import python_2_unicode_compatible
 import requests
 from requests.exceptions import HTTPError
 from cached_property import cached_property, cached_property_with_ttl
@@ -14,13 +12,11 @@ from portal.libs.agave.exceptions import ValidationError
 from portal.libs.agave.models.base import BaseAgaveResource
 from portal.libs.agave.models.systems.roles import Roles
 
-# pylint: disable=invalid-name
+
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
-# pylint: enable=invalid-name
 
 
-@python_2_unicode_compatible
 class BaseSystem(BaseAgaveResource):
     """Agave System representation
 
@@ -367,18 +363,18 @@ class BaseSystem(BaseAgaveResource):
         """
         result = 'FAIL'
         success = True
-        if self.type == self.TYPES.STORAGE:
-            try:
-                self._ac.files.list(
-                    systemId=self.id,
-                    filePath=''
-                )
-                result = 'SUCCESS'
-            except HTTPError as err:
-                success = False
-                result = err.response.json()
-        elif self.type == self.TYPES.STORAGE:
+        # if self.type == self.TYPES.STORAGE:
+        try:
+            self._ac.files.list(
+                systemId=self.id,
+                filePath=''
+            )
             result = 'SUCCESS'
+        except HTTPError as err:
+            success = False
+            result = err.response.json()
+        # elif self.type == self.TYPES.EXECUTION:
+        #     result = 'SUCCESS'
 
         return success, result
 
@@ -393,7 +389,6 @@ class BaseSystem(BaseAgaveResource):
         self._ac.systems.manage(body=clone_body, systemId=self.id)
         self.available = True
         return self
-
 
     def __str__(self):
         """String -> self.id: self.type"""
@@ -411,7 +406,7 @@ class BaseSystem(BaseAgaveResource):
         )
 
 
-@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class BaseSystemProxy(BaseAgaveResource):
     """`proxy` nested object representation
 
@@ -453,7 +448,7 @@ class BaseSystemProxy(BaseAgaveResource):
         return dict_obj
 
 
-@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class BaseSystemAuth(BaseAgaveResource):
     """`auth` nested object representation
 
@@ -478,11 +473,11 @@ class BaseSystemAuth(BaseAgaveResource):
             None,
             **kwargs
         )
-        self.type = kwargs.get('type')
-        self.username = kwargs.get('username')
-        self.public_key = kwargs.get('publicKey')
-        self.private_key = kwargs.get('privateKey')
-        self.password = kwargs.get('password')
+        self.type = kwargs.get('type', BaseSystem.AUTH_TYPES.SSHKEYS)
+        self.username = kwargs.get('username', '')
+        self.public_key = kwargs.get('publicKey', '')
+        self.private_key = kwargs.get('privateKey', '')
+        self.password = kwargs.get('password', '')
 
     def _populate_obj(self):
         """No need to populate this obj"""
@@ -501,7 +496,6 @@ class BaseSystemAuth(BaseAgaveResource):
 
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-instance-attributes
-@python_2_unicode_compatible
 class BaseSystemStorage(BaseAgaveResource):
     """`storage` nested object represntation
 
@@ -593,7 +587,7 @@ class BaseSystemStorage(BaseAgaveResource):
             )
 
 
-@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class BaseSystemLogin(BaseAgaveResource):
     """`login` nested object representation
 
@@ -656,7 +650,7 @@ class BaseSystemLogin(BaseAgaveResource):
             )
 
 
-@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class BaseSystemQueue(BaseAgaveResource):
     """Base System Queue"""
 
@@ -756,7 +750,7 @@ class BaseSystemQueue(BaseAgaveResource):
             )
 
 
-@python_2_unicode_compatible  # pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods
 class BaseSystemQueues(object):
     """Base System Queues
 

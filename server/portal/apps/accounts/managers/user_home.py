@@ -2,7 +2,7 @@
 .. :module:: apps.accounts.managers.user_home
    :synopsis: Manager handling anything pertaining to user's home directory
 """
-from __future__ import unicode_literals, absolute_import
+
 import os
 import logging
 # import json

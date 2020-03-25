@@ -2,12 +2,7 @@
 .. module: portal.libs.agave.models.systems.execution
    :synopsis: Models representing systems in Agave.
 """
-from __future__ import unicode_literals, absolute_import
-# from collections import namedtuple
 import logging
-from future.utils import python_2_unicode_compatible
-# import requests
-# from django.conf import settings
 from portal.libs.agave.exceptions import ValidationError
 from portal.libs.agave.models.systems.base import BaseSystem
 
@@ -17,7 +12,7 @@ METRICS = logging.getLogger('metrics.{}'.format(__name__))
 # pylint: enable=invalid-name
 
 
-@python_2_unicode_compatible  # pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-instance-attributes
 class ExecutionSystem(BaseSystem):
     """Agave Storage System representation
 

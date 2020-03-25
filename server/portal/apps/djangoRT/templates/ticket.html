@@ -1,16 +1,16 @@
 	<tr>
 		<td>
 		{% if ticket.Status == 'new' %}
-			<i class="fa fa-star-o"></i>
+			<i class="far fa-star"></i>
 		{% endif %}
 		{% if ticket.Status == 'open' %}
-			<i class="fa fa-envelope-o"></i>
+			<i class="fas fa-envelope"></i>
 		{% endif %}
 		{% if ticket.Status == 'response required' %}
-			<i class="fa fa-exclamation"></i>
+			<i class="fas fa-exclamation"></i>
 		{% endif %}
 		{% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}
-			<i class="fa fa-times"></i>
+			<i class="fas fa-times"></i>
 		{% endif %}
 		{{ticket.Status}}
 		</td>

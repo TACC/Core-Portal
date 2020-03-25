@@ -1,0 +1,80 @@
+#appDetail-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    height: 60vh;
+    padding-top: 15px;
+}
+
+#appForm-wrapper {
+    overflow-y: scroll;
+    display: flex;
+    flex-grow: 1;
+    padding: 0 40px 0 30px;
+    flex: .7 1 0;
+    max-width: 780px;
+    flex-direction: column;
+}
+
+.appInfo-wrapper {
+    flex: .5 1 0;
+    max-width: 400px;
+    border-right: 1px solid #989898;
+    padding-right: 30px;
+}
+
+.appInfo-description {
+    font-size: 14px;
+    padding-bottom: 20px;
+}
+
+.doc-icon {
+  margin-right: 10px;
+}
+
+.appInfo-documentation {
+    display: flex;
+    align-items: center;
+}
+
+.appForm-textInput label, .appForm-select label {
+    font-weight: bold;
+}
+
+.appSchema-header {
+    font-weight: bold;
+    padding-bottom: 10px;
+    display: flex;
+}
+
+.appSchema-header span {
+    border-bottom: 2px solid #989898;
+    flex-grow: 1;
+}
+
+.appSchema-section {
+    padding-bottom: 20px;
+}
+
+.appForm-help {
+    font-style: italic;
+    font-weight: 400;
+}
+
+#appForm-wrapper .validation-error {
+    font-size: 0.8rem;
+    color: #EB6E6E;
+    padding-top: 5px;
+}
+
+.btn-resetForm {
+    padding: 5px 0 0 20px;
+}
+
+.appDetail-error {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
+    color: #9d85ef;
+}

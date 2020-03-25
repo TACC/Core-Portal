@@ -4,7 +4,10 @@ from portal.apps.onboarding.state import SetupState
 from django.db.models import signals
 from django.contrib.auth import get_user_model
 from portal.apps.onboarding.steps.test_steps import MockStep
+import pytest
 
+
+@pytest.mark.django_db(transaction=True)
 class TestAbstractStep(TestCase):
     def setUp(self):
         super(TestAbstractStep, self).setUp()
@@ -36,7 +39,7 @@ class TestAbstractStep(TestCase):
         request = RequestFactory().get("/api/test")
         mock_step = MockStep(self.user)
         self.assertEqual(
-            mock_step.webhook_url(request), 
+            mock_step.webhook_url(request),
             "http://testserver/webhooks/onboarding/"
         )
 
@@ -45,7 +48,7 @@ class TestAbstractStep(TestCase):
         mock_step.state = SetupState.PENDING
         mock_step.log("test event")
         events = SetupEvent.objects.all().filter(user=self.user)
-        self.assertEqual(events[0].message, "test event" )
+        self.assertEqual(events[0].message, "test event")
         self.assertEqual(events[0].state, SetupState.PENDING)
 
     def test_init_with_event(self):
@@ -82,6 +85,6 @@ class TestAbstractStep(TestCase):
         mock_step = MockStep(self.user)
         mock_step.state = SetupState.PENDING
         self.assertEqual(
-            str(mock_step), 
+            str(mock_step),
             "<portal.apps.onboarding.steps.test_steps.MockStep for test is pending>"
         )

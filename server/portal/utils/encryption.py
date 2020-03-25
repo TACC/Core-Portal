@@ -2,7 +2,7 @@
 .. :module:: portal.utils.encryption
    :synopsis: Utilities to handle encryption and ssh keys
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 import base64
 from Crypto.PublicKey import RSA
@@ -44,7 +44,7 @@ def export_key(key, format='PEM'):  # pylint: disable=redefined-builtin
         Use `format='PEM'` for exporting private keys
         and `format='OpenSSH' for exporting public keys
     """
-    return key.exportKey(format)
+    return key.exportKey(format).decode('utf-8')
 
 
 def encrypt(raw):
@@ -58,15 +58,14 @@ def encrypt(raw):
     """
     source = raw.encode('utf-8')
     # Use hash to make sure size is appropiate
-    key = SHA256.new(settings.SECRET_KEY).digest()
+    key = SHA256.new(str.encode(settings.SECRET_KEY)).digest()
     # pylint: disable=invalid-name
     IV = Random.new().read(AES.block_size)
     # pylint: enable=invalid-name
     encryptor = AES.new(key, AES.MODE_CBC, IV)
     # calculate needed padding
     padding = AES.block_size - len(source) % AES.block_size
-    source += chr(padding) * padding
-    # Python 3.x: source += bytes([padding]) * padding
+    source += bytes([padding]) * padding
     # store the IV at the beginning and encrypt
     data = IV + encryptor.encrypt(source)
     return base64.b64encode(data).decode("utf-8")
@@ -79,7 +78,7 @@ def decrypt(raw):
     """
     source = base64.b64decode(raw.encode("utf-8"))
     # use SHA-256 over our key to get a proper-sized AES key
-    key = SHA256.new(settings.SECRET_KEY).digest()
+    key = SHA256.new(str.encode(settings.SECRET_KEY)).digest()
     # extract the IV from the beginning
     # pylint: disable=invalid-name
     IV = source[:AES.block_size]
@@ -88,10 +87,8 @@ def decrypt(raw):
     # decrypt
     data = decryptor.decrypt(source[AES.block_size:])
     # pick the padding value from the end;
-    padding = ord(data[-1])
-    # Python 3.x: padding = data[-1]
-    # Python 3.x: if data[-padding:] != bytes([padding]) * padding:
-    if data[-padding:] != chr(padding) * padding:
+    padding = data[-1]
+    if data[-padding:] != bytes([padding]) * padding:
         raise ValueError("Invalid padding...")
     # remove the padding
-    return data[:-padding]
+    return data[:-padding].decode('utf-8')

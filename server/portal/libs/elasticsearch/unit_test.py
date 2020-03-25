@@ -9,7 +9,7 @@ from portal.libs.elasticsearch.exceptions import DocumentNotFound
 
 class TestESSetupMethods(TestCase):
     def setUp(self):
-        return 
+        return
 
     @patch('portal.libs.elasticsearch.indexes.Index')
     def test_generic_setup_if_index_exists(self, mock_index):
@@ -32,11 +32,11 @@ class TestESSetupMethods(TestCase):
             call('test-staging-type-TIME_NOW'),
             call().aliases(**{'test-staging-type': {}})
         ])
-        
+
     @patch('portal.libs.elasticsearch.indexes.setup_indexes')
     @patch('portal.libs.elasticsearch.indexes.index_time_string')
     def test_files_setup(self, mock_timestring, mock_setup):
-        
+
         setup_files_index()
         mock_setup.assert_called_with('files', False, False)
 

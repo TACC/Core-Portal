@@ -2,9 +2,7 @@
 .. :module:: apps.accounts.managers.accounts
    :synopsis: Manager handling anything pertaining to accounts
 """
-from __future__ import unicode_literals, absolute_import
 import logging
-from inspect import isclass, isfunction
 from importlib import import_module
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -20,10 +18,7 @@ from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.accounts.models import SSHKeys, Keys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
-from portal.apps.onboarding.execute import (
-    execute_setup_steps,
-    new_user_setup_check
-)
+from portal.apps.onboarding.execute import execute_setup_steps
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -43,7 +38,7 @@ def check_user(username):
                 username=username)
         )
     elif len(users) > 1:
-        logger.warn(
+        logger.warning(
             'Multiple users with the username: %s exists',
             username
         )
@@ -114,6 +109,7 @@ def get_user_home_system_id(user):
         return mgr.get_system_id()
     return None
 
+
 def setup(username):
     """Fires necessary steps for setup
 
@@ -179,7 +175,6 @@ def reset_system_keys(username, system_id):
         when managing home directories
     """
     user = check_user(username)
-    home_sys_id = get_user_home_system_id(user)
 
     sys_dict = user.agave_oauth.client.systems.get(systemId=system_id)
     if sys_dict['type'] == StorageSystem.TYPES.STORAGE:
@@ -303,7 +298,7 @@ def add_pub_key_to_resource(
         except ObjectDoesNotExist:
             try:
                 pub_key = user.ssh_keys.for_system(system_id).public
-            except:
+            except Exception:
                 raise
         message = mgr.add_public_key(
             system_id,
@@ -321,23 +316,23 @@ def add_pub_key_to_resource(
         try:
             # "Re-throw" exception to get known exception type status codes
             raise exc
-        except AuthenticationException as exc:
+        except AuthenticationException:
             # Bad password/token
-            status = 403 # Forbidden
-        except ( ObjectDoesNotExist ) as exc:
+            status = 403  # Forbidden
+        except ObjectDoesNotExist:
             # user.ssh_keys does not exist, suggest resetting keys
-            status = 409 # Conflict
+            status = 409  # Conflict
         except KeyCannotBeAdded:
             # May occur when system is down
-            message = "KeyCannotBeAdded" # KeyCannnotBeAdded exception does not contain a message?
+            message = "KeyCannotBeAdded"  # KeyCannnotBeAdded exception does not contain a message?
             status = 503
         except (
             ChannelException,
             SSHException
         ) as exc:
             # cannot ssh to system
-            message = str(type(exc)) # paramiko exceptions do not contain a string message?
-            status = 502 # Bad gateway
+            message = str(type(exc))  # paramiko exceptions do not contain a string message?
+            status = 502  # Bad gateway
 
     return success, message, status
 
@@ -355,9 +350,9 @@ def storage_systems(user, offset=0, limit=100, filter_prefix=True):
     :param bool filter_prefix: Whether or not to filter by prefix.
     """
     prefix = getattr(
-            settings,
-            'PORTAL_NAMESPACE',
-            ''
+        settings,
+        'PORTAL_NAMESPACE',
+        ''
     )
 
     systems = StorageSystem.search(
@@ -370,8 +365,8 @@ def storage_systems(user, offset=0, limit=100, filter_prefix=True):
         limit=limit
     )
     out = list(systems)
-    #if there aren't any storage systems that are namespaced
-    #by PORTAL_NAMESPACE, just send a list of all available storage systems
+    # if there aren't any storage systems that are namespaced
+    # by PORTAL_NAMESPACE, just send a list of all available storage systems
     if not out:
         systems = StorageSystem.list(
             user.agave_oauth.client,
@@ -381,6 +376,7 @@ def storage_systems(user, offset=0, limit=100, filter_prefix=True):
         )
         out = list(systems)
     return out
+
 
 def execution_systems(user, offset=0, limit=100, filter_prefix=True):
     """Return all execution systems for a user.
@@ -413,36 +409,6 @@ def execution_systems(user, offset=0, limit=100, filter_prefix=True):
             limit=limit
         )
     return list(systems)
-
-
-def public_key_for_systems(system_ids):
-    """Returns public key for one or more systems
-
-    :param user: Django user's instance
-    :param list(str) system_ids: List of strings with system ids
-
-    :returns: Dictionary with a key for each system id.
-        Each nested dict will have a `public_key` and `owner` value.
-    :rtype: dict
-
-    .. todo::
-        Need to check permissions to systems. Although we are
-        only returning the public key we should make sure
-        the user has access to the system
-    """
-    resp_dict = {}
-    for system_id in system_ids:
-        keys = {}
-        try:
-            keys_obj = Keys.objects.get(system=system_id)
-            keys['public_key'] = keys_obj.public
-            keys['owner'] = keys_obj.ssh_keys.user.username
-        except Keys.DoesNotExist:
-            keys['public_key'] = None
-            keys['owner'] = None
-        resp_dict[system_id] = keys.copy()
-
-    return resp_dict
 
 
 def get_system(user, system_id):

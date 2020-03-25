@@ -1,6 +1,6 @@
-from __future__ import absolute_import
+
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -12,8 +12,8 @@ from portal.libs.elasticsearch.docs.base import IndexedFile
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
 from portal.libs.elasticsearch.docs.files import BaseESFile
 from portal.libs.elasticsearch.utils import index_agave, index_project
-from portal.apps.projects.utils import project_id_to_system_id
-from portal.apps.projects.models import ProjectMetadata
+# from portal.apps.projects.utils import project_id_to_system_id
+# from portal.apps.projects.models import ProjectMetadata
 from portal.libs.agave.models.files import BaseFile
 from portal.libs.agave.utils import service_account
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems = Fals
         filePath = '/' + filePath
 
     try:
-        filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).next()
+        filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).__next__()
     except Exception as exc:
         logger.debug(exc)
         raise self.retry(exc=exc)
@@ -50,36 +50,36 @@ def index_community_data(self, reindex=False):
     agave_indexer.apply_async(args=[settings.AGAVE_COMMUNITY_DATA_SYSTEM], kwargs={'reindex': reindex})
     agave_indexer.apply_async(args=[settings.AGAVE_PUBLIC_DATA_SYSTEM], kwargs={'reindex': reindex})
 
-@shared_task(bind=True, queue='indexing')
-def project_indexer(self, projectId):
-    """
-    Background task to index a single project given its ID
-    """
-    index_project(projectId)
+# @shared_task(bind=True, queue='indexing')
+# def project_indexer(self, projectId):
+#     """
+#     Background task to index a single project given its ID
+#     """
+#     index_project(projectId)
 
-@shared_task(bind=True, queue='indexing')
-def index_all_projects(self):
-    """
-    Retrieve all project metadata records from the database and index them
-    """
-    project_records = ProjectMetadata.objects.all()
-    for project in project_records:
-        project_indexer.apply_async(args=[project.project_id])
+# @shared_task(bind=True, queue='indexing')
+# def index_all_projects(self):
+#     """
+#     Retrieve all project metadata records from the database and index them
+#     """
+#     project_records = ProjectMetadata.objects.all()
+#     for project in project_records:
+#         project_indexer.apply_async(args=[project.project_id])
 
-@shared_task(bind=True, queue='indexing')
-def index_project_files(self, reindex=False):
-    """
-    Index all storage systems associated with projects.
-    """
-    project_records = ProjectMetadata.objects.all()
-    for project in project_records:
-        projectId = project.project_id
-        uname = project.owner.username
-        systemId = project_id_to_system_id(projectId)
-        agave_indexer.apply_async(
-            args=[systemId],
-            kwargs={'filePath': '/', 'reindex': reindex}
-        )
+# @shared_task(bind=True, queue='indexing')
+# def index_project_files(self, reindex=False):
+#     """
+#     Index all storage systems associated with projects.
+#     """
+#     project_records = ProjectMetadata.objects.all()
+#     for project in project_records:
+#         projectId = project.project_id
+#         uname = project.owner.username
+#         systemId = project_id_to_system_id(projectId)
+#         agave_indexer.apply_async(
+#             args=[systemId],
+#             kwargs={'filePath': '/', 'reindex': reindex}
+#         )
 
 # Indexing task for My Data.
 @shared_task(bind=True, queue='indexing')

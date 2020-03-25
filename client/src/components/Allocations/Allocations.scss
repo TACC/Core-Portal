@@ -1,0 +1,194 @@
+/*
+    Variables and Mixins
+*/
+@mixin alloc-button {
+    button {
+        border-radius: 0;
+        border: 0;
+        font: Bold 12px Roboto;
+        background-color: #9D85EF;
+        padding: 0.5rem 1rem;
+    }
+}
+/*
+    Components
+*/
+.btn-link {
+    color: #9d85ef;
+    padding-left: 0;
+}
+#allocations-wrapper {
+    width: 100%;
+    padding-right: 32px;
+}
+#allocations-container {
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid #707070;
+    height: calc(100vh - 116px);
+}
+#allocations-header {
+    @include alloc-button();
+    display: flex;
+    justify-content: space-between;
+    margin: 21px auto 0.5rem 1.75rem;
+    padding-left: 0.2em;
+    #header-text {
+        font-size: 1.25rem;
+        font-weight: 400;
+        vertical-align: text-bottom;
+        letter-spacing: 0;
+        width: 10rem;
+        display: flex;
+        align-items: flex-end;
+        a {
+            color: #484848;
+        }
+    }
+}
+#allocations-sidebar {
+    width: fit-content;
+    border-right: 1px solid rgba(112, 112, 112, .25);
+    font-family: Roboto;
+    .nav-link {
+        padding: 8px 0 8px 30px;
+        display: flex;
+        align-items: center;
+        width: 215px;
+    }
+    a {
+        color: #707070;
+        padding-left: 1.5em;
+        height: 2.5em;
+        .link-icon {
+            font-size: 1.2em;
+            width: 1em;
+        }
+        .link-text {
+            font-size: 0.78em;
+            font-weight: 500;
+            padding-left: 16px;
+            vertical-align: middle;
+        }
+    }
+    .active {
+        background: rgba(#9d85ef, 0.25);
+    }
+}
+.allocations-table {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0 0 0 1em;
+    overflow-y: auto;
+    table {
+        width: 100%;
+        border: 0;
+        font-size: 14px;
+        tr {
+            height: 2.25rem;
+            td {
+                padding: 0;
+                vertical-align: text-top;
+            }
+            border-bottom: 1px solid rgba(#707070,0.25);
+            margin-bottom: 24px;
+        }
+        thead {
+            tr {
+                border-bottom: 1px solid #707070;
+            }
+        }
+        tbody {
+            tr:last-child {
+                border-bottom: none;
+            }
+        }
+        .sub-table-row {
+            :nth-child(even) {
+                background-color: white;
+            }
+            color: #707070;
+            font: 14px Roboto;
+        }
+        .sub-table-cell {
+            background-color: rgba(#c6c6c6, 0.1);
+            height: 2.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    }
+    .alloc-badge {
+        font-size: 11px;
+    }
+}
+#pending {
+    @extend .allocations-table;
+}
+.allocations-modal-header {
+    background-color: #F4F4F4;
+    padding: 1rem;
+    span {
+        color: #484848;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+}
+.allocations-request-body {
+    color: #484848;
+}
+.team-view-modal-wrapper {
+    .table-hover {
+        tbody {
+            tr {
+                height: 35px;
+                cursor: pointer;
+                color: #484848;
+                td {
+                    font-weight: 500;
+                    font-size: 14px;
+                    vertical-align: middle;
+                }
+            }
+            tr:hover {
+                background-color: #dfdaf5;
+            }
+        }
+    }
+    .modal-body {
+        overflow-y: initial !important;
+    }
+    .modal-left {
+        height: 50vh;
+        max-width: 230px;
+        overflow-y: scroll;
+        padding-left: 0;
+        padding-right: 0;
+        border-right: 1px solid rgba(112, 112, 112, .25);
+    }
+    .modal-right {
+        display: flex;
+        padding: 1em;
+        max-width: 500px;
+        overflow: auto;
+        .contact-card {
+            display: flex;
+            flex-direction: column;
+            font: 16px Roboto;
+            height: 100%;
+            overflow: auto;
+            div {
+                padding: 0.25rem;
+                text-overflow: ellipsis;
+                overflow: auto;
+            }
+        }
+    }
+    .user-name {
+        margin-left: 1.5rem;
+    }
+    .active-user {
+        background-color: #dfdaf5;
+    }
+}

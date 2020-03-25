@@ -2,7 +2,6 @@
 .. module: portal.lis.elasticsearch.analyzers
    :synopsis: Elastic Search Analyzers
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 from elasticsearch_dsl import analyzer, token_filter, tokenizer
 
@@ -24,6 +23,6 @@ file_pattern_analyzer = analyzer('file_ext_analyzer',
                         tokenizer=tokenizer('file_pattern', 'pattern', pattern='\\.'),
                         filter='lowercase')
 
-reverse_file_analyzer = analyzer('file_reverse', 
+reverse_file_analyzer = analyzer('file_reverse',
                         tokenizer=tokenizer('keyword'),
                         filter=['lowercase', 'reverse'])

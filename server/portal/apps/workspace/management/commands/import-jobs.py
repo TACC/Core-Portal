@@ -1,4 +1,4 @@
-import logging 
+import logging
 from django.core.management import BaseCommand, CommandError
 from django.conf import settings
 from portal.libs.agave.utils import service_account
@@ -39,4 +39,3 @@ class Command(BaseCommand):
                 done = len(jobs) < 100
                 total += len(jobs)
             print("{} jobs for {}".format(total, user.username))
-        

@@ -2,7 +2,6 @@
 .. module: portal.libs.elasticsearch.indexes
    :synopsis: ElasticSearch Index setup
 """
-from __future__ import unicode_literals, absolute_import
 from datetime import datetime
 import logging
 from django.conf import settings

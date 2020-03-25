@@ -105,7 +105,7 @@ class TestBaseESFile(TestCase):
         ])
 
         # Check that iteration ends after all children have been listed.
-        self.assertRaises(StopIteration, child_generator.next)
+        self.assertRaises(StopIteration, child_generator.__next__)
 
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.save')
     def test_save(self, mock_save):
@@ -121,7 +121,7 @@ class TestBaseESFile(TestCase):
         base.save()
         mock_save.assert_called_with()
 
-    
+
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.delete')
     def test_delete_no_dir(self, mock_delete):
         wrapped_doc = IndexedFile(
@@ -170,7 +170,7 @@ class TestBaseESResource(TestCase):
     def test_getter_and_setter(self):
         wrapped_doc = IndexedFile(
             **{'name': 'folder1', 'system': 'test.system', 'path': '/path/to/folder', 'format': 'folder'})
-        base = BaseESResource(wrapped_doc=wrapped_doc)     
+        base = BaseESResource(wrapped_doc=wrapped_doc)
 
         base.name = 'folder2'
         self.assertEqual(base.name, 'folder2')
@@ -187,7 +187,7 @@ class TestBaseESResource(TestCase):
         base = BaseESResource(wrapped_doc=wrapped_doc)
         self.assertEqual(base._wrapped, wrapped_doc)
 
-        base_with_kwargs = BaseESResource(wrapped_doc=wrapped_doc, **{'name': 'folder2'}) 
+        base_with_kwargs = BaseESResource(wrapped_doc=wrapped_doc, **{'name': 'folder2'})
         mock_update.assert_called_with(**{'name': 'folder2'})
 
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.update')
@@ -202,7 +202,7 @@ class TestBaseESResource(TestCase):
     def test_to_dict(self, mock_to_dict):
         wrapped_doc = IndexedFile(
             **{'name': 'folder1', 'system': 'test.system', 'path': '/path/to/folder', 'format': 'folder'})
-        base = BaseESResource(wrapped_doc=wrapped_doc)   
+        base = BaseESResource(wrapped_doc=wrapped_doc)
 
         base.to_dict()
         mock_to_dict.assert_called_with()
@@ -309,7 +309,7 @@ class TestIndexedFile(TestCase):
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.get')
     @patch('portal.libs.elasticsearch.docs.base.IndexedFile.search')
     def test_children_returns_when_hits(self, mock_search, mock_get):
-        
+
         search_res = IndexedFile(
             **{'name': 'res1', 'system': 'test.system', 'path': '/path/to/res1'})
         mock_hit = MagicMock()

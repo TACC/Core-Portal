@@ -1,8 +1,8 @@
 {% extends "portal/apps/accounts/index.html" %}
 {% block title %}Account Profile{% endblock %}
 {% block panel_content %}
-<div class="panel panel-default">
-    <div class="panel-body">
+<div class="card">
+    <div class="card-body">
         <h2>Account Profile</h2>
         <hr>
         <div class="row">
@@ -47,7 +47,7 @@
             -->
         </div>
         <hr>
-        <a href="{% url 'portal_accounts:profile_edit' %}" class="btn btn-default"><i class="fa fa-edit"></i> Edit profile
+        <a href="{% url 'portal_accounts:profile_edit' %}" class="btn btn-default"><i class="fas fa-edit"></i></i> Edit profile
         </a>
     </div>
 </div>

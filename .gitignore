@@ -14,14 +14,13 @@ nohup.out
 server/static
 server/portal/static/vendor/lib/node_modules
 server/media
+server/cms
 
 # Ignore local Django settings
-#server/portal/settings/settings_local.py
-server/portal/settings/settings_secret.py
-#server/portal/settings/settings_agave.py
-#server/portal/settings/settings_celery.py
-#server/portal/settings/elasticsearch.py
+*secrets.py
+*settings_secret.py
 
+docker_repo.var
 server/src
 
 #ignore portal.env
@@ -46,7 +45,8 @@ client/build/
 /portal/static/build/
 
 # no webpack compiled templates
-server/portal/templates/base.html
+server/portal/apps/workbench/templates/portal/apps/workbench/index.html
+server/portal/apps/workbench/templates/portal/apps/workbench/index.html.gz
 
 # in case you leave that here
 datadump.json
@@ -72,7 +72,6 @@ htmlcov/
 .tox/
 .coverage
 .coverage.*
-.coverage*
 .cache
 nosetests.xml
 coverage.xml
@@ -85,9 +84,6 @@ docs/_build/
 target/
 
 /server/conf/docker/logs.txt
-
-package-lock.json
-
 
 ###############################
 # Ansible .gitignores content.
@@ -172,10 +168,5 @@ playbooks/hosts
 # Gitcrypt key
 portal_crypt.key
 
-# docker-compose file with pgadmin.
-server/conf/docker/docker-compose-dev.all.debug.utils.yml
-
 # vim stuff
 *.swp
-server/conf/nginx/certificates/wma_prtl.key
-server/conf/nginx/certificates/wma_prtl.pub

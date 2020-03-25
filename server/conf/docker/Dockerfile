@@ -1,38 +1,42 @@
-FROM centos:centos7
+FROM python:3.6-buster
 
-MAINTAINER TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>
+LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 EXPOSE 8000
 
-#upgrade
-RUN yum upgrade -y
-# add EPEL repo
-RUN yum install -y epel-release
-RUN yum install -y python-pip python-setuptools gcc python-devel unzip wget git mysql-devel vim nfs-utils libsemanage-python postgresql-devel --enablerepo=epel
-RUN yum groupinstall -y 'Development Tools'
+# install locales for en_us.utf-8
+RUN apt-get update && apt-get install -y \
+    dialog \
+    apt-utils \
+    locales \
+    && rm -rf /var/lib/apt/lists/* \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-#install nodejs
-RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
-RUN yum -y install nodejs
+ENV LC_ALL en_US.utf-8
+ENV LANG en_US.utf-8
 
-#install uwsgi
-RUN pip install uwsgi
+RUN apt-get update &&  apt-get install -y --no-install-recommends \
+    sqlite3 \
+    postgresql \
+    postgresql-client
 
-# RUN pip install --upgrade pip && pip install uwsgitop
-RUN pip install --upgrade pip
-RUN pip install uwsgitop==0.10
+# install node 12.x
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN apt-get install -y nodejs
 
+RUN pip3 install --upgrade pip setuptools wheel
+
+# install python packages
 COPY server/requirements.txt /tmp/requirements.txt
-
-RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt
 
 COPY . /srv/www/portal
-#RUN mkdir -p /srv/www/project
 
 RUN mkdir -p /var/log/portal
 
+ARG build_client=build_client
+RUN chmod u+x /srv/www/portal/client/build_client.sh && /srv/www/portal/client/build_client.sh $build_client
+
 WORKDIR /srv/www/portal/server
-
-#RUN npm install
-
-#RUN python manage.py collectstatic -c --traceback --noinput

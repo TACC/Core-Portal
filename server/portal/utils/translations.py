@@ -1,9 +1,8 @@
 import logging
 import os
-import six
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import copy
-from urlparse import urlparse
+from urllib.parse import urlparse
 from django.conf import settings
 
 
@@ -12,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 def get_jupyter_url(system, path, username, is_dir=False):
     """Translate file path and system to Jupyter URL
-    
+
     Requires PORTAL_JUPYTER_URL and PORTAL_JUPYTER_SYSTEM_MAP settings
     Args:
         system: agave system
@@ -35,7 +34,7 @@ def get_jupyter_url(system, path, username, is_dir=False):
     # Have to make a storage system map -> jupyter mount point map with portal-home-{username} keys replaced
     user_replace = lambda k : k.replace("{username}", username)
     system_map = {
-        user_replace(k) : user_replace(v) for (k, v) in portal_jupyter_system_map.iteritems()
+        user_replace(k) : user_replace(v) for (k, v) in portal_jupyter_system_map.items()
     }
 
     # Check to see that the request file manager is configured to a Jupyter mount point
@@ -53,7 +52,7 @@ def get_jupyter_url(system, path, username, is_dir=False):
     _ , ext = os.path.splitext(path)
     if ext == ".ipynb":
         action = "/notebooks"
-    
+
     if is_dir:
         action = "/tree"
 
@@ -71,22 +70,22 @@ def url_parse_inputs(job):
     Translates the inputs of an Agave job to be URL encoded
     """
     job = copy.deepcopy(job)
-    for key, value in six.iteritems(job['inputs']):
+    for key, value in job['inputs'].items():
         # this could either be an array, or a string...
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             parsed = urlparse(value)
             if parsed.scheme:
                 job['inputs'][key] = '{}://{}{}'.format(
-                    parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                    parsed.scheme, parsed.netloc, urllib.parse.quote(parsed.path))
             else:
-                job['inputs'][key] = urllib.quote(parsed.path)
+                job['inputs'][key] = urllib.parse.quote(parsed.path)
         else:
             # If array, replace it with new array where each element was parsed
             parsed_values = [ ]
             for input in value:
                 parsed = urlparse(input)
                 input = '{}://{}{}'.format(
-                    parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                    parsed.scheme, parsed.netloc, urllib.parse.quote(parsed.path))
                 parsed_values.append(input)
             job['inputs'][key] = parsed_values
     return job

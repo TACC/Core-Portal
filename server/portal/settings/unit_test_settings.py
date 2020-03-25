@@ -12,9 +12,9 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
-#pylint: disable=invalid-name
-gettext = lambda s: s
-#pylint: enable=invalid-name
+
+def gettext(s): return s
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,23 +26,23 @@ SITE_ID = 1
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '__CHANGE_ME!__'
 # SECURITY WARNING: don't run with debug turned on in production!
-#Cookie name. this can be whatever you want
-SESSION_COOKIE_NAME='sessionid'  # use the sessionid in your views code
-#the module to store sessions data
-SESSION_ENGINE='django.contrib.sessions.backends.db'
-#age of cookie in seconds (default: 2 weeks)
-SESSION_COOKIE_AGE= 24*60*60*7 # the number of seconds for only 7 for example
-#whether a user's session cookie expires when the web browser is closed
-SESSION_EXPIRE_AT_BROWSER_CLOSE=False
-#whether the session cookie should be secure (https:// only)
-SESSION_COOKIE_SECURE=False
+# Cookie name. this can be whatever you want
+SESSION_COOKIE_NAME = 'sessionid'  # use the sessionid in your views code
+# the module to store sessions data
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+# age of cookie in seconds (default: 2 weeks)
+SESSION_COOKIE_AGE = 24*60*60*7  # the number of seconds for only 7 for example
+# whether a user's session cookie expires when the web browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+# whether the session cookie should be secure (https:// only)
+SESSION_COOKIE_SECURE = False
 
 ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
-PORTAL_ICON_FILENAME='path/to/icon.ico'
-PORTAL_LOGO_FILENAME='path/to/logo.png'
-PORTAL_NAVBAR_BACKGROUND_FILENAME='path/to/background.png'
+PORTAL_ICON_FILENAME = 'path/to/icon.ico'
+PORTAL_LOGO_FILENAME = 'path/to/logo.png'
+PORTAL_NAVBAR_BACKGROUND_FILENAME = 'path/to/background.png'
 PORTAL_DOMAIN = 'test.portal'
 PORTAL_ADMIN_USERNAME = 'wma_prtl'
 
@@ -52,107 +52,90 @@ ROOT_URLCONF = 'portal.urls'
 
 
 INSTALLED_APPS = [
-    'djangocms_admin_style',  # Order-dependent requirement for CMS. Must precede 'django.contrib.admin'.
+
+    # django CMS admin style must be before django.contrib.admin
+    'djangocms_admin_style',
 
     # Core Django.
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sessions.middleware',
-    'django.contrib.admin',
-    'django.contrib.sites',                         # CMS
-    'django.contrib.sitemaps',
-    'django.contrib.staticfiles',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
 
-    # Django CMS.
-    # CMS plugins that must be before 'cms'.
-    'cmsplugin_cascade',
-
-    # - CMS minimum requirements.
-    'cms',
-    'menus',
-    'sekizai',
-    'treebeard',
-
-    # - CMS remaining plugins.
-    'djangocms_text_ckeditor',
-
-    # 'forms_builder.forms',                          # django-forms-builder
-
-
-    'aldryn_bootstrap3',
-    'captcha',                                        # Aldryn-forms
-    'filer',
-    'easy_thumbnails',
-
-    'djangocms_audio',
-    'djangocms_forms',
-    'djangocms_googlemap',
-    'djangocms_snippet',
-    'djangocms_style',
-    'djangocms_youtube',
-    'djangocms_video',
-
-    'cmsplugin_filer_file',
-    'cmsplugin_filer_folder',
-    'cmsplugin_filer_link',
-    'cmsplugin_filer_image',
-    'cmsplugin_filer_teaser',
-    'cmsplugin_filer_video',
-    'cmsplugin_iframe',  # edit template here: /usr/lib/python2.7/site-packages/cmsplugin_iframe/templates/cms/plugins
-    'cmsplugin_socialsharekit',
+    'django.contrib.sites',  # also required for django CMS
+    'django.contrib.sitemaps',
+    'django.contrib.sessions.middleware',
 
     # Django recaptcha.
-    'snowpenguin.django.recaptcha2',
+    'captcha',
+
+    # Some django-filer/Pillow stuff
+    'filer',
+    'easy_thumbnails',
+    'mptt',
 
     # Pipeline.
-    'mptt',
-    'bootstrap3',
+    'bootstrap4',
     'termsandconditions',
     'impersonate',
 
     # Websockets.
     'ws4redis',
 
-    # Haystack integration.
-    'haystack',
-
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
-    'portal.apps.data_depot',
-    'portal.apps.workspace',
-    'portal.apps.signals',
-    'portal.apps.search',
-    'portal.apps.workbench',
     'portal.apps.djangoRT',
-    'portal.apps.projects',
     'portal.apps.licenses',
     'portal.apps.notifications',
     'portal.apps.onboarding',
-    'portal.apps.public_data',
-    'portal.apps.googledrive_integration'
+    'portal.apps.search',
+    'portal.apps.signals',
+    'portal.apps.workbench',
+    'portal.apps.workspace',
+    'portal.apps.system_monitor',
+
+    # django CMS
+    'cms',
+    'menus',
+    'treebeard',
+    'sekizai',
+    'djangocms_text_ckeditor',
+    'djangocms_link',
+    'djangocms_file',
+    'djangocms_picture',
+    'djangocms_video',
+    'djangocms_googlemap',
+    'djangocms_snippet',
+    'djangocms_style',
+    'djangocms_column',
+
 ]
 
 MIDDLEWARE = [
-    'cms.middleware.utils.ApphookReloadMiddleware',
+    # Django core middleware.
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
+
+    'django.middleware.locale.LocaleMiddleware',    # needed for django CMS
+    'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
+
+    # Throws an Error.
+    # 'portal.middleware.PortalTermsMiddleware',
+
+    # django CMS
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
-
-    # Throws an Error.
-    # 'portal.middleware.PortalTermsMiddleware',
+    'cms.middleware.utils.ApphookReloadMiddleware',
 ]
 
 TEMPLATES = [
@@ -166,16 +149,14 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
+
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
                 'portal.utils.contextprocessors.messages',
             ],
-            'libraries':{
-                'sd2e_nav_tags': 'portal.templatetags.sd2e_nav_tags',
-
-            }
         },
     },
 ]
@@ -232,7 +213,6 @@ MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-    ('vendor', os.path.join(BASE_DIR, '../node_modules')),
 ]
 
 FIXTURE_DIRS = [
@@ -251,9 +231,21 @@ DATABASES = {
     }
 }
 
-ALLOCATION_SYSTEMS = [ ]
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'test',
+#         'USER': 'dev',
+#         'PASSWORD': 'dev',
+#         'HOST': 'frontera_prtl_postgres',
+#         'PORT': '5432'
+#     }
+# }
 
-PORTAL_NAMESPACE='test'
+ALLOCATION_SYSTEMS = []
+
+PORTAL_NAMESPACE = 'test'
+PORTAL_ALLOCATION = 'test'
 
 PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/path/to/home_dirs'
 PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
@@ -307,7 +299,7 @@ PORTAL_SEARCH_MANAGERS = {
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
-PORTAL_JOB_NOTIFICATION_STATES = []
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
 
 EXTERNAL_RESOURCE_SECRETS = {
     "google-drive": {
@@ -426,32 +418,31 @@ LOGGING = {
 
 MIGRATION_MODULES = {
     'auth': None,
+    'cms': None,
     'contenttypes': None,
+
+
     'default': None,
-    'sessions': None,
     'core': None,
     'profiles': None,
-    'snippets': None,
-    'scaffold_templates': None,
-    'cms': None,
-    'filer': None,
-    'aldryn_bootstrap3': None,
-    'cmsplugin_cascade': None,
-    'cmsplugin_filer_file': None,
-    'cmsplugin_filer_image': None,
-    'cmsplugin_filer_video': None,
-    'cmsplugin_filer_teaser': None,
-    'cmsplugin_filer_link': None,
-    'cmsplugin_filer_folder': None,
-    'djangocms_audio': None,
+
+    # 'snippets': None,
+    'sites': None,
+
+    # 'scaffold_templates': None,
+
+    'djangocms_column': None,
+    'djangocms_file': None,
     'djangocms_googlemap': None,
+    'djangocms_link': None,
+    'djangocms_picture': None,
     'djangocms_snippet': None,
     'djangocms_style': None,
     'djangocms_text_ckeditor': None,
     'djangocms_video': None,
-    'cmsplugin_socialsharekit': None,
-    'cmsplugin_iframe': None,
-    'djangocms_forms': None
+    'easy_thumbnails': None,
+    'filer': None,
+    'sessions': None,
 }
 
 COMMUNITY_INDEX_SCHEDULE = {'hour': 0, 'minute': 0, 'day_of_week': 0}
@@ -461,11 +452,6 @@ COMMUNITY_INDEX_SCHEDULE = {'hour': 0, 'minute': 0, 'day_of_week': 0}
 CMS_PERMISSION = True
 
 CMS_PLACEHOLDER_CONF = {}
-
-CMSPLUGIN_CASCADE_PLUGINS = ['cmsplugin_cascade.bootstrap3']
-CMSPLUGIN_CASCADE_PLUGINS.append('cmsplugin_cascade.link')
-SELECT2_CSS = 'node_modules/select2/dist/css/select2.min.css'  # PATH?
-SELECT2_JS = 'node_modules/select2/dist/js/select2.min.js'     # PATH?
 
 
 CMSPLUGIN_FILER_IMAGE_STYLE_CHOICES = (
@@ -477,7 +463,7 @@ CMSPLUGIN_FILER_IMAGE_DEFAULT_STYLE = 'default'
 TEXT_ADDITIONAL_TAGS = ('iframe',)
 TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'src', 'height', 'width')
 
-TEXT_SAVE_IMAGE_FUNCTION='cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
+TEXT_SAVE_IMAGE_FUNCTION = 'cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
 
 THUMBNAIL_HIGH_RESOLUTION = True
 
@@ -495,10 +481,10 @@ CKEDITOR_SETTINGS = {
     'toolbar': 'CMS',
 }
 
-ALDRYN_BOILERPLATE_NAME='bootstrap3'
-
 # DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = RECAPTCHA_PUBLIC_KEY
 # DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = RECAPTCHA_PRIVATE_KEY
+
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
 

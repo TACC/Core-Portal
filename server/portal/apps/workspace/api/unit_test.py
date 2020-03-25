@@ -11,7 +11,7 @@ class TestJobHistoryView(TestCase):
         self.mock_agave_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
         self.mock_agave_client = self.mock_agave_patcher.start()
         self.client.force_login(get_user_model().objects.get(username="username"))
-    
+
     def tearDown(self):
         self.mock_agave_patcher.stop()
 

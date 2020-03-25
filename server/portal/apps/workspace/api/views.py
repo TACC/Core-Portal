@@ -2,18 +2,16 @@
 .. :module:: apps.workspace.api.views
    :synopsys: Views to handle Workspace API
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import json
-import urllib
-import os
-from urlparse import urlparse
-from datetime import datetime, timedelta
-from django.http import JsonResponse, HttpResponse
+from urllib.parse import urlparse
+from datetime import timedelta
+from django.utils import timezone
+from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from portal.utils.translations import get_jupyter_url
 from portal.apps.workspace.api import lookups as LookupManager
 from portal.views.base import BaseApiView
@@ -26,10 +24,10 @@ from portal.apps.workspace.managers.user_applications import UserApplicationsMan
 from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
 
-#pylint: disable=invalid-name
+
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
-#pylint: enable=invalid-name
+
 
 def get_manager(request, file_mgr_name):
     """Lookup Manager to handle call"""
@@ -44,6 +42,7 @@ def _app_license_type(app_id):
     app_lic_type = app_id.replace('-{}'.format(app_id.split('-')[-1]), '').upper()
     lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
     return lic_type
+
 
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
@@ -60,20 +59,13 @@ class AppsView(BaseApiView):
             data['scheduler'] = exec_sys.scheduler
             data['exec_sys'] = exec_sys.to_dict()
 
-            # set maxNodes from system queue for app
-            if (data['parallelism'] == 'PARALLEL') and ('defaultQueue' in data):
-                for queue in exec_sys.queues.all():
-                    if queue.name == data['defaultQueue']:
-                        data['maxNodes'] = queue.maxNodes
-                        break
-
             lic_type = _app_license_type(app_id)
             data['license'] = {
                 'type': lic_type
             }
             if lic_type is not None:
                 _, license_models = get_license_info()
-                license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                license_model = [x for x in license_models if x.license_type == lic_type][0]
                 lic = license_model.objects.filter(user=request.user).first()
                 data['license']['enabled'] = lic is not None
         else:
@@ -85,13 +77,14 @@ class AppsView(BaseApiView):
                 data = agave.apps.list(privateOnly=True)
         return JsonResponse({"response": data})
 
+
 @method_decorator(login_required, name='dispatch')
 class MonitorsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         target = request.GET.get('target')
         logger.info(request.GET)
         admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
-                token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+                             token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
         data = admin_client.monitors.list(target=target)
         return JsonResponse({"response": data})
 
@@ -121,7 +114,7 @@ class MetadataView(BaseApiView):
             }
             if lic_type is not None:
                 _, license_models = get_license_info()
-                license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                license_model = [x for x in license_models if x.license_type == lic_type][0]
                 lic = license_model.objects.filter(user=request.user).first()
                 data['license']['enabled'] = lic is not None
         else:
@@ -134,7 +127,7 @@ class MetadataView(BaseApiView):
                     ]
                 })
             data = agave.meta.listMetadata(q=query)
-        return JsonResponse({'response': data})
+        return JsonResponse({'response': {'listing': data, 'default_tab': settings.PORTAL_APPS_DEFAULT_TAB}})
 
     def post(self, request, *args, **kwargs):
         agave = request.user.agave_oauth.client
@@ -169,7 +162,7 @@ class JobsView(BaseApiView):
             job_meta = agave.meta.listMetadata(q=json.dumps(q))
             data['_embedded'] = {"metadata": job_meta}
 
-            #TODO: Decouple this from front end somehow!
+            # TODO: Decouple this from front end somehow!
             archiveSystem = data.get('archiveSystem', None)
             if archiveSystem:
                 archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])
@@ -195,17 +188,17 @@ class JobsView(BaseApiView):
             jobs = JobSubmission.objects.all().filter(user=request.user)
 
             if period != "all":
-                enddate = datetime.now()
+                enddate = timezone.now()
                 if period == "day":
                     days = 1
-                if period == "week":
+                elif period == "week":
                     days = 7
                 elif period == "month":
                     days = 30
                 startdate = enddate - timedelta(days=days)
                 jobs = jobs.filter(time__range=[startdate, enddate])
 
-            user_job_ids = [ 
+            user_job_ids = [
                 job.jobId for job in jobs
             ]
             data = list(
@@ -232,13 +225,13 @@ class JobsView(BaseApiView):
 
         # cancel job / stop job
         if job_id and job_action:
-            data = agave.jobs.manage(jobId=job_id, body={"action":job_action})
+            data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
             return JsonResponse({"response": data})
         # submit job
         elif job_post:
 
             # cleaning archive path value
-            if 'archivePath' in job_post:
+            if job_post.get('archivePath'):
                 parsed = urlparse(job_post['archivePath'])
                 if parsed.path.startswith('/') and len(parsed.path) > 1:
                     # strip leading '/'
@@ -260,7 +253,7 @@ class JobsView(BaseApiView):
             else:
                 job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
-                        datetime.now().strftime('%Y-%m-%d'))
+                        timezone.now().strftime('%Y-%m-%d'))
                 job_post['archiveSystem'] = \
                     settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(request.user.username)
 
@@ -268,12 +261,11 @@ class JobsView(BaseApiView):
             lic_type = _app_license_type(job_post['appId'])
             if lic_type is not None:
                 _, license_models = get_license_info()
-                license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                license_model = [x for x in license_models if x.license_type == lic_type][0]
                 lic = license_model.objects.filter(user=request.user).first()
                 job_post['parameters']['_license'] = lic.license_as_str()
 
             # url encode inputs
-            # TODO: PUll this out of here and make it a utility
             if job_post['inputs']:
                 job_post = url_parse_inputs(job_post)
 
@@ -281,8 +273,8 @@ class JobsView(BaseApiView):
             apps_mgr = UserApplicationsManager(request.user)
             app = apps_mgr.get_or_create_app(job_post['appId'], job_post['allocation'])
 
-            if app._new_exec_sys:
-                return JsonResponse({"response": {"execSys": app._new_exec_sys.to_dict()}})
+            if app.exec_sys:
+                return JsonResponse({"response": {"execSys": app.exec_sys.to_dict()}})
 
             job_post['appId'] = app.id
             del job_post['allocation']
@@ -297,21 +289,23 @@ class JobsView(BaseApiView):
             job_post['parameters']['_webhook_base_url'] = wh_base_url
             job_post['notifications'] = [
                 {'url': jobs_wh_url,
-                'event': e}
-                for e in ["PENDING", "QUEUED", "SUBMITTING", "PROCESSING_INPUTS", "STAGED", "RUNNING", "KILLED", "FAILED", "STOPPED", "FINISHED", "BLOCKED"]]
+                 'event': e}
+                for e in settings.PORTAL_JOB_NOTIFICATION_STATES]
 
             # Remove any params from job_post that are not in appDef
-            for param, _ in job_post['parameters'].items():
-                if not any(p['id'] == param for p in app.parameters):
-                    del job_post['parameters'][param]
+            job_post['parameters'] = {param: job_post['parameters'][param]
+                                      for param in job_post['parameters']
+                                      if param in [p['id'] for p in app.parameters]}
 
             response = agave.jobs.submit(body=job_post)
+
             if "id" in response:
                 job = JobSubmission.objects.create(
                     user=request.user,
                     jobId=response["id"]
                 )
                 job.save()
+
             return JsonResponse({"response": response})
 
 
@@ -363,6 +357,7 @@ class SystemsView(BaseApiView):
         agc = service_account()
         data = agc.systems.updateRole(systemId=system_id, body=role_body)
         return JsonResponse({"response": data})
+
 
 @method_decorator(login_required, name='dispatch')
 class JobHistoryView(BaseApiView):

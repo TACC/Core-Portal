@@ -1,0 +1,35 @@
+.data-files-nav-link {
+  color: #9d85ef;
+}
+.data-files-nav-link:hover {
+  color: #9d85ef;
+}
+
+.data-files-name {
+  font-size: 10px/11px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scroll-fade {
+  position: relative;
+}
+
+.scroll-fade:after {
+  position: absolute;
+  bottom: 0;
+  height: 70px;
+  width: 100%;
+  content: "";
+  background: linear-gradient( to top,
+    rgba(255, 255, 255, 0.7) 20%, rgba(255, 255, 255, 0) 95%
+  );
+  pointer-events: none;
+}
+.icon-filetype {
+  font-size: 1.1em;
+  color: #707070;
+  display: flex;
+}

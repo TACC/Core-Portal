@@ -2,7 +2,6 @@
 .. module: portal.exceptions.api
    :synopsis: Exceptions used within the API
 """
-from __future__ import unicode_literals, absolute_import
 from requests.exceptions import RequestException
 from requests.models import Response
 

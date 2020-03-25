@@ -2,7 +2,7 @@
 .. module:: views.base
    :synopsis: Base views to standardize error logging and handling.
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from requests.exceptions import ConnectionError, HTTPError
 from django.views.generic import View

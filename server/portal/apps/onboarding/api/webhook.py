@@ -1,18 +1,12 @@
 from portal.apps.onboarding.execute import (
-    load_setup_step, 
+    load_setup_step,
     execute_setup_steps
-)
-from portal.apps.accounts.models import PortalProfile
-from portal.apps.onboarding.models import (
-    SetupEvent, 
-    SetupEventEncoder
 )
 from portal.apps.onboarding.state import SetupState
 from portal.views.base import BaseApiView
 from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
 from django.http import (
-    JsonResponse, 
     HttpResponse,
     HttpResponseBadRequest,
     HttpResponseForbidden
@@ -25,6 +19,7 @@ import base64
 import traceback
 
 logger = logging.getLogger(__name__)
+
 
 class SetupStepWebhookView(BaseApiView):
     @method_decorator(csrf_exempt)
@@ -64,7 +59,7 @@ class SetupStepWebhookView(BaseApiView):
             logger.info("Webhook authorization failed")
             logger.info(ex)
             return HttpResponseForbidden()
-        
+
         # Get request body
         setup = json.loads(request.body)
 

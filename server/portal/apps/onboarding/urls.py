@@ -4,12 +4,13 @@
 """
 from django.conf.urls import url
 from portal.apps.onboarding.views import (
-    SetupStatusView, 
+    SetupStatusView,
     SetupAdminView
 )
 from portal.apps.onboarding import views
 
 
+app_name = 'portal_onboarding'
 urlpatterns = [
     # Holding page for users that are not setup_complete
     url(r'^setup(?:/(?P<username>[\w]+))?', view=SetupStatusView.as_view(), name='holding'),

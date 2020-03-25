@@ -1,5 +1,4 @@
-from __future__ import unicode_literals, absolute_import
-from inspect import isclass, isfunction
+from inspect import isclass
 from importlib import import_module
 from django.conf import settings
 from portal.apps.onboarding.state import SetupState
@@ -10,13 +9,17 @@ from portal.apps.accounts.models import PortalProfile
 import logging
 
 logger = logging.getLogger(__name__)
+
+
 class StepExecuteException(Exception):
     """
     Exception raised when setup step processing
     is interrupted
     """
+
     def __init__(self, message):
         super(StepExecuteException, self).__init__(message)
+
 
 def new_user_setup_check(user):
     extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
@@ -29,6 +32,7 @@ def new_user_setup_check(user):
         logger.info("Preparing onboarding steps for user {username}".format(username=user.username))
         prepare_setup_steps(user)
 
+
 def log_setup_state(user, message):
     # Create an event log for a user completing setup.
     # This will also signal the front end
@@ -37,9 +41,10 @@ def log_setup_state(user, message):
         step="portal.apps.onboarding.execute.execute_setup_steps",
         state=SetupState.COMPLETED if user.profile.setup_complete else SetupState.FAILED,
         message=message,
-        data={ "setup_complete" : user.profile.setup_complete }
+        data={"setup_complete": user.profile.setup_complete}
     )
     event.save()
+
 
 def load_setup_step(user, step):
     module_str, callable_str = step.rsplit('.', 1)
@@ -60,6 +65,7 @@ def load_setup_step(user, step):
         )
     return setup_step
 
+
 def prepare_setup_steps(user):
     """
     Set the initial state of all setup steps for a given user
@@ -69,6 +75,7 @@ def prepare_setup_steps(user):
         setup_step = load_setup_step(user, step)
         if setup_step.last_event is None:
             setup_step.prepare()
+
 
 @shared_task()
 def execute_setup_steps(username):
@@ -101,7 +108,7 @@ def execute_setup_steps(username):
     user.profile.setup_complete = True
     user.profile.save()
     log_setup_state(
-        user, 
+        user,
         "{user} setup is now complete".format(
             user=user.username
         )

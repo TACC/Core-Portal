@@ -5,7 +5,6 @@ from django.test import TestCase
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-print settings.FIXTURE_DIRS
 
 class TestAppsApiViews(TestCase):
     fixtures = ['users', 'auth']
@@ -52,8 +51,8 @@ class TestAppsApiViews(TestCase):
             }
         ]
 
-        #need to do a return_value on the mock_client because
-        #the calling signature is something like client = Agave(**kwargs).apps.list()
+        # need to do a return_value on the mock_client because
+        # the calling signature is something like client = Agave(**kwargs).apps.list()
         self.mock_client.apps.list.return_value = apps
         response = self.client.get('/api/workspace/apps/', follow=True)
         data = response.json()
@@ -78,7 +77,7 @@ class TestAppsApiViews(TestCase):
         self.assertTrue("response" in data)
         self.assertTrue(self.mock_client.jobs.submit.called)
         self.assertEqual(response.status_code, 200)
-        #make sure that the notifications get into the body of the job submission
+        # make sure that the notifications get into the body of the job submission
         args, kwargs = self.mock_client.jobs.submit.call_args
         body = kwargs["body"]
         self.assertTrue("notifications" in body)
@@ -97,7 +96,7 @@ class TestAppsApiViews(TestCase):
 
         # the spaces should get quoted out
         job_data = self.job_data
-        job_data["inputs"]["workingDirectory"] = u"agave://test.system/name with spaces"
+        job_data["inputs"]["workingDirectory"] = "agave://test.system/name with spaces"
         self.mock_client.jobs.submit.return_value = {"status": "ok"}
 
         self.client.force_login(user)
@@ -106,7 +105,7 @@ class TestAppsApiViews(TestCase):
         args, kwargs = self.mock_client.jobs.submit.call_args
         body = kwargs["body"]
         input = body["inputs"]["workingDirectory"]
-        #the spaces should have been quoted
+        # the spaces should have been quoted
         self.assertTrue("%20" in input)
 
     def test_licensed_apps(self):

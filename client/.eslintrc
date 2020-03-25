@@ -1,35 +1,58 @@
 {
-    "extends": ["eslint:recommended"],
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module",
-    },
+    "root": true,
     "env": {
         "browser": true,
-        "node": true,
         "es6": true,
-        "jquery": true,
-        "mocha": true,
-        "jasmine": true,
+        "jest": true
     },
-    "rules": {
-        "semi"                  : [1, "always"],
-        "consistent-return"     : 2,
-        "indent"                : [1, 4, { "SwitchCase": 1 }],
-        "no-else-return"        : 1,
-        "space-unary-ops"       : 2,
-        "max-len"               : 0,
-        "arrow-parens"          : 1,
-        "quote-props"           : [1, "as-needed"],
-        "quotes"                : [1, "single", {"avoidEscape": true}],
-        "one-var"               : [1, "consecutive"],
-        "brace-style"           : [1, "1tbs", { "allowSingleLine": true }],
-        "object-curly-spacing"  : [1, "always"],
-        "no-unused-vars"        : 1,
-    },
+    "extends": [
+        "airbnb",
+        "standard",
+        "prettier",
+        "prettier/react",
+        "prettier/standard"
+    ],
     "globals": {
-        "moment": false,
-        "angular": false,
-        "inject": false,
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "prettier",
+        "jest"
+    ],
+    "parser": "babel-eslint",
+    "ignorePatterns": ["*.test.js"],
+    "rules": {
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/*.test.js", "**/*.spec.js"]}],
+        "semi": [1, "always"],
+        "no-underscore-dangle": 0,
+        "react/jsx-props-no-spreading": [2, {
+            "html": "enforce" ,
+            "custom": "enforce",
+            "exceptions": ["input", "Input", "FormField", "Table", "table", "thead", "tbody", "th", "tr", "td", "div"],
+            "explicitSpread": "ignore"
+        }],
+        "prettier/prettier": ["error", { "singleQuote": true }],
+        "jsx-a11y/anchor-is-valid": 0
+    },
+    "settings": {
+        "import/resolver": {
+            // Prevent `path` resolution error in Webpack configs.
+            // SEE: https://github.com/benmosher/eslint-plugin-import/issues/1396#issuecomment-511007063
+            "node": {},
+            // Support Webpack aliases
+            "webpack": {
+                "config": "webpack.common.js"
+            }
+        }
     }
 }

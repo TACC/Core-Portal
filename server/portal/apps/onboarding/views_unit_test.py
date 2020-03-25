@@ -1,12 +1,14 @@
-from mock import Mock, patch, MagicMock, ANY
-from portal.apps.onboarding.state import SetupState
-from portal.apps.onboarding.models import SetupEvent
+from mock import patch, ANY
 from django.contrib.auth import get_user_model
-from django.db.models import signals
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.test import TestCase, RequestFactory
 from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.onboarding.views import SetupStatusView
+import pytest
+
+
+pytestmark = pytest.mark.django_db
+
 
 class TestSetupStatusView(TestCase):
     def setUp(self):
@@ -52,13 +54,13 @@ class TestSetupStatusView(TestCase):
         request.user = self.user
         self.view.get(request, "mockuser")
         self.mock_render.assert_called_with(
-            request, 
+            request,
             'portal/apps/onboarding/setup.html',
             {
                 "first_name": "mock",
                 "last_name": "user",
                 "email": "mock@user.com",
-                "username" : "mockuser"
+                "username": "mockuser"
             }
         )
 
@@ -76,7 +78,7 @@ class TestSetupStatusView(TestCase):
                 "first_name": "mock",
                 "last_name": "user",
                 "email": "mock@user.com",
-                "username" : "mockuser"
+                "username": "mockuser"
             }
         )
 
@@ -87,4 +89,3 @@ class TestSetupStatusView(TestCase):
         response = self.view.get(request, "otheruser")
         self.mock_logout.assert_called_with(ANY)
         self.assertEqual(type(response), HttpResponseRedirect)
-

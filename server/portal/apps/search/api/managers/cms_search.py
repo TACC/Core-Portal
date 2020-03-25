@@ -3,7 +3,7 @@
    :synopsis: Manager handling CMS searches.
 """
 
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from future.utils import python_2_unicode_compatible
 from portal.apps.search.api.managers.base import BaseSearchManager

@@ -1,10 +1,12 @@
 
 from portal.apps.workspace.models import JobSubmission
 from django.contrib.auth import get_user_model
-from django.db.models import signals
-from django.test import TransactionTestCase
+from django.test import TestCase
+import pytest
 
-class TestJobSubmissionModel(TransactionTestCase):
+
+@pytest.mark.django_db(transaction=True)
+class TestJobSubmissionModel(TestCase):
     def setUp(self):
         super(TestJobSubmissionModel, self).setUp()
         # Create a test user
@@ -21,4 +23,3 @@ class TestJobSubmissionModel(TransactionTestCase):
         event = JobSubmission.objects.all()[0]
         self.assertEqual(event.user, self.user)
         self.assertEqual(event.jobId, "1234")
-

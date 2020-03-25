@@ -1,6 +1,7 @@
 [
   {
     "model": "auth.user",
+    "pk": 1,
     "fields": {
       "password": "password",
       "last_login": "2018-09-10T19:56:35.919Z",

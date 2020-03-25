@@ -2,7 +2,6 @@
 .. module: portal.libs.agave.exceptions
     :synopsis: Exceptions for the agave
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 from portal.libs.exceptions import PortalLibException
 

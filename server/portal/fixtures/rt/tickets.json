@@ -1,0 +1,52 @@
+[
+  {
+    "id": "ticket/51234",
+    "Queue": "Web & Mobile Apps",
+    "Owner": "Nobody",
+    "Creator": "portal",
+    "Subject": "New User Access Request",
+    "Status": "user_wait",
+    "Priority": "0",
+    "InitialPriority": "0",
+    "FinalPriority": "0",
+    "Requestors": [
+      "username@tacc.utexas.edu"
+    ],
+    "Created": "Mon Jan 28 14:43:36 2019",
+    "Starts": "Not set",
+    "Started": "Mon Jan 28 14:51:39 2019",
+    "Due": "Not set",
+    "Resolved": "Mon Jan 28 14:51:39 2019",
+    "Told": "Mon Oct 28 20:49:03 2019",
+    "LastUpdated": "Tue Oct 29 08:13:19 2019",
+    "TimeEstimated": "0",
+    "TimeWorked": "0",
+    "TimeLeft": "0",
+    "CF.{Resource}": ""
+  },
+  {
+    "id": "ticket/51235",
+    "Queue": "Web & Mobile Apps",
+    "Owner": "username",
+    "Creator": "portal",
+    "Subject": "test ticket for username",
+    "Status": "resolved",
+    "Priority": "0",
+    "InitialPriority": "0",
+    "FinalPriority": "0",
+    "Requestors": [
+      "username@tacc.utexas.edu"
+    ],
+    "Created": "Mon May 20 18:39:33 2019",
+    "Starts": "Not set",
+    "Started": "Mon May 20 22:09:01 2019",
+    "Due": "Not set",
+    "Resolved": "Mon May 20 22:09:01 2019",
+    "Told": "Mon May 20 22:09:01 2019",
+    "LastUpdated": "Mon May 20 22:09:01 2019",
+    "TimeEstimated": "0",
+    "TimeWorked": "0",
+    "TimeLeft": "0",
+    "CF.{Resource}": "DUMMY_portal"
+  }
+]

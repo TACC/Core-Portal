@@ -1,0 +1,15 @@
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "targets": "> 1%, not dead"
+            }
+        ],
+        "react-app"
+    ],
+    "plugins": [
+        "@babel/plugin-proposal-class-properties",
+        "react-hot-loader/babel"
+    ]
+}

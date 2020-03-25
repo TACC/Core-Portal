@@ -1,21 +1,20 @@
 import logging
-from future.utils import python_2_unicode_compatible
 from portal.views.base import BaseApiView
 from portal.apps.users import utils as users_utils
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import user_passes_test
 from django.forms.models import model_to_dict
 from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator 
+from django.utils.decorators import method_decorator
 from django.conf import settings
 from elasticsearch_dsl import Q
-from pytas.http import TASClient
 from portal.libs.elasticsearch.docs.base import IndexedFile
-from portal.apps.users.utils import get_allocations
+from pytas.http import TASClient
+from portal.apps.users.utils import get_allocations, get_usernames, get_user_data
 
 logger = logging.getLogger(__name__)
+
 
 class AuthenticatedView(BaseApiView):
 
@@ -39,7 +38,6 @@ class AuthenticatedView(BaseApiView):
         return HttpResponse('Unauthorized', status=401)
 
 
-@python_2_unicode_compatible
 @method_decorator(login_required, name='dispatch')
 class UsageView(BaseApiView):
 
@@ -48,7 +46,7 @@ class UsageView(BaseApiView):
         system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
         search = IndexedFile.search()
         # search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
-        search = search.filter(Q('term', **{"system._exact":system}))
+        search = search.filter(Q('term', **{"system._exact": system}))
         search = search.extra(size=0)
         search.aggs.metric('total_storage_bytes', 'sum', field="length")
         resp = search.execute()
@@ -59,7 +57,6 @@ class UsageView(BaseApiView):
         return JsonResponse(out, safe=False)
 
 
-@python_2_unicode_compatible
 @method_decorator(login_required, name='dispatch')
 class SearchView(BaseApiView):
 
@@ -71,7 +68,7 @@ class SearchView(BaseApiView):
         if q:
             try:
                 user = model.objects.get(username=q)
-            except ObjectDoesNotExist as err:
+            except ObjectDoesNotExist:
                 return HttpResponseNotFound()
             res_dict = {
                 'first_name': user.first_name,
@@ -84,7 +81,7 @@ class SearchView(BaseApiView):
                 res_dict['profile'] = {
                     'institution': user_tas['institution']
                 }
-            except Exception as err:
+            except Exception:
                 logger.info('No Profile.')
 
             return JsonResponse(res_dict)
@@ -108,16 +105,36 @@ class SearchView(BaseApiView):
             return HttpResponseNotFound()
 
 
-@python_2_unicode_compatible
 @method_decorator(login_required, name='dispatch')
 class AllocationsView(BaseApiView):
 
     def get(self, request):
         """Returns active user allocations on TACC resources
 
-        : returns: {'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION}
+        : returns: {'response': {'active': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive, 'hosts': hosts}}
         : rtype: dict
         """
-        allocations = get_allocations(request.user.username)
+        data = get_allocations(request.user.username)
 
-        return JsonResponse({'allocs': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION}, safe=False)
+        return JsonResponse({"response": data, "status": 200})
+
+
+@method_decorator(login_required, name='dispatch')
+class TeamView(BaseApiView):
+
+    def get(self, request, project_id):
+        """Returns usernames for project team
+
+        : returns: {'usernames': usernames}
+        : rtype: dict
+        """
+        usernames = get_usernames(project_id)
+        return JsonResponse({'usernames': usernames}, safe=False)
+
+
+@method_decorator(login_required, name='dispatch')
+class UserDataView(BaseApiView):
+
+    def get(self, request, username):
+        user_data = get_user_data(username)
+        return JsonResponse({username: user_data})

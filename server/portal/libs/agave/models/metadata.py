@@ -2,7 +2,6 @@
 .. :module:: portal.libs.agave.models.metadata
    :synopsis: Classes to represent Agave Metadata
 """
-from __future__ import unicode_literals, absolute_import
 import logging
 import json
 from cached_property import cached_property_with_ttl

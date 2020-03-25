@@ -2,21 +2,12 @@
 .. module: apps.data_depot.managers.base
    :synopsis: Abstract classes to build Data Depot file managers.
 """
-from __future__ import unicode_literals, absolute_import
 import logging
-#import datetime
-#import os
 from abc import ABCMeta, abstractmethod, abstractproperty
 from six import add_metaclass
-#from future.utils import python_2_unicode_compatible
-#from cached_property import cached_property
-#from django.conf import settings
-#from django.contrib.auth import get_user_model
-#from requests.exceptions import HTTPError
 
-#pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+
 
 @add_metaclass(ABCMeta)
 class AbstractWorkspaceManager:
@@ -31,7 +22,7 @@ class AbstractWorkspaceManager:
     standardize this by creating a small abstraction layer.
     """
 
-    def __init__(self, request, **kwargs):#pylint: disable=unused-argument
+    def __init__(self, request, **kwargs):
         """Inspect the request object to initialize manager.
 
         :param request: Django request object.
@@ -61,7 +52,7 @@ class AbstractWorkspaceManager:
 
 @add_metaclass(ABCMeta)
 class AbstractApplicationsManager:
-    """Abstract class describing a Manager for a user's cloned applications 
+    """Abstract class describing a Manager for a user's cloned applications
     and cloned execution systems.
     """
 
@@ -80,7 +71,7 @@ class AbstractApplicationsManager:
     @abstractmethod
     def get_clone_system_id(self, *args, **kwargs):
         """Gets system id to deploy cloned app materials to.
-        
+
         *System Id* is a string, unique id for each system.
         This function returns the system id for a user's home system.
 
@@ -118,7 +109,7 @@ class AbstractApplicationsManager:
     def clone_application(self, *args, **kwargs):
         """Clones an application given a host app, allocation, and target name.
 
-        ..note: checks if cloned Execution System already exists for user, 
+        ..note: checks if cloned Execution System already exists for user,
         and creates it if not.
 
         :param str allocation: Project allocation
@@ -134,10 +125,10 @@ class AbstractApplicationsManager:
     @abstractmethod
     def get_or_create_cloned_app(self, *args, **kwargs):
         """Gets or creates a cloned app for the user.
-        
+
         Generates a cloned app id and tries to fetch that app.
         If the app exists, check for updates.
-        
+
         If app does not exist, clone the host app to cloned app id.
 
         :param host_app: Application instance of host app
@@ -153,7 +144,7 @@ class AbstractApplicationsManager:
         """Gets or creates application for user.
 
         If application selected is owned by user, return the app,
-        else clone the app to the same exec system with the 
+        else clone the app to the same exec system with the
         specified allocation.
 
         ..note: Entry point.
@@ -173,7 +164,7 @@ class AbstractApplicationsManager:
         :param str host_system_id: Agave id of host execution system
         :param str new_system_id: id for system clone
         :param str alloc: Project allocation for system's custom directives
-        
+
         :returns: ExecutionSystem instance
         :rtype: ExecutionSystem
         """

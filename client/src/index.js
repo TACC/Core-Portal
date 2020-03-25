@@ -1,18 +1,20 @@
-import $ from 'jquery';
-import 'bootstrap';
-import * as tv4 from 'tv4';
-window["$"] = $;
-window["jQuery"] = $;
-window["jquery"] = $;
-window["tv4"] = tv4;
+import 'react-hot-loader';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import AppRouter from './components/Workbench';
+import './index.scss';
+import * as serviceWorker from './serviceWorker';
+import store from './redux/store';
 
-import 'bootstrap-datepicker/dist/css/bootstrap-datepicker.css';
-import 'angular-material/angular-material.css';
-// import 'font-awesome/css/font-awesome.css';
-import '../css/portal.css';
-import '../css/search.css';
-import '../css/workbench.css';
-import '../css/dashboard.css';
-import '../css/notifications.css';
+ReactDOM.render(
+  <Provider store={store}>
+    <AppRouter />
+  </Provider>,
+  document.getElementById('react-root')
+);
 
-import mod from './angular/main.module.js';
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.unregister();

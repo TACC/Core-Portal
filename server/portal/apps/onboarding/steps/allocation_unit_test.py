@@ -1,11 +1,11 @@
 from django.test import TestCase, RequestFactory, override_settings
 from django.contrib.auth import get_user_model
-from mock import patch, ANY
-from portal.apps.onboarding.models import SetupEvent
-from portal.apps.onboarding.state import SetupState
+from mock import patch
 from portal.apps.onboarding.steps.allocation import AllocationStep
-from pytas.http import TASClient
+import pytest
 
+
+@pytest.mark.django_db(transaction=True)
 class AllocationStepTest(TestCase):
     def setUp(self):
         super(AllocationStepTest, self).setUp()
@@ -62,7 +62,7 @@ class AllocationStepTest(TestCase):
 
     @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
     def test_user_has_no_resources(self):
-        self.mock_get_allocations.return_value = { }
+        self.mock_get_allocations.return_value = {}
         self.step.process()
         self.mock_log.assert_called_with(
             "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
@@ -74,7 +74,7 @@ class AllocationStepTest(TestCase):
     @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
     def test_user_has_wrong_resources(self):
         self.mock_get_allocations.return_value = {
-            "ls5.tacc.utexas.edu" : [ ]
+            "ls5.tacc.utexas.edu": []
         }
         self.step.process()
         self.mock_log.assert_called_with(
@@ -86,20 +86,20 @@ class AllocationStepTest(TestCase):
 
     @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
     def test_user_has_no_resources_pi_inelligible(self):
-        self.mock_get_allocations.return_value = { }
+        self.mock_get_allocations.return_value = {}
         self.mock_tas_get_user.return_value['piEligibility'] = 'Ineligible'
         self.step.process()
         self.mock_log.assert_called_with(
             "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
             data={
                 "more_info": self.step.pi_ineligible_message
-            } 
+            }
         )
 
     @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
     def test_user_has_system(self):
         self.mock_get_allocations.return_value = {
-            "stampede2.tacc.utexas.edu" : [ ]
+            "stampede2.tacc.utexas.edu": []
         }
         self.step.process()
         self.mock_complete.assert_called_with("You have the required systems for accessing this portal")

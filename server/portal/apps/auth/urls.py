@@ -2,15 +2,10 @@
 .. module:: portal.apps.auth.urls
    :synopsis: Auth URls
 """
-# from django.conf import settings
-from django.conf.urls import include, url
-from django.core.urlresolvers import reverse
-# from django.conf.urls.i18n import i18n_patterns
-# from django.conf.urls.static import static
-# from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.conf.urls import url
 from portal.apps.auth import views
 
+app_name = 'portal_auth'
 urlpatterns = [
     url(r'^logged-out/$', views.logged_out, name='logout'),
     url(r'^agave/$', views.agave_oauth, name='agave_oauth'),

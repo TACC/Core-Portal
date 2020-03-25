@@ -2,7 +2,7 @@
 .. module:: portal.utils.decorators
    :synopsis: Decorator to be used across the portal.
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from functools import wraps
 from portal.utils.jwt_auth import login_user_agave_jwt

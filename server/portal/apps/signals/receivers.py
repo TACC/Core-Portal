@@ -14,9 +14,9 @@ import copy
 logger = logging.getLogger(__name__)
 WEBSOCKETS_FACILITY = 'notifications'
 
-@receiver(portal_event, dispatch_uid = __name__)
+
+@receiver(portal_event, dispatch_uid=__name__)
 def portal_event_callback(sender, **kwargs):
-    event_type = kwargs.get('event_type', '')
     users = kwargs.get('event_users', [])
 
     data = copy.copy(kwargs)
@@ -33,7 +33,7 @@ def portal_event_callback(sender, **kwargs):
 
 @receiver(post_save, sender=Notification, dispatch_uid='notification_msg')
 def send_notification_ws(sender, instance, created, **kwargs):
-    #Only send WS message if it's a new notification not if we're updating.
+    # Only send WS message if it's a new notification not if we're updating.
     logger.debug('receiver received something.')
     if not created:
         return
@@ -46,13 +46,12 @@ def send_notification_ws(sender, instance, created, **kwargs):
         msg = RedisMessage(instance_dict)
         rp.publish_message(msg)
 #        logger.debug('WS socket msg sent: {}'.format(instance_dict))
-    except Exception as e:
+    except Exception:
         logger.debug('Exception sending websocket message',
-                      exc_info=True,
-                      extra = instance.to_dict())
-        logger.debug('Exception sending websocket message',
-                     exc_info=True)
+                     exc_info=True,
+                     extra=instance.to_dict())
     return
+
 
 @receiver(post_save, sender=SetupEvent, dispatch_uid='setup_event')
 def send_setup_event(sender, instance, created, **kwargs):
@@ -66,7 +65,7 @@ def send_setup_event(sender, instance, created, **kwargs):
     # All staff will receive websocket notifications so they can see
     # setup event updates for users they are administering
     receiving_users = get_user_model().objects.all().filter(is_staff=True)
-    receiving_users = [ user for user in receiving_users ]
+    receiving_users = [user for user in receiving_users]
     # Add the setup_event's user to the notification list
     receiving_users.append(setup_event.user)
     try:
@@ -83,11 +82,11 @@ def send_setup_event(sender, instance, created, **kwargs):
         # notifications. This also prevents staff from accumulating messages
         # for all users.
         rp.publish_message(msg, expire=10)
-        
-    except:
+
+    except Exception:
         logger.debug(
             'Exception sending websocket message',
             exc_info=True,
-            extra = setup_event.to_dict()
+            extra=setup_event.to_dict()
         )
     return

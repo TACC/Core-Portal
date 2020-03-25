@@ -2,7 +2,7 @@
 .. :module:: apps.search.api.views
    :synopsys: Views to handle Search API
 """
-from __future__ import unicode_literals, absolute_import
+
 from future.utils import python_2_unicode_compatible
 import logging
 from django.http import JsonResponse

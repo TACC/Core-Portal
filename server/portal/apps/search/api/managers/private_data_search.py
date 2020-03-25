@@ -3,7 +3,7 @@
    :synopsis: Manager handling My Data searches.
 """
 
-from __future__ import unicode_literals, absolute_import
+
 import logging
 from portal.apps.search.api.managers.base import BaseSearchManager
 from portal.libs.elasticsearch.docs.base import IndexedFile

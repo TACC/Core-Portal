@@ -1,26 +1,43 @@
 {% extends "portal/apps/accounts/index.html" %}
 
-{% load bootstrap3 sekizai_tags staticfiles %}
+{% load bootstrap4 sekizai_tags staticfiles %}
 
 {% block panel_content %}
-<div class="panel panel-default">
-    <div class="panel-body">
+<div class="card">
+  <div class="card-body">
       <h2>Edit Profile</h2>
       <hr>
-      <form method="post" action="">
+      <form method="post" action="" id="profileEditForm" data-departments-url="{% url 'portal_accounts:load_departments' %}">
         {% csrf_token %}
         {% bootstrap_form form %}
-        <div class="form-group">
+        {% buttons %}
           <button type="submit" class="btn btn-success">Save Profile</button>
           <a href="{% url 'portal_accounts:manage_profile' %}" class="btn btn-default">Cancel</a>
-        </div>
+        {% endbuttons %}
       </form>
     </div>
   </div>
 </div>
+<script>
+  // On instituiton change, find old department list and replace with new department list response
+  const institutionIdSelect = document.getElementById('id_institutionId');
+  institutionIdSelect.addEventListener('change', (event) => {
+    const profileEditForm = document.getElementById('profileEditForm');
+    const url = profileEditForm.getAttribute('data-departments-url')
+    const institutionId = event.target.value;
 
-{% addtoblock 'js' %}
-<script type="text/javascript" src="{% static 'portal/apps/accounts/js/institution_departments.js' %}"></script>
-{% endaddtoblock %}
+    fetch(`${url}?institutionId=${institutionId}`).then((response) => {
+      return response.text();
+    }).then((data) => {
+      let departmentIdSelect = document.getElementById('id_departmentId');
+      departmentIdSelect.innerHTML = data;
 
+      // disable dropdown if no departments
+      departmentIdSelect.disabled = departmentIdSelect.childElementCount <= 1;
+    }, (err) => {
+      departmentIdSelect.innerHTML = null;
+      departmentIdSelect.disabled = true;
+    });
+  });
+</script>
 {% endblock %}

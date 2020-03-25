@@ -1,16 +1,12 @@
-
-from django.contrib import messages
-from django.conf import settings
 from django.contrib.auth import logout
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from portal.apps.accounts.models import PortalProfile
-from portal.apps.notifications.models import Notification     
 
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 class SetupCompleteMiddleware(object):
     def __init__(self, get_response):
@@ -19,8 +15,8 @@ class SetupCompleteMiddleware(object):
     def __call__(self, request):
         if not reverse('workbench:index') in request.path:
             return self.get_response(request)
-    
-        if not hasattr(request, "user") or not request.user.is_authenticated():
+
+        if not hasattr(request, "user") or not request.user.is_authenticated:
             return HttpResponseRedirect(reverse('portal_accounts:logout'))
 
         user = request.user

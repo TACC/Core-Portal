@@ -2,14 +2,12 @@
 .. module: portal.libs.elasticsearch.docs.projects
    :synopsis: Wrapper classes for ES ``projects`` doc type.
 """
-
-from __future__ import unicode_literals, absolute_import
-from future.utils import python_2_unicode_compatible
 import logging
 import os
 from django.conf import settings
 from portal.libs.elasticsearch.docs.base import IndexedProject, BaseESResource
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
+
 
 class BaseESProject(BaseESResource):
     def __init__(self, projectId, wrapped_doc=None, **kwargs):

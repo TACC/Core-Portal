@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load bootstrap3 sekizai_tags staticfiles %}
+{% load bootstrap4 sekizai_tags staticfiles %}
 {% block title %} Registration {% endblock %}
 {% block content %}
   <div class="container">
@@ -11,7 +11,7 @@
     <p>You must agree to the TACC Acceptable Use Policy, and then fill out the Account Request form.</p>
     <p>After submitting the Account Request form, you should receive a confirmation email. Please go ahead and confirm.</p>
     <p>Once your email is confirmed, your account request will then be reviewed. Account approval should occur within 1 business day. You should receive an email when your account is approved.</p>
-    
+
     <p>If you require further assistance, please submit a support ticket <a href="https://consult.tacc.utexas.edu/Ticket/Create.html?Queue={{rt_qn}}" target="_blank">here</a>.</p>
 
     <form method="post" action="">
@@ -19,7 +19,7 @@
         {% bootstrap_form access_form %}
         <button class="btn btn-primary" type="submit">Request Access</button>
         <a class="btn btn-link" href="/">Cancel</a>
-        <a class="btn btn-link pull-right" href="{% url 'portal_auth:agave_oauth' %}">Already have an account? Log in.</a>
+        <a class="btn btn-link pull-right" href="/accounts/login">Already have an account? Log in.</a>
       </form>
 
   </div>

@@ -2,10 +2,8 @@
 .. :module:: portal.libs.agave.models.applications
    :synopsis: Classes to represent Agave Applications
 """
-from __future__ import unicode_literals, absolute_import
 from collections import namedtuple
 import logging
-import json
 from cached_property import cached_property_with_ttl
 from portal.libs.agave.exceptions import (
     ValidationError,
@@ -15,7 +13,6 @@ from portal.libs.agave.exceptions import (
 )
 from portal.libs.agave.models.base import BaseAgaveResource
 from portal.libs.agave.models.permissions import ApplicationPermissions
-from requests.exceptions import HTTPError
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -84,7 +81,6 @@ class Application(BaseAgaveResource):
         CLI='CLI'
     )
 
-
     def __init__(self, client, id=None, load=True, ignore_error=404, **kwargs):
         """Agave application definition representation.
         """
@@ -137,7 +133,7 @@ class Application(BaseAgaveResource):
         self.outputs = getattr(self, 'outputs', [])
         self._links = getattr(self, '_links', {})
 
-        self._new_exec_sys = None
+        self.exec_sys = None
 
     @cached_property_with_ttl(ttl=60 * 15)
     def permissions(self):
@@ -155,12 +151,12 @@ class Application(BaseAgaveResource):
     def __str__(self):
         return '{id}'.format(id=self.id)
 
-    def __repr__(self):
-        return '{class_name}(id={id}, label={label})'.format(
-            class_name=self.__class__.__name__,
-            id=self.id,
-            label=self.label
-        )
+    # def __repr__(self):
+    #     return '{class_name}(id={id}, label={label})'.format(
+    #         class_name=self.__class__.str(__name__),
+    #         id=self.id,
+    #         label=self.label
+    #     )
 
     def _populate_obj(self):
         """Populate Object.
@@ -341,7 +337,7 @@ class Application(BaseAgaveResource):
 
     def save(self):
         """Save this app record.
-        
+
         .. note:: This is to be used when instantiating the app from the class, e.g. from_dict,
             and the app does not already exist.
         """
@@ -349,7 +345,7 @@ class Application(BaseAgaveResource):
         self._ac.apps.add(
             body=self.to_dict()
         )
-    
+
     def clone(self, client, depl_path=None, exec_sys=None, depl_sys=None, name=None, ver=None):
         """Clone this application record
         """

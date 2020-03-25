@@ -3,8 +3,10 @@ from django.contrib.auth import get_user_model
 from mock import patch
 from pytas.http import TASClient
 from portal.apps.onboarding.steps.project_membership import ProjectMembershipStep
+import pytest
 
 
+@pytest.mark.django_db(transaction=True)
 class ProjectMembershipStepTest(TestCase):
     fixtures = ['users', 'auth']
 

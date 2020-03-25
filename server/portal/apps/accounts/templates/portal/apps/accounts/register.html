@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load bootstrap3 sekizai_tags staticfiles %}
+{% load bootstrap4 sekizai_tags staticfiles %}
 {% block title %} Registration {% endblock %}
 {% block content %}
   <div class="container">
@@ -37,14 +37,10 @@
           {% bootstrap_form account_form %}
           <button class="btn btn-primary" type="submit">Register Account</button>
           <a class="btn btn-link" href="/">Cancel</a>
-          <a class="btn btn-link" href="{% url 'portal_auth:agave_oauth' %}">Already have an account? Log in.</a>
+          <a class="btn btn-link" href="{% url 'login' %}">Already have an account? Log in.</a>
         </form>
       </div>
     </div>
-
   </div>
-  {% addtoblock 'js' %}
-    <script type="text/javascript" src="{% static 'portal/apps/accounts/js/institution_departments.js' %}"></script>
-    <script type="text/javascript" src="{% static 'portal/apps/accounts/js/new_institution.js' %}"></script>
-  {% endaddtoblock %}
+
 {% endblock %}

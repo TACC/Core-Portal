@@ -1,18 +1,13 @@
 """Auth models
 """
-from __future__ import unicode_literals
-
 import logging
 import time
-import six
 import requests
 from requests import HTTPError
 from django.db import models
 from django.conf import settings
 from agavepy.agave import Agave
 from agavepy import agave
-
-# Create your models here.
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -28,7 +23,7 @@ class AgaveOAuthToken(models.Model):
 
     Use this class to store login details as well as refresh a token.
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='agave_oauth')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='agave_oauth', on_delete=models.CASCADE)
     token_type = models.CharField(max_length=255)
     scope = models.CharField(max_length=255)
     access_token = models.CharField(max_length=255)
@@ -40,10 +35,10 @@ class AgaveOAuthToken(models.Model):
     def masked_token(self):
         """Masked token.
 
-        :return: Masked token with only the first 8 digits visible.
+        :return: Masked token with only the last 8 digits visible.
         :rtype: str
         """
-        return self.access_token[:8].ljust(len(self.access_token), b'-')
+        return self.access_token[:8].ljust(len(self.access_token), '-')
 
     @property
     def expired(self):
@@ -54,6 +49,23 @@ class AgaveOAuthToken(models.Model):
         """
         current_time = time.time()
         return self.created + self.expires_in - current_time - TOKEN_EXPIRY_THRESHOLD <= 0
+
+    @property
+    def created_at(self):
+        """Map the agavepy.Token property to model property
+
+        :return: The Epoch timestamp this token was created
+        :rtype: int
+        """
+        return self.created_at
+
+    @created_at.setter
+    def created_at(self, value):
+        """Map the agavepy.Token property to model property
+
+        :param int value: The Epoch timestamp this token was created
+        """
+        self.created = value
 
     @property
     def token(self):
@@ -92,16 +104,41 @@ class AgaveOAuthToken(models.Model):
     def update(self, **kwargs):
         """Update and save.
         """
-        for key, val in six.iteritems(kwargs):
+        for key, val in kwargs.items():
             setattr(self, key, val)
         self.save()
 
-    def __unicode__(self):
-        return '<{} - {}>'.format(self.user.username, self.token_type)
-
     def __str__(self):
-        return self.__unicode__()
+        return '<{} - {}>'.format(self.user.username, self.token_type)
 
     def __repr__(self):
         return 'AgaveOAuthToken(user={},token_type={},...)'.\
                format(self.user.username, self.token_type)
+
+
+class AgaveServiceStatus(object):
+    page_id = getattr(settings, 'AGAVE_STATUSIO_PAGE_ID', '53a1e022814a437c5a000781')
+    status_io_base_url = getattr(settings, 'STATUSIO_BASE_URL',
+                                 'https://api.status.io/1.0')
+    status_overall = {}
+    status = []
+    incidents = []
+    maintenance = {
+        'active': [],
+        'upcoming': [],
+    }
+
+    def __init__(self):
+        self.update()
+
+    def update(self):
+        try:
+            resp = requests.get('%s/status/%s' % (self.status_io_base_url, self.page_id))
+            data = resp.json()
+            if 'result' in data:
+                for k, v, in data['result'].items():
+                    setattr(self, k, v)
+            else:
+                raise Exception(data)
+        except HTTPError:
+            logger.warning('Agave Service Status update failed')

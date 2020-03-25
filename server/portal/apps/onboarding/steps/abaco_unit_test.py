@@ -1,19 +1,22 @@
 from django.test import (
-    TestCase, 
-    TransactionTestCase, 
+    TestCase,
+    TransactionTestCase,
     RequestFactory,
     override_settings
 )
 from django.contrib.auth import get_user_model
 from django.db.models import signals
-from django.db import transaction
-from portal.apps.auth.models import AgaveOAuthToken
-from mock import Mock, patch, MagicMock, ANY
+from mock import patch, MagicMock
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.steps.abaco import AbacoStep
 import json
+import pytest
 
+pytestmark = pytest.mark.django_db
+
+
+@pytest.mark.django_db(transaction=True)
 class TestAbacoStep(TestCase):
     def setUp(self):
         super(TestAbacoStep, self).setUp()
@@ -37,7 +40,7 @@ class TestAbacoStep(TestCase):
         step = AbacoStep(self.user)
         step.prepare()
 
-        # Reload the step to see if it recalls 
+        # Reload the step to see if it recalls
         step = AbacoStep(self.user)
         self.assertEqual(step.state, SetupState.STAFFWAIT)
 
@@ -59,18 +62,18 @@ class TestAbacoStep(TestCase):
         mock_user.agave_oauth.client = mock_client
         request.user = mock_user
 
-        mock_data = { "key": "value" }
-        
+        mock_data = {"key": "value"}
+
         # Perform the "staff_confirm" action
         step.client_action("staff_confirm", mock_data, request)
         mock_client.actors.sendMessage.assert_called_with(
             actorId="3rN0bMyYj3meD",
             message={
                 "username": "test",
-                "step" : "portal.apps.onboarding.steps.abaco.AbacoStep",
-                "callback_url" : "http://testserver/webhooks/onboarding/",
-                "callback_secret" : "dev",
-                "data" : mock_data
+                "step": "portal.apps.onboarding.steps.abaco.AbacoStep",
+                "callback_url": "http://testserver/webhooks/onboarding/",
+                "callback_secret": "dev",
+                "data": mock_data
             }
         )
 
@@ -84,9 +87,9 @@ class TestAbacoStep(TestCase):
 
         request = RequestFactory().post("/api/onboarding/user/test")
         request.user = self.staff
-        
+
         step.client_action("staff_deny", None, request)
-        
+
         step = AbacoStep(self.user)
         self.assertEqual(step.state, SetupState.FAILED)
 
@@ -96,7 +99,7 @@ class TestAbacoStep(TestCase):
 
         request = RequestFactory().post("/api/onboarding/user/test")
         request.user = self.user
-        
+
         step.client_action("staff_confirm", None, request)
 
         step = AbacoStep(self.user)
@@ -105,19 +108,22 @@ class TestAbacoStep(TestCase):
     @patch('portal.apps.onboarding.steps.abaco.AbacoStep.log')
     def test_webhook_callback(self, mock_log):
         webhook_data = {
-            "state" : "completed",
-            "message" : "message",
-            "data" : "data"
+            "state": "completed",
+            "message": "message",
+            "data": "data"
         }
         step = AbacoStep(self.user)
         step.webhook_callback(webhook_data=webhook_data)
         mock_log.assert_called_with("message", "data")
 
+
+@pytest.mark.django_db(transaction=True)
 class TestAbacoStepTransaction(TransactionTestCase):
     """
     A separate test case that allows DB transactions to be tested on
     AbacoStep
     """
+
     def setUp(self):
         super(TestAbacoStepTransaction, self).setUp()
         signals.post_save.disconnect(sender=SetupEvent, dispatch_uid="setup_event")
@@ -137,7 +143,7 @@ class TestAbacoStepTransaction(TransactionTestCase):
     def tearDown(self):
         super(TestAbacoStepTransaction, self).tearDown()
         self.mock_async.stop()
-        SetupEvent.objects.all().delete() 
+        SetupEvent.objects.all().delete()
 
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
     def test_make_callback(self):
@@ -146,12 +152,12 @@ class TestAbacoStepTransaction(TransactionTestCase):
         step.log("Waiting for webhook")
 
         abaco_message = {
-            "username" : "test",
-            "step" : "portal.apps.onboarding.steps.abaco.AbacoStep",
-            "callback_url" : "http://testserver/webhooks/onboarding/",
-            "callback_secret" : "dev",
-            "data" : {
-                "key" : "value"
+            "username": "test",
+            "step": "portal.apps.onboarding.steps.abaco.AbacoStep",
+            "callback_url": "http://testserver/webhooks/onboarding/",
+            "callback_secret": "dev",
+            "data": {
+                "key": "value"
             }
         }
 
@@ -159,14 +165,14 @@ class TestAbacoStepTransaction(TransactionTestCase):
         result_state = "completed"
         result_message = "Actor completed successfully"
         result_data = None
-        
+
         response_message = {
-            "username" : abaco_message["username"],
-            "step" : abaco_message["step"],
-            "webhook_data" : {
+            "username": abaco_message["username"],
+            "step": abaco_message["step"],
+            "webhook_data": {
                 "state": result_state,
-                "message" : result_message,
-                "data" : result_data
+                "message": result_message,
+                "data": result_data
             }
         }
 
@@ -189,7 +195,7 @@ class TestAbacoStepTransaction(TransactionTestCase):
             "/webhooks/onboarding/",
             content_type="application/json",
             data=json.dumps(response_message),
-            **{ "HTTP_AUTHORIZATION" : "Basic: ZGV2OmRldg==" }
+            **{"HTTP_AUTHORIZATION": "Basic: ZGV2OmRldg=="}
         )
 
         # Test that the webhook_call went all the way through

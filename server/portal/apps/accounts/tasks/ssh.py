@@ -2,10 +2,8 @@
 .. :module:: apps.accounts.tasks.ssh
    :synopsis: Tasks related to user accounts
 """
-from __future__ import unicode_literals, absolute_import
+
 import logging
-# from django.contrib.auth import get_user_model
-# from django.conf import settings
 from celery import shared_task
 from celery.result import AsyncResult
 

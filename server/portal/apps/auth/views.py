@@ -2,13 +2,13 @@
 Auth views.
 """
 import logging
-import os
 import time
 import requests
+import secrets
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
@@ -16,17 +16,13 @@ from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.auth.tasks import setup_user
 from portal.apps.onboarding.execute import new_user_setup_check
 
-#pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
-#pylint: enable=invalid-name
 
 
 def logged_out(request):
-    return render(request, 'designsafe/apps/auth/logged_out.html')
+    return render(request, 'portal/apps/auth/logged_out.html')
 
-def _get_auth_state():
-    return os.urandom(24).encode('hex')
 
 # Create your views here.
 def agave_oauth(request):
@@ -36,7 +32,7 @@ def agave_oauth(request):
     client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
 
     session = request.session
-    session['auth_state'] = _get_auth_state()
+    session['auth_state'] = secrets.token_hex(24)
     next_page = request.GET.get('next')
     if next_page:
         session['next'] = next_page
@@ -70,6 +66,10 @@ def agave_oauth_callback(request):
 
     if 'code' in request.GET:
         # obtain a token for the user
+        # Using http for dev.
+        # redirect_uri = 'http://{}{}'.format(request.get_host(),
+        #                                    reverse('portal_auth:agave_oauth_callback'))
+        # Use https for prod.
         redirect_uri = 'https://{}{}'.format(request.get_host(),
                                              reverse('portal_auth:agave_oauth_callback'))
         code = request.GET['code']
@@ -86,20 +86,6 @@ def agave_oauth_callback(request):
         response = requests.post('%s/token' % tenant_base_url,
                                  data=body,
                                  auth=(client_key, client_sec))
-        
-        # Agave OAuth token redemption will fail occassionally for some users due
-        # to a bug in WSO2. Log this error and render a "Submit a ticket" page for the end user
-        if response.status_code != 200:
-            logger.error(
-                "Agave Tenant error while trying to redeem state {}, code {} for an agave token".format(
-                    state, code
-                )
-            )
-            context = {
-                "state": state
-            }
-            return render(request, 'portal/apps/auth/autherror.html', context)
-
         token_data = response.json()
         token_data['created'] = int(time.time())
         # log user in
@@ -150,6 +136,7 @@ def agave_oauth_callback(request):
     else:
         login_url = getattr(settings, 'LOGIN_REDIRECT_URL')
         return HttpResponseRedirect(login_url)
+
 
 def agave_session_error(request):
     """Agave token error handler.

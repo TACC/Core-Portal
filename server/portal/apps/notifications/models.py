@@ -1,11 +1,12 @@
 from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
-import datetime
+from django.utils import timezone
 import logging
 import json
 import six
 
 logger = logging.getLogger(__name__)
+
 
 class BaseNotify(models.Model):
     """Abstract base notification class.
@@ -13,11 +14,11 @@ class BaseNotify(models.Model):
     These are the base fields that every notification should have.
     """
     event_type = models.CharField(max_length=50)
-    datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
-    #Status should be SUCCESS, INFO, ERROR, WARNING,
-    status = models.CharField(max_length = 255)
+    datetime = models.DateTimeField(default=timezone.now, blank=True)
+    # Status should be SUCCESS, INFO, ERROR, WARNING,
+    status = models.CharField(max_length=255)
     jobId = models.CharField(max_length=255, blank=True)
-    operation = models.CharField(max_length = 255, default = '')
+    operation = models.CharField(max_length=255, default='')
     message = models.TextField(default='')
     extra = models.TextField(default='')
     action_link = models.TextField(default='')
@@ -73,6 +74,7 @@ class BaseNotify(models.Model):
     class Meta:
         abstract = True
 
+
 class Notification(BaseNotify):
     # what are the agave length defaults?
     user = models.CharField(max_length=20, db_index=True)
@@ -95,6 +97,7 @@ class Notification(BaseNotify):
             'deleted': self.deleted
         })
         return event_data
+
 
 class Broadcast(BaseNotify):
     group = models.CharField(max_length=20)
