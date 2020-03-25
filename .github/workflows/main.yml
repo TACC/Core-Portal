@@ -10,7 +10,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  Server-Side Unit Tests:
+  Server_Side_Unit_Tests:
     runs-on: ubuntu-18.04
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -46,7 +46,7 @@ jobs:
         name: frontera-server-side
         fail_ci_if_error: false
 
-  Server-Side Linting:
+  Server_Side_Linting:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
@@ -72,7 +72,7 @@ jobs:
         git fetch origin "+refs/heads/master:refs/remotes/origin/master"
         git diff -U0 origin/master..HEAD | flake8 --diff
 
-  Client-Side Unit Tests:
+  Client_Side_Unit_Tests:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
@@ -102,7 +102,7 @@ jobs:
         npm run test
         bash <(curl -s https://codecov.io/bash) -cF javascript
 
-  Client-Side Linting:
+  Client_Side_Linting:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
