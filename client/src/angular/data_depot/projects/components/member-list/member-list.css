@@ -1,0 +1,20 @@
+.member-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 2em;
+    position: relative;
+    vertical-align: bottom;
+    border-bottom: 1px solid #DDD;
+}
+
+.validator-message {
+    border: 1px solid #DDD;
+    margin-top: 1em;
+    padding: 1em 1em 1em 1em;
+}
+
+.member-remove-button {
+    background: none !important;
+    background-color: transparent !important;
+}

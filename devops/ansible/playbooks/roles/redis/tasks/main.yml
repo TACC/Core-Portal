@@ -1,0 +1,11 @@
+---
+
+- name: Install Redis
+  yum:
+    name: redis
+
+- name: Enable redis
+  command: systemctl enable redis
+
+- name: Start redis
+  command: systemctl start redis

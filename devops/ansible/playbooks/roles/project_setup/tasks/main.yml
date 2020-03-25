@@ -1,0 +1,82 @@
+- name: Manually create virtualenv directory
+  file:
+    path: "{{ project_home_dir }}/.envs/{{project_name}}"
+    state: "directory"
+    owner: portal
+    group: portal
+
+- name: Manually create the initial virtualenv
+  command: virtualenv {{ project_home_dir }}/.envs/project -p {{ project_python_version }} creates="{{ project_home_dir}}/.envs/project/bin"
+  become_user: portal
+
+- name: Installing project requirements
+  pip:
+    requirements: "{{ project_home_dir }}/{{project_name}}/server/requirements.txt"
+    virtualenv: "{{ project_home_dir }}/.envs/{{project_name}}"
+    virtualenv_python: "{{ project_python_version }}"
+  become_user: portal
+
+- name: Manually create uwsgi socket directory
+  file:
+    path: "/run/uwsgi"
+    state: "directory"
+    owner: portal
+    group: portal
+    recurse: yes
+
+- name: Manually create uwsgi log directory
+  file:
+    path: "/var/log/uwsgi"
+    state: "directory"
+    owner: portal
+    group: portal
+    recurse: yes
+
+- name: Manually create django log directory
+  file:
+    path: "/var/log/{{project_name}}"
+    state: "directory"
+    owner: portal
+    group: portal
+    recurse: yes
+
+- name: Manually create django metrics log file.
+  copy:
+    content: ""
+    dest: "/var/log/{{project_name}}.log"
+    owner: portal
+    group: portal
+
+- name: Create settings_secret.py
+  template:
+    src: settings_secret.j2
+    dest: "{{project_home_dir}}/{{project_name}}/server/portal/settings/settings_secret.py"
+  become_user: portal
+
+- name: Install NPM pacakges
+  npm:
+    path: "{{project_home_dir}}/{{project_name}}/client"
+
+- name: Django Apply migrations
+  command: "{{ project_home_dir }}/.envs/{{project_name}}/bin/python2 {{project_home_dir}}/{{project_name}}/server/manage.py migrate"
+  become_user: portal
+
+- name: Webpack build
+  command: "npm run build"
+  args:
+    chdir: "{{project_home_dir}}/{{project_name}}/client"
+  become_user: portal
+
+- name: Django Collect static
+  command: "{{ project_home_dir }}/.envs/{{project_name}}/bin/python2 {{project_home_dir}}/{{project_name}}/server/manage.py collectstatic --no-input"
+  become_user: portal
+
+- name: Fixing Django log permissions
+  file:
+    path: "/var/log/{{project_name}}"
+    owner: portal
+    group: portal
+    recurse: yes
+
+# - name: restart uwsgi
+#   service: name=uwsgi.service state=restarted enabled=yes

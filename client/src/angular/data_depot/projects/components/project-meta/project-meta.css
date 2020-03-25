@@ -1,0 +1,37 @@
+.member {
+    background-color: #EEEEEE;
+    padding: 0.25em 0.5em 0.25em 0.5em;
+    margin-right: 0.25em;
+}
+
+.project-meta-detail {
+    border: 1px solid #DDD;
+    padding: 1em 1em 1em 1em;
+    margin-bottom: 1em;
+}
+.project-meta-buttons {
+    margin-top: 1em;
+}
+.project-meta-table {
+    font-size: 1em;
+    margin-left: 0.25em;
+    max-width: 100%;
+}
+.project-meta-table tr {
+    vertical-align: top;
+}
+.project-meta-table tr td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+
+}
+.project-meta-table th,td {
+    padding-right: 2.25em;
+    padding-bottom: 0.5em;
+}

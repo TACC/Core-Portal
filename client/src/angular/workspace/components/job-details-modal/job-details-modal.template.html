@@ -1,0 +1,39 @@
+<div class="modal-header">
+    <h3 class="modal-title">{{$ctrl.job.name}}</h3>
+</div>
+<div class="modal-body job-details-modal">
+    <div ng-if="$ctrl.loading">
+        <i class="fa fa-spinner fa-spin"></i>&nbsp;Loading...
+    </div>
+    <dl ng-if="!$ctrl.loading" class="job-info">
+        <dt>Job ID</dt>
+        <dd>{{ $ctrl.job.id }}</dd>
+        <dt>Application</dt>
+        <dd>{{ $ctrl.job.appId }}</dd>
+        <dt>Status (<a ui-sref="wb.jobs.job({ jobId: $ctrl.job.id })">View Job Details</a>)</dt>
+        <dd class="job-status">
+            <div>
+                Submitted<br />
+                <job-datetime datetime="$ctrl.job.created"></job-datetime>
+            </div>
+            <div>
+                <job-status-label item="$ctrl.job"></job-status-label><br />
+                <job-datetime datetime="$ctrl.job.ended"></job-datetime>
+            </div>
+        </dd>
+        <dt></dt>
+        <dd>
+           <job-message-expandable job="$ctrl.job"></job-message-expandable> 
+           <job-history-expandable history="$ctrl.jobHistory"></job-history-expandable>
+        </dd>
+        <dt>Output</dt>
+        <dd ng-if="!$ctrl.jobFinished"><i>Output pending</i></dd>
+        <dd><a href="{{ $ctrl.job.archiveUrl }}">View in Data Depot</a></dd>
+        <dd><a href="{{ $ctrl.job.jupyterUrl }}" ng-if="$ctrl.job.jupyterUrl" target=_blank>View in JupyterHub</a></dd>
+        <br />
+        <job-actions job="$ctrl.job" dismiss="$ctrl.close()"></job-actions>
+    </dl>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="$ctrl.close()">Close</button>
+</div>

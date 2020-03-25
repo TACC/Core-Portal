@@ -1,0 +1,24 @@
+{
+  "uuid" : "9036688022144422376-242ac119-0001-012",
+  "schemaId" : null,
+  "internalUsername" : null,
+  "associationIds" : [ ],
+  "lastUpdated" : "2018-09-06T11:48:37.345-05:00",
+  "name" : "metadata.name",
+  "value" : {
+  },
+  "created" : "2018-09-06T11:32:47.901-05:00",
+  "owner" : "username",
+  "_links" : {
+    "self" : {
+      "href" : "https://api.tacc.utexas.edu/meta/v2/data/9036688022144422376-242ac119-0001-012"
+    },
+    "permissions" : {
+      "href" : "https://api.tacc.utexas.edu/meta/v2/data/9036688022144422376-242ac119-0001-012/pems"
+    },
+    "owner" : {
+      "href" : "https://api.tacc.utexas.edu/profiles/v2/username"
+    },
+    "associationIds" : [ ]
+  }
+}

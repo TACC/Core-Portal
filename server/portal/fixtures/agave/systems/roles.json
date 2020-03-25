@@ -1,0 +1,57 @@
+[ {
+    "username" : "username_1",
+    "role" : "OWNER",
+    "_links" : {
+      "self" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc/roles/username_1"
+      },
+      "parent" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc"
+      },
+      "profile" : {
+        "href" : "https://api.tacc.utexas.edu/profiles/v2/username_1"
+      }
+    }
+  }, {
+    "username" : "username_2",
+    "role" : "USER",
+    "_links" : {
+      "self" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc/roles/username_2"
+      },
+      "parent" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc"
+      },
+      "profile" : {
+        "href" : "https://api.tacc.utexas.edu/profiles/v2/username_2"
+      }
+    }
+  }, {
+    "username" : "username_3",
+    "role" : "USER",
+    "_links" : {
+      "self" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc/roles/username_3"
+      },
+      "parent" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc"
+      },
+      "profile" : {
+        "href" : "https://api.tacc.utexas.edu/profiles/v2/username_3"
+      }
+    }
+  }, {
+    "username" : "username_4",
+    "role" : "USER",
+    "_links" : {
+      "self" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc/roles/username_4"
+      },
+      "parent" : {
+        "href" : "https://api.tacc.utexas.edu/systems/v2/portal.exec.hpc"
+      },
+      "profile" : {
+        "href" : "https://api.tacc.utexas.edu/profiles/v2/username_4"
+      }
+    }
+} ]

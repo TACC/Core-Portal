@@ -1,0 +1,3 @@
+# Git-Crypt all the things.
+devops/ansible/playbooks/group_vars/*.yml filter=git-crypt diff=git-crypt
+devops/ansible/playbooks/roles/secret_files/* filter=git-crypt diff=git-crypt

@@ -1,0 +1,98 @@
+{
+    "id": "compress-0.1",
+    "name": "compress",
+    "icon": "",
+    "parallelism": "SERIAL",
+    "defaultProcessorsPerNode": 1,
+    "defaultMemoryPerNode": 1,
+    "defaultNodeCount": 1,
+    "defaultMaxRunTime": "02:00:00",
+    "defaultQueue": "debug",
+    "version": "0.1",
+    "isPublic": false,
+    "helpURI": null,
+    "label": "Compress folder",
+    "shortDescription": "Compress a folder for download.",
+    "longDescription": "Compress a folder for download.",
+    "tags": [
+        "appCategory:Utilities",
+        "appIcon:compress"
+    ],
+    "ontology": [],
+    "executionType": "CLI",
+    "executionSystem": "cep.community.exec.stampede2.cli",
+    "deploymentPath": "applications/compress",
+    "deploymentSystem": "cep.storage.default",
+    "templatePath": "wrapper.sh",
+    "testPath": "test/test.sh",
+    "checkpointable": false,
+    "modules": [],
+    "available": true,
+    "inputs": [
+        {
+            "semantics": {
+                "fileTypes": [
+                    "raw-0"
+                ],
+                "minCardinality": 1,
+                "ontology": [
+                    "xsd:string"
+                ],
+                "maxCardinality": 1
+            },
+            "id": "workingDirectory",
+            "value": {
+                "default": "agave://cep.storage.default/",
+                "required": true,
+                "enquote": false,
+                "visible": true,
+                "validator": "",
+                "order": 0
+            },
+            "details": {
+                "argument": null,
+                "repeatArgument": false,
+                "description": "The directory containing the files that you want to work on. This directory and its files will be copied to where your Matlab session runs. You can drag the link for the directory from the Data Browser on the left, or click the 'Select Input' button and then select the directory.",
+                "showArgument": false,
+                "label": "Working Directory"
+            }
+        }
+    ],
+    "parameters": [
+        {
+            "id": "compression_type",
+            "value": {
+                "visible": true,
+                "required": true,
+                "type": "enumeration",
+                "order": 0,
+                "enquote": false,
+                "default": "tgz",
+                "enum_values": [
+                    {
+                        "tgz": "tar.gz"
+                    },
+                    {
+                        "zip": "zip"
+                    }
+                ]
+            },
+            "details": {
+                "label": "Compression Type",
+                "description": "Select the type of compressed file, either a Gzipped TAR file (.tar.gz) or a Zip file (.zip).",
+                "argument": null,
+                "showArgument": false,
+                "repeatArgument": false
+            },
+            "semantics": {
+                "minCardinality": 1,
+                "maxCardinality": 1,
+                "ontology": [
+                    "xs:enumeration",
+                    "xs:string"
+                ]
+            }
+        }
+    ],
+    "outputs": []
+}

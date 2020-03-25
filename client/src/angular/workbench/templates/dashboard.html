@@ -1,0 +1,254 @@
+
+<div class="container-fluid" id="dashboard">
+  <div class="row dashboard-top">
+    <div class="col-sm-3">
+      <div class="dashboard-stat blue">
+        <div class="visual">
+          <i class="fa fa-rocket">&nbsp;</i>
+        </div>
+        <div class="details">
+          <div class="number"> {{vm.jobs.length}} </div>
+          <div class="desc"> Recent Jobs </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="dashboard-stat green">
+        <div class="visual">
+          <i class="fa fa-cogs">&nbsp;</i>
+        </div>
+        <div class="details">
+          <div class="number"> {{vm.apps.length}} </div>
+          <div class="desc">Available Apps</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="dashboard-stat red">
+        <div class="visual">
+          <i class="fa fa-folder-open">&nbsp;</i>
+        </div>
+        <div class="details">
+          <div class="number"> {{vm.usage.total_storage_bytes | bytes}} </div>
+          <div class="desc"> Data Stored </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div><span>Quick Links</span></div>
+      <div><a href="/accounts/profile/">Manage Account</a></div>
+      <div><a ui-sref="wb.data_depot.db({'systemId': vm.mydata_system.systemId, 'path': '', 'name': vm.mydata_system.name, 'directory': 'agave'})">Data Files</a></div>
+      <div><a ui-sref="wb.workspace">Applications</a></div>
+      <!-- <div><a href="/workbench/help">Training</a></div> -->
+    </div>
+
+  </div>
+
+
+  <div class="row dashboard-bottom">
+
+    <div class="col-sm-9">
+      <div class="panel panel-default">
+        <div class="panel-heading dashboard">
+          <h3 class="panel-title">My Jobs</h3>
+        </div>
+        <div data-ng-show="!vm.jobs.length" class="panel-body">
+          <h3 data-ng-show="!vm.loading_jobs">
+            No recent jobs! You can submit jobs in
+            <a data-ui-sref="wb.workspace"> Applications </a>
+          </h3>
+          <div class="text-center" data-ng-show="vm.loading_jobs">
+            <i class="fa fa-spinner fa-pulse fa-2x fa-fw" >&nbsp;</i>
+          </div>
+        </div>
+        <div id="ds_jobs_chart" class="ds-chart" data-ng-show="vm.jobs.length"></div>
+        <ul class="list-group" data-ng-show="vm.display_job_details">
+          <li class="list-group-item" data-ng-repeat="job in vm.jobs_details">
+            <div class="row">
+              <div class="col-md-3">
+                <span class="label label-default"> {{job.appId}} </span>
+              </div>
+              <div class="col-md-3 col-md-offset-6 text-right">
+                <span class="label label-info"> {{ job.status }} </span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+
+    <div class="col-sm-3">
+
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix dashboard">
+          <h3 class="panel-title pull-left">My Tickets</h3>
+          <a class="button btn-xs btn-primary pull-right" href="/tickets/ticket/new/"> Create New </a>
+        </div>
+          <ul class="list-group">
+            <li class="list-group-item" data-ng-repeat="ticket in vm.my_tickets">
+              <a data-ng-href="/help/tickets/{{ ticket.id }}"> {{ticket.id}} </a> {{ticket.Subject}}
+            </li>
+          </ul>
+
+          <div data-ng-show="loading_tickets" class="text-center">
+            <i class="fa fa-spinner fa-pulse fa-2x fa-fw">&nbsp;</i>
+          </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading dashboard">
+          <h3 class="panel-title">Recent Apps</h3>
+        </div>
+        <ul class="list-group" ng-show="!vm.loading_jobs">
+          <li class="list-group-item" data-ng-repeat="app in vm.recent_apps">
+            <a ui-sref="wb.workspace"> {{app}} </a>
+          </li>
+          <li class="list-group-item" data-ng-show="!vm.recent_apps.length">
+            Wow, no recent apps! You can submit jobs in
+            <a data-ui-sref="wb.workspace"> Applications </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="row dashboard-board"> <!-- SYSTEMS LISTING START -->
+    <div class="col-sm-6">
+      <div class="panel panel-default">
+        <div class="panel-heading dashboard">
+          <h3 class="panel-title">My Storage Systems</h3>
+        </div>
+        <div class="panel-body">
+          <div ng-if="vm.data.strgSystems.length == 0 && !vm.ui.loadingSystems">
+            No Storage Systems Available!
+          </div>
+          <div class="system-item"
+               data-ng-repeat="sys in vm.data.strgSystems | orderBy: -Date(sys.lastModified)"
+               data-ng-if="!vm.ui.loadingSystems">
+            <div class="col-sm-6">
+              <dl class="system-def-list">
+                <dt>Name</dt>
+                <dd>{{sys.name}}</dd>
+                <dt>Storage Host</dt>
+                <dd>{{sys.storage.host}}</dd>
+                <dt>Keys Tracked</dt>
+                <dd data-ng-if="sys.keysTracked">
+                  <i class="fa fa-check text-success">&nbsp;</i>
+                  <span class="sr-only">True</span>
+                </dd>
+                <dd data-ng-if="!sys.keysTracked">
+                  <i class="fa fa-times text-danger">&nbsp;</i>
+                  <span class="sr-only">False</span>
+                </dd>
+              </dl>
+            </div>
+            <div class="col-sm-6 btn-group system-actions">
+              <button type="button"
+                      class="btn btn-info"
+                      data-ng-click="vm.testSystem(sys)"
+                      data-ng-disabled="vm.ui.testSystems[sys.id].testing">
+                Test <i class="fa fa-check text-success"
+                        data-ng-if="!vm.ui.testSystems[sys.id].error &&
+                                    !vm.ui.testSystems[sys.id].testing &&
+                                    vm.ui.testSystems[sys.id].response">&nbsp;</i>
+                     <i class="fa fa-times text-error"
+                        data-ng-if="vm.ui.testSystems[sys.id].error">&nbsp;</i>
+                     <span data-ng-if="vm.ui.testSystems[sys.id].testing">
+                       {{vm.ui.testSystems[sys.id].message}}
+                     </span>
+                <span data-ng-if="vm.ui.testSystems[sys.id].testing" > Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
+                   data-ng-if="vm.ui.testSystems[sys.id].testing">&nbsp;</i>
+              </button>
+              <br />
+              <button type="button"
+                      class="btn btn-default"
+                      data-ng-click="vm.publicKey(sys)"
+                      data-ng-disabled="!sys.keysTracked">
+                Public Key
+              </button>
+              <button type="button"
+                      class="btn btn-success"
+                      data-ng-click="vm.pushKey(sys)"
+                      data-ng-disabled="vm.ui.pushSystems[sys.id].pushing">
+                Reset and Push Public Key
+                <span data-ng-if="vm.ui.pushSystems[sys.id].pushing"> Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw"
+                   data-ng-if="vm.ui.pushSystems[sys.id].pushing">&nbsp;</i>
+              </button>
+            </div>
+          </div>
+          <div class="loading-msg"
+               data-ng-if="vm.ui.loadingSystems">
+            <i class="fa fa-spinner fa-pulse fa-2x fa-fw" >&nbsp;</i>
+            <span> Loading ...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="panel panel-default">
+        <div class="panel-heading dashboard">
+          <h3 class="panel-title">My Execution Systems</h3>
+        </div>
+        <div class="panel-body">
+          <div ng-if="vm.data.execSystems.length == 0">
+            No Execution Systems Available!
+          </div>
+          <div class="system-item" data-ng-repeat="sys in vm.data.execSystems | orderBy: -Date('lastModified')" data-ng-if="!vm.ui.loadingSystems" >
+            <div class="col-sm-6">
+              <dl class="system-def-list">
+                <dt>ID</dt>
+                <dd>{{sys.id}}</dd>
+                <dt>Name</dt>
+                <dd>{{sys.name}}</dd>
+                <dt>Storage Host</dt>
+                <dd>{{sys.storage.host}}</dd>
+                <dt>Exec Host</dt>
+                <dd>{{sys.login.host}}</dd>
+                <dt>Keys Tracked</dt>
+                <dd data-ng-if="sys.keysTracked">
+                  <i class="fa fa-check text-success">&nbsp;</i>
+                  <span class="sr-only">True</span>
+                </dd>
+                <dd data-ng-if="!sys.keysTracked">
+                  <i class="fa fa-times text-danger">&nbsp;</i>
+                  <span class="sr-only">False</span>
+                </dd>
+              </dl>
+            </div>
+            <div class="col-sm-6 btn-group system-actions">
+              <button type="button" class="btn btn-info" data-ng-click="vm.testSystem(sys)" data-ng-disabled="vm.ui.testSystems[sys.id].testing">
+                Test <i class="fa fa-check text-success" data-ng-if="!vm.ui.testSystems[sys.id].error &&
+                                        !vm.ui.testSystems[sys.id].testing &&
+                                        vm.ui.testSystems[sys.id].response">&nbsp;</i>
+                <i class="fa fa-times text-error" data-ng-if="vm.ui.testSystems[sys.id].error">&nbsp;</i>
+                <span data-ng-if="vm.ui.testSystems[sys.id].testing">
+                  {{vm.ui.testSystems[sys.id].message}}
+                </span>
+                <span data-ng-if="vm.ui.testSystems[sys.id].testing"> Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw" data-ng-if="vm.ui.testSystems[sys.id].testing">&nbsp;</i>
+              </button>
+              <br />
+              <button type="button" class="btn btn-default" data-ng-click="vm.publicKey(sys)" data-ng-disabled="!sys.keysTracked">
+                Public Key
+              </button>
+              <br />
+              <button type="button" class="btn btn-success" data-ng-click="vm.pushKey(sys)" data-ng-disabled="vm.ui.pushSystems[sys.id].pushing">
+                Reset and Push Public Key
+                <span data-ng-if="vm.ui.pushSystems[sys.id].pushing"> Loading ...</span>
+                <i class="fa fa-spinner fa-pulse fa-2x fa-fw" data-ng-if="vm.ui.pushSystems[sys.id].pushing">&nbsp;</i>
+              </button>
+            </div>
+          </div>
+          <div class="loading-msg" data-ng-if="vm.ui.loadingSystems">
+            <i class="fa fa-spinner fa-pulse fa-2x fa-fw">&nbsp;</i>
+            <span> Loading ...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- SYSTEMS END -->
+
+</div>

@@ -1,0 +1,22 @@
+[Unit]
+Description=uWSGI Emperor
+After=syslog.target
+
+[Service]
+
+{% if newrelic_licence_key %}
+Environment=NEW_RELIC_CONFIG_FILE=/etc/newrelic.ini
+ExecStart=/srv/www/.envs/{{project_name}}/bin/newrelic-admin run-program /bin/uwsgi --ini /etc/uwsgi/emperor.ini --uid {{ uwsgi_uid }} --gid {{ uwsgi_gid }}
+{% else %}
+ExecStart=/bin/uwsgi --ini /etc/uwsgi/emperor.ini --uid {{ uwsgi_uid }} --gid {{ uwsgi_gid }}
+{% endif %}
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -INT $MAINPID
+Restart=always
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+KillSignal=SIGQUIT
+
+[Install]
+WantedBy=multi-user.target

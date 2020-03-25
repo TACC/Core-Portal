@@ -1,0 +1,88 @@
+<div ng-if="!$ctrl.job">
+    <div class="alert-detail">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+    </div>
+</div>
+<div ng-if="$ctrl.job">
+    <h2>{{ $ctrl.job.name }}</h2>
+    <div class="job-name-subtext">
+        <b>Job ID: </b>{{ $ctrl.job.id }} |
+        <b>Application: </b>{{ $ctrl.job.appId }} |
+        <b>System: </b>{{ $ctrl.job.systemId }}
+    </div>
+    <div class="job-summary-left">
+        <dl>
+            <dt>Output</dt>
+            <dd ng-if="!$ctrl.jobFinished"><i>Output pending</i></dd>
+            <dd><a href="{{ $ctrl.job.archiveUrl }}">View in Data Depot</a></dd>
+            <dd><a href="{{ $ctrl.job.jupyterUrl }}" ng-if="$ctrl.job.jupyterUrl" target=_blank>View in JupyterHub</a></dd>
+        </dl>
+        <job-actions job="$ctrl.job"></job-actions>
+    </div>
+    <div class="job-summary-right">
+        <div class="job-summary-panel">
+            <b>Status</b>
+            <div class="job-status-event">
+                <div>Submitted</div>
+                <job-datetime datetime="$ctrl.job.created"></job-datetime>
+            </div>
+            <div class="job-status-event">
+                <div>
+                    <job-status-label item="$ctrl.job"></job-status-label>
+                </div>
+                <job-datetime datetime="$ctrl.job.ended"></job-datetime>
+            </div>
+        </div>
+        <job-message-expandable job="$ctrl.job"></job-message-expandable>
+        <job-history-expandable history="$ctrl.jobHistory"></job-history-expandable>
+        <div ng-if="!$ctrl.summary" class="job-detail agave-info">
+            <table class="agave-job">
+                <tr>
+                    <th width="20%">Inputs</th>
+                </tr>
+                <tr ng-repeat="(input, value) in $ctrl.job.inputs">
+                    <td class="array-item">
+                        {{ input }}
+                    </td>
+                    <td ng-bind-html="$ctrl.renderInput(value)">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Parameters</th>
+                </tr>
+                <tr ng-repeat="(parameter, value) in $ctrl.job.parameters">
+                    <td class="array-item">{{ parameter }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                <tr>
+                    <th>Max Hours</th>
+                    <td>{{ $ctrl.job.maxHours }}</td>
+                </tr>
+                <tr>
+                    <th>Archive Path</th>
+                    <td><a href="{{ $ctrl.job.archiveUrl }}">agave://{{ $ctrl.job.archiveSystem }}/{{ $ctrl.job.archivePath }}</a></td>
+                </tr>
+                <tr>
+                    <th>Node Count</th>
+                    <td>{{ $ctrl.job.nodeCount }}</td>
+                </tr>
+                <tr>
+                    <th>Processors per Node</th>
+                    <td>{{ $ctrl.job.processorsPerNode }}</td>
+                </tr>
+                <tr>
+                    <th>Memory Per Node</th>
+                    <td>{{ $ctrl.job.memoryPerNode }}</td>
+                </tr>
+                <tr>
+                    <th>Remote Queue</th>
+                    <td>{{ $ctrl.job.remoteQueue }}</td>
+                </tr>
+                <tr>
+                    <th>Work Path</th>
+                    <td>{{ $ctrl.job.workPath }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

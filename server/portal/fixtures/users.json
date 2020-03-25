@@ -1,0 +1,53 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "password",
+    "last_login": "2018-09-10T19:56:35.919Z",
+    "is_superuser": false,
+    "username": "username",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email": "username@server.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-09-10T19:56:35.899Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "password",
+    "last_login": "2018-09-11T21:07:21.954Z",
+    "is_superuser": false,
+    "username": "envision",
+    "first_name": "Envision",
+    "last_name": "User",
+    "email": "envision@utexas.edu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-09-11T21:07:21.933Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "password",
+    "last_login": "2018-09-11T21:08:05.200Z",
+    "is_superuser": false,
+    "username": "wma_prtl",
+    "first_name": "DesignSafe",
+    "last_name": "Administrator",
+    "email": "info@designsafe-ci.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-09-11T21:08:05.186Z",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]

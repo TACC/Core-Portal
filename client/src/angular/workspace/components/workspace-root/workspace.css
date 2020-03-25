@@ -1,0 +1,148 @@
+#workspace {
+    margin-top: 3px;
+}
+
+.workspace-panel-container {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    -moz-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    align-content: flex-start;
+    -webkit-flex: 0;
+    -moz-flex: 0;
+    -ms-flex: 0;
+    flex: 0;
+}
+
+app-form, workspace-data-browser, job-status-panel {
+    position: relative;
+    border: 1px solid #ddd;
+    background-color: #eee;
+    padding: 9px;
+    margin-bottom: 30px;
+}
+
+app-form {
+    -webkit-flex: 1;
+    -moz-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    min-height: 600px;
+}
+
+workspace-data-browser, job-status-panel {
+    -webkit-flex: 0 0 auto;
+    -moz-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    max-width: 310px;
+}
+
+.workspace-panel-toggle {
+    width: 1.5em;
+    position: absolute;
+    top: 0;
+}
+
+.workspace-panel-toggle:focus, .workspace-panel-toggle:active {
+    outline: none;
+}
+
+.workspace-panel-sidebar-left .workspace-panel-toggle {
+    right: 0;
+}
+
+.workspace-panel-sidebar-right .workspace-panel-toggle {
+    left: 0;
+}
+
+.workspace-panel-collapsed {
+    background-color: #999;
+    border-color: #777;
+    color: #909090;
+}
+
+.workspace-panel-collapsed .workspace-panel-toggle {
+    width: 100%;
+}
+
+.workspace-panel-collapsed .workspace-panel-content {
+    display: none;
+}
+
+.workspace-panel-title {
+    display: none;
+    position: absolute;
+    top: 2em;
+    transform: rotate(90deg);
+    transform-origin: 0;
+    white-space: nowrap;
+}
+
+.workspace-panel-collapsed .workspace-panel-title {
+    display: block;
+}
+
+.files-listing caption {
+    white-space: normal !important;
+}
+
+
+
+.app-form-wrapper {
+  border: 1px solid #eee;
+  padding: 0.5em;
+  background-color: #fff;
+}
+
+
+
+.agave-file-picker {
+    padding: 0.5em 0.5em 0.5em 0.5em;
+}
+
+.agave-file-picker.wants {
+    background-color: #5bc0de;
+}
+
+.agave-file-picker.wants label {
+    color: #fff;
+}
+
+.agave-file-picker-cancel {
+    color: #fff;
+}
+
+.dnd-list ul[dnd-list] {
+    min-height: 42px;
+}
+
+.dnd-list ul[dnd-list] .dndPlaceholder {
+    background-color: #ddd;
+    min-height: 70px;
+}
+
+.dnd-list ul[dnd-list] li.selected {
+    background-color: #337AB7;
+    color: #fff;
+}
+
+.dnd-list ul[dnd-list] li.selected {
+    background-color: #337AB7;
+    color: #fff;
+}
+
+.top-buffer { margin-top:10px; }
+
+.btn-tab {
+  margin-top:3.4px;
+}
+
+li .popover.right {
+  width: 185px;
+}

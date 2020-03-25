@@ -1,0 +1,10 @@
+<div class="breadcrumb">
+    <ul class="breadcrumb">
+        <li ng-if="$ctrl.project">
+            <a href="" ng-click="$ctrl.onBrowseProjectRoot()"> My Projects</a>
+        </li>
+        <li ng-repeat="item in $ctrl.trail">
+            <a href="" ng-click="$ctrl.onBrowse({$event: $event, file: item})">{{ item.name }}</a>
+        </li>
+    </ul>
+</div>

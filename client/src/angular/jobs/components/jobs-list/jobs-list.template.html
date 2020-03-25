@@ -1,0 +1,27 @@
+<h2>
+    Jobs Status
+    <button ng-click="$ctrl.refresh()" class="btn btn-sm btn-default pull-right">
+        <i class="fa fa-refresh" ng-class="{'fa-spin': $ctrl.loading}"></i>
+        <span class="sr-only">Refresh</span>
+    </button>
+</h2>
+<div ng-if="!$ctrl.jobs && !$ctrl.loading" class="alert alert-info">
+    No job history to display.
+</div>
+<select class="form-control period-select"
+    ng-model="$ctrl.display"
+    ng-options="s as s.label for s in $ctrl.displayOptions"
+    ng-change="$ctrl.displayChange()"
+></select>
+<br />
+<div class="jobs-list-wrapper">
+    <ul class="list-group">
+        <job-status ng-repeat="job in $ctrl.jobs" job="job" modal="$ctrl.modal"></job-status>
+    </ul>
+    <button class="btn btn-sm btn-block btn-default"
+            ng-disabled="!$ctrl.hasMoreJobs"
+            ng-click="$ctrl.loadMore()">
+        <i class="fa fa-refresh" ng-class="{'fa-spin': $ctrl.loading}"></i>
+        Load more jobs
+    </button>
+</div>

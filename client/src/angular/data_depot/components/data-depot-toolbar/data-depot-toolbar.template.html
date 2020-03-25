@@ -1,0 +1,106 @@
+<div class="clearfix btn-toolbar-ds dd-toolbar" ds-fix-top="dd-toolbar-fixed-top">
+    <div class="btn-toolbar pull-right" role="toolbar" aria-label="Data browser Toolbar">
+        <form class="navbar-form navbar-left" ng-submit="$ctrl.search()" style="display:flex">
+            <input class="form-control" style="width:240px;" placeholder="Search" ng-model="$ctrl.searchQuery.queryString">
+            <button class="btn btn-default" style="clear: right;">
+                <i class="fa fa-search"></i>
+            </button>
+        </form>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.rename()" ng-disabled="!$ctrl.tests.canRename ||
+                                        $ctrl.browser.busy ||
+                                        $ctrl.browser.busyListing">
+                <i class="fa fa-pencil"></i>
+                <span style="display:block;">Rename</span>
+            </button>
+        </div>
+        <div class="btn-group">
+
+            <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.move()" ng-disabled="!$ctrl.tests.canMove ||
+                                        $ctrl.browser.busy ||
+                                        $ctrl.browser.busyListing">
+                <i class="fa fa-arrows"></i>
+                <span style="display:block;">Move</span>
+            </button>
+
+            <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.copy()" ng-disabled="!$ctrl.tests.canCopy ||
+                                        $ctrl.browser.busy ||
+                                        $ctrl.browser.busyListing">
+                <i class="fa fa-copy"></i>
+                <span style="display:block;">Copy</span>
+            </button>
+
+            <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.preview()" ng-disabled="!$ctrl.tests.canPreview ||
+                                        $ctrl.browser.busy ||
+                                        $ctrl.browser.busyListing">
+                <i class="fa fa-binoculars"></i>
+                <span style="display:block;">Preview</span>
+            </button>
+                <!-- <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.previewImages()">
+                    <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
+                </button> -->
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-default"
+                title=""
+                ng-if="$ctrl.ZipService.zippyAppId"
+                ng-click="$ctrl.compress()"
+                ng-disabled="$ctrl.compressButtonDisabled()">
+                <i ng-class="$ctrl.compressButtonClass()"></i>
+                <span style="display:block;">Compress</span>
+            </button>
+            <button class="btn btn-sm btn-default"
+                title=""
+                ng-if="$ctrl.ZipService.extractAppId"
+                ng-click="$ctrl.extract()"
+                ng-disabled="$ctrl.extractButtonDisabled()">
+                <i ng-class="$ctrl.extractButtonClass()"></i>
+                <span style="display:block;">Extract</span>
+            </button>
+            <button class="btn btn-sm btn-default"
+                    title=""
+                    ng-click="$ctrl.download(preview=False)"
+                    ng-disabled="!$ctrl.tests.canDownload || $ctrl.browser.busy || $ctrl.browser.busyListing">
+                <i class="fa fa-cloud-download"></i>
+                <span style="display:block;">Download</span>
+            </button>
+            <!-- <button class="btn btn-sm btn-default"
+                    title="Public URL"
+                    ng-click="$ctrl.publicUrl()"
+                    ng-disabled="!$ctrl.tests.canDownload || $ctrl.browser.busy || $ctrl.browser.busyListing">
+                <i class="fa fa-link"></i>
+                <span style="display:block;">Public URL</span>
+	    </button> -->
+        </div>
+            <!-- <div class="btn-group">
+                <button class="btn btn-sm btn-default" title="" ng-click="$ctrl.share()"
+                        ng-disabled="!$ctrl.tests.canShare ||
+                                    $ctrl.browser.project.publicationStatus === 'publishing'">
+                    <i class="fa fa-send"></i><span style="display:block;">Share</span>
+                </button>
+            </div> -->
+        <div class="btn-group">
+            <button class="btn btn-sm btn-default"
+                    uib-tooltip="Move a file to the .Trash folder. If you wish to delete a file or folder permanently, please submit a ticket."
+                    tooltip-placement="bottom"
+                    ng-click="$ctrl.trash()"
+                    ng-if="!$ctrl.tests.canDelete"
+                    ng-disabled="!$ctrl.tests.canTrash ||
+                                $ctrl.browser.listing.path == '/.Trash' ||
+                                $ctrl.browser.busy ||
+                                $ctrl.browser.busyListing">
+                <i class="fa fa-trash"></i>
+                <span style="display:block;">Move to Trash</span>
+            </button>
+            <!-- <button class="btn btn-sm btn-danger" title="" ng-click="$ctrl.rm()" ng-disabled="!$ctrl.tests.canDelete" ng-if="$ctrl.tests.canDelete">
+                        <i class="fa fa-trash"></i><span style="display:block;">Delete selected files</span>
+                    </button> -->
+        </div>
+            <!-- <div class="btn-group">
+                <button class="btn btn-sm btn-info" title="" ng-click="$ctrl.details()">
+                    <i class="fa fa-info-circle"></i><span style="display:block;">Details</span>
+                    <span class="sr-only">{{ $ctrl.browser.listing.name }}</span>
+                </button>
+            </div> -->
+    </div>
+</div>

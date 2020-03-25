@@ -1,0 +1,46 @@
+<div>
+    <h4>
+        {{$ctrl.label}}
+    </h4>
+    <div data-ng-if="!$ctrl.isBeingEdited && !$ctrl.saving" class="projects-animate">
+        <div>{{$ctrl.value}}</div>
+        <div class="edit-control-container">
+            <button ng-if="$ctrl.editable"
+                    class="btn btn-sm btn-link"
+                    data-ng-click="$ctrl.editField()"> 
+                <i class="fa fa-pencil text-info"></i>
+                &nbsp;Edit
+            </button>
+
+        </div>
+    </div>
+    <div data-ng-if="$ctrl.isBeingEdited || $ctrl.saving" class="projects-animate">
+        <input ng-If="$ctrl.inputType != 'textarea'" ng-attr-type="$ctrl.inputType"
+                data-ng-model="$ctrl.value"
+                class="field-input"/>
+        <textarea 
+            ng-If="$ctrl.inputType == 'textarea'" 
+            data-ng-model="$ctrl.value"
+            class="field-textarea"></textarea>
+        <div class="edit-control-container">
+            <button class="btn btn-sm btn-link"
+                    ng-if="!$ctrl.saving"
+                    data-ng-click="$ctrl.saveField()">
+                <i class="fa fa-check text-success"></i>
+                &nbsp;Save
+            </button>
+            <button class="btn btn-sm btn-link"
+                    ng-if="!$ctrl.saving"
+                    data-ng-click="$ctrl.cancelEdit()">
+                <i class="fa fa-times text-danger"></i>
+                &nbsp;Cancel
+            </button>
+            <button ng-if="$ctrl.saving" 
+                    disabled="true"
+                    class="btn btn-sm btn-link">
+                Saving <i ng-if="$ctrl.saving" class="fa fa-spinner fa-spin"></i>
+            </button>
+        </div>
+    </div>
+</div>
+

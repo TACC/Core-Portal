@@ -1,0 +1,10 @@
+.projects-button-container {
+    margin-top: 1em;
+    width: 100%;
+    text-align: right;
+}
+
+.projects-animate.ng-enter {
+    -webkit-animation: fadeIn 0.5s;
+    animation: fadeIn 0.5s;
+}

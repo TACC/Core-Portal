@@ -1,0 +1,61 @@
+[ {
+    "username" : "username",
+    "internalUsername" : null,
+    "permission" : {
+      "read" : true,
+      "write" : true,
+      "execute" : true
+    },
+    "recursive" : true,
+    "_links" : {
+      "self" : {
+        "href" : "https://api.tacc.utexas.edu/files/v2/pems/system/portal.home.username/file.txt?username.eq=username_1"
+      },
+      "file" : {
+        "href" : "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username/file.txt"
+      },
+      "profile" : {
+        "href" : "https://api.tacc.utexas.edu/profiles/v2/username_1"
+      }
+    }
+  }, {
+    "username" : "username2",
+    "internalUsername" : null,
+    "permission" : {
+      "read" : true,
+      "write" : true,
+      "execute" : false
+    },
+    "recursive" : true,
+    "_links" : {
+      "self" : {
+        "href" : "https://api.tacc.utexas.edu/files/v2/pems/system/portal.home.username/file.txt?username.eq=username_2"
+      },
+      "file" : {
+        "href" : "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username/file.txt"
+      },
+      "profile" : {
+        "href" : "https://api.tacc.utexas.edu/profiles/v2/username_2"
+      }
+    }
+}, {
+    "username" : "username3",
+    "internalUsername" : null,
+    "permission" : {
+      "read" : true,
+      "write" : true,
+      "execute" : true
+    },
+    "recursive" : true,
+    "_links" : {
+      "self" : {
+        "href" : "https://api.tacc.utexas.edu/files/v2/pems/system/portal.home.username/file.txt?username.eq=username_3"
+      },
+      "file" : {
+        "href" : "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username/file.txt"
+      },
+      "profile" : {
+        "href" : "https://api.tacc.utexas.edu/profiles/v2/username_3"
+      }
+    }
+} ]

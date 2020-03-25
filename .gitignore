@@ -1,0 +1,181 @@
+# ignore intellij IDE things
+.idea/
+
+# OsX DS_Store nonsense
+.DS_Store
+nohup.out
+
+# ignore virtualenv folder
+.env/
+
+/portal/.docs/build/
+
+#ignore local static and media folders
+server/static
+server/portal/static/vendor/lib/node_modules
+server/media
+
+# Ignore local Django settings
+#server/portal/settings/settings_local.py
+server/portal/settings/settings_secret.py
+#server/portal/settings/settings_agave.py
+#server/portal/settings/settings_celery.py
+#server/portal/settings/elasticsearch.py
+
+server/src
+
+#ignore portal.env
+portal.env
+
+#celery
+celerybeat-schedule
+
+# don't commit certs
+certs/
+
+# no node modules
+node_modules/
+
+#no coverage
+client/coverage
+
+# no client build
+client/build/
+
+# no client side build
+/portal/static/build/
+
+# no webpack compiled templates
+server/portal/templates/base.html
+
+# in case you leave that here
+datadump.json
+
+# no development databases
+db.sqlite3*
+
+# ignore various Python things
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+*.egg-info/
+.installed.cfg
+*.egg
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.coverage*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+*.mo
+*.pot
+*.log
+docs/_build/
+.docs/build/
+target/
+
+/server/conf/docker/logs.txt
+
+package-lock.json
+
+
+###############################
+# Ansible .gitignores content.
+.vagrant/
+/static
+Vagrantfile.local
+vagrantfile.local
+*.retry
+
+# Custom
+
+# Byte-compiled / optimized / DLL files
+*.zip
+*.exe
+*.msi
+__pycache__/
+*.py[cod]
+db.sqlite3
+logs/
+log/
+docker/requirements.txt
+.db/
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Ansible config files
+playbooks/hosts
+!playbooks/group_vars/*.example.yml
+!playbooks/roles/secret_files/.gitkeep
+
+# vscode
+.vscode/
+
+# Gitcrypt key
+portal_crypt.key
+
+# docker-compose file with pgadmin.
+server/conf/docker/docker-compose-dev.all.debug.utils.yml
+
+# vim stuff
+*.swp
+server/conf/nginx/certificates/wma_prtl.key
+server/conf/nginx/certificates/wma_prtl.pub

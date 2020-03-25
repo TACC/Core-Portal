@@ -1,0 +1,11 @@
+<div class="workspace-panel workspace-panel-sidebar workspace-panel-sidebar-right"
+     ng-class="{'workspace-panel-collapsed': $ctrl.collapsed}">
+     <div class="workspace-panel-title">Jobs Status</div>
+     <div class="workspace-panel-content">
+        <jobs-list modal="true"></jobs-list>
+     </div>
+     <button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="$ctrl.togglePanel()">
+         <i class="fa" ng-class="{'fa-caret-left': $ctrl.collapsed, 'fa-caret-right': !$ctrl.collapsed}"></i>
+         <span class="sr-only">Toggle panel</span>
+     </button>
+</div>

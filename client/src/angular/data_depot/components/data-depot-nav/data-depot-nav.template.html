@@ -1,0 +1,72 @@
+<div class="list-group list-group-root well">
+    <div>
+        <a class="list-group-item" 
+           uib-tooltip="Private directory for your data"
+           ui-sref="wb.data_depot.db({
+                    systemId: $ctrl.sysMyData.systemId,
+                    filePath:'',
+                    query_string: null,
+                    name: $ctrl.sysMyData.name,
+                    directory: 'agave'})"
+            ui-sref-opts="{reload: true}" ng-class="{active: $ctrl.params.systemId == $ctrl.sysMyData.systemId}">
+            <i class="fa fa-user">&ensp;</i>
+            My Data
+        </a>
+    </div>
+    <div>
+        <a 
+           class="list-group-item" 
+           uib-tooltip="Directories shared with collaborators"
+           ui-sref="wb.data_depot.projects.list" 
+           ui-sref-opts="{reload: true, inherit: false}"
+           ui-sref-active="{'active': 'wb.data_depot.projects.*'}">
+            <i class="fa fa-briefcase">&ensp;</i>
+            My Projects
+        </a>
+    </div>
+    <div>
+        <a 
+           class="list-group-item" 
+           uib-tooltip="Data viewable by all authorized portal users"
+           ui-sref="wb.data_depot.db({
+                        systemId: $ctrl.sysCommunityData.systemId,
+                        filePath:'',
+                        query_string: null,
+                        name: $ctrl.sysCommunityData.name,
+                        directory: 'shared'})"
+           ui-sref-opts="{reload: true}" ng-class="{active: $ctrl.params.systemId == $ctrl.sysCommunityData.systemId}">
+            <i class="fa fa-users">&ensp;</i>
+            Community Data
+        </a>
+    </div>
+    <div ng-if="$ctrl.sysPublicData.systemId">
+        <a 
+            class="list-group-item" 
+            uib-tooltip="Data viewable by the public"
+            ui-sref="wb.data_depot.db({
+                        systemId: $ctrl.sysPublicData.systemId,
+                        filePath:'',
+                        query_string: null,
+                        name: $ctrl.sysPublicData.name,
+                        directory: 'public'})"
+            ui-sref-opts="{reload: true}" ng-class="{active: $ctrl.params.systemId == $ctrl.sysPublicData.systemId}">
+            <i class="fa fa-institution">&ensp;</i>
+            Public Data
+        </a>
+    </div>
+    <div ng-repeat="extSys in $ctrl.externalResources">
+        <a
+           class="list-group-item"
+           uib-tooltip="Access to my {{extSys.name}} for copying"
+           ui-sref="wb.data_depot.external_resources({
+                        filePath:'',
+                        name: extSys.name,
+                        directory: extSys.directory,
+                        fileMgr: extSys.fileMgr,
+                        id: null})"
+           ui-sref-opts="{reload: true}" ng-class="{active: $ctrl.params.fileMgr == extSys.fileMgr}">
+            <i class="fa-brand-icon {{extSys.fileMgr}}">&ensp;</i>
+            {{ extSys.name }}
+        </a>
+    </div>
+</div>

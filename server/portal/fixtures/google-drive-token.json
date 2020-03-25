@@ -1,0 +1,32 @@
+[
+    {
+        "fields": {
+            "user": 1,
+            "credentials" : {
+                "client_id": "test",
+                "client_secret": "test",
+                "refresh_token": "asdf1234",
+                "scopes": ["https://www.googleapis.com/auth/drive.readonly"],
+                "token": "100000"
+            }
+        },
+        "model": "googledrive_integration.googledriveusertoken",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "user": 2,
+            "credentials": {
+                "client_id": "test",
+                "client_secret": "test",
+                "refresh_token": "1234asdf",
+                "scopes": [
+                    "https://www.googleapis.com/auth/drive.readonly"
+                ],
+                "token": "200000"
+            }
+        },
+        "model": "googledrive_integration.googledriveusertoken",
+        "pk": 2
+    }
+]

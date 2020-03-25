@@ -1,0 +1,106 @@
+.notify-bouncing::before {
+  -webkit-animation: 2s bounce;
+  animation: 2s bounce;
+}
+
+notification-detail:hover>.notification {
+  background: #dedede;
+}
+
+#notification-container {
+  cursor: default;
+}
+
+#notification-container .dropdown-toggle {
+  background-color: #00000000;
+}
+
+#notification-container .dropdown-menu {
+  min-width: 40em;
+}
+
+#notification-badge {
+  height: 1.7em;
+  width: 1.7em;
+  line-height: 1.5em;
+  font-size: 0.9em;
+  border-radius: 30%;
+  background-color: #008cba;
+  border: 2px solid white;
+  color: white;
+  top: 0px;
+  padding: 0;
+  right: 0.2em;
+  position: absolute;
+}
+
+#notifications-bell-container {
+  display: inline-block;
+}
+
+@media screen and (max-width: 767px) {
+    #notifications-bell-container {
+        display: none;
+    }
+}
+
+.notifications-wrapper {
+  padding: 5px;
+  background-color: black;
+  overflow: auto;
+  max-height: 30em;
+}
+
+.notifications-none {
+  padding: 5px;
+  background-color: black;
+}
+
+.notifications-none div {
+  background-color: white;
+  color: black;
+  width: 100%;
+  padding: 5px 5px 5px 5px;
+  font-style: italic;
+}
+
+.notifications-wrapper .notification {
+  background-color: white;
+  color: black;
+  margin-top: 0em;
+}
+
+.notifications-wrapper .notification.unread {
+  background-color: #ebfeff;
+}
+
+.dropdown-menu .notification-time {
+  display: none;
+}
+
+.dropdown-menu .notification .notification-message {
+  padding: 5px;
+}
+
+.notifications-wrapper .notification:hover {
+  background-color: #eeeeee;
+}
+
+.notifications-dropdown-header {
+  padding: 0.5em 0.5em 0.5em 0.5em;
+  font-size: 1.25em;
+}
+
+.notifications-dropdown-header a {
+  color: white;
+}
+
+.notifications-dropdown-header .pull-right {
+  margin-left: 1em;
+}
+
+@media screen and (max-width: 767px) {
+  #notifications-bell-container {
+    display: none;
+  }
+}

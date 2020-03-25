@@ -1,0 +1,77 @@
+<!-- PRIVATE (MY DATA) & PUBLIC DATA -->
+<td ng-if='listing.doc_type === "files" || listing.doc_type === "object"'>
+  <i ng-if="listing.mimeType == 'text/directory'" class="fa fa-folder fa-lg"> </i>
+  <i ng-if="listing.mimeType != 'text/directory'" class="fa fa-file-o fa-lg"> </i>
+  <a
+    ui-sref="wb.data_depot.db({
+                systemId:listing.system,
+                directory:route,
+                filePath:listing.path})">
+     {{ listing.name }}
+  </a>
+</td>
+<td ng-if='listing.doc_type === "files" || listing.doc_type === "object"'>
+  {{ listing.lastModified | date:'medium' }}
+</td>
+<td ng-if='listing.doc_type === "files" || listing.doc_type === "object"'>
+  {{ listing.length | bytes }}
+</td>
+<td ng-if='listing.doc_type === "files" || listing.doc_type === "object"'>
+  {{ listing.lastUpdated | date:'medium' }}
+</td>
+
+<!-- PUBLISHED DATA -->
+<td ng-if = 'listing.doc_type === "publication"'>
+  <div ng-if="listing.projectId">
+    <h4><a href="">{{ listing.project.value.title }}</a></h4>
+  </div>
+</td>
+<td ng-if = 'listing.doc_type === "publication"'>
+  <div ng-if="listing.projectId">
+    {{ listing.project.value.projectType }}
+  </div>
+</td>
+<td ng-if = 'listing.doc_type === "publication"'>
+  <div ng-if="listing.projectId">
+    <p>{{ listing.project.value.description }}</p>
+  </div>
+</td>
+<td ng-if = 'listing.doc_type === "publication"'>
+  <div ng-if="listing.projectId">
+    {{ listing.created | date:'short' }}
+  </div>
+</td>
+<td ng-if = 'listing.doc_type === "publication"'>
+  <div ng-if="!listing.projectId">
+    <h4><a href="">{{ listing.title }}</a></h4>
+  </div>
+</td>
+<td ng-if = 'listing.doc_type === "publication"'>
+  <div ng-if="!listing.projectId">
+  </div>
+</td>
+<td ng-if = 'listing.doc_type === "publication"'>
+  <div ng-if="!listing.projectId">
+    {{ listing.description }}
+  </div>
+</td>
+<td ng-if = 'listing.doc_type === "publication"'>
+  <div ng-if="!listing.projectId">
+    {{ listing.startDate | date:'short' }}
+  </div>
+</td>
+
+<!-- CMS DATA -->
+<td ng-if='listing.doc_type === "modelresult"'>
+  <span class="label label-default">Web Content</span>
+</td>
+<td ng-if='listing.doc_type === "modelresult"'>
+  <a ng-href="{{listing.url || '/'}}" target="_self">
+    {{ listing.title }}
+  </a>
+</td>
+<td ng-if='listing.doc_type === "modelresult"'>
+  <a ng-href="{{listing.url || '/'}}" target="_self">
+    {{ listing.date | date:'medium' }}
+  </a>
+</td>

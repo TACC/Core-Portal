@@ -1,0 +1,64 @@
+[{
+    "name": ".",
+    "path": "/parent_folder",
+    "lastModified": "2018-09-11T11:39:53.000-05:00",
+    "length": 22,
+    "permissions": "ALL",
+    "format": "folder",
+    "mimeType": "text/directory",
+    "type": "dir",
+    "system": "portal.home.username",
+    "_links": {
+      "self": {
+        "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder"
+      },
+      "system": {
+        "href": "https://api.tacc.utexas.edu/systems/v2/portal.home.username"
+      },
+      "metadata": {
+        "href": "https://api.tacc.utexas.edu/meta/v2/data?q=%7B%22associationIds%22%3A%222513457404145701352-242ac113-0001-002%22%7D"
+      },
+      "history": {
+        "href": "https://api.tacc.utexas.edu/files/v2/history/system/portal.home.username//parent_folder"
+      }
+    }
+  },
+  {
+    "name": "file_one.json",
+    "path": "/parent_folder/file_one.json",
+    "lastModified": "2018-09-11T11:38:34.000-05:00",
+    "length": 9,
+    "permissions": "READ_WRITE",
+    "format": "raw",
+    "system": "portal.home.username",
+    "mimeType": "application/octet-stream",
+    "type": "file",
+    "_links": {
+      "self": {
+        "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder/file_one.json"
+      },
+      "system": {
+        "href": "https://api.tacc.utexas.edu/systems/v2/portal.home.username"
+      }
+    }
+  },
+    {
+      "name": "sub_folder",
+      "path": "/parent_folder/sub_folder",
+      "lastModified": "2018-09-11T11:39:53.000-05:00",
+      "length": 22,
+      "permissions": "ALL",
+      "format": "folder",
+      "system": "portal.home.username",
+      "mimeType": "text/directory",
+      "type": "dir",
+      "_links": {
+        "self": {
+          "href": "https://api.tacc.utexas.edu/files/v2/media/system/portal.home.username//parent_folder/sub_folder"
+        },
+        "system": {
+          "href": "https://api.tacc.utexas.edu/systems/v2/portal.home.username"
+        }
+      }
+    }
+]
