@@ -31,11 +31,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Run Server-side unit tests and generate coverage report
-      run: |
+    - run: |
         cd server
         pip install -r requirements.txt
-        pytest --cov-config=.coveragerc --cov=server/portal --cov-report=xml -ra
+    - name: Run Server-side unit tests and generate coverage report
+      run: pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
@@ -64,11 +64,11 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
-
-    - name: Server-Side Linting
-      run: |
+    - run: |
         cd server
         pip install -r requirements.txt
+    - name: Server-Side Linting
+      run: |
         git fetch origin "+refs/heads/master:refs/remotes/origin/master"
         git diff -U0 origin/master..HEAD | flake8 --diff
 
@@ -79,7 +79,7 @@ jobs:
     - name: Setup Node.js for use with actions
       uses: actions/setup-node@v1
       with:
-        version: 12.x
+        node-version: 12.x
 
     - uses: actions/cache@v1
       with:
@@ -88,19 +88,13 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
 
+    - run: |
+        cd client
+        npm install
     - name: Client Side Unit Tests
-      run: |
-        cd client
-        npm install
-        npm run test
-#        bash <(curl -s https://codecov.io/bash) -cF javascript
+      run: npm run test
 
-    - name: Generate coverage report
-      run: |
-        cd client
-        npm install
-        npm run test
-        bash <(curl -s https://codecov.io/bash) -cF javascript
+    - run: bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
 
   Client_Side_Linting:
     runs-on: ubuntu-18.04
@@ -109,7 +103,7 @@ jobs:
     - name: Setup Node.js for use with actions
       uses: actions/setup-node@v1
       with:
-        version: 12.x
+        node-version: 12.x
 
     - uses: actions/cache@v1
       with:
@@ -118,8 +112,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
 
-    - name: Client Side Linting
-      run: |
+    - run: |
         cd client
         npm install
-        npm run lint
+    - name: Client Side Linting
+      run: npm run lint
