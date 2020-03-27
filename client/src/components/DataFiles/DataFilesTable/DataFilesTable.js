@@ -12,7 +12,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import './DataFilesTable.scss';
 
 // What to render if there are no files to display

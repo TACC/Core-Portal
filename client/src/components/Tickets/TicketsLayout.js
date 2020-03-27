@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import { formatDate } from 'utils/timeFormat';
 import * as ROUTES from '../../constants/routes';
 import './TicketsLayout.scss';

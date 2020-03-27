@@ -16,8 +16,8 @@ import {
   Col
 } from 'reactstrap';
 import { useForm, useField, splitFormProps } from 'react-form';
+import { FileInputDropZone } from '_common';
 import * as ROUTES from '../../constants/routes';
-import FileInputDropZone from './FileInputDropZone';
 import './TicketCreateForm.scss';
 
 const InputField = React.forwardRef((props, ref) => {
