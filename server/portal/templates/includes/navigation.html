@@ -36,33 +36,8 @@ They seem useful, and would be re-incoprorated when their usage is necessary.
   </button>
   <!-- Navbar Links -->
   <div class="collapse navbar-collapse" id="navbarsExpandTarget">
-    <ul class="s-cms-nav  navbar-nav">
+    <ul class="s-cms-nav  navbar-nav" id="cms-nav-pages" data-cms-nav-endpoint="/cms/nav/pages/markup/">
       <!-- All top-level CMS controlled nav elements handled here. -->
-      {# TEMP: Manual markup #}
-      <li class="nav-item">
-        <a class="nav-link" href="/"><span>Home</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/training/"><span>Training</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/user-guide/"><span>User Guide</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/allocations/"><span>Allocations</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/fellowship/"><span>Fellowships</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/news/"><span>News</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/about/"><span>About</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/help/"><span>Help</span></a>
-      </li>
     </ul>
 
     {# Duplicated at https://gitlab.tacc.utexas.edu/wma-cms/frontera-cms/blob/master/taccsite_cms/templates/nav_branding_partials/nav.branding.frontera.v2.html #}
@@ -97,6 +72,25 @@ They seem useful, and would be re-incoprorated when their usage is necessary.
       {% endif %}
       <!-- end of user logged in/not logged in if -->
     </ul>
-
   </div>
 </nav>
+<script>
+  function includeCMSPagesHTML() {
+    const cmsPagesElement = document.getElementById("cms-nav-pages");
+    cmsPagesEndpoint = cmsPagesElement.dataset.cmsNavEndpoint;
+    if (cmsPagesEndpoint) {
+      fetch(cmsPagesEndpoint).then((response) => {
+        return response.text();
+      }).then((data) => {
+        cmsPagesElement.innerHTML = data;
+      }, (err) => {
+        cmsPagesElement.innerHTML = null;
+      }).finally(() => {
+        cmsPagesElement.removeAttribute("data-cms-nav-endpoint");
+      });
+    }
+  }
+</script>
+<script>
+  includeCMSPagesHTML();
+</script>
