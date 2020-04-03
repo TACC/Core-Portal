@@ -7,10 +7,9 @@ import LoadingSpinner from '_common/LoadingSpinner';
 import { ManageAccountInput } from './ManageAccountFields';
 
 export default function() {
-  const { checking } = useSelector(({ profile }) => {
-    const { demographics } = profile.data;
-    return { ...demographics, checking: profile.checkingPassword };
-  });
+  const { checking } = useSelector(({ profile }) => ({
+    checking: profile.checkingPassword
+  }));
   const dispatch = useDispatch();
   const formSchema = obj().shape({
     currentPW: str().required('Please enter your current password'),
@@ -27,16 +26,9 @@ export default function() {
         confirmNewPW: ''
       }}
       onSubmit={(values, { setSubmitting, resetForm }) => {
-        const { currentPW, newPW } = values;
         dispatch({
           type: 'CHANGE_PASSWORD',
-          options: {
-            method: 'POST',
-            body: JSON.stringify({
-              currentPW,
-              newPW
-            })
-          }
+          values
         });
         setSubmitting(false);
         resetForm();
@@ -69,7 +61,7 @@ export default function() {
           type="password"
           placeholder="Confirm New Password"
         />
-        <div style={{ color: '#707070' }}>
+        <div style={{ color: '#707070', fontStyle: 'italic' }}>
           <span>Passwords must meet the following criteria:</span>
           <ul style={{ listStyleType: 'none', paddingLeft: '1rem' }}>
             <li>Must not contain your username or parts of your full name;</li>

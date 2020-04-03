@@ -27,6 +27,8 @@ export function* changePassword(action) {
   const options = {
     credentials: 'same-origin',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    method: 'POST',
+    body: JSON.stringify(action.values),
     ...action.options
   };
   yield put({ type: 'CHECKING_PASSWORD' });

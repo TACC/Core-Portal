@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
 import { Formik, Form } from 'formik';
 import { object as obj, string as str } from 'yup';
+import LoadingSpinner from '_common/LoadingSpinner';
 import { ManageAccountInput } from './ManageAccountFields';
-import LoadingSpinner from '../../_common/LoadingSpinner';
 
 export default function() {
   const {

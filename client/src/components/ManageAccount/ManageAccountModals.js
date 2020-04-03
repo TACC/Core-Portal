@@ -13,7 +13,9 @@ export const EditRequiredInformation = () => {
   const closeModal = () => dispatch({ type: 'CLOSE_EDIT_REQUIRED' });
   return (
     <Modal isOpen={open} toggle={closeModal}>
-      <ModalHeader>Edit Required Information</ModalHeader>
+      <ModalHeader className="manage-account-modal-header">
+        Edit Required Information
+      </ModalHeader>
       <ModalBody
         style={{
           maxHeight: '50vh',
@@ -31,7 +33,9 @@ export const EditOptionalInformation = () => {
   const closeModal = () => dispatch({ type: 'CLOSE_EDIT_OPTIONAL' });
   return (
     <Modal isOpen={open} toggle={closeModal}>
-      <ModalHeader>Edit Optional Information</ModalHeader>
+      <ModalHeader className="manage-account-modal-header">
+        Edit Optional Information
+      </ModalHeader>
       <ModalBody>
         <EditOptionalInformationForm />
       </ModalBody>
@@ -44,7 +48,9 @@ export const ChangePassword = () => {
   const closeModal = () => dispatch({ type: 'CLOSE_CHANGEPW' });
   return (
     <Modal isOpen={open} toggle={closeModal}>
-      <ModalHeader>Change Password</ModalHeader>
+      <ModalHeader className="manage-account-modal-header">
+        Change Password
+      </ModalHeader>
       <ModalBody>
         <ChangePasswordForm />
       </ModalBody>

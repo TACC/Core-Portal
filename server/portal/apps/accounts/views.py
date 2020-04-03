@@ -279,7 +279,7 @@ def manage_pro_profile(request):
 
 
 @login_required
-def authenticate_user(request):
+def check_current_password(request):
     username = str(request.user)
     body = json.loads(request.body)
     password = body['currentPW']
