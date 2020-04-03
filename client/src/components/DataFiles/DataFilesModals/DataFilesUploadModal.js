@@ -11,7 +11,7 @@ import {
   ModalFooter,
   Table
 } from 'reactstrap';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
 
 const DataFilesUploadStatus = ({ i, removeCallback }) => {

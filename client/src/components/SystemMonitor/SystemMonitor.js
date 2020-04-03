@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTable } from 'react-table';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import { Display, Operational, Load } from './SystemMonitorCells';
 import './SystemMonitor.scss';
 

@@ -5,6 +5,7 @@ import { Link, Route, Switch } from 'react-router-dom';
 import JobsView from '../Jobs';
 import Tickets, { TicketModal, TicketCreateModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
+import BrowserChecker from '../_common/BrowserChecker';
 import * as ROUTES from '../../constants/routes';
 import './Dashboard.scss';
 
@@ -13,6 +14,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard-wrapper">
+      <BrowserChecker />
       <div className="dashboard-header">
         <h5>Dashboard</h5>
         <Link to="/accounts/profile" className="wb-link">
