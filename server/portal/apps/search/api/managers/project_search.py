@@ -7,9 +7,10 @@
 import logging
 from future.utils import python_2_unicode_compatible
 from portal.apps.search.api.managers.base import BaseSearchManager
-from portal.libs.elasticsearch.docs.base import IndexedProject
+# from portal.libs.elasticsearch.docs.base import IndexedProject
 from elasticsearch_dsl import Q, Index
 from django.conf import settings
+
 
 @python_2_unicode_compatible
 class ProjectSearchManager(BaseSearchManager):
@@ -42,3 +43,4 @@ class ProjectSearchManager(BaseSearchManager):
         """Wraps the search result in a BaseFile object for serializtion."""
         res = self._search.execute()
         return [mgr.get_by_project_id(hit.projectId).storage for hit in res]
+"""
