@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { UncontrolledAlert } from 'reactstrap';
+import { isEmpty } from 'lodash';
+import { LoadingSpinner } from '_common';
 import Sidebar from '../Sidebar';
 import {
   RequiredInformation,
@@ -10,11 +13,14 @@ import {
   OptionalInformation
 } from './ManageAccountTables';
 import ManageAccountModals from './ManageAccountModals';
-import LoadingSpinner from '../_common/LoadingSpinner';
 import './ManageAccount.scss';
 
 const ManageAccountView = () => {
-  const { isLoading } = useSelector(state => state.profile);
+  const {
+    isLoading,
+    errors,
+    data: { licenses, integrations }
+  } = useSelector(state => state.profile);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch({ type: 'GET_PROFILE_DATA' });
@@ -25,7 +31,9 @@ const ManageAccountView = () => {
       <div className="manage-account-content">
         <div className="manage-account-header">
           <h5>Manage Account</h5>
-          <Link to="/workbench/dashboard">Back to Dashboard</Link>
+          <Link to="/workbench/dashboard" style={{ fontWeight: '500' }}>
+            Back to Dashboard
+          </Link>
         </div>
         <div className="user-profile">
           <div className="user-profile-main">
@@ -33,6 +41,16 @@ const ManageAccountView = () => {
               <LoadingSpinner />
             ) : (
               <>
+                {errors.data && (
+                  <UncontrolledAlert color="danger">
+                    Unable to get your profile data
+                  </UncontrolledAlert>
+                )}
+                {errors.fields && (
+                  <UncontrolledAlert color="danger">
+                    Unable to get form fields
+                  </UncontrolledAlert>
+                )}
                 <RequiredInformation />
                 <OptionalInformation />
                 <ManageAccountModals />
@@ -40,8 +58,8 @@ const ManageAccountView = () => {
             )}
           </div>
           <div className="user-profile-side">
-            <Licenses />
-            <ThirdPartyApps />
+            {!isEmpty(licenses) && <Licenses />}
+            {!isEmpty(integrations) && <ThirdPartyApps />}
             <ChangePassword />
           </div>
         </div>

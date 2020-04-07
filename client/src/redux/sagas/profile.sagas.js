@@ -1,85 +1,90 @@
 import { put, takeLatest, call } from 'redux-saga/effects';
-import Cookies from 'js-cookie';
 import 'cross-fetch';
+import { fetchUtil } from 'utils/fetchUtil';
 
 const ROOT_SLUG = '/accounts/api/profile';
 
 export function* getProfileData(action) {
   yield put({ type: 'GET_FORM_FIELDS' });
-  const response = yield call(fetch, `${ROOT_SLUG}/data/`, {
-    credentials: 'same-origin',
-    ...action.options
-  });
-  const payload = yield response.json();
-  yield put({ type: 'ADD_DATA', payload });
+  try {
+    const response = yield call(fetchUtil, {
+      url: `${ROOT_SLUG}/data/`
+    });
+    yield put({ type: 'ADD_DATA', payload: response });
+  } catch (error) {
+    yield put({ type: 'ADD_DATA_ERROR', payload: error });
+  }
 }
 
 export function* getFormFields(action) {
-  const response = yield call(fetch, `${ROOT_SLUG}/fields/`, {
-    credentials: 'same-origin',
-    ...action.options
-  });
-  const payload = yield response.json();
-  yield put({ type: 'POPULATE_FIELDS', payload });
+  try {
+    const response = yield call(fetchUtil, { url: `${ROOT_SLUG}/fields/` });
+    yield put({ type: 'POPULATE_FIELDS', payload: response });
+  } catch (error) {
+    yield put({ type: 'POPULATE_FIELDS_ERROR', payload: error });
+  }
 }
 
 export function* changePassword(action) {
-  const options = {
-    credentials: 'same-origin',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    method: 'POST',
-    body: JSON.stringify(action.values),
-    ...action.options
-  };
   yield put({ type: 'CHECKING_PASSWORD' });
-  const response = yield call(fetch, `${ROOT_SLUG}/check/`, options);
-  const { verified } = yield response.json();
-  yield put({ type: 'CHECKED_PASSWORD', payload: verified });
-  if (verified) {
-    yield call(fetch, `${ROOT_SLUG}/change-password/`, options);
+  yield call(action.callback, {});
+  try {
+    yield call(fetchUtil, {
+      url: `${ROOT_SLUG}/change-password/`,
+      method: 'PUT',
+      body: JSON.stringify(action.values)
+    });
+    yield put({ type: 'CHECKED_PASSWORD' });
+    yield call(action.callback, { reset: true });
+    yield put({ type: 'CHANGED_PASSWORD' });
+  } catch (error) {
+    yield put({ type: 'CHECKED_PASSWORD' });
+    yield put({ type: 'PASSWORD_ERROR', payload: error });
   }
 }
 
 export function* editRequiredInformation(action) {
-  yield put({ type: 'CLOSE_EDIT_REQUIRED' });
-  yield put({ type: 'LOAD_DATA' });
-  const response = yield call(fetch, `${ROOT_SLUG}/edit-profile/`, {
-    credentials: 'same-origin',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    method: 'PUT',
-    body: JSON.stringify({
-      flag: 'Required',
-      ...action.values
-    }),
-    ...action.options
-  });
-  const json = yield response.json();
-  const payload = yield {
-    demographics: Object.values(json).reduce(
-      (obj, val) => ({ ...obj, ...val }),
-      {}
-    )
-  };
-  yield put({ type: 'ADD_DATA', payload });
+  yield put({ type: 'EDITING_INFORMATION' });
+  try {
+    yield call(fetchUtil, {
+      url: `${ROOT_SLUG}/edit-profile/`,
+      method: 'PUT',
+      body: JSON.stringify({
+        flag: 'Required',
+        ...action.values
+      })
+    });
+    yield put({
+      type: 'EDIT_INFORMATION_SUCCESS',
+      payload: { required: true }
+    });
+  } catch (error) {
+    yield put({ type: 'EDIT_INFORMATION_ERROR', payload: { required: error } });
+  }
 }
 
 export function* editOptionalInformation(action) {
+  yield put({ type: 'EDITING_INFORMATION' });
   const { professionalLevel, website, orcidId, bio } = yield action.values;
-  yield call(fetch, `${ROOT_SLUG}/edit-profile/`, {
-    credentials: 'same-origin',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    method: 'PUT',
-    body: JSON.stringify({
-      flag: 'Optional',
-      professional_level: professionalLevel,
-      orcid_id: orcidId,
-      website,
-      bio
-    }),
-    ...action.options
-  });
-  yield put({ type: 'CLOSE_EDIT_OPTIONAL' });
-  yield put({ type: 'LOAD_DATA' });
+  try {
+    yield call(fetchUtil, {
+      url: `${ROOT_SLUG}/edit-profile/`,
+      method: 'PUT',
+      body: JSON.stringify({
+        flag: 'Optional',
+        professional_level: professionalLevel,
+        orcid_id: orcidId,
+        website,
+        bio
+      })
+    });
+    yield put({
+      type: 'EDIT_INFORMATION_SUCCESS',
+      payload: { optional: true }
+    });
+  } catch (error) {
+    yield put({ type: 'EDIT_INFORMATION_ERROR', payload: { optional: error } });
+  }
 }
 
 export function* watchEditRequired() {

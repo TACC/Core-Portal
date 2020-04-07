@@ -4,11 +4,11 @@ import { Button } from 'reactstrap';
 import { Formik, Form } from 'formik';
 import { object as obj, string as str } from 'yup';
 import { pick } from 'lodash';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
 export default function() {
-  const { initialValues, fields } = useSelector(({ profile }) => {
+  const { initialValues, fields, isEditing } = useSelector(({ profile }) => {
     const { data } = profile;
     const { demographics } = data;
     const initial = pick(demographics, [
@@ -31,7 +31,8 @@ export default function() {
         institution: initial.institutionId,
         country: initial.countryId,
         citizenship: initial.citizenshipId
-      }
+      },
+      isEditing: profile.editing
     };
   });
   const dispatch = useDispatch();
@@ -50,59 +51,46 @@ export default function() {
       'Phone number is not valid'
     )
   });
+  const handleSubmit = (values, { setSubmitting }) => {
+    dispatch({
+      type: 'EDIT_REQUIRED_INFORMATION',
+      values
+    });
+    setSubmitting(false);
+  };
   if (!fields.ethnicities) return <LoadingSpinner />;
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={formSchema}
-      onSubmit={(values, { setSubmitting }) => {
-        dispatch({
-          type: 'EDIT_REQUIRED_INFORMATION',
-          values
-        });
-        setSubmitting(false);
-      }}
+      onSubmit={handleSubmit}
     >
-      {props => {
-        return (
-          <Form>
-            {/* TAS Fields - Text */}
-            <ManageAccountInput label="First Name" name="firstName" />
-            <ManageAccountInput label="Last Name" name="lastName" />
-            <ManageAccountInput label="Email Address" name="email" />
-            <ManageAccountInput label="Phone Number" name="phone" />
-            {/* TAS Fields - Select */}
-            <ManageAccountInput
-              label="Institution"
-              name="institutionId"
-              type="select"
-            />
-            <ManageAccountInput
-              label="Position/Title"
-              name="title"
-              type="select"
-            />
-            <ManageAccountInput
-              label="Residence"
-              name="countryId"
-              type="select"
-            />
-            <ManageAccountInput
-              label="Citizenship"
-              name="citizenshipId"
-              type="select"
-            />
-            {/* Django Fields */}
-            <ManageAccountInput
-              label="Ethnicity"
-              name="ethnicity"
-              type="select"
-            />
-            <ManageAccountInput label="Gender" name="gender" type="select" />
-            <Button type="submit">Submit</Button>
-          </Form>
-        );
-      }}
+      <Form>
+        {/* TAS Fields - Text */}
+        <ManageAccountInput label="First Name" name="firstName" />
+        <ManageAccountInput label="Last Name" name="lastName" />
+        <ManageAccountInput label="Email Address" name="email" />
+        <ManageAccountInput label="Phone Number" name="phone" />
+        {/* TAS Fields - Select */}
+        <ManageAccountInput
+          label="Institution"
+          name="institutionId"
+          type="select"
+        />
+        <ManageAccountInput label="Position/Title" name="title" type="select" />
+        <ManageAccountInput label="Residence" name="countryId" type="select" />
+        <ManageAccountInput
+          label="Citizenship"
+          name="citizenshipId"
+          type="select"
+        />
+        {/* Django Fields */}
+        <ManageAccountInput label="Ethnicity" name="ethnicity" type="select" />
+        <ManageAccountInput label="Gender" name="gender" type="select" />
+        <Button type="submit" className="manage-account-submit-button">
+          {isEditing ? <LoadingSpinner placement="inline" /> : 'Submit'}
+        </Button>
+      </Form>
     </Formik>
   );
 }

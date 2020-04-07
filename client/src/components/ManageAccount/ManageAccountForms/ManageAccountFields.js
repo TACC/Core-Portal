@@ -52,13 +52,11 @@ export const ManageAccountInput = ({ label, ...props }) => {
         <Input
           {...field}
           {...props}
-          className={`${meta.error ? 'is-invalid' : ''}`}
+          className={meta.error && 'is-invalid'}
           bsSize="sm"
         />
       )}
-      {meta.touched && meta.error ? (
-        <FormText color="danger">{meta.error}</FormText>
-      ) : null}
+      {meta.error && <FormText color="danger">{meta.error}</FormText>}
     </FormGroup>
   );
 };

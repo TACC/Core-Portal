@@ -1,69 +1,109 @@
 export const initialState = {
   isLoading: true,
   checkingPassword: false,
+  editing: false,
+  success: { optional: false, required: false, password: false },
   data: {
     demographics: {},
     licenses: [],
     integrations: []
   },
+  errors: {},
   fields: {},
   modals: {
-    editRequired: false,
-    editOptional: false,
-    changePW: false
+    required: false,
+    optional: false,
+    password: false
   }
 };
 export default function profile(state = initialState, action) {
   switch (action.type) {
     case 'LOAD_DATA':
-      return { ...state, isLoading: true };
+      return {
+        ...state,
+        isLoading: true,
+        errors: { ...state.errors, data: undefined }
+      };
     case 'ADD_DATA':
       return {
         ...state,
         isLoading: false,
         data: { ...state.data, ...action.payload }
       };
+    case 'ADD_DATA_ERROR':
+      return {
+        ...state,
+        isLoading: false,
+        errors: {
+          ...state.errors,
+          data: action.payload
+        }
+      };
     case 'POPULATE_FIELDS':
-      return { ...state, fields: action.payload };
-    case 'OPEN_EDIT_REQUIRED':
       return {
         ...state,
-        modals: { ...state.modals, editRequired: true }
+        fields: action.payload,
+        errors: { ...state.errors, fields: undefined }
       };
-    case 'CLOSE_EDIT_REQUIRED':
+    case 'POPULATE_FIELDS_ERROR':
+      return { ...state, errors: { ...state.errors, fields: action.payload } };
+    case 'OPEN_PROFILE_MODAL':
+      return { ...state, modals: { ...state.modals, ...action.payload } };
+    case 'CLOSE_PROFILE_MODAL':
       return {
         ...state,
-        modals: { ...state.modals, editRequired: false }
+        success: { optional: false, required: false, password: false },
+        modals: {
+          editRequired: false,
+          editOptional: false,
+          changePW: false
+        }
       };
-    case 'OPEN_EDIT_OPTIONAL':
+    case 'EDITING_INFORMATION':
+      return { ...state, editing: true };
+    case 'EDIT_INFORMATION_SUCCESS': {
       return {
         ...state,
-        modals: { ...state.modals, editOptional: true }
+        editing: false,
+        success: { ...state.success, ...action.payload }
       };
-    case 'CLOSE_EDIT_OPTIONAL':
+    }
+    case 'EDIT_INFORMATION_ERROR':
       return {
         ...state,
-        modals: { ...state.modals, editOptional: false }
-      };
-    case 'OPEN_CHANGEPW':
-      return {
-        ...state,
-        modals: { ...state.modals, changePW: true }
-      };
-    case 'CLOSE_CHANGEPW':
-      return {
-        ...state,
-        modals: { ...state.modals, changePW: false }
+        editing: false,
+        errors: { ...state.errors, ...action.payload }
       };
     case 'CHECKING_PASSWORD':
       return {
         ...state,
+        success: { ...state.success, password: false },
         checkingPassword: true
       };
     case 'CHECKED_PASSWORD':
       return {
         ...state,
-        checkingPassword: false
+        checkingPassword: false,
+        errors: {
+          ...state.errors,
+          password: undefined
+        }
+      };
+    case 'CHANGED_PASSWORD':
+      return {
+        ...state,
+        success: {
+          ...state.success,
+          password: true
+        }
+      };
+    case 'PASSWORD_ERROR':
+      return {
+        ...state,
+        errors: {
+          ...state.errors,
+          password: action.payload
+        }
       };
     default:
       return state;

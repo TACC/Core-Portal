@@ -20,6 +20,7 @@ from django.utils.decorators import method_decorator
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string
 from pytas.http import TASClient
 
 from portal.apps.accounts import forms, integrations
@@ -61,6 +62,25 @@ class LogoutView(View):
         """GET"""
         logout(request)
         return HttpResponseRedirect('/')
+
+
+@login_required
+def change_password(request):
+    username = str(request.user)
+    body = json.loads(request.body)
+    current_password = body['currentPW']
+    new_password = body['newPW']
+
+    tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+    auth = tas.authenticate(username, current_password)
+    if auth:
+        try:
+            tas.change_password(username, current_password, new_password)
+            return JsonResponse({'completed': True})
+        except Exception as e:
+            return JsonResponse({'message': e.args[1]}, status=422)
+    else:
+        return JsonResponse({'message': 'Incorrect Password'}, status=401)
 
 
 def request_access(request):
@@ -279,33 +299,6 @@ def manage_pro_profile(request):
 
 
 @login_required
-def check_current_password(request):
-    username = str(request.user)
-    body = json.loads(request.body)
-    password = body['currentPW']
-
-    tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
-    auth = tas.authenticate(username, password)
-    if auth:
-        return JsonResponse({'verified': True})
-    else:
-        return JsonResponse({'verified': False})
-
-
-# For React
-@login_required
-def change_password(request):
-    username = str(request.user)
-    body = json.loads(request.body)
-    current_password = body['currentPW']
-    new_password = body['newPW']
-
-    tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
-    tas.change_password(username, current_password, new_password)
-    return JsonResponse({'completed': True})
-
-
-@login_required
 def pro_profile_edit(request):
     context = {}
     user = request.user
@@ -415,6 +408,7 @@ def manage_licenses(request):
     for l, m in zip(licenses, license_models):
         if m.objects.filter(user=request.user).exists():
             l['current_user_license'] = True
+        l['template_html'] = render_to_string(l['details_html'])
     return licenses
 
 

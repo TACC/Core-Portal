@@ -14,12 +14,12 @@
   flex-direction: column;
   flex-grow: 1;
   max-height: 100%;
+  padding: 1.25rem 2.5rem 0 1.5rem;
 }
 .manage-account-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 40px 20px 20px;
   height: 2rem;
   border-bottom: 1px solid #707070;
   h5 {
@@ -32,19 +32,22 @@
   display: flex;
   flex-flow: row wrap;
   height: calc(100% - 2rem);
-  margin-top: 1.5rem;
-  padding-left: 1rem;
   .user-profile-main {
     width: 70%;
     border-right: 1px solid rgba(112, 112, 112, .25);
-    padding-right: 1rem;
+    padding: 1rem 1rem 0 0;
     div:not(:first-child) {
       margin-top: 2rem;
     }
   }
   .user-profile-side {
     width: 30%;
-    padding: 0 1rem;
+    padding: 1rem 0 0 1rem;
+  }
+}
+.manage-account-modal {
+  .modal-content {
+    border-radius: 0 !important;
   }
 }
 .manage-account-modal-header {
@@ -74,6 +77,8 @@
     align-items: center;
     height: 2rem;
     padding-left: 1rem;
+    border-bottom: 1px solid rgba(#707070, 0.25);
+    white-space: nowrap;
   }
 }
 
@@ -85,7 +90,6 @@
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
-  // TODO: Refactor this block
   border-bottom: solid 1px #707070;
   padding: 0 0.5rem 0.5rem;
   margin-bottom: 1rem;
@@ -95,11 +99,23 @@
   font-size: 14px;
   margin-bottom: 1rem;
 }
-.change-pw-button {
+.manage-account-submit-button {
   border-radius: 0;
   border: 0;
   font: Bold 12px Roboto;
   background-color: #9D85EF;
   padding: 0.5rem 1rem;
 }
-
+.form-button {
+  font-size: 14px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.license-button {
+  background-color: transparent !important;
+}
+.change-password-form {
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+}

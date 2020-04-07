@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { useTable } from 'react-table';
-import { Button } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { shape, array } from 'prop-types';
+import { shape, array, string } from 'prop-types';
+import { Link } from 'react-router-dom';
 
 export const TableTemplate = ({ attributes: { columns, data } }) => {
   const { getTableProps, headerGroups, rows, prepareRow } = useTable({
@@ -46,12 +46,16 @@ TableTemplate.propTypes = {
 
 export const RequiredInformation = () => {
   const dispatch = useDispatch();
-  const { demographics } = useSelector(state => state.profile.data);
+  const {
+    data: { demographics },
+    errors
+  } = useSelector(state => state.profile);
   const columns = useMemo(
     () => [
       {
         Header: 'Full Name',
-        accessor: ({ firstName, lastName }) => `${firstName} ${lastName}`
+        accessor: ({ firstName, lastName }) =>
+          `${firstName || ''} ${lastName || ''}`
       },
       { Header: 'Phone No.', accessor: 'phone' },
       { Header: 'Email', accessor: 'email' },
@@ -65,30 +69,84 @@ export const RequiredInformation = () => {
     []
   );
   const data = useMemo(() => [demographics], []);
-  const openModal = () => dispatch({ type: 'OPEN_EDIT_REQUIRED' });
+  const openModal = () =>
+    dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { required: true } });
   return (
     <div className="profile-component-wrapper">
       <div className="profile-component-header">
-        <span>Required Information</span>
-        <Link to="/accounts/profile" onClick={openModal}>
+        <strong>Required Information</strong>
+        <Button
+          color="link"
+          onClick={openModal}
+          className="form-button"
+          disabled={errors.fields !== undefined}
+        >
           Edit Required Information
-        </Link>
+        </Button>
       </div>
       <TableTemplate attributes={{ columns, data }} />
     </div>
   );
 };
-
+/* eslint-disable react/no-danger */
+const LicenseCell = ({ cell: { value } }) => {
+  const [modal, setModal] = React.useState(false);
+  const toggle = () => setModal(!modal);
+  const { license_type: type, template_html: __html } = value;
+  return (
+    <>
+      <Button
+        color="link"
+        size="sm"
+        onClick={toggle}
+        className="license-button"
+      >
+        {value.current_user_license ? 'View Details' : 'Request Activation'}
+      </Button>
+      <Modal isOpen={modal} toggle={toggle}>
+        <ModalHeader>{type}</ModalHeader>
+        <ModalBody>
+          <div dangerouslySetInnerHTML={{ __html }} />
+          Click{' '}
+          <Link
+            to={`/workbench/dashboard/tickets/create?subject=${type}+Activation`}
+          >
+            here
+          </Link>{' '}
+          to open a ticket.
+        </ModalBody>
+      </Modal>
+    </>
+  );
+};
+LicenseCell.propTypes = {
+  cell: shape({
+    value: shape({
+      license_type: string.isRequired,
+      template_html: string.isRequired
+    })
+  }).isRequired
+};
+/* eslint-enable react/no-danger */
 export const Licenses = () => {
   const { licenses } = useSelector(state => state.profile.data);
   const columns = useMemo(
-    () => [{ Header: 'MATLAB' }, { Header: 'LS-DYNA' }],
+    () =>
+      licenses.map(license => {
+        return {
+          Header: license.license_type,
+          accessor: () => license,
+          Cell: LicenseCell
+        };
+      }),
     []
   );
-  const data = useMemo(() => licenses, []);
+  const data = useMemo(() => licenses, [licenses]);
   return (
     <div className="profile-component-wrapper">
-      <div className="profile-component-header">Licenses</div>
+      <div className="profile-component-header">
+        <strong>Licenses</strong>
+      </div>
       <div className="profile-component-body">
         <TableTemplate attributes={{ columns, data }} />
       </div>
@@ -106,10 +164,12 @@ export const ThirdPartyApps = () => {
     ],
     []
   );
-  const data = useMemo(() => integrations, []);
+  const data = useMemo(() => integrations, [integrations]);
   return (
     <div className="profile-component-wrapper">
-      <div className="profile-component-header">3rd Party Apps</div>
+      <div className="profile-component-header">
+        <strong>3rd Party Apps</strong>
+      </div>
       <div className="profile-component-body">
         <TableTemplate attributes={{ columns, data }} />
       </div>
@@ -118,12 +178,15 @@ export const ThirdPartyApps = () => {
 };
 export const ChangePassword = () => {
   const dispatch = useDispatch();
-  const openModal = () => dispatch({ type: 'OPEN_CHANGEPW' });
+  const openModal = () =>
+    dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { password: true } });
   return (
     <div className="profile-component-wrapper">
-      <div className="profile-component-header">Change Password</div>
+      <div className="profile-component-header">
+        <strong>Change Password</strong>
+      </div>
       <div className="profile-component-body">
-        <Button onClick={openModal} className="change-pw-button">
+        <Button onClick={openModal} className="manage-account-submit-button">
           Change Password
         </Button>
       </div>
@@ -131,8 +194,10 @@ export const ChangePassword = () => {
   );
 };
 export const OptionalInformation = () => {
-  const { demographics } = useSelector(state => state.profile.data);
-
+  const {
+    data: { demographics },
+    errors
+  } = useSelector(state => state.profile);
   const dispatch = useDispatch();
   const columns = useMemo(
     () => [
@@ -144,14 +209,20 @@ export const OptionalInformation = () => {
     []
   );
   const data = useMemo(() => [demographics], []);
-  const openModal = () => dispatch({ type: 'OPEN_EDIT_OPTIONAL' });
+  const openModal = () =>
+    dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { optional: true } });
   return (
     <div className="profile-component-wrapper">
       <div className="profile-component-header">
-        <span>Optional Information</span>
-        <Link to="/accounts/profile" onClick={openModal}>
+        <strong>Optional Information</strong>
+        <Button
+          color="link"
+          className="form-button"
+          onClick={openModal}
+          disabled={errors.fields !== undefined}
+        >
           Edit Optional Information
-        </Link>
+        </Button>
       </div>
       <TableTemplate attributes={{ columns, data }} />
     </div>
