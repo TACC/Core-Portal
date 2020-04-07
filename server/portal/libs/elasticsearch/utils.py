@@ -1,22 +1,20 @@
 """
 Utilities to help on elastic search implementations.
 """
-import json
+
 import os
 import logging
 import datetime
-from django.conf import settings
 from elasticsearch.helpers import bulk
-from portal.libs.agave.utils import walk_levels
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
 from elasticsearch_dsl import MultiSearch
 from elasticsearch_dsl.connections import get_connection
 # from portal.apps.projects.models import ProjectMetadata
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
 
 def index_project(projectId):

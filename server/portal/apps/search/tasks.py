@@ -1,20 +1,11 @@
 
 import logging
-import urllib.request
-import urllib.parse
-import urllib.error
-import os
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from celery import shared_task
-from agavepy.agave import Agave
-from elasticsearch_dsl import Q, Search
-from portal.libs.elasticsearch.docs.base import IndexedFile
-from portal.libs.elasticsearch.exceptions import DocumentNotFound
 # from portal.apps.projects.utils import project_id_to_system_id
 # from portal.apps.projects.models import ProjectMetadata
-from portal.libs.agave.models.files import BaseFile
 from portal.libs.agave.utils import service_account
 logger = logging.getLogger(__name__)
 

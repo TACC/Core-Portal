@@ -172,7 +172,7 @@ def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False):
         else:
             files.append(agave_file)
     if not bottom_up:
-        yield (path, folders, files)    
+        yield (path, folders, files)
     for child in folders:
         for (
                 child_path,
