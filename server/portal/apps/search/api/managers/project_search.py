@@ -43,4 +43,3 @@ class ProjectSearchManager(BaseSearchManager):
         """Wraps the search result in a BaseFile object for serializtion."""
         res = self._search.execute()
         return [mgr.get_by_project_id(hit.projectId).storage for hit in res]
-"""

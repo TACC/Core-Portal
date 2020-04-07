@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from portal.apps.auth.models import AgaveOAuthToken
 from django.conf import settings
-from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_indexes
+from portal.libs.elasticsearch.indexes import setup_files_index, setup_indexes
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
 
 
@@ -40,9 +40,11 @@ class TestESSetupMethods(TestCase):
         setup_files_index()
         mock_setup.assert_called_with('files', False, False)
 
+    """
     @patch('portal.libs.elasticsearch.indexes.setup_indexes')
     @patch('portal.libs.elasticsearch.indexes.index_time_string')
     def test_projects_setup(self, mock_timestring, mock_setup):
         mock_timestring.return_value = 'TIME_NOW'
         setup_projects_index()
         mock_setup.assert_called_with('projects', False, False)
+    """

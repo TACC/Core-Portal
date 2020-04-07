@@ -177,6 +177,8 @@ class TestSiteSearchView(TestCase):
         """Test that the search query is correctly called using the sortOrder value"""
         return True;
 
+
+@skip('hold until projects are implemented')
 class TestProjectSearchManager(TestCase):
 
     def test_mgr_init(self):
