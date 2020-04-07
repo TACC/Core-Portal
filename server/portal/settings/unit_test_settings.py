@@ -124,7 +124,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',   # Custom Portal Auth Check.
     'django.middleware.locale.LocaleMiddleware',    # needed for django CMS
     'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
 

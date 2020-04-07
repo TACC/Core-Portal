@@ -12,10 +12,12 @@ from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.steps.test_steps import MockWebhookStep
 import json
 import pytest
+from unittest import skip
 
 pytestmark = pytest.mark.django_db
 
 
+@skip("Need to rewrite onboarding unit tests with fixtures")
 class SetupStepWebhookTest(TestCase):
     def setUp(self):
         super(SetupStepWebhookTest, self).setUp()

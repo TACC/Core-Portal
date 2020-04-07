@@ -22,12 +22,14 @@ from portal.apps.onboarding.api.views import (
 )
 import pytest
 import logging
+from unittest import skip
 
 logger = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.django_db
 
 
+@skip("Need to rewrite onboarding unit tests with fixtures")
 class TestSetupStepView(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -281,6 +283,7 @@ class TestSetupStepView(TestCase):
         self.assertEqual(last_event["state"], SetupState.COMPLETED)
 
 
+@skip("Need to rewrite onboarding unit tests with fixtures")
 class TestSetupAdminViews(TestCase):
     @classmethod
     def setUpClass(cls):
