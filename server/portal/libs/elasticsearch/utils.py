@@ -35,9 +35,9 @@ def index_level(path, folders, files, systemId, reindex=False):
 
     for obj in folders + files:
         obj_dict = dict(obj)
-        obj_dict['basePath'] = os.path.dirname(obj.path)
+        obj_dict['basePath'] = os.path.dirname(obj_dict['path'])
         try:
-            doc = IndexedFile.from_path(obj.system, obj.path)
+            doc = IndexedFile.from_path(obj_dict['system'], obj_dict['path'])
             doc.update(**obj_dict)
         except DocumentNotFound:
             doc = IndexedFile(**obj_dict)
@@ -47,10 +47,10 @@ def index_level(path, folders, files, systemId, reindex=False):
         #    pems = obj.pems_list()
         #    doc._wrapped.update(**{'pems': pems})
 
-    children_paths = [_file.path for _file in folders + files]
+    children_paths = [_file['path'] for _file in folders + files]
     for doc in IndexedFile.list_children(systemId, path):
         if doc.path not in children_paths:
-            doc.delete()
+            doc.delete_recursive()
 
 
 def current_time():

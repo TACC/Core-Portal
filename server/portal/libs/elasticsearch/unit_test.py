@@ -1,9 +1,9 @@
 from mock import patch, call, MagicMock
 from django.test import TestCase
+from portal.libs.elasticsearch.exceptions import DocumentNotFound
 
-
-from portal.libs.elasticsearch.indexes import setup_files_index, setup_indexes
-from portal.libs.elasticsearch.utils import index_listing
+from portal.libs.elasticsearch.indexes import setup_files_index, setup_indexes, IndexedFile
+from portal.libs.elasticsearch.utils import index_listing, index_level
 
 
 class TestESSetupMethods(TestCase):
@@ -104,3 +104,42 @@ class TestESUtils(TestCase):
                         {'_index': 'test-staging-files',
                          '_id': 'id2',
                          '_op_type': 'delete'}])
+
+    @patch('portal.libs.elasticsearch.utils.IndexedFile.list_children')
+    @patch('portal.libs.elasticsearch.utils.IndexedFile.from_path')
+    @patch('portal.libs.elasticsearch.utils.IndexedFile.save')
+    def test_index_level_with_save(self, mock_save, mock_get, mock_children):
+        mock_children.return_value = []
+        mock_get.side_effect = DocumentNotFound
+        testfolder = {'system': 'test.system', 'path': '/test/folder'}
+
+        index_level('/test', [testfolder], [], 'test.system')
+
+        mock_save.assert_called_once_with()
+
+    @patch('portal.libs.elasticsearch.utils.IndexedFile.list_children')
+    @patch('portal.libs.elasticsearch.utils.IndexedFile.from_path')
+    @patch('portal.libs.elasticsearch.utils.IndexedFile.update')
+    def test_index_level_with_update(self, mock_update, mock_get, mock_children):
+        mock_children.return_value = []
+        mock_get.return_value = IndexedFile()
+        testfolder = {'system': 'test.system', 'path': '/test/folder'}
+
+        index_level('/test', [testfolder], [], 'test.system')
+
+        mock_update.assert_called_once_with(**{'system': 'test.system',
+                                               'path': '/test/folder',
+                                               'basePath': '/test'})
+
+    @patch('portal.libs.elasticsearch.utils.IndexedFile.list_children')
+    @patch('portal.libs.elasticsearch.utils.IndexedFile.from_path')
+    @patch('portal.libs.elasticsearch.utils.IndexedFile.update')
+    @patch('portal.libs.elasticsearch.utils.IndexedFile.delete_recursive')
+    def test_index_level_with_delete(self, mock_delete, mock_update, mock_get, mock_children):
+        mock_children.return_value = [IndexedFile(path='/random/path')]
+        mock_get.return_value = IndexedFile()
+        testfolder = {'system': 'test.system', 'path': '/test/folder'}
+
+        index_level('/test', [testfolder], [], 'test.system')
+
+        mock_delete.assert_called_once_with()
