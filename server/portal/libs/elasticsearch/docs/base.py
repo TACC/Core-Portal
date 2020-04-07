@@ -5,19 +5,16 @@
 import logging
 import datetime
 from django.conf import settings
-from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import (Document, Date, Object, Text, Long, Boolean,
                                Keyword)
-
-from elasticsearch import TransportError
 from portal.libs.elasticsearch.exceptions import DocumentNotFound
 from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, file_pattern_analyzer, reverse_file_analyzer
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
-
+"""
 class IndexedProject(Document):
     title = Text(fields={'_exact': Keyword()})
     description = Text()
@@ -72,6 +69,7 @@ class IndexedProject(Document):
 
     class Index:
         name = settings.ES_INDEX_PREFIX.format('projects')
+"""
 
 
 class IndexedFile(Document):
