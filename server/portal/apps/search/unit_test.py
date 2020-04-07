@@ -9,7 +9,7 @@ from portal.apps.search.api.lookups import search_lookup_manager
 from portal.apps.search.api.managers.cms_search import CMSSearchManager
 from portal.apps.search.api.managers.shared_search import SharedSearchManager
 from portal.apps.search.api.managers.private_data_search import PrivateDataSearchManager
-from portal.apps.search.api.managers.project_search import ProjectSearchManager
+# from portal.apps.search.api.managers.project_search import ProjectSearchManager
 from portal.apps.search.api.managers.public_search import PublicSearchManager
 
 from portal.apps.search.tasks import index_community_data
