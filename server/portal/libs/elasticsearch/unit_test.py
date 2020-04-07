@@ -1,10 +1,8 @@
-from mock import Mock, patch, MagicMock, PropertyMock, call
+from mock import patch, call
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from portal.apps.auth.models import AgaveOAuthToken
-from django.conf import settings
+
+
 from portal.libs.elasticsearch.indexes import setup_files_index, setup_indexes
-from portal.libs.elasticsearch.exceptions import DocumentNotFound
 
 
 class TestESSetupMethods(TestCase):
@@ -28,7 +26,7 @@ class TestESSetupMethods(TestCase):
         mock_index.assert_has_calls([
             call('test-staging-type'),
             call().exists(),
-            call().exists(), # from while loop
+            call().exists(),  # from while loop
             call('test-staging-type-TIME_NOW'),
             call().aliases(**{'test-staging-type': {}})
         ])
