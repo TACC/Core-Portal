@@ -53,19 +53,23 @@ def index_level(path, folders, files, systemId, reindex=False):
             doc.delete()
 
 
+def current_time():
+    return datetime.datetime.now()
+
+
 def index_listing(files):
     idx = IndexedFile.Index.name
     ms = MultiSearch()
     for file in files:
         q = IndexedFile.search()\
-            .filter('term', **{'path._exact': file.path})\
-            .filter('term', **{'system._exact': file.system})
+            .filter('term', **{'path._exact': file['path']})\
+            .filter('term', **{'system._exact': file['system']})
         ms = ms.add(q)
 
     ops = []
     for i, res in enumerate(ms.execute()):
         file_dict = dict(files[i])
-        file_dict['lastUpdated'] = datetime.datetime.now()
+        file_dict['lastUpdated'] = current_time()
         file_dict['basePath'] = os.path.dirname(file_dict['path'])
 
         if not len(res):

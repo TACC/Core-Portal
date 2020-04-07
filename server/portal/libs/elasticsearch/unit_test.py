@@ -1,8 +1,9 @@
-from mock import patch, call
+from mock import patch, call, MagicMock
 from django.test import TestCase
 
 
 from portal.libs.elasticsearch.indexes import setup_files_index, setup_indexes
+from portal.libs.elasticsearch.utils import index_listing
 
 
 class TestESSetupMethods(TestCase):
@@ -46,3 +47,60 @@ class TestESSetupMethods(TestCase):
         setup_projects_index()
         mock_setup.assert_called_with('projects', False, False)
     """
+
+
+class TestESUtils(TestCase):
+
+    @patch('portal.libs.elasticsearch.utils.MultiSearch')
+    @patch('portal.libs.elasticsearch.utils.bulk')
+    @patch('portal.libs.elasticsearch.utils.current_time')
+    @patch('portal.libs.elasticsearch.utils.get_connection')
+    def test_index_listing_no_res(self, mock_conn, mock_time, mock_bulk, mock_search):
+        files = [
+            {'system': 'test.system', 'path': '/test/file1'},
+        ]
+        mock_conn.return_value = 'default'
+        mock_time.return_value = 'TIME_NOW'
+        mock_search().add().execute.return_value = [[]]
+
+        index_listing(files)
+
+        mock_bulk.assert_called_once_with(
+            'default', [{'_index': 'test-staging-files',
+                         'doc': {'system': 'test.system',
+                                 'path': '/test/file1',
+                                 'lastUpdated': 'TIME_NOW',
+                                 'basePath': '/test'},
+                         '_op_type': 'index'}])
+
+    @patch('portal.libs.elasticsearch.utils.MultiSearch')
+    @patch('portal.libs.elasticsearch.utils.bulk')
+    @patch('portal.libs.elasticsearch.utils.current_time')
+    @patch('portal.libs.elasticsearch.utils.get_connection')
+    def test_index_listing_multi_res(self, mock_conn, mock_time, mock_bulk, mock_search):
+        files = [
+            {'system': 'test.system', 'path': '/test/file1'},
+        ]
+
+        res1 = MagicMock()
+        res1.meta.id = 'id1'
+        res2 = MagicMock()
+        res2.meta.id = 'id2'
+
+        mock_conn.return_value = 'default'
+        mock_time.return_value = 'TIME_NOW'
+        mock_search().add().execute.return_value = [[res1, res2]]
+
+        index_listing(files)
+
+        mock_bulk.assert_called_once_with(
+            'default', [{'_index': 'test-staging-files',
+                         '_id': 'id1',
+                         'doc': {'system': 'test.system',
+                                 'path': '/test/file1',
+                                 'lastUpdated': 'TIME_NOW',
+                                 'basePath': '/test'},
+                         '_op_type': 'update'},
+                        {'_index': 'test-staging-files',
+                         '_id': 'id2',
+                         '_op_type': 'delete'}])
