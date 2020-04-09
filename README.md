@@ -187,6 +187,17 @@ Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/F
 2. Update compose file in [Camino](https://bitbucket.org/taccaci/camino/) with new tag name
 3. Deploy new image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Deployments/)
 
+### Contributing
+
+#### Development Workflow
+We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/IntroducingGitFlow.html) as our development workflow. Our [development site](https://dev.fronteraweb.tacc.utexas.edu) (accessible behind the TACC Network) is always up-to-date with `master`, while the [production site](https://frontera-portal.tacc.utexas.edu) is built to a hashed commit tag.
+- Feature branches contain major updates, bug fixes, and hot fixes with respective branch prefixes:
+    - `task/` for features and updates
+    - `bug/` for bugfixes
+    - `fix/` for hotfixes
+
+#### Best Practices
+Sign your commits ([see this link](https://help.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) for help)
 
 ### Resources
 
