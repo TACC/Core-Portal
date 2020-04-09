@@ -31,11 +31,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - run: |
+    - name: pip install
+      run: |
         cd server
         pip install -r requirements.txt
     - name: Run Server-side unit tests and generate coverage report
-      run: pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
+      run: |
+        cd server
+        pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
@@ -88,11 +91,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
 
-    - run: |
+    - name: npm install
+      run: |
         cd client
         npm install
     - name: Client Side Unit Tests
-      run: npm run test
+      run: |
+        cd client
+        npm run test
 
     - run: bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
 
@@ -112,8 +118,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
 
-    - run: |
+    - name: npm install
+      run: |
         cd client
         npm install
     - name: Client Side Linting
-      run: npm run lint
+      run: |
+        cd client
+        npm run lint
