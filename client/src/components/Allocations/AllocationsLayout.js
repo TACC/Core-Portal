@@ -5,7 +5,7 @@ import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClipboard, faDesktop } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import { AllocationsTable } from './AllocationsTables';
 import { NewAllocReq } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';

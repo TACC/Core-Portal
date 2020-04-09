@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import './AppLayout.scss';
 import AppBrowser from '../AppBrowser/AppBrowser';
 import AppDetail, { AppPlaceholder } from '../AppForm/AppForm';

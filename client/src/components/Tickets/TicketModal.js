@@ -24,9 +24,8 @@ import {
 import { useForm, useField } from 'react-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-import LoadingSpinner from '_common/LoadingSpinner';
 import { formatDateTime } from 'utils/timeFormat';
-import FileInputDropZone from './FileInputDropZone';
+import { FileInputDropZone, LoadingSpinner } from '_common';
 import * as ROUTES from '../../constants/routes';
 import './TicketModal.scss';
 

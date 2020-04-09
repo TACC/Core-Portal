@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 
 const PreviewModalSpinner = () => (
   <div className="h-100 listing-placeholder">
