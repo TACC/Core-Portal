@@ -43,6 +43,15 @@ jobs:
         name: frontera-server-side
 #         fail_ci_if_error: false
 
+    - uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        author_name: $GITHUB_ACTOR
+      env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # optional
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+      if: always()
+
   Server_Side_Linting:
     runs-on: ubuntu-18.04
     steps:
@@ -50,10 +59,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
-        # Version range or exact version of a Python version to use, using SemVer's version range syntax.
-        python-version: 3.6 # optional, default is 3.x
-        # The target architecture (x86, x64) of the Python interpreter.
-        architecture: x64 # optional, default is x64
+        python-version: 3.6
 
     - uses: actions/cache@v1
       with:
