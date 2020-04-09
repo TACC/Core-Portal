@@ -3,7 +3,7 @@
 * v2.0.0
 * Working Design: https://xd.adobe.com/view/db2660cc-1011-4f26-5d31-019ce87c1fe8-ad17/
 
-[![codecov](https://codecov.io/bb/taccaci/frontera-portal/branch/master/graph/badge.svg?token=awjI9tRbqj)](https://codecov.io/bb/taccaci/frontera-portal)
+[![codecov](https://codecov.io/gh/TACC/Frontera-Portal/branch/master/graph/badge.svg?token=TM9CH1AHJ1)](https://codecov.io/gh/TACC/Frontera-Portal)
 
 ## Prequisites for running the portal application
 
