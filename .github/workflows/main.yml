@@ -19,10 +19,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
-        # Version range or exact version of a Python version to use, using SemVer's version range syntax.
-        python-version: 3.6 # optional, default is 3.x
-        # The target architecture (x86, x64) of the Python interpreter.
-        architecture: x64 # optional, default is x64
+        python-version: 3.6
 
     - uses: actions/cache@v1
       with:
@@ -44,7 +41,7 @@ jobs:
         file: ./server/coverage.xml
         flags: unittests
         name: frontera-server-side
-        fail_ci_if_error: false
+#         fail_ci_if_error: false
 
   Server_Side_Linting:
     runs-on: ubuntu-18.04
@@ -69,6 +66,7 @@ jobs:
       run: |
         git fetch origin "+refs/heads/master:refs/remotes/origin/master"
         git diff -U0 origin/master..HEAD | flake8 --diff
+#         pylint --rcfile=server/.pylintrc $(git diff origin/master..HEAD --name-only "*.py")
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-18.04
