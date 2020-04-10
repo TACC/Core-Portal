@@ -19,9 +19,7 @@ METADATA_HEADER = "*** Ticket Metadata ***"
 
 class TicketsView(BaseApiView):
     def get(self, request, ticket_id=None):
-        """GET
-
-        Returns a list of all tickets for a user or a single ticket
+        """Get a list of all tickets for a user or a single ticket
 
         """
         if not request.user.is_authenticated:
@@ -38,6 +36,9 @@ class TicketsView(BaseApiView):
             return JsonResponse({'tickets': user_tickets})
 
     def post(self, request):
+        """Post a new ticket
+
+        """
         rt = rtUtil.DjangoRt()
 
         data = request.POST.copy()
@@ -139,6 +140,8 @@ class TicketsHistoryView(BaseApiView):
         return ticket_history
 
     def _get_matching_history_entry(self, ticket_history, content):
+        """ Find most-recent ticket history entry that matches certain content
+        """
         for entry in reversed(ticket_history):
             if entry["IsCreator"] and entry["Content"] == content:
                 return entry
@@ -146,6 +149,9 @@ class TicketsHistoryView(BaseApiView):
 
     @has_access_to_ticket
     def post(self, request, ticket_id):
+        """ Post reply to ticket
+
+        """
         data = request.POST.copy()
         reply = data.get('reply')
         if reply is None:
@@ -172,7 +178,7 @@ class TicketsHistoryView(BaseApiView):
 
     @has_access_to_ticket
     def get(self, request, ticket_id):
-        """GET
+        """Get ticket history
         """
         rt = rtUtil.DjangoRt()
         ticket_history = self._get_ticket_history(rt, request.user.username, ticket_id)
