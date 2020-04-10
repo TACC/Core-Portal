@@ -10,8 +10,8 @@ import {
   Row
 } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
+import { chunk, isEmpty, startCase, has } from 'lodash';
 import { LoadingSpinner } from '_common';
-import { chunk, isEmpty, startCase } from 'lodash';
 
 const modalPropTypes = {
   isOpen: bool.isRequired,
@@ -20,14 +20,26 @@ const modalPropTypes = {
 
 export const UserRow = ({ username, handleClick, index, active }) => {
   const dispatch = useDispatch();
-  const listing = useSelector(
-    state => state.allocations.userDirectory[username]
-  );
+  const { listing, error } = useSelector(state => {
+    const { allocations } = state;
+    const { errors } = allocations;
+    return {
+      listing: allocations.userDirectory[username],
+      error: has(errors, 'usernames') && has(errors.usernames, username)
+    };
+  });
   useEffect(() => {
     if (isEmpty(listing)) {
       dispatch({ type: 'GET_USER_DATA', username });
     }
   }, [dispatch]);
+  if (isEmpty(listing) && error) {
+    return (
+      <tr onClick={() => handleClick(index)}>
+        <td>{username}</td>
+      </tr>
+    );
+  }
   if (isEmpty(listing)) {
     return <LoadingRow />;
   }
@@ -87,7 +99,19 @@ NewAllocReq.propTypes = modalPropTypes;
 export const TeamView = ({ isOpen, toggle, pid }) => {
   const [card, setCard] = useState(null);
   const dispatch = useDispatch();
-  const { teams, pages } = useSelector(state => state.allocations);
+  const { teams, pages, error, name } = useSelector(({ allocations }) => {
+    const { errors } = allocations;
+    const { active, inactive } = allocations;
+    const { title } = active
+      .concat(inactive)
+      .filter(alloc => alloc.projectId === pid)
+      .pop();
+    return {
+      ...allocations,
+      name: title,
+      error: has(errors, 'teams') && has(errors.teams, pid)
+    };
+  });
   const loading = useSelector(state => ({
     usernames: state.allocations.loadingUsernames,
     userPage: state.allocations.loadingPage
@@ -119,46 +143,54 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
       </Header>
       <Body className="d-flex p-0">
         <Container>
-          <Row>
-            <Col className="modal-left" onScroll={handleScroll} lg={5}>
-              <Table
-                hover={visible.length !== 0}
-                responsive
-                borderless
-                size="sm"
-                style={visible ? { height: '250px' } : null}
-              >
-                <tbody>
-                  {visible.length === 0 ? (
-                    <tr>
-                      <td style={{ verticalAlign: 'middle' }}>
-                        <LoadingSpinner />
-                      </td>
-                    </tr>
-                  ) : (
-                    (!loading.usernames &&
-                      visible[0].map(({ username }, idx) => (
-                        <UserRow
-                          key={username}
-                          username={username}
-                          index={idx}
-                          handleClick={() => setCard(username)}
-                          active={username === card}
-                        />
-                      ))) || <LoadingRow />
-                  )}
-                  {loading.userPage && <LoadingRow />}
-                </tbody>
-              </Table>
-            </Col>
-            <Col className="modal-right">
-              {card ? (
-                <ContactCard username={card} />
-              ) : (
-                "Click on a user's name to view their contact information."
-              )}
-            </Col>
-          </Row>
+          {error ? (
+            <Row style={{ height: '50vh' }}>
+              <Col className="d-flex justify-content-center">
+                <span>Unable to retrieve team data for {name}</span>
+              </Col>
+            </Row>
+          ) : (
+            <Row>
+              <Col className="modal-left" onScroll={handleScroll} lg={5}>
+                <Table
+                  hover={visible.length !== 0}
+                  responsive
+                  borderless
+                  size="sm"
+                  style={visible ? { height: '250px' } : null}
+                >
+                  <tbody>
+                    {visible.length === 0 ? (
+                      <tr>
+                        <td style={{ verticalAlign: 'middle' }}>
+                          <LoadingSpinner />
+                        </td>
+                      </tr>
+                    ) : (
+                      (!loading.usernames &&
+                        visible[0].map(({ username }, idx) => (
+                          <UserRow
+                            key={username}
+                            username={username}
+                            index={idx}
+                            handleClick={() => setCard(username)}
+                            active={username === card}
+                          />
+                        ))) || <LoadingRow />
+                    )}
+                    {loading.userPage && <LoadingRow />}
+                  </tbody>
+                </Table>
+              </Col>
+              <Col className="modal-right">
+                {card ? (
+                  <ContactCard username={card} />
+                ) : (
+                  "Click on a user's name to view their contact information."
+                )}
+              </Col>
+            </Row>
+          )}
         </Container>
       </Body>
     </Modal>
@@ -167,10 +199,19 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
 TeamView.propTypes = { ...modalPropTypes, pid: number.isRequired };
 
 export const ContactCard = ({ username }) => {
-  const listing = useSelector(
-    state => state.allocations.userDirectory[username]
-  );
-  if (isEmpty(listing)) return <div />;
+  const { listing, error } = useSelector(({ allocations }) => {
+    const { errors } = allocations;
+    return {
+      listing: allocations.userDirectory[username],
+      error: has(errors, 'usernames') && has(errors.usernames, username)
+    };
+  });
+  if (error) {
+    return <div>Unable to retrieve contact information for {username} </div>;
+  }
+  if (isEmpty(listing)) {
+    return <div />;
+  }
   const { firstName, lastName, email } = listing;
   return (
     <div className="contact-card">

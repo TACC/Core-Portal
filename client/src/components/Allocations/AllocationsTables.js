@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
@@ -65,7 +67,34 @@ export const useAllocations = page => {
   ];
 };
 
+const ErrorMessage = () => {
+  const dispatch = useDispatch();
+  return (
+    <>
+      <span style={{ color: '#9d85ef' }}>
+        <FontAwesomeIcon
+          icon={faExclamationTriangle}
+          style={{ marginRight: '10px' }}
+        />
+        Unable to retrieve your allocations.&nbsp;
+      </span>
+      <a
+        href="#"
+        style={{ color: '#9d85ef' }}
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+          dispatch({ type: 'GET_ALLOCATIONS' });
+        }}
+      >
+        Try reloading the page.
+      </a>
+    </>
+  );
+};
+
 export const AllocationsTable = ({ page }) => {
+  const { allocations: error } = useSelector(state => state.allocations.errors);
   const tableAttributes = useAllocations(page);
   const {
     getTableProps,
@@ -103,10 +132,16 @@ export const AllocationsTable = ({ page }) => {
           ) : (
             <tr>
               <td colSpan={headerGroups[0].headers.length}>
-                <center>
-                  You have no {`${page[0].toLocaleUpperCase()}${page.slice(1)}`}
-                  {'  '}
-                  allocations.
+                <center style={{ padding: '1rem' }}>
+                  {error ? (
+                    <ErrorMessage />
+                  ) : (
+                    <span>
+                      You have no{' '}
+                      {`${page[0].toLocaleUpperCase()}${page.slice(1)}`}
+                      allocations.
+                    </span>
+                  )}
                 </center>
               </td>
             </tr>
