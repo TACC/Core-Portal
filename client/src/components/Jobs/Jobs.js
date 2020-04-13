@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ReactTable from 'react-table-6';
@@ -7,7 +8,7 @@ import { LoadingSpinner } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
-function JobsView() {
+function JobsView({ showDetails }) {
   const dispatch = useDispatch();
   const spinnerState = useSelector(state => state.spinner);
   const jobs = useSelector(state => state.jobs.list);
@@ -28,6 +29,19 @@ function JobsView() {
         <span title={el.value} id={`jobID${el.index}`}>
           {el.value}
         </span>
+      )
+    },
+    {
+      Header: 'Job Details',
+      accessor: 'name',
+      show: showDetails,
+      Cell: el => (
+        <Link
+          to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${el.value}`}
+          className="wb-link"
+        >
+          View Details
+        </Link>
       )
     },
     {
@@ -109,5 +123,12 @@ function JobsView() {
     />
   );
 }
+
+JobsView.propTypes = {
+  showDetails: PropTypes.bool
+};
+JobsView.defaultProps = {
+  showDetails: false
+};
 
 export default JobsView;
