@@ -449,6 +449,19 @@ export async function previewUtil(api, scheme, system, path, href) {
   return requestJson.data.href;
 }
 
+export function* carousel(action) {
+  // Get multiple hrefs
+  yield put({ type: 'DATA_FILES_SET_CAROUSEL', payload: [] });
+  const previewCalls = action.data.map(pc =>
+    call(previewUtil, pc.api, pc.scheme, pc.system, pc.path, pc.href)
+  );
+  const payload = yield all(previewCalls);
+  yield put({ type: 'DATA_FILES_SET_CAROUSEL', payload });
+}
+export function* watchCarousel() {
+  yield takeLeading('DATA_FILES_CAROUSEL', carousel);
+}
+
 export async function mkdirUtil(api, scheme, system, path, dirname) {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;
   if (apiPath === '/') {

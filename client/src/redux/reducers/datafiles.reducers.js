@@ -59,7 +59,8 @@ const initialFilesState = {
     mkdir: false,
     rename: false,
     pushKeys: false,
-    trash: false
+    trash: false,
+    carousel: false
   },
   modalProps: {
     preview: {},
@@ -68,9 +69,11 @@ const initialFilesState = {
     upload: {},
     mkdir: {},
     rename: {},
-    pushKeys: {}
+    pushKeys: {},
+    carousel: {}
   },
-  previewHref: ''
+  previewHref: '',
+  imagePreviews: []
 };
 
 let selectedSet, enabled, setValue;
@@ -246,6 +249,11 @@ export function files(state = initialFilesState, action) {
           ...state.modalProps,
           [action.payload.operation]: action.payload.props
         }
+      };
+    case 'DATA_FILES_SET_CAROUSEL':
+      return {
+        ...state,
+        imagePreviews: action.payload
       };
     default:
       return state;
