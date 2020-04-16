@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import Dashboard from '../Dashboard';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
-import JobHistory from '../History/JobHistory';
+import History from '../History/History';
 import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
 import * as ROUTES from '../../constants/routes';
@@ -39,7 +39,7 @@ function Workbench() {
             path={`${path}${ROUTES.ALLOCATIONS}`}
             component={Allocations}
           />
-          <Route path={`${path}${ROUTES.HISTORY}`} component={JobHistory} />
+          <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
           <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
         </Switch>
       </div>

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import JobsView from '../Jobs';
 
-function JobHistory() {
+export default function JobHistory() {
   const [showDetails] = useState(true);
   return <JobsView showDetails={showDetails} />;
 }
-
-export default JobHistory;

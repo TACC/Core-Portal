@@ -1,0 +1,35 @@
+.history-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.history-sidebar {
+  /* this is a copy of allocations-sidebar from Allocations.scss  @TODO refactor so using a single definition*/
+  width: fit-content;
+  border-right: 1px solid rgba(112, 112, 112, .25);
+  font-family: Roboto;
+  .nav-link {
+    padding: 8px 0 8px 30px;
+    display: flex;
+    align-items: center;
+    width: 215px;
+  }
+  a {
+    color: #707070;
+    padding-left: 1.5em;
+    height: 2.5em;
+    .link-icon {
+      font-size: 1.2em;
+      width: 1em;
+    }
+    .link-text {
+      font-size: 0.78em;
+      font-weight: 500;
+      padding-left: 16px;
+      vertical-align: middle;
+    }
+  }
+  .active {
+    background: rgba(#9d85ef, 0.25);
+  }
+}
