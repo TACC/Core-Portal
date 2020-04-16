@@ -8,6 +8,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
     "@fortawesome/react-fontawesome": "^0.1.8",
     "@hot-loader/react-dom": "^16.11.0",
+    "bowser": "^2.9.0",
     "cross-fetch": "^3.0.4",
     "formik": "^2.1.1",
     "html-react-parser": "^0.10.0",

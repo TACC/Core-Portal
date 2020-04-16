@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 

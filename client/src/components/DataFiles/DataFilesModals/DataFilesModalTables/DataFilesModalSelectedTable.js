@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, shallowEqual } from 'react-redux';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import {
   FileLengthCell,

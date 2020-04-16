@@ -97,4 +97,15 @@ describe('TicketLayout', () => {
       getStatusText('random_status');
     }).toThrow(RangeError);
   });
+
+  it ('renders an error message when unable to load tickets', () => {
+    const store = mockStore({
+      ticketList: {
+        ...initialMockState,
+        loadingError: true
+      }
+    });
+    const { getByText } = renderTicketsComponent(store);
+    expect(getByText(/unable to retrieve/)).toBeDefined();
+  });
 });
