@@ -33,7 +33,7 @@ function JobsView({ showDetails }) {
     },
     {
       Header: 'Job Details',
-      accessor: 'name',
+      accessor: 'id',
       show: showDetails,
       Cell: el => (
         <Link
