@@ -22,15 +22,6 @@ from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, fi
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
-try:
-    HOSTS = settings.ES_HOSTS
-    connections.configure(
-        default={'hosts': HOSTS, 'http_auth': settings.ES_AUTH}
-    )
-except AttributeError as exc:
-    logger.error('Missing ElasticSearch config. %s', exc)
-    raise
-
 
 class IndexedProject(Document):
     title = Text(fields={'_exact': Keyword()})

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import {
   Button,
   Modal,
@@ -11,7 +11,7 @@ import {
   ModalFooter,
   Table
 } from 'reactstrap';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
 
 const DataFilesUploadStatus = ({ i, removeCallback }) => {

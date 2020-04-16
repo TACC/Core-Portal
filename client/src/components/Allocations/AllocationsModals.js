@@ -10,7 +10,7 @@ import {
   Row
 } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import LoadingSpinner from '_common/LoadingSpinner';
+import { LoadingSpinner } from '_common';
 import { chunk, isEmpty, startCase } from 'lodash';
 
 const modalPropTypes = {
