@@ -40,10 +40,13 @@ $linkBackgroundColor: #dfdaf5;
 }
 
 /* WARNING: Used by other components (yet not imported by them), but not this component */
-.nav-content .side-nav-icon {
+/* CAVEAT: Used on test markup, to prove that the syntax is allowed */
+.nav-content > .side-nav-icon {
   width: 1em;
   font-size: 1.2em;
   vertical-align: middle;
+
+  display: none;
 }
 
 .icon {

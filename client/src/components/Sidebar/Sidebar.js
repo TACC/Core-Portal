@@ -23,6 +23,9 @@ const Sidebar = () => {
               className={`${styles.icon} ${iconStyles.icon} ${iconStyles['icon-nav-dashboard']}`}
             />
             <span className={styles.link__text}>Dashboard</span>
+            <div className={styles['nav-content']}>
+              <samp className={styles['side-nav-icon']}>Test</samp>
+            </div>
           </div>
         </NavLink>
       </NavItem>
