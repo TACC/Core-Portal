@@ -142,6 +142,8 @@ Follow the Confluence pages below to set up Projects, Notifications, and Elastic
 
 ### Linting and Formatting Conventions
 
+#### Client
+
 Client-side Javascript code is linted via eslint, and is enforced on commits to the repo. To see a list of linting issues, run `npm run lint` in the console under the `client` folder.
 
 You may need to globally install eslint for these to work: `npm install -g eslint`
@@ -150,6 +152,8 @@ You may auto-fix your linting errors to conform with Prettier standards via:
 ```
 eslint ./client --fix
 ```
+
+#### Server
 
 Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 master | flake8 --diff` from the command line.
 This requires that you have a local python virtual environemnt setup with this project's dependencies installed:
@@ -186,6 +190,17 @@ Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/F
 1. Build and publish portal image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Portal/)
 2. Update compose file in [Camino](https://bitbucket.org/taccaci/camino/) with new tag name
 3. Deploy new image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Deployments/)
+
+### Styled Components
+
+This repository uses [Styled Components](https://styled-components.com/), which introduces solutions (some to problems it introduces):
+
+* Integreation with Jest: [`jest-styled-components`](https://github.com/styled-components/jest-styled-components)
+* CSS Linting Integration: [Stylelint](https://styled-components.com/docs/tooling#stylelint)
+* Proprietary Themed Styling: [`styled-theming`](https://github.com/styled-components/styled-theming)
+* Syntax Highlighting:
+    * Others: [Docs > Tooling | Styled Components](https://styled-components.com/docs/tooling#syntax-highlighting)
+    * VSCode: **Use an extension that forks** [vscode-styled-components](https://github.com/styled-components/vscode-styled-components)
 
 ### Contributing
 

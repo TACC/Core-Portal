@@ -10,6 +10,17 @@
     ],
     "plugins": [
         "@babel/plugin-proposal-class-properties",
-        "react-hot-loader/babel"
+        "react-hot-loader/babel",
+        // SEE: https://styled-components.com/docs/tooling
+        ["babel-plugin-styled-components", {
+            "ssr": false, // Disables server-side rendering support (unused)
+            "displayName": true, // Adds a class name to remind us of CSS source
+            "fileName": false, // Reduces length of the `displayName`
+
+            // Blindly trusting these defaults
+            "minify": true,
+            "transpileTemplateLiterals": true,
+            "pure": false
+        }]
     ]
 }
