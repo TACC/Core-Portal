@@ -44,7 +44,8 @@ module.exports = merge.smart(common, {
           {
             loader: 'css-loader',
             options: {
-              sourceMap: true
+              sourceMap: true,
+              modules: true
             }
           },
           {

@@ -1,4 +1,4 @@
-#sidebar {
+.container {
     min-width: 215px;
     max-width: 215px;
     width: 215px;
@@ -7,33 +7,33 @@
     padding-top: 20px;
 }
 
-#sidebar .nav-link {
+.link {
   color: #707070;
 }
-
-#sidebar .nav-link.active {
+.isActive {
   background: #dfdaf5;
 }
 
-#sidebar .nav-content {
+.link__content {
   padding-left: 20px;
   display: flex;
   align-items: center;
 }
 
-#sidebar .nav-text {
+.link__text {
   padding-left: 20px;
   font-size: .78em;
   font-weight: 500;
 }
 
+/* WARNING: Used by other components (yet not imported by them), but not this component */
 .nav-content .side-nav-icon {
   width: 1em;
   font-size: 1.2em;
   vertical-align: middle;
 }
 
-.icon-nav {
+.icon {
   font-size: 1.5em;
   display: flex;
   height: 1em;
