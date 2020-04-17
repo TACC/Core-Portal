@@ -32,6 +32,7 @@
     "ignorePatterns": ["*.test.js"],
     "rules": {
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "import/extensions": ["off", {"styles.js": "always" }],
         "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/*.test.js", "**/*.spec.js"]}],
         "semi": [1, "always"],
         "no-underscore-dangle": 0,
