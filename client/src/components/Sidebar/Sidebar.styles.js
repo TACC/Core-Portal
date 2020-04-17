@@ -16,6 +16,10 @@ export const NavLinkStyled = styled(NavLink)`
   &.active {
     background: #dfdaf5;
   }
+  /* Override Bootstrap 'a:hover' */
+  &:hover {
+    color: #707070;
+  }
 `;
 
 export const SidebarLinkContent = styled.div`
