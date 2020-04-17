@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { number, string, func, bool } from 'prop-types';
+import React, { useState } from 'react';
+import { number, string, func, bool, shape, arrayOf, object } from 'prop-types';
 import {
   Modal,
   ModalHeader as Header,
@@ -9,56 +9,15 @@ import {
   Col,
   Row
 } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
-import { chunk, isEmpty, startCase } from 'lodash';
+import { isEmpty, capitalize } from 'lodash';
 
 const modalPropTypes = {
   isOpen: bool.isRequired,
   toggle: func.isRequired
 };
-
-export const UserRow = ({ username, handleClick, index, active }) => {
-  const dispatch = useDispatch();
-  const listing = useSelector(
-    state => state.allocations.userDirectory[username]
-  );
-  useEffect(() => {
-    if (isEmpty(listing)) {
-      dispatch({ type: 'GET_USER_DATA', username });
-    }
-  }, [dispatch]);
-  if (isEmpty(listing)) {
-    return <LoadingRow />;
-  }
-  const { firstName, lastName } = listing;
-  return (
-    <tr
-      className={active ? 'active-user' : ''}
-      onClick={() => handleClick(index)}
-    >
-      <td>
-        <span className="user-name">
-          {`${startCase(firstName)} ${startCase(lastName)}`}
-        </span>
-      </td>
-    </tr>
-  );
-};
-UserRow.propTypes = {
-  username: string.isRequired,
-  handleClick: func.isRequired,
-  index: number.isRequired,
-  active: bool.isRequired
-};
-
-const LoadingRow = () => (
-  <tr>
-    <th>
-      <LoadingSpinner placement="inline" />
-    </th>
-  </tr>
-);
 
 export const NewAllocReq = ({ isOpen, toggle }) => (
   <Modal isOpen={isOpen} toggle={() => toggle()}>
@@ -84,29 +43,71 @@ export const NewAllocReq = ({ isOpen, toggle }) => (
 );
 NewAllocReq.propTypes = modalPropTypes;
 
+const UserCell = ({ cell: { value } }) => {
+  const { firstName, lastName } = value;
+  return (
+    <span className="user-name">
+      {`${capitalize(firstName)} ${capitalize(lastName)}`}
+    </span>
+  );
+};
+UserCell.propTypes = {
+  cell: shape({
+    value: shape({
+      firstName: string.isRequired,
+      lastName: string.isRequired
+    }).isRequired
+  }).isRequired
+};
+
+const TeamTable = ({ rawData, clickHandler }) => {
+  const data = React.useMemo(() => rawData, [rawData]);
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'name',
+        accessor: row => {
+          return row;
+        },
+        UserCell
+      }
+    ],
+    [rawData]
+  );
+  const { getTableProps, getTableBodyProps, rows, prepareRow } = useTable({
+    columns,
+    data
+  });
+  return (
+    <Table hover responsive borderless size="sm" {...getTableProps()}>
+      <tbody {...getTableBodyProps()}>
+        {rows.map(row => {
+          prepareRow(row);
+          return (
+            <tr
+              {...row.getRowProps({
+                onClick: () => clickHandler(row.values.name)
+              })}
+            >
+              {row.cells.map(cell => (
+                <td {...cell.getCellProps()}>{cell.render('UserCell')}</td>
+              ))}
+            </tr>
+          );
+        })}
+      </tbody>
+    </Table>
+  );
+};
+TeamTable.propTypes = {
+  rawData: arrayOf(object).isRequired,
+  clickHandler: func.isRequired
+};
+
 export const TeamView = ({ isOpen, toggle, pid }) => {
+  const { teams, loadingUsernames } = useSelector(state => state.allocations);
   const [card, setCard] = useState(null);
-  const dispatch = useDispatch();
-  const { teams, pages } = useSelector(state => state.allocations);
-  const loading = useSelector(state => ({
-    usernames: state.allocations.loadingUsernames,
-    userPage: state.allocations.loadingPage
-  }));
-  const visible = chunk(teams[pid] || [], 20 * pages[pid]);
-  const handleScroll = ({ target }) => {
-    const heightDiff = target.scrollHeight - target.scrollTop;
-    const bottom =
-      heightDiff <= target.clientHeight + 2 &&
-      heightDiff >= target.clientHeight - 2;
-    if (bottom && visible[0].length < (teams[pid].length || 0)) {
-      dispatch({
-        type: 'ADD_PAGE',
-        payload: {
-          [pid]: pages[pid] + 1
-        }
-      });
-    }
-  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -119,41 +120,20 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
       </Header>
       <Body className="d-flex p-0">
         <Container>
+          <Row />
           <Row>
-            <Col className="modal-left" onScroll={handleScroll} lg={5}>
-              <Table
-                hover={visible.length !== 0}
-                responsive
-                borderless
-                size="sm"
-                style={visible ? { height: '250px' } : null}
-              >
-                <tbody>
-                  {visible.length === 0 ? (
-                    <tr>
-                      <td style={{ verticalAlign: 'middle' }}>
-                        <LoadingSpinner />
-                      </td>
-                    </tr>
-                  ) : (
-                    (!loading.usernames &&
-                      visible[0].map(({ username }, idx) => (
-                        <UserRow
-                          key={username}
-                          username={username}
-                          index={idx}
-                          handleClick={() => setCard(username)}
-                          active={username === card}
-                        />
-                      ))) || <LoadingRow />
-                  )}
-                  {loading.userPage && <LoadingRow />}
-                </tbody>
-              </Table>
+            <Col className="modal-left" lg={5}>
+              {loadingUsernames[pid] && loadingUsernames[pid].loading ? (
+                <LoadingSpinner />
+              ) : (
+                !isEmpty(teams[pid]) && (
+                  <TeamTable rawData={teams[pid]} clickHandler={setCard} />
+                )
+              )}
             </Col>
             <Col className="modal-right">
               {card ? (
-                <ContactCard username={card} />
+                <ContactCard listing={card} />
               ) : (
                 "Click on a user's name to view their contact information."
               )}
@@ -166,17 +146,13 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
 };
 TeamView.propTypes = { ...modalPropTypes, pid: number.isRequired };
 
-export const ContactCard = ({ username }) => {
-  const listing = useSelector(
-    state => state.allocations.userDirectory[username]
-  );
-  if (isEmpty(listing)) return <div />;
-  const { firstName, lastName, email } = listing;
+export const ContactCard = ({ listing }) => {
+  const { firstName, lastName, email, username } = listing;
   return (
     <div className="contact-card">
       <div>
         <strong>
-          {startCase(firstName)} {startCase(lastName)} <br />
+          {capitalize(firstName)} {capitalize(lastName)} <br />
         </strong>
       </div>
       <div>Username: {username}</div>
@@ -184,4 +160,11 @@ export const ContactCard = ({ username }) => {
     </div>
   );
 };
-ContactCard.propTypes = { username: string.isRequired };
+ContactCard.propTypes = {
+  listing: shape({
+    firstName: string.isRequired,
+    lastName: string.isRequired,
+    email: string.isRequired,
+    username: string.isRequired
+  }).isRequired
+};

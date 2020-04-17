@@ -24,7 +24,10 @@ export const useAllocations = page => {
       },
       {
         Header: 'Team',
-        accessor: 'projectId',
+        accessor: ({ projectName, projectId }) => ({
+          name: projectName.toLowerCase(),
+          projectId
+        }),
         Cell: Team
       },
       {

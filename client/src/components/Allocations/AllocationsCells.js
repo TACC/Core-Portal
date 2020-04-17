@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { object, shape, array, number } from 'prop-types';
+import { object, shape, array, number, string } from 'prop-types';
 import { Button, Badge } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,6 +14,7 @@ const CELL_PROPTYPES = {
 export const Team = ({ cell: { value } }) => {
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
+  const { projectId } = value;
   return (
     <>
       <Button
@@ -22,7 +23,7 @@ export const Team = ({ cell: { value } }) => {
         onClick={() => {
           dispatch({
             type: 'GET_TEAMS',
-            payload: { id: value }
+            payload: { ...value }
           });
           setOpenModal(true);
         }}
@@ -32,7 +33,7 @@ export const Team = ({ cell: { value } }) => {
       </Button>
       <TeamView
         isOpen={openModal}
-        pid={value}
+        pid={projectId}
         toggle={() => setOpenModal(!openModal)}
       />
     </>
@@ -40,7 +41,10 @@ export const Team = ({ cell: { value } }) => {
 };
 Team.propTypes = {
   cell: shape({
-    value: number.isRequired
+    value: shape({
+      projectId: number.isRequired,
+      name: string.isRequired
+    }).isRequired
   }).isRequired
 };
 

@@ -18,11 +18,7 @@ import {
   watchDownload,
   watchTrash
 } from './datafiles.sagas';
-import {
-  watchAllocations,
-  watchUserData,
-  watchUsers
-} from './allocations.sagas';
+import watchAllocations from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
 import {
   watchTicketListFetch,
@@ -50,11 +46,9 @@ export default function* rootSaga() {
     watchMkdir(),
     watchDownload(),
     watchTrash(),
-    watchAllocations(),
+    ...watchAllocations,
     watchApps(),
     watchSystems(),
-    watchUsers(),
-    watchUserData(),
     watchSystemMonitor(),
     watchTicketListFetch(),
     watchTicketDetailedView(),

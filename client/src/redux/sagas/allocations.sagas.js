@@ -12,15 +12,26 @@ export function* getAllocations(action) {
     const json = yield response.json();
     const payload = { ...json.response };
     yield put({ type: 'ADD_ALLOCATIONS', payload });
-    const teams = yield flatten(Object.values(payload)).reduce(
+    const allocations = yield {
+      active: json.response.active,
+      inactive: json.response.inactive
+    };
+    const teams = yield flatten(Object.values(allocations)).reduce(
       (obj, item) => ({ ...obj, [item.projectId]: {} }),
       {}
     );
-    const pages = yield flatten(Object.values(payload)).reduce(
+    const pages = yield flatten(Object.values(allocations)).reduce(
       (obj, item) => ({ ...obj, [item.projectId]: 1 }),
       {}
     );
-    yield put({ type: 'POPULATE_TEAMS', payload: { teams, pages } });
+    const loadingTeams = yield Object.keys(teams).reduce(
+      (obj, teamID) => ({ ...obj, [teamID]: { loading: true } }),
+      {}
+    );
+    yield put({
+      type: 'POPULATE_TEAMS',
+      payload: { teams, pages, loadingTeams }
+    });
   } catch (error) {
     const json = { error };
     yield put({ type: 'ADD_ALLOCATIONS', payload: json });
@@ -28,36 +39,27 @@ export function* getAllocations(action) {
 }
 
 function* getUsernames(action) {
-  const response = yield call(fetch, `/api/users/team/${action.payload.id}`, {
+  const response = yield call(fetch, `/api/users/team/${action.payload.name}`, {
     credentials: 'same-origin',
     ...action.options
   });
   const json = yield response.json();
   const payload = yield {
-    [action.payload.id]: json.usernames.sort((a, b) =>
-      a.username.localeCompare(b.username)
-    )
+    data: {
+      [action.payload.projectId]: json.usernames.sort((a, b) =>
+        a.firstName.localeCompare(b.firstName)
+      )
+    },
+    loading: { [action.payload.projectId]: false }
   };
   yield put({ type: 'ADD_USERNAMES_TO_TEAM', payload });
 }
 
-function* getUserData(action) {
-  const response = yield call(
-    fetch,
-    `/api/users/team/user/${action.username}`,
-    {}
-  );
-  const payload = yield response.json();
-  yield put({ type: 'ADD_USER_TO_DIRECTORY', payload });
-  yield put({ type: 'PAGE_LOADED' });
-}
-
-export function* watchAllocations() {
+export function* watchAllocationData() {
   yield takeEvery('GET_ALLOCATIONS', getAllocations);
 }
-export function* watchUsers() {
+export function* watchTeams() {
   yield takeLatest('GET_TEAMS', getUsernames);
 }
-export function* watchUserData() {
-  yield takeEvery('GET_USER_DATA', getUserData);
-}
+
+export default [watchAllocationData(), watchTeams()];

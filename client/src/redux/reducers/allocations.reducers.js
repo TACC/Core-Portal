@@ -3,9 +3,7 @@ const initialState = {
   inactive: [],
   loading: true,
   teams: {},
-  pages: {},
-  userDirectory: {},
-  loadingUsernames: true,
+  loadingUsernames: {},
   hosts: {},
   portal_alloc: '',
   loadingPage: false
@@ -20,27 +18,20 @@ function allocations(state = initialState, action) {
       return {
         ...state,
         teams: { ...state.teams, ...action.payload.teams },
-        pages: { ...state.pages, ...action.payload.pages }
+        loadingUsernames: {
+          ...state.loadingUsernames,
+          ...action.payload.loadingTeams
+        }
       };
     case 'ADD_USERNAMES_TO_TEAM':
       return {
         ...state,
-        teams: { ...state.teams, ...action.payload },
-        loadingUsernames: false
+        teams: { ...state.teams, ...action.payload.data },
+        loadingUsernames: {
+          ...state.loadingUsernames,
+          ...action.payload.loading
+        }
       };
-    case 'ADD_USER_TO_DIRECTORY':
-      return {
-        ...state,
-        userDirectory: { ...state.userDirectory, ...action.payload }
-      };
-    case 'ADD_PAGE':
-      return {
-        ...state,
-        loadingPage: true,
-        pages: { ...state.pages, ...action.payload }
-      };
-    case 'PAGE_LOADED':
-      return { ...state, loadingPage: false };
     default:
       return state;
   }
