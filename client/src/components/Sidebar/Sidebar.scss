@@ -1,17 +1,25 @@
+$containerColor: #f4f4f4;
+$linkColor: #707070;
+$linkBackgroundColor: #dfdaf5;
+
 .container {
     min-width: 215px;
     max-width: 215px;
     width: 215px;
-    background: #f4f4f4;
+    background: $containerColor;
     border-right: 1px solid rgba(112, 112, 112, .25);
     padding-top: 20px;
 }
 
 .link {
-  color: #707070;
+  color: $linkColor;
+}
+/* Overwrite Bootstrap `a:hover` */
+.link:hover {
+  color: $linkColor;
 }
 .isActive {
-  background: #dfdaf5;
+  background: $linkBackgroundColor;
 }
 
 .link__content {
