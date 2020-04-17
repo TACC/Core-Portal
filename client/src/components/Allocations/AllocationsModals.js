@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { number, string, func, bool, shape, arrayOf, object } from 'prop-types';
 import {
   Modal,
-  ModalHeader as Header,
-  ModalBody as Body,
+  ModalHeader,
+  ModalBody,
   Table,
   Container,
   Col,
@@ -12,19 +12,32 @@ import {
 import { useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
-import { isEmpty, capitalize } from 'lodash';
+import { capitalize } from 'lodash';
 
-const modalPropTypes = {
+const MODAL_PROPTYPES = {
   isOpen: bool.isRequired,
   toggle: func.isRequired
 };
+const USER_LISTING_PROPTYPES = shape({
+  firstName: string.isRequired,
+  lastName: string.isRequired,
+  email: string.isRequired,
+  username: string.isRequired
+});
 
 export const NewAllocReq = ({ isOpen, toggle }) => (
   <Modal isOpen={isOpen} toggle={() => toggle()}>
-    <Header toggle={toggle} charCode="x" className="allocations-modal-header">
+    <ModalHeader
+      toggle={toggle}
+      charCode="x"
+      className="allocations-modal-ModalHeader"
+    >
       <span>Manage Allocations</span>
-    </Header>
-    <Body className="allocations-request-body" data-testid="request-body">
+    </ModalHeader>
+    <ModalBody
+      className="allocations-request-ModalModalBody"
+      data-testid="request-ModalModalBody"
+    >
       <p>
         You can manage your allocation, your team members, or request more time
         on a machine by using your TACC user account credentials to access the
@@ -38,10 +51,10 @@ export const NewAllocReq = ({ isOpen, toggle }) => (
         </a>
         .
       </p>
-    </Body>
+    </ModalBody>
   </Modal>
 );
-NewAllocReq.propTypes = modalPropTypes;
+NewAllocReq.propTypes = MODAL_PROPTYPES;
 
 const UserCell = ({ cell: { value } }) => {
   const { firstName, lastName } = value;
@@ -60,15 +73,13 @@ UserCell.propTypes = {
   }).isRequired
 };
 
-const TeamTable = ({ rawData, clickHandler }) => {
+const TeamTable = ({ rawData, clickHandler, visible }) => {
   const data = React.useMemo(() => rawData, [rawData]);
   const columns = React.useMemo(
     () => [
       {
         Header: 'name',
-        accessor: row => {
-          return row;
-        },
+        accessor: row => row,
         UserCell
       }
     ],
@@ -86,7 +97,10 @@ const TeamTable = ({ rawData, clickHandler }) => {
           return (
             <tr
               {...row.getRowProps({
-                onClick: () => clickHandler(row.values.name)
+                className: row.values.name === visible ? 'active-user' : '',
+                onClick: () => {
+                  clickHandler(row.values.name);
+                }
               })}
             >
               {row.cells.map(cell => (
@@ -100,14 +114,16 @@ const TeamTable = ({ rawData, clickHandler }) => {
   );
 };
 TeamTable.propTypes = {
-  rawData: arrayOf(object).isRequired,
-  clickHandler: func.isRequired
+  rawData: arrayOf(object),
+  clickHandler: func.isRequired,
+  visible: USER_LISTING_PROPTYPES
 };
+TeamTable.defaultProps = { visible: {}, rawData: [] };
 
 export const TeamView = ({ isOpen, toggle, pid }) => {
   const { teams, loadingUsernames } = useSelector(state => state.allocations);
   const [card, setCard] = useState(null);
-
+  const isLoading = loadingUsernames[pid] && loadingUsernames[pid].loading;
   return (
     <Modal
       isOpen={isOpen}
@@ -115,38 +131,45 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
       className="team-view-modal-wrapper"
       size="lg"
     >
-      <Header toggle={toggle} charCode="x" className="allocations-modal-header">
+      <ModalHeader
+        toggle={toggle}
+        charCode="x"
+        className="allocations-modal-ModalHeader"
+      >
         <span>View Team</span>
-      </Header>
-      <Body className="d-flex p-0">
+      </ModalHeader>
+      <ModalBody className="d-flex p-0">
         <Container>
-          <Row />
           <Row>
             <Col className="modal-left" lg={5}>
-              {loadingUsernames[pid] && loadingUsernames[pid].loading ? (
+              {isLoading ? (
                 <LoadingSpinner />
               ) : (
-                !isEmpty(teams[pid]) && (
-                  <TeamTable rawData={teams[pid]} clickHandler={setCard} />
-                )
+                <TeamTable
+                  visible={card}
+                  rawData={teams[pid]}
+                  clickHandler={setCard}
+                />
               )}
             </Col>
             <Col className="modal-right">
-              {card ? (
-                <ContactCard listing={card} />
-              ) : (
-                "Click on a user's name to view their contact information."
-              )}
+              <ContactCard listing={card} />
             </Col>
           </Row>
         </Container>
-      </Body>
+      </ModalBody>
     </Modal>
   );
 };
-TeamView.propTypes = { ...modalPropTypes, pid: number.isRequired };
+TeamView.propTypes = { ...MODAL_PROPTYPES, pid: number.isRequired };
 
 export const ContactCard = ({ listing }) => {
+  if (!listing)
+    return (
+      <span>
+        Click on a user&apos;s name to view their contact information.
+      </span>
+    );
   const { firstName, lastName, email, username } = listing;
   return (
     <div className="contact-card">
@@ -160,11 +183,6 @@ export const ContactCard = ({ listing }) => {
     </div>
   );
 };
-ContactCard.propTypes = {
-  listing: shape({
-    firstName: string.isRequired,
-    lastName: string.isRequired,
-    email: string.isRequired,
-    username: string.isRequired
-  }).isRequired
-};
+
+ContactCard.propTypes = { listing: USER_LISTING_PROPTYPES };
+ContactCard.defaultProps = { listing: {} };
