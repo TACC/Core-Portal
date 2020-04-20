@@ -12,6 +12,8 @@ from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.steps.abaco import AbacoStep
 import json
 import pytest
+from unittest import skip
+
 
 pytestmark = pytest.mark.django_db
 
@@ -117,6 +119,7 @@ class TestAbacoStep(TestCase):
         mock_log.assert_called_with("message", "data")
 
 
+@skip("Need to rewrite onboarding unit tests with fixtures")
 @pytest.mark.django_db(transaction=True)
 class TestAbacoStepTransaction(TransactionTestCase):
     """
