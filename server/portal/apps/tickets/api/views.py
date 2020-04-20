@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.exceptions import PermissionDenied
-from portal.apps.djangoRT import rtUtil
+from portal.apps.tickets import rtUtil
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 
