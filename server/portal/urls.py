@@ -55,7 +55,7 @@ urlpatterns = [
     # api
     path('api/users/', include('portal.apps.users.urls', namespace='users')),
     path('api/workspace/', include('portal.apps.workspace.api.urls', namespace='workspace_api')),
-    path('api/tickets/', include('portal.apps.djangoRT.api.urls', namespace='portal_tickets_api')),
+    path('api/tickets/', include('portal.apps.tickets.api.urls', namespace='portal_tickets_api')),
     path('api/datafiles/', include('portal.apps.datafiles.urls', namespace='datafiles')),
     path('api/search/', include('portal.apps.search.api.urls', namespace='search')),
     path('api/system-monitor/', include('portal.apps.system_monitor.urls', namespace='system_monitor')),
@@ -65,7 +65,7 @@ urlpatterns = [
     path('webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
 
     # views
-    path('tickets/', include('portal.apps.djangoRT.urls', namespace='tickets')),
+    path('tickets/', include('portal.apps.tickets.urls', namespace='tickets')),
     path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
 
     # version check.

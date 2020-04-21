@@ -28,21 +28,21 @@ def mock_rt(mocker, rt_tickets, rt_ticket_history):
 
 @pytest.fixture
 def mock_rtutil(mocker, mock_rt):
-    mocker.patch('portal.apps.djangoRT.api.views.rtUtil.DjangoRt', return_value=mock_rt)
+    mocker.patch('portal.apps.tickets.api.views.rtUtil.DjangoRt', return_value=mock_rt)
     yield mock_rt
 
 
 @pytest.fixture
 def mock_rtutil_no_access(mocker, mock_rt):
     mock_rt.hasAccess.return_value = False
-    mocker.patch('portal.apps.djangoRT.api.views.rtUtil.DjangoRt', return_value=mock_rt)
+    mocker.patch('portal.apps.tickets.api.views.rtUtil.DjangoRt', return_value=mock_rt)
     yield mock_rt
 
 
 @pytest.fixture
 def mock_get_matching_history_entry(mocker, rt_ticket_history):
     last_entry = rt_ticket_history[-1]
-    mocker.patch('portal.apps.djangoRT.api.views.TicketsHistoryView._get_matching_history_entry', return_value=last_entry)
+    mocker.patch('portal.apps.tickets.api.views.TicketsHistoryView._get_matching_history_entry', return_value=last_entry)
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
