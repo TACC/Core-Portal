@@ -18,7 +18,7 @@ const Sidebar = () => {
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
-            <i className={`${styles.icon} .icon .icon-nav-dashboard`} />
+            <i className={`${styles.icon} icon icon-nav-dashboard`} />
             <span className={styles.link__text}>Dashboard</span>
             <div className={styles['nav-content']}>
               <samp className={styles['side-nav-icon']}>Test</samp>
@@ -34,7 +34,7 @@ const Sidebar = () => {
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
-            <i className={`${styles.icon} .icon .icon-nav-folder`} />
+            <i className={`${styles.icon} icon icon-nav-folder`} />
             <span className={styles.link__text}>Data Files</span>
           </div>
         </NavLink>
@@ -47,7 +47,7 @@ const Sidebar = () => {
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
-            <i className={`${styles.icon} .icon .icon-nav-application`} />
+            <i className={`${styles.icon} icon icon-nav-application`} />
             <span className={styles.link__text}>Applications</span>
           </div>
         </NavLink>
@@ -60,7 +60,7 @@ const Sidebar = () => {
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
-            <i className={`${styles.icon} .icon .icon-nav-allocation`} />
+            <i className={`${styles.icon} icon icon-nav-allocation`} />
             <span className={styles.link__text}>Allocations</span>
           </div>
         </NavLink>
