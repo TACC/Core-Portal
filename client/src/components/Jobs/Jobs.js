@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Badge } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -8,7 +9,7 @@ import { LoadingSpinner } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
-function JobsView({ showDetails }) {
+function JobsView({ showDetails, showFancyStatus }) {
   const dispatch = useDispatch();
   const spinnerState = useSelector(state => state.spinner);
   const jobs = useSelector(state => state.jobs.list);
@@ -93,6 +94,15 @@ function JobsView({ showDetails }) {
       headerStyle: { textAlign: 'left' },
       accessor: d =>
         d.status.substr(0, 1).toUpperCase() + d.status.substr(1).toLowerCase(),
+      Cell: el => {
+        const isFailed = el.value === 'Failed';
+        const isFinished = el.value === 'Finished';
+        if (showFancyStatus && (isFailed || isFinished))
+          return (
+            <Badge color={isFailed ? 'danger' : 'success'}>{el.value}</Badge>
+          );
+        return el.value;
+      },
       id: 'jobStatusCol',
       width: 100
     }
@@ -125,10 +135,12 @@ function JobsView({ showDetails }) {
 }
 
 JobsView.propTypes = {
-  showDetails: PropTypes.bool
+  showDetails: PropTypes.bool,
+  showFancyStatus: PropTypes.bool
 };
 JobsView.defaultProps = {
-  showDetails: false
+  showDetails: false,
+  showFancyStatus: false
 };
 
 export default JobsView;
