@@ -50,7 +50,7 @@ module.exports = merge.smart(common, {
             options: {
               sourceMap: true,
               modules: {
-                localIdentName: '[name]_[local]___[hash:base64:10]'
+                localIdentName: '[name]__[local]--[hash:base64:10]'
               }
             }
           },
