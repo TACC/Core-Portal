@@ -9,6 +9,7 @@ import {
   SidebarLinkText,
   NavIcon
 } from './Sidebar.styles.js';
+// } from './Sidebar.styles.alt.js';
 import './Sidebar.css';
 
 /** A navigation list for the application */
