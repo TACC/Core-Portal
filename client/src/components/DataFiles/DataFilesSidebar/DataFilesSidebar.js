@@ -51,12 +51,11 @@ const DataFilesSidebar = () => {
                 <i className="icon-nav-folder" /> Folder
               </DropdownItem>
               <DropdownItem
-                className="border-top-menu-item"
+                className="complex-dropdown-item"
                 onClick={toggleUploadModal}
               >
                 <i className="icon-action-upload" />
                 <span className="multiline-menu-item-wrapper">
-                  {' '}
                   Upload
                   <small> Up to 100mb of 25 files </small>
                 </span>
