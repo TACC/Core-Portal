@@ -3,7 +3,6 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
 import styles from './Sidebar.scss';
-import iconStyles from '../../styles/icon.css';
 
 /** A navigation list for the application */
 const Sidebar = () => {
@@ -19,9 +18,7 @@ const Sidebar = () => {
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
-            <i
-              className={`${styles.icon} ${iconStyles.icon} ${iconStyles['icon-nav-dashboard']}`}
-            />
+            <i className={`${styles.icon} .icon .icon-nav-dashboard`} />
             <span className={styles.link__text}>Dashboard</span>
             <div className={styles['nav-content']}>
               <samp className={styles['side-nav-icon']}>Test</samp>
@@ -37,9 +34,7 @@ const Sidebar = () => {
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
-            <i
-              className={`${styles.icon} ${iconStyles.icon} ${iconStyles['icon-nav-folder']}`}
-            />
+            <i className={`${styles.icon} .icon .icon-nav-folder`} />
             <span className={styles.link__text}>Data Files</span>
           </div>
         </NavLink>
@@ -52,9 +47,7 @@ const Sidebar = () => {
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
-            <i
-              className={`${styles.icon} ${iconStyles.icon} ${iconStyles['icon-nav-application']}`}
-            />
+            <i className={`${styles.icon} .icon .icon-nav-application`} />
             <span className={styles.link__text}>Applications</span>
           </div>
         </NavLink>
@@ -67,9 +60,7 @@ const Sidebar = () => {
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
-            <i
-              className={`${styles.icon} ${iconStyles.icon} ${iconStyles['icon-nav-allocation']}`}
-            />
+            <i className={`${styles.icon} .icon .icon-nav-allocation`} />
             <span className={styles.link__text}>Allocations</span>
           </div>
         </NavLink>

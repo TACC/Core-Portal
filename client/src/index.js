@@ -4,6 +4,9 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import AppRouter from './components/Workbench';
 import './index.scss';
+// TEST: Does an import of a global" css file work?
+//       (check that non-FA icons are displayed)
+import './styles/icon.css';
 import * as serviceWorker from './serviceWorker';
 import store from './redux/store';
 

@@ -4,6 +4,10 @@
   https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Sectioning_root
 */
 
+/* TEST: Does a class name in a "global" CSS file take affect?
+         (check for change on icons of Data File action buttons) */
+.icon-action::before { background-color: green }
+
 body {
   margin: 0;
   font-family: "Roboto";

@@ -21,6 +21,10 @@ module.exports = merge(common, {
     rules: [
       {
         test: /\.s?[ac]ss$/i,
+        exclude: [
+          path.join(__dirname, '/src/styles/'),
+          path.join(__dirname, '/src/index.scss')
+        ],
         use: [
           {
             loader: MiniCssExtractPlugin.loader
@@ -30,6 +34,30 @@ module.exports = merge(common, {
             options: {
               sourceMap: true,
               modules: true
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true
+            }
+          }
+        ]
+      },
+      {
+        test: /\.s?[ac]ss$/i,
+        include: [
+          path.join(__dirname, '/src/styles/'),
+          path.join(__dirname, '/src/index.scss')
+        ],
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true
             }
           },
           {
