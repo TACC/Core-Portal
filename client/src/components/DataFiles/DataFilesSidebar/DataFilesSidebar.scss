@@ -52,6 +52,7 @@ $frontera-portal-color-primary: #9d85ef;
   margin-top: 11px;
   padding: 0;
   left: -20px;
+  width: 200px;
 }
 .dropdown-menu:before {
   position: absolute;
@@ -84,13 +85,19 @@ $frontera-portal-color-primary: #9d85ef;
   line-height: 1.1em;
   small {
     display: block;
+    color: #484848;
   }
 }
 
 .dropdown-item{
-  padding: .25rem 1rem;
+  padding: 9px 5px;
+  size: 10px;
+  color: #707070;
   i {
-      padding-right: 10px;
+      padding-right: 5px;
+  }
+  &:hover {
+    color: #707070;
   }
 }
 
