@@ -33,7 +33,10 @@ module.exports = merge(common, {
             loader: 'css-loader',
             options: {
               sourceMap: true,
-              modules: true
+              modules: {
+                localIdentName: '[hash:base64:10]'
+              },
+              localsConvention: 'camelCase'
             }
           },
           {

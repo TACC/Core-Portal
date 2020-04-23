@@ -14,7 +14,7 @@ const Sidebar = () => {
           tag={RRNavLink}
           exact
           to={`${path}${ROUTES.DASHBOARD}`}
-          className={styles.link}
+          className={styles.linkWithHyphenTwice}
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
@@ -30,7 +30,7 @@ const Sidebar = () => {
         <NavLink
           tag={RRNavLink}
           to={`${path}${ROUTES.DATA}`}
-          className={styles.link}
+          className={styles.linkWithHyphenTwice}
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
@@ -43,7 +43,7 @@ const Sidebar = () => {
         <NavLink
           tag={RRNavLink}
           to={`${path}${ROUTES.APPLICATIONS}`}
-          className={styles.link}
+          className={styles.linkWithHyphenTwice}
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>
@@ -56,7 +56,7 @@ const Sidebar = () => {
         <NavLink
           tag={RRNavLink}
           to={`${path}${ROUTES.ALLOCATIONS}`}
-          className={styles.link}
+          className={styles.linkWithHyphenTwice}
           activeClassName={styles.isActive}
         >
           <div className={styles.link__content}>

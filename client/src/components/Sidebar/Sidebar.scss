@@ -16,11 +16,11 @@ $linkBackgroundColor: #dfdaf5;
     padding-top: 20px;
 }
 
-.link {
+.link-with-hyphen--twice {
   color: $linkColor;
 }
 /* Overwrite Bootstrap `a:hover` */
-.link:hover {
+.link-with-hyphen--twice:hover {
   color: $linkColor;
 }
 .isActive {
