@@ -2,20 +2,18 @@ import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Formik, Form, useField } from 'formik';
+import { Formik, Form } from 'formik';
 import {
   Alert,
   Button,
   Col,
   Container,
   FormGroup,
-  FormText,
-  Label,
   Row,
   Spinner
 } from 'reactstrap';
 import * as Yup from 'yup';
-import { FileInputDropZone, FormField } from '_common';
+import { FileInputDropZoneField, FormField } from '_common';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateForm.scss';
 
@@ -29,37 +27,6 @@ const formSchema = Yup.object().shape({
     .required('Required'),
   cc: Yup.string().email('Invalid email')
 });
-
-function UploadFilesField({ id, isSubmitted }) {
-  // eslint-disable-next-line no-unused-vars
-  const [field, meta, helpers] = useField(id);
-
-  return (
-    <FormGroup className="appForm-textInput">
-      <Label
-        for={id}
-        size="sm"
-        style={{ display: 'flex', alignItems: 'center' }}
-      >
-        Upload Files
-      </Label>
-      <FileInputDropZone
-        id={id}
-        files={field.value}
-        onSetFiles={helpers.setValue}
-        isSubmitted={isSubmitted}
-      />
-      <FormText className="appForm-help" color="muted" /* TODO fix classname */>
-        Error reports and screenshots can be helpful for diagnostics
-      </FormText>
-    </FormGroup>
-  );
-}
-
-UploadFilesField.propTypes = {
-  id: PropTypes.string.isRequired,
-  isSubmitted: PropTypes.bool.isRequired
-};
 
 function CreatedTicketInformation({ isAuthenticated, ticketId }) {
   if (!ticketId) {
@@ -161,7 +128,11 @@ function TicketCreateForm({ authenticatedUser }) {
                 description="Explain your steps leading up to the problem and include any error
           reports"
               />
-              <UploadFilesField id="attachments" isSubmitted={isSubmitting} />
+              <FileInputDropZoneField
+                id="attachments"
+                isSubmitted={isSubmitting}
+                description="Error reports and screenshots can be helpful for diagnostics"
+              />
               <Container>
                 <Row>
                   <Col lg="6">
