@@ -66,7 +66,7 @@ FormField.defaultProps = {
   name: undefined,
   label: undefined,
   description: undefined,
-  required: undefined,
+  required: false,
   agaveFile: undefined
 };
 

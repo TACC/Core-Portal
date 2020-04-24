@@ -29,6 +29,7 @@ import { FileInputDropZone, LoadingSpinner } from '_common';
 import * as ROUTES from '../../constants/routes';
 import './TicketModal.scss';
 
+
 async function validateReply(reply, instance) {
   if (!reply) {
     return 'A reply is required';
