@@ -15,11 +15,9 @@ import {
   Spinner
 } from 'reactstrap';
 import * as Yup from 'yup';
-import { FileInputDropZone } from '_common';
-import FormField from '../Applications/AppForm/AppFormFields';
+import { FileInputDropZone, FormField } from '_common';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateForm.scss';
-
 
 const formSchema = Yup.object().shape({
   subject: Yup.string().required('Required'),

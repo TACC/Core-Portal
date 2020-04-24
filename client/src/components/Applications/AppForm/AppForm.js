@@ -16,7 +16,8 @@ import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
 import FormSchema from './AppFormSchema';
 import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
-import FormField from './AppFormFields';
+import { FormField } from '_common';
+
 
 const appShape = PropTypes.shape({
   id: PropTypes.string,
