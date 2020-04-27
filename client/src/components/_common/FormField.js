@@ -11,6 +11,7 @@ import {
 } from 'reactstrap';
 import { useField } from 'formik';
 import PropTypes from 'prop-types';
+import './Form.scss';
 
 const FormField = ({ label, description, required, agaveFile, ...props }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -18,8 +19,9 @@ const FormField = ({ label, description, required, agaveFile, ...props }) => {
   const [field, meta] = useField(props);
   const { id, name } = props;
   return (
-    <FormGroup className="appForm-textInput">
+    <FormGroup>
       <Label
+        className="form-label"
         for={id || name}
         size="sm"
         style={{ display: 'flex', alignItems: 'center' }}
@@ -44,9 +46,9 @@ const FormField = ({ label, description, required, agaveFile, ...props }) => {
         <Input {...field} {...props} bsSize="sm" />
       )}
       {meta.touched && meta.error ? (
-        <div className="validation-error">{meta.error}</div>
+        <div className="form-validation-error">{meta.error}</div>
       ) : (
-        <FormText className="appForm-help" color="muted">
+        <FormText className="form-help" color="muted">
           {description}
         </FormText>
       )}

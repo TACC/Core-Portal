@@ -3,16 +3,18 @@ import { useField } from 'formik';
 import { FormGroup, FormText, Label } from 'reactstrap';
 import PropTypes from 'prop-types';
 import FileInputDropZone from './FileInputDropZone';
+import './Form.scss';
 
 function FileInputDropZoneField({ id, isSubmitted, description }) {
   // eslint-disable-next-line no-unused-vars
   const [field, meta, helpers] = useField(id);
 
   return (
-    <FormGroup className="appForm-textInput" /* TODO fix classname */>
+    <FormGroup>
       <Label
         for={id}
         size="sm"
+        className="form-label"
         style={{ display: 'flex', alignItems: 'center' }}
       >
         Upload Files
@@ -23,7 +25,7 @@ function FileInputDropZoneField({ id, isSubmitted, description }) {
         onSetFiles={helpers.setValue}
         isSubmitted={isSubmitted}
       />
-      <FormText className="appForm-help" color="muted" /* TODO fix classname */>
+      <FormText className="form-help" color="muted">
         {description}
       </FormText>
     </FormGroup>
