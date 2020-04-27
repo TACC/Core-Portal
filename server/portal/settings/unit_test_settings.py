@@ -87,7 +87,7 @@ INSTALLED_APPS = [
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
-    'portal.apps.djangoRT',
+    'portal.apps.tickets',
     'portal.apps.licenses',
     'portal.apps.notifications',
     'portal.apps.onboarding',
