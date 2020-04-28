@@ -4,12 +4,6 @@ from datetime import datetime
 
 
 class DjangoRt:
-    CLOSED = 'closed'
-    RESOLVED = 'resolved'
-    OPEN = 'open'
-    NEW = 'new'
-    RESPONSE_REQUIRED = 'response required'
-
     def __init__(self):
         self.rtHost = getattr(settings, 'RT_HOST')
         self.rtUn = getattr(settings, 'RT_UN')
@@ -46,16 +40,6 @@ class DjangoRt:
             ticket['Created'] = datetime.strptime(ticket['Created'], '%Y-%m-%d %X')
 
         return ticketHistory
-
-    # Returns the ticket id of the created ticket
-    def createTicket(self, ticket):
-        return self.tracker.create_ticket(Queue=self.rtQueue,
-                                          files=ticket.attachments,
-                                          Subject=ticket.subject,
-                                          Text=ticket.problem_description,
-                                          Requestors=ticket.requestor,
-                                          Cc=",".join(ticket.cc),
-                                          CF_resource=settings.RT_TAG)
 
     def create_ticket(self, attachments, subject, problem_description, requestor, cc):
         return self.tracker.create_ticket(Queue=self.rtQueue,
