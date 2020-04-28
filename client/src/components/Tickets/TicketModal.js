@@ -196,8 +196,8 @@ const TicketHistoryCard = ({
       >
         <span className="ticket-history-header d-inline-block text-truncate">
           <strong>
-            {ticketCreator ? (
-              <span className="ticket-creator"> {creator} </span>
+            {!ticketCreator ? (
+              <span className="ticket-responder"> {creator} </span>
             ) : (
               creator
             )}{' '}
