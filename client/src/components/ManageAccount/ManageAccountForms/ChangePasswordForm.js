@@ -3,10 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
 import { object as obj, string as str, ref } from 'yup';
 import { Formik, Form } from 'formik';
+import { isEmpty } from 'lodash';
+import { bool } from 'prop-types';
 import { LoadingSpinner } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
-const ChangePasswordFormBody = () => {
+const ChangePasswordFormBody = ({ canSubmit }) => {
   const isChecking = useSelector(({ profile }) => profile.checkingPassword);
   const Requirements = () => (
     <div style={{ color: '#707070', fontStyle: 'italic' }}>
@@ -47,12 +49,14 @@ const ChangePasswordFormBody = () => {
         className="manage-account-submit-button"
         type="submit"
         style={{ alignSelf: 'flex-end' }}
+        disabled={!canSubmit}
       >
         {isChecking ? <LoadingSpinner placement="inline" /> : 'Change Password'}
       </Button>
     </Form>
   );
 };
+ChangePasswordFormBody.propTypes = { canSubmit: bool.isRequired };
 
 export default function() {
   const { restrictions } = useSelector(({ profile: { data } }) => {
@@ -93,20 +97,23 @@ export default function() {
         'Your new password must be different from your old password'
       )
       .required('Required'),
-    confirmNewPW: str().oneOf([ref('newPW')], 'Passwords do not match')
+    confirmNewPW: str()
+      .oneOf([ref('newPW')], 'Passwords do not match')
+      .required('Required')
   });
   const initialValues = {
     currentPW: '',
     newPW: '',
     confirmNewPW: ''
   };
+  const hasErrors = errors => isEmpty(Object.keys(errors));
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={handleSubmit}
       validationSchema={formSchema}
     >
-      <ChangePasswordFormBody />
+      {({ errors }) => <ChangePasswordFormBody canSubmit={hasErrors(errors)} />}
     </Formik>
   );
 }

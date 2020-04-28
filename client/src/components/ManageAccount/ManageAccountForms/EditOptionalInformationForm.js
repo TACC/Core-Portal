@@ -21,7 +21,13 @@ export default function() {
   const formSchema = obj().shape({
     orcidId: str(),
     bio: str(),
-    website: str().url('Please enter a valid URL')
+    website: str().matches(
+      new RegExp(
+        '^(http://www.|https://www.|http://|https://)?[a-z0-9]+([-.]{1}[a-z0-9]+)*.[a-z]{2,5}(:[0-9]{1,5})?(/.*)?$',
+        'gm'
+      ),
+      'Please enter a valid URL'
+    )
   });
   const handleSubmit = (values, { setSubmitting }) => {
     dispatch({ type: 'EDIT_OPTIONAL_INFORMATION', values });

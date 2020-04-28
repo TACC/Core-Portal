@@ -22,12 +22,16 @@ export const EditRequiredInformation = () => {
   };
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">
-      <ModalHeader className="manage-account-modal-header">
-        Edit Required Information
+      <ModalHeader
+        className="manage-account-modal-header"
+        toggle={closeModal}
+        charCode="X"
+      >
+        <span>Edit Required Information</span>
       </ModalHeader>
       <ModalBody
         style={{
-          maxHeight: '50vh',
+          maxHeight: '90vh',
           overflowY: 'auto'
         }}
       >
@@ -59,8 +63,12 @@ export const EditOptionalInformation = () => {
   };
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">
-      <ModalHeader className="manage-account-modal-header">
-        Edit Optional Information
+      <ModalHeader
+        className="manage-account-modal-header"
+        toggle={closeModal}
+        charCode="X"
+      >
+        <span>Edit Optional Information</span>
       </ModalHeader>
       <ModalBody>
         {success && (
@@ -90,8 +98,12 @@ export const ChangePassword = () => {
   const closeModal = () => dispatch({ type: 'CLOSE_PROFILE_MODAL' });
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">
-      <ModalHeader className="manage-account-modal-header">
-        Change Password
+      <ModalHeader
+        className="manage-account-modal-header"
+        toggle={closeModal}
+        charCode="X"
+      >
+        <span>Change Password</span>
       </ModalHeader>
       <ModalBody>
         {error && (
