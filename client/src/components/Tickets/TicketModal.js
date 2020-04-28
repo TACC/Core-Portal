@@ -184,6 +184,10 @@ const TicketHistoryCard = ({
     toggleIcon = <i className="icon-action icon-action-expand" />;
   }
 
+  const ticketHeaderClassName = ticketCreator
+    ? 'ticket-creator'
+    : 'ticket-responder';
+
   return (
     <Card className="mt-1">
       <CardHeader
@@ -196,12 +200,8 @@ const TicketHistoryCard = ({
       >
         <span className="ticket-history-header d-inline-block text-truncate">
           <strong>
-            {!ticketCreator ? (
-              <span className="ticket-responder"> {creator} </span>
-            ) : (
-              creator
-            )}{' '}
-            | {`${formatDateTime(created)}`}
+            <span className={ticketHeaderClassName}> {creator} </span> |{' '}
+            {`${formatDateTime(created)}`}
           </strong>{' '}
           {isOpen ? '' : content}
         </span>
