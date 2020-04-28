@@ -111,6 +111,13 @@ services:
     command: "celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
     container_name: frontera_prtl_workers
 
+  docs:
+    image: taccwma/frontera-docs:latest
+    volumes:
+      - ../../docs:/docs/site
+    command: ["mkdocs", "build"]
+    container_name: frontera_docs
+
 volumes:
   frontera_prtl_redis_data:
   frontera_prtl_es_data:

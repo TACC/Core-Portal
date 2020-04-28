@@ -1,5 +1,5 @@
 from django.urls import path
-from portal.apps.djangoRT import views
+from portal.apps.tickets import views
 
 app_name = 'tickets'
 urlpatterns = [
