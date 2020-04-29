@@ -116,7 +116,7 @@ function JobsView({ showDetails, showFancyStatus }) {
       resizable={false}
       resolveData={data => data.map(row => row)}
       pageSize={jobs.length}
-      className="jobsList -striped -highlight"
+      className="jobs-list -striped -highlight"
       defaultSorted={[{ id: 'jobDateCol', desc: true }]}
       noDataText={
         <>

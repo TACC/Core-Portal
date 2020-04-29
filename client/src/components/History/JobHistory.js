@@ -1,6 +1,11 @@
 import React from 'react';
 import JobsView from '../Jobs';
+import './JobHistory.scss';
 
 export default function JobHistory() {
-  return <JobsView showDetails showFancyStatus />;
+  return (
+    <div className="job-history">
+      <JobsView showDetails showFancyStatus />
+    </div>
+  );
 }

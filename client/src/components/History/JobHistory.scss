@@ -1,0 +1,16 @@
+.job-history .jobs-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 0 1em;
+  overflow-y: auto;
+}
+
+.job-history {
+  width: 100%;
+}
+
+/* copied from Dashboard.scss. Need to refactor to only have one definition
+Looks like color of dashboard tables set in Workbench.csss is overwritten in Dashboard.scsss*/
+.job-history .ReactTable .rt-th, .dashboard-items .ReactTable .rt-td {
+  color: #707070;
+}

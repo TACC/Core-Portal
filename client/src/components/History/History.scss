@@ -5,7 +5,6 @@
 
 .history-sidebar {
   /* this is a copy of allocations-sidebar from Allocations.scss  @TODO refactor so using a single definition*/
-  width: fit-content;
   border-right: 1px solid rgba(112, 112, 112, .25);
   font-family: Roboto;
   .nav-link {
