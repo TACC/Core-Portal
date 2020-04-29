@@ -57,7 +57,7 @@ const DataFilesSidebar = () => {
                 <i className="icon-action-upload" />
                 <span className="multiline-menu-item-wrapper">
                   Upload
-                  <small> Up to 100mb of 25 files </small>
+                  <small> Up to 100mb or 25 files </small>
                 </span>
               </DropdownItem>
             </DropdownMenu>

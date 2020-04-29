@@ -51,15 +51,14 @@ $frontera-portal-color-primary: #9d85ef;
   border-radius: 0;
   margin-top: 11px;
   padding: 0;
-  left: -20px;
-  width: 230px;
+  left: -30px !important;
+  width: 200px;
   vertical-align: top;
 }
 .dropdown-menu:before {
   position: absolute;
   top: -10px;
   left: 65px;
-  display: inline-block;
   border-right: 10px solid transparent;
   border-bottom: 10px solid $frontera-portal-color-primary;
   border-left: 10px solid transparent;
@@ -69,7 +68,6 @@ $frontera-portal-color-primary: #9d85ef;
   position: absolute;
 	top: -9px;
 	left: 66px;
-	display: inline-block;
 	border-right: 9px solid transparent;
 	border-bottom: 9px solid #ffffff;
 	border-left: 9px solid transparent;
@@ -78,6 +76,7 @@ $frontera-portal-color-primary: #9d85ef;
 
 .complex-dropdown-item {
   border-top: 1px solid #707070;
+  display: flex;
 }
 
 .multiline-menu-item-wrapper {
