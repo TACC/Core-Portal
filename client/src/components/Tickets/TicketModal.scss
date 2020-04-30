@@ -40,6 +40,11 @@
   height: 90vh;
   min-height: 535px;
 
+  /* alter bootstrap size to match font-size for rest of ticket forms */
+  .col-form-label-sm {
+    font-size: 0.75rem;
+  }
+
   .card-header {
     background-color: white;
     display: flex;
