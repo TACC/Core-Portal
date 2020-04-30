@@ -15,6 +15,7 @@ server/static
 server/portal/static/vendor/lib/node_modules
 server/media
 server/cms
+server/docs
 
 # Ignore local Django settings
 *secrets.py
