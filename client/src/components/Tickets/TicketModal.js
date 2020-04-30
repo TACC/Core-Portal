@@ -79,7 +79,7 @@ function TicketHistoryReply({ ticketId }) {
       {({ isSubmitting, isValid }) => {
         return (
           <Form className="ticket-reply-form">
-            <FormField name="reply" label="Subject" required />
+            <FormField name="reply" label="Reply" required />
             <FileInputDropZoneField
               id="attachments"
               isSubmitted={isSubmitting}
