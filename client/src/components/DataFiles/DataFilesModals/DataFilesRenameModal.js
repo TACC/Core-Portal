@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Form,
+  FormGroup,
+  Input,
+  Label
+} from 'reactstrap';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -92,54 +102,59 @@ const DataFilesRenameModal = () => {
       toggle={toggle}
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>Rename {selectedFile.name}</ModalHeader>
-      <ModalBody>
-        Enter the new name for this file:
-        <div className="input-group mb-3">
-          <input
-            onChange={validate}
-            className="form-control"
-            value={newName}
-            placeholder={newName}
-          />
-          {status && (
-            <div className="input-group-append">
-              <span className="input-group-text">
-                <DataFilesRenameStatus status={status} />
+      <Form>
+        <ModalHeader toggle={toggle}>Rename {selectedFile.name}</ModalHeader>
+        <ModalBody>
+          <FormGroup>
+            <Label>Enter the new name for this file:</Label>
+            <div className="input-group mb-3">
+              <Input
+                onChange={validate}
+                className="form-control"
+                value={newName}
+                placeholder={newName}
+              />
+              {status && (
+                <div className="input-group-append">
+                  <span className="input-group-text">
+                    <DataFilesRenameStatus status={status} />
+                  </span>
+                </div>
+              )}
+            </div>
+            <div
+              hidden={newName === '' || validated}
+              style={{ paddingTop: '10px' }}
+            >
+              <span style={{ color: '#9d85ef' }}>
+                <FontAwesomeIcon
+                  icon={faExclamationTriangle}
+                  style={{ marginRight: '10px' }}
+                  color="#9d85ef"
+                />
+                Valid characters are <b>A-Z a-z 0-9 . _ -</b>
               </span>
             </div>
-          )}
-        </div>
-        <div
-          hidden={newName === '' || validated}
-          style={{ paddingTop: '10px' }}
-        >
-          <span style={{ color: '#9d85ef' }}>
-            <FontAwesomeIcon
-              icon={faExclamationTriangle}
-              style={{ marginRight: '10px' }}
-              color="#9d85ef"
-            />
-            Valid characters are <b>A-Z a-z 0-9 . _ -</b>
-          </span>
-        </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button
-          disabled={!newName || !validated}
-          className="data-files-btn"
-          onClick={rename}
-        >
-          Rename{' '}
-        </Button>{' '}
-        <Button
-          color="secondary"
-          className="data-files-btn-cancel"
-          onClick={toggle}
-        >
-          Close
-        </Button>
-      </ModalFooter>
+          </FormGroup>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            type="submit"
+            disabled={!newName || !validated}
+            className="data-files-btn"
+            onClick={rename}
+          >
+            Rename{' '}
+          </Button>{' '}
+          <Button
+            color="secondary"
+            className="data-files-btn-cancel"
+            onClick={toggle}
+          >
+            Close
+          </Button>
+        </ModalFooter>
+      </Form>
     </Modal>
   );
 };
