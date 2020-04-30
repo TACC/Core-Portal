@@ -18,20 +18,34 @@
     padding-left: 0;
 }
 #allocations-wrapper {
-    width: 100%;
+    /* Styles as a flex parent */
+    display: flex;
+    flex-direction: column;
+
     padding-right: 32px;
 }
 #allocations-container {
+    /* Styles as a flex child */
+    flex-grow: 1;
+
+    /* Styles as a flex parent */
     display: flex;
     flex-direction: row;
+
     border-top: 1px solid #707070;
-    height: calc(100vh - 116px);
 }
+/* Make right-most item fill up remaining horizontal space */
+/* FAQ: Do this via container, because item can change (table or loading UI) */
+/* TODO: Extract this common style from: Dash., Data F., App's, and Alloc's */
+#allocations-container > :last-child {
+    flex-grow: 1;
+}
+
 #allocations-header {
     @include alloc-button();
     display: flex;
     justify-content: space-between;
-    margin: 21px auto 0.5rem 1.75rem;
+    margin: 21px 0 0.5rem 1.75rem;
     padding-left: 0.2em;
     #header-text {
         font-size: 1.25rem;
