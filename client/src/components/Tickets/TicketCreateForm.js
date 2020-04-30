@@ -13,7 +13,7 @@ import {
   Spinner
 } from 'reactstrap';
 import * as Yup from 'yup';
-import { FileInputDropZoneField, FormField } from '_common';
+import { FileInputDropZoneFormField, FormField } from '_common';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateForm.scss';
 
@@ -128,7 +128,7 @@ function TicketCreateForm({ authenticatedUser }) {
                 description="Explain your steps leading up to the problem and include any error
           reports"
               />
-              <FileInputDropZoneField
+              <FileInputDropZoneFormField
                 id="attachments"
                 isSubmitted={isSubmitting}
                 description="Error reports and screenshots can be helpful for diagnostics"

@@ -9,19 +9,20 @@ import {
   InputGroup,
   InputGroupAddon
 } from 'reactstrap';
+
 import { useField } from 'formik';
 import PropTypes from 'prop-types';
-import './Form.scss';
+import './FormField.scss';
 
 const FormField = ({ label, description, required, agaveFile, ...props }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
-  // which we can spread on <input> and alse replace ErrorMessage entirely.
+  // which we can spread on <input> and also replace ErrorMessage entirely.
   const [field, meta] = useField(props);
   const { id, name } = props;
   return (
     <FormGroup>
       <Label
-        className="form-label"
+        className="form-field__label"
         for={id || name}
         size="sm"
         style={{ display: 'flex', alignItems: 'center' }}
@@ -46,9 +47,9 @@ const FormField = ({ label, description, required, agaveFile, ...props }) => {
         <Input {...field} {...props} bsSize="sm" />
       )}
       {meta.touched && meta.error ? (
-        <div className="form-validation-error">{meta.error}</div>
+        <div className="form-field__validation-error">{meta.error}</div>
       ) : (
-        <FormText className="form-help" color="muted">
+        <FormText className="form-field__help" color="muted">
           {description}
         </FormText>
       )}

@@ -22,7 +22,7 @@ import * as Yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { formatDateTime } from 'utils/timeFormat';
-import { FormField, FileInputDropZoneField, LoadingSpinner } from '_common';
+import { FormField, FileInputDropZoneFormField, LoadingSpinner } from '_common';
 import { Formik, Form } from 'formik';
 import * as ROUTES from '../../constants/routes';
 import './TicketModal.scss';
@@ -85,7 +85,7 @@ function TicketHistoryReply({ ticketId }) {
               className="ticket-reply-text-area"
               required
             />
-            <FileInputDropZoneField
+            <FileInputDropZoneFormField
               id="attachments"
               isSubmitted={isSubmitting}
               description="Error reports and screenshots can be helpful for diagnostics"
