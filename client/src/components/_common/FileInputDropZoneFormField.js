@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import FileInputDropZone from './FileInputDropZone';
 import './Form.scss';
 
-function FileInputDropZoneField({ id, isSubmitted, description }) {
+function FileInputDropZoneFormField({ id, isSubmitted, description }) {
   // eslint-disable-next-line no-unused-vars
   const [field, meta, helpers] = useField(id);
 
@@ -32,14 +32,14 @@ function FileInputDropZoneField({ id, isSubmitted, description }) {
   );
 }
 
-FileInputDropZoneField.propTypes = {
+FileInputDropZoneFormField.propTypes = {
   id: PropTypes.string.isRequired,
   isSubmitted: PropTypes.bool.isRequired,
   description: PropTypes.string
 };
 
-FileInputDropZoneField.defaultProps = {
+FileInputDropZoneFormField.defaultProps = {
   description: undefined
 };
 
-export default FileInputDropZoneField;
+export default FileInputDropZoneFormField;
