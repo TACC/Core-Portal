@@ -5,10 +5,10 @@
     padding: 20px 40px 0 20px;
 }
 .data-files-items {
-    /* Styles as a flex child */
+    /* As a flex item */
     flex-grow: 1;
 
-    /* Styles as a flex parent */
+    /* As a flex container */
     display: flex;
     flex-direction: row;
     /* FAQ: Redundant, but offers clarity. Child must NOT use `height: 100%`;

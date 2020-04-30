@@ -5,10 +5,10 @@
     color: #484848;
 }
 .workbench-content {
-    /* Styles as a flex child */
+    /* As a flex item */
     flex-grow: 1;
 
-    /* Styles as a flex parent */
+    /* As a flex container */
     display: flex;
     flex-direction: column;
 }
