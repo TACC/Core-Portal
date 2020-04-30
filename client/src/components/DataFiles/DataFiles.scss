@@ -11,9 +11,6 @@
     /* As a flex container */
     display: flex;
     flex-direction: row;
-    /* FAQ: Redundant, but offers clarity. Child must NOT use `height: 100%`;
-            Safari renders child w/ `height: 100%` as if it's `height: auto` */
-    align-items: stretch;
 }
 /* Make right-most item fill up remaining horizontal space */
 .data-files-items > :last-child {
