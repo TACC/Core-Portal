@@ -34,8 +34,6 @@
     border-top: 1px solid #707070;
 }
 /* Make right-most item fill up remaining horizontal space */
-/* FAQ: Do this via container, because item can change (table or loading UI) */
-/* TODO: Extract this common style from: Dash., Data F., App's, and Alloc's */
 #allocations-container > :last-child {
     flex-grow: 1;
 }

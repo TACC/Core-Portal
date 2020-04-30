@@ -15,7 +15,7 @@
             Safari renders child w/ `height: 100%` as if it's `height: auto` */
     align-items: stretch;
 }
-/* Make right-most item fill up remaining vertical space */
+/* Make right-most item fill up remaining horizontal space */
 .data-files-items > :last-child {
     flex-grow: 1;
 }
