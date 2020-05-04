@@ -124,6 +124,7 @@ function TicketCreateForm({ authenticatedUser }) {
                 name="problem_description"
                 label="Problem Description"
                 className="ticket-description-text-area"
+                type="textarea"
                 required
                 description="Explain your steps leading up to the problem and include any error
           reports"

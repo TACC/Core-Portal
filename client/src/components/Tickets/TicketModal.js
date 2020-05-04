@@ -82,6 +82,7 @@ function TicketHistoryReply({ ticketId }) {
             <FormField
               name="reply"
               label="Reply"
+              type="textarea"
               className="ticket-reply-text-area"
               required
             />
