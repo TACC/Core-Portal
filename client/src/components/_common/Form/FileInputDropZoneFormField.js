@@ -6,8 +6,7 @@ import FileInputDropZone from './FileInputDropZone';
 import './FormField.scss';
 
 function FileInputDropZoneFormField({ id, isSubmitted, description }) {
-  // eslint-disable-next-line no-unused-vars
-  const [field, meta, helpers] = useField(id);
+  const [field, , helpers] = useField(id);
 
   return (
     <FormGroup>
