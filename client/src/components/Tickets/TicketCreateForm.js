@@ -25,7 +25,14 @@ const formSchema = Yup.object().shape({
   email: Yup.string()
     .email('Invalid email')
     .required('Required'),
-  cc: Yup.string().email('Invalid email')
+  cc: Yup.array()
+    .transform(function(value, originalValue) {
+      if (this.isType(value) && value !== null) {
+        return value;
+      }
+      return originalValue ? originalValue.split(/[\s,]+/) : [];
+    })
+    .of(Yup.string().email('Invalid email'))
 });
 
 function CreatedTicketInformation({ isAuthenticated, ticketId }) {
