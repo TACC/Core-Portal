@@ -23,8 +23,7 @@ export default function() {
     bio: str(),
     website: str().matches(
       new RegExp(
-        '^(http://www.|https://www.|http://|https://)?[a-z0-9]+([-.]{1}[a-z0-9]+)*.[a-z]{2,5}(:[0-9]{1,5})?(/.*)?$',
-        'gm'
+        '^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|www\\.){1}([0-9A-Za-z-\\.@:%_+~#=]+)+((\\.[a-zA-Z]{2,3})+)(/(.)*)?(\\?(.)*)?'
       ),
       'Please enter a valid URL'
     )
@@ -34,7 +33,7 @@ export default function() {
     setSubmitting(false);
   };
   const initialValues = {
-    website: demographics.website || '',
+    website: demographics.website || 'http://',
     bio: demographics.bio || '',
     orcidId: demographics.orcid_id || '',
     professionalLevel: demographics.professional_level || ''

@@ -27,14 +27,69 @@ export const useOptions = label => {
   }
 };
 
-export const ManageAccountInput = ({ label, ...props }) => {
-  const [field, meta] = useField(props);
-  const { type } = props;
+export const ManageAccountInput = ({ label, type, ...props }) => {
+  const [field, meta, { setValue }] = useField(props);
+  const [other, setOther] = React.useState(false);
   const select = type === 'select';
-  let key, options;
-  if (select) {
-    key = useOptions(label);
-    options = useSelector(state => state.profile.fields[key]);
+  const key = select ? useOptions(label) : '';
+  const options = useSelector(state => {
+    if (key) return state.profile.fields[key];
+    return [];
+  });
+
+  React.useEffect(() => {
+    const initialValues = options.map(option => option[0]);
+    if (meta.value === 'Other' || !initialValues.includes(meta.value)) {
+      setOther(true);
+    }
+  }, []);
+
+  if (select && label === 'Professional Level') {
+    return (
+      <FormGroup>
+        <Label>{label}</Label>
+        {other ? (
+          <>
+            <Input {...field} {...props} type="text" />
+            <Input
+              type="select"
+              onChange={({ target }) => {
+                if (!target.value.includes('Other')) {
+                  setOther(false);
+                  setValue(target.value);
+                }
+              }}
+            >
+              {options.map(([value, lbl], arr, _) => {
+                return (
+                  <option
+                    key={lbl}
+                    {...{ value, label: lbl }}
+                    selected={lbl.includes('Other')}
+                  />
+                );
+              })}
+            </Input>
+          </>
+        ) : (
+          <Input
+            {...field}
+            {...props}
+            onChange={({ target }) => {
+              if (target.value === 'Other') {
+                setOther(true);
+              } else {
+                setValue(target.value);
+              }
+            }}
+            bsSize="sm"
+            disabled={label === 'Citizenship' && field.value}
+          >
+            {options.map(renderOptions)}
+          </Input>
+        )}
+      </FormGroup>
+    );
   }
   return (
     <FormGroup>
