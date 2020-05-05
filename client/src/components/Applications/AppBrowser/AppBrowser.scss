@@ -24,11 +24,12 @@
     padding-top: 10px;
     padding-bottom: 10px;
 }
-/* FAQ: Combining ID and classname are overspecific, but it is accurate,
-      because only with `ul` should these styles be overwritten */
+/* Overwrite browser styles */
+/* FAQ: Combining ID and classname is overspecific, but it is accurate,
+        because only with `ul` should these styles be overwritten */
 ul#appBrowser-sidebar {
-  padding-left: 0; /* overwrite browser styles */
-  list-style: none; /* overwrite browser styles */
+  padding-left: 0;
+  list-style: none;
 }
 
 #appBrowser-sidebar .nav-link, #appBrowser-tray .nav-link {
