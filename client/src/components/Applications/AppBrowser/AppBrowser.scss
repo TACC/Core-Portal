@@ -1,27 +1,46 @@
-
 #appBrowser-wrapper {
-  padding-top: 8px;
-  border-bottom: 1px solid #707070;
+  /* As a flex item */
+  flex-grow: 1;
+  flex-shrink: 0; /* Prevent Safari from shrinking this element (FP-389) */
+
+  /* As a flex container */
   display: flex;
   flex-direction: row;
-  padding-bottom: 5px;
+  align-items: stretch;
+
+  border-bottom: 1px solid #707070;
+}
+#appBrowser-sidebar,
+#appBrowser-tray .apps-grid-list {
+  --max-item-count: 5;
+
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(var(--max-item-count), min-content);
+}
+/* FAQ: Combining ID and classname are overspecific, but it is accurate,
+      because only with `ul` should these styles be overwritten */
+ul#appBrowser-sidebar {
+  padding-left: 0; /* overwrite browser styles */
 }
 
 #appBrowser-sidebar {
-    width: 230px;
-    max-width: 230px;
-    min-width: 230px;
-    border-right: 1px solid rgba(112, 112, 112, .25);
+    list-style: none;
+
     margin-left: -20px;
-    border-bottom: none;
-    padding-right: 0;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 #appBrowser-sidebar .nav-link, #appBrowser-tray .nav-link {
+  padding: 5px 25px 5px 20px; /* overwrite Bootstrap, match UI design */
+
   color: #707070;
   border-radius: 0;
-  cursor: pointer;
+  cursor: pointer; /* RFE: Add `href` on links to both avoid needing this style and provide URL to app state */
   border: none;
+
+  white-space: nowrap;
 }
 
 #appBrowser-sidebar .nav-link.active, #appBrowser-tray .nav-link.active {
@@ -35,12 +54,9 @@
 }
 
 #appBrowser-tray {
-  width: 100%;
-}
+  flex-grow: 1;
 
-#appBrowser-tray .apps-grid-list {
-  display: flex;
-  flex-wrap: wrap;
+  border-left: 1px solid rgba(112, 112, 112, .25);
 }
 
 #appBrowser-sidebar .nav-content {
@@ -60,8 +76,4 @@
 .app-icon {
   font-size: 1.5em;
   display: flex;
-}
-
-.apps-grid-item {
-  width: 200px;
 }
