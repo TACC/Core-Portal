@@ -1,0 +1,24 @@
+{# @var className #}
+
+<ul class="s-cms-nav  {{ className }}" id="cms-nav-pages" data-cms-nav-endpoint="/cms/nav/pages/markup/">
+    {# All top-level CMS controlled nav elements handled here. #}
+    {# Content populated via JavaScript, below #}
+</ul>
+<script>
+  (function includeCMSPagesHTML() {
+    const cmsPagesElement = document.getElementById("cms-nav-pages");
+    const cmsPagesEndpoint = cmsPagesElement && cmsPagesElement.dataset.cmsNavEndpoint;
+
+    if (cmsPagesEndpoint) {
+      fetch(cmsPagesEndpoint).then((response) => {
+        return response.text();
+      }).then((data) => {
+        cmsPagesElement.innerHTML = data;
+      }, (err) => {
+        cmsPagesElement.innerHTML = null;
+      }).finally(() => {
+        cmsPagesElement.removeAttribute("data-cms-nav-endpoint");
+      });
+    }
+  })();
+</script>
