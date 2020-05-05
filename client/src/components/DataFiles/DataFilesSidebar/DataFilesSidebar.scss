@@ -1,4 +1,5 @@
 $data-files-wrapper-horizontal-padding: 20px;
+$frontera-portal-color-primary: #9d85ef;
 
 .data-files-sidebar {
   width: 165px;
@@ -12,9 +13,11 @@ $data-files-wrapper-horizontal-padding: 20px;
   padding-left: $data-files-wrapper-horizontal-padding;
   color: #707070;
 }
+
 .data-files-sidebar .nav-link.active {
   background: #dfdaf5;
 }
+
 .data-files-sidebar .nav-text {
   padding-left: 15px;
   font-size: 0.78em;
@@ -41,3 +44,64 @@ $data-files-wrapper-horizontal-padding: 20px;
       the negative space created from `data-files-wrapper`'s `padding` */
   margin-left: -$data-files-wrapper-horizontal-padding;
 }
+
+.dropdown-menu {
+  border-color: $frontera-portal-color-primary;
+  border-radius: 0;
+  margin-top: 11px;
+  padding: 0;
+  width: 200px;
+  vertical-align: top;
+}
+.dropdown-menu:before {
+  position: absolute;
+  top: -10px;
+  left: 65px;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid $frontera-portal-color-primary;
+  border-left: 10px solid transparent;
+  content: '';
+}
+.dropdown-menu:after {
+  position: absolute;
+	top: -9px;
+	left: 66px;
+	border-right: 9px solid transparent;
+	border-bottom: 9px solid #ffffff;
+	border-left: 9px solid transparent;
+	content: '';
+}
+
+.complex-dropdown-item {
+  border-top: 1px solid #707070;
+  display: flex;
+}
+
+.multiline-menu-item-wrapper {
+  display: inline-block;
+  padding-left: 5px;
+  line-height: 1.1em;
+  small {
+    display: block;
+    color: #484848;
+  }
+}
+
+.dropdown-item {
+  padding: 10px 6px;
+  color: #707070;
+  font-size: 14px;
+  i {
+      padding-right: 19px;
+      font-size: 20px;
+      vertical-align: middle;
+  }
+  &:hover {
+    color: #707070;
+  }
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+    background-color: #E6E0FB;
+  }
