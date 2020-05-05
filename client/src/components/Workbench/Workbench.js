@@ -11,6 +11,8 @@ import * as ROUTES from '../../constants/routes';
 import './Workbench.scss';
 
 function Workbench() {
+  // use path to allow History only in local development (cep.dev)
+  const fullPath = window.location.href;
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   // Get systems and any other initial data we need from the backend
@@ -39,7 +41,9 @@ function Workbench() {
             path={`${path}${ROUTES.ALLOCATIONS}`}
             component={Allocations}
           />
-          <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
+          {fullPath.startsWith('https://cep.dev/') && (
+            <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
+          )}
           <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
         </Switch>
       </div>
