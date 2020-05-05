@@ -21,8 +21,8 @@
 
 #appBrowser-sidebar {
     margin-left: -20px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 /* FAQ: Combining ID and classname are overspecific, but it is accurate,
       because only with `ul` should these styles be overwritten */
