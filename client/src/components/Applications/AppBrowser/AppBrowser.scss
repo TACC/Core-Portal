@@ -18,18 +18,17 @@
   grid-auto-flow: column;
   grid-template-rows: repeat(var(--max-item-count), min-content);
 }
+
+#appBrowser-sidebar {
+    margin-left: -20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
 /* FAQ: Combining ID and classname are overspecific, but it is accurate,
       because only with `ul` should these styles be overwritten */
 ul#appBrowser-sidebar {
   padding-left: 0; /* overwrite browser styles */
-}
-
-#appBrowser-sidebar {
-    list-style: none;
-
-    margin-left: -20px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+  list-style: none; /* overwrite browser styles */
 }
 
 #appBrowser-sidebar .nav-link, #appBrowser-tray .nav-link {
