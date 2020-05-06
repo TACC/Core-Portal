@@ -20,9 +20,17 @@
 }
 
 #appBrowser-sidebar {
+    /* FP-404: All Portal section sidebars should use this value. */
+    --min-width: 200px;
+
     margin-left: -20px;
     padding-top: 10px;
     padding-bottom: 10px;
+}
+#appBrowser-sidebar .nav-item {
+    /* Define minimum width of list and minimum width of columns in list */
+    /* NOTE: Wes B. does not know how to do this using CSS Grid. Help is welcome. */
+    min-width: var(--min-width);
 }
 /* Overwrite browser styles */
 /* FAQ: Combining ID and classname is overspecific, but it is accurate,
