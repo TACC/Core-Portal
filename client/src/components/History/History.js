@@ -3,35 +3,50 @@ import {
   Route,
   Switch,
   Redirect,
-  NavLink as RRNavLink
+  useLocation,
+  NavLink as RRNavLink, Link
 } from 'react-router-dom';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+
+import {Button, Nav, NavItem, NavLink} from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDesktop } from '@fortawesome/free-solid-svg-icons';
 import * as ROUTES from '../../constants/routes';
 import JobHistory from './JobHistory';
+import PropTypes from 'prop-types';
 import './History.scss';
 
 const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
+
+export const HistoryHeader = ({ title }) => {
+  return (
+    <div className="history-header">
+      <span className="history-header__text"> {title} </span>
+      <Button className="history-header__button" color="link">
+        Mark All as Viewed
+      </Button>
+    </div>
+  );
+};
+HistoryHeader.propTypes = { title: PropTypes.string.isRequired };
 
 const HistorySidebar = () => (
   <Nav className="history-sidebar" vertical>
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/jobs`} activeClassName="active">
-        <FontAwesomeIcon icon={faDesktop} size="1x" className="link-icon" />
-        <span className="link-text">Jobs</span>
+        <FontAwesomeIcon icon={faDesktop} size="1x" className="side-nav-icon" />
+        <span className="nav-text">Jobs</span>
       </NavLink>
     </NavItem>
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/uploads`} activeClassName="active">
-        <FontAwesomeIcon icon={faDesktop} size="1x" className="link-icon" />
-        <span className="link-text">Uploads</span>
+        <FontAwesomeIcon icon={faDesktop} size="1x" className="side-nav-icon" />
+        <span className="nav-text">Uploads</span>
       </NavLink>
     </NavItem>
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/files`} activeClassName="active">
-        <FontAwesomeIcon icon={faDesktop} size="1x" className="link-icon" />
-        <span className="link-text">Files</span>
+        <FontAwesomeIcon icon={faDesktop} size="1x" className="side-nav-icon" />
+        <span className="nav-text">Files</span>
       </NavLink>
     </NavItem>
   </Nav>
@@ -39,21 +54,26 @@ const HistorySidebar = () => (
 
 const History = () => {
   return (
-    <div className="history-container">
-      <HistorySidebar />
-      <Switch>
-        <Route exact path={`${root}/jobs`}>
-          <JobHistory />
-        </Route>
-        <Route exact path={`${root}/uploads`}>
-          <h2>Uploads</h2>
-        </Route>
-        <Route exact path={`${root}/files`}>
-          <h2>Files</h2>
-        </Route>
-        <Redirect from={root} to={`${root}/jobs`} />
-      </Switch>
-    </div>
+    <span className="history-wrapper">
+      <HistoryHeader title="Dummy / Something" />
+      <div className="history-container">
+        <HistorySidebar />
+        <div className="history-content">
+          <Switch>
+            <Route exact path={`${root}/jobs`}>
+              <JobHistory />
+            </Route>
+            <Route exact path={`${root}/uploads`}>
+              <h2>Uploads</h2>
+            </Route>
+            <Route exact path={`${root}/files`}>
+              <h2>Files</h2>
+            </Route>
+            <Redirect from={root} to={`${root}/jobs`} />
+          </Switch>
+        </div>
+      </div>
+    </span>
   );
 };
 
