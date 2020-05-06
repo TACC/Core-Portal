@@ -279,49 +279,6 @@ def get_profile_data(request):
 
 
 @login_required
-def manage_pro_profile(request):
-    user = request.user
-    try:
-        portal_profile = PortalProfile.objects.get(user__id=user.id)
-    except PortalProfile.DoesNotExist:
-        logout(request)
-        return HttpResponseRedirect(reverse('portal_auth:logout'))
-    context = {
-        'title': 'Manage Professional Profile',
-        'user': user,
-        'profile': portal_profile
-    }
-    return render(
-        request,
-        'portal/apps/accounts/professional_profile.html',
-        context
-    )
-
-
-@login_required
-def pro_profile_edit(request):
-    context = {}
-    user = request.user
-    portal_profile = PortalProfile.objects.get(user_id=user.id)
-    form = forms.ProfessionalProfileForm(
-        request.POST or None,
-        instance=portal_profile
-    )
-    if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(
-                reverse('portal_accounts:manage_pro_profile')
-            )
-    context["form"] = form
-    return render(
-        request,
-        'portal/apps/accounts/professional_profile_edit.html',
-        context
-    )
-
-
-@login_required
 def manage_authentication(request):
     print(request.method)
     if request.method == 'POST':

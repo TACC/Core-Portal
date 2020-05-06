@@ -29,9 +29,6 @@ urlpatterns = [
 
     url(r'^profile/edit/$', views.profile_edit, name='profile_edit'),
 
-    # url(r'^professional-profile/$', views.manage_pro_profile, name='manage_pro_profile'),
-    # url(r'^professional-profile/edit$', views.pro_profile_edit, name='pro_profile_edit'),
-
     url(r'^authentication/$', views.manage_authentication, name='manage_authentication'),
     # url(r'^identities/$', views.manage_identities, name='manage_identities'),
 

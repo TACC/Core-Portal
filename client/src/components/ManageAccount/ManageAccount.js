@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { UncontrolledAlert } from 'reactstrap';
+import { UncontrolledAlert, Col, Row, Container } from 'reactstrap';
 import { isEmpty } from 'lodash';
 import { LoadingSpinner } from '_common';
 import Sidebar from '../Sidebar';
@@ -28,15 +28,15 @@ const ManageAccountView = () => {
   return (
     <div className="manage-account-wrapper">
       <Sidebar />
-      <div className="manage-account-content">
-        <div className="manage-account-header">
+      <Container fluid>
+        <Row className="manage-account-header">
           <h5>Manage Account</h5>
           <Link to="/workbench/dashboard" style={{ fontWeight: '500' }}>
             Back to Dashboard
           </Link>
-        </div>
-        <div className="user-profile">
-          <div className="user-profile-main">
+        </Row>
+        <Row className="user-profile">
+          <Col lg="8" className="user-profile-main">
             {isLoading ? (
               <LoadingSpinner />
             ) : (
@@ -56,14 +56,14 @@ const ManageAccountView = () => {
                 <ManageAccountModals />
               </>
             )}
-          </div>
-          <div className="user-profile-side">
+          </Col>
+          <Col lg="4">
             {!isEmpty(licenses) && <Licenses />}
             {!isEmpty(integrations) && <ThirdPartyApps />}
             <ChangePassword />
-          </div>
-        </div>
-      </div>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 };
