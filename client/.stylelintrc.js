@@ -434,29 +434,44 @@ module.exports = {
     // Require a newline or disallow whitespace before the commas of media query lists.
     'media-query-list-comma-newline-before': null,
     // Require a single space or disallow whitespace after the commas of media query lists (Autofixable).
-    'media-query-list-comma-space-after': null,
+    'media-query-list-comma-space-after': 'always',
     // Require a single space or disallow whitespace before the commas of media query lists (Autofixable).
-    'media-query-list-comma-space-before': null,
+    'media-query-list-comma-space-before': 'never-single-line',
 
     // AT-RULE
     // Require or disallow an empty line before at-rules (Autofixable).
-    'at-rule-empty-line-before': null,
+    'at-rule-empty-line-before': [
+      'always',
+      {
+        'except': [
+          'after-same-name',
+          'inside-block',
+          'blockless-after-same-name-blockless',
+          'blockless-after-blockless',
+          'first-nested'
+        ],
+        'ignore': [
+          'after-comment',
+          'first-nested'
+        ]
+      }
+    ],
     // Specify lowercase or uppercase for at-rules names (Autofixable).
-    'at-rule-name-case': null,
+    'at-rule-name-case': 'lower',
     // Require a newline after at-rule names.
     'at-rule-name-newline-after': null,
     // Require a single space after at-rule names (Autofixable).
-    'at-rule-name-space-after': null,
+    'at-rule-name-space-after': 'always',
     // Require a newline after the semicolon of at-rules (Autofixable).
-    'at-rule-semicolon-newline-after': null,
+    'at-rule-semicolon-newline-after': 'always',
     // Require a single space or disallow whitespace before the semicolons of at-rules.
-    'at-rule-semicolon-space-before': null,
+    'at-rule-semicolon-space-before': 'never',
 
     // COMMENT
     // Require or disallow an empty line before comments (Autofixable).
     'comment-empty-line-before': null,
     // Require or disallow whitespace on the inside of comment markers (Autofixable).
-    'comment-whitespace-inside': null,
+    'comment-whitespace-inside': 'always',
 
     // GENERAL / SHEET
     // Specify indentation (Autofixable).
@@ -464,15 +479,15 @@ module.exports = {
     // Specify unix or windows linebreaks (Autofixable).
     linebreaks: null,
     // Limit the number of adjacent empty lines (Autofixable).
-    'max-empty-lines': null,
+    'max-empty-lines': 5,
     // Limit the length of a line.
     'max-line-length': 160,
     // Disallow end-of-line whitespace (Autofixable).
-    'no-eol-whitespace': null,
+    'no-eol-whitespace': true,
     // Disallow missing end-of-source newlines (Autofixable).
-    'no-missing-end-of-source-newline': null,
+    'no-missing-end-of-source-newline': true,
     // Disallow empty first lines (Autofixable).
-    'no-empty-first-line': null,
+    'no-empty-first-line': true,
     // Require or disallow Unicode BOM.
     'unicode-bom': null
   }
