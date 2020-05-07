@@ -1,42 +1,37 @@
 import React, { useMemo } from 'react';
 import { useTable } from 'react-table';
-import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { shape, array, string } from 'prop-types';
 import { Link } from 'react-router-dom';
 
 export const TableTemplate = ({ attributes: { columns, data } }) => {
-  const { getTableProps, headerGroups, rows, prepareRow } = useTable({
+  const { getTableProps, rows, prepareRow } = useTable({
     columns,
     data
   });
   return (
-    <table
-      {...getTableProps({
-        className: 'manage-account-table'
-      })}
+    <Table
+      {...getTableProps({ className: 'manage-account-table' })}
+      responsive
+      striped
     >
       <tbody>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
-              <td key={column.Header}>{column.render('Header')}</td>
-            ))}
-          </tr>
-        ))}
-
         {rows.map(row => {
           prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map(cell => (
-                <th {...cell.getCellProps()}>{cell.render('Cell')}</th>
-              ))}
+          return row.cells.map(cell => (
+            <tr {...row.getRowProps()} key={cell.getCellProps().key}>
+              <th>
+                <span>{cell.column.render('Header')}</span>
+              </th>
+              <td {...cell.getCellProps()} key={null}>
+                {cell.render('Cell')}
+              </td>
             </tr>
-          );
+          ));
         })}
       </tbody>
-    </table>
+    </Table>
   );
 };
 TableTemplate.propTypes = {
@@ -147,9 +142,7 @@ export const Licenses = () => {
       <div className="profile-component-header">
         <strong>Licenses</strong>
       </div>
-      <div className="profile-component-body">
-        <TableTemplate attributes={{ columns, data }} />
-      </div>
+      <TableTemplate attributes={{ columns, data }} />
     </div>
   );
 };
@@ -170,9 +163,7 @@ export const ThirdPartyApps = () => {
       <div className="profile-component-header">
         <strong>3rd Party Apps</strong>
       </div>
-      <div className="profile-component-body">
-        <TableTemplate attributes={{ columns, data }} />
-      </div>
+      <TableTemplate attributes={{ columns, data }} />
     </div>
   );
 };
@@ -185,7 +176,7 @@ export const ChangePassword = () => {
       <div className="profile-component-header">
         <strong>Change Password</strong>
       </div>
-      <div className="profile-component-body">
+      <div style={{ margin: '1rem' }}>
         <Button onClick={openModal} className="manage-account-submit-button">
           Change Password
         </Button>
@@ -204,7 +195,10 @@ export const OptionalInformation = () => {
       { Header: 'My Website', accessor: 'website' },
       { Header: 'Orcid ID', accessor: 'orcid_id' },
       { Header: 'Professional Level', accessor: 'professional_level' },
-      { Header: 'Research Bio', accessor: 'bio' }
+      {
+        Header: 'Research Bio',
+        accessor: 'bio'
+      }
     ],
     []
   );

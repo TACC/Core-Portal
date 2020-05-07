@@ -3,8 +3,7 @@
 */
 .manage-account-wrapper {
   display: flex;
-  width: 100%;
-  height: 100%;
+  padding: 0;
   a {
     color: #9d85ef;
   }
@@ -52,7 +51,7 @@
 }
 .manage-account-modal-header {
   background-color: #f4f4f4;
-  background-color: #F4F4F4;
+  color: #484848;
   padding: 1rem;
   span {
       color: #484848;
@@ -62,27 +61,26 @@
 }
 // Tables
 .manage-account-table {
-  width: 100%;
-  color: #707070;
   font-size: 14px;
-  tbody {
-    display: flex;
-  }
-  tr {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    :nth-child(odd) {
-      background-color: rgba(#c6c6c6, 0.1);
+  color: #707070;
+  table-layout: fixed;
+  line-height: 2.3rem;
+  td, th {
+    padding: 0;
+    width: 50%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: middle;
+    span {
+      margin-left: 1rem;
     }
   }
-  td, th {
-    display: flex; 
-    align-items: center;
-    height: 2rem;
-    padding-left: 1rem;
-    border-bottom: 1px solid rgba(#707070, 0.25);
-    white-space: nowrap;
+  th {
+    font-weight: normal;
+  }
+  td {
+    font-weight: bold;
   }
 }
 .profile-component-wrapper {
@@ -94,8 +92,7 @@
   align-items: center;
   font-size: 14px;
   border-bottom: solid 1px #707070;
-  padding: 0 0.5rem 0.5rem;
-  margin-bottom: 1rem;
+  padding: 0 0.5rem 0.5rem 0;
 }
 .profile-component-body {
   padding: 0 0.5rem;
@@ -112,11 +109,13 @@
 }
 .form-button {
   font-size: 14px;
+  font-weight: bold;
   padding-top: 0;
   padding-bottom: 0;
 }
 .license-button {
   background-color: transparent !important;
+  font-weight: bold;
 }
 .change-password-form {
   font-size: 14px;

@@ -5,7 +5,9 @@ import { useSelector } from 'react-redux';
 import { FormText, Input, FormGroup, Label } from 'reactstrap';
 
 export const renderOptions = ([value, label], arr, _) => (
-  <option key={label} {...{ value, label }} />
+  <option key={label} value={value}>
+    {label}
+  </option>
 );
 
 export const useOptions = label => {
@@ -27,9 +29,10 @@ export const useOptions = label => {
   }
 };
 
-export const ManageAccountInput = ({ label, type, ...props }) => {
+export const ManageAccountInput = ({ label, ...props }) => {
   const [field, meta, { setValue }] = useField(props);
   const [other, setOther] = React.useState(false);
+  const { type } = props;
   const select = type === 'select';
   const key = select ? useOptions(label) : '';
   const options = useSelector(state => {

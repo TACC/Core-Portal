@@ -26,7 +26,7 @@ const ManageAccountView = () => {
     dispatch({ type: 'GET_PROFILE_DATA' });
   }, [dispatch, isLoading]);
   return (
-    <div className="manage-account-wrapper">
+    <Container fluid className="manage-account-wrapper">
       <Sidebar />
       <Container fluid>
         <Row className="manage-account-header">
@@ -64,7 +64,7 @@ const ManageAccountView = () => {
           </Col>
         </Row>
       </Container>
-    </div>
+    </Container>
   );
 };
 
