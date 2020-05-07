@@ -1,4 +1,3 @@
-
 #appBrowser-wrapper {
   padding-top: 8px;
   border-bottom: 1px solid #707070;
@@ -17,19 +16,22 @@
     padding-right: 0;
 }
 
-#appBrowser-sidebar .nav-link, #appBrowser-tray .nav-link {
+#appBrowser-sidebar .nav-link,
+#appBrowser-tray .nav-link {
   color: #707070;
   border-radius: 0;
   cursor: pointer;
   border: none;
 }
 
-#appBrowser-sidebar .nav-link.active, #appBrowser-tray .nav-link.active {
+#appBrowser-sidebar .nav-link.active,
+#appBrowser-tray .nav-link.active {
   background: #dfdaf5;
   border: none;
 }
 
-#appBrowser-sidebar .nav-link:hover, #appBrowser-tray .nav-link:hover {
+#appBrowser-sidebar .nav-link:hover,
+#appBrowser-tray .nav-link:hover {
   background: #d9d1ff;
   border: none;
 }
@@ -51,7 +53,8 @@
   align-items: center;
 }
 
-#appBrowser-sidebar .nav-text, #appBrowser-tray .nav-text {
+#appBrowser-sidebar .nav-text,
+#appBrowser-tray .nav-text {
   padding-left: 15px;
   font-size: .78em;
   font-weight: 500;

@@ -30,7 +30,8 @@
     margin-bottom: 38px;
 }
 
-.dashboard-header, .dashboard-item-header {
+.dashboard-header,
+.dashboard-item-header {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -62,6 +63,7 @@
     padding: 0;
 }
 
-.dashboard-items .ReactTable .rt-th, .dashboard-items .ReactTable .rt-td {
+.dashboard-items .ReactTable .rt-th,
+.dashboard-items .ReactTable .rt-td {
     color: #707070;
 }
