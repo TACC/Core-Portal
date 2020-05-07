@@ -402,7 +402,7 @@ module.exports = {
 
     // SELECTOR LIST
     // Require a newline or disallow whitespace after the commas of selector lists (Autofixable).
-    'selector-list-comma-newline-after': null,
+    'selector-list-comma-newline-after': 'always',
     // Require a newline or disallow whitespace before the commas of selector lists (Autofixable).
     'selector-list-comma-newline-before': null,
     // Require a single space or disallow whitespace after the commas of selector lists (Autofixable).
@@ -416,17 +416,17 @@ module.exports = {
 
     // MEDIA FEATURE
     // Require a single space or disallow whitespace after the colon in media features (Autofixable).
-    'media-feature-colon-space-after': null,
+    'media-feature-colon-space-after': 'always',
     // Require a single space or disallow whitespace before the colon in media features (Autofixable).
-    'media-feature-colon-space-before': null,
+    'media-feature-colon-space-before': 'never',
     // Specify lowercase or uppercase for media feature names (Autofixable).
-    'media-feature-name-case': null,
+    'media-feature-name-case': 'lower',
     // Require a single space or disallow whitespace on the inside of the parentheses within media features (Autofixable).
-    'media-feature-parentheses-space-inside': null,
+    'media-feature-parentheses-space-inside': 'never', // FAQ: Mirror ESLint for functions
     // Require a single space or disallow whitespace after the range operator in media features (Autofixable).
-    'media-feature-range-operator-space-after': null,
+    'media-feature-range-operator-space-after': 'always',
     // Require a single space or disallow whitespace before the range operator in media features (Autofixable).
-    'media-feature-range-operator-space-before': null,
+    'media-feature-range-operator-space-before': 'always',
 
     // MEDIA QUERY LIST
     // Require a newline or disallow whitespace after the commas of media query lists (Autofixable).
@@ -475,13 +475,14 @@ module.exports = {
 
     // GENERAL / SHEET
     // Specify indentation (Autofixable).
-    indentation: 2,
+    // indentation: 2,
+    indentation: null, // FAQ: This is a massive change, hold off for now
     // Specify unix or windows linebreaks (Autofixable).
     linebreaks: null,
     // Limit the number of adjacent empty lines (Autofixable).
     'max-empty-lines': 5,
     // Limit the length of a line.
-    'max-line-length': 160,
+    'max-line-length': 160, // FAQ: Mirror PyLint
     // Disallow end-of-line whitespace (Autofixable).
     'no-eol-whitespace': true,
     // Disallow missing end-of-source newlines (Autofixable).
