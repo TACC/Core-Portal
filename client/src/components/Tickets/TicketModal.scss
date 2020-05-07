@@ -100,6 +100,12 @@
     width: 100%
   }
 
+  /* ticket header specific styles */
+  .ticket-id {
+    color: #707070;
+    padding-right: 5px;
+  }
+
   /* make bootstrap dialog wider */
   @media (min-width: 1200px) {
     .modal-dialog {
