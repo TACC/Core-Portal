@@ -94,4 +94,4 @@ def index_my_data(self, reindex=False):
 def index_cms(self):
     logger.info("Updating search index")
     if not settings.DEBUG:
-        call_command("rebuild_index", interactive=False)
+        call_command("update_index", interactive=False)
