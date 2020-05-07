@@ -97,7 +97,8 @@ body > .content {
 
 [class^="icon-"]:before,
 [class*=" icon-"]:before/*,
-[class^="icon-"], [class*=" icon-"] */ {
+[class^="icon-"],
+[class*=" icon-"] */ {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'core-portal' !important;
   font-style: normal;
