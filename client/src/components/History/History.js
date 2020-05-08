@@ -6,12 +6,12 @@ import {
   NavLink as RRNavLink
 } from 'react-router-dom';
 
-import {Button, Nav, NavItem, NavLink} from 'reactstrap';
+import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDesktop } from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types';
 import * as ROUTES from '../../constants/routes';
 import JobHistory from './JobHistory';
-import PropTypes from 'prop-types';
 import './History.scss';
 
 const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
@@ -26,26 +26,37 @@ export const HistoryHeader = ({ title }) => {
     </div>
   );
 };
+
 HistoryHeader.propTypes = { title: PropTypes.string.isRequired };
 
 const HistorySidebar = () => (
   <Nav className="history-sidebar" vertical>
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/jobs`} activeClassName="active">
-        <FontAwesomeIcon icon={faDesktop} size="1x" className="side-nav-icon" />
-        <span className="nav-text">Jobs</span>
+        <div className="nav-content">
+          <FontAwesomeIcon
+            icon={faDesktop}
+            size="1x"
+            className="side-nav-icon"
+          />
+          <span className="nav-text">Jobs</span>
+        </div>
       </NavLink>
     </NavItem>
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/uploads`} activeClassName="active">
-        <FontAwesomeIcon icon={faDesktop} size="1x" className="side-nav-icon" />
-        <span className="nav-text">Uploads</span>
+        <div className="nav-content">
+          <i className="icon-action-upload side-nav-icon history-sidebar__icon-nav" />
+          <span className="nav-text">Uploads</span>
+        </div>
       </NavLink>
     </NavItem>
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/files`} activeClassName="active">
-        <FontAwesomeIcon icon={faDesktop} size="1x" className="side-nav-icon" />
-        <span className="nav-text">Files</span>
+        <div className="nav-content">
+          <i className="icon-nav-folder side-nav-icon history-sidebar__icon-nav" />
+          <span className="nav-text">Files</span>
+        </div>
       </NavLink>
     </NavItem>
   </Nav>

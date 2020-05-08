@@ -68,7 +68,7 @@ const Sidebar = () => {
             activeClassName="active"
           >
             <div className="nav-content">
-              <i className="icon-nav icon-nav-allocation" />
+              <i className="icon-nav icon-nav-notification" />
               <span className="nav-text">History</span>
             </div>
           </NavLink>
