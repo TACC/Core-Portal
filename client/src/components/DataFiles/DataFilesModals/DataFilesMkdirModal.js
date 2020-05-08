@@ -52,7 +52,7 @@ const DataFilesMkdirModal = () => {
     history.push(location.pathname);
   };
 
-  const mkdir = () =>
+  const mkdir = event => {
     dispatch({
       type: 'DATA_FILES_MKDIR',
       payload: {
@@ -64,6 +64,8 @@ const DataFilesMkdirModal = () => {
         reloadCallback: reloadPage
       }
     });
+    event.preventDefault();
+  };
 
   return (
     <>

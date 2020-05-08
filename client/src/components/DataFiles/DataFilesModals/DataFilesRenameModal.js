@@ -83,7 +83,7 @@ const DataFilesRenameModal = () => {
     });
   };
 
-  const rename = () =>
+  const rename = event => {
     dispatch({
       type: 'DATA_FILES_RENAME',
       payload: {
@@ -94,6 +94,8 @@ const DataFilesRenameModal = () => {
         scheme
       }
     });
+    event.preventDefault();
+  };
 
   return (
     <Modal
