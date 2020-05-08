@@ -13,3 +13,11 @@ Looks like color of dashboard tables set in Workbench.csss is overwritten in Das
 .job-history .ReactTable .rt-th, .dashboard-items .ReactTable .rt-td {
   color: #707070;
 }
+
+/* Overrides */
+
+/* Override Bootstrap `.badge`, because we need to weight/size matching other text */
+.job-history .badge {
+  font-size: 100%;
+  font-weight: 400;
+}
