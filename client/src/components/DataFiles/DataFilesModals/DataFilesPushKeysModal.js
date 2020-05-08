@@ -37,7 +37,7 @@ const DataFilesPushKeysModal = () => {
       payload: { operation: 'pushKeys', props: {} }
     });
   };
-  const pushKeys = () => {
+  const pushKeys = event => {
     dispatch({
       type: 'DATA_FILES_PUSH_KEYS',
       payload: {
@@ -48,6 +48,7 @@ const DataFilesPushKeysModal = () => {
         reloadCallback: reloadPage
       }
     });
+    event.preventDefault();
   };
   return (
     <>
