@@ -3,8 +3,7 @@ import {
   Route,
   Switch,
   Redirect,
-  useLocation,
-  NavLink as RRNavLink, Link
+  NavLink as RRNavLink
 } from 'react-router-dom';
 
 import {Button, Nav, NavItem, NavLink} from 'reactstrap';
@@ -20,7 +19,7 @@ const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
 export const HistoryHeader = ({ title }) => {
   return (
     <div className="history-header">
-      <span className="history-header__text"> {title} </span>
+      <span className="history-header__text"> History / {title} </span>
       <Button className="history-header__button" color="link">
         Mark All as Viewed
       </Button>
@@ -55,7 +54,16 @@ const HistorySidebar = () => (
 const History = () => {
   return (
     <span className="history-wrapper">
-      <HistoryHeader title="Dummy / Something" />
+      <Route
+        exact
+        path={`${root}/:historyType`}
+        render={({ match }) => {
+          const historyType =
+            match.params.historyType.substr(0, 1).toUpperCase() +
+            match.params.historyType.substr(1).toLowerCase();
+          return <HistoryHeader title={historyType} />;
+        }}
+      />
       <div className="history-container">
         <HistorySidebar />
         <div className="history-content">
