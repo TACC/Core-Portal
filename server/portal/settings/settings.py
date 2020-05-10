@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import logging
 from kombu import Exchange, Queue
-from portal.settings import settings_secret
+from textwrap import dedent
 
 
 logger = logging.getLogger(__file__)
@@ -29,10 +29,11 @@ FIXTURE_DIRS = [
 ]
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = settings_secret._SECRET_KEY
+SECRET_KEY = 'change_me'
 # SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 # Cookie name. this can be whatever you want
-SESSION_COOKIE_NAME = 'coresessionid'  # use the sessionid in your views code
+SESSION_COOKIE_NAME = 'coresessionid'
 # the module to store sessions data
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # age of cookie in seconds (default: 2 weeks)
@@ -47,9 +48,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
-PORTAL_ICON_FILENAME = settings_secret._PORTAL_ICON_FILENAME
-PORTAL_LOGO_FILENAME = settings_secret._PORTAL_LOGO_FILENAME
-PORTAL_NAVBAR_BACKGROUND_FILENAME = settings_secret._PORTAL_NAVBAR_BACKGROUND_FILENAME
+PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
+PORTAL_LOGO_FILENAME = ''
+PORTAL_NAVBAR_BACKGROUND_FILENAME = ''
 
 ROOT_URLCONF = 'portal.urls'
 
@@ -184,7 +185,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = settings_secret._WSGI_APPLICATION
+WSGI_APPLICATION = 'portal.wsgi.application'
 
 AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
                            'django.contrib.auth.backends.ModelBackend']
@@ -215,7 +216,7 @@ IMPERSONATE = {
     'REQUIRE_SUPERUSER': True
 }
 
-LOGIN_REDIRECT_URL = getattr(settings_secret, '_LOGIN_REDIRECT_URL', '/')
+LOGIN_REDIRECT_URL = '/workbench/dashboard/'
 LOGIN_URL = '/auth/agave/'
 
 # Internationalization
@@ -263,49 +264,47 @@ SETTINGS: LOCAL
 """
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEBUG = settings_secret._DEBUG
+DEBUG = 'True'
 
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': settings_secret._DJANGO_DB_ENGINE,
-        'NAME': settings_secret._DJANGO_DB_NAME,
-        'USER': settings_secret._DJANGO_DB_USER,
-        'PASSWORD': settings_secret._DJANGO_DB_PASSWORD,
-        'HOST': settings_secret._DJANGO_DB_HOST,
-        'PORT': settings_secret._DJANGO_DB_PORT
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dev',
+        'USER': 'dev',
+        'PASSWORD': 'dev',
+        'HOST': 'frontera_prtl_postgres',
+        'PORT': '5432'
     }
 }
 
 WS4REDIS_CONNECTION = {
-    'host': settings_secret._RESULT_BACKEND_HOST,
+    'host': 'frontera_prtl_redis',
 }
 WEBSOCKET_URL = '/ws/'
 
-# TAS Authentication.
-TAS_URL = settings_secret._TAS_URL
-TAS_CLIENT_KEY = settings_secret._TAS_CLIENT_KEY
-TAS_CLIENT_SECRET = settings_secret._TAS_CLIENT_SECRET
+# TAS Auth
+TAS_URL = 'https://tas.tacc.utexas.edu/api'
+TAS_CLIENT_KEY = ''
+TAS_CLIENT_SECRET = ''
 
-REQUEST_ACCESS = getattr(settings_secret, "_REQUEST_ACCESS", True)
+REQUEST_ACCESS = True
 
 # Redmine Tracker Authentication.
-RT_HOST = settings_secret._RT_HOST
-RT_UN = settings_secret._RT_UN
-RT_PW = settings_secret._RT_PW
-RT_QUEUE = settings_secret._RT_QUEUE
-RT_TAG = getattr(settings_secret, '_RT_TAG', "")
+RT_HOST = 'https://consult.tacc.utexas.edu/REST/1.0'
+RT_UN = ''
+RT_PW = ''
+RT_QUEUE = ''
+RT_TAG = ''
 
 # Recaptcha Authentication.
-RECAPTCHA_PUBLIC_KEY = settings_secret._RECAPTCHA_PUBLIC_KEY
-RECAPTCHA_PRIVATE_KEY = settings_secret._RECAPTCHA_PRIVATE_KEY
-RECAPTCHA_USE_SSL = settings_secret._RECAPTCHA_USE_SSL
+RECAPTCHA_PUBLIC_KEY = ''
+RECAPTCHA_PRIVATE_KEY = ''
+RECAPTCHA_USE_SSL = 'True'
 
 # Google Analytics.
-GOOGLE_ANALYTICS_PROPERTY_ID = settings_secret._GOOGLE_ANALYTICS_PROPERTY_ID
-GOOGLE_ANALYTICS_PRELOAD = settings_secret._GOOGLE_ANALYTICS_PRELOAD
+GOOGLE_ANALYTICS_PROPERTY_ID = ''
+GOOGLE_ANALYTICS_PRELOAD = ''
 
 
 """
@@ -389,18 +388,17 @@ SETTINGS: AGAVE
 """
 
 # Agave Tenant.
-AGAVE_TENANT_ID = settings_secret._AGAVE_TENANT_ID
-AGAVE_TENANT_BASEURL = settings_secret._AGAVE_TENANT_BASEURL
+AGAVE_TENANT_ID = 'portals'
+AGAVE_TENANT_BASEURL = 'https://portals-api.tacc.utexas.edu'
 
 # Agave Client Configuration
-AGAVE_CLIENT_KEY = settings_secret._AGAVE_CLIENT_KEY
-AGAVE_CLIENT_SECRET = settings_secret._AGAVE_CLIENT_SECRET
-AGAVE_SUPER_TOKEN = settings_secret._AGAVE_SUPER_TOKEN
-AGAVE_STORAGE_SYSTEM = settings_secret._AGAVE_STORAGE_SYSTEM
-AGAVE_COMMUNITY_DATA_SYSTEM = settings_secret._AGAVE_COMMUNITY_DATA_SYSTEM
-AGAVE_PUBLIC_DATA_SYSTEM = settings_secret._AGAVE_PUBLIC_DATA_SYSTEM
-
-PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
+AGAVE_CLIENT_KEY = ''
+AGAVE_CLIENT_SECRET = ''
+AGAVE_SUPER_TOKEN = ''
+AGAVE_STORAGE_SYSTEM = 'frontera.storage.default'
+AGAVE_COMMUNITY_DATA_SYSTEM = 'frontera.storage.community'
+AGAVE_PUBLIC_DATA_SYSTEM = 'frontera.storage.public'
+PORTAL_ADMIN_USERNAME = 'wma_prtl'
 
 AGAVE_JWT_PUBKEY = (
     'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzO\n'
@@ -408,7 +406,7 @@ AGAVE_JWT_PUBKEY = (
     '0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXn\n'
     'RS4HrKGJTzxaCcU7OQIDAQAB'
 )
-AGAVE_JWT_HEADER = settings_secret._AGAVE_JWT_HEADER
+AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
 AGAVE_JWT_ISSUER = 'wso2.org/products/am'
 AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
 
@@ -416,7 +414,7 @@ AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
 SETTINGS: DJANGO CMS
 """
 
-SITE_ID = settings_secret._SITE_ID
+SITE_ID = 1
 FILER_DEBUG = True
 FILER_ENABLE_LOGGING = True
 DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', )}
@@ -470,20 +468,6 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.background'
 )
 
-# CKEDITOR_SETTINGS = {
-#     'language': '{{ language }}',
-#     'toolbar_CMS': [
-#         ['Undo', 'Redo'],
-#         ['cmsplugins', '-', 'ShowBlocks'],
-#         ['Format', 'Styles'],
-#     ],
-#     'skin': 'moono-lisa',
-#     'contentsCss': [
-#         'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-#         # '/css/mysitestyles.css',
-#     ],
-# }
-
 CKEDITOR_SETTINGS = {
     'language': '{{ language }}',
     'skin': 'moono-lisa',
@@ -493,32 +477,11 @@ CKEDITOR_SETTINGS = {
 
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = RECAPTCHA_PUBLIC_KEY
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = RECAPTCHA_PRIVATE_KEY
-# DJANGOCMS_FORMS_PLUGIN_MODULE = _('Generic')
-# DJANGOCMS_FORMS_PLUGIN_NAME = _('Form')
-# DJANGOCMS_FORMS_DEFAULT_TEMPLATE = 'djangocms_forms/form_template/default.html'  # Path?
-# DJANGOCMS_FORMS_TEMPLATES = (
-#     ('djangocms_forms/form_template/default.html', _('Default')),
-# )
-# DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
-# DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
-# DJANGOCMS_FORMS_REDIRECT_DELAY = 10000  # 10 seconds. Default is 1 second.
-# instance.redirect_delay > DJANGOCMS_FORMS_REDIRECT_DELAY > 1000 (default)  # per form delay.
 
 # Media Plugins.
 DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
-# DJANGOCMS_AUDIO_TEMPLATES = [
-#     # ('default', _('Default Version')),
-#     ('feature', _('Featured Version')),
-# ]
-
-# DJANGOCMS_EMBED_API_KEY = ""    # Requires an embed.ly account to use.
 
 DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
-# DJANGOCMS_VIDEO_TEMPLATES = [
-#     ('feature', _('Featured Version')),
-# ]
-# Requires registering portal app on youtube: https://developers.google.com/youtube/registering_an_application
-# DJANGOCMS_YOUTUBE_API_KEY = '<youtube_data_api_server_key>'
 
 
 """
@@ -527,33 +490,33 @@ SETTINGS: CELERY
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-_BROKER_URL_PROTOCOL = 'amqp://'
-_BROKER_URL_USERNAME = settings_secret._BROKER_URL_USERNAME
-_BROKER_URL_PWD = settings_secret._BROKER_URL_PWD
-_BROKER_URL_HOST = settings_secret._BROKER_URL_HOST
-_BROKER_URL_PORT = settings_secret._BROKER_URL_PORT
-_BROKER_URL_VHOST = settings_secret._BROKER_URL_VHOST
+BROKER_URL_PROTOCOL = 'amqp://'
+BROKER_URL_USERNAME = 'dev'
+BROKER_URL_PWD = 'dev'
+BROKER_URL_HOST = 'frontera_prtl_rabbitmq'
+BROKER_URL_PORT = '5672'
+BROKER_URL_VHOST = 'dev'
 
 CELERY_BROKER_URL = ''.join(
     [
-        _BROKER_URL_PROTOCOL, _BROKER_URL_USERNAME, ':',
-        _BROKER_URL_PWD, '@', _BROKER_URL_HOST, ':',
-        _BROKER_URL_PORT, '/', _BROKER_URL_VHOST
+        BROKER_URL_PROTOCOL, BROKER_URL_USERNAME, ':',
+        BROKER_URL_PWD, '@', BROKER_URL_HOST, ':',
+        BROKER_URL_PORT, '/', BROKER_URL_VHOST
     ]
 )
 
-_RESULT_BACKEND_PROTOCOL = 'redis://'
-_RESULT_BACKEND_USERNAME = settings_secret._RESULT_BACKEND_USERNAME
-_RESULT_BACKEND_PWD = settings_secret._RESULT_BACKEND_PWD
-_RESULT_BACKEND_HOST = settings_secret._RESULT_BACKEND_HOST
-_RESULT_BACKEND_PORT = settings_secret._RESULT_BACKEND_PORT
-_RESULT_BACKEND_DB = settings_secret._RESULT_BACKEND_DB
+RESULT_BACKEND_PROTOCOL = 'redis://'
+RESULT_BACKEND_USERNAME = 'dev'
+RESULT_BACKEND_PWD = 'dev'
+RESULT_BACKEND_HOST = 'frontera_prtl_redis'
+RESULT_BACKEND_PORT = '6379'
+RESULT_BACKEND_DB = '0'
 
 CELERY_RESULT_BACKEND = ''.join(
     [
-        _RESULT_BACKEND_PROTOCOL,
-        _RESULT_BACKEND_HOST, ':', _RESULT_BACKEND_PORT,
-        '/', _RESULT_BACKEND_DB
+        RESULT_BACKEND_PROTOCOL,
+        RESULT_BACKEND_HOST, ':', RESULT_BACKEND_PORT,
+        '/', RESULT_BACKEND_DB
     ]
 )
 
@@ -642,7 +605,14 @@ PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 SETTINGS: EXTERNAL DATA RESOURCES
 """
 
-EXTERNAL_RESOURCE_SECRETS = getattr(settings_secret, '_EXTERNAL_RESOURCE_SECRETS', {})
+EXTERNAL_RESOURCE_SECRETS = {
+    "google-drive": {
+        "client_secret": "this_is_a_secret",
+        "client_id": "428879134432-hkjhstfe39lj5o0o8l6s57ut0ql4aks5.apps.googleusercontent.com",
+        "name": "Google Drive",
+        "directory": "external-resources"
+    }
+}
 
 
 PORTAL_WORKSPACE_MANAGERS = {
@@ -664,44 +634,33 @@ TOOLBAR_OPTIONS = {
 
 AGAVE_DEFAULT_TRASH_NAME = '.Trash'
 
-PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = settings_secret.\
-    _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
+PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'frontera.home.{}'
 
-PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = settings_secret.\
-    _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH
+PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/corral-repl/tacc/aci/CEP/home_dirs/'
 
-PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = settings_secret.\
-    _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH
+PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
 
-PORTAL_DATA_DEPOT_STORAGE_HOST = settings_secret.\
-    _PORTAL_DATA_DEPOT_STORAGE_HOST
+PORTAL_DATA_DEPOT_STORAGE_HOST = 'frontera.tacc.utexas.edu'
 
-PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = settings_secret.\
-    _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
+PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = 'frontera.project'
 
-PORTAL_PROJECTS_NAME_PREFIX = settings_secret.\
-    _PORTAL_PROJECTS_NAME_PREFIX
+PORTAL_PROJECTS_NAME_PREFIX = 'frontera.project'
 
-PORTAL_PROJECTS_ID_PREFIX = settings_secret.\
-    _PORTAL_PROJECTS_ID_PREFIX
+PORTAL_NAMESPACE = 'frontera'
 
-PORTAL_PROJECTS_ROOT_DIR = settings_secret.\
-    _PORTAL_PROJECTS_ROOT_DIR
+PORTAL_PROJECTS_ID_PREFIX = lambda PORTAL_NAMESPACE : PORTAL_NAMESPACE.upper()
 
-PORTAL_PROJECTS_ROOT_SYSTEM_NAME = settings_secret.\
-    _PORTAL_PROJECTS_ROOT_SYSTEM_NAME
+PORTAL_PROJECTS_ROOT_DIR = 'data.tacc.utexas.edu'
 
-PORTAL_PROJECTS_ROOT_HOST = settings_secret.\
-    _PORTAL_PROJECTS_ROOT_HOST
+PORTAL_PROJECTS_ROOT_SYSTEM_NAME = lambda PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX : '{}.root'.format(PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX)
 
-PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
-    _PORTAL_PROJECTS_PRIVATE_KEY
+PORTAL_PROJECTS_ROOT_HOST = 'data.tacc.utexas.edu'
 
-PORTAL_PROJECTS_PUBLIC_KEY = settings_secret.\
-    _PORTAL_PROJECTS_PUBLIC_KEY
+PORTAL_PROJECTS_PRIVATE_KEY = ''
 
-COMMUNITY_INDEX_SCHEDULE = settings_secret.\
-    _COMMUNITY_INDEX_SCHEDULE
+PORTAL_PROJECTS_PUBLIC_KEY = ''
+
+COMMUNITY_INDEX_SCHEDULE = {}
 
 # This setting is not used directly most of the time.
 # We mainly use it when creating the execution system for the pems app
@@ -710,71 +669,57 @@ COMMUNITY_INDEX_SCHEDULE = settings_secret.\
 # so we can refer to this line when looking for this system's ID.
 # Also, it might be useful in the future when we need to do any changes
 # to this system or setup any management commands.
-PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = settings_secret.\
-    _PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID
+PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = 'cep.project.admin.data.cli'
 
-PORTAL_PROJECTS_PEMS_APP_ID = settings_secret.\
-    _PORTAL_PROJECTS_PEMS_APP_ID
+PORTAL_PROJECTS_PEMS_APP_ID = 'cep.cloud.admin-pems-0.1'
 
-PORTAL_USER_HOME_MANAGER = settings_secret.\
-    _PORTAL_USER_HOME_MANAGER
+PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_work_home.UserWORKHomeManager'
 
-PORTAL_KEYS_MANAGER = settings_secret.\
-    _PORTAL_KEYS_MANAGER
+PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 
-PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
-    _PORTAL_USER_ACCOUNT_SETUP_STEPS
+PORTAL_USER_ACCOUNT_SETUP_STEPS = []
 
-PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = settings_secret.\
-    _PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD
+PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = ''
 
-PORTAL_NAMESPACE = settings_secret.\
-    _PORTAL_NAMESPACE
+PORTAL_PROJECTS_SYSTEM_PORT = 22
 
-PORTAL_PROJECTS_SYSTEM_PORT = getattr(settings_secret, '_PORTAL_PROJECTS_SYSTEM_PORT', 22)
+PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/home1'
 
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = settings_secret.\
-    _PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'frontera'
 
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
-    _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM
+PORTAL_APPS_METADATA_NAMES = ["portal_apps", "test_apps", "utrc_apps"]
 
-PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
+PORTAL_APPS_DEFAULT_TAB = ''
 
-PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '')
-
-PORTAL_JOB_NOTIFICATION_STATES = getattr(
-    settings_secret, "_PORTAL_JOB_NOTIFICATION_STATES", [
-        "PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
-)
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
 
 # "View in Jupyter Notebook" base URL
-PORTAL_JUPYTER_URL = getattr(settings_secret, '_PORTAL_JUPYTER_URL', None)
+PORTAL_JUPYTER_URL = 'https://jupyter.tacc.cloud'
 # "View in Jupyter Notebook" mount map, i.e. "data-sd2e-community" -> "/sd2e-community" for SD2E
-PORTAL_JUPYTER_SYSTEM_MAP = getattr(settings_secret, '_PORTAL_JUPYTER_SYSTEM_MAP', None)
+PORTAL_JUPYTER_SYSTEM_MAP = {"frontera.home.{username}": "/tacc-work",}
 
-WH_BASE_URL = getattr(settings_secret, '_WH_BASE_URL', '')
+WH_BASE_URL = 'https://acb3eed5.ngrok.io'
 
-PORTAL_DOMAIN = settings_secret._PORTAL_DOMAIN
+PORTAL_DOMAIN = 'cep.dev'
 
-PORTAL_ALLOCATION = getattr(settings_secret, '_PORTAL_ALLOCATION', '')
+PORTAL_ALLOCATION = 'TACC-ACI'
 
-ALLOCATION_SYSTEMS = getattr(settings_secret, '_ALLOCATION_SYSTEMS', [])
+ALLOCATION_SYSTEMS = []
 
 """
 SETTINGS: settings related to possible steps in PORTAL_USER_ACCOUNT_SETUP_STEPS
 """
 # ProjectMembershipStep
-REQUIRED_PROJECTS = getattr(settings_secret, '_REQUIRED_PROJECTS', [])
+REQUIRED_PROJECTS = []
 
 """
 SETTINGS: ELASTICSEARCH
 """
 
-ES_HOSTS = settings_secret._ES_HOSTS
-ES_AUTH = settings_secret._ES_AUTH
+ES_HOSTS = 'frontera_prtl_elasticsearch:9200'
+ES_AUTH = 'dev:esauth'
 
-ES_INDEX_PREFIX = settings_secret._ES_INDEX_PREFIX
+ES_INDEX_PREFIX = 'frontera-staging-{}'
 
 HAYSTACK_CONNECTIONS = {
     'default': {
@@ -789,7 +734,7 @@ HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
-SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_secret, '_SYSTEM_MONITOR_DISPLAY_LIST', [])
+SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
 
 """
 SETTINGS: EXPORTS
@@ -849,3 +794,8 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
                                 SUPPORTED_IPYNB_PREVIEW_EXTS)
+
+try:
+   from portal.settings.settings_secret import *
+except ImportError:
+    raise Exception("No settings_secret.py file found")
