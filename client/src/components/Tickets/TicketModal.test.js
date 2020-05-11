@@ -47,7 +47,6 @@ function renderTicketsModelComponent(store) {
       <BrowserRouter>
         <TicketModal />
       </BrowserRouter>
-      BrowserRouter>
     </Provider>
   );
 }

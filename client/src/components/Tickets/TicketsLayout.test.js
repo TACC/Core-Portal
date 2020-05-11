@@ -35,7 +35,6 @@ function renderTicketsComponent(store) {
       <BrowserRouter>
         <TicketsView />
       </BrowserRouter>
-      BrowserRouter>
     </Provider>
   );
 }
