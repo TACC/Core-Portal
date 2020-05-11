@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner } from '_common';
@@ -12,9 +12,8 @@ const PreviewModalSpinner = () => (
 
 const TextPreview = ({ cb }) => {
   const body = useSelector(state => state.files.previewText);
-  useEffect(() => {
-    if (body) cb();
-  }, [body]);
+  if (!body) return <></>;
+  cb();
   return (
     <div>
       <pre>
