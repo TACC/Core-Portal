@@ -68,6 +68,12 @@
     font-size: 0.75rem;
   }
 
+  /* Override Bootstrap `.form-text` (being used in _common/Form/FormField.js), because we need the field text to be the
+  same size as the field label */
+  .form-text {
+    font-size: 0.75rem;
+  }
+
   .modal-header {
     background-color: #F4F4F4;
   }

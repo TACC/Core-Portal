@@ -3,9 +3,11 @@
   display: flex;
   flex-direction: column;
   font-size: 0.75rem;
+
+  /* Override Bootstrap `.form-text` (being used in _common/Form/FormField.js), because we need the field text to be the
+   same size as the field label */
   .form-text {
     font-size: 0.75rem;
-    font-style: italic;
   }
 
   /* alter bootstrap size to match font-size for rest of ticket forms */
