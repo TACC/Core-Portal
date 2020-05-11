@@ -421,7 +421,7 @@ export function* preview(action) {
     payload: { href: null }
   });
 
-  const href = yield call(
+  const data = yield call(
     previewUtil,
     action.payload.api,
     action.payload.scheme,
@@ -429,11 +429,19 @@ export function* preview(action) {
     action.payload.path,
     action.payload.href
   );
+  const { href, fileType } = yield data;
 
   yield put({
     type: 'DATA_FILES_SET_PREVIEW_HREF',
-    payload: { href }
+    payload: { href, type: fileType, previewText: '' }
   });
+
+  if (fileType === 'text') {
+    const response = yield call(fetch, href);
+    const file = yield response.blob();
+    const content = yield call(parseFileUtil, file);
+    yield put({ type: 'DATA_FILES_TEXT_PREVIEW', payload: { content } });
+  }
 }
 
 export async function previewUtil(api, scheme, system, path, href) {
@@ -446,8 +454,23 @@ export async function previewUtil(api, scheme, system, path, href) {
   });
 
   const requestJson = await request.json();
-  return requestJson.data.href;
+  return requestJson.data;
 }
+
+export const parseFileUtil = file => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = ({ target }) => {
+      const content = target.result;
+      resolve(content);
+    };
+    reader.onerror = e => {
+      const error = new Error('Unable to load file');
+      reject(error);
+    };
+    reader.readAsText(file);
+  });
+};
 
 export async function mkdirUtil(api, scheme, system, path, dirname) {
   let apiPath = !path || path[0] === '/' ? path : `/${path}`;

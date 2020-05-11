@@ -70,7 +70,9 @@ const initialFilesState = {
     rename: {},
     pushKeys: {}
   },
-  previewHref: ''
+  previewHref: '',
+  previewType: '',
+  previewText: ''
 };
 
 let selectedSet, enabled, setValue;
@@ -232,9 +234,12 @@ export function files(state = initialFilesState, action) {
     case 'DATA_FILES_SET_PREVIEW_HREF':
       return {
         ...state,
-        previewHref: action.payload.href
+        previewHref: action.payload.href,
+        previewType: action.payload.type,
+        previewText: action.payload.previewText
       };
-
+    case 'DATA_FILES_TEXT_PREVIEW':
+      return { ...state, previewText: action.payload.content };
     case 'DATA_FILES_TOGGLE_MODAL':
       return {
         ...state,
