@@ -18,7 +18,7 @@ server/cms
 server/docs
 
 # Ignore local Django settings
-*secrets.py
+secrets.py
 *settings_secret.py
 
 docker_repo.var
