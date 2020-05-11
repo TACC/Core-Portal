@@ -173,7 +173,7 @@ function TicketCreateForm({ authenticatedUser }) {
                 color="primary"
                 disabled={!isValid || isSubmitting || creating}
               >
-                {creating && <Spinner size="sm" color="white" />}
+                {creating && <Spinner size="sm" color="white" data-testid="creating-spinner" />}
                 Add Ticket
               </Button>
             </div>
