@@ -61,4 +61,30 @@ describe('TicketCreateForm', () => {
     const { getByText, getByTestId } = renderTicketsCreateForm(store);
     expect(getByTestId('creating-spinner'));
   });
+
+  it('renders a ticket create ID upon success', () => {
+    const store = mockStore({
+      ticketCreate: {
+        ...initialMockState,
+        creatingSuccess: true,
+        createdTicketId: 1234,
+      }
+    });
+
+    const { getByText } = renderTicketsCreateForm(store);
+    expect(getByText(/1234/)).toBeDefined();
+  });
+
+  it('renders a ticket creation error', () => {
+    const store = mockStore({
+      ticketCreate: {
+        ...initialMockState,
+        creatingError: true,
+        creatingErrorMessage: "Mock error"
+      }
+    });
+
+    const { getByText } = renderTicketsCreateForm(store);
+    expect(getByText(/Mock error/)).toBeDefined();
+  });
 });

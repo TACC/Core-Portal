@@ -149,7 +149,6 @@ function TicketCreateForm({ authenticatedUser }) {
         formData.append('attachments', attach)
       );
     }
-
     dispatch({
       type: 'TICKET_CREATE',
       payload: {
