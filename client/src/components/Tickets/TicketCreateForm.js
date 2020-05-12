@@ -149,7 +149,6 @@ function TicketCreateForm({ authenticatedUser }) {
         formData.append('attachments', attach)
       );
     }
-
     dispatch({
       type: 'TICKET_CREATE',
       payload: {
@@ -262,7 +261,9 @@ function TicketCreateForm({ authenticatedUser }) {
           </Alert>
         )}
         <Button type="submit" color="primary" disabled={!canSubmit || creating}>
-          {creating && <Spinner size="sm" color="white" />}
+          {creating && (
+            <Spinner size="sm" color="white" data-testid="creating-spinner" />
+          )}
           Add Ticket
         </Button>
       </div>
