@@ -41,7 +41,8 @@ ul#appBrowser-sidebar {
 }
 
 #appBrowser-sidebar .nav-link, #appBrowser-tray .nav-link {
-  padding: 5px 25px 5px 20px; /* overwrite Bootstrap, match UI design */
+  /* Overwrite Bootstrap, match UI design */
+  padding: 8px 30px 8px 24px; /* ~6px 25px ~6px 20px design * 1.2 design-to-app ratio (rounded) */
 
   color: #707070;
   border-radius: 0;
@@ -68,9 +69,7 @@ ul#appBrowser-sidebar {
   border-left: 1px solid rgba(112, 112, 112, .25);
 }
 
-#appBrowser-sidebar .nav-content {
-  padding-left: 10px;
-}
+#appBrowser-sidebar .nav-content,
 #appBrowser-tray .nav-content {
   display: flex;
   align-items: center;
@@ -78,11 +77,19 @@ ul#appBrowser-sidebar {
 
 #appBrowser-sidebar .nav-text, #appBrowser-tray .nav-text {
   padding-left: 15px;
-  font-size: .78em;
+  font-size: 12px; /* 10px design * 1.2 design-to-app ratio (rounded) */
   font-weight: 500;
 }
 
-.app-icon {
-  font-size: 1.5em;
-  display: flex;
+.app-icon,
+.category-icon {
+  /* Styles copied from .side-nav-icon because:
+     - CSS architecture does not facilitate `@extend`
+     - CSS modules not available yet to provide `composes`
+     - Styles of `.side-nav-icon` match prupose (though name does not) */
+  width: 1em;
+  font-size: 20px; /* 16px design * 1.2 design-to-app ratio (rounded) */
+  vertical-align: middle;
+
+  &[class*="icon-"]::before { display: block }
 }

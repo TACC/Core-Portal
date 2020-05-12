@@ -4,10 +4,7 @@ import { useSelector, shallowEqual } from 'react-redux';
 // import PropTypes from 'prop-types';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faDesktop,
-  faExclamationTriangle
-} from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
@@ -64,11 +61,7 @@ const AppBrowser = () => {
               }}
             >
               <span className="nav-content">
-                <FontAwesomeIcon
-                  icon={faDesktop}
-                  size="1x"
-                  className="side-nav-icon"
-                />
+                <i className="icon-nav-application  category-icon" />
                 <span className="nav-text">{`${category} [${categoryDict[category].length}]`}</span>
               </span>
             </NavLink>
