@@ -69,15 +69,9 @@ ul#appBrowser-sidebar {
   border-left: 1px solid rgba(112, 112, 112, .25);
 }
 
-#appBrowser-sidebar .nav-content,
-#appBrowser-tray .nav-content {
-  display: flex;
-  align-items: center;
-}
-
 #appBrowser-sidebar .nav-text, #appBrowser-tray .nav-text {
   padding-left: 15px;
-  font-size: 12px; /* 10px design * 1.2 design-to-app ratio (rounded) */
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
   font-weight: 500;
 }
 
@@ -88,7 +82,7 @@ ul#appBrowser-sidebar {
      - CSS modules not available yet to provide `composes`
      - Styles of `.side-nav-icon` match prupose (though name does not) */
   width: 1em;
-  font-size: 20px; /* 16px design * 1.2 design-to-app ratio (rounded) */
+  font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
   vertical-align: middle;
 
   &[class*="icon-"]::before { display: block }

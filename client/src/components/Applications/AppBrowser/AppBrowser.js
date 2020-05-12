@@ -79,7 +79,7 @@ const AppBrowser = () => {
                     to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.value.definition.id}`}
                     activeClassName="active"
                   >
-                    <div className="nav-content">
+                    <span className="nav-content">
                       <i
                         className={`app-icon ${
                           app.value.definition.appIcon
@@ -90,7 +90,7 @@ const AppBrowser = () => {
                       <span className="nav-text">
                         {app.value.definition.label}
                       </span>
-                    </div>
+                    </span>
                   </NavLink>
                 </div>
               ))}
