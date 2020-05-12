@@ -59,6 +59,13 @@ const DataFilesToolbar = ({ scheme }) => {
       payload: { operation: 'copy', props: { selectedFiles } }
     });
 
+  const toggleCompressModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'compress', props: { selectedFiles } }
+    });
+  };
+
   const download = () => {
     dispatch({
       type: 'DATA_FILES_DOWNLOAD',
@@ -79,10 +86,19 @@ const DataFilesToolbar = ({ scheme }) => {
   const canDownload =
     selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
   const canTrash = selectedFiles.length > 0 && scheme === 'private';
+  const canCompress = selectedFiles.length > 0;
 
   return (
     <>
       <div id="data-files-toolbar-button-row">
+        {canCompress && (
+          <ToolbarButton
+            text="Compress"
+            onClick={toggleCompressModal}
+            icon={{}}
+            disabled={false}
+          />
+        )}
         <ToolbarButton
           text="Rename"
           onClick={toggleRenameModal}

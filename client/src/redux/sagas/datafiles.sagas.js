@@ -10,6 +10,7 @@ import {
   race,
   take
 } from 'redux-saga/effects';
+import { fetchUtil } from 'utils/fetchUtil';
 
 export async function fetchSystemsUtil() {
   const response = await fetch('/api/datafiles/systems/list/');
@@ -576,4 +577,76 @@ export function* trashFile(system, path, id) {
       payload: { status: 'ERROR', key: id, operation: 'trash' }
     });
   }
+}
+
+/* eslint-disable no-console */
+export function* compressFiles(action) {
+  const inputFiles = action.payload.files.map(
+    file => `agave://${file.system}${file.path}`
+  );
+  const filenames = action.payload.files.reduce(
+    (names, file) => `${names}"${file.name}" `,
+    ''
+  );
+  const zipfileName = `${action.payload.files[0].name}.zip`;
+  const archivePath = `agave://${
+    action.payload.files[0].system
+  }${action.payload.files[0].path.substring(
+    0,
+    action.payload.files[0].path.lastIndexOf('/') + 1
+  )}`;
+  console.log(filenames);
+  try {
+    const res = yield call(fetchUtil, {
+      url: '/api/workspace/apps',
+      params: { publicOnly: true }
+    });
+    const apps = res.response;
+    const zippyApps = apps.filter(app => app.id.includes('zippy-'));
+    const latestZippy = zippyApps.reduce((latest, app) => {
+      if (app.revision > latest.revision) {
+        return app;
+      }
+      return latest;
+    }, zippyApps[0]);
+
+    console.log(latestZippy);
+
+    const compressParams = {
+      allocation: 'FORK',
+      appId: latestZippy.id,
+      archive: true,
+      archivePath,
+      maxRunTime: '02:00:00',
+      name: 'Compressing Files',
+      inputs: {
+        inputFiles
+      },
+      parameters: {
+        zipfileName,
+        filenames
+      }
+    };
+
+    console.log(compressParams);
+    // Submit Job
+    const jobRes = yield call(fetchUtil, {
+      url: '/api/workspace/jobs',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': Cookies.get('csrftoken')
+      },
+      body: JSON.stringify(compressParams)
+    });
+    console.log(jobRes);
+  } catch (error) {
+    yield console.log('error');
+  } finally {
+    yield console.log('done!');
+  }
+}
+/* eslint-enable no-console */
+export function* watchCompress() {
+  yield takeLeading('DATA_FILES_COMPRESS', compressFiles);
 }

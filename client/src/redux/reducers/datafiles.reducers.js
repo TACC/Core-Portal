@@ -61,7 +61,8 @@ const initialFilesState = {
     mkdir: false,
     rename: false,
     pushKeys: false,
-    trash: false
+    trash: false,
+    compress: false
   },
   modalProps: {
     preview: {},
