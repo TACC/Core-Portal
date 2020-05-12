@@ -10,6 +10,7 @@ import {
   race,
   take
 } from 'redux-saga/effects';
+import { fetchUtil } from 'utils/fetchUtil';
 
 export async function fetchSystemsUtil() {
   const response = await fetch('/api/datafiles/systems/list/');
@@ -595,4 +596,166 @@ export function* trashFile(system, path, id) {
       payload: { status: 'ERROR', key: id, operation: 'trash' }
     });
   }
+}
+
+const getExtractParams = async file => {
+  const res = await fetchUtil({
+    url: '/api/workspace/apps',
+    params: { publicOnly: true }
+  });
+  const apps = res.response;
+
+  const latestExtract = apps
+    .filter(app => app.id.includes('extract-frontera'))
+    .reduce(
+      (latest, app) => {
+        if (app.version > latest.version) {
+          return app;
+        }
+        if (app.version < latest.version) {
+          return latest;
+        }
+        // Same version of app
+        if (app.revision >= latest.revision) {
+          return app;
+        }
+        return latest;
+      },
+      { revision: null, version: null }
+    );
+  const inputFile = `agave://${file.system}${file.path}`;
+  const archivePath = `agave://${file.system}${file.path.substring(
+    0,
+    file.path.lastIndexOf('/') + 1
+  )}`;
+  return JSON.stringify({
+    allocation: 'FORK',
+    appId: latestExtract.id,
+    archive: true,
+    archivePath,
+    inputs: {
+      inputFile
+    },
+    maxRunTime: '02:00:00',
+    name: 'Extracting Zip File',
+    parameters: {}
+  });
+};
+
+export function* extractFiles(action) {
+  try {
+    const params = yield call(getExtractParams, action.payload.file);
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'RUNNING', operation: 'extract' }
+    });
+    const submission = yield call(jobHelper, params);
+    if (submission.status === 'ACCEPTED') {
+      yield put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'SUCCESS', operation: 'extract' }
+      });
+    } else {
+      throw new Error('Unable to extract files');
+    }
+  } catch (error) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'ERROR', operation: 'extract' }
+    });
+  }
+}
+export function* watchExtract() {
+  yield takeLeading('DATA_FILES_EXTRACT', extractFiles);
+}
+
+/**
+ * Create JSON string of job params
+ * @async
+ * @param {Array<Object>} files
+ * @param {String} zipfileName
+ * @returns {String}
+ */
+const getCompressParams = async (files, zipfileName) => {
+  const res = await fetchUtil({
+    url: '/api/workspace/apps',
+    params: { publicOnly: true }
+  });
+  const apps = res.response;
+  const latestZippy = apps
+    .filter(app => app.id.includes('zippy-frontera'))
+    .reduce(
+      (latest, app) => {
+        if (app.version > latest.version) {
+          return app;
+        }
+        if (app.version < latest.version) {
+          return latest;
+        }
+        // Same version of app
+        if (app.revision >= latest.revision) {
+          return app;
+        }
+        return latest;
+      },
+      { revision: null, version: null }
+    );
+  const inputs = {
+    inputFiles: files.map(file => `agave://${file.system}${file.path}`)
+  };
+  const parameters = {
+    filenames: files.reduce((names, file) => `${names}"${file.name}" `, ''),
+    zipfileName
+  };
+  const archivePath = `agave://${files[0].system}${files[0].path.substring(
+    0,
+    files[0].path.lastIndexOf('/') + 1
+  )}`;
+
+  return JSON.stringify({
+    allocation: 'FORK',
+    appId: latestZippy.id,
+    archive: true,
+    archivePath,
+    maxRunTime: '02:00:00',
+    name: 'Compressing Files',
+    inputs,
+    parameters
+  });
+};
+
+export function* compressFiles(action) {
+  try {
+    const params = yield call(
+      getCompressParams,
+      action.payload.files,
+      action.payload.filename
+    );
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'RUNNING', operation: 'compress' }
+    });
+    const submission = yield call(jobHelper, params);
+    if (submission.status === 'ACCEPTED') {
+      yield put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'SUCCESS', operation: 'compress' }
+      });
+    } else {
+      throw new Error('Unable to compress files');
+    }
+  } catch (error) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'ERROR', operation: 'compress' }
+    });
+  }
+}
+export async function jobHelper(body) {
+  const url = '/api/workspace/jobs';
+  const res = await fetchUtil({ url, method: 'POST', body });
+  return res.response;
+}
+export function* watchCompress() {
+  yield takeLeading('DATA_FILES_COMPRESS', compressFiles);
 }

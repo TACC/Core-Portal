@@ -31,7 +31,9 @@ const initialFilesState = {
     copy: {},
     select: {},
     upload: {},
-    trash: {}
+    trash: {},
+    compress: {},
+    extract: {}
   },
   loadingScroll: {
     FilesListing: false,
@@ -68,7 +70,9 @@ const initialFilesState = {
     mkdir: false,
     rename: false,
     pushKeys: false,
-    trash: false
+    trash: false,
+    compress: false,
+    extract: false
   },
   modalProps: {
     preview: {},

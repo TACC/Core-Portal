@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
+import getFilePermissions from 'utils/filePermissions';
 import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
@@ -13,7 +14,7 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
       onClick={onClick}
       className="data-files-toolbar-button"
     >
-      <i className={iconClassName} data-testid="toolbar-icon" />
+      {iconName && <i className={iconClassName} data-testid="toolbar-icon" />}
       <span className="toolbar-button-text">{text}</span>
     </Button>
   );
@@ -59,6 +60,23 @@ const DataFilesToolbar = ({ scheme }) => {
       payload: { operation: 'copy', props: { selectedFiles } }
     });
 
+  const toggleCompressModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'compress', props: { selectedFiles } }
+    });
+  };
+
+  const toggleExtractModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'extract',
+        props: { selectedFile: selectedFiles[0] }
+      }
+    });
+  };
+
   const download = () => {
     dispatch({
       type: 'DATA_FILES_DOWNLOAD',
@@ -73,16 +91,30 @@ const DataFilesToolbar = ({ scheme }) => {
     });
   };
 
-  const canRename = selectedFiles.length === 1 && scheme === 'private';
-  const canMove = selectedFiles.length > 0 && scheme === 'private';
-  const canCopy = selectedFiles.length > 0 && scheme === 'private';
-  const canDownload =
-    selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
-  const canTrash = selectedFiles.length > 0 && scheme === 'private';
+  const permissionParams = { files: selectedFiles, scheme };
+  const canRename = getFilePermissions('rename', permissionParams);
+  const canMove = getFilePermissions('move', permissionParams);
+  const canCopy = getFilePermissions('copy', permissionParams);
+  const canDownload = getFilePermissions('download', permissionParams);
+  const canTrash = getFilePermissions('trash', permissionParams);
+  const canCompress = getFilePermissions('compress', permissionParams);
+  const canExtract = getFilePermissions('extract', permissionParams);
 
   return (
     <>
       <div id="data-files-toolbar-button-row">
+        <ToolbarButton
+          text="Extract"
+          onClick={toggleExtractModal}
+          iconName=""
+          disabled={!canExtract}
+        />
+        <ToolbarButton
+          text="Compress"
+          onClick={toggleCompressModal}
+          iconName=""
+          disabled={!canCompress}
+        />
         <ToolbarButton
           text="Rename"
           onClick={toggleRenameModal}
