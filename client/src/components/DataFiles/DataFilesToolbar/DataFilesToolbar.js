@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { isEmpty } from 'lodash';
 import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, icon, onClick, disabled }) => {
@@ -82,21 +81,19 @@ const DataFilesToolbar = ({ scheme }) => {
     });
   };
 
+  const selectedImages = selectedFiles.filter(file =>
+    file.mimeType.includes('image')
+  );
+
   const carousel = () => {
-    const props = selectedImages.map(img => {
-      const { api, system, path } = params;
-      return {
-        api,
-        scheme,
-        system,
-        path,
-        href: img._links.self.href
-      };
-    });
-    dispatch({ type: 'DATA_FILES_CAROUSEL', data: props });
+    const imageData = selectedImages.map(img => ({
+      ...params,
+      href: img._links.self.href
+    }));
+    dispatch({ type: 'DATA_FILES_CAROUSEL', payload: imageData });
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'carousel', props: { selectedImages } }
+      payload: { operation: 'carousel', props: {} }
     });
   };
 
@@ -106,29 +103,17 @@ const DataFilesToolbar = ({ scheme }) => {
   const canDownload =
     selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
   const canTrash = selectedFiles.length > 0 && scheme === 'private';
-  const selectedImages = selectedFiles.filter(({ name }) => {
-    const extension = name.split('.').pop();
-    switch (extension) {
-      case 'jpg':
-        return extension === 'jpg';
-      case 'png':
-        return extension === 'png';
-      default:
-        return false;
-    }
-  });
+  const hasImages = selectedImages.length > 0;
 
   return (
     <>
       <div id="data-files-toolbar-button-row">
-        {!isEmpty(selectedImages) && (
-          <ToolbarButton
-            text="Preview Images"
-            icon={{}}
-            onClick={carousel}
-            disabled={false}
-          />
-        )}
+        <ToolbarButton
+          text="Preview Images"
+          icon={{}}
+          onClick={carousel}
+          disabled={!hasImages}
+        />
         <ToolbarButton
           text="Rename"
           onClick={toggleRenameModal}

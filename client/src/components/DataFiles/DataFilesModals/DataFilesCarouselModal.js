@@ -14,7 +14,7 @@ import {
 } from 'reactstrap';
 import { LoadingSpinner } from '_common';
 import { isEmpty } from 'lodash';
-import { instanceOf } from 'prop-types';
+import { arrayOf, string } from 'prop-types';
 
 const DataFilesCarousel = ({ links }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -51,15 +51,30 @@ const DataFilesCarousel = ({ links }) => {
           activeIndex={activeIndex}
           onClickHandler={goToIndex}
         />
-        {links.map((link, idx) => {
+        {links.map((link, idx, arr) => {
+          const [loaded, setLoaded] = useState(false);
+          const current = idx === activeIndex;
           return (
             <CarouselItem
+              key={link}
               onExiting={() => setAnimating(true)}
               onExited={() => setAnimating(false)}
-              key={link}
             >
-              <img src={link} alt="ok" />
-              <CarouselCaption captionText={`Image ${idx + 1}`} />
+              <>
+                {!loaded && current && (
+                  <div style={{ height: '200px' }}>
+                    <LoadingSpinner />
+                  </div>
+                )}
+                <img
+                  src={link}
+                  alt={`Selected Images ${idx + 1}/${arr.length}`}
+                  onLoad={() => setLoaded(true)}
+                />
+              </>
+              <CarouselCaption
+                captionText={`Image ${idx + 1} of ${arr.length}`}
+              />
             </CarouselItem>
           );
         })}
@@ -77,7 +92,7 @@ const DataFilesCarousel = ({ links }) => {
     )
   );
 };
-DataFilesCarousel.propTypes = { links: instanceOf(Array).isRequired };
+DataFilesCarousel.propTypes = { links: arrayOf(string).isRequired };
 
 const DataFilesCarouselModal = () => {
   const dispatch = useDispatch();
@@ -85,11 +100,13 @@ const DataFilesCarouselModal = () => {
   const imageURLs = useSelector(state => {
     return state.files.imagePreviews;
   });
-  const toggle = () =>
+  const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'carousel', props: {} }
     });
+    dispatch({ type: 'DATA_FILES_SET_CAROUSEL', payload: [] });
+  };
 
   return (
     <>
@@ -121,4 +138,4 @@ const DataFilesCarouselModal = () => {
   );
 };
 
-export default React.memo(DataFilesCarouselModal);
+export default DataFilesCarouselModal;
