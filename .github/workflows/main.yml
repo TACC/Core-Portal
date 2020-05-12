@@ -41,7 +41,7 @@ jobs:
         file: ./server/coverage.xml
         flags: unittests
         name: frontera-server-side
-#         fail_ci_if_error: false
+        fail_ci_if_error: true
 
   Server_Side_Linting:
     runs-on: ubuntu-18.04
@@ -93,7 +93,8 @@ jobs:
         cd client
         npm run test
 
-    - run: bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
+    - name: Upload coverage to Codecov
+      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
 
   Client_Side_Linting:
     runs-on: ubuntu-18.04
