@@ -42,7 +42,7 @@ ul#appBrowser-sidebar {
 
 #appBrowser-sidebar .nav-link, #appBrowser-tray .nav-link {
   /* Overwrite Bootstrap, match UI design */
-  padding: 8px 30px 8px 24px; /* ~6px 25px ~6px 20px design * 1.2 design-to-app ratio (rounded) */
+  padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
 
   color: #707070;
   border-radius: 0;

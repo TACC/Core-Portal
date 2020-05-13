@@ -52,6 +52,7 @@
     font-family: Roboto;
     width: 215px;
 
+    /* !!!: This link is `40px`, which is taller than other sidebar links (which are ~`35px`) */
     .nav-link {
         /* NOTE: These styles match `.nav-content`. That class is not used in
                  the markup for this sidebar because it is extraneous */
@@ -60,7 +61,7 @@
         align-items: center;
 
         color: #707070;
-        padding-left: 1.5em;
+        padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
         height: 2.5em;
 
         .link-icon {
