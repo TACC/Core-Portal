@@ -102,6 +102,18 @@ toggle-icon {
     width: 100%
   }
 
+  /* ticket header specific styles */
+  .ticket-id {
+    color: #707070;
+  }
+  /* Visual separation for subject preceded by ID */
+  .ticket-id + .ticket-subject::before {
+    content: '|';
+    display: inline-block;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+  }
+
   /* make bootstrap dialog wider */
   @media (min-width: 1200px) {
     .modal-dialog {
