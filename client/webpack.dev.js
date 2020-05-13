@@ -37,7 +37,6 @@ module.exports = merge.smart(common, {
     rules: [
       {
         test: /^(.)*\.module\.(css|sass|scss)$/i,
-        // exclude: [path.join(__dirname, '/src/styles/')],
         use: [
           {
             loader: 'style-loader'
@@ -62,7 +61,6 @@ module.exports = merge.smart(common, {
       },
       {
         test: /^((?!\.module).)*\.(css|sass|scss)$/i,
-        // include: [path.join(__dirname, '/src/styles/')],
         use: [
           {
             loader: 'style-loader'
