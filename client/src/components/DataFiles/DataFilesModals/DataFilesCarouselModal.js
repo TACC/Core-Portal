@@ -37,59 +37,60 @@ const DataFilesCarousel = ({ links }) => {
     setActiveIndex(newIndex);
   };
 
-  if (isEmpty(links)) return <LoadingSpinner />;
   return (
-    links && (
-      <Carousel
+    <Carousel
+      activeIndex={activeIndex}
+      next={next}
+      previous={previous}
+      interval={false}
+    >
+      <CarouselIndicators
+        items={links}
         activeIndex={activeIndex}
-        next={next}
-        previous={previous}
-        interval={false}
-      >
-        <CarouselIndicators
-          items={links}
-          activeIndex={activeIndex}
-          onClickHandler={goToIndex}
-        />
-        {links.map((link, idx, arr) => {
-          const [loaded, setLoaded] = useState(false);
-          const current = idx === activeIndex;
-          return (
-            <CarouselItem
-              key={link}
-              onExiting={() => setAnimating(true)}
-              onExited={() => setAnimating(false)}
-            >
-              <>
-                {!loaded && current && (
-                  <div style={{ height: '200px' }}>
-                    <LoadingSpinner />
-                  </div>
-                )}
-                <img
-                  src={link}
-                  alt={`Selected Images ${idx + 1}/${arr.length}`}
-                  onLoad={() => setLoaded(true)}
-                />
-              </>
-              <CarouselCaption
-                captionText={`Image ${idx + 1} of ${arr.length}`}
-              />
-            </CarouselItem>
-          );
-        })}
-        <CarouselControl
-          direction="prev"
-          directionText="Previous"
-          onClickHandler={previous}
-        />
-        <CarouselControl
-          direction="next"
-          directionText="Next"
-          onClickHandler={next}
-        />
-      </Carousel>
-    )
+        onClickHandler={goToIndex}
+      />
+      {links.map((link, idx, arr) => {
+        const [loaded, setLoaded] = useState(false);
+        const current = idx === activeIndex;
+        return (
+          <CarouselItem
+            key={link}
+            onExiting={() => setAnimating(true)}
+            onExited={() => setAnimating(false)}
+          >
+            {!loaded && current && (
+              <div
+                style={{
+                  height: '200px',
+                  backgroundColor: 'grey'
+                }}
+              >
+                <LoadingSpinner />
+              </div>
+            )}
+            <img
+              src={link}
+              alt={`Selected Images ${idx + 1}/${arr.length}`}
+              onLoad={() => setLoaded(true)}
+            />
+
+            <CarouselCaption
+              captionText={`Image ${idx + 1} of ${arr.length}`}
+            />
+          </CarouselItem>
+        );
+      })}
+      <CarouselControl
+        direction="prev"
+        directionText="Previous"
+        onClickHandler={previous}
+      />
+      <CarouselControl
+        direction="next"
+        directionText="Next"
+        onClickHandler={next}
+      />
+    </Carousel>
   );
 };
 DataFilesCarousel.propTypes = { links: arrayOf(string).isRequired };
@@ -109,32 +110,25 @@ const DataFilesCarouselModal = () => {
   };
 
   return (
-    <>
-      <Modal
-        size="lg"
-        isOpen={isOpen}
-        toggle={toggle}
-        className="dataFilesModal"
-      >
-        <ModalHeader toggle={toggle}>Image Carousel</ModalHeader>
-        <ModalBody>
-          {isEmpty(imageURLs) ? (
-            <LoadingSpinner />
-          ) : (
-            <DataFilesCarousel links={imageURLs} />
-          )}
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            color="secondary"
-            className="data-files-btn-cancel"
-            onClick={toggle}
-          >
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </>
+    <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
+      <ModalHeader toggle={toggle}>Image Carousel</ModalHeader>
+      <ModalBody>
+        {isEmpty(imageURLs) ? (
+          <LoadingSpinner />
+        ) : (
+          <DataFilesCarousel links={imageURLs} />
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          color="secondary"
+          className="data-files-btn-cancel"
+          onClick={toggle}
+        >
+          Close
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 };
 
