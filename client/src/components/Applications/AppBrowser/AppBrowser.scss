@@ -12,11 +12,19 @@
 }
 #appBrowser-sidebar,
 #appBrowser-tray .apps-grid-list {
+  --vertical-buffer: 10px;
   --max-item-count: 5;
+  --min-item-count: 5;
+  --item-height: 34px; /* (~30px design * 1.2 design-to-app ratio) */
+  /* i.e. ( items * item height ) + ( top space & bottom space ) */
+  --height: calc(( var(--min-item-count) * var(--item-height) ) + ( var(--vertical-buffer) * 2 ));
 
   display: inline-grid;
   grid-auto-flow: column;
   grid-template-rows: repeat(var(--max-item-count), min-content);
+  height: var(--height);
+  padding-top: var(--vertical-buffer);
+  padding-bottom: var(--vertical-buffer);
 }
 
 #appBrowser-sidebar {
@@ -24,8 +32,6 @@
     --min-width: 200px;
 
     margin-left: -20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
 }
 #appBrowser-sidebar .nav-item {
     /* Define minimum width of list and minimum width of columns in list */
