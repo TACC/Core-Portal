@@ -47,8 +47,7 @@ module.exports = merge.smart(common, {
               sourceMap: true,
               modules: {
                 localIdentName: '[name]__[local]--[hash:base64:10]'
-              },
-              localsConvention: 'camelCase'
+              }
             }
           },
           {
