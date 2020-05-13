@@ -15,7 +15,7 @@
   --vertical-buffer: 10px;
   --max-item-count: 5;
   --min-item-count: 5;
-  --item-height: 34px; /* (~30px design * 1.2 design-to-app ratio) */
+  --item-height: 35px; /* (~30px design * 1.2 design-to-app ratio) */
   /* i.e. ( items * item height ) + ( top space & bottom space ) */
   --height: calc(( var(--min-item-count) * var(--item-height) ) + ( var(--vertical-buffer) * 2 ));
 
