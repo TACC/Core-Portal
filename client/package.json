@@ -107,6 +107,7 @@
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.1",
     "stylelint": "^13.3.3",
+    "stylelint-config-standard": "^20.0.0",
     "terser-webpack-plugin": "^2.2.2",
     "weak-key": "^1.0.1",
     "webpack": "^4.41.2",

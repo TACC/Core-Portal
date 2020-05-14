@@ -5,7 +5,7 @@
     button {
         border-radius: 0;
         border: 0;
-        font: Bold 12px Roboto;
+        font: bold 12px Roboto, sans-serif;
         background-color: #9D85EF;
         padding: 0.5rem 1rem;
     }
@@ -48,8 +48,8 @@
 }
 #allocations-sidebar {
     width: fit-content;
-    border-right: 1px solid rgba(112, 112, 112, .25);
-    font-family: Roboto;
+    border-right: 1px solid rgba(112, 112, 112, 0.25);
+    font-family: Roboto, sans-serif;
     .nav-link {
         padding: 8px 0 8px 30px;
         display: flex;
@@ -91,7 +91,7 @@
                 padding: 0;
                 vertical-align: text-top;
             }
-            border-bottom: 1px solid rgba(#707070,0.25);
+            border-bottom: 1px solid rgba(#707070, 0.25);
             margin-bottom: 24px;
         }
         thead {
@@ -109,7 +109,7 @@
                 background-color: white;
             }
             color: #707070;
-            font: 14px Roboto;
+            font: 14px Roboto, sans-serif;
         }
         .sub-table-cell {
             background-color: rgba(#c6c6c6, 0.1);
@@ -165,7 +165,7 @@
         overflow-y: scroll;
         padding-left: 0;
         padding-right: 0;
-        border-right: 1px solid rgba(112, 112, 112, .25);
+        border-right: 1px solid rgba(112, 112, 112, 0.25);
     }
     .modal-right {
         display: flex;
@@ -175,7 +175,7 @@
         .contact-card {
             display: flex;
             flex-direction: column;
-            font: 16px Roboto;
+            font: 16px Roboto, sans-serif;
             height: 100%;
             overflow: auto;
             div {
