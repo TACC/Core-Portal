@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTable } from 'react-table';
-import { LoadingSpinner } from '_common';
 import PropTypes from 'prop-types';
+import LoadingSpinner from '../LoadingSpinner';
 import './PaginationTable.scss';
 
 const PaginationLoadingRow = ({ isLoading }) => {

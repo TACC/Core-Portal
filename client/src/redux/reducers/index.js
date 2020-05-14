@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { jobs } from './jobs.reducers';
+import jobs from './jobs.reducers';
 import { app, apps } from './apps.reducers';
 import { systems, files } from './datafiles.reducers';
 import {

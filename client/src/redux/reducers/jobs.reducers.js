@@ -1,4 +1,4 @@
-export function jobs(
+function jobs(
   state = {
     list: [],
     submit: { submitting: false },
@@ -46,3 +46,5 @@ export function jobs(
       return state;
   }
 }
+
+export default jobs;
