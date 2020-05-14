@@ -22,9 +22,8 @@
             "webpackHotModuleReloading": true,
             // WARNING: This MUST match `localIdentName` in `client/webpack.*.js`
             "generateScopedName": "[name]__[local]--[hash:base64:10]",
-            // Allow multiple stylesheets to be imported without requiring
-            // ["Named `styleName` resolution"](https://github.com/gajus/babel-plugin-react-css-modules#named-stylename-resolution)
-            // RFE: Do not allow this, long-term…
+            // Allow multiple stylesheets to be imported without requiring "Named `styleName` resolution"
+            // RFE: Do not allow this long-term, because components should only include one stylesheet
             "autoResolveMultipleImports": true
         }]
     ]

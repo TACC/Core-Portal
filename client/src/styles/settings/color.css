@@ -11,11 +11,11 @@
     --global-color-primary--normal: #AFAFAF;
     --global-color-primary--dark: #707070;
     --global-color-primary--x-dark: #484848;
-    --global-color-primary--xx-dark: #222222; /* For header background, which is styled by CMS styles */
+    --global-color-primary--xx-dark: #222222; /* Unused. For header background, which is styled by CMS styles */
 
     /* Distinct Hues */
     --global-color-accent--normal: #9D85EF;
-        --global-color-accent--light: #9D85EF40; /* `normal` @ 25% opacity */
+        --global-color-accent--light: #9D85EF40; /* Not used, yet. *//* `normal` @ 25% opacity */
     --global-color-success--normal: #43D130;
     --global-color-warning--normal: #C7CE1D;
     --global-color-danger--normal: #EB6E6E;

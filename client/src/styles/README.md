@@ -16,13 +16,13 @@ _This file imports, in [ITCSS][itcss] order, all stylesheets from this directory
 
 Variables for values, media queries, selectors, etc.
 
-_These are __not__ styles. These are variables used to reduce reptition. These can __NOT__ be used via `compose:`._
+_These are __not__ styles. These are variables used to reduce reptition. These can __NOT__ be used via `composes:`._
 
 ## Tools
 
 Mixins, functions, and other processing logic.
 
-_These are __not__ styles. These are tools to create styles. These can __NOT__ be used via `compose:`._
+_These are __not__ styles. These are tools to create styles. These can __NOT__ be used via `composes:`._
 
 ## Generic
 
@@ -34,7 +34,7 @@ _No classes allowed. These can __NOT__ be used via `composes:`._
 
 Styling for bare HTML elements (like `<button>`, `<a>`, `<td>`, etc.).
 
-_No classes allowed. These can __NOT__ be used via `compose:`._
+_No classes allowed. These can __NOT__ be used via `composes:`._
 
 ## Objects
 
