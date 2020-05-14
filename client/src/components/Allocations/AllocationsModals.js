@@ -12,7 +12,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
-import { capitalize } from 'lodash';
+import { capitalize, has } from 'lodash';
 
 const MODAL_PROPTYPES = {
   isOpen: bool.isRequired,
@@ -121,7 +121,10 @@ TeamTable.propTypes = {
 TeamTable.defaultProps = { visible: {}, rawData: [] };
 
 export const TeamView = ({ isOpen, toggle, pid }) => {
-  const { teams, loadingUsernames } = useSelector(state => state.allocations);
+  const { teams, loadingUsernames, errors } = useSelector(
+    state => state.allocations
+  );
+  const error = has(errors.team, pid);
   const [card, setCard] = useState(null);
   const isLoading = loadingUsernames[pid] && loadingUsernames[pid].loading;
   return (
@@ -140,6 +143,13 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
       </ModalHeader>
       <ModalBody className="d-flex p-0">
         <Container>
+          {error && (
+            <Row style={{ height: '50vh' }}>
+              <Col className="d-flex justify-content-center">
+                <span>Unable to retrieve team data.</span>
+              </Col>
+            </Row>
+          )}
           <Row>
             <Col className="modal-left" lg={5}>
               {isLoading ? (

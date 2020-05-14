@@ -6,14 +6,25 @@ const initialState = {
   loadingUsernames: {},
   hosts: {},
   portal_alloc: '',
-  loadingPage: false
+  loadingPage: false,
+  errors: {}
 };
 function allocations(state = initialState, action) {
   switch (action.type) {
     case 'START_ADD_ALLOCATIONS':
-      return { ...state, loading: true };
+      return {
+        ...state,
+        errors: { ...state.errors, allocations: undefined },
+        loading: true
+      };
     case 'ADD_ALLOCATIONS':
       return { ...state, ...action.payload, loading: false };
+    case 'ADD_ALLOCATIONS_ERROR':
+      return {
+        ...state,
+        errors: { ...state.errors, allocations: action.payload },
+        loading: false
+      };
     case 'POPULATE_TEAMS':
       return {
         ...state,
@@ -21,6 +32,17 @@ function allocations(state = initialState, action) {
         loadingUsernames: {
           ...state.loadingUsernames,
           ...action.payload.loadingTeams
+        }
+      };
+    case 'POPULATE_TEAMS_ERROR':
+      return {
+        ...state,
+        errors: {
+          ...state.errors,
+          teams: {
+            ...state.errors.teams,
+            ...action.payload
+          }
         }
       };
     case 'ADD_USERNAMES_TO_TEAM':
