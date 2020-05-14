@@ -4,13 +4,24 @@ import { LoadingSpinner } from '_common';
 import PropTypes from 'prop-types';
 import './PaginationTable.scss';
 
-const PaginationLoadingRow = () => {
+const PaginationLoadingRow = ({ isLoading }) => {
+  if (!isLoading) {
+    return null;
+  }
   return (
     <div className="-loading">
-      <LoadingSpinner placement="inline"/>
+      <LoadingSpinner placement="inline" data-testid="pagination-spinner"/>
     </div>
   )
 }
+PaginationLoadingRow.propTypes = {
+  isLoading: PropTypes.bool.isRequired
+};
+PaginationLoadingRow.defaultProps = {
+  isLoading: false
+};
+
+
 
 const PaginationTable = ({ tableColumns, tableData, onPagination, isLoading }) => {
   const columns = React.useMemo(
@@ -71,15 +82,15 @@ const PaginationTable = ({ tableColumns, tableData, onPagination, isLoading }) =
             </tr>
           )
         })}
-        { isLoading ? <PaginationLoadingRow /> : '' }
+        {<PaginationLoadingRow isLoading={isLoading} />}
       </tbody>
     </table>
   );
 };
 
 PaginationTable.propTypes = {
-  tableColumns: PropTypes.array.isRequired,
-  tableData: PropTypes.array.isRequired,
+  tableColumns: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  tableData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   onPagination: PropTypes.func,
   isLoading: PropTypes.bool
 };
