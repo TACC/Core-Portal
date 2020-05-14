@@ -1,7 +1,16 @@
 import React, { useCallback } from 'react';
 import { useTable } from 'react-table';
+import { LoadingSpinner } from '_common';
 import PropTypes from 'prop-types';
 import './PaginationTable.scss';
+
+const PaginationLoadingRow = () => {
+  return (
+    <div className="-loading">
+      <LoadingSpinner placement="inline"/>
+    </div>
+  )
+}
 
 const PaginationTable = ({ tableColumns, tableData, onPagination, isLoading }) => {
   const columns = React.useMemo(
@@ -10,7 +19,7 @@ const PaginationTable = ({ tableColumns, tableData, onPagination, isLoading }) =
   )
   const data = React.useMemo(
     () => tableData,
-    []
+    [tableData]
   )
 
   const {
@@ -62,6 +71,7 @@ const PaginationTable = ({ tableColumns, tableData, onPagination, isLoading }) =
             </tr>
           )
         })}
+        { isLoading ? <PaginationLoadingRow /> : '' }
       </tbody>
     </table>
   );
@@ -70,12 +80,14 @@ const PaginationTable = ({ tableColumns, tableData, onPagination, isLoading }) =
 PaginationTable.propTypes = {
   tableColumns: PropTypes.array.isRequired,
   tableData: PropTypes.array.isRequired,
-  onPagination: PropTypes.func
+  onPagination: PropTypes.func,
+  isLoading: PropTypes.bool
 };
 PaginationTable.defaultProps = {
   tableColumns: [],
   tableData: [],
-  onPagination: (offset) => { }
+  onPagination: (offset) => { },
+  isLoading: false
 };
 
 export default PaginationTable;

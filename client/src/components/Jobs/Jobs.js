@@ -10,13 +10,19 @@ import { default as jobsList } from './JobsFixture';
 
 function JobsView() {
   const dispatch = useDispatch();
-  const spinnerState = useSelector(state => state.spinner);
-  //const jobs = useSelector(state => state.jobs.list);
-  const jobs = jobsList;
+  const isLoading = useSelector(state => state.jobs.loading);
+  const jobs = useSelector(state => state.jobs.list);
 
   useEffect(() => {
-    dispatch({ type: 'GET_JOBS', params: { limit: 100 } });
+    dispatch({ type: 'GET_JOBS', params: { limit: 20 } });
   }, [dispatch]);
+
+  const paginationCallback = useCallback(
+    (offset) => {
+      dispatch({ type: 'GET_JOBS', params: { offset: offset, limit: 20 } });
+    },
+    []
+  );
 
   const columns = [
     {
@@ -82,12 +88,13 @@ function JobsView() {
     }
   ];
 
-  if (spinnerState) {
-    return <LoadingSpinner />;
-  }
-
   return (
-    <PaginationTable tableColumns={columns} tableData={jobs}/>
+    <PaginationTable 
+      tableColumns={columns} 
+      tableData={jobs}
+      onPagination={paginationCallback}
+      isLoading={isLoading}
+    />
   )
   
 }

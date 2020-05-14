@@ -35,6 +35,13 @@
     tr:hover {
       background-color: rgba(0, 0, 0, 0.05);
     }
+
+    .-loading {
+      width: 100%;
+      padding-top: 0.5em;
+      padding-bottom: 0.5em;
+      text-align: justify;
+    }
   }
 }
 
