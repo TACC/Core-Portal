@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useTable } from 'react-table';
 import PropTypes from 'prop-types';
 import './PaginationTable.scss';
 
-const PaginationTable = ({ tableColumns, tableData }) => {
+const PaginationTable = ({ tableColumns, tableData, onPagination, isLoading }) => {
   const columns = React.useMemo(
     () => tableColumns,
     []
@@ -23,6 +23,13 @@ const PaginationTable = ({ tableColumns, tableData }) => {
     { columns, data }
   )
 
+  const onScroll = ({ target }) => {
+    const bottom = target.scrollHeight - target.scrollTop === target.clientHeight;
+    if (bottom) {
+      onPagination(tableData.length);
+    }
+  }
+
   return (
     <table {...getTableProps()} className="PaginationTable">
       <thead>
@@ -38,7 +45,7 @@ const PaginationTable = ({ tableColumns, tableData }) => {
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()}>
+      <tbody {...getTableBodyProps()} onScroll={onScroll}>
         {rows.map(row => {
           prepareRow(row)
           return (
@@ -61,12 +68,14 @@ const PaginationTable = ({ tableColumns, tableData }) => {
 };
 
 PaginationTable.propTypes = {
-  tableColumns: PropTypes.array,
-  tableData: PropTypes.array
+  tableColumns: PropTypes.array.isRequired,
+  tableData: PropTypes.array.isRequired,
+  onPagination: PropTypes.func
 };
 PaginationTable.defaultProps = {
   tableColumns: [],
-  tableData: []
+  tableData: [],
+  onPagination: (offset) => { }
 };
 
 export default PaginationTable;
