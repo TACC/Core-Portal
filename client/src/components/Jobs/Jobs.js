@@ -16,7 +16,14 @@ function JobsView() {
   }, [dispatch]);
 
   const paginationCallback = useCallback(offset => {
-    dispatch({ type: 'GET_JOBS', params: { offset, limit: 20 } });
+    // The only way we have some semblance of 
+    // knowing whether or not there are more jobs 
+    // is if the number of jobs is not a multiple
+    // of the pagination limit. 
+    // i.e., you asked for 100 jobs but got 96.
+    if (offset % 20 == 0) {
+      dispatch({ type: 'GET_JOBS', params: { offset, limit: 20 } });
+    }
   }, []);
 
   const columns = [
