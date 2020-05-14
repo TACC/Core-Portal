@@ -1,10 +1,13 @@
 module.exports = {
-  ignoreFiles: [
-    'build/**/*'
-  ],
-  // SEE: https://github.com/stylelint/stylelint-config-recommended#stylelint-config-recommended
-  // SEE: https://github.com/stylelint/stylelint-config-standard#example
+  ignoreFiles: ['build/**/*'],
+
+  // `stylelint-config-recommended` turns on all the "possible errors" rules
+  // SEE: Rules: https://stylelint.io/user-guide/rules/list#possible-errors
+  // `stylelint-config-standard` enforces common stylistic conventions
+  // SEE: CSS: https://github.com/stylelint/stylelint-config-standard#example
+  // SEE: Rules: https://github.com/stylelint/stylelint-config-standard/blob/master/index.js
   extends: 'stylelint-config-standard',
+
   // SEE: https://stylelint.io/user-guide/rules/list
   rules: {
     //
