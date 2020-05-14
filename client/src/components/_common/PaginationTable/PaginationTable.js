@@ -10,7 +10,7 @@ const PaginationLoadingRow = ({ isLoading }) => {
   }
   return (
     <div className="-loading">
-      <LoadingSpinner placement="inline" data-testid="pagination-spinner"/>
+      <LoadingSpinner placement="inline"/>
     </div>
   )
 }
