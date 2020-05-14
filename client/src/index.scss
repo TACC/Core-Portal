@@ -95,8 +95,8 @@ body > .content {
   font-display: block;
 }
 
-[class^="icon-"]:before,
-[class*=" icon-"]:before/*,
+[class^="icon-"]::before,
+[class*=" icon-"]::before/*,
 [class^="icon-"],
 [class*=" icon-"] */ {
   /* use !important to prevent issues with browser extensions that change fonts */
@@ -112,51 +112,51 @@ body > .content {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-action-expand:before {
+.icon-action-expand::before {
   content: "\59";
 }
-.icon-nav-allocation:before {
+.icon-nav-allocation::before {
   content: "\61";
 }
-.icon-action-copy:before {
+.icon-action-copy::before {
   content: "\63";
 }
-.icon-action-download:before {
+.icon-action-download::before {
   content: "\64";
 }
-.icon-action-rename:before {
+.icon-action-rename::before {
   content: "\65";
 }
-.icon-nav-folder:before {
+.icon-nav-folder::before {
   content: "\66";
 }
-.icon-nav-application:before {
+.icon-nav-application::before {
   content: "\69";
 }
-.icon-action-move:before {
+.icon-action-move::before {
   content: "\6d";
 }
-.icon-nav-notification:before {
+.icon-nav-notification::before {
   content: "\6e";
 }
-.icon-nav-dashboard:before {
+.icon-nav-dashboard::before {
   content: "\6f";
 }
-.icon-nav-jupyter:before {
+.icon-nav-jupyter::before {
   content: "\70";
 }
-.icon-action-trash:before {
+.icon-action-trash::before {
   content: "\74";
 }
-.icon-action-upload:before {
+.icon-action-upload::before {
   content: "\79";
 }
-.icon-action-collapse:before {
+.icon-action-collapse::before {
   content: "\7A";
 }
-.icon-action-loading:before {
+.icon-action-loading::before {
   content: "\FA";
 }
-.icon-action-close:before {
+.icon-action-close::before {
   content: "E900";
 }

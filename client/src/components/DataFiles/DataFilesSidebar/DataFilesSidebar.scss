@@ -54,7 +54,7 @@ $frontera-portal-color-primary: #9d85ef;
   width: 200px;
   vertical-align: top;
 }
-.dropdown-menu:before {
+.dropdown-menu::before {
   position: absolute;
   top: -10px;
   left: 65px;
@@ -63,7 +63,7 @@ $frontera-portal-color-primary: #9d85ef;
   border-left: 10px solid transparent;
   content: '';
 }
-.dropdown-menu:after {
+.dropdown-menu::after {
   position: absolute;
 	top: -9px;
 	left: 66px;

@@ -69,7 +69,7 @@
   color: white;
 }
 
-.workbench-content .ReactTable .rt-thead.-header  {
+.workbench-content .ReactTable .rt-thead.-header {
   box-shadow: none;
   border-bottom: 1px solid #707070;
   font-weight: 500;
@@ -83,8 +83,8 @@
   border-bottom: 1px solid rgba(112, 112, 112, 0.25);
 }
 
-.workbench-content .ReactTable .rt-thead .rt-th.-sort-asc:after,
-.ReactTable .rt-thead .rt-td.-sort-asc:after {
+.workbench-content .ReactTable .rt-thead .rt-th.-sort-asc::after,
+.ReactTable .rt-thead .rt-td.-sort-asc::after {
   margin-left: 5px;
   font-family: "Font Awesome 5 Free";
   content: "\f0dd";
@@ -102,8 +102,8 @@
   color: #484848;
 }
 
-.workbench-content .ReactTable .rt-thead .rt-th.-sort-desc:after,
-.ReactTable .rt-thead .rt-td.-sort-desc:after {
+.workbench-content .ReactTable .rt-thead .rt-th.-sort-desc::after,
+.ReactTable .rt-thead .rt-td.-sort-desc::after {
   margin-left: 5px;
   font-family: "Font Awesome 5 Free";
   content: "\f0de";

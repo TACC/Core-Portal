@@ -359,21 +359,21 @@ module.exports = {
     // Require or disallow an empty line before the closing brace of blocks (Autofixable).
     'block-closing-brace-empty-line-before': null,
     // Require a newline or disallow whitespace after the closing brace of blocks (Autofixable).
-    'block-closing-brace-newline-after': null,
+    'block-closing-brace-newline-after': 'always',
     // Require a newline or disallow whitespace before the closing brace of blocks (Autofixable).
-    'block-closing-brace-newline-before': null,
+    'block-closing-brace-newline-before': 'always-multi-line',
     // Require a single space or disallow whitespace after the closing brace of blocks.
-    'block-closing-brace-space-after': null,
+    'block-closing-brace-space-after': null, // Irrelevant, because `'block-closing-brace-newline-after': 'always'`
     // Require a single space or disallow whitespace before the closing brace of blocks (Autofixable).
-    'block-closing-brace-space-before': null,
+    'block-closing-brace-space-before': 'always-single-line',
     // Require a newline after the opening brace of blocks (Autofixable).
-    'block-opening-brace-newline-after': null,
+    'block-opening-brace-newline-after': 'always-multi-line',
     // Require a newline or disallow whitespace before the opening brace of blocks (Autofixable).
-    'block-opening-brace-newline-before': null,
+    'block-opening-brace-newline-before': 'never-single-line',
     // Require a single space or disallow whitespace after the opening brace of blocks (Autofixable).
-    'block-opening-brace-space-after': null,
+    'block-opening-brace-space-after': 'always-single-line',
     // Require a single space or disallow whitespace before the opening brace of blocks (Autofixable).
-    'block-opening-brace-space-before': null,
+    'block-opening-brace-space-before': 'always',
 
     // SELECTOR
     // Require a single space or disallow whitespace on the inside of the brackets within attribute selectors (Autofixable).

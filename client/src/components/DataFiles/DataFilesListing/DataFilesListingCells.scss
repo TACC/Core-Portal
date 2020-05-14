@@ -17,7 +17,7 @@
   position: relative;
 }
 
-.scroll-fade:after {
+.scroll-fade::after {
   position: absolute;
   bottom: 0;
   height: 70px;

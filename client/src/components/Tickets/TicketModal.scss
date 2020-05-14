@@ -1,5 +1,5 @@
 .ticket-detailed-view-container,
-.ticket-detailed-view-container .row{
+.ticket-detailed-view-container .row {
   height: 100%;
 }
 
@@ -18,7 +18,7 @@
   flex-direction: column;
 }
 
-.ticket-reply-group{
+.ticket-reply-group {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -95,7 +95,7 @@ toggle-icon {
   }
 
   /* Ensure that modal title takes up space but allows room for close button */
-  .modal-title{
+  .modal-title {
     width: 90%
   }
   .modal-header-title {
