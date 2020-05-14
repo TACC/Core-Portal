@@ -103,7 +103,7 @@ module.exports = {
     // Disallow duplicate @import rules within a stylesheet.
     // 'no-duplicate-at-import-rules': null,
     // Disallow duplicate selectors within a stylesheet.
-    'no-duplicate-selectors': null, // TODO: Turn this on after CSS Modules is heavily used
+    'no-duplicate-selectors': null, // TODO: Uncomment to enable this after CSS Modules is heavily used
                                     //       (duplicate selectors can help separate contexts)
     // Disallow empty sources.
     // 'no-empty-source': null,
