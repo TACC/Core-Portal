@@ -1,4 +1,4 @@
-export const jobsList = [
+const jobsList = [
   {
     id: '44e27d58-11ef-4839-8856-d722d788379f-007',
     name: 'seir-city-covid19-1.2.0_2020-05-01T14:44:30',
@@ -2100,3 +2100,5 @@ export const jobsList = [
     }
   }
 ];
+
+export default jobsList;
