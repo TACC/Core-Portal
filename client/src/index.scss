@@ -87,7 +87,8 @@ body > .content {
   Designed at TACC.
 */
 @font-face {
-  font-family: 'core-portal';
+  font-family: 'core-portal'; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
+                              /* WARNING: This block of code moves in PR #26 */
   src: url('./fonts/core-portal-V2.1.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
@@ -99,7 +100,8 @@ body > .content {
 [class^="icon-"],
 [class*=" icon-"] */ {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'core-portal' !important;
+  font-family: 'core-portal' !important; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
+                                         /* WARNING: This block of code moves in PR #26 */
   font-style: normal;
   font-weight: normal;
   font-variant: normal;

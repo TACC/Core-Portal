@@ -86,7 +86,7 @@
 .workbench-content .ReactTable .rt-thead .rt-th.-sort-asc::after,
 .ReactTable .rt-thead .rt-td.-sort-asc::after {
   margin-left: 5px;
-  font-family: "Font Awesome 5 Free"; /* stylelint-disable font-family-no-missing-generic-family-keyword */
+  font-family: "Font Awesome 5 Free"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
   content: "\f0dd";
   display: inline-block;
   vertical-align: middle;
@@ -105,7 +105,7 @@
 .workbench-content .ReactTable .rt-thead .rt-th.-sort-desc::after,
 .ReactTable .rt-thead .rt-td.-sort-desc::after {
   margin-left: 5px;
-  font-family: "Font Awesome 5 Free"; /* stylelint-disable font-family-no-missing-generic-family-keyword */
+  font-family: "Font Awesome 5 Free"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
   content: "\f0de";
   display: inline-block;
   vertical-align: middle;

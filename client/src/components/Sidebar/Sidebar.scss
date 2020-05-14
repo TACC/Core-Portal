@@ -23,7 +23,7 @@
 
 #sidebar .nav-text {
   padding-left: 20px;
-  font-size: .78em;
+  font-size: 0.78em; /* WARNING: This line of code is changed in PR #26; it's value (of 0.75) is desirable */
   font-weight: 500;
 }
 
