@@ -2,6 +2,7 @@ module.exports = {
   ignoreFiles: [
     'build/**/*'
   ],
+  // SEE: https://stylelint.io/user-guide/rules/list
   rules: {
     //
     // POSSIBLE ERRORS
@@ -376,29 +377,29 @@ module.exports = {
 
     // SELECTOR
     // Require a single space or disallow whitespace on the inside of the brackets within attribute selectors (Autofixable).
-    'selector-attribute-brackets-space-inside': null,
+    'selector-attribute-brackets-space-inside': 'never',
     // Require a single space or disallow whitespace after operators within attribute selectors (Autofixable).
-    'selector-attribute-operator-space-after': null,
+    'selector-attribute-operator-space-after': 'never',
     // Require a single space or disallow whitespace before operators within attribute selectors (Autofixable).
-    'selector-attribute-operator-space-before': null,
+    'selector-attribute-operator-space-before': 'never',
     // Require or disallow quotes for attribute values.
-    'selector-attribute-quotes': null,
+    'selector-attribute-quotes': 'always',
     // Require a single space or disallow whitespace after the combinators of selectors (Autofixable).
-    'selector-combinator-space-after': null,
+    'selector-combinator-space-after': 'always',
     // Require a single space or disallow whitespace before the combinators of selectors (Autofixable).
-    'selector-combinator-space-before': null,
+    'selector-combinator-space-before': 'always',
     // Disallow non-space characters for descendant combinators of selectors (Autofixable).
-    'selector-descendant-combinator-no-non-space': null,
+    'selector-descendant-combinator-no-non-space': true,
     // Specify lowercase or uppercase for pseudo-class selectors (Autofixable).
-    'selector-pseudo-class-case': null,
+    'selector-pseudo-class-case': 'lower',
     // Require a single space or disallow whitespace on the inside of the parentheses within pseudo-class selectors (Autofixable).
-    'selector-pseudo-class-parentheses-space-inside': null,
+    'selector-pseudo-class-parentheses-space-inside': 'never',
     // Specify lowercase or uppercase for pseudo-element selectors (Autofixable).
-    'selector-pseudo-element-case': null,
+    'selector-pseudo-element-case': 'lower',
     // Specify single or double colon notation for applicable pseudo-elements (Autofixable).
-    'selector-pseudo-element-colon-notation': null,
+    'selector-pseudo-element-colon-notation': 'double',
     // Specify lowercase or uppercase for type selectors (Autofixable).
-    'selector-type-case': null,
+    'selector-type-case': null, // WARNING: Do not use, yet; requires regex, and has bugs (as of 2020-05-14)
 
     // SELECTOR LIST
     // Require a newline or disallow whitespace after the commas of selector lists (Autofixable).
