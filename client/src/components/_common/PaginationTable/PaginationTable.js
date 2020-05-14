@@ -23,8 +23,9 @@ const PaginationTable = ({ tableColumns, tableData }) => {
     { columns, data }
   )
 
+  /* TODO: After, FP-103, use `composes:` to apply `o-fixed-header-table` */
   return (
-    <table {...getTableProps()} className="PaginationTable">
+    <table {...getTableProps()} className="PaginationTable o-fixed-header-table">
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>

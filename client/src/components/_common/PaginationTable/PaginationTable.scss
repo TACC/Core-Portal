@@ -1,4 +1,6 @@
 .PaginationTable {
+  --fixed-header-table--body-height: 30vh; /* calculated by guess & check */
+
   position: relative;
   align-items: stretch;
   width: 100%;
@@ -32,4 +34,74 @@
       background-color: rgba(0, 0, 0, 0.05);
     }
   }
+}
+
+
+
+
+
+/* TODO: After, FP-103, use `composes:` to apply `o-fixed-header-table` */
+/*
+Fixed Header Table
+
+A table with a header that does not move, and a body that scrolls.
+
+> __Warning__: This forces table to become a fixed layout, and requires manually calculated column widths
+
+Properties:
+- `--fixed-header-table--body-height: 100px` - The height of the body of the table.
+
+Markup:
+<table class="fixed-header-table">
+    <thead>
+      <tr>
+        <th>A</th>
+        <th>B</th>
+        <th>C</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>A</td>
+        <td>B</td>
+        <td>C</td>
+      </tr>
+    </thead>
+</table>
+
+Styleguide Objects.FixedHeaderTable
+*/
+.o-fixed-header-table {
+  --body-height: 100px;
+
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.o-fixed-header-table thead tr {
+  display: block;
+}
+.o-fixed-header-table tbody {
+  display: block;
+  overflow: auto;
+  width: 100%;
+  height: var(--fixed-header-table--body-height, var(--body-height));
+}
+
+
+
+
+
+/* TODO: Create these styles for the "user"/"client" component */
+/* !!!: Edit `PaginationTable` to be the root class of the "user"/"client" component */
+/* Manually calculated column widths because table layout is fixed by table component */
+.PaginationTable {
+  th:nth-child(1),
+  td:nth-child(1) { width: 20%; }
+  th:nth-child(2),
+  td:nth-child(2) { width: 50%; }
+  th:nth-child(3),
+  td:nth-child(3) { width: 15%; }
+  th:nth-child(4),
+  td:nth-child(4) { width: 15%; }
 }
