@@ -52,7 +52,7 @@
     white-space: pre-wrap;
   }
 
-  .ticket-creator {
+  .ticket-responder {
     color: #9d85ef
   }
 
@@ -98,6 +98,18 @@
   }
   .modal-header-title {
     width: 100%
+  }
+
+  /* ticket header specific styles */
+  .ticket-id {
+    color: #707070;
+  }
+  /* Visual separation for subject preceded by ID */
+  .ticket-id + .ticket-subject::before {
+    content: '|';
+    display: inline-block;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
   }
 
   /* make bootstrap dialog wider */
