@@ -1,0 +1,35 @@
+.PaginationTable {
+  position: relative;
+  align-items: stretch;
+  width: 100%;
+  overflow: scroll;
+  border-bottom: 1px solid #707070;
+
+  thead {
+    user-select: none;
+    color: #707070;
+    border-bottom: 1px solid #707070;
+
+    th {
+      padding-right: 1em;
+    }
+
+    .-sort-asc, .sort-desc {
+      color: #484848;
+    }
+  }
+
+  tbody {
+    overflow-y: scroll;
+    tr {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    tr:nth-child(odd) {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+    tr:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+}

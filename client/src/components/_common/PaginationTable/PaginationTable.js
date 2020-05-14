@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTable } from 'react-table';
 import PropTypes from 'prop-types';
-import './LoadMoreTable.scss';
+import './PaginationTable.scss';
 
-const LoadMoreTable = ({ tableColumns, tableData }) => {
+const PaginationTable = ({ tableColumns, tableData }) => {
   const columns = React.useMemo(
     () => tableColumns,
     []
@@ -24,7 +24,7 @@ const LoadMoreTable = ({ tableColumns, tableData }) => {
   )
 
   return (
-    <table {...getTableProps()}>
+    <table {...getTableProps()} className="PaginationTable">
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -38,7 +38,7 @@ const LoadMoreTable = ({ tableColumns, tableData }) => {
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()} className="jobs-table-body">
+      <tbody {...getTableBodyProps()}>
         {rows.map(row => {
           prepareRow(row)
           return (
@@ -60,13 +60,13 @@ const LoadMoreTable = ({ tableColumns, tableData }) => {
   );
 };
 
-LoadMoreTable.propTypes = {
+PaginationTable.propTypes = {
   tableColumns: PropTypes.array,
   tableData: PropTypes.array
 };
-LoadMoreTable.defaultProps = {
+PaginationTable.defaultProps = {
   tableColumns: [],
   tableData: []
 };
 
-export default LoadMoreTable;
+export default PaginationTable;
