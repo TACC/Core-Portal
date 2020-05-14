@@ -1,12 +1,10 @@
 import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { useTable } from 'react-table';
 import 'react-table-6/react-table.css';
-import { LoadingSpinner, PaginationTable } from '_common';
+import { PaginationTable } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
-import { default as jobsList } from './JobsFixture';
 
 function JobsView() {
   const dispatch = useDispatch();
