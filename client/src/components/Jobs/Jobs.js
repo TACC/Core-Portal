@@ -6,7 +6,7 @@ import 'react-table-6/react-table.css';
 import { LoadingSpinner, LoadMoreTable } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
-import { jobsList } from './JobsFixture';
+import { default as jobsList } from './JobsFixture';
 
 function JobsView() {
   const dispatch = useDispatch();
