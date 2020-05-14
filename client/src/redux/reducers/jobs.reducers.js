@@ -1,27 +1,27 @@
-export function spinner(state = false, action) {
-  switch (action.type) {
-    case 'SHOW_SPINNER':
-      return true;
-    case 'HIDE_SPINNER':
-      return false;
-    default:
-      return state;
-  }
-}
-
 export function jobs(
   state = {
     list: [],
-    submit: { submitting: false }
+    submit: { submitting: false },
+    loading: false
   },
   action
 ) {
   switch (action.type) {
+    case 'JOBS_LIST_START':
+      return {
+        ...state,
+        loading: true
+      };
     case 'JOBS_LIST':
       return {
         ...state,
-        list: action.payload
+        list: state.list.concat(action.payload)
       };
+    case 'JOBS_LIST_FINISH':
+      return {
+        ...state,
+        loading: false
+      }
     case 'TOGGLE_SUBMITTING':
       return {
         ...state,
