@@ -21,7 +21,7 @@ export function jobs(
       return {
         ...state,
         loading: false
-      }
+      };
     case 'TOGGLE_SUBMITTING':
       return {
         ...state,

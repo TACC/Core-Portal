@@ -61,7 +61,7 @@ const jobsList = [
           'https://portals-api.tacc.utexas.edu/files/v2/listings/system/frontera.home.username/archive'
       }
     }
-  },
+  }
 ];
 
 export default jobsList;

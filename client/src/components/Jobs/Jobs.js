@@ -15,12 +15,9 @@ function JobsView() {
     dispatch({ type: 'GET_JOBS', params: { limit: 20 } });
   }, [dispatch]);
 
-  const paginationCallback = useCallback(
-    (offset) => {
-      dispatch({ type: 'GET_JOBS', params: { offset: offset, limit: 20 } });
-    },
-    []
-  );
+  const paginationCallback = useCallback(offset => {
+    dispatch({ type: 'GET_JOBS', params: { offset, limit: 20 } });
+  }, []);
 
   const columns = [
     {
@@ -87,14 +84,13 @@ function JobsView() {
   ];
 
   return (
-    <PaginationTable 
-      tableColumns={columns} 
+    <PaginationTable
+      tableColumns={columns}
       tableData={jobs}
       onPagination={paginationCallback}
       isLoading={isLoading}
     />
-  )
-  
+  );
 }
 
 export default JobsView;

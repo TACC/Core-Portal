@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
 import PropTypes from 'prop-types';
@@ -10,45 +10,38 @@ const PaginationLoadingRow = ({ isLoading }) => {
   }
   return (
     <div className="-loading">
-      <LoadingSpinner placement="inline"/>
+      <LoadingSpinner placement="inline" />
     </div>
-  )
-}
+  );
+};
 PaginationLoadingRow.propTypes = {
   isLoading: PropTypes.bool.isRequired
 };
-PaginationLoadingRow.defaultProps = {
-  isLoading: false
-};
 
-
-
-const PaginationTable = ({ tableColumns, tableData, onPagination, isLoading }) => {
-  const columns = React.useMemo(
-    () => tableColumns,
-    []
-  )
-  const data = React.useMemo(
-    () => tableData,
-    [tableData]
-  )
+const PaginationTable = ({
+  tableColumns,
+  tableData,
+  onPagination,
+  isLoading
+}) => {
+  const columns = React.useMemo(() => tableColumns, []);
+  const data = React.useMemo(() => tableData, [tableData]);
 
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
-    prepareRow,
-  } = useTable(
-    { columns, data }
-  )
+    prepareRow
+  } = useTable({ columns, data });
 
   const onScroll = ({ target }) => {
-    const bottom = target.scrollHeight - target.scrollTop === target.clientHeight;
+    const bottom =
+      target.scrollHeight - target.scrollTop === target.clientHeight;
     if (bottom) {
       onPagination(tableData.length);
     }
-  }
+  };
 
   return (
     <table {...getTableProps()} className="PaginationTable">
@@ -56,31 +49,21 @@ const PaginationTable = ({ tableColumns, tableData, onPagination, isLoading }) =
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map(column => (
-              <th
-                {...column.getHeaderProps()}
-              >
-                {column.render('Header')}
-              </th>
+              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
             ))}
           </tr>
         ))}
       </thead>
       <tbody {...getTableBodyProps()} onScroll={onScroll}>
         {rows.map(row => {
-          prepareRow(row)
+          prepareRow(row);
           return (
             <tr {...row.getRowProps()}>
               {row.cells.map(cell => {
-                return (
-                  <td
-                    {...cell.getCellProps()}
-                  >
-                    {cell.render('Cell')}
-                  </td>
-                )
+                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}
             </tr>
-          )
+          );
         })}
         {<PaginationLoadingRow isLoading={isLoading} />}
       </tbody>
@@ -95,9 +78,7 @@ PaginationTable.propTypes = {
   isLoading: PropTypes.bool
 };
 PaginationTable.defaultProps = {
-  tableColumns: [],
-  tableData: [],
-  onPagination: (offset) => { },
+  onPagination: offset => {},
   isLoading: false
 };
 
