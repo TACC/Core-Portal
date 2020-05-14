@@ -31,7 +31,7 @@ FIXTURE_DIRS = [
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'change_me'
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 # Cookie name. this can be whatever you want
 SESSION_COOKIE_NAME = 'coresessionid'
 # the module to store sessions data
@@ -259,47 +259,16 @@ FIXTURE_DIRS = [
     os.path.join(BASE_DIR, 'fixtures'),
 ]
 
-"""
-SETTINGS: LOCAL
-"""
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEBUG = 'True'
-
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dev',
-        'USER': 'dev',
-        'PASSWORD': 'dev',
-        'HOST': 'frontera_prtl_postgres',
-        'PORT': '5432'
-    }
-}
-
-WS4REDIS_CONNECTION = {
-    'host': 'frontera_prtl_redis',
-}
 WEBSOCKET_URL = '/ws/'
 
 # TAS Auth
 TAS_URL = 'https://tas.tacc.utexas.edu/api'
-TAS_CLIENT_KEY = ''
-TAS_CLIENT_SECRET = ''
 
 REQUEST_ACCESS = True
 
 # Redmine Tracker Authentication.
 RT_HOST = 'https://consult.tacc.utexas.edu/REST/1.0'
-RT_UN = ''
-RT_PW = ''
-RT_QUEUE = ''
-RT_TAG = ''
 
-# Recaptcha Authentication.
-RECAPTCHA_PUBLIC_KEY = ''
-RECAPTCHA_PRIVATE_KEY = ''
 RECAPTCHA_USE_SSL = 'True'
 
 # Google Analytics.
@@ -391,14 +360,6 @@ SETTINGS: AGAVE
 AGAVE_TENANT_ID = 'portals'
 AGAVE_TENANT_BASEURL = 'https://portals-api.tacc.utexas.edu'
 
-# Agave Client Configuration
-AGAVE_CLIENT_KEY = ''
-AGAVE_CLIENT_SECRET = ''
-AGAVE_SUPER_TOKEN = ''
-AGAVE_STORAGE_SYSTEM = 'frontera.storage.default'
-AGAVE_COMMUNITY_DATA_SYSTEM = 'frontera.storage.community'
-AGAVE_PUBLIC_DATA_SYSTEM = 'frontera.storage.public'
-PORTAL_ADMIN_USERNAME = 'wma_prtl'
 
 AGAVE_JWT_PUBKEY = (
     'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzO\n'
@@ -475,8 +436,7 @@ CKEDITOR_SETTINGS = {
 }
 
 
-DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = RECAPTCHA_PUBLIC_KEY
-DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = RECAPTCHA_PRIVATE_KEY
+
 
 # Media Plugins.
 DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
@@ -489,36 +449,6 @@ SETTINGS: CELERY
 """
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-BROKER_URL_PROTOCOL = 'amqp://'
-BROKER_URL_USERNAME = 'dev'
-BROKER_URL_PWD = 'dev'
-BROKER_URL_HOST = 'frontera_prtl_rabbitmq'
-BROKER_URL_PORT = '5672'
-BROKER_URL_VHOST = 'dev'
-
-CELERY_BROKER_URL = ''.join(
-    [
-        BROKER_URL_PROTOCOL, BROKER_URL_USERNAME, ':',
-        BROKER_URL_PWD, '@', BROKER_URL_HOST, ':',
-        BROKER_URL_PORT, '/', BROKER_URL_VHOST
-    ]
-)
-
-RESULT_BACKEND_PROTOCOL = 'redis://'
-RESULT_BACKEND_USERNAME = 'dev'
-RESULT_BACKEND_PWD = 'dev'
-RESULT_BACKEND_HOST = 'frontera_prtl_redis'
-RESULT_BACKEND_PORT = '6379'
-RESULT_BACKEND_DB = '0'
-
-CELERY_RESULT_BACKEND = ''.join(
-    [
-        RESULT_BACKEND_PROTOCOL,
-        RESULT_BACKEND_HOST, ':', RESULT_BACKEND_PORT,
-        '/', RESULT_BACKEND_DB
-    ]
-)
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
@@ -601,19 +531,6 @@ PORTAL_SEARCH_MANAGERS = {
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
-"""
-SETTINGS: EXTERNAL DATA RESOURCES
-"""
-
-EXTERNAL_RESOURCE_SECRETS = {
-    "google-drive": {
-        "client_secret": "this_is_a_secret",
-        "client_id": "428879134432-hkjhstfe39lj5o0o8l6s57ut0ql4aks5.apps.googleusercontent.com",
-        "name": "Google Drive",
-        "directory": "external-resources"
-    }
-}
-
 
 PORTAL_WORKSPACE_MANAGERS = {
     'private': 'portal.apps.workspace.managers.private.FileManager',
@@ -633,32 +550,6 @@ TOOLBAR_OPTIONS = {
 }
 
 AGAVE_DEFAULT_TRASH_NAME = '.Trash'
-
-PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'frontera.home.{}'
-
-PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/corral-repl/tacc/aci/CEP/home_dirs/'
-
-PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
-
-PORTAL_DATA_DEPOT_STORAGE_HOST = 'frontera.tacc.utexas.edu'
-
-PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = 'frontera.project'
-
-PORTAL_PROJECTS_NAME_PREFIX = 'frontera.project'
-
-PORTAL_NAMESPACE = 'frontera'
-
-PORTAL_PROJECTS_ID_PREFIX = lambda PORTAL_NAMESPACE : PORTAL_NAMESPACE.upper()
-
-PORTAL_PROJECTS_ROOT_DIR = 'data.tacc.utexas.edu'
-
-PORTAL_PROJECTS_ROOT_SYSTEM_NAME = lambda PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX : '{}.root'.format(PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX)
-
-PORTAL_PROJECTS_ROOT_HOST = 'data.tacc.utexas.edu'
-
-PORTAL_PROJECTS_PRIVATE_KEY = ''
-
-PORTAL_PROJECTS_PUBLIC_KEY = ''
 
 COMMUNITY_INDEX_SCHEDULE = {}
 
@@ -685,10 +576,6 @@ PORTAL_PROJECTS_SYSTEM_PORT = 22
 
 PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/home1'
 
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'frontera'
-
-PORTAL_APPS_METADATA_NAMES = ["portal_apps", "test_apps", "utrc_apps"]
-
 PORTAL_APPS_DEFAULT_TAB = ''
 
 PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
@@ -699,10 +586,6 @@ PORTAL_JUPYTER_URL = 'https://jupyter.tacc.cloud'
 PORTAL_JUPYTER_SYSTEM_MAP = {"frontera.home.{username}": "/tacc-work",}
 
 WH_BASE_URL = 'https://acb3eed5.ngrok.io'
-
-PORTAL_DOMAIN = 'cep.dev'
-
-PORTAL_ALLOCATION = 'TACC-ACI'
 
 ALLOCATION_SYSTEMS = []
 
@@ -716,19 +599,6 @@ REQUIRED_PROJECTS = []
 SETTINGS: ELASTICSEARCH
 """
 
-ES_HOSTS = 'frontera_prtl_elasticsearch:9200'
-ES_AUTH = 'dev:esauth'
-
-ES_INDEX_PREFIX = 'frontera-staging-{}'
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': ES_HOSTS,
-        'INDEX_NAME': ES_INDEX_PREFIX.format('cms'),
-        'KWARGS': {'http_auth': ES_AUTH}
-    }
-}
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
@@ -796,6 +666,6 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_IPYNB_PREVIEW_EXTS)
 
 try:
-   from portal.settings.settings_secret import *
+   from portal.settings.settings_custom import *
 except ImportError:
-    raise Exception("No settings_secret.py file found")
+    raise Exception("No settings_custom.py file found")

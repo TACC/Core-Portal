@@ -1,9 +1,12 @@
 .git
 .cache
 **/settings_secret.py
+**/settings_custom.py
 **/node_modules/*
 **/client/build/*
 server/cms
 server/static
 server/media
 devops
+*settings_secret.py
+*settings_custom.py
