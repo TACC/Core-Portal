@@ -11,9 +11,7 @@ const PaginationLoadingRow = ({ isLoading }) => {
   return (
     <tr className="-loading">
       <td>
-        <LoadingSpinner
-          placement="inline" 
-        />
+        <LoadingSpinner placement="inline" />
       </td>
     </tr>
   );
