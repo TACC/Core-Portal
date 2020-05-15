@@ -184,6 +184,16 @@ export const ChangePassword = () => {
     </div>
   );
 };
+const WebsiteCell = ({ cell: { value } }) => <a href={value}>{value}</a>;
+WebsiteCell.propTypes = {
+  cell: shape({ value: string })
+};
+WebsiteCell.defaultProps = { cell: { value: '' } };
+const OrcidCell = ({ cell: { value } }) => (
+  <a href={`https://orchid.org/${value}`}>{value}</a>
+);
+OrcidCell.propTypes = WebsiteCell.propTypes;
+OrcidCell.defaultProps = WebsiteCell.defaultProps;
 export const OptionalInformation = () => {
   const {
     data: { demographics },
@@ -192,8 +202,16 @@ export const OptionalInformation = () => {
   const dispatch = useDispatch();
   const columns = useMemo(
     () => [
-      { Header: 'My Website', accessor: 'website' },
-      { Header: 'Orcid ID', accessor: 'orcid_id' },
+      {
+        Header: 'My Website',
+        accessor: 'website',
+        Cell: WebsiteCell
+      },
+      {
+        Header: 'Orcid ID',
+        accessor: 'orcid_id',
+        Cell: OrcidCell
+      },
       { Header: 'Professional Level', accessor: 'professional_level' },
       {
         Header: 'Research Bio',

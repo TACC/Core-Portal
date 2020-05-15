@@ -13,11 +13,11 @@ const ChangePasswordFormBody = ({ canSubmit }) => {
   const Requirements = () => (
     <div style={{ color: '#707070', fontStyle: 'italic' }}>
       <span>Passwords must meet the following criteria:</span>
-      <ul style={{ listStyleType: 'none', paddingLeft: '1rem' }}>
+      <ul style={{ paddingLeft: '1rem' }}>
         <li>Must not contain your username or parts of your full name;</li>
         <li>Must be a minimum of 8 characters in length</li>
         <li>Must contain characters from at least three of the following:</li>
-        <li style={{ paddingLeft: '1rem' }}>
+        <li style={{ marginLeft: '1rem' }}>
           Uppercase letters, lowercase letters, numbers, symbols
         </li>
       </ul>
@@ -95,6 +95,10 @@ export default function() {
       .notOneOf(
         [ref('currentPW')],
         'Your new password must be different from your old password'
+      )
+      .matches(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+        'Must Contain at least three of the following: One Uppercase, One Lowercase, One Number and One special character'
       )
       .required('Required'),
     confirmNewPW: str()

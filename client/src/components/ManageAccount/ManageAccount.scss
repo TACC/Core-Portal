@@ -62,7 +62,6 @@
 // Tables
 .manage-account-table {
   font-size: 14px;
-  color: #707070;
   table-layout: fixed;
   line-height: 2.3rem;
   td, th {
@@ -78,9 +77,11 @@
   }
   th {
     font-weight: normal;
+    color: #707070;
   }
   td {
     font-weight: bold;
+    color: #484848;
   }
 }
 .profile-component-wrapper {
@@ -90,7 +91,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
+  font-size: 16px;
   border-bottom: solid 1px #707070;
   padding: 0 0.5rem 0.5rem 0;
 }
@@ -108,7 +109,7 @@
   padding: 0.5rem 1rem;
 }
 .form-button {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   padding-top: 0;
   padding-bottom: 0;
