@@ -595,24 +595,26 @@ export function* compressFiles(action) {
     0,
     action.payload.files[0].path.lastIndexOf('/') + 1
   )}`;
-  console.log(filenames);
+
   try {
     const res = yield call(fetchUtil, {
       url: '/api/workspace/apps',
-      params: { publicOnly: true }
+      params: { private: true }
     });
     const apps = res.response;
-    const zippyApps = apps.filter(app => app.id.includes('zippy-'));
-    const latestZippy = zippyApps.reduce((latest, app) => {
-      if (app.revision > latest.revision) {
-        return app;
-      }
-      return latest;
-    }, zippyApps[0]);
+    const latestZippy = apps
+      .filter(app => app.id.includes('zippy-frontera'))
+      .reduce(
+        (latest, app) => {
+          if (app.revision > latest.revision) {
+            return app;
+          }
+          return latest;
+        },
+        { revision: null }
+      );
 
-    console.log(latestZippy);
-
-    const compressParams = {
+    const params = JSON.stringify({
       allocation: 'FORK',
       appId: latestZippy.id,
       archive: true,
@@ -626,27 +628,25 @@ export function* compressFiles(action) {
         zipfileName,
         filenames
       }
-    };
-
-    console.log(compressParams);
-    // Submit Job
-    const jobRes = yield call(fetchUtil, {
-      url: '/api/workspace/jobs',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': Cookies.get('csrftoken')
-      },
-      body: JSON.stringify(compressParams)
     });
-    console.log(jobRes);
+
+    const submission = yield call(compressUtil, params);
+    console.log(submission);
+    if (submission.status === 'ACCEPTED') {
+      console.log('COMPRESS SUBMITTED!');
+    } else if (submission.execSys) {
+      console.log('PUSH KEYS');
+    }
   } catch (error) {
     yield console.log('error');
-  } finally {
-    yield console.log('done!');
   }
 }
 /* eslint-enable no-console */
+export async function compressUtil(body) {
+  const url = '/api/workspace/jobs';
+  const json = await fetchUtil({ url, method: 'POST', body });
+  return json;
+}
 export function* watchCompress() {
   yield takeLeading('DATA_FILES_COMPRESS', compressFiles);
 }
