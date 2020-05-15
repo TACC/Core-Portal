@@ -9,7 +9,7 @@
 }
 
 /* copied from Dashboard.scss. Need to refactor to only have one definition
-Looks like color of dashboard tables set in Workbench.csss is overwritten in Dashboard.scsss*/
+Looks like color of dashboard tables set in Workbench.scss is overwritten in Dashboard.scss*/
 .job-history .ReactTable .rt-th, .dashboard-items .ReactTable .rt-td {
   color: #707070;
 }
