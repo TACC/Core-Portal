@@ -25,22 +25,30 @@
 
   tbody {
     overflow-y: scroll;
-    tr {
+    tr:not([class=-loading]) {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    tr:nth-child(odd) {
+    tr:nth-child(odd):not([class=-loading]) {
       background-color: rgba(0, 0, 0, 0.03);
     }
-    tr:hover {
+    tr:hover:not([class=-loading]) {
       background-color: rgba(0, 0, 0, 0.05);
     }
 
     .-loading {
       width: 100%;
+      display:block; 
+      box-sizing:border-box; 
+    }
+
+    .-loading > td {
+      width: 100%;
       padding-top: 0.5em;
       padding-bottom: 0.5em;
       text-align: justify;
+      display:block; 
+      box-sizing:border-box; 
     }
   }
 }

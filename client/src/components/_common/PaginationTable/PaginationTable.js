@@ -9,9 +9,13 @@ const PaginationLoadingRow = ({ isLoading }) => {
     return null;
   }
   return (
-    <div className="-loading">
-      <LoadingSpinner placement="inline" />
-    </div>
+    <tr className="-loading">
+      <td>
+        <LoadingSpinner
+          placement="inline" 
+        />
+      </td>
+    </tr>
   );
 };
 PaginationLoadingRow.propTypes = {
@@ -38,7 +42,7 @@ const PaginationTable = ({
   const onScroll = ({ target }) => {
     const bottom =
       target.scrollHeight - target.scrollTop === target.clientHeight;
-    if (bottom) {
+    if (bottom && target.scrollTop > 0) {
       onPagination(tableData.length);
     }
   };
@@ -65,7 +69,7 @@ const PaginationTable = ({
             </tr>
           );
         })}
-        {<PaginationLoadingRow isLoading={isLoading} />}
+        <PaginationLoadingRow isLoading={isLoading} />
       </tbody>
     </table>
   );
