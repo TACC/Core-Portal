@@ -91,12 +91,14 @@ function JobsView() {
   ];
 
   return (
-    <PaginationTable
-      tableColumns={columns}
-      tableData={jobs}
-      onPagination={paginationCallback}
-      isLoading={isLoading}
-    />
+    <div className="jobs-view">
+      <PaginationTable
+        tableColumns={columns}
+        tableData={jobs}
+        onPagination={paginationCallback}
+        isLoading={isLoading}
+      />
+    </div>
   );
 }
 

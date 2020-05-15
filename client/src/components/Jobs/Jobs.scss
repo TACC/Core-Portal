@@ -1,7 +1,10 @@
-.jobs-table-body {
-  overflow-y: scroll;
-}
-
-.ReactTable .pagination-bottom {
-  display: none;
+.jobs-view .PaginationTable {
+  th:nth-child(1),
+  td:nth-child(1) { width: 20%; }
+  th:nth-child(2),
+  td:nth-child(2) { width: 50%; }
+  th:nth-child(3),
+  td:nth-child(3) { width: 15%; }
+  th:nth-child(4),
+  td:nth-child(4) { width: 15%; }
 }

@@ -43,12 +43,13 @@
     }
 
     .-loading > td {
-      width: 100%;
+      width: 100% !important;
       padding-top: 0.5em;
       padding-bottom: 0.5em;
       text-align: justify;
       display:block; 
-      box-sizing:border-box; 
+      box-sizing:border-box;
+      clear: both;
     }
   }
 }
@@ -103,22 +104,4 @@ Styleguide Objects.FixedHeaderTable
   overflow: auto;
   width: 100%;
   height: var(--fixed-header-table--body-height, var(--body-height));
-}
-
-
-
-
-
-/* TODO: Create these styles for the "user"/"client" component */
-/* !!!: Edit `PaginationTable` to be the root class of the "user"/"client" component */
-/* Manually calculated column widths because table layout is fixed by table component */
-.PaginationTable {
-  th:nth-child(1),
-  td:nth-child(1) { width: 20%; }
-  th:nth-child(2),
-  td:nth-child(2) { width: 50%; }
-  th:nth-child(3),
-  td:nth-child(3) { width: 15%; }
-  th:nth-child(4),
-  td:nth-child(4) { width: 15%; }
 }
