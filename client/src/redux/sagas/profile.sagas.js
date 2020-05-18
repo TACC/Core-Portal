@@ -1,8 +1,18 @@
 import { put, takeLatest, call } from 'redux-saga/effects';
+import { omit } from 'lodash';
 import 'cross-fetch';
 import { fetchUtil } from 'utils/fetchUtil';
 
 const ROOT_SLUG = '/accounts/api/profile';
+
+const getPasswordStatus = h => {
+  const passwordChanged = h.filter(entry =>
+    entry.comment.includes('Password changed')
+  );
+  const lastChanged = passwordChanged.pop().timestamp;
+  const output = new Date(lastChanged).toLocaleDateString();
+  return output;
+};
 
 export function* getProfileData(action) {
   yield put({ type: 'GET_FORM_FIELDS' });
@@ -10,7 +20,11 @@ export function* getProfileData(action) {
     const response = yield call(fetchUtil, {
       url: `${ROOT_SLUG}/data/`
     });
-    yield put({ type: 'ADD_DATA', payload: response });
+    const passwordLastChanged = getPasswordStatus(response.history);
+    yield put({
+      type: 'ADD_DATA',
+      payload: { ...omit(response, 'history'), passwordLastChanged }
+    });
   } catch (error) {
     yield put({ type: 'ADD_DATA_ERROR', payload: error });
   }

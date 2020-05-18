@@ -6,7 +6,8 @@ export const initialState = {
   data: {
     demographics: {},
     licenses: [],
-    integrations: []
+    integrations: [],
+    passwordLastChanged: ''
   },
   errors: {},
   fields: {},

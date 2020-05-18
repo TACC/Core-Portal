@@ -58,9 +58,15 @@ const ManageAccountView = () => {
             )}
           </Col>
           <Col lg="4">
-            {!isEmpty(licenses) && <Licenses />}
-            {!isEmpty(integrations) && <ThirdPartyApps />}
-            <ChangePassword />
+            {isLoading ? (
+              <LoadingSpinner />
+            ) : (
+              <>
+                {!isEmpty(licenses) && <Licenses />}
+                {!isEmpty(integrations) && <ThirdPartyApps />}
+                <ChangePassword />
+              </>
+            )}
           </Col>
         </Row>
       </Container>

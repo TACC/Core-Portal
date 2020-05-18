@@ -173,6 +173,10 @@ export const ThirdPartyApps = () => {
   );
 };
 export const ChangePassword = () => {
+  const lastChanged = useSelector(state => {
+    const { data } = state.profile;
+    return data.passwordLastChanged;
+  });
   const dispatch = useDispatch();
   const openModal = () =>
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { password: true } });
@@ -181,10 +185,23 @@ export const ChangePassword = () => {
       <div className="profile-component-header">
         <strong>Change Password</strong>
       </div>
-      <div style={{ margin: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          margin: '1rem'
+        }}
+      >
         <Button onClick={openModal} className="manage-account-submit-button">
           Change Password
         </Button>
+        {lastChanged && (
+          <span
+            style={{ fontSize: '14px', marginLeft: '1rem', color: '#707070' }}
+          >
+            Last Changed {lastChanged}
+          </span>
+        )}
       </div>
     </div>
   );

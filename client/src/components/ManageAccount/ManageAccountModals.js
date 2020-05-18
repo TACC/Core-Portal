@@ -87,15 +87,18 @@ export const EditOptionalInformation = () => {
   );
 };
 export const ChangePassword = () => {
-  const { password: open, error, success } = useSelector(({ profile }) => {
+  const { password: open, error, success } = useSelector(state => {
     return {
-      ...profile.modals,
-      error: profile.errors.password,
-      success: profile.success.password
+      ...state.profile.modals,
+      error: state.profile.errors.password,
+      success: state.profile.success.password
     };
   });
   const dispatch = useDispatch();
-  const closeModal = () => dispatch({ type: 'CLOSE_PROFILE_MODAL' });
+  const closeModal = () => {
+    dispatch({ type: 'CLOSE_PROFILE_MODAL' });
+    if (success) dispatch({ type: 'LOAD_DATA' });
+  };
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">
       <ModalHeader

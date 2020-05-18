@@ -8,6 +8,7 @@ import rt
 import urllib.request
 import urllib.parse
 import urllib.error
+import requests
 from django.forms.models import model_to_dict
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -247,6 +248,19 @@ def registration_successful(request):
     )
 
 
+def get_user_history(username):
+    """
+    Get user history from tas
+    """
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    r = requests.get('{0}/v1/users/{1}/history'.format(settings.TAS_URL, username), auth=auth)
+    resp = r.json()
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise Exception('Failed to get project users', resp['message'])
+
+
 @login_required
 def get_profile_data(request):
     """
@@ -262,6 +276,7 @@ def get_profile_data(request):
     )
 
     user_profile = tas.get_user(username=request.user.username)
+    history = get_user_history(request.user.username)
 
     try:
         demographics = model_to_dict(django_user.profile)
@@ -271,6 +286,7 @@ def get_profile_data(request):
     demographics.update(user_profile)
     context = {
         'demographics': demographics,
+        'history': history,
         'licenses': manage_licenses(request),
         'integrations': manage_applications(request),
     }
