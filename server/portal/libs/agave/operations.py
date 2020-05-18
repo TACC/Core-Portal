@@ -4,35 +4,117 @@ import datetime
 from django.conf import settings
 from requests.exceptions import HTTPError
 import logging
+from elasticsearch_dsl import Q
+from portal.libs.elasticsearch.indexes import IndexedFile
+from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 
 logger = logging.getLogger(__name__)
 
 
-def listing(client, system, path, offset=0, limit=100):
+def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
+    """
+    Perform a Tapis file listing
+
+    Params
+    ------
+    client: agavepy.agave.Agave
+        Tapis client to use for the listing.
+    system: str
+        Tapis system ID.
+    path: str
+        Path in which to peform the listing.
+    offset: int
+        Offset for pagination.
+    limit: int
+        Number of results to return.
+
+    Returns
+    -------
+    list
+        List of dicts containing file metadata from Elasticsearch
+
+    """
     raw_listing = client.files.list(systemId=system,
                                     filePath=urllib.parse.quote(path),
                                     offset=int(offset) + 1,
                                     limit=int(limit))
 
     try:
+        # Convert file objects to dicts for serialization.
         listing = list(map(dict, raw_listing))
     except IndexError:
+        # Return [] if the listing is empty.
         listing = []
+
+    # Update Elasticsearch after each listing.
+    agave_listing_indexer.delay(listing)
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
+
+
+def search(client, system, path, offset=0, limit=100, query_string='', **kwargs):
+    """
+    Perform a search for files using a query string.
+
+    Params
+    ------
+    client: NoneType
+    system: str
+        Tapis system ID to filter on.
+    path: NoneType
+    offset: int
+        Search offset for pagination.
+    limit: int
+        Number of search results to return
+    query_string: str
+        Query string to pass to Elasticsearch
+
+    Returns
+    -------
+    list
+        List of dicts containing file metadata from Elasticsearch
+
+    """
+    ngram_query = Q("query_string", query=query_string,
+                    fields=["name"],
+                    minimum_should_match='80%',
+                    default_operator='or')
+    match_query = Q("query_string", query=query_string,
+                    fields=[
+                        "name._exact, name._pattern"],
+                    default_operator='and')
+
+    search = IndexedFile.search()
+    search = search.query(ngram_query | match_query)
+    search = search.filter('term', **{'system._exact': system})
+    search = search.extra(from_=int(offset), size=int(limit))
+    res = search.execute()
+    hits = [hit.to_dict() for hit in res]
+
+    return {'listing': hits, 'reachedEnd': len(hits) < int(limit)}
 
 
 def download(client, system, path, href, force=True, max_uses=3, lifetime=600):
     """Creates a postit pointing to this file.
 
-    This should be used to preview or quickly share a file.
+    Params
+    ------
+    client: agavepy.agave.Agave
+        Tapis client to use.
+    system: NoneType
+    path: NoneType
+    href: str
+        Tapis href to use for generating the postit.
+    force: bool
+        Wether to force preview by adding ``inline``
+    max_uses: int
+         Maximum amount the postit link can be used.
+    lifetime: int
+        Life time of the postit link in seconds.
 
-    :param bool force: Wether to force preview by adding ``inline``
-     to the Content-Disposition header.
-    :param int max_uses: Maximum amount the postit link can be used.
-    :parm int lifetime: Life time of the postit link in seconds.
-
-    :returns: Post it link.
-    :rtype: str
+    Returns
+    -------
+    str
+    Post it link.
     """
     # pylint: disable=protected-access
     args = {
@@ -53,22 +135,20 @@ def download(client, system, path, href, force=True, max_uses=3, lifetime=600):
 def mkdir(client, system, path, dir_name):
     """Create a new directory.
 
-    The directory will be created inside the directory represented by this
-    class.
+    Params
+    ------
+    client: agavepy.agave.Agave
+        Tapis client to use for the listing.
+    system: str
+        Tapis system ID.
+    path: str
+        Path in which to run mkdir.
+    dir_name: str
+        Name of the directory
 
-    :param str dir_name: The name of the new directory.
-
-    :return: The newly created directory.
-    :rtype: :class:`BaseFile`
-    :raises HTTPError: if an error occurs calling the files endpoint.
-
-    .. note:: The response from Agave after creating a diretory is not
-        the same returned when listing a file/folder. Because of this we
-        return an instance of
-    :class:`BaseFile` using only ``systemId`` and ``path``.
-
-    .. todo:: Does this method needs to be a ``@classmethod``?
-
+    Returns
+    -------
+    dict
     """
     body = {
         'action': 'mkdir',
@@ -77,26 +157,34 @@ def mkdir(client, system, path, dir_name):
     result = client.files.manage(systemId=system,
                                  filePath=urllib.parse.quote(path),
                                  body=body)
+
+    agave_indexer.apply_async(kwargs={'systemId': system,
+                                      'filePath': path,
+                                      'recurse': False})
     return result
 
 
 def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
-    """Move the current file to the given destination.
+    """Move a current file to the given destination.
 
-    If a :attr:`file_name` is given then the file will be renamed upon
-    moving it. If :attr:`file_name` is *not* given the file will preserve
-    its name.
+    Params
+    ------
+    client: agavepy.agave.Agave
+        Tapis client to use for the listing.
+    src_system: str
+        System ID for the file's source.
+    src_path: str
+        Path to the source file.
+    dest_system: str
+        System ID for the destination.
+    dest_path: str
+        Path under which the file should be moved.
+    file_name: str
+        New name for the file if desired.
 
-    :param str des_path: Destination path.
-    :param str file_name: New name for file.
-
-    :return: This instance updated.
-    :rtype: :class:`BaseFile`
-
-    .. note:: The response from Agave after creating a diretory is not
-        the same returned when listing a file/folder. Because of this we
-        return an instance of
-    :class:`BaseFile` using only ``systemId`` and ``path``.
+    Returns
+    -------
+    dict
 
     """
 
@@ -123,9 +211,11 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         if err.response.status_code != 404:
             raise
 
+    full_dest_path = os.path.join(dest_path.strip('/'), file_name)
+
     if src_system == dest_system:
         body = {'action': 'move',
-                'path': os.path.join(dest_path.strip('/'), file_name)}
+                'path': full_dest_path}
         move_result = client.files.manage(systemId=src_system,
                                           filePath=urllib.parse.quote(
                                               src_path),
@@ -144,27 +234,42 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         client.files.delete(systemId=src_system,
                             filePath=urllib.parse.quote(src_path))
 
+    if os.path.dirname(src_path) != dest_path:
+        agave_indexer.apply_async(kwargs={'systemId': src_system,
+                                          'filePath': os.path.dirname(src_path),
+                                          'recurse': False},
+                                  routing_key='indexing')
+    agave_indexer.apply_async(kwargs={'systemId': dest_system,
+                                      'filePath': os.path.dirname(full_dest_path),
+                                      'recurse': False}, routing_key='indexing')
+    if move_result['nativeFormat'] == 'dir':
+        agave_indexer.apply_async(kwargs={'systemId': dest_system,
+                                          'filePath': full_dest_path, 'recurse': True},
+                                  routing_key='indexing')
     return move_result
 
 
 def copy(client, src_system, src_path, dest_system, dest_path, file_name=None):
     """Copies the current file to the provided destination path.
 
-    If ``new_name`` is *not* provided the file will be copied with the
-    same name. If ``dest_path`` is the same as the original and *no*
-    ``new_name`` is provided a random string will be appended to the end
+     Params
+    ------
+    client: agavepy.agave.Agave
+        Tapis client to use for the listing.
+    src_system: str
+        System ID for the file's source.
+    src_path: str
+        Path to the source file.
+    dest_system: str
+        System ID for the destination.
+    dest_path: str
+        Path under which the file should be copied.
+    file_name: str
+        New name for the file if desired.
 
-    :param str dest_path: Destination path.
-    :param str file_name: New name.
-
-    :return: The copied file
-    :rtype: :class:`BaseFile`
-
-    .. warning:: If ``dest_path`` does not exists this function will fail.
-
-    .. note:: When returning the response we have to do a :meth:`listing`
-    because the response from Agave is not the same a ``listing`` response
-    and we need to standardize that.
+    Returns
+    -------
+    dict
     """
     if file_name is None:
         file_name = src_path.strip('/').split('/')[-1]
@@ -173,7 +278,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None):
         client.files.list(systemId=dest_system,
                           filePath="{}/{}".format(dest_path, file_name))
 
-        # Trash path exists, must make it unique.
+        # Destination path exists, must make it unique.
         _ext = os.path.splitext(file_name)[1].lower()
         _name = os.path.splitext(file_name)[0]
         now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
@@ -182,9 +287,10 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None):
         if err.response.status_code != 404:
             raise
 
+    full_dest_path = os.path.join(dest_path.strip('/'), file_name)
     if src_system == dest_system:
         body = {'action': 'copy',
-                'path': os.path.join(dest_path.strip('/'), file_name)}
+                'path': full_dest_path}
         copy_result = client.files.manage(systemId=src_system,
                                           filePath=urllib.parse.quote(
                                               src_path),
@@ -201,6 +307,15 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None):
             urlToIngest=src_url
         )
 
+    agave_indexer.apply_async(kwargs={'systemId': dest_system,
+                                      'filePath': os.path.dirname(full_dest_path),
+                                      'recurse': False},
+                              routing_key='indexing')
+    agave_indexer.apply_async(kwargs={'systemId': dest_system,
+                                      'filePath': full_dest_path,
+                                      'recurse': True},
+                              routing_key='indexing')
+
     return copy_result
 
 
@@ -210,12 +325,45 @@ def delete(client, system, path):
 
 
 def rename(client, system, path, new_name):
+    """Renames a file. This is performed under the hood by moving the file to
+    the same parent folder but with a new name.
+
+     Params
+    ------
+    client: agavepy.agave.Agave
+        Tapis client to use.
+    system: str
+        Tapis system ID for the file.
+    path: str
+        Path of the file relative to the storage system root.
+    new_name: str
+        New name for the file.
+
+    Returns
+    -------
+    dict
+    """
     new_path = os.path.dirname(path)
     return move(client, src_system=system, src_path=path,
                 dest_system=system, dest_path=new_path, file_name=new_name)
 
 
 def trash(client, system, path):
+    """Move a file to the .Trash folder.
+
+    Params
+    ------
+    client: agavepy.agave.Agave
+        Tapis client to use.
+    system: str
+        Tapis system ID for the file.
+    path: str
+        Path of the file relative to the storage system root.
+
+    Returns
+    -------
+    dict
+    """
 
     file_name = path.strip('/').split('/')[-1]
     trash_name = file_name
@@ -246,17 +394,22 @@ def trash(client, system, path):
     return resp
 
 
-def upload(client, system, path, uploaded_file, ensure_path=False,
-           **kwargs):
-    """Upload one or more files.
+def upload(client, system, path, uploaded_file):
+    """Upload a file.
+    Params
+    ------
+    client: agavepy.agave.Agave
+        Tapis client to use.
+    system: str
+        Tapis system ID for the file.
+    path: str
+        Path to upload the file to.
+    uploaded_file: file
+        File object to upload.
 
-    :param str file_id_dest: Id representing a file/folder.
-    :param list uploaded_files: List of uploaded files.
-    :param bool ensure_path: If True the path of the uploaded
-        files will be created if it does not exists.
-
-    :returns: A file object.
-    :rtype: obj
+    Returns
+    -------
+    dict
     """
 
     try:
@@ -272,17 +425,33 @@ def upload(client, system, path, uploaded_file, ensure_path=False,
                                    fileName=str(upload_name),
                                    fileToUpload=uploaded_file)
 
+    agave_indexer.apply_async(kwargs={'systemId': system,
+                                      'filePath': path,
+                                      'recurse': False},
+                              )
     return resp
 
 
 def preview(client, system, path, href, max_uses=3, lifetime=600):
     """Preview a file.
+    Params
+    ------
+    client: agavepy.agave.Agave
+        Tapis client to use.
+    system: str
+        Tapis system ID.
+    path: str
+        Path to the file.
+    href: str
+        Tapis href for the file to be previewed.
+    max_uses: int
+         Maximum amount the postit link can be used.
+    lifetime: int
+        Life time of the postit link in seconds.
 
-    :param str file_id: Id representing a file/folder.
-
-    :returns: Downloaded file stream.
-    :rtype: byte[]
-
+    Returns
+    -------
+    dict
     """
 
     file_name = path.strip('/').split('/')[-1]

@@ -7,8 +7,8 @@ import datetime
 from django.conf import settings
 from elasticsearch_dsl import (Document, Date, Object, Text, Long, Boolean,
                                Keyword)
-from portal.libs.elasticsearch.exceptions import DocumentNotFound
 from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, file_pattern_analyzer, reverse_file_analyzer
+from portal.libs.elasticsearch.utils import file_uuid_sha256
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -73,6 +73,10 @@ class IndexedProject(Document):
 
 
 class IndexedFile(Document):
+    """
+    Elasticsearch document representing an indexed file. Thin wrapper around
+    `elasticsearch_dsl.Document`.
+    """
     name = Text(analyzer=file_analyzer, fields={
         '_exact': Keyword(),
         '_pattern': Text(analyzer=file_pattern_analyzer),
@@ -103,35 +107,50 @@ class IndexedFile(Document):
         })
     })
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
+        """
+        Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.save()
+        """
         self.lastUpdated = datetime.datetime.now()
-        return super(IndexedFile, self).save(**kwargs)
+        return super(IndexedFile, self).save(*args, **kwargs)
 
-    def update(self, **kwargs):
+    def update(self, *args, **kwargs):
+        """
+        Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.update()
+        """
         lastUpdated = datetime.datetime.now()
-        return super(IndexedFile, self).update(lastUpdated=lastUpdated, **kwargs)
+        return super(IndexedFile, self).update(lastUpdated=lastUpdated, *args, **kwargs)
 
     @classmethod
     def from_path(cls, system, path):
-        search = cls.search()
-        search = search.filter('term', **{'path._exact': path})
-        search = search.filter('term', **{'system._exact': system})
-        search_scan = search.scan()
-        try:
-            result = next(search_scan)
-        except StopIteration:
-            raise DocumentNotFound("No document found for "
-                                   "{}/{}".format(system, path))
-        # Iterate through any duplicate results and delete them if they exist.
-        for duplicate in search_scan:
-            cls.get(duplicate.meta.id).delete()
-        return cls.get(result.meta.id)
+        """
+        Fetches an IndexedFile with the specified system and path.
 
-    @classmethod
-    def list_children(cls, system, path):
-        return cls(system=system, path=path).children()
+        Parameters
+        ----------
+        system: str
+            System attribute of the indexed file.
+        path: str
+            Path attribute of the indexed file.
+        Returns
+        -------
+        IndexedFile
+
+        Raises
+        ------
+        elasticsearch.exceptions.NotFoundError
+        """
+        uuid = file_uuid_sha256(system, path)
+        return cls.get(uuid)
 
     def children(self):
+        """
+        Yields all children of the indexed file. Non-recursive.
+
+        Yields
+        ------
+        IndexedFile
+        """
         search = self.search()
         search = search.filter('term', **{'basePath._exact': self.path})
         search = search.filter('term', **{'system._exact': self.system})
@@ -140,6 +159,13 @@ class IndexedFile(Document):
             yield self.get(hit.meta.id)
 
     def delete_recursive(self):
+        """
+        Recursively delete an indexed file and all of its children.
+
+        Returns
+        -------
+        Void
+        """
         for child in self.children():
             child.delete_recursive()
         self.delete()
@@ -149,5 +175,8 @@ class IndexedFile(Document):
 
 
 class ReindexedFile(IndexedFile):
+    """Identical to IndexedFile, but using a separate index for zero-downtime
+    reindexing applications.
+    """
     class Index:
         name = settings.ES_INDEX_PREFIX.format('files-reindex')

@@ -7,10 +7,12 @@ from celery import shared_task
 # from portal.apps.projects.utils import project_id_to_system_id
 # from portal.apps.projects.models import ProjectMetadata
 from portal.libs.agave.utils import service_account
+from portal.libs.elasticsearch.utils import index_listing
 logger = logging.getLogger(__name__)
 
+
 # Crawl and index agave files
-@shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="6/m")
+@shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="12/m")
 def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
 
     from portal.libs.elasticsearch.utils import index_level
@@ -31,6 +33,11 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
     if recurse:
         for child in folders:
             self.delay(systemId, filePath=child.path, reindex=reindex)
+
+
+@shared_task(bind=True, max_retries=3, queue='default')
+def agave_listing_indexer(self, listing):
+    index_listing(listing)
 
 
 @shared_task(bind=True, queue='indexing')
