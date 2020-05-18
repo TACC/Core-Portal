@@ -84,7 +84,7 @@ PaginationTable.propTypes = {
 PaginationTable.defaultProps = {
   onPagination: offset => {},
   isLoading: false,
-  className: ""
+  className: ''
 };
 
 export default PaginationTable;
