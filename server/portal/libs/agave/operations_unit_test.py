@@ -4,7 +4,7 @@ from django.test import TestCase
 from agavepy.agave import AttrDict
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.response import Hit
-from portal.libs.agave.operations import listing, search, download, mkdir, move, copy, rename, trash, upload, preview
+from portal.libs.agave.operations import listing, search, mkdir, move, copy, rename
 
 
 class TestOperations(TestCase):
@@ -86,7 +86,7 @@ class TestOperations(TestCase):
         self.assertEqual(mock_indexer.apply_async.call_count, 3)
 
     @patch('portal.libs.agave.operations.agave_indexer')
-    def test_copy(self, mock_indexer): 
+    def test_copy(self, mock_indexer):
         client = MagicMock()
         client.files.list.side_effect = HTTPError(response=MagicMock(status_code=404))
         client.files.manage.return_value = {'nativeFormat': 'dir'}
