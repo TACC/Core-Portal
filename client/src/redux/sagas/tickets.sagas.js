@@ -136,6 +136,9 @@ export function* postTicketReply(action) {
         payload: json.ticket_history_reply
       });
       action.payload.resetSubmittedForm();
+
+      /* ticket reply causes ticket status change so list of ticket needs to be updated */
+      yield put({ type: 'TICKET_LIST_FETCH' });
     }
   } catch {
     yield put({
