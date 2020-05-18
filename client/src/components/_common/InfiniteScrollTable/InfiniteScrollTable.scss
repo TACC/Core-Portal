@@ -41,7 +41,10 @@
       display:block; 
       box-sizing:border-box;
       td {
+        /* FAQ: Because widths can be defined by component that uses this one,
+                and those width might not use a class, we must overwrite it */
         width: 100% !important /* override allowed `td:nth-child(N)` width */;
+
         padding-top: 0.5em;
         padding-bottom: 0.5em;
         text-align: justify;
