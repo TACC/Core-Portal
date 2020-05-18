@@ -89,7 +89,12 @@ const LicenseCell = ({ cell: { value } }) => {
   const toggle = () => setModal(!modal);
   const { license_type: type, template_html: __html } = value;
   return (
-    <>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'flex-end'
+      }}
+    >
       <Button
         color="link"
         size="sm"
@@ -111,7 +116,7 @@ const LicenseCell = ({ cell: { value } }) => {
           to open a ticket.
         </ModalBody>
       </Modal>
-    </>
+    </div>
   );
 };
 LicenseCell.propTypes = {

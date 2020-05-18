@@ -11,10 +11,10 @@ export default function() {
     data: { demographics },
     fields,
     isEditing
-  } = useSelector(({ profile }) => {
+  } = useSelector(state => {
     return {
-      ...profile,
-      isEditing: profile.editing
+      ...state.profile,
+      isEditing: state.profile.editing
     };
   });
   const dispatch = useDispatch();
@@ -55,7 +55,8 @@ export default function() {
         />
         <ManageAccountInput label="Bio" name="bio" type="textarea" />
         <Button type="submit" className="manage-account-submit-button">
-          {isEditing ? <LoadingSpinner placement="inline" /> : 'Submit'}
+          {isEditing && <LoadingSpinner placement="inline" />}
+          <span style={isEditing ? { marginLeft: '1rem' } : {}}>Submit</span>
         </Button>
       </Form>
     </Formik>

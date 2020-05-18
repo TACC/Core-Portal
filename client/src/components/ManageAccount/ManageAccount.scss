@@ -102,6 +102,9 @@
 }
 // Buttons and Forms
 .manage-account-submit-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border-radius: 0;
   border: 0;
   font: Bold 12px Roboto;

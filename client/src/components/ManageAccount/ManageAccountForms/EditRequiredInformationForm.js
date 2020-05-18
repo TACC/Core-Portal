@@ -38,7 +38,8 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
         className="manage-account-submit-button"
         disabled={!canSubmit}
       >
-        {isEditing ? <LoadingSpinner placement="inline" /> : 'Submit'}
+        {isEditing && <LoadingSpinner placement="inline" />}
+        <span style={isEditing ? { marginLeft: '1rem' } : {}}>Submit</span>
       </Button>
     </Form>
   );
@@ -46,8 +47,8 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
 RequiredInformationFormBody.propTypes = { canSubmit: bool.isRequired };
 
 export default function() {
-  const { initialValues, fields } = useSelector(({ profile }) => {
-    const { data } = profile;
+  const { initialValues, fields } = useSelector(state => {
+    const { data } = state.profile;
     const { demographics } = data;
     const initial = pick(demographics, [
       'firstName',
@@ -63,14 +64,14 @@ export default function() {
       'institutionId'
     ]);
     return {
-      fields: profile.fields,
+      fields: state.profile.fields,
       initialValues: {
         ...initial,
         institution: initial.institutionId,
         country: initial.countryId,
         citizenship: initial.citizenshipId
       },
-      isEditing: profile.editing
+      isEditing: state.profile.editing
     };
   });
   const dispatch = useDispatch();

@@ -9,7 +9,7 @@ import { LoadingSpinner } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
 const ChangePasswordFormBody = ({ canSubmit }) => {
-  const isChecking = useSelector(({ profile }) => profile.checkingPassword);
+  const isChecking = useSelector(state => state.profile.checkingPassword);
   const Requirements = () => (
     <div style={{ color: '#707070', fontStyle: 'italic' }}>
       <span>Passwords must meet the following criteria:</span>
@@ -51,7 +51,10 @@ const ChangePasswordFormBody = ({ canSubmit }) => {
         style={{ alignSelf: 'flex-end' }}
         disabled={!canSubmit}
       >
-        {isChecking ? <LoadingSpinner placement="inline" /> : 'Change Password'}
+        {isChecking && <LoadingSpinner placement="inline" />}
+        <span style={isChecking ? { marginLeft: '1rem' } : {}}>
+          Change Password
+        </span>
       </Button>
     </Form>
   );
@@ -59,7 +62,8 @@ const ChangePasswordFormBody = ({ canSubmit }) => {
 ChangePasswordFormBody.propTypes = { canSubmit: bool.isRequired };
 
 export default function() {
-  const { restrictions } = useSelector(({ profile: { data } }) => {
+  const { restrictions } = useSelector(state => {
+    const { data } = state.profile;
     const { username, firstName, lastName } = data.demographics;
     return {
       restrictions: { username, firstName, lastName }
