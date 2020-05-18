@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import PaginationTable from './PaginationTable';
+import InfiniteScrollTable from './InfiniteScrollTable';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
@@ -34,10 +34,10 @@ const tableColumns = [
   },
 ];
 
-describe('PaginationTable', () => {
+describe('InfiniteScrollTable', () => {
   it('renders a table', () => {
     const { getByText } = render(
-      <PaginationTable 
+      <InfiniteScrollTable 
         tableColumns={tableColumns} 
         tableData={tableData} 
       />
@@ -48,7 +48,7 @@ describe('PaginationTable', () => {
 
   it('renders a loading spinner', () => {
     const { getByTestId } = render(
-      <PaginationTable
+      <InfiniteScrollTable
         tableColumns={tableColumns} 
         tableData={tableData} 
         isLoading={true}

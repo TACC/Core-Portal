@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import 'react-table-6/react-table.css';
-import { PaginationTable } from '_common';
+import { InfiniteScrollTable } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
@@ -15,11 +15,11 @@ function JobsView() {
     dispatch({ type: 'GET_JOBS', params: { limit: 20 } });
   }, [dispatch]);
 
-  const paginationCallback = useCallback(offset => {
+  const infiniteScrollCallback = useCallback(offset => {
     // The only way we have some semblance of
     // knowing whether or not there are more jobs
     // is if the number of jobs is not a multiple
-    // of the pagination limit.
+    // of the scroll size limit.
     // i.e., you asked for 100 jobs but got 96.
     if (offset % 20 === 0) {
       dispatch({ type: 'GET_JOBS', params: { offset, limit: 20 } });
@@ -91,10 +91,10 @@ function JobsView() {
   ];
 
   return (
-    <PaginationTable
+    <InfiniteScrollTable
       tableColumns={columns}
       tableData={jobs}
-      onPagination={paginationCallback}
+      onInfiniteScroll={infiniteScrollCallback}
       isLoading={isLoading}
       className="jobs-view"
     />

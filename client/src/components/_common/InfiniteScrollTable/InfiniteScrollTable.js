@@ -2,9 +2,9 @@ import React from 'react';
 import { useTable } from 'react-table';
 import PropTypes from 'prop-types';
 import LoadingSpinner from '../LoadingSpinner';
-import './PaginationTable.scss';
+import './InfiniteScrollTable.scss';
 
-const PaginationLoadingRow = ({ isLoading }) => {
+const InfiniteScrollLoadingRow = ({ isLoading }) => {
   if (!isLoading) {
     return null;
   }
@@ -16,14 +16,14 @@ const PaginationLoadingRow = ({ isLoading }) => {
     </tr>
   );
 };
-PaginationLoadingRow.propTypes = {
+InfiniteScrollLoadingRow.propTypes = {
   isLoading: PropTypes.bool.isRequired
 };
 
-const PaginationTable = ({
+const InfiniteScrollTable = ({
   tableColumns,
   tableData,
-  onPagination,
+  onInfiniteScroll,
   isLoading,
   className
 }) => {
@@ -42,12 +42,12 @@ const PaginationTable = ({
     const bottom =
       target.scrollHeight - target.scrollTop === target.clientHeight;
     if (bottom && target.scrollTop > 0) {
-      onPagination(tableData.length);
+      onInfiniteScroll(tableData.length);
     }
   };
 
   return (
-    <table {...getTableProps()} className={`${className} PaginationTable`}>
+    <table {...getTableProps()} className={`${className} InfiniteScrollTable`}>
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -68,23 +68,23 @@ const PaginationTable = ({
             </tr>
           );
         })}
-        <PaginationLoadingRow isLoading={isLoading} />
+        <InfiniteScrollLoadingRow isLoading={isLoading} />
       </tbody>
     </table>
   );
 };
 
-PaginationTable.propTypes = {
+InfiniteScrollTable.propTypes = {
   tableColumns: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   tableData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  onPagination: PropTypes.func,
+  onInfiniteScroll: PropTypes.func,
   isLoading: PropTypes.bool,
   className: PropTypes.string
 };
-PaginationTable.defaultProps = {
-  onPagination: offset => {},
+InfiniteScrollTable.defaultProps = {
+  onInfiniteScroll: offset => {},
   isLoading: false,
   className: ''
 };
 
-export default PaginationTable;
+export default InfiniteScrollTable;

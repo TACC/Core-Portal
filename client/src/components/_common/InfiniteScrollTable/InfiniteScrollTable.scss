@@ -1,4 +1,4 @@
-.PaginationTable {
+.InfiniteScrollTable {
   --fixed-header-table--body-height: 30vh; /* calculated by guess & check */
   /* TODO: After, FP-103, use `composes:` not `@extend` */
   @extend .o-fixed-header-table;
