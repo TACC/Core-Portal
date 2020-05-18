@@ -27,7 +27,12 @@ const formSchema = Yup.object().shape({
     .required('Required'),
   cc: Yup.array()
     .transform((value, originalValue) => {
-      if (this.isType(value) && value !== null) {
+      if (
+        Yup.string()
+          .email()
+          .isType(value) &&
+        value !== null
+      ) {
         return value;
       }
       return originalValue ? originalValue.split(/[\s,]+/) : [];
