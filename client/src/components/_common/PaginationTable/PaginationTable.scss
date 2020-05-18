@@ -39,17 +39,16 @@
     .-loading {
       width: 100%;
       display:block; 
-      box-sizing:border-box; 
-    }
-
-    .-loading > td {
-      width: 100% !important;
-      padding-top: 0.5em;
-      padding-bottom: 0.5em;
-      text-align: justify;
-      display:block; 
       box-sizing:border-box;
-      clear: both;
+      td {
+        width: 100%;
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        text-align: justify;
+        display:block; 
+        box-sizing:border-box;
+        clear: both;
+      }
     }
   }
 }

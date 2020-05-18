@@ -24,7 +24,8 @@ const PaginationTable = ({
   tableColumns,
   tableData,
   onPagination,
-  isLoading
+  isLoading,
+  className
 }) => {
   const columns = React.useMemo(() => tableColumns, []);
   const data = React.useMemo(() => tableData, [tableData]);
@@ -46,7 +47,7 @@ const PaginationTable = ({
   };
 
   return (
-    <table {...getTableProps()} className="PaginationTable">
+    <table {...getTableProps()} className={`${className} PaginationTable`}>
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -77,11 +78,13 @@ PaginationTable.propTypes = {
   tableColumns: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   tableData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   onPagination: PropTypes.func,
-  isLoading: PropTypes.bool
+  isLoading: PropTypes.bool,
+  className: PropTypes.string
 };
 PaginationTable.defaultProps = {
   onPagination: offset => {},
-  isLoading: false
+  isLoading: false,
+  className: ""
 };
 
 export default PaginationTable;
