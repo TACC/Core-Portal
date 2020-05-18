@@ -26,7 +26,7 @@ const formSchema = Yup.object().shape({
     .email('Invalid email')
     .required('Required'),
   cc: Yup.array()
-    .transform(function(value, originalValue) {
+    .transform((value, originalValue) => {
       if (this.isType(value) && value !== null) {
         return value;
       }
