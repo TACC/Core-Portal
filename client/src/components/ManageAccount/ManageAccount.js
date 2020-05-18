@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { UncontrolledAlert, Col, Row, Container } from 'reactstrap';
+import { Alert, Col, Row, Container } from 'reactstrap';
 import { isEmpty } from 'lodash';
 import { LoadingSpinner } from '_common';
 import Sidebar from '../Sidebar';
@@ -42,14 +42,10 @@ const ManageAccountView = () => {
             ) : (
               <>
                 {errors.data && (
-                  <UncontrolledAlert color="danger">
-                    Unable to get your profile data
-                  </UncontrolledAlert>
+                  <Alert color="danger">Unable to get your profile data</Alert>
                 )}
                 {errors.fields && (
-                  <UncontrolledAlert color="danger">
-                    Unable to get form fields
-                  </UncontrolledAlert>
+                  <Alert color="danger">Unable to get form fields</Alert>
                 )}
                 <RequiredInformation />
                 <OptionalInformation />

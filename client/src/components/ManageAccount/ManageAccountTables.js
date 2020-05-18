@@ -5,11 +5,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { shape, array, string } from 'prop-types';
 import { Link } from 'react-router-dom';
 
-export const TableTemplate = ({ attributes: { columns, data } }) => {
-  const { getTableProps, rows, prepareRow } = useTable({
-    columns,
-    data
-  });
+export const TableTemplate = ({ attributes }) => {
+  const { getTableProps, rows, prepareRow } = useTable(attributes);
   return (
     <Table
       {...getTableProps({ className: 'manage-account-table' })}

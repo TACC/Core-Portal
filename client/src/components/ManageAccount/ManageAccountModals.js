@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody, UncontrolledAlert } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Alert } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   EditRequiredInformationForm,
@@ -36,13 +36,11 @@ export const EditRequiredInformation = () => {
         }}
       >
         {success && (
-          <UncontrolledAlert color="success">
+          <Alert color="success">
             Successfully Edited Required Information
-          </UncontrolledAlert>
+          </Alert>
         )}
-        {error && (
-          <UncontrolledAlert color="danger">{error.message}</UncontrolledAlert>
-        )}
+        {error && <Alert color="danger">{error.message}</Alert>}
         <EditRequiredInformationForm />
       </ModalBody>
     </Modal>
@@ -72,14 +70,12 @@ export const EditOptionalInformation = () => {
       </ModalHeader>
       <ModalBody>
         {success && (
-          <UncontrolledAlert color="success">
+          <Alert color="success">
             Successfully Edited Optional Information
-          </UncontrolledAlert>
+          </Alert>
         )}
         {error && (
-          <UncontrolledAlert color="danger">
-            Unable to update optional information
-          </UncontrolledAlert>
+          <Alert color="danger">Unable to update optional information</Alert>
         )}
         <EditOptionalInformationForm />
       </ModalBody>
@@ -109,13 +105,11 @@ export const ChangePassword = () => {
         <span>Change Password</span>
       </ModalHeader>
       <ModalBody>
-        {error && (
-          <UncontrolledAlert color="danger">{error.message}</UncontrolledAlert>
-        )}
+        {error && <Alert color="danger">{error.message}</Alert>}
         {success && (
-          <UncontrolledAlert color="success">
+          <Alert color="success">
             Your password has been successfully changed!
-          </UncontrolledAlert>
+          </Alert>
         )}
         <ChangePasswordForm />
       </ModalBody>
