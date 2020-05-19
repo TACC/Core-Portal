@@ -9,8 +9,31 @@ import * as ROUTES from '../../constants/routes';
 
 function JobsView() {
   const dispatch = useDispatch();
-  const spinnerState = useSelector(state => state.spinner);
-  const jobs = useSelector(state => state.jobs.list);
+  const { spinnerState, jobs, categoryDict } = useSelector(
+    state => ({
+      spinnerState: state.spinner,
+      jobs: state.jobs.list,
+      categoryDict: state.apps.categoryDict
+    })
+  );
+
+  const findAppIcon = (appId) => {
+    let appIcon = "application";
+
+    Object.keys(categoryDict).forEach(
+      (category) => {
+        categoryDict[category].forEach(
+          (app) => {
+            let definition = app.value.definition;
+            if (appId.includes(definition.id) && "appIcon" in definition) {
+              appIcon = definition.appIcon;
+            }
+          }
+        )
+      }
+    )
+    return appIcon;
+  }
 
   useEffect(() => {
     dispatch({ type: 'GET_JOBS', params: { limit: 100 } });
@@ -21,6 +44,14 @@ function JobsView() {
   }
 
   const columns = [
+    {
+      Header: '',
+      accessor: 'appId',
+      width: 50,
+      Cell: el => (
+        <span>{findAppIcon(el.value)}</span>
+      )
+    },
     {
       Header: 'Job ID',
       accessor: 'name',
