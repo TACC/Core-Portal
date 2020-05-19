@@ -86,9 +86,8 @@
 }
 .profile-component-wrapper {
   margin-top: 1.25rem;
-    /*Override striped bootstrap table*/
-  .table-striped>tbody>tr:nth-child(odd)>td, 
-  .table-striped>tbody>tr:nth-child(odd)>th {
+    /* Override striped bootstrap table */
+  .table-striped>tbody>tr:nth-child(odd) {
     background-color: rgba(198, 198, 198, 0.1); 
   }
 }
