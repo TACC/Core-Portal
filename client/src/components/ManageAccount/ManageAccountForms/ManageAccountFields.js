@@ -33,12 +33,15 @@ export const ManageAccountInput = ({ label, ...props }) => {
   const [field, meta, { setValue }] = useField(props);
   const [other, setOther] = React.useState(false);
   const { type } = props;
+
   const select = type === 'select';
   const key = select ? useOptions(label) : '';
   const options = useSelector(state => {
     if (key) return state.profile.fields[key];
     return [];
   });
+
+  const inputProps = { ...field, ...props };
 
   React.useEffect(() => {
     const initialValues = options.map(option => option[0]);
@@ -48,43 +51,40 @@ export const ManageAccountInput = ({ label, ...props }) => {
   }, []);
 
   if (select && label === 'Professional Level') {
+    const handleOtherChange = e => {
+      if (!e.target.value.includes('Other')) {
+        setOther(false);
+        setValue(e.target.value);
+      }
+    };
+    const handleChange = e => {
+      if (e.target.value === 'Other') {
+        setOther(true);
+        setValue('');
+      } else {
+        setValue(e.target.value);
+      }
+    };
+
     return (
       <FormGroup>
         <Label>{label}</Label>
         {other ? (
           <>
-            <Input {...field} {...props} type="text" />
             <Input
               type="select"
-              onChange={({ target }) => {
-                if (!target.value.includes('Other')) {
-                  setOther(false);
-                  setValue(target.value);
-                }
-              }}
+              defaultValue="Other"
+              bsSize="sm"
+              onChange={handleOtherChange}
             >
-              {options.map(([value, lbl], arr, _) => {
-                return (
-                  <option
-                    key={lbl}
-                    {...{ value, label: lbl }}
-                    selected={lbl.includes('Other')}
-                  />
-                );
-              })}
+              {options.map(renderOptions)}
             </Input>
+            <Input {...inputProps} bsSize="sm" type="text" />
           </>
         ) : (
           <Input
-            {...field}
-            {...props}
-            onChange={({ target }) => {
-              if (target.value === 'Other') {
-                setOther(true);
-              } else {
-                setValue(target.value);
-              }
-            }}
+            {...inputProps}
+            onChange={handleChange}
             bsSize="sm"
             disabled={label === 'Citizenship' && field.value}
           >
@@ -99,8 +99,7 @@ export const ManageAccountInput = ({ label, ...props }) => {
       <Label>{label}</Label>
       {select ? (
         <Input
-          {...field}
-          {...props}
+          {...inputProps}
           bsSize="sm"
           disabled={label === 'Citizenship' && field.value}
         >
@@ -108,8 +107,7 @@ export const ManageAccountInput = ({ label, ...props }) => {
         </Input>
       ) : (
         <Input
-          {...field}
-          {...props}
+          {...inputProps}
           className={meta.error && 'is-invalid'}
           bsSize="sm"
         />

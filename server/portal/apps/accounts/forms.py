@@ -76,7 +76,7 @@ PROFESSIONAL_LEVEL_OPTIONS = (
     ('Faculty or Researcher', 'Faculty or Researcher'),
     ('Staff (support, administration, etc)', 'Staff (support, administration, etc)'),
     ('Practicing Engineer or Architect', 'Practicing Engineer or Architect'),
-    ('Other', 'Other (Please describe in your interests above)')
+    ('Other', 'Other')
 )
 
 
