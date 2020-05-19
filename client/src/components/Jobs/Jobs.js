@@ -3,38 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, AppIcon } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
 function JobsView() {
   const dispatch = useDispatch();
-  const { spinnerState, jobs, categoryDict } = useSelector(
-    state => ({
-      spinnerState: state.spinner,
-      jobs: state.jobs.list,
-      categoryDict: state.apps.categoryDict
-    })
-  );
-
-  const findAppIcon = (appId) => {
-    let appIcon = "application";
-
-    Object.keys(categoryDict).forEach(
-      (category) => {
-        categoryDict[category].forEach(
-          (app) => {
-            let definition = app.value.definition;
-            if (appId.includes(definition.id) && "appIcon" in definition) {
-              appIcon = definition.appIcon;
-            }
-          }
-        )
-      }
-    )
-    return appIcon;
-  }
-
+  const { spinnerState, jobs } = useSelector(state => ({
+    spinnerState: state.spinner,
+    jobs: state.jobs.list
+  }));
   useEffect(() => {
     dispatch({ type: 'GET_JOBS', params: { limit: 100 } });
   }, [dispatch]);
@@ -47,9 +25,11 @@ function JobsView() {
     {
       Header: '',
       accessor: 'appId',
-      width: 50,
+      width: 30,
       Cell: el => (
-        <span>{findAppIcon(el.value)}</span>
+        <span>
+          <AppIcon appId={el.value} />
+        </span>
       )
     },
     {
