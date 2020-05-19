@@ -1,5 +1,5 @@
 import { put, takeLatest, call } from 'redux-saga/effects';
-import { omit } from 'lodash';
+import { omit, isEmpty } from 'lodash';
 import 'cross-fetch';
 import { fetchUtil } from 'utils/fetchUtil';
 
@@ -9,6 +9,7 @@ const getPasswordStatus = h => {
   const passwordChanged = h.filter(entry =>
     entry.comment.includes('Password changed')
   );
+  if (isEmpty(passwordChanged)) return '';
   const lastChanged = passwordChanged.pop().timestamp;
   const output = new Date(lastChanged).toLocaleDateString();
   return output;

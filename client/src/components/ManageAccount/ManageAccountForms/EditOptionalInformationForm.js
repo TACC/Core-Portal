@@ -21,19 +21,14 @@ export default function() {
   const formSchema = obj().shape({
     orcidId: str(),
     bio: str(),
-    website: str().matches(
-      new RegExp(
-        '^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|www\\.){1}([0-9A-Za-z-\\.@:%_+~#=]+)+((\\.[a-zA-Z]{2,3})+)(/(.)*)?(\\?(.)*)?'
-      ),
-      'Please enter a valid URL'
-    )
+    website: str()
   });
   const handleSubmit = (values, { setSubmitting }) => {
     dispatch({ type: 'EDIT_OPTIONAL_INFORMATION', values });
     setSubmitting(false);
   };
   const initialValues = {
-    website: demographics.website || 'http://',
+    website: demographics.website || '',
     bio: demographics.bio || '',
     orcidId: demographics.orcid_id || '',
     professionalLevel: demographics.professional_level || ''

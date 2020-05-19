@@ -18,7 +18,7 @@ export const EditRequiredInformation = () => {
   const dispatch = useDispatch();
   const closeModal = () => {
     dispatch({ type: 'CLOSE_PROFILE_MODAL' });
-    if (success) dispatch({ type: 'LOAD_DATA' });
+    if (success) dispatch({ type: 'LOAD_PROFILE_DATA' });
   };
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">
@@ -57,7 +57,7 @@ export const EditOptionalInformation = () => {
   const dispatch = useDispatch();
   const closeModal = () => {
     dispatch({ type: 'CLOSE_PROFILE_MODAL' });
-    if (success) dispatch({ type: 'LOAD_DATA' });
+    if (success) dispatch({ type: 'LOAD_PROFILE_DATA' });
   };
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">
@@ -93,7 +93,7 @@ export const ChangePassword = () => {
   const dispatch = useDispatch();
   const closeModal = () => {
     dispatch({ type: 'CLOSE_PROFILE_MODAL' });
-    if (success) dispatch({ type: 'LOAD_DATA' });
+    if (success) dispatch({ type: 'LOAD_PROFILE_DATA' });
   };
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">

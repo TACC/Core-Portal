@@ -101,7 +101,13 @@ const LicenseCell = ({ cell: { value } }) => {
         {value.current_user_license ? 'View Details' : 'Request Activation'}
       </Button>
       <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader>{type}</ModalHeader>
+        <ModalHeader
+          className="manage-account-modal-header"
+          toggle={toggle}
+          charCode="X"
+        >
+          {type}
+        </ModalHeader>
         <ModalBody>
           <div dangerouslySetInnerHTML={{ __html }} />
           Click{' '}
