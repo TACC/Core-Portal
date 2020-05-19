@@ -22,7 +22,12 @@ const AppIcon = ({ appId }) => {
     return appIcon;
   };
 
-  return <i className={`app-icon icon-nav-${findAppIcon(appId)}`} />;
+  return (
+    <i
+      className={`app-icon icon-nav-${findAppIcon(appId)}`}
+      data-testid="app-icon"
+    />
+  );
 };
 AppIcon.propTypes = {
   appId: PropTypes.string.isRequired
