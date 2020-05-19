@@ -86,6 +86,20 @@
     font-weight: bold;
     color: #484848;
   }
+  th.research-bio {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  td.research-bio {
+    padding-top: 0.5rem;
+    width: 100%;
+    color: #707070;
+    font-weight: normal;
+    line-height: 16px;
+    white-space: normal;
+    overflow: visible;
+  }
 }
 .profile-component-wrapper {
   margin-top: 1.25rem;

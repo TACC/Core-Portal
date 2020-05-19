@@ -16,16 +16,20 @@ export const TableTemplate = ({ attributes }) => {
       <tbody>
         {rows.map(row => {
           prepareRow(row);
-          return row.cells.map(cell => (
-            <tr {...row.getRowProps()} key={cell.getCellProps().key}>
-              <th>
-                <span>{cell.column.render('Header')}</span>
-              </th>
-              <td {...cell.getCellProps()} key={null}>
-                {cell.render('Cell')}
-              </td>
-            </tr>
-          ));
+          return row.cells.map(cell => {
+            const className =
+              cell.column.Header === 'Research Bio' ? 'research-bio' : null;
+            return (
+              <tr {...row.getRowProps()} key={cell.getCellProps().key}>
+                <th className={className}>
+                  <span>{cell.column.render('Header')}</span>
+                </th>
+                <td {...cell.getCellProps({ className })} key={null}>
+                  {cell.render('Cell')}
+                </td>
+              </tr>
+            );
+          });
         })}
       </tbody>
     </Table>

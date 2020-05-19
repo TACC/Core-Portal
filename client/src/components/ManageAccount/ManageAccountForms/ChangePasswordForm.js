@@ -10,7 +10,7 @@ import { ManageAccountInput } from './ManageAccountFields';
 
 const ChangePasswordFormBody = ({ canSubmit }) => {
   const isChecking = useSelector(state => state.profile.checkingPassword);
-  const Requirements = () => (
+  const Requirements = (
     <div style={{ color: '#707070', fontStyle: 'italic' }}>
       <span>Passwords must meet the following criteria:</span>
       <ul style={{ paddingLeft: '1rem' }}>
@@ -29,20 +29,12 @@ const ChangePasswordFormBody = ({ canSubmit }) => {
         label="Current Password"
         name="currentPW"
         type="password"
-        placeholder="Current Password"
       />
-
-      <ManageAccountInput
-        label="New Password"
-        name="newPW"
-        type="password"
-        placeholder="New Password"
-      />
+      <ManageAccountInput label="New Password" name="newPW" type="password" />
       <ManageAccountInput
         label="Confirm New Password"
         name="confirmNewPW"
         type="password"
-        placeholder="Confirm New Password"
       />
       <Requirements />
       <Button
