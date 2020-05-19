@@ -101,7 +101,7 @@ export default function() {
         'Your new password must be different from your old password'
       )
       .matches(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+        /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/,
         'Must Contain at least three of the following: One Uppercase, One Lowercase, One Number and One special character'
       )
       .required('Required'),
