@@ -21,7 +21,14 @@ RejectedFileMessage.propTypes = {
   numberOfFiles: PropTypes.number.isRequired
 };
 
-function FileInputDropZone({ files, onSetFiles, isSubmitted }) {
+// TODO add maxSize property so we can disable maxsize checking
+function FileInputDropZone({
+  files,
+  onSetFiles,
+  maxSizeMessage,
+  hideFileList,
+  isSubmitted
+}) {
   const [numberRejectedFiles, setNumberRejectedFiles] = useState(0);
 
   const { getRootProps, open, getInputProps } = useDropzone({
@@ -42,7 +49,7 @@ function FileInputDropZone({ files, onSetFiles, isSubmitted }) {
     onSetFiles(files);
   };
 
-  const hasFiles = files.length > 0;
+  const showFileList = files.length > 0 && !hideFileList;
 
   if (isSubmitted && numberRejectedFiles > 0) {
     // reset number of rejected files when files is submitted
@@ -53,7 +60,7 @@ function FileInputDropZone({ files, onSetFiles, isSubmitted }) {
     // eslint-disable-next-line react/jsx-props-no-spreading
     <div {...getRootProps()} className="dropzone-area">
       <input {...getInputProps()} />
-      {!hasFiles && (
+      {!showFileList && (
         <div className="no-attachment-view">
           <i className="icon-action-upload" />
           <br />
@@ -64,10 +71,10 @@ function FileInputDropZone({ files, onSetFiles, isSubmitted }) {
           <strong>or</strong>
           <strong>Drag and Drop</strong>
           <br />
-          Max File Size: 3MB
+          {maxSizeMessage}
         </div>
       )}
-      {hasFiles && (
+      {showFileList && (
         <div className="attachment-view">
           <div className="attachment-list">
             {files.map((f, i) => (
@@ -99,7 +106,14 @@ function FileInputDropZone({ files, onSetFiles, isSubmitted }) {
 FileInputDropZone.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   onSetFiles: PropTypes.func.isRequired,
-  isSubmitted: PropTypes.bool.isRequired
+  isSubmitted: PropTypes.bool,
+  maxSizeMessage: PropTypes.string.isRequired,
+  hideFileList: PropTypes.bool
+};
+
+FileInputDropZone.defaultProps = {
+  hideFileList: false,
+  isSubmitted: false
 };
 
 export default FileInputDropZone;
