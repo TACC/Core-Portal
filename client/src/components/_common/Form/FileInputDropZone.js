@@ -21,10 +21,10 @@ RejectedFileMessage.propTypes = {
   numberOfFiles: PropTypes.number.isRequired
 };
 
-// TODO add maxSize property so we can disable maxsize checking
 function FileInputDropZone({
   files,
   onSetFiles,
+  maxSize,
   maxSizeMessage,
   hideFileList,
   isSubmitted
@@ -33,7 +33,7 @@ function FileInputDropZone({
 
   const { getRootProps, open, getInputProps } = useDropzone({
     noClick: true,
-    maxSize: 3145728,
+    maxSize,
     onDrop: accepted => {
       const updatedValues = [...accepted, ...files];
       onSetFiles(updatedValues);
@@ -108,12 +108,14 @@ FileInputDropZone.propTypes = {
   onSetFiles: PropTypes.func.isRequired,
   isSubmitted: PropTypes.bool,
   maxSizeMessage: PropTypes.string.isRequired,
+  maxSize: PropTypes.number,
   hideFileList: PropTypes.bool
 };
 
 FileInputDropZone.defaultProps = {
   hideFileList: false,
-  isSubmitted: false
+  isSubmitted: false,
+  maxSize: Infinity
 };
 
 export default FileInputDropZone;
