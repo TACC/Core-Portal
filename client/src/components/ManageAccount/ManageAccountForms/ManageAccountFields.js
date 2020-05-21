@@ -84,12 +84,7 @@ export const ManageAccountInput = ({ label, ...props }) => {
             <Input {...inputProps} bsSize="sm" type="text" />
           </>
         ) : (
-          <Input
-            {...inputProps}
-            onChange={handleChange}
-            bsSize="sm"
-            disabled={label === 'Citizenship' && field.value}
-          >
+          <Input {...inputProps} onChange={handleChange} bsSize="sm">
             {options.map(renderOptions)}
           </Input>
         )}
