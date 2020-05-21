@@ -1,0 +1,122 @@
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  Server_Side_Unit_Tests:
+    runs-on: ubuntu-18.04
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.6
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - run: pip install -r server/requirements.txt
+    - name: Run Server-side unit tests and generate coverage report
+      run: |
+        cd server
+        pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./server/coverage.xml
+        flags: unittests
+        name: frontera-server-side
+        fail_ci_if_error: true
+
+  Server_Side_Linting:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        # Version range or exact version of a Python version to use, using SemVer's version range syntax.
+        python-version: 3.6 # optional, default is 3.x
+        # The target architecture (x86, x64) of the Python interpreter.
+        architecture: x64 # optional, default is x64
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - run: pip install -r server/requirements.txt
+    - name: Server-Side Linting
+      run: |
+        git fetch origin "+refs/heads/master:refs/remotes/origin/master"
+        git diff -U0 origin/master..HEAD | flake8 --diff
+#         pylint --rcfile=server/.pylintrc $(git diff origin/master..HEAD --name-only "*.py")
+
+  Client_Side_Unit_Tests:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Node.js for use with actions
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: npm install
+      run: |
+        cd client
+        npm install
+    - name: Client Side Unit Tests
+      run: |
+        cd client
+        npm run test
+
+    - name: Upload coverage to Codecov
+      run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
+
+  Client_Side_Linting:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Node.js for use with actions
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: npm install
+      run: |
+        cd client
+        npm install
+    - name: Client Side Linting
+      run: |
+        cd client
+        npm run lint

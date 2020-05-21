@@ -1,6 +1,0 @@
-		<ul class="nav nav-pills">
-			<li role="presentation"><a href="{% url 'tickets:mytickets' %}">Back to ticket listing</a></li>
-		{% if ticket_id %}
-			<li role="presentation"><a href="{% url 'tickets:detail' ticket_id %}">Back to ticket</a></li>
-		{% endif %}
-		</ul>

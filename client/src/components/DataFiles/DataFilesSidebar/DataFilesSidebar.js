@@ -48,10 +48,17 @@ const DataFilesSidebar = () => {
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem onClick={toggleMkdirModal}>
-                <i className="icon-nav-folder" /> Add Folder
+                <i className="icon-nav-folder" /> Folder
               </DropdownItem>
-              <DropdownItem onClick={toggleUploadModal}>
-                <i className="icon-action-upload" /> Upload File
+              <DropdownItem
+                className="complex-dropdown-item"
+                onClick={toggleUploadModal}
+              >
+                <i className="icon-action-upload" />
+                <span className="multiline-menu-item-wrapper">
+                  Upload
+                  <small> Up to 500mb </small>
+                </span>
               </DropdownItem>
             </DropdownMenu>
           </ButtonDropdown>

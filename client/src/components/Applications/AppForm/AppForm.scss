@@ -37,10 +37,6 @@
     align-items: center;
 }
 
-.appForm-textInput label, .appForm-select label {
-    font-weight: bold;
-}
-
 .appSchema-header {
     font-weight: bold;
     padding-bottom: 10px;
@@ -54,17 +50,6 @@
 
 .appSchema-section {
     padding-bottom: 20px;
-}
-
-.appForm-help {
-    font-style: italic;
-    font-weight: 400;
-}
-
-#appForm-wrapper .validation-error {
-    font-size: 0.8rem;
-    color: #EB6E6E;
-    padding-top: 5px;
 }
 
 .btn-resetForm {
