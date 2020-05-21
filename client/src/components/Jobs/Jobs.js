@@ -10,9 +10,10 @@ function JobsView() {
   const dispatch = useDispatch();
   const isLoading = useSelector(state => state.jobs.loading);
   const jobs = useSelector(state => state.jobs.list);
+  const limit = 20;
 
   useEffect(() => {
-    dispatch({ type: 'GET_JOBS', params: { limit: 20 } });
+    dispatch({ type: 'GET_JOBS', params: { limit } });
   }, [dispatch]);
 
   const infiniteScrollCallback = useCallback(offset => {
@@ -22,7 +23,7 @@ function JobsView() {
     // of the scroll size limit.
     // i.e., you asked for 100 jobs but got 96.
     if (offset % 20 === 0) {
-      dispatch({ type: 'GET_JOBS', params: { offset, limit: 20 } });
+      dispatch({ type: 'GET_JOBS', params: { offset, limit } });
     }
   }, []);
 
