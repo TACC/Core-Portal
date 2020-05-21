@@ -31,7 +31,7 @@
     "redux-saga": "^1.1.3",
     "reselect": "^4.0.0",
     "uuid": "^7.0.2",
-    "yup": "^0.28.0"
+    "yup": "^0.28.1"
   },
   "scripts": {
     "lint": "eslint .",
