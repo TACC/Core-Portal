@@ -43,7 +43,7 @@ export const ManageAccountInput = ({ label, ...props }) => {
 
   const inputProps = { ...field, ...props };
   if (other) {
-    inputProps.style = { marginTop: '1rem' };
+    inputProps.style = { marginTop: '0.5rem' };
   }
   React.useEffect(() => {
     const initialValues = options.map(option => option[0]);
