@@ -25,18 +25,18 @@
 
   tbody {
     overflow-y: scroll;
-    tr:not([class=-loading]) {
+    tr:not([class=-status]) {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    tr:nth-child(odd):not([class=-loading]) {
+    tr:nth-child(odd):not([class=-status]) {
       background-color: rgba(0, 0, 0, 0.03);
     }
-    tr:hover:not([class=-loading]) {
+    tr:hover:not([class=-status]) {
       background-color: rgba(0, 0, 0, 0.05);
     }
 
-    .-loading {
+    .-status {
       width: 100%;
       display:block; 
       box-sizing:border-box;

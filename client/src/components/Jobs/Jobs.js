@@ -11,6 +11,18 @@ function JobsView() {
   const isLoading = useSelector(state => state.jobs.loading);
   const jobs = useSelector(state => state.jobs.list);
   const limit = 20;
+  const noDataText = (
+    <>
+      No recent jobs. You can submit jobs from the{' '}
+      <Link
+        to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
+        className="wb-link"
+      >
+        Applications Page
+      </Link>
+      .
+    </>
+  );
 
   useEffect(() => {
     dispatch({ type: 'GET_JOBS', params: { limit } });
@@ -98,6 +110,7 @@ function JobsView() {
       onInfiniteScroll={infiniteScrollCallback}
       isLoading={isLoading}
       className="jobs-view"
+      noDataText={noDataText}
     />
   );
 }

@@ -9,7 +9,7 @@ const InfiniteScrollLoadingRow = ({ isLoading }) => {
     return null;
   }
   return (
-    <tr className="-loading">
+    <tr className="-status">
       <td>
         <LoadingSpinner placement="inline" />
       </td>
@@ -20,12 +20,28 @@ InfiniteScrollLoadingRow.propTypes = {
   isLoading: PropTypes.bool.isRequired
 };
 
+const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
+  if (!display) {
+    return null;
+  }
+  return (
+    <tr className="-status">
+      <td>{noDataText}</td>
+    </tr>
+  );
+};
+InfiniteScrollNoDataRow.propTypes = {
+  display: PropTypes.bool.isRequired,
+  noDataText: PropTypes.string.isRequired
+};
+
 const InfiniteScrollTable = ({
   tableColumns,
   tableData,
   onInfiniteScroll,
   isLoading,
-  className
+  className,
+  noDataText
 }) => {
   const columns = React.useMemo(() => tableColumns, []);
   const data = React.useMemo(() => tableData, [tableData]);
@@ -69,6 +85,10 @@ const InfiniteScrollTable = ({
           );
         })}
         <InfiniteScrollLoadingRow isLoading={isLoading} />
+        <InfiniteScrollNoDataRow
+          display={!isLoading && tableData.length === 0}
+          noDataText={noDataText}
+        />
       </tbody>
     </table>
   );
@@ -79,12 +99,14 @@ InfiniteScrollTable.propTypes = {
   tableData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   onInfiniteScroll: PropTypes.func,
   isLoading: PropTypes.bool,
-  className: PropTypes.string
+  className: PropTypes.string,
+  noDataText: PropTypes.string
 };
 InfiniteScrollTable.defaultProps = {
   onInfiniteScroll: offset => {},
   isLoading: false,
-  className: ''
+  className: '',
+  noDataText: ''
 };
 
 export default InfiniteScrollTable;
