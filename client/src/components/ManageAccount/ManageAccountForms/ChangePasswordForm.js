@@ -10,7 +10,7 @@ import { ManageAccountInput } from './ManageAccountFields';
 
 const ChangePasswordFormBody = ({ canSubmit }) => {
   const isChecking = useSelector(state => state.profile.checkingPassword);
-  const Requirements = (
+  const Requirements = () => (
     <div style={{ color: '#707070', fontStyle: 'italic' }}>
       <span>Passwords must meet the following criteria:</span>
       <ul style={{ paddingLeft: '1rem' }}>
