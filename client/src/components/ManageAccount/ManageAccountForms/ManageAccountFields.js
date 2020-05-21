@@ -42,7 +42,9 @@ export const ManageAccountInput = ({ label, ...props }) => {
   });
 
   const inputProps = { ...field, ...props };
-
+  if (other) {
+    inputProps.style = { marginTop: '1rem' };
+  }
   React.useEffect(() => {
     const initialValues = options.map(option => option[0]);
     if (meta.value === 'Other' || !initialValues.includes(meta.value)) {
@@ -98,11 +100,7 @@ export const ManageAccountInput = ({ label, ...props }) => {
     <FormGroup>
       <Label>{label}</Label>
       {select ? (
-        <Input
-          {...inputProps}
-          bsSize="sm"
-          disabled={label === 'Citizenship' && field.value}
-        >
+        <Input {...inputProps} bsSize="sm">
           {options.map(renderOptions)}
         </Input>
       ) : (

@@ -29,6 +29,7 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
         label="Citizenship"
         name="citizenshipId"
         type="select"
+        disabled
       />
       {/* Django Fields */}
       <ManageAccountInput label="Ethnicity" name="ethnicity" type="select" />
