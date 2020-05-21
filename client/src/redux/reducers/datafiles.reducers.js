@@ -24,7 +24,8 @@ const initialFilesState = {
     copy: {},
     select: {},
     upload: {},
-    trash: {}
+    trash: {},
+    compress: {}
   },
   loadingScroll: {
     FilesListing: false,

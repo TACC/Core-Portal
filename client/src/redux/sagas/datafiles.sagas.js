@@ -579,73 +579,78 @@ export function* trashFile(system, path, id) {
   }
 }
 
-/* eslint-disable no-console */
-export function* compressFiles(action) {
-  const inputFiles = action.payload.files.map(
-    file => `agave://${file.system}${file.path}`
-  );
-  const filenames = action.payload.files.reduce(
-    (names, file) => `${names}"${file.name}" `,
-    ''
-  );
-  const zipfileName = `${action.payload.files[0].name}.zip`;
-  const archivePath = `agave://${
-    action.payload.files[0].system
-  }${action.payload.files[0].path.substring(
+/**
+ * Create JSON string of job params
+ */
+const getCompressParams = async files => {
+  const res = await fetchUtil({
+    url: '/api/workspace/apps',
+    params: { private: true }
+  });
+  const apps = res.response;
+
+  const latestZippy = apps
+    .filter(app => app.id.includes('zippy-frontera'))
+    .reduce(
+      (latest, app) => {
+        if (app.revision > latest.revision) {
+          return app;
+        }
+        return latest;
+      },
+      { revision: null }
+    );
+  const inputs = {
+    inputFiles: files.map(file => `agave://${file.system}${file.path}`)
+  };
+  const parameters = {
+    filenames: files.reduce((names, file) => `${names}"${file.name}" `, ''),
+    zipfileName: `${files[0].name}.zip`
+  };
+  const archivePath = `agave://${files[0].system}${files[0].path.substring(
     0,
-    action.payload.files[0].path.lastIndexOf('/') + 1
+    files[0].path.lastIndexOf('/') + 1
   )}`;
 
+  return JSON.stringify({
+    allocation: 'FORK',
+    appId: latestZippy.id,
+    archive: true,
+    archivePath,
+    maxRunTime: '02:00:00',
+    name: 'Compressing Files',
+    inputs,
+    parameters
+  });
+};
+
+export function* compressFiles(action) {
   try {
-    const res = yield call(fetchUtil, {
-      url: '/api/workspace/apps',
-      params: { private: true }
+    const params = yield call(getCompressParams, action.payload.files);
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'RUNNING', operation: 'compress' }
     });
-    const apps = res.response;
-    const latestZippy = apps
-      .filter(app => app.id.includes('zippy-frontera'))
-      .reduce(
-        (latest, app) => {
-          if (app.revision > latest.revision) {
-            return app;
-          }
-          return latest;
-        },
-        { revision: null }
-      );
-
-    const params = JSON.stringify({
-      allocation: 'FORK',
-      appId: latestZippy.id,
-      archive: true,
-      archivePath,
-      maxRunTime: '02:00:00',
-      name: 'Compressing Files',
-      inputs: {
-        inputFiles
-      },
-      parameters: {
-        zipfileName,
-        filenames
-      }
-    });
-
-    const submission = yield call(compressUtil, params);
-    console.log(submission);
+    const submission = yield call(compressUtil, params); // TODO: dispatch 'SUBMIT_JOB'
     if (submission.status === 'ACCEPTED') {
-      console.log('COMPRESS SUBMITTED!');
-    } else if (submission.execSys) {
-      console.log('PUSH KEYS');
+      yield put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'SUCCESS', operation: 'compress' }
+      });
+    } else {
+      throw new Error('Unable to compress files');
     }
   } catch (error) {
-    yield console.log('error');
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'ERROR', operation: 'compress' }
+    });
   }
 }
-/* eslint-enable no-console */
 export async function compressUtil(body) {
   const url = '/api/workspace/jobs';
-  const json = await fetchUtil({ url, method: 'POST', body });
-  return json;
+  const res = await fetchUtil({ url, method: 'POST', body });
+  return res.response;
 }
 export function* watchCompress() {
   yield takeLeading('DATA_FILES_COMPRESS', compressFiles);

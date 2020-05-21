@@ -86,19 +86,17 @@ const DataFilesToolbar = ({ scheme }) => {
   const canDownload =
     selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
   const canTrash = selectedFiles.length > 0 && scheme === 'private';
-  const canCompress = selectedFiles.length > 0;
+  const canCompress = selectedFiles.length > 0 && scheme === 'private';
 
   return (
     <>
       <div id="data-files-toolbar-button-row">
-        {canCompress && (
-          <ToolbarButton
-            text="Compress"
-            onClick={toggleCompressModal}
-            icon={{}}
-            disabled={false}
-          />
-        )}
+        <ToolbarButton
+          text="Compress"
+          onClick={toggleCompressModal}
+          icon={{}}
+          disabled={!canCompress}
+        />
         <ToolbarButton
           text="Rename"
           onClick={toggleRenameModal}
