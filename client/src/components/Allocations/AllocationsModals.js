@@ -143,13 +143,6 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
       </ModalHeader>
       <ModalBody className="d-flex p-0">
         <Container>
-          {error && (
-            <Row style={{ height: '50vh' }}>
-              <Col className="d-flex justify-content-center">
-                <span>Unable to retrieve team data.</span>
-              </Col>
-            </Row>
-          )}
           <Row>
             <Col className="modal-left" lg={5}>
               {isLoading ? (
@@ -163,7 +156,11 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
               )}
             </Col>
             <Col className="modal-right">
-              <ContactCard listing={card} />
+              {error ? (
+                <span>Unable to retrieve team data.</span>
+              ) : (
+                <ContactCard listing={card} />
+              )}
             </Col>
           </Row>
         </Container>
