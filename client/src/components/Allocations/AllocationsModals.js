@@ -124,7 +124,7 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
   const { teams, loadingUsernames, errors } = useSelector(
     state => state.allocations
   );
-  const error = has(errors.team, pid);
+  const error = has(errors.teams, pid);
   const [card, setCard] = useState(null);
   const isLoading = loadingUsernames[pid] && loadingUsernames[pid].loading;
   return (
@@ -143,26 +143,30 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
       </ModalHeader>
       <ModalBody className="d-flex p-0">
         <Container>
-          <Row>
-            <Col className="modal-left" lg={5}>
-              {isLoading ? (
-                <LoadingSpinner />
-              ) : (
-                <TeamTable
-                  visible={card}
-                  rawData={teams[pid]}
-                  clickHandler={setCard}
-                />
-              )}
-            </Col>
-            <Col className="modal-right">
-              {error ? (
+          {error ? (
+            <Row style={{ height: '50vh' }}>
+              <Col className="d-flex justify-content-center">
                 <span>Unable to retrieve team data.</span>
-              ) : (
+              </Col>
+            </Row>
+          ) : (
+            <Row>
+              <Col className="modal-left" lg={5}>
+                {isLoading ? (
+                  <LoadingSpinner />
+                ) : (
+                  <TeamTable
+                    visible={card}
+                    rawData={teams[pid]}
+                    clickHandler={setCard}
+                  />
+                )}
+              </Col>
+              <Col className="modal-right">
                 <ContactCard listing={card} />
-              )}
-            </Col>
-          </Row>
+              </Col>
+            </Row>
+          )}
         </Container>
       </ModalBody>
     </Modal>

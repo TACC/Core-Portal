@@ -37,11 +37,15 @@ function allocations(state = initialState, action) {
     case 'POPULATE_TEAMS_ERROR':
       return {
         ...state,
+        loadingUsernames: {
+          ...state.loadingUsernames,
+          ...action.payload.loading
+        },
         errors: {
           ...state.errors,
           teams: {
             ...state.errors.teams,
-            ...action.payload
+            ...action.payload.errors
           }
         }
       };
