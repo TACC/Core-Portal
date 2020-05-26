@@ -163,7 +163,11 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
                 )}
               </Col>
               <Col className="modal-right">
-                <ContactCard listing={card} />
+                {isLoading ? (
+                  <span>Loading user list. This may take a moment.</span>
+                ) : (
+                  <ContactCard listing={card} />
+                )}
               </Col>
             </Row>
           )}
