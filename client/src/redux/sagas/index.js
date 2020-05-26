@@ -2,7 +2,6 @@ import { all } from 'redux-saga/effects';
 import { watchJobs } from './jobs.sagas';
 import watchApps from './apps.sagas';
 import watchSystems from './systems.sagas';
-
 import {
   watchFetchSystems,
   watchFetchFiles,
