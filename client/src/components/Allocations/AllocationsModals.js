@@ -30,14 +30,11 @@ export const NewAllocReq = ({ isOpen, toggle }) => (
     <ModalHeader
       toggle={toggle}
       charCode="x"
-      className="allocations-modal-ModalHeader"
+      className="allocations-modal-header"
     >
       <span>Manage Allocations</span>
     </ModalHeader>
-    <ModalBody
-      className="allocations-request-ModalModalBody"
-      data-testid="request-ModalModalBody"
-    >
+    <ModalBody className="allocations-request-body" data-testid="request-body">
       <p>
         You can manage your allocation, your team members, or request more time
         on a machine by using your TACC user account credentials to access the
@@ -137,7 +134,7 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
       <ModalHeader
         toggle={toggle}
         charCode="x"
-        className="allocations-modal-ModalHeader"
+        className="allocations-modal-header"
       >
         <span>View Team</span>
       </ModalHeader>

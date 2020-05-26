@@ -23,9 +23,8 @@ export function* getAllocations(action) {
     const { response } = yield call(fetchUtil, {
       url: '/api/users/allocations/'
     });
-    const { active, inactive } = yield response;
-    const payload = { active, inactive };
-    yield put({ type: 'ADD_ALLOCATIONS', payload });
+    const { active, inactive } = response;
+    yield put({ type: 'ADD_ALLOCATIONS', payload: response });
     yield put({
       type: 'POPULATE_TEAMS',
       payload: getTeams({

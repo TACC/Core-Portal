@@ -97,7 +97,7 @@ const ErrorMessage = () => {
 };
 
 export const AllocationsTable = ({ page }) => {
-  const { allocations: error } = useSelector(state => state.allocations.errors);
+  const { errors } = useSelector(state => state.allocations.errors);
   const tableAttributes = useAllocations(page);
   const {
     getTableProps,
@@ -136,7 +136,7 @@ export const AllocationsTable = ({ page }) => {
             <tr>
               <td colSpan={headerGroups[0].headers.length}>
                 <center style={{ padding: '1rem' }}>
-                  {error ? (
+                  {errors ? (
                     <ErrorMessage />
                   ) : (
                     <span>
