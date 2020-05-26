@@ -12,26 +12,8 @@ const mockStore = configureStore();
 const store = mockStore(
   { 
     apps: { 
-      categoryDict: { 
-        mockCategory: [
-          // App definition with an icon
-          {
-            value: {
-              definition: {
-                id: "jupyter",
-                appIcon: "jupyter"
-              }
-            }
-          },
-          // App definition without an icon
-          {
-            value: {
-              definition: {
-                id: "vasp"
-              }
-            }
-          }
-        ] 
+      appIcons: {
+        "jupyter": "jupyter"
       } 
     } 
   }
@@ -57,13 +39,6 @@ describe('AppIcon', () => {
   });
   it('should show generic icons for apps with no appIcon', () => {
     const { getByTestId } = renderAppIcon("vasp");
-    expect(getByTestId(/app-icon/)).toHaveAttribute(
-      'class',
-      'app-icon icon-nav-application'
-    )
-  });
-  it('should show generic icons for unknown apps', () => {
-    const { getByTestId } = renderAppIcon("unknown");
     expect(getByTestId(/app-icon/)).toHaveAttribute(
       'class',
       'app-icon icon-nav-application'
