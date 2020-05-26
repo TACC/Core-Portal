@@ -133,6 +133,7 @@ export const AllocationsTable = ({ page }) => {
               );
             })
           ) : (
+            /* eslint-disable prettier/prettier */
             <tr>
               <td colSpan={headerGroups[0].headers.length}>
                 <center style={{ padding: '1rem' }}>
@@ -140,14 +141,13 @@ export const AllocationsTable = ({ page }) => {
                     <ErrorMessage />
                   ) : (
                     <span>
-                      You have no{' '}
-                      {`${page[0].toLocaleUpperCase()}${page.slice(1)}`}
-                      allocations.
+                      You have no {`${page[0].toLocaleUpperCase()}${page.slice(1)}`} allocations.
                     </span>
                   )}
                 </center>
               </td>
             </tr>
+            /* eslint-enable prettier/prettier */
           )}
         </tbody>
       </table>
