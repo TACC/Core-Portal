@@ -5,9 +5,14 @@ import PropTypes from 'prop-types';
 import FileInputDropZone from './FileInputDropZone';
 import './FormField.scss';
 
-function FileInputDropZoneFormField({ id, isSubmitted, description }) {
+function FileInputDropZoneFormField({
+  id,
+  isSubmitted,
+  description,
+  maxSizeMessage,
+  maxSize
+}) {
   const [field, , helpers] = useField(id);
-
   return (
     <FormGroup>
       <Label
@@ -23,6 +28,8 @@ function FileInputDropZoneFormField({ id, isSubmitted, description }) {
         files={field.value}
         onSetFiles={helpers.setValue}
         isSubmitted={isSubmitted}
+        maxSizeMessage={maxSizeMessage}
+        maxSize={maxSize}
       />
       <FormText className="form-field__help" color="muted">
         {description}
@@ -34,11 +41,14 @@ function FileInputDropZoneFormField({ id, isSubmitted, description }) {
 FileInputDropZoneFormField.propTypes = {
   id: PropTypes.string.isRequired,
   isSubmitted: PropTypes.bool.isRequired,
-  description: PropTypes.string
+  description: PropTypes.string,
+  maxSizeMessage: PropTypes.string.isRequired,
+  maxSize: PropTypes.number
 };
 
 FileInputDropZoneFormField.defaultProps = {
-  description: undefined
+  description: undefined,
+  maxSize: Infinity
 };
 
 export default FileInputDropZoneFormField;
