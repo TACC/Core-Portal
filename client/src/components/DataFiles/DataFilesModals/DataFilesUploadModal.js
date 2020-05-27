@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -12,6 +12,7 @@ import {
   Table
 } from 'reactstrap';
 import { LoadingSpinner } from '_common';
+import FileInputDropZone from '../../_common/Form/FileInputDropZone';
 import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
 
 const DataFilesUploadStatus = ({ i, removeCallback }) => {
@@ -50,11 +51,8 @@ const DataFilesUploadModal = () => {
   const isOpen = useSelector(state => state.files.modals.upload);
   const params = useSelector(state => state.files.params.FilesListing);
   const status = useSelector(state => state.files.operationStatus.upload);
-
-  const uploadRef = useRef({ files: [] });
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const dispatch = useDispatch();
-
   const uploadStart = () => {
     const filteredFiles = uploadedFiles.filter(f => status[f.id] !== 'SUCCESS');
     filteredFiles.length > 0 &&
@@ -89,14 +87,12 @@ const DataFilesUploadModal = () => {
     });
   };
 
-  const selectFiles = () => {
+  const selectFiles = acceptedFiles => {
     const files = [];
-    for (let i = 0; i < uploadRef.current.files.length; i += 1) {
-      files.push({ data: uploadRef.current.files.item(i), id: uuidv4() });
-    }
-
+    acceptedFiles.forEach(file => {
+      files.push({ data: file, id: uuidv4() });
+    });
     setUploadedFiles([...uploadedFiles, ...files]);
-    uploadRef.current.value = null;
   };
 
   return (
@@ -109,39 +105,11 @@ const DataFilesUploadModal = () => {
     >
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
       <ModalBody>
-        <input
-          ref={uploadRef}
-          hidden
-          type="file"
-          multiple
-          onChange={selectFiles}
+        <FileInputDropZone
+          onSetFiles={selectFiles}
+          maxSizeMessage="Up to 500mb"
+          files={[]}
         />
-
-        <div
-          style={{
-            display: 'flex',
-            height: '100px',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: '#F4F4F4'
-          }}
-        >
-          <div>
-            <Button
-              onClick={() => uploadRef.current.click()}
-              style={{
-                borderRadius: '0px',
-                paddingLeft: '25px',
-                paddingRight: '25px',
-                border: '1px solid black',
-                backgroundColor: '#F4F4F4',
-                color: 'black'
-              }}
-            >
-              Select File(s)
-            </Button>
-          </div>
-        </div>
 
         <div hidden={uploadedFiles.length === 0} style={{ marginTop: '10px' }}>
           <span style={{ fontSize: '20px' }}>
