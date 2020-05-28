@@ -1,71 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { number, string, func, bool } from 'prop-types';
+import React, { useState } from 'react';
+import { number, string, func, bool, shape, arrayOf, object } from 'prop-types';
 import {
   Modal,
-  ModalHeader as Header,
-  ModalBody as Body,
+  ModalHeader,
+  ModalBody,
   Table,
   Container,
   Col,
   Row
 } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
-import { chunk, isEmpty, startCase } from 'lodash';
+import { capitalize, has } from 'lodash';
 
-const modalPropTypes = {
+const MODAL_PROPTYPES = {
   isOpen: bool.isRequired,
   toggle: func.isRequired
 };
-
-export const UserRow = ({ username, handleClick, index, active }) => {
-  const dispatch = useDispatch();
-  const listing = useSelector(
-    state => state.allocations.userDirectory[username]
-  );
-  useEffect(() => {
-    if (isEmpty(listing)) {
-      dispatch({ type: 'GET_USER_DATA', username });
-    }
-  }, [dispatch]);
-  if (isEmpty(listing)) {
-    return <LoadingRow />;
-  }
-  const { firstName, lastName } = listing;
-  return (
-    <tr
-      className={active ? 'active-user' : ''}
-      onClick={() => handleClick(index)}
-    >
-      <td>
-        <span className="user-name">
-          {`${startCase(firstName)} ${startCase(lastName)}`}
-        </span>
-      </td>
-    </tr>
-  );
-};
-UserRow.propTypes = {
-  username: string.isRequired,
-  handleClick: func.isRequired,
-  index: number.isRequired,
-  active: bool.isRequired
-};
-
-const LoadingRow = () => (
-  <tr>
-    <th>
-      <LoadingSpinner placement="inline" />
-    </th>
-  </tr>
-);
+const USER_LISTING_PROPTYPES = shape({
+  firstName: string.isRequired,
+  lastName: string.isRequired,
+  email: string.isRequired,
+  username: string.isRequired
+});
 
 export const NewAllocReq = ({ isOpen, toggle }) => (
   <Modal isOpen={isOpen} toggle={() => toggle()}>
-    <Header toggle={toggle} charCode="x" className="allocations-modal-header">
+    <ModalHeader
+      toggle={toggle}
+      charCode="x"
+      className="allocations-modal-header"
+    >
       <span>Manage Allocations</span>
-    </Header>
-    <Body className="allocations-request-body" data-testid="request-body">
+    </ModalHeader>
+    <ModalBody className="allocations-request-body" data-testid="request-body">
       <p>
         You can manage your allocation, your team members, or request more time
         on a machine by using your TACC user account credentials to access the
@@ -79,34 +48,82 @@ export const NewAllocReq = ({ isOpen, toggle }) => (
         </a>
         .
       </p>
-    </Body>
+    </ModalBody>
   </Modal>
 );
-NewAllocReq.propTypes = modalPropTypes;
+NewAllocReq.propTypes = MODAL_PROPTYPES;
+
+const UserCell = ({ cell: { value } }) => {
+  const { firstName, lastName } = value;
+  return (
+    <span className="user-name">
+      {`${capitalize(firstName)} ${capitalize(lastName)}`}
+    </span>
+  );
+};
+UserCell.propTypes = {
+  cell: shape({
+    value: shape({
+      firstName: string.isRequired,
+      lastName: string.isRequired
+    }).isRequired
+  }).isRequired
+};
+
+const TeamTable = ({ rawData, clickHandler, visible }) => {
+  const data = React.useMemo(() => rawData, [rawData]);
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'name',
+        accessor: row => row,
+        UserCell
+      }
+    ],
+    [rawData]
+  );
+  const { getTableProps, getTableBodyProps, rows, prepareRow } = useTable({
+    columns,
+    data
+  });
+  return (
+    <Table hover responsive borderless size="sm" {...getTableProps()}>
+      <tbody {...getTableBodyProps()}>
+        {rows.map(row => {
+          prepareRow(row);
+          return (
+            <tr
+              {...row.getRowProps({
+                className: row.values.name === visible ? 'active-user' : '',
+                onClick: () => {
+                  clickHandler(row.values.name);
+                }
+              })}
+            >
+              {row.cells.map(cell => (
+                <td {...cell.getCellProps()}>{cell.render('UserCell')}</td>
+              ))}
+            </tr>
+          );
+        })}
+      </tbody>
+    </Table>
+  );
+};
+TeamTable.propTypes = {
+  rawData: arrayOf(object),
+  clickHandler: func.isRequired,
+  visible: USER_LISTING_PROPTYPES
+};
+TeamTable.defaultProps = { visible: {}, rawData: [] };
 
 export const TeamView = ({ isOpen, toggle, pid }) => {
+  const { teams, loadingUsernames, errors } = useSelector(
+    state => state.allocations
+  );
+  const error = has(errors.teams, pid);
   const [card, setCard] = useState(null);
-  const dispatch = useDispatch();
-  const { teams, pages } = useSelector(state => state.allocations);
-  const loading = useSelector(state => ({
-    usernames: state.allocations.loadingUsernames,
-    userPage: state.allocations.loadingPage
-  }));
-  const visible = chunk(teams[pid] || [], 20 * pages[pid]);
-  const handleScroll = ({ target }) => {
-    const heightDiff = target.scrollHeight - target.scrollTop;
-    const bottom =
-      heightDiff <= target.clientHeight + 2 &&
-      heightDiff >= target.clientHeight - 2;
-    if (bottom && visible[0].length < (teams[pid].length || 0)) {
-      dispatch({
-        type: 'ADD_PAGE',
-        payload: {
-          [pid]: pages[pid] + 1
-        }
-      });
-    }
-  };
+  const isLoading = loadingUsernames[pid] && loadingUsernames[pid].loading;
   return (
     <Modal
       isOpen={isOpen}
@@ -114,69 +131,61 @@ export const TeamView = ({ isOpen, toggle, pid }) => {
       className="team-view-modal-wrapper"
       size="lg"
     >
-      <Header toggle={toggle} charCode="x" className="allocations-modal-header">
+      <ModalHeader
+        toggle={toggle}
+        charCode="x"
+        className="allocations-modal-header"
+      >
         <span>View Team</span>
-      </Header>
-      <Body className="d-flex p-0">
+      </ModalHeader>
+      <ModalBody className="d-flex p-0">
         <Container>
-          <Row>
-            <Col className="modal-left" onScroll={handleScroll} lg={5}>
-              <Table
-                hover={visible.length !== 0}
-                responsive
-                borderless
-                size="sm"
-                style={visible ? { height: '250px' } : null}
-              >
-                <tbody>
-                  {visible.length === 0 ? (
-                    <tr>
-                      <td style={{ verticalAlign: 'middle' }}>
-                        <LoadingSpinner />
-                      </td>
-                    </tr>
-                  ) : (
-                    (!loading.usernames &&
-                      visible[0].map(({ username }, idx) => (
-                        <UserRow
-                          key={username}
-                          username={username}
-                          index={idx}
-                          handleClick={() => setCard(username)}
-                          active={username === card}
-                        />
-                      ))) || <LoadingRow />
-                  )}
-                  {loading.userPage && <LoadingRow />}
-                </tbody>
-              </Table>
-            </Col>
-            <Col className="modal-right">
-              {card ? (
-                <ContactCard username={card} />
-              ) : (
-                "Click on a user's name to view their contact information."
-              )}
-            </Col>
-          </Row>
+          {error ? (
+            <Row style={{ height: '50vh' }}>
+              <Col className="d-flex justify-content-center">
+                <span>Unable to retrieve team data.</span>
+              </Col>
+            </Row>
+          ) : (
+            <Row>
+              <Col className="modal-left" lg={5}>
+                {isLoading ? (
+                  <LoadingSpinner />
+                ) : (
+                  <TeamTable
+                    visible={card}
+                    rawData={teams[pid]}
+                    clickHandler={setCard}
+                  />
+                )}
+              </Col>
+              <Col className="modal-right">
+                {isLoading ? (
+                  <span>Loading user list. This may take a moment.</span>
+                ) : (
+                  <ContactCard listing={card} />
+                )}
+              </Col>
+            </Row>
+          )}
         </Container>
-      </Body>
+      </ModalBody>
     </Modal>
   );
 };
-TeamView.propTypes = { ...modalPropTypes, pid: number.isRequired };
+TeamView.propTypes = { ...MODAL_PROPTYPES, pid: number.isRequired };
 
-export const ContactCard = ({ username }) => {
-  const listing = useSelector(
-    state => state.allocations.userDirectory[username]
-  );
-  if (isEmpty(listing)) return <div />;
-  const { firstName, lastName, email } = listing;
+export const ContactCard = ({ listing }) => {
+  if (!listing)
+    return (
+      <span>Click on a user’s name to view their contact information.</span>
+    );
+  const { firstName, lastName, email, username } = listing;
   return (
     <div className="contact-card">
       <div>
         <strong>
-          {startCase(firstName)} {startCase(lastName)} <br />
+          {capitalize(firstName)} {capitalize(lastName)} <br />
         </strong>
       </div>
       <div>Username: {username}</div>
@@ -184,4 +193,6 @@ export const ContactCard = ({ username }) => {
     </div>
   );
 };
-ContactCard.propTypes = { username: string.isRequired };
+
+ContactCard.propTypes = { listing: USER_LISTING_PROPTYPES };
+ContactCard.defaultProps = { listing: {} };
