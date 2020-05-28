@@ -12,7 +12,7 @@
   /* TODO: After FP-103: Use `composes:` not `@extend` */
   @extend .u-ellipsis;
 
-  width: 30ch;
+  width: 25ch;
 }
 ._truncate-approx-char-count--inline { display: inline-block; }
 ._truncate-approx-char-count--block { display: block; }

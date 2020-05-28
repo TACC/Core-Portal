@@ -3,15 +3,17 @@
 /* WARNING: This is globally available; do NOT use its styles as such */
 @import '../../styles/trumps/_truncate.scss';
 
-.jobs-view.InfiniteScrollTable {
+.jobs-view {
   th:nth-child(1),
-  td:nth-child(1) { width: 20%; }
+  td:nth-child(1) { width: 05%; }
   th:nth-child(2),
-  td:nth-child(2) { width: 50%; }
+  td:nth-child(2) { width: 25%; }
   th:nth-child(3),
-  td:nth-child(3) { width: 15%; }
+  td:nth-child(3) { width: 40%; }
   th:nth-child(4),
   td:nth-child(4) { width: 15%; }
+  th:nth-child(5),
+  td:nth-child(5) { width: 15%; }
 }
 
 .job__name,
