@@ -51,7 +51,7 @@
     }
   }
   /* Allow `.o-fixed-header-table td` width to apply to common inline elements */
-  /* Allow `u-ellipsis` usage to have effect on common inline elements */
+  /* Allow `.u-ellipsis` usage to have effect on common inline elements */
   & td > a,
   & td > span {
     display: inline-block;
