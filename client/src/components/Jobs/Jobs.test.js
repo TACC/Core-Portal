@@ -13,6 +13,11 @@ const initialMockState = {
   loading: false
 };
 
+// Provide mock state for AppIcon
+const appIconMockState = {
+  appIcons: { }
+}
+
 function renderJobsComponent(store) {
   return render(
     <Provider store={store}>
@@ -28,6 +33,9 @@ describe('Jobs View', () => {
     const store = mockStore({
       jobs: {
         ...initialMockState,
+      },
+      apps: {
+        ...appIconMockState
       }
     });
 
