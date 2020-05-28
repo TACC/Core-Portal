@@ -178,9 +178,7 @@ TeamView.propTypes = { ...MODAL_PROPTYPES, pid: number.isRequired };
 export const ContactCard = ({ listing }) => {
   if (!listing)
     return (
-      <span>
-        Click on a user&apos;s name to view their contact information.
-      </span>
+      <span>Click on a user’s name to view their contact information.</span>
     );
   const { firstName, lastName, email, username } = listing;
   return (
