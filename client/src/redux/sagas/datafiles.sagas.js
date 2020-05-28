@@ -579,16 +579,78 @@ export function* trashFile(system, path, id) {
   }
 }
 
+const getExtractParams = async file => {
+  const res = await fetchUtil({
+    url: '/api/workspace/apps',
+    params: { publicOnly: true }
+  });
+  const apps = res.response;
+
+  const latestExtract = apps
+    .filter(app => app.id.includes('extract-frontera'))
+    .reduce(
+      (latest, app) => {
+        if (app.revision > latest.revision) {
+          return app;
+        }
+        return latest;
+      },
+      { revision: null }
+    );
+  const inputFile = `agave://${file.system}${file.path}`;
+  const archivePath = `agave://${file.system}${file.path.substring(
+    0,
+    file.path.lastIndexOf('/') + 1
+  )}`;
+  return JSON.stringify({
+    allocation: 'FORK',
+    appId: latestExtract.id,
+    archive: true,
+    archivePath,
+    inputs: {
+      inputFile
+    },
+    maxRunTime: '02:00:00',
+    name: 'Extracting Zip File',
+    parameters: {}
+  });
+};
+export function* extractFiles(action) {
+  try {
+    const params = yield call(getExtractParams, action.payload.file);
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'RUNNING', operation: 'extract' }
+    });
+    const submission = yield call(jobHelper, params);
+    if (submission.status === 'ACCEPTED') {
+      yield put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'SUCCESS', operation: 'extract' }
+      });
+    } else {
+      throw new Error('Unable to extract files');
+    }
+  } catch (error) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'ERROR', operation: 'extract' }
+    });
+  }
+}
+export function* watchExtract() {
+  yield takeLeading('DATA_FILES_EXTRACT', extractFiles);
+}
+
 /**
  * Create JSON string of job params
  */
 const getCompressParams = async files => {
   const res = await fetchUtil({
     url: '/api/workspace/apps',
-    params: { private: true }
+    params: { publicOnly: true }
   });
   const apps = res.response;
-
   const latestZippy = apps
     .filter(app => app.id.includes('zippy-frontera'))
     .reduce(
@@ -631,7 +693,7 @@ export function* compressFiles(action) {
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'compress' }
     });
-    const submission = yield call(compressUtil, params); // TODO: dispatch 'SUBMIT_JOB'
+    const submission = yield call(jobHelper, params); // TODO: dispatch 'SUBMIT_JOB'
     if (submission.status === 'ACCEPTED') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -647,7 +709,7 @@ export function* compressFiles(action) {
     });
   }
 }
-export async function compressUtil(body) {
+export async function jobHelper(body) {
   const url = '/api/workspace/jobs';
   const res = await fetchUtil({ url, method: 'POST', body });
   return res.response;

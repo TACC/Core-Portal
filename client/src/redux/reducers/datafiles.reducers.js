@@ -25,7 +25,8 @@ const initialFilesState = {
     select: {},
     upload: {},
     trash: {},
-    compress: {}
+    compress: {},
+    extract: {}
   },
   loadingScroll: {
     FilesListing: false,
@@ -63,7 +64,8 @@ const initialFilesState = {
     rename: false,
     pushKeys: false,
     trash: false,
-    compress: false
+    compress: false,
+    extract: false
   },
   modalProps: {
     preview: {},

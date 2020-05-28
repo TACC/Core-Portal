@@ -10,7 +10,7 @@ const DataFilesCompressModal = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const status = useSelector(
-    state => state.files.operationStatus.compress,
+    state => state.files.operationStatus.extract,
     shallowEqual
   );
 
@@ -19,7 +19,7 @@ const DataFilesCompressModal = () => {
     shallowEqual
   );
 
-  const isOpen = useSelector(state => state.files.modals.compress);
+  const isOpen = useSelector(state => state.files.modals.extract);
   const selectedFiles = useSelector(({ files: { selected, listing } }) =>
     selected.FilesListing.map(i => ({
       ...listing.FilesListing[i]
@@ -30,10 +30,9 @@ const DataFilesCompressModal = () => {
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'compress', props: {} }
+      payload: { operation: 'extract', props: {} }
     });
 
-  // TODO: Add listing of files to be compressed
   const onOpened = () => {
     dispatch({
       type: 'FETCH_FILES_MODAL',
@@ -46,19 +45,17 @@ const DataFilesCompressModal = () => {
     if (isString(status)) {
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: {}, operation: 'compress' }
+        payload: { status: {}, operation: 'extract' }
       });
       history.push(location.pathname);
     }
   };
-
-  const compressCallback = () => {
+  const extractCallback = () => {
     dispatch({
-      type: 'DATA_FILES_COMPRESS',
-      payload: { files: selected }
+      type: 'DATA_FILES_EXTRACT',
+      payload: { file: selected[0] }
     });
   };
-
   return (
     <Modal
       isOpen={isOpen}
@@ -67,29 +64,28 @@ const DataFilesCompressModal = () => {
       toggle={toggle}
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>Compress Files</ModalHeader>
+      <ModalHeader toggle={toggle}>Extract Files</ModalHeader>
       <ModalBody>
-        {/* TODO: Form for filename and filetype */}
         <p>
-          A job to compress your files will be submitted on your behalf. You can
-          check the status of this job on your Dashboard, and your compressed
-          file will appear in this directory.
+          A job to extract your file will be submitted on your behalf. You can
+          check the status of this job on your Dashboard, and your extracted
+          files will appear in this directory.
         </p>
         {status === 'SUCCESS' && (
           <span style={{ color: 'green' }}>
-            Successfully started compress job
+            Successfully started extract job
           </span>
         )}
       </ModalBody>
       <ModalFooter>
         <Button
-          onClick={compressCallback}
+          onClick={extractCallback}
           className="data-files-btn"
           disabled={status === 'RUNNING'}
           style={{ display: 'flex' }}
         >
           {status === 'RUNNING' && <LoadingSpinner placement="inline" />}
-          <span>Compress</span>
+          <span>Extract</span>
         </Button>
         <Button
           color="secondary"

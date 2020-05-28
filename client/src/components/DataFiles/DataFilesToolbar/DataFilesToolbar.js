@@ -66,6 +66,16 @@ const DataFilesToolbar = ({ scheme }) => {
     });
   };
 
+  const toggleExtractModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'extract',
+        props: { selectedFile: selectedFiles[0] }
+      }
+    });
+  };
+
   const download = () => {
     dispatch({
       type: 'DATA_FILES_DOWNLOAD',
@@ -87,10 +97,17 @@ const DataFilesToolbar = ({ scheme }) => {
     selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
   const canTrash = selectedFiles.length > 0 && scheme === 'private';
   const canCompress = selectedFiles.length > 0 && scheme === 'private';
+  const canExtract = canDownload && selectedFiles[0].name.includes('.zip');
 
   return (
     <>
       <div id="data-files-toolbar-button-row">
+        <ToolbarButton
+          text="Extract"
+          onClick={toggleExtractModal}
+          icon={{}}
+          disabled={!canExtract}
+        />
         <ToolbarButton
           text="Compress"
           onClick={toggleCompressModal}
