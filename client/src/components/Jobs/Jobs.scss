@@ -3,18 +3,27 @@
 /* WARNING: This is globally available; do NOT use its styles as such */
 @import '../../styles/trumps/_truncate.scss';
 
-.jobs-view.InfiniteScrollTable {
+.jobs-view {
+  /* icon */
   th:nth-child(1),
-  td:nth-child(1) { width: 20%; }
+  td:nth-child(1) { width: 05%; }
+  /* name */
   th:nth-child(2),
-  td:nth-child(2) { width: 50%; }
+  td:nth-child(2) { width: 20%; }
+  /* path */
   th:nth-child(3),
-  td:nth-child(3) { width: 15%; }
+  td:nth-child(3) { width: 40%; }
+  /* date */
   th:nth-child(4),
-  td:nth-child(4) { width: 15%; }
+  td:nth-child(4) { width: 20%; }
+  /* status */
+  th:nth-child(5),
+  td:nth-child(5) { width: 15%; }
 }
 
 .job__name,
 .job__path {
   @extend ._truncate-approx-char-count--inline;
 }
+.job__name { --width: 15ch; }
+.job__path { --width: 30ch; }
