@@ -9,10 +9,12 @@
 ._truncate-approx-char-count,
 ._truncate-approx-char-count--inline,
 ._truncate-approx-char-count--block {
+  --width: 25ch; /* `25ch` is approx. 30 characters */
+
   /* TODO: After FP-103: Use `composes:` not `@extend` */
   @extend .u-ellipsis;
 
-  width: 25ch;
+  width: var(--width);
 }
 ._truncate-approx-char-count--inline { display: inline-block; }
 ._truncate-approx-char-count--block { display: block; }
