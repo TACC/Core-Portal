@@ -3,15 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, AppIcon } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
 function JobsView() {
   const dispatch = useDispatch();
-  const spinnerState = useSelector(state => state.spinner);
-  const jobs = useSelector(state => state.jobs.list);
-
+  const { spinnerState, jobs } = useSelector(state => ({
+    spinnerState: state.spinner,
+    jobs: state.jobs.list
+  }));
   useEffect(() => {
     dispatch({ type: 'GET_JOBS', params: { limit: 100 } });
   }, [dispatch]);
@@ -21,6 +22,16 @@ function JobsView() {
   }
 
   const columns = [
+    {
+      Header: '',
+      accessor: 'appId',
+      width: 30,
+      Cell: el => (
+        <span>
+          <AppIcon appId={el.value} />
+        </span>
+      )
+    },
     {
       Header: 'Job ID',
       accessor: 'name',

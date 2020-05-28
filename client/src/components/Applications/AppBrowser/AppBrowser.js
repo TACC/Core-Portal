@@ -8,6 +8,7 @@ import {
   faDesktop,
   faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
+import { AppIcon } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
@@ -87,13 +88,7 @@ const AppBrowser = () => {
                     activeClassName="active"
                   >
                     <div className="nav-content">
-                      <i
-                        className={`app-icon ${
-                          app.value.definition.appIcon
-                            ? `icon-nav-${app.value.definition.appIcon}`
-                            : 'icon-nav-application'
-                        }`}
-                      />
+                      <AppIcon appId={app.value.definition.id} />
                       <span className="nav-text">
                         {app.value.definition.label}
                       </span>
