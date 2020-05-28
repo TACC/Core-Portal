@@ -5,14 +5,14 @@
     padding: 20px 40px 0 25px;
 }
 .dashboard-items {
-    /* Styles as a flex child */
+    /* As a flex item */
     flex-grow: 1;
 
-    /* Styles as a flex parent */
+    /* As a flex container */
     display: flex;
     flex-direction: column;
 }
-/* Make bottom item fill up remaining vertical space */
+/* Make bottom-most item fill up remaining vertical space */
 .dashboard-items > :last-child {
     flex-grow: 1;
 }
