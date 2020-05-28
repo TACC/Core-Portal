@@ -1,0 +1,13 @@
+/* HACK: CSS solution to JS truncation responsibility */
+/* TODO: FP-425: Replace with JavaScript solution */
+/* SEE: https://github.com/TACC/Frontera-Portal/pull/29#discussion_r428845608 */
+/* SEE: https://confluence.tacc.utexas.edu/x/Q4D0C */
+._truncate-approx-char-count,
+[class*="_truncate-approx-char-count"] {
+  /* TODO: After FP-103: Use `composes:` not `@extend` */
+  @extend .u-ellipsis;
+
+  width: 30ch;
+}
+._truncate-approx-char-count--inline { display: inline-block; }
+._truncate-approx-char-count--block { display: block; }

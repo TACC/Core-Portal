@@ -44,7 +44,11 @@ function JobsView() {
       Header: 'Job ID',
       accessor: 'name',
       Cell: el => (
-        <span title={el.value} id={`jobID${el.index}`}>
+        <span
+          title={el.value}
+          id={`jobID${el.index}`}
+          className="_truncate-approx-char-count--inline"
+        >
           {el.value}
         </span>
       )
@@ -62,7 +66,7 @@ function JobsView() {
         return outputPath !== 'listings' ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
-            className="wb-link"
+            className="wb-link _truncate-approx-char-count--inline"
           >
             {outputPath}
           </Link>

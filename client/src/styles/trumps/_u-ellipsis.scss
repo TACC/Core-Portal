@@ -1,0 +1,28 @@
+.u-ellipsis {
+  /* display: block; *//* Set your value in consumer styelsheet */
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* SEE: http://codepen.io/thetallweeks/pen/yybGra */
+.u-ellipsis--anim {
+  position: relative; /* for absolutely positioned children */
+}
+.u-ellipsis--anim::after {
+  position: absolute;
+  overflow: hidden;
+
+  display: inline-block;
+  content: "…";
+  width: 0;
+  vertical-align: bottom;
+
+  animation: ellipsis steps( 4, end ) 900ms infinite;
+}
+@keyframes ellipsis {
+  to {
+    width: 1.25em;
+  }
+}
