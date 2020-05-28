@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import 'react-table-6/react-table.css';
-import { InfiniteScrollTable } from '_common';
+import { AppIcon, InfiniteScrollTable } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
@@ -23,7 +23,6 @@ function JobsView() {
       .
     </>
   );
-
   useEffect(() => {
     dispatch({ type: 'GET_JOBS', params: { limit } });
   }, [dispatch]);
@@ -40,6 +39,16 @@ function JobsView() {
   }, []);
 
   const columns = [
+    {
+      Header: '',
+      accessor: 'appId',
+      width: 30,
+      Cell: el => (
+        <span>
+          <AppIcon appId={el.value} />
+        </span>
+      )
+    },
     {
       Header: 'Job Name',
       accessor: 'name',

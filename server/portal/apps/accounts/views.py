@@ -8,17 +8,20 @@ import rt
 import urllib.request
 import urllib.parse
 import urllib.error
+import requests
+from django.forms.models import model_to_dict
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.generic.base import TemplateView, View
 from django.shortcuts import render, render_to_response
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string
 from pytas.http import TASClient
 
 from portal.apps.accounts import forms, integrations
@@ -60,6 +63,25 @@ class LogoutView(View):
         """GET"""
         logout(request)
         return HttpResponseRedirect('/')
+
+
+@login_required
+def change_password(request):
+    username = str(request.user)
+    body = json.loads(request.body)
+    current_password = body['currentPW']
+    new_password = body['newPW']
+
+    tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+    auth = tas.authenticate(username, current_password)
+    if auth:
+        try:
+            tas.change_password(username, current_password, new_password)
+            return JsonResponse({'completed': True})
+        except Exception as e:
+            return JsonResponse({'message': e.args[1]}, status=422)
+    else:
+        return JsonResponse({'message': 'Incorrect Password'}, status=401)
 
 
 def request_access(request):
@@ -226,11 +248,23 @@ def registration_successful(request):
     )
 
 
-@login_required
-def manage_profile(request):
+def get_user_history(username):
     """
-    The default accounts view. Provides user settings for managing profile,
-    authentication, notifications, identities, and applications.
+    Get user history from tas
+    """
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    r = requests.get('{0}/v1/users/{1}/history'.format(settings.TAS_URL, username), auth=auth)
+    resp = r.json()
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise Exception('Failed to get project users', resp['message'])
+
+
+@login_required
+def get_profile_data(request):
+    """
+    JSON profile data
     """
     django_user = request.user
     tas = TASClient(
@@ -240,63 +274,24 @@ def manage_profile(request):
             'password': settings.TAS_CLIENT_SECRET
         }
     )
+
     user_profile = tas.get_user(username=request.user.username)
+    history = get_user_history(request.user.username)
 
     try:
-        demographics = django_user.profile
+        demographics = model_to_dict(django_user.profile)
     except ObjectDoesNotExist as e:
         demographics = {}
         logger.info('exception e:{} {}'.format(type(e), e))
-
+    demographics.update(user_profile)
     context = {
-        'title': 'Manage Profile',
-        'profile': user_profile,
-        'demographics': demographics
+        'demographics': demographics,
+        'history': history,
+        'licenses': manage_licenses(request),
+        'integrations': manage_applications(request),
     }
-    return render(request, 'portal/apps/accounts/profile.html', context)
 
-
-@login_required
-def manage_pro_profile(request):
-    user = request.user
-    try:
-        portal_profile = PortalProfile.objects.get(user__id=user.id)
-    except PortalProfile.DoesNotExist:
-        logout(request)
-        return HttpResponseRedirect(reverse('portal_auth:logout'))
-    context = {
-        'title': 'Manage Professional Profile',
-        'user': user,
-        'profile': portal_profile
-    }
-    return render(
-        request,
-        'portal/apps/accounts/professional_profile.html',
-        context
-    )
-
-
-@login_required
-def pro_profile_edit(request):
-    context = {}
-    user = request.user
-    portal_profile = PortalProfile.objects.get(user_id=user.id)
-    form = forms.ProfessionalProfileForm(
-        request.POST or None,
-        instance=portal_profile
-    )
-    if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(
-                reverse('portal_accounts:manage_pro_profile')
-            )
-    context["form"] = form
-    return render(
-        request,
-        'portal/apps/accounts/professional_profile_edit.html',
-        context
-    )
+    return JsonResponse(context)
 
 
 @login_required
@@ -386,28 +381,43 @@ def manage_licenses(request):
     for l, m in zip(licenses, license_models):
         if m.objects.filter(user=request.user).exists():
             l['current_user_license'] = True
-    context = {
-        'title': 'Manage Software Licenses',
-        'licenses': licenses
-    }
-    return render(
-        request,
-        'portal/apps/accounts/manage_licenses.html',
-        context
-    )
+        l['template_html'] = render_to_string(l['details_html'])
+    return licenses
 
 
 @login_required
 def manage_applications(request):
-    context = {
-        'title': 'Manage 3rd Party Applications',
-        'integrations': integrations.get_integrations()
-    }
-    return render(
-        request,
-        'portal/apps/accounts/manage_applications.html',
-        context
+    return integrations.get_integrations()
+
+
+@login_required
+def edit_profile(request):
+    tas = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            'username': settings.TAS_CLIENT_KEY,
+            'password': settings.TAS_CLIENT_SECRET
+        }
     )
+    user = request.user
+    body = json.loads(request.body)
+    portal_profile = user.profile
+    if body['flag'] == 'Required':
+
+        portal_profile.ethnicity = body['ethnicity']
+        portal_profile.gender = body['gender']
+
+        tas_user = tas.get_user(username=user)
+        body['piEligibility'] = tas_user['piEligibility']
+        body['source'] = tas_user['source']
+        tas.save_user(tas_user['id'], body)
+    elif body['flag'] == 'Optional':
+        portal_profile.website = body['website']
+        portal_profile.professional_level = body['professional_level']
+        portal_profile.bio = body['bio']
+        portal_profile.orcid_id = body['orcid_id']
+    portal_profile.save()
+    return JsonResponse({'portal': model_to_dict(portal_profile), 'tas': tas.get_user(username=user)})
 
 
 @login_required
@@ -538,7 +548,10 @@ def _process_password_reset_request(request, form):
             username
         )
         try:
-            tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+            tas = TASClient(
+                baseURL=settings.TAS_URL,
+                credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET}
+            )
             user = tas.get_user(username=username)
             logger.info(
                 'Processing password reset request for username: "%s"',
@@ -565,7 +578,10 @@ def _process_password_reset_confirm(request, form):
     if form.is_valid():
         data = form.cleaned_data
         try:
-            tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
+            tas = TASClient(
+                baseURL=settings.TAS_URL,
+                credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET}
+            )
             return tas.confirm_password_reset(
                 data['username'],
                 data['code'],
@@ -655,6 +671,17 @@ def departments_json(request):
         json.dumps(departments),
         content_type='application/json'
     )
+
+
+def get_form_fields(request):
+    return JsonResponse({
+        'institutions': [list(i) for i in forms.get_institution_choices()],
+        'countries': [list(c) for c in forms.get_country_choices()],
+        'titles': [list(t) for t in forms.USER_PROFILE_TITLES],
+        'ethnicities': [list(e) for e in forms.ETHNICITY_OPTIONS],
+        'genders': [list(g) for g in forms.GENDER_OPTIONS],
+        'professionalLevels': [list(p) for p in forms.PROFESSIONAL_LEVEL_OPTIONS]
+    })
 
 
 def load_departments(request):
