@@ -2,7 +2,6 @@ import { all } from 'redux-saga/effects';
 import { watchJobs } from './jobs.sagas';
 import watchApps from './apps.sagas';
 import watchSystems from './systems.sagas';
-
 import {
   watchFetchSystems,
   watchFetchFiles,
@@ -20,6 +19,7 @@ import {
 } from './datafiles.sagas';
 import watchAllocations from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
+import watchProfile from './profile.sagas';
 import {
   watchTicketListFetch,
   watchTicketDetailedView,
@@ -50,6 +50,8 @@ export default function* rootSaga() {
     watchApps(),
     watchSystems(),
     watchSystemMonitor(),
+    watchPostTicketReply(),
+    ...watchProfile,
     watchTicketListFetch(),
     watchTicketDetailedView(),
     watchTicketDetailedViewFetchHistory(),

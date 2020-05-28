@@ -9,6 +9,7 @@ import {
 } from './tickets.reducers';
 import systemMonitor from './systemMonitor.reducers';
 import allocations from './allocations.reducers';
+import profile from './profile.reducers';
 import authenticatedUser from './authenticated_user.reducer';
 import { pushKeys } from './systems.reducers';
 
@@ -19,6 +20,7 @@ export default combineReducers({
   systemMonitor,
   files,
   allocations,
+  profile,
   ticketList,
   ticketDetailedView,
   ticketCreate,
