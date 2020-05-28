@@ -1,7 +1,6 @@
-/* TODO: FP-425: Use JavaScript instead */
 /* HACK: FP-103/FP-420: Should import via CSS Modules */
 /* WARNING: This is globally available; do NOT use its styles as such */
-@import '../../styles/trumps/_truncate.scss';
+@import '../../styles/trumps/_u-ellipsis.scss';
 
 .jobs-view {
   /* icon */
@@ -23,7 +22,7 @@
 
 .job__name,
 .job__path {
-  @extend ._truncate-approx-char-count--inline;
+  @extend .u-ellipsis;
+
+  display: inline-block;
 }
-.job__name { --width: 15ch; }
-.job__path { --width: 30ch; }

@@ -50,6 +50,11 @@
       }
     }
   }
+  /* Allow width from `.o-fixed-header-table` to apply to common inline elements */
+  & td > a,
+  & td > span {
+    display: inline-block;
+  }
 }
 
 
@@ -106,4 +111,11 @@ Styleguide Objects.FixedHeaderTable
   overflow: auto;
   width: 100%;
   height: var(--fixed-header-table--body-height, var(--body-height));
+}
+/* Stretch cell content to fit available space */
+/* WARNING: This is ineffectual for inline elements */
+.o-fixed-header-table td > * {
+  /* display: inline-block; *//* define this only in consumer styles for inline elements */
+
+  width: 100%;
 }
