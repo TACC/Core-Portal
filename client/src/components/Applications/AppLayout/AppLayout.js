@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner } from '_common';
@@ -43,10 +43,6 @@ const AppsRoutes = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const appDict = useSelector(state => state.apps.appDict, shallowEqual);
-  useEffect(() => {
-    dispatch({ type: 'GET_APPS' });
-    dispatch({ type: 'GET_APP_START' });
-  }, [dispatch]);
 
   return (
     <div id="apps-wrapper">
@@ -58,7 +54,6 @@ const AppsRoutes = () => {
           exact
           path={`${path}/:appId`}
           render={({ match: { params } }) => {
-            dispatch({ type: 'FLUSH_SUBMIT' });
             dispatch({
               type: 'GET_APP',
               payload: {
