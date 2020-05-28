@@ -8,6 +8,6 @@ urlpatterns = [
     url(r'^auth/$', AuthenticatedView.as_view(), name='user_authenticated'),
     url(r'^usage/$', UsageView.as_view(), name='user_usage'),
     url(r'^allocations/$', AllocationsView.as_view(), name='user_allocations'),
-    path('team/<int:project_id>', TeamView.as_view(), name='user_team'),
+    path('team/<slug:project_name>', TeamView.as_view(), name='user_team'),
     path('team/user/<slug:username>', UserDataView.as_view(), name='user_data')
 ]
