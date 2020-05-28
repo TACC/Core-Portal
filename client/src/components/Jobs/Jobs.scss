@@ -1,3 +1,8 @@
+/* TODO: FP-425: Use JavaScript instead */
+/* HACK: FP-103/FP-420: Should import via CSS Modules */
+/* WARNING: This is globally available; do NOT use its styles as such */
+@import '../../styles/trumps/_truncate.scss';
+
 .jobs-view.InfiniteScrollTable {
   th:nth-child(1),
   td:nth-child(1) { width: 20%; }
@@ -7,4 +12,9 @@
   td:nth-child(3) { width: 15%; }
   th:nth-child(4),
   td:nth-child(4) { width: 15%; }
+}
+
+.job__name,
+.job__path {
+  @extend ._truncate-approx-char-count--inline;
 }

@@ -1,0 +1,18 @@
+/* TODO: FP-425: Delete this file */
+/* HACK: FP-103/FP-420: Should import via CSS Modules */
+/* WARNING: This is globally available; do NOT use its styles as such */
+@import './_u-ellipsis.scss';
+
+/* HACK: CSS solution to JS truncation responsibility */
+/* TODO: FP-425: Replace with JavaScript solution */
+/* SEE: https://github.com/TACC/Frontera-Portal/pull/29#discussion_r428845608 */
+._truncate-approx-char-count,
+._truncate-approx-char-count--inline,
+._truncate-approx-char-count--block {
+  /* TODO: After FP-103: Use `composes:` not `@extend` */
+  @extend .u-ellipsis;
+
+  width: 30ch;
+}
+._truncate-approx-char-count--inline { display: inline-block; }
+._truncate-approx-char-count--block { display: block; }
