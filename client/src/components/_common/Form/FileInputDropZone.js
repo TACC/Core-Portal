@@ -21,14 +21,15 @@ RejectedFileMessage.propTypes = {
   numberOfFiles: PropTypes.number.isRequired
 };
 
-function FileInputDropZone({ files, onAddFile, onRemoveFile, isSubmitted }) {
+function FileInputDropZone({ files, onSetFiles, isSubmitted }) {
   const [numberRejectedFiles, setNumberRejectedFiles] = useState(0);
 
   const { getRootProps, open, getInputProps } = useDropzone({
     noClick: true,
     maxSize: 3145728,
     onDrop: accepted => {
-      accepted.forEach(file => onAddFile(file));
+      const updatedValues = [...accepted, ...files];
+      onSetFiles(updatedValues);
       setNumberRejectedFiles(0);
     },
     onDropRejected: rejected => {
@@ -36,10 +37,15 @@ function FileInputDropZone({ files, onAddFile, onRemoveFile, isSubmitted }) {
     }
   });
 
+  const removeFile = fileIndex => {
+    files.splice(fileIndex, 1);
+    onSetFiles(files);
+  };
+
   const hasFiles = files.length > 0;
 
   if (isSubmitted && numberRejectedFiles > 0) {
-    // reset number of rejected files when files is submited
+    // reset number of rejected files when files is submitted
     setNumberRejectedFiles(0);
   }
 
@@ -72,7 +78,7 @@ function FileInputDropZone({ files, onAddFile, onRemoveFile, isSubmitted }) {
                   className="attachment-remove"
                   onClick={() => {
                     setNumberRejectedFiles(0);
-                    onRemoveFile(i);
+                    removeFile(i);
                   }}
                 >
                   Remove
@@ -92,8 +98,7 @@ function FileInputDropZone({ files, onAddFile, onRemoveFile, isSubmitted }) {
 
 FileInputDropZone.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onAddFile: PropTypes.func.isRequired,
-  onRemoveFile: PropTypes.func.isRequired,
+  onSetFiles: PropTypes.func.isRequired,
   isSubmitted: PropTypes.bool.isRequired
 };
 

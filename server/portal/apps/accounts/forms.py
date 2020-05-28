@@ -1,14 +1,11 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.urls import reverse
-from django.utils.safestring import mark_safe
 from django.conf import settings
 # TODO: Re-implement captcha
 # from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 # from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
-from .models import (PortalProfile, NotificationPreferences,
-                     PortalProfileNHInterests, PortalProfileResearchActivities)
+from .models import (PortalProfile, NotificationPreferences)
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
 import re
@@ -79,7 +76,7 @@ PROFESSIONAL_LEVEL_OPTIONS = (
     ('Faculty or Researcher', 'Faculty or Researcher'),
     ('Staff (support, administration, etc)', 'Staff (support, administration, etc)'),
     ('Practicing Engineer or Architect', 'Practicing Engineer or Architect'),
-    ('Other', 'Other (Please describe in your interests above)')
+    ('Other', 'Other')
 )
 
 
@@ -153,49 +150,6 @@ def check_password_policy(user, password, confirmPassword):
     return True, None
 
 
-class ChangePasswordForm(forms.Form):
-    current_password = forms.CharField(widget=forms.PasswordInput)
-    new_password = forms.CharField(widget=forms.PasswordInput)
-    confirm_new_password = forms.CharField(
-        widget=forms.PasswordInput,
-        help_text='Passwords must meet the following criteria:<ul>'
-                  '<li>Must not contain your username or parts of your full name;</li>'
-                  '<li>Must be a minimum of 8 characters in length;</li>'
-                  '<li>Must contain characters from at least three of the following: '
-                  'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
-
-    def __init__(self, *args, **kwargs):
-        self._username = kwargs.pop('username')
-        super(ChangePasswordForm, self).__init__(*args, **kwargs)
-
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        reset_link = reverse('portal_accounts:password_reset')
-        current_password_correct = tas.authenticate(self._username,
-                                                    cleaned_data['current_password'])
-        if current_password_correct:
-            tas_user = tas.get_user(username=self._username)
-            pw = cleaned_data['new_password']
-            confirm_pw = cleaned_data['confirm_new_password']
-            valid, error_message = check_password_policy(tas_user, pw, confirm_pw)
-            if not valid:
-                self.add_error('new_password', error_message)
-                self.add_error('confirm_new_password', error_message)
-                raise forms.ValidationError(error_message)
-        else:
-            err_msg = mark_safe(
-                'The current password you provided is incorrect. Please try again. '
-                'If you do not remember your current password you can '
-                '<a href="%s" tabindex="-1">reset your password</a> with an email '
-                'confirmation.' % reset_link)
-            self.add_error('current_password', err_msg)
-
-    def save(self):
-        cleaned_data = self.cleaned_data
-        tas.change_password(self._username, cleaned_data['current_password'],
-                            cleaned_data['new_password'])
-
-
 class PasswordResetRequestForm(forms.Form):
     username = forms.CharField(label='Enter Your TACC Username', required=True)
 
@@ -233,40 +187,6 @@ class PasswordResetConfirmForm(forms.Form):
             self.add_error('password', error_message)
             self.add_error('confirmPassword', '')
             raise forms.ValidationError(error_message)
-
-
-class UserProfileForm(forms.Form):
-    firstName = forms.CharField(label='First name')
-    lastName = forms.CharField(label='Last name')
-    email = forms.EmailField()
-    phone = forms.CharField()
-    institutionId = forms.ChoiceField(
-        label='Institution', choices=(),
-        error_messages={'invalid': 'Please select your affiliated institution'})
-    departmentId = forms.ChoiceField(label='Department', choices=(), required=False)
-    title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
-    countryId = forms.ChoiceField(
-        label='Country of residence', choices=(),
-        error_messages={'invalid': 'Please select your Country of residence'})
-    citizenshipId = forms.ChoiceField(
-        disabled=True,
-        required=False,
-        label='Country of citizenship', choices=(),
-        error_messages={'invalid': 'Please select your Country of citizenship'})
-    # ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
-    # gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
-
-    def __init__(self, *args, **kwargs):
-        super(UserProfileForm, self).__init__(*args, **kwargs)
-        self.fields['institutionId'].choices = get_institution_choices()
-        data = self.data or self.initial
-        if data is not None and 'institutionId' in data and data['institutionId']:
-            choices = get_department_choices(data['institutionId'])
-            self.fields['departmentId'].choices = choices
-            self.fields['departmentId'].disabled = len(choices) <= 1
-
-        self.fields['countryId'].choices = get_country_choices()
-        self.fields['citizenshipId'].choices = get_country_choices()
 
 
 class TasUserProfileAdminForm(forms.Form):
@@ -425,55 +345,6 @@ class UserRegistrationForm(forms.Form):
             logger.exception('Error saving UserTermsAndConditions for user=%s', user)
 
         return tas_user
-
-
-class ProfessionalProfileForm(forms.ModelForm):
-    bio_placeholder = (
-        'Please provide a brief summary of your professional profile, '
-        'the natural hazards activities with which you are involved or '
-        'would like to be involved, and any other comments that would help '
-        'identify your experience and interest within the community. '
-    )
-    nh_interests = forms.ModelMultipleChoiceField(
-        queryset=PortalProfileNHInterests.objects.all(),
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        label="Natural Hazards Interests (check all that apply)"
-    )
-    bio = forms.CharField(
-        max_length=4096,
-        widget=forms.Textarea(attrs={'placeholder': bio_placeholder}),
-        label='Professional and Research Interests',
-        required=False
-    )
-    website = forms.CharField(max_length=256, required=False, label="Personal Website")
-    orcid_id = forms.CharField(max_length=256, required=False, label="Orcid ID")
-    professional_level = forms.ChoiceField(
-        choices=PROFESSIONAL_LEVEL_OPTIONS,
-        widget=forms.RadioSelect,
-        required=False)
-    research_activities = forms.ModelMultipleChoiceField(
-        queryset=PortalProfileResearchActivities.objects.all(),
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        label="Research Activities (check all that apply)"
-    )
-
-    def clean_website(self):
-        ws = self.cleaned_data['website']
-        if (ws != '') and (not ws.startswith('http://')):
-            ws = "http://" + ws
-        return ws or None
-
-    # def clean_bio(self):
-    #     bio = self.cleaned_data['bio']
-    #     bio = escape(bio)
-    #     return bio
-
-    class Meta:
-        model = PortalProfile
-        # exclude = ['user', 'ethnicity', 'gender']
-        exclude = ['user']
 
 
 class NotificationPreferencesForm(forms.ModelForm):
