@@ -9,6 +9,9 @@ import configureStore from "redux-mock-store";
 
 const mockStore = configureStore();
 const initialMockState = {
+  pushKeys: {
+    target: {}
+  },
   files: {
     loading: {
       FilesListing: false
@@ -124,6 +127,7 @@ describe("DataFilesListing", () => {
     const history = createMemoryHistory();
     history.push("/workbench/data/tapis/private/test.system/");
     const store = mockStore({
+      ...initialMockState,
       files: {
         ...initialMockState.files,
         listing: { FilesListing: [testfile] }

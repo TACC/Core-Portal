@@ -124,7 +124,7 @@ describe("fetchFiles", () => {
         limit: 100
       }
     })
-      .provide([[matchers.call.fn(fetchFilesUtil), throwError({message: "404"})]])
+      .provide([[matchers.call.fn(fetchFilesUtil), throwError({message: "404", status: 404})]])
       .put({
         type: "FETCH_FILES_START",
         payload: {

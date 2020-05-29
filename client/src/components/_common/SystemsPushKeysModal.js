@@ -79,11 +79,11 @@ const SystemsPushKeysModal = () => {
           {error ? <div style={{ color: 'red' }}>{error.message}</div> : null}
           <ModalBody>
             <p>
-              To use this app, you must authenticate to this system with a
-              six-digit one time passcode from the TACC Token mobile app at
-              least once. A public key will be pushed to your{' '}
-              <code>authorized_keys</code> file on the system below. This will
-              allow you to submit jobs to this system from this portal.
+              To proceed, you must authenticate to this system with a six-digit
+              one time passcode from the TACC Token mobile app at least once. A
+              public key will be pushed to your <code>authorized_keys</code>{' '}
+              file on the system below. This will allow you to access this
+              system from this portal.
             </p>
             <Form>
               <FormGroup>
