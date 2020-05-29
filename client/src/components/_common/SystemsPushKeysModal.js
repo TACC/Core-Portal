@@ -47,7 +47,7 @@ const SystemsPushKeysModal = () => {
   const pushKeys = () => {
     const hostnames = system.login
       ? [system.login.host, system.storage.host]
-      : system.storage.host;
+      : [system.storage.host];
     [...new Set(hostnames)].forEach(hostname => {
       dispatch({
         type: 'SYSTEMS_PUSH_KEYS',
@@ -94,14 +94,16 @@ const SystemsPushKeysModal = () => {
                 <Label for="pushKeysSysType">System Type</Label>
                 <Input name="pushKeysSysType" disabled value={system.type} />
               </FormGroup>
-              <FormGroup>
-                <Label for="pushKeysSysLogin">Login Host</Label>
-                <Input
-                  name="pushKeysSysLogin"
-                  disabled
-                  value={system.login.host}
-                />
-              </FormGroup>
+              {system.login && (
+                <FormGroup>
+                  <Label for="pushKeysSysLogin">Login Host</Label>
+                  <Input
+                    name="pushKeysSysLogin"
+                    disabled
+                    value={system.login.host}
+                  />
+                </FormGroup>
+              )}
               <FormGroup>
                 <Label for="pushKeysSysStorage">Storage Host</Label>
                 <Input

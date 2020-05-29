@@ -18,6 +18,7 @@ import './DataFilesTable.scss';
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
   const dispatch = useDispatch();
+  const system = useSelector(state => state.pushKeys.target);
   const loading = useSelector(state => state.files.loading[section]);
   const err = useSelector(state => state.files.error[section]);
   const filesLength = data.length;
@@ -25,8 +26,14 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   const pushKeys = e => {
     e.preventDefault();
     dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'pushKeys' }
+      type: 'SYSTEMS_TOGGLE_MODAL',
+      payload: {
+        operation: 'pushKeys',
+        props: {
+          onSuccess: {},
+          system
+        }
+      }
     });
   };
   if (loading) {

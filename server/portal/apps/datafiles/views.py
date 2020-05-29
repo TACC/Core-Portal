@@ -1,6 +1,7 @@
 from portal.views.base import BaseApiView
 from django.http import JsonResponse, HttpResponseForbidden
 from django.conf import settings
+from requests.exceptions import HTTPError
 import json
 import logging
 from portal.apps.accounts.managers.accounts import get_user_home_system_id
@@ -36,9 +37,18 @@ class TapisFilesView(BaseApiView):
         except AttributeError:
             client = None
 
-        response = tapis_get_handler(
-            client, scheme, system, path, operation, **request.GET.dict())
-        return JsonResponse({'data': response})
+        try:
+            response = tapis_get_handler(
+                client, scheme, system, path, operation, **request.GET.dict())
+            return JsonResponse({'data': response})
+        except HTTPError as e:
+            error_status = e.response.status_code
+            error_json = e.response.json()
+            if error_status == 502:
+                # In case of 502, fetch system definition for pushing keys.
+                error_json['system'] = dict(client.systems.get(systemId=system))
+
+            return JsonResponse(error_json, status=error_status)
 
     def put(self, request, operation=None, scheme=None,
             handler=None, system=None, path='/'):
