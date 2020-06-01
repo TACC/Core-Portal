@@ -2,8 +2,18 @@
     flex-grow: 1;
     display: flex;
     flex-direction: row;
-    height: 60vh;
+    height: 100%; /* Be consistent with `#appDetail-error`/`.app-placeholder` (which can exist at the same location),
+                     so that `appBrowser-wrapper` height does not change based on sibling content */
     padding-top: 15px;
+    /* Match bottom space found in UI design at `Core Portal > Applications` */
+    padding-bottom: 30px;
+}
+
+/* Overwrite independent opinion of Bootstrap styles */
+/* ???: Is `.jumbotron` used without Design review? */
+/* ???: From where does `.jumbotron` originate? */
+#appDetail-wrapper .jumbotron {
+    margin-bottom: 0;
 }
 
 #appForm-wrapper {
@@ -37,10 +47,6 @@
     align-items: center;
 }
 
-.appForm-textInput label, .appForm-select label {
-    font-weight: bold;
-}
-
 .appSchema-header {
     font-weight: bold;
     padding-bottom: 10px;
@@ -56,17 +62,6 @@
     padding-bottom: 20px;
 }
 
-.appForm-help {
-    font-style: italic;
-    font-weight: 400;
-}
-
-#appForm-wrapper .validation-error {
-    font-size: 0.8rem;
-    color: #EB6E6E;
-    padding-top: 5px;
-}
-
 .btn-resetForm {
     padding: 5px 0 0 20px;
 }
@@ -74,7 +69,8 @@
 .appDetail-error {
     display: flex;
     justify-content: center;
-    height: 100%;
+    height: 100%; /* Be consistent with `#appDetail-wrapper`/`.app-placeholder` (which can exist at the same location),
+                     so that `appBrowser-wrapper` height does not change based on sibling content */
     align-items: center;
     color: #9d85ef;
 }

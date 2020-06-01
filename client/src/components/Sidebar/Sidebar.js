@@ -7,7 +7,8 @@ import './Sidebar.module.scss';
 
 /** A navigation list for the application */
 const Sidebar = () => {
-  const { path } = useRouteMatch();
+  let { path } = useRouteMatch();
+  if (path.includes('accounts')) path = ROUTES.WORKBENCH;
   return (
     <Nav styleName="root" vertical>
       <NavItem>

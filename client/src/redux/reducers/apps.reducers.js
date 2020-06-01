@@ -1,6 +1,7 @@
 const initialState = {
   categoryDict: {},
   appDict: {},
+  appIcons: {},
   error: { isError: false },
   loading: false,
   defaultTab: ''

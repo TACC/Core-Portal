@@ -25,18 +25,6 @@ code {
 }
 
 /*
-  Application Root
-  ===
-  The root element of the JavaScript application
-*/
-
-/* FAQ: If the app root element has only a single child,
-        then it should be the same height as the app root */
-#react-root > :only-child {
-  height: 100%;
-}
-
-/*
   External Layout
   ===
   Expand, to fill desired space, any wrapper elements
@@ -66,7 +54,9 @@ body {
 
     <body>
       <div class="content">
-        <div id="react-root">…</div>
+        <div id="react-root">
+          <div class="…">…</div>
+        </div>
       </div>
     </body>
 */
@@ -75,11 +65,15 @@ body {
         (which may be shorter than window height), can have siblings elements
         (would be influenced by force stretch), so gently stretch outward. */
 body,
-body > .content {
+body > .content,
+#react-root {
   display: flex;
   flex-direction: column;
 }
+body > .content,
 #react-root,
-body > .content {
+/* FAQ: If the app root element has only a single child,
+        then it should be the same height as the app root */
+#react-root > :only-child {
   flex-grow: 1;
 }
