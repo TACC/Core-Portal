@@ -153,7 +153,18 @@ function sortAppMetaUtil(payload) {
       appDict[appMeta.value.definition.id] = appMeta;
     });
   });
-  return { appDict, categoryDict };
+
+  /* Create an appIcons dictionary */
+  const appIcons = {};
+  Object.keys(categoryDict).forEach(category => {
+    categoryDict[category].forEach(app => {
+      const { definition } = app.value;
+      if ('appIcon' in definition) {
+        appIcons[definition.id] = definition.appIcon;
+      }
+    });
+  });
+  return { appDict, categoryDict, appIcons };
 }
 
 function* getApps() {
@@ -210,6 +221,7 @@ function* getApp(action) {
   if (currentApp.definition.id === appId) {
     return;
   }
+  yield put({ type: 'FLUSH_SUBMIT' });
   yield put({ type: 'GET_APP_START' });
   if (appMeta && appMeta.value.type === 'html') {
     yield put({

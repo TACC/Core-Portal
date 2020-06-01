@@ -61,6 +61,7 @@ toggle-icon {
     color: #9d85ef;
   }
 
+  /* FP-426: Avoid all these styles by using `LoadingSpinner` */
   .ticket-history-loading-icon {
     display: flex;
     height: 100%;

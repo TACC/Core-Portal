@@ -5,14 +5,14 @@
     padding: 20px 40px 0 20px;
 }
 .data-files-items {
-    /* Styles as a flex child */
+    /* As a flex item */
     flex-grow: 1;
 
-    /* Styles as a flex parent */
+    /* As a flex container */
     display: flex;
     flex-direction: row;
 }
-/* Make right-most item fill up remaining vertical space */
+/* Make right-most item fill up remaining horizontal space */
 .data-files-items > :last-child {
     flex-grow: 1;
 }
