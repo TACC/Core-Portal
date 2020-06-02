@@ -6,7 +6,8 @@ import './Sidebar.scss';
 
 /** A navigation list for the application */
 const Sidebar = () => {
-  const { path } = useRouteMatch();
+  let { path } = useRouteMatch();
+  if (path.includes('accounts')) path = ROUTES.WORKBENCH;
   // use path to allow History only in local development (cep.dev)
   const fullPath = window.location.href;
   return (

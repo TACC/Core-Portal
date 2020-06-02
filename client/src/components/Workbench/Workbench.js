@@ -20,6 +20,8 @@ function Workbench() {
     dispatch({ type: 'FETCH_SYSTEMS' });
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
     dispatch({ type: 'GET_ALLOCATIONS' });
+    dispatch({ type: 'GET_APPS' });
+    dispatch({ type: 'GET_APP_START' });
   }, []);
 
   return (
