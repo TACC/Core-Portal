@@ -4,11 +4,10 @@ import { fetchUtil } from 'utils/fetchUtil';
 function* getSystemMonitor(action) {
   yield put({ type: 'SYSTEM_MONITOR_LOAD' });
   try {
-    const res = yield call(fetchUtil, {
+    const result = yield call(fetchUtil, {
       url: '/api/system-monitor/'
     });
-    const json = yield res.json();
-    yield put({ type: 'SYSTEM_MONITOR_ADD', payload: json });
+    yield put({ type: 'SYSTEM_MONITOR_SUCCESS', payload: result });
   } catch (error) {
     yield put({
       type: 'SYSTEM_MONITOR_ERROR',

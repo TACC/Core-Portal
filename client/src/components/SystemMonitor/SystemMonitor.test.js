@@ -9,7 +9,7 @@ const list = [
   {
     display_name: 'Frontera',
     is_operational: true,
-    jobs: { running: 1 },
+    jobs: { running: 1, queued: 2 },
     load_percentage: 100
   },
   {
@@ -21,7 +21,7 @@ const list = [
   {
     display_name: 'Stampede',
     is_operational: true,
-    jobs: { running: 1 },
+    jobs: { running: 1, queued: 2 },
     load_percentage: 100
   }
 ];
