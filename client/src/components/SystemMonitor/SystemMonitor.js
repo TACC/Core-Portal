@@ -2,10 +2,10 @@ import React, { useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { Display, Operational, Load } from './SystemMonitorCells';
 import './SystemMonitor.scss';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faExclamationTriangle} from "@fortawesome/free-solid-svg-icons";
 
 const SystemsList = () => {
   const systemList = useSelector(state => state.systemMonitor.list);
