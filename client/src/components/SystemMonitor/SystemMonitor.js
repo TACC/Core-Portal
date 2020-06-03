@@ -93,7 +93,7 @@ const SystemsList = () => {
           })
         ) : (
           <tr>
-            <td>No rows found</td>
+            <td colSpan="5">No systems being monitored</td>
           </tr>
         )}
       </tbody>
