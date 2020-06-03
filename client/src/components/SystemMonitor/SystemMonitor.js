@@ -4,9 +4,12 @@ import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
 import { Display, Operational, Load } from './SystemMonitorCells';
 import './SystemMonitor.scss';
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faExclamationTriangle} from "@fortawesome/free-solid-svg-icons";
 
 const SystemsList = () => {
   const systemList = useSelector(state => state.systemMonitor.list);
+  const loadingError = useSelector(state => state.systemMonitor.error);
   const data = useMemo(() => systemList, []);
   const columns = useMemo(
     () => [
@@ -38,6 +41,19 @@ const SystemsList = () => {
     ],
     []
   );
+
+  if (loadingError) {
+    return (
+      <div className="system-monitor__error" data-testid="loading-error">
+        <FontAwesomeIcon
+          icon={faExclamationTriangle}
+          style={{ marginRight: '10px' }}
+        />
+        <div>Unable to gather system information</div>
+      </div>
+    );
+  }
+
   const {
     getTableProps,
     getTableBodyProps,

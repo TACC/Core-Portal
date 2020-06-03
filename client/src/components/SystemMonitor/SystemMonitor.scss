@@ -30,3 +30,10 @@ $table-border: 1px solid black;
         background-color: rgba(#c6c6c6, 0.1);
     }
 }
+
+.system-monitor__error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #9d85ef;
+}

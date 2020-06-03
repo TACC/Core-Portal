@@ -4,7 +4,6 @@ import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import SystemsList from './SystemMonitor';
 
-
 const mockStore = configureStore();
 const list = [
   {
@@ -37,24 +36,22 @@ function renderSystemMonitor(store) {
 
 describe('System Monitor Component', () => {
   it('display a no-systems message when there is no data', () => {
-    const store = mockStore({systemMonitor: {list: [], loading: false}});
+    const store = mockStore({ systemMonitor: { list: [], loading: false } });
     const { getByText } = renderSystemMonitor(store);
     expect(getByText('No systems being monitored')).toBeDefined();
   });
   it('renders spinner when loading ', () => {
-    const store = mockStore({systemMonitor: {list: [], loading: true}});
+    const store = mockStore({ systemMonitor: { list: [], loading: true } });
     const { getByTestId } = renderSystemMonitor(store);
     expect(getByTestId('loading-spinner'));
   });
-  it('should display the system name in each row', () => {
-    const store = mockStore({systemMonitor: {list, loading: false}});
-    const { getByText } = renderSystemMonitor(store);
-    expect(getByText('Frontera')).toBeDefined();
-    expect(getByText('Lonestar')).toBeDefined();
-    expect(getByText('Stampede')).toBeDefined();
+  it('renders error when there is an error ', () => {
+    const store = mockStore({ systemMonitor: { list: [], loading: false, error:"Problem" } });
+    const { getByTestId } = renderSystemMonitor(store);
+    expect(getByTestId('loading-error'));
   });
   it('should display the system name in each row', () => {
-    const store = mockStore({systemMonitor: {list, loading: false}});
+    const store = mockStore({ systemMonitor: { list, loading: false } });
     const { getByText } = renderSystemMonitor(store);
     expect(getByText('Frontera')).toBeDefined();
     expect(getByText('Lonestar')).toBeDefined();
