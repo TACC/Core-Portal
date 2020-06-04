@@ -107,7 +107,7 @@ const DataFilesUploadModal = () => {
       <ModalBody>
         <FileInputDropZone
           onSetFiles={selectFiles}
-          maxSizeMessage="Up to 500mb"
+          maxSizeMessage="Max File Size: 500MB"
           files={[]}
         />
 
