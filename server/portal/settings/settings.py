@@ -56,7 +56,6 @@ ROOT_URLCONF = 'portal.urls'
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
     # django CMS admin style must be before django.contrib.admin
     'djangocms_admin_style',
 
@@ -71,6 +70,9 @@ INSTALLED_APPS = [
     'django.contrib.sites',  # also required for django CMS
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
+
+    # Django Channels
+    'channels',
 
     # Django recaptcha.
     'captcha',
