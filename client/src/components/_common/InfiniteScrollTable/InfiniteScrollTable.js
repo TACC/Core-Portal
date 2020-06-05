@@ -4,6 +4,12 @@ import PropTypes from 'prop-types';
 import LoadingSpinner from '../LoadingSpinner';
 import './InfiniteScrollTable.scss';
 
+const rowContentPropType = PropTypes.oneOfType([
+  PropTypes.string,
+  PropTypes.element,
+  PropTypes.oneOf([React.Fragment])
+]);
+
 const InfiniteScrollLoadingRow = ({ isLoading }) => {
   if (!isLoading) {
     return null;
@@ -32,7 +38,7 @@ const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
 };
 InfiniteScrollNoDataRow.propTypes = {
   display: PropTypes.bool.isRequired,
-  noDataText: PropTypes.string.isRequired
+  noDataText: rowContentPropType.isRequired
 };
 
 const InfiniteScrollTable = ({
@@ -100,7 +106,7 @@ InfiniteScrollTable.propTypes = {
   onInfiniteScroll: PropTypes.func,
   isLoading: PropTypes.bool,
   className: PropTypes.string,
-  noDataText: PropTypes.string
+  noDataText: rowContentPropType
 };
 InfiniteScrollTable.defaultProps = {
   onInfiniteScroll: offset => {},
