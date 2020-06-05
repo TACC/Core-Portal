@@ -73,19 +73,19 @@ const SystemsPushKeysModal = () => {
           onClosed={onClosed}
           toggle={toggle}
         >
-          <ModalHeader toggle={toggle}>
-            Authenticate with TACC Token
-          </ModalHeader>
-          {error ? <div style={{ color: 'red' }}>{error.message}</div> : null}
-          <ModalBody>
-            <p>
-              To use this app, you must authenticate to this system with a
-              six-digit one time passcode from the TACC Token mobile app at
-              least once. A public key will be pushed to your{' '}
-              <code>authorized_keys</code> file on the system below. This will
-              allow you to submit jobs to this system from this portal.
-            </p>
-            <Form>
+          <Form>
+            <ModalHeader toggle={toggle}>
+              Authenticate with TACC Token
+            </ModalHeader>
+            {error ? <div style={{ color: 'red' }}>{error.message}</div> : null}
+            <ModalBody>
+              <p>
+                To use this app, you must authenticate to this system with a
+                six-digit one time passcode from the TACC Token mobile app at
+                least once. A public key will be pushed to your{' '}
+                <code>authorized_keys</code> file on the system below. This will
+                allow you to submit jobs to this system from this portal.
+              </p>
               <FormGroup>
                 <Label for="pushKeysSysId">System ID</Label>
                 <Input name="pushKeysSysId" disabled value={system.id} />
@@ -129,18 +129,23 @@ const SystemsPushKeysModal = () => {
                   value={token}
                 />
               </FormGroup>
-            </Form>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={pushKeys} disabled={submitting}>
-              {submitting && <Spinner size="sm" color="white" />}{' '}
-              {error && <FontAwesomeIcon icon={faExclamationCircle} />}{' '}
-              Authenticate
-            </Button>
-            <Button color="secondary" onClick={toggle}>
-              Close
-            </Button>
-          </ModalFooter>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                type="submit"
+                color="primary"
+                onClick={pushKeys}
+                disabled={submitting}
+              >
+                {submitting && <Spinner size="sm" color="white" />}{' '}
+                {error && <FontAwesomeIcon icon={faExclamationCircle} />}{' '}
+                Authenticate
+              </Button>
+              <Button color="secondary" onClick={toggle}>
+                Close
+              </Button>
+            </ModalFooter>
+          </Form>
         </Modal>
       )}
     </>

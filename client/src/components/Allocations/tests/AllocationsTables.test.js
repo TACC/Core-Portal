@@ -16,7 +16,7 @@ const mockInitialState = {
   loadingUsernames: true,
   hosts: {},
   portal_alloc: '',
-  loadingPage: false
+  loadingPage: false, errors: {}
 };
 const mockStore = configureStore();
 describe('Allocations Table', () => {
