@@ -32,7 +32,9 @@ const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
   }
   return (
     <tr className="-status">
-      <td><span class="jobs-view__message">{noDataText}</span></td>
+      <td>
+        <span className="jobs-view__message">{noDataText}</span>
+      </td>
     </tr>
   );
 };
