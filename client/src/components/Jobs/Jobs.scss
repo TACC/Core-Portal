@@ -8,10 +8,10 @@
   td:nth-child(1) { width: 05%; }
   /* name */
   th:nth-child(2),
-  td:nth-child(2) { width: 20%; }
+  td:nth-child(2) { width: 30%; }
   /* path */
   th:nth-child(3),
-  td:nth-child(3) { width: 40%; }
+  td:nth-child(3) { width: 30%; }
   /* date */
   th:nth-child(4),
   td:nth-child(4) { width: 20%; }
@@ -23,4 +23,6 @@
 .job__name,
 .job__path {
   @extend .u-ellipsis;
+
+  direction: rtl; /* move overflow/ellipsis to left of text */
 }
