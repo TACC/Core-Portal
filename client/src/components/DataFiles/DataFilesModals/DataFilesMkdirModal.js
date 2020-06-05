@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Form,
+  FormGroup,
+  Input,
+  Label
+} from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
@@ -42,7 +52,7 @@ const DataFilesMkdirModal = () => {
     history.push(location.pathname);
   };
 
-  const mkdir = () =>
+  const mkdir = event => {
     dispatch({
       type: 'DATA_FILES_MKDIR',
       payload: {
@@ -54,6 +64,8 @@ const DataFilesMkdirModal = () => {
         reloadCallback: reloadPage
       }
     });
+    event.preventDefault();
+  };
 
   return (
     <>
@@ -64,42 +76,51 @@ const DataFilesMkdirModal = () => {
         onClosed={onClosed}
         className="dataFilesModal"
       >
-        <ModalHeader toggle={toggle}>
-          Creating folder in: {params.path}
-        </ModalHeader>
-        <ModalBody>
-          Enter the new name for the new folder:
-          <input onChange={validate} className="form-control" value={dirname} />
-          <div
-            hidden={dirname === '' || validated}
-            style={{ paddingTop: '10px' }}
-          >
-            <span style={{ color: '#9d85ef' }}>
-              <FontAwesomeIcon
-                icon={faExclamationTriangle}
-                style={{ marginRight: '10px' }}
-                color="#9d85ef"
+        <Form>
+          <ModalHeader toggle={toggle}>
+            Creating folder in: {params.path}
+          </ModalHeader>
+          <ModalBody>
+            <FormGroup>
+              <Label>Enter the new name for the new folder:</Label>
+              <Input
+                onChange={validate}
+                className="form-control"
+                value={dirname}
               />
-              Valid characters for folder names are <b>A-Z a-z 0-9 . _ -</b>
-            </span>
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            disabled={!dirname || !validated}
-            className="data-files-btn"
-            onClick={mkdir}
-          >
-            Create Folder{' '}
-          </Button>
-          <Button
-            color="secondary"
-            className="data-files-btn-cancel"
-            onClick={toggle}
-          >
-            Close
-          </Button>
-        </ModalFooter>
+              <div
+                hidden={dirname === '' || validated}
+                style={{ paddingTop: '10px' }}
+              >
+                <span style={{ color: '#9d85ef' }}>
+                  <FontAwesomeIcon
+                    icon={faExclamationTriangle}
+                    style={{ marginRight: '10px' }}
+                    color="#9d85ef"
+                  />
+                  Valid characters for folder names are <b>A-Z a-z 0-9 . _ -</b>
+                </span>
+              </div>
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="submit"
+              disabled={!dirname || !validated}
+              className="data-files-btn"
+              onClick={mkdir}
+            >
+              Create Folder{' '}
+            </Button>
+            <Button
+              color="secondary"
+              className="data-files-btn-cancel"
+              onClick={toggle}
+            >
+              Close
+            </Button>
+          </ModalFooter>
+        </Form>
       </Modal>
     </>
   );
