@@ -33,7 +33,7 @@ function JobsView() {
       )
     },
     {
-      Header: 'Job ID',
+      Header: 'Job Name',
       accessor: 'name',
       Cell: el => (
         <span title={el.value} id={`jobID${el.index}`}>

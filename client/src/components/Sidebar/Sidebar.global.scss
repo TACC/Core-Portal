@@ -1,11 +1,5 @@
-.nav-content .side-nav-icon {
-  width: 1em;
-  font-size: 1.2em;
-  vertical-align: middle;
-}
-
-.icon-nav {
-  font-size: 1.5em;
+/* WARNING: Also used by external components */
+.nav-content {
   display: flex;
-  height: 1em;
+  align-items: center;
 }

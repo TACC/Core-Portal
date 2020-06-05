@@ -14,7 +14,7 @@
 #appBrowser-tray .apps-grid-list {
   --vertical-buffer: 10px;
   --max-item-count: 5;
-  --item-height: 34px; /* (~30px design * 1.2 design-to-app ratio) */
+  --item-height: 35px; /* (~30px design * 1.2 design-to-app ratio) */
   /* i.e. ( items * item height ) + ( top space & bottom space ) */
   --height: calc(( var(--max-item-count) * var(--item-height) ) + ( var(--vertical-buffer) * 2 ));
 
@@ -46,7 +46,8 @@ ul#appBrowser-sidebar {
 }
 
 #appBrowser-sidebar .nav-link, #appBrowser-tray .nav-link {
-  padding: 5px 25px 5px 20px; /* overwrite Bootstrap, match UI design */
+  /* Overwrite Bootstrap, match UI design */
+  padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
 
   color: #707070;
   border-radius: 0;
@@ -73,21 +74,19 @@ ul#appBrowser-sidebar {
   border-left: 1px solid rgba(112, 112, 112, .25);
 }
 
-#appBrowser-sidebar .nav-content {
-  padding-left: 10px;
-}
-#appBrowser-tray .nav-content {
-  display: flex;
-  align-items: center;
-}
-
 #appBrowser-sidebar .nav-text, #appBrowser-tray .nav-text {
   padding-left: 15px;
-  font-size: .78em;
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
   font-weight: 500;
 }
 
-.app-icon {
-  font-size: 1.5em;
-  display: flex;
+.app-icon,
+.category-icon {
+  /* Styles copied from `.icon` */
+  /* FP-455: Do not duplicate styles */
+  width: 1em;
+  font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
+  vertical-align: middle;
+  display: inline-flex; /* `flex` to align `::before`; `inline` to not trigger new line */
+                        /* a modern slimmer alternative to `&::before { display: block; }` */
 }
