@@ -8,6 +8,7 @@ import {
   faDesktop,
   faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
+import { AppIcon } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
@@ -54,7 +55,7 @@ const AppBrowser = () => {
 
   return (
     <div id="appBrowser-wrapper">
-      <Nav vertical tabs id="appBrowser-sidebar">
+      <Nav id="appBrowser-sidebar">
         {Object.keys(categoryDict).map(category => (
           <NavItem key={category}>
             <NavLink
@@ -63,14 +64,14 @@ const AppBrowser = () => {
                 toggle(category);
               }}
             >
-              <div className="nav-content">
+              <span className="nav-content">
                 <FontAwesomeIcon
                   icon={faDesktop}
                   size="1x"
                   className="side-nav-icon"
                 />
                 <span className="nav-text">{`${category} [${categoryDict[category].length}]`}</span>
-              </div>
+              </span>
             </NavLink>
           </NavItem>
         ))}
@@ -87,13 +88,7 @@ const AppBrowser = () => {
                     activeClassName="active"
                   >
                     <div className="nav-content">
-                      <i
-                        className={`app-icon ${
-                          app.value.definition.appIcon
-                            ? `icon-nav-${app.value.definition.appIcon}`
-                            : 'icon-nav-application'
-                        }`}
-                      />
+                      <AppIcon appId={app.value.definition.id} />
                       <span className="nav-text">
                         {app.value.definition.label}
                       </span>
