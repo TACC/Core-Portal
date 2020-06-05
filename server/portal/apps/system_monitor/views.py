@@ -16,6 +16,11 @@ def _get_unoperational_system(hostname):
             'display_name': hostname.split('.')[0].capitalize(),
             'is_operational': False}
 
+
+def _system_status_endpoint():
+    return getattr(settings, 'SYSMON_URL', 'https://portal.tacc.utexas.edu/commnq/index.json')
+
+
 class SysmonDataView(BaseApiView):
 
     def get(self, request):
@@ -24,8 +29,7 @@ class SysmonDataView(BaseApiView):
         '''
         systems = []
         requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
-        system_status_endpoint = getattr(settings, 'SYSMON_URL', 'https://portal.tacc.utexas.edu/commnq/index.json')
-        systems_json = requests.get(system_status_endpoint).json()
+        systems_json = requests.get(_system_status_endpoint()).json()
         for sys in requested_systems:
             if sys not in systems_json:
                 logger.info('System information for {} is missing. Assuming not operational status.'.format(sys))
@@ -34,7 +38,7 @@ class SysmonDataView(BaseApiView):
             try:
                 system = System(systems_json[sys]).to_dict()
                 systems.append(system)
-            except Exception as e:
+            except Exception:
                 logger.exception('Problem gather system information for {}: Assuming not operational status'.format(sys))
                 systems.append(_get_unoperational_system(sys))
         return JsonResponse(systems, safe=False)
