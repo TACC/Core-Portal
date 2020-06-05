@@ -68,6 +68,9 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
+    # Django Channels
+    'channels',
+
     # Django recaptcha.
     'captcha',
 
@@ -80,9 +83,6 @@ INSTALLED_APPS = [
     'bootstrap4',
     'termsandconditions',
     'impersonate',
-
-    # Websockets.
-    'ws4redis',
 
     # Custom apps.
     'portal.apps.accounts',
@@ -489,3 +489,14 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
 
 DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
+
+# Channels
+ASGI_APPLICATION = 'portal.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
+        },
+    },
+}

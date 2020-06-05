@@ -10,7 +10,6 @@ from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 channel_layer = get_channel_layer()
-# Create your views here.
 
 logger = logging.getLogger(__name__)
 

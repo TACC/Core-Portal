@@ -84,6 +84,7 @@ services:
       - ../../../.:/srv/www/portal
     container_name: frontera_prtl_websockets
     command: ['python', './manage.py', 'runserver', '0.0.0.0:9000']
+    # command: ['daphne -b 0.0.0.0 -p 9000 --fd 0 --access-log - --proxy-headers portal.asgi:application']
 
   django:
     image: taccwma/frontera-portal:local

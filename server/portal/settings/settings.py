@@ -87,9 +87,6 @@ INSTALLED_APPS = [
     'termsandconditions',
     'impersonate',
 
-    # Websockets.
-    'ws4redis',
-
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
@@ -169,7 +166,6 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.template.context_processors.static',
                 'django_settings_export.settings_export',
-                'ws4redis.context_processors.default',
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
                 'portal.utils.contextprocessors.messages',
@@ -281,9 +277,6 @@ DATABASES = {
     }
 }
 
-WS4REDIS_CONNECTION = {
-    'host': settings_secret._RESULT_BACKEND_HOST,
-}
 WEBSOCKET_URL = '/ws/'
 
 # TAS Authentication.
@@ -383,6 +376,12 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         },
+        'daphne': {
+            'handlers': [
+                'console',
+            ],
+            'level': 'DEBUG'
+        }
     },
 }
 
@@ -859,7 +858,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('redis', 6379)],
+            "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
         },
     },
 }
