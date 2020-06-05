@@ -14,7 +14,10 @@ logger = logging.getLogger(__name__)
 def _get_unoperational_system(hostname):
     return {'hostname': hostname,
             'display_name': hostname.split('.')[0].capitalize(),
-            'is_operational': False}
+            'is_operational': False,
+            'load_percentage': 0,
+            'jobs': {'running': 0,'queued': 0, 'other': 0},
+            }
 
 
 def _system_status_endpoint():

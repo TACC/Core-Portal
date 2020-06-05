@@ -64,6 +64,8 @@ def test_system_monitor_when_missing_system(client, settings, requests_mock, sys
     assert system['hostname'] == 'frontera.tacc.utexas.edu'
     assert system['display_name'] == 'Frontera'
     assert not system['is_operational']
+    assert system['load_percentage'] == 0
+    assert system['jobs'] == {'running': 0,'queued': 0, 'other': 0}
 
 
 @pytest.mark.django_db()
