@@ -6,6 +6,7 @@ from datetime import datetime
 from django.conf import settings
 from portal.apps.system_monitor.views import _system_status_endpoint
 
+
 @pytest.fixture
 def system_status_old(scope="module"):
     yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/system_monitor/index.json')))
@@ -17,7 +18,7 @@ def system_status(system_status_old, scope="module"):
     altered_system_status = system_status_old.copy()
     system = altered_system_status['frontera.tacc.utexas.edu']
     for test_entry in system['tests']:
-        system['tests'][test_entry]['timestamp']=str(pytz.utc.localize(datetime.now()))
+        system['tests'][test_entry]['timestamp'] = str(pytz.utc.localize(datetime.now()))
     yield altered_system_status
 
 
@@ -65,7 +66,7 @@ def test_system_monitor_when_missing_system(client, settings, requests_mock, sys
     assert system['display_name'] == 'Frontera'
     assert not system['is_operational']
     assert system['load_percentage'] == 0
-    assert system['jobs'] == {'running': 0,'queued': 0, 'other': 0}
+    assert system['jobs'] == {'running': 0, 'queued': 0, 'other': 0}
 
 
 @pytest.mark.django_db()

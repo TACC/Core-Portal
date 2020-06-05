@@ -16,7 +16,7 @@ def _get_unoperational_system(hostname):
             'display_name': hostname.split('.')[0].capitalize(),
             'is_operational': False,
             'load_percentage': 0,
-            'jobs': {'running': 0,'queued': 0, 'other': 0},
+            'jobs': {'running': 0, 'queued': 0, 'other': 0},
             }
 
 
