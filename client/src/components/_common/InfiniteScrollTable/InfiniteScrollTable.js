@@ -32,7 +32,9 @@ const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
   }
   return (
     <tr className="-status">
-      <td>{noDataText}</td>
+      <td>
+        <span className="jobs-view__message">{noDataText}</span>
+      </td>
     </tr>
   );
 };
@@ -92,7 +94,7 @@ const InfiniteScrollTable = ({
         })}
         <InfiniteScrollLoadingRow isLoading={isLoading} />
         <InfiniteScrollNoDataRow
-          display={!isLoading && tableData.length === 0}
+          display={true}
           noDataText={noDataText}
         />
       </tbody>
