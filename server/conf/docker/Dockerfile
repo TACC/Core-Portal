@@ -28,9 +28,12 @@ RUN apt-get install -y nodejs
 
 RUN pip3 install --upgrade pip setuptools wheel
 
+# install poetry
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
+
 # install python packages
-COPY server/requirements.txt /tmp/requirements.txt
-RUN pip3 install -r /tmp/requirements.txt
+COPY server/pyproject.toml server/poetry.lock /tmp/
+RUN cd /tmp && poetry install
 
 COPY . /srv/www/portal
 
