@@ -1,5 +1,5 @@
 module.exports = {
-  ignoreFiles: ['build/**/*'],
+  ignoreFiles: ['build/**/*', 'coverage/**/*'],
 
   // `stylelint-config-recommended` turns on all the "possible errors" rules
   // SEE: Rules: https://stylelint.io/user-guide/rules/list#possible-errors
