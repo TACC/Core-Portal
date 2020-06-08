@@ -7,7 +7,6 @@ import { string } from 'prop-types';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
-/** Custom hook to get columns and data for table */
 export const useAllocations = page => {
   const allocations = useSelector(state => {
     if (page === 'expired') return state.allocations.inactive;
@@ -26,9 +25,15 @@ export const useAllocations = page => {
       },
       {
         Header: 'Team',
-        accessor: ({ projectName, projectId }) => ({
+        // TODO: Refactor to Util
+        accessor: ({ projectName, projectId, systems }) => ({
           name: projectName.toLowerCase(),
-          projectId
+          projectId,
+          allocationIds: systems.map(sys => {
+            // Each system has an allocation object
+            const { id } = sys.allocation;
+            return { system: sys, id };
+          })
         }),
         Cell: Team
       },

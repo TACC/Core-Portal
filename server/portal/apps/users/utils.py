@@ -196,3 +196,15 @@ def get_user_data(username):
     )
     user_data = tas_client.get_user(username=username)
     return user_data
+
+
+# TODO: Look up best practices for docstrings
+def get_allocation_usage_by_user(allocation_id):
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    r = requests.get('{0}/v1/allocations/{1}/usage'.format(settings.TAS_URL, allocation_id), auth=auth)
+    logger.info(r)
+    resp = r.json()
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise Exception('Failed to get project users', resp['message'])

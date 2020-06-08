@@ -1,4 +1,4 @@
-import { put, takeEvery, takeLatest, call } from 'redux-saga/effects';
+import { put, takeEvery, takeLatest, call, all } from 'redux-saga/effects';
 import { flatten } from 'lodash';
 import { fetchUtil } from 'utils/fetchUtil';
 import 'cross-fetch';
@@ -37,7 +37,7 @@ export function* getAllocations(action) {
   }
 }
 
-const getTeamPayload = (id, obj, error = false) => {
+const getTeamPayload = (id, obj, error = false, usageData = {}) => {
   const loading = { [id]: false };
   if (error) {
     return {
@@ -45,19 +45,47 @@ const getTeamPayload = (id, obj, error = false) => {
       loading
     };
   }
-  const data = {
-    [id]: obj.usernames.sort((a, b) => a.firstName.localeCompare(b.firstName))
-  };
 
+  const data = {
+    [id]: obj
+      .sort((a, b) => a.firstName.localeCompare(b.firstName))
+      .map(user => {
+        const { username } = user;
+        const individualUsage = usageData.filter(
+          val => val.username === username
+        );
+        if (!individualUsage) {
+          return user;
+        }
+        return {
+          ...user,
+          usageData: individualUsage.map(val => ({
+            usage: val.usage,
+            resource: val.resource
+          }))
+        };
+      })
+  };
   return { data, loading };
 };
 
 function* getUsernames(action) {
   try {
-    const json = yield call(fetchUtil, {
+    const res = yield call(fetchUtil, {
       url: `/api/users/team/${action.payload.name}`
     });
-    const payload = getTeamPayload(action.payload.projectId, json);
+    const json = res.response;
+
+    const { allocationIds } = action.payload;
+    const usageCalls = allocationIds.map(params => usageUtil(params));
+    const usage = yield all(usageCalls);
+
+    const payload = getTeamPayload(
+      action.payload.projectId,
+      json,
+      false,
+      flatten(usage)
+    );
     yield put({ type: 'ADD_USERNAMES_TO_TEAM', payload });
   } catch (error) {
     const payload = getTeamPayload(action.payload.projectId, error, true);
@@ -67,6 +95,18 @@ function* getUsernames(action) {
     });
   }
 }
+
+const usageUtil = async params => {
+  const res = await fetchUtil({
+    url: `/api/users/team/usage/${params.id}`
+  });
+  const data = res.response
+    .map(user => {
+      return { ...user, resource: params.system.host };
+    })
+    .filter(Boolean);
+  return data;
+};
 
 export function* watchAllocationData() {
   yield takeEvery('GET_ALLOCATIONS', getAllocations);

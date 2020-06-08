@@ -12,7 +12,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
-import { capitalize, has } from 'lodash';
+import { capitalize, has, isEmpty } from 'lodash';
 
 const MODAL_PROPTYPES = {
   isOpen: bool.isRequired,
@@ -190,9 +190,64 @@ export const ContactCard = ({ listing }) => {
       </div>
       <div>Username: {username}</div>
       <div>Email: {email}</div>
+      {!isEmpty(listing.usageData) && (
+        <UsageTable rawData={listing.usageData} />
+      )}
     </div>
   );
 };
 
 ContactCard.propTypes = { listing: USER_LISTING_PROPTYPES };
 ContactCard.defaultProps = { listing: {} };
+
+export const UsageTable = ({ rawData }) => {
+  const data = React.useMemo(() => rawData, [rawData]);
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'System',
+        accessor: 'resource'
+      },
+      { Header: 'Usage', accessor: 'usage' },
+      { Header: '% of Allocation' }
+    ],
+    [rawData]
+  );
+  const { getTableBodyProps, rows, prepareRow, headerGroups } = useTable({
+    columns,
+    data
+  });
+  return (
+    <Table striped hover>
+      <thead>
+        {headerGroups.map(headerGroup => (
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map(column => (
+              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {rows.map(row => {
+          prepareRow(row);
+          return (
+            <tr {...row.getRowProps()}>
+              {row.cells.map(cell => (
+                <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+              ))}
+            </tr>
+          );
+        })}
+      </tbody>
+    </Table>
+  );
+};
+UsageTable.propTypes = {
+  rawData: arrayOf(
+    shape({
+      resource: string,
+      usage: number
+    })
+  ).isRequired
+};
