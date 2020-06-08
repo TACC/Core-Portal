@@ -118,7 +118,7 @@
             }
         }
         .sub-table-row {
-            /* FP-457 *//* stylelint-disable no-descending-specificity */
+            /* FP-457: Will fix this *//* stylelint-disable no-descending-specificity */
             :nth-child(even) {
                 background-color: white;
             }
@@ -156,7 +156,7 @@
 .team-view-modal-wrapper {
     .table-hover {
         tbody {
-            /* FP-457 *//* stylelint-disable no-descending-specificity */
+            /* FP-457: Will fix this *//* stylelint-disable no-descending-specificity */
             tr {
                 height: 35px;
                 cursor: pointer;
