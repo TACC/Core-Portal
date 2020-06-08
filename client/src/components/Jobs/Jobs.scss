@@ -1,31 +1,21 @@
-/* HACK: FP-103/FP-420: Should import via CSS Modules */
-/* WARNING: This is globally available; do NOT use its styles as such */
-@import '../../styles/trumps/_u-ellipsis.scss';
-
 .jobs-view {
   /* icon */
   th:nth-child(1),
-  td:nth-child(1) { width: 05%; }
+  td:nth-child(1) { min-width: 2em; }
   /* name */
   th:nth-child(2),
-  td:nth-child(2) { width: 30%; }
+  td:nth-child(2) { width: 50%; }
   /* path */
   th:nth-child(3),
-  td:nth-child(3) { width: 30%; }
+  td:nth-child(3) { width: 50%; }
   /* date */
   th:nth-child(4),
-  td:nth-child(4) { width: 20%; }
+  td:nth-child(4) { min-width: 10em; }
   /* status */
   th:nth-child(5),
-  td:nth-child(5) { width: 15%; }
+  td:nth-child(5) { min-width: 6em; }
 }
 
 .job__path {
-  @extend .u-ellipsis;
-
   direction: rtl; /* move overflow/ellipsis to left of text */
-}
-
-.job__name {
-  @extend .u-ellipsis;
 }
