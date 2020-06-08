@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import 'react-table-6/react-table.css';
 import { AppIcon, InfiniteScrollTable } from '_common';
-import './Jobs.scss';
+import './Jobs.module.scss';
 import * as ROUTES from '../../constants/routes';
 
 function JobsView() {
@@ -53,7 +53,7 @@ function JobsView() {
       Header: 'Job Name',
       accessor: 'name',
       Cell: el => (
-        <span title={el.value} id={`jobID${el.index}`} className="job__name">
+        <span title={el.value} id={`jobID${el.index}`} styleName="name">
           {el.value}
         </span>
       )
@@ -71,7 +71,8 @@ function JobsView() {
         return outputPath !== 'listings' ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
-            className="wb-link job__path"
+            styleName="path"
+            className="wb-link"
           >
             {outputPath}
           </Link>
@@ -118,7 +119,7 @@ function JobsView() {
       tableData={jobs}
       onInfiniteScroll={infiniteScrollCallback}
       isLoading={isLoading}
-      className="jobs-view"
+      styleName="root"
       noDataText={noDataText}
     />
   );

@@ -2,7 +2,7 @@
 /* WARNING: This is globally available; do NOT use its styles as such */
 @import '../../styles/trumps/_u-ellipsis.scss';
 
-.jobs-view {
+.root {
   /* icon */
   th:nth-child(1),
   td:nth-child(1) { width: 05%; }
@@ -19,12 +19,9 @@
   th:nth-child(5),
   td:nth-child(5) { width: 15%; }
 }
-.jobs-view__message {
-  text-align: center;
-}
 
-.job__name,
-.job__path {
+.name,
+.path {
   @extend .u-ellipsis;
 
   direction: rtl; /* move overflow/ellipsis to left of text */
