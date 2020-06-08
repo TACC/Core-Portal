@@ -74,7 +74,7 @@ ul#appBrowser-sidebar {
   flex-grow: 1;
 
   background-color: #f4f4f4;
-  border-left: 1px solid rgba(112, 112, 112, .25);
+  border-left: 1px solid rgba(112, 112, 112, 0.25);
 }
 
 #appBrowser-sidebar .nav-content {
@@ -102,5 +102,6 @@ ul#appBrowser-sidebar {
   font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
   vertical-align: middle;
 
-  &[class*="icon-"]::before { display: block }
+  /* FP-130: Should delete this line */
+  &[class*="icon-"]::before { display: block; }
 }
