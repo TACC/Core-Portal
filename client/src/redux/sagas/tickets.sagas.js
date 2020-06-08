@@ -89,7 +89,7 @@ export function* fetchTicketHistory(action) {
     const lastEntry = getLastEntry(ticketHistory);
     if (lastEntry)
       yield put({
-        type: 'TICKET_HISTORY_TOGGLE_SHOW_ITEM',
+        type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
         payload: { index: Number(lastEntry.id) }
       });
     yield put({

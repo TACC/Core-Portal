@@ -2,6 +2,7 @@ from django.db.models import Q
 from django.conf import settings
 from pytas.http import TASClient
 import logging
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -165,21 +166,19 @@ def get_allocations(username):
     }
 
 
-def get_usernames(project_id):
+def get_usernames(project_name):
     """Returns list of project users
 
     : returns: usernames
     : rtype: list
     """
-    tas_client = TASClient(
-        baseURL=settings.TAS_URL,
-        credentials={
-            'username': settings.TAS_CLIENT_KEY,
-            'password': settings.TAS_CLIENT_SECRET
-        }
-    )
-    usernames = tas_client.get_project_users(project_id=project_id)
-    return usernames
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    r = requests.get('{0}/v1/projects/name/{1}/users'.format(settings.TAS_URL, project_name), auth=auth)
+    resp = r.json()
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise Exception('Failed to get project users', resp['message'])
 
 
 def get_user_data(username):

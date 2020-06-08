@@ -4,10 +4,8 @@ import { useSelector, shallowEqual } from 'react-redux';
 // import PropTypes from 'prop-types';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faDesktop,
-  faExclamationTriangle
-} from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { AppIcon } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
@@ -54,7 +52,7 @@ const AppBrowser = () => {
 
   return (
     <div id="appBrowser-wrapper">
-      <Nav vertical tabs id="appBrowser-sidebar">
+      <Nav id="appBrowser-sidebar">
         {Object.keys(categoryDict).map(category => (
           <NavItem key={category}>
             <NavLink
@@ -63,14 +61,10 @@ const AppBrowser = () => {
                 toggle(category);
               }}
             >
-              <div className="nav-content">
-                <FontAwesomeIcon
-                  icon={faDesktop}
-                  size="1x"
-                  className="side-nav-icon"
-                />
+              <span className="nav-content">
+                <i className="icon-nav-application  category-icon" />
                 <span className="nav-text">{`${category} [${categoryDict[category].length}]`}</span>
-              </div>
+              </span>
             </NavLink>
           </NavItem>
         ))}
@@ -86,18 +80,12 @@ const AppBrowser = () => {
                     to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.value.definition.id}`}
                     activeClassName="active"
                   >
-                    <div className="nav-content">
-                      <i
-                        className={`app-icon ${
-                          app.value.definition.appIcon
-                            ? `icon-nav-${app.value.definition.appIcon}`
-                            : 'icon-nav-application'
-                        }`}
-                      />
+                    <span className="nav-content">
+                      <AppIcon appId={app.value.definition.id} />
                       <span className="nav-text">
                         {app.value.definition.label}
                       </span>
-                    </div>
+                    </span>
                   </NavLink>
                 </div>
               ))}
