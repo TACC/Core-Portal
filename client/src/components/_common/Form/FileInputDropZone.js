@@ -64,7 +64,9 @@ function FileInputDropZone({
         <div className="no-attachment-view">
           <i className="icon-action-upload" />
           <br />
-          <RejectedFileMessage numberOfFiles={numberRejectedFiles} />
+          {!hideFileList && (
+            <RejectedFileMessage numberOfFiles={numberRejectedFiles} />
+          )}
           <Button outline onClick={open} className="select-files-button">
             Select File(s)
           </Button>
