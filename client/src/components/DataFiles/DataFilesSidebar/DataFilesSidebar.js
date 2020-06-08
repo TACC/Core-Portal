@@ -71,7 +71,7 @@ const DataFilesSidebar = () => {
                 to={`${match.path}/tapis/private/`}
                 activeClassName="active"
               >
-                <span>
+                <span className="nav-content">
                   <FontAwesomeIcon
                     icon={faDesktop}
                     size="1x"
