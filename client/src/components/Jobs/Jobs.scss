@@ -20,9 +20,12 @@
   td:nth-child(5) { width: 15%; }
 }
 
-.job__name,
 .job__path {
   @extend .u-ellipsis;
 
   direction: rtl; /* move overflow/ellipsis to left of text */
+}
+
+.job__name {
+  @extend .u-ellipsis;
 }
