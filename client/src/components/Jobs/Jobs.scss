@@ -1,7 +1,31 @@
-.ReactTable .rt-thead {
-  overflow-y: scroll;
+/* HACK: FP-103/FP-420: Should import via CSS Modules */
+/* WARNING: This is globally available; do NOT use its styles as such */
+@import '../../styles/trumps/_u-ellipsis.scss';
+
+.jobs-view {
+  /* icon */
+  th:nth-child(1),
+  td:nth-child(1) { width: 05%; }
+  /* name */
+  th:nth-child(2),
+  td:nth-child(2) { width: 30%; }
+  /* path */
+  th:nth-child(3),
+  td:nth-child(3) { width: 30%; }
+  /* date */
+  th:nth-child(4),
+  td:nth-child(4) { width: 20%; }
+  /* status */
+  th:nth-child(5),
+  td:nth-child(5) { width: 15%; }
+}
+.jobs-view__message {
+  text-align: center;
 }
 
-.ReactTable .pagination-bottom {
-  display: none;
+.job__name,
+.job__path {
+  @extend .u-ellipsis;
+
+  direction: rtl; /* move overflow/ellipsis to left of text */
 }

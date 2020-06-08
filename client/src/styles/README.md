@@ -1,10 +1,10 @@
 # TACC Frontera Web Portal - Styles
 
 These files are all regular native CSS (not CSS modules, not SCSS).
-
-These files are organized via [ITCSS][itcss].
+These files are organized via [ITCSS][itcss] and named with [BEM Namespaces][bem-ns].
 
 [itcss]: https://www.xfive.co/blog/itcss-scalable-maintainable-css-architecture/ "Inverted Triangle CSS"
+[bem-ns]: https://medium.com/@wenukagtx/bem-namespaces-81a5868e725c#28a3 "BEM & Namespaces"
 
 ## `global.css`
 
