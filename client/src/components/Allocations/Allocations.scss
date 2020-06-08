@@ -58,10 +58,9 @@
     }
 }
 #allocations-sidebar {
-    width: fit-content;
+    width: 215px;
     border-right: 1px solid rgba(112, 112, 112, 0.25);
     font-family: Roboto, sans-serif;
-    width: 215px;
 
     /* !!!: This link is `40px`, which is taller than other sidebar links (which are ~`35px`) */
     .nav-link {
@@ -119,9 +118,11 @@
             }
         }
         .sub-table-row {
+            /* FP-457 *//* stylelint-disable no-descending-specificity */
             :nth-child(even) {
                 background-color: white;
             }
+            /* stylelint-enable no-descending-specificity */
             color: #707070;
             font: 14px Roboto, sans-serif;
         }
@@ -155,6 +156,7 @@
 .team-view-modal-wrapper {
     .table-hover {
         tbody {
+            /* FP-457 *//* stylelint-disable no-descending-specificity */
             tr {
                 height: 35px;
                 cursor: pointer;
@@ -165,6 +167,7 @@
                     vertical-align: middle;
                 }
             }
+            /* stylelint-enable no-descending-specificity */
             tr:hover {
                 background-color: #dfdaf5;
             }
