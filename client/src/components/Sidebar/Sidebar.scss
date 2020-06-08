@@ -26,10 +26,12 @@
 }
 
 /* WARNING: Also used by external components */
+/* FP-130: Migrates this to another stylesheet *//* stylelint-disable no-descending-specificity */
 .nav-content {
   display: flex;
   align-items: center;
 }
+/* stylelint-enable no-descending-specificity */
 /* WARNING: Only used by external components */
 .nav-content .side-nav-icon {
   width: 1em;
