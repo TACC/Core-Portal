@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Form,
+  FormGroup,
+  Input,
+  Label
+} from 'reactstrap';
 
 const DataFilesPushKeysModal = () => {
   const dispatch = useDispatch();
@@ -27,7 +37,7 @@ const DataFilesPushKeysModal = () => {
       payload: { operation: 'pushKeys', props: {} }
     });
   };
-  const pushKeys = () => {
+  const pushKeys = event => {
     dispatch({
       type: 'DATA_FILES_PUSH_KEYS',
       payload: {
@@ -38,6 +48,7 @@ const DataFilesPushKeysModal = () => {
         reloadCallback: reloadPage
       }
     });
+    event.preventDefault();
   };
   return (
     <>
@@ -49,34 +60,38 @@ const DataFilesPushKeysModal = () => {
         toggle={toggle}
         className="dataFilesModal"
       >
-        <ModalHeader toggle={toggle}>Push Keys</ModalHeader>
-        <ModalBody>
-          Password
-          <input
-            type="password"
-            onChange={e => setPassword(e.target.value)}
-            value={password}
-            className="form-control"
-          />
-          TACC token
-          <input
-            onChange={e => setToken(e.target.value)}
-            value={token}
-            className="form-control"
-          />
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={pushKeys}>
-            Authenticate
-          </Button>
-          <Button
-            color="secondary"
-            className="data-files-btn-cancel"
-            onClick={toggle}
-          >
-            Close
-          </Button>
-        </ModalFooter>
+        <Form>
+          <ModalHeader toggle={toggle}>Push Keys</ModalHeader>
+          <ModalBody>
+            <FormGroup>
+              <Label>Password</Label>
+              <Input
+                type="password"
+                onChange={e => setPassword(e.target.value)}
+                value={password}
+                className="form-control"
+              />
+              <Label>TACC Token</Label>
+              <Input
+                onChange={e => setToken(e.target.value)}
+                value={token}
+                className="form-control"
+              />
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button type="submit" color="primary" onClick={pushKeys}>
+              Authenticate
+            </Button>
+            <Button
+              color="secondary"
+              className="data-files-btn-cancel"
+              onClick={toggle}
+            >
+              Close
+            </Button>
+          </ModalFooter>
+        </Form>
       </Modal>
     </>
   );
