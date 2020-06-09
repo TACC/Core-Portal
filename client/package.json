@@ -3,7 +3,6 @@
   "version": "2.0.0",
   "private": true,
   "dependencies": {
-    "@babel/compat-data": "^7.10.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
     "@fortawesome/free-regular-svg-icons": "^5.11.2",
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
@@ -59,6 +58,7 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.7.5",
+    "@babel/compat-data": "^7.10.1",
     "@babel/core": "^7.7.5",
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/preset-env": "^7.7.6",
