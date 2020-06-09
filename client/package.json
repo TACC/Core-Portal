@@ -60,7 +60,6 @@
     "@babel/cli": "^7.10.1",
     "@babel/compat-data": "^7.10.1",
     "@babel/core": "^7.10.1",
-    "@babel/plugin-proposal-class-properties": "^7.10.1",
     "@babel/preset-env": "^7.10.1",
     "@babel/preset-react": "^7.10.1",
     "@testing-library/jest-dom": "^5.0.2",
