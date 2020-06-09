@@ -3,7 +3,8 @@
   "version": "2.0.0",
   "private": true,
   "resolutions": {
-    "@babel/preset-env": "^7.8.7"
+    "@babel/preset-env": "^7.8.7",
+    "@babel/preset-react": "^7.8.7"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
