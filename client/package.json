@@ -2,10 +2,6 @@
   "name": "client",
   "version": "2.0.0",
   "private": true,
-  "resolutions": {
-    "@babel/preset-env": "^7.8.7",
-    "@babel/preset-react": "^7.8.7"
-  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
     "@fortawesome/free-regular-svg-icons": "^5.11.2",
@@ -61,12 +57,12 @@
     ]
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.5",
+    "@babel/cli": "^7.10.1",
     "@babel/compat-data": "^7.10.1",
-    "@babel/core": "^7.7.5",
-    "@babel/plugin-proposal-class-properties": "^7.7.4",
-    "@babel/preset-env": "^7.7.6",
-    "@babel/preset-react": "^7.7.4",
+    "@babel/core": "^7.10.1",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/preset-env": "^7.10.1",
+    "@babel/preset-react": "^7.10.1",
     "@testing-library/jest-dom": "^5.0.2",
     "@testing-library/react": "^9.3.2",
     "babel-eslint": "^10.0.3",
