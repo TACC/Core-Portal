@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
 
 export function* getJobs(action) {
-  yield put({ type: 'SHOW_SPINNER' });
+  yield put({ type: 'JOBS_LIST_START' });
   const url = new URL('/api/workspace/jobs', window.location.origin);
   Object.keys(action.params).forEach(key =>
     url.searchParams.append(key, action.params[key])
@@ -16,10 +16,10 @@ export function* getJobs(action) {
     });
     const json = yield res.json();
     yield put({ type: 'JOBS_LIST', payload: json.response });
-    yield put({ type: 'HIDE_SPINNER' });
+    yield put({ type: 'JOBS_LIST_FINISH' });
   } catch {
     yield put({ type: 'JOBS_LIST', payload: [{ error: 'err!' }] });
-    yield put({ type: 'HIDE_SPINNER' });
+    yield put({ type: 'JOBS_LIST_FINISH' });
   }
 }
 

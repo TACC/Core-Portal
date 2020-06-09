@@ -20,10 +20,12 @@
 /* FAQ: Inner wraps of specific `.dash-grid-items` */
 /* RFC: Implement `max-height: …` in a modular manner */
 /* SEE: https://tacc-team.slack.com/archives/GQW4Q8HLG/p1578514280032300?thread_ts=1578511498.030900&cid=GQW4Q8HLG */
+/* TODO: re-work this container and table to properly lay-out and contain elements within this
+         wrapper's height and width */
 .jobs-wrapper {
-    max-height: 45vh;
+    max-height: 40vh;
     /* RFC: Implement `margin-bottom: 38px` independent of `.jobs-wrapper` */
-    margin-bottom: 38px;
+    margin-bottom: 60px;
 }
 .tickets-wrapper {
     max-height: 27vh;

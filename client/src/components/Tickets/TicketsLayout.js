@@ -117,6 +117,7 @@ function TicketsView() {
         resizable={false}
         resolveData={data => data.map(row => row)}
         pageSize={tickets.length}
+        showPagination={false}
         className="ticketsList -striped -highlight"
         defaultSorted={[{ id: 'ticketDateCol', desc: true }]}
         getTrProps={(state, rowInfo, instance) => {
