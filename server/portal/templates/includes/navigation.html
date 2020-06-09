@@ -34,12 +34,8 @@ They seem useful, and would be re-incoprorated when their usage is necessary.
   </button>
   <!-- Navbar Links -->
   <div class="collapse navbar-collapse" id="navbarsExpandTarget">
-    {% include "navigation/cms.html"
-        with className="navbar-nav"
-        only %}
+    {% include "./navigation/cms.html" with className="navbar-nav" only %}
 
-    {% include "navigation/portal.html"
-        with className="navbar-nav navbar-right  ml-auto" user=user
-        only %}
+    {% include "./navigation/portal.html" with className="navbar-nav navbar-right  ml-auto" user=user only %}
   </div>
 </nav>
