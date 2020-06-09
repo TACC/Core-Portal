@@ -4,11 +4,12 @@
 version: "3"
 services:
   cms:
-    image: taccwma/frontera-cms:latest
+    image: frontera_cms_445ec0e_real
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
-      - ../../cms/static:/code/static
+      # - ../../cms/static:/code/static
+      # - ../../../../frontera-cms/taccsite_cms/static/site_cms:/code/static/site_cms
       - ../../cms/media:/code/media
     command: ["uwsgi", "--ini", "uwsgi.ini"]
     container_name: frontera_prtl_cms
