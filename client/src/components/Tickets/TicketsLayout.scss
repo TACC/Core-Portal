@@ -7,3 +7,18 @@
 .ticket-unknown-status {
   font-family: monospace;
 }
+
+.tickets-view {
+  /* Ticket Number */
+  th:nth-child(1),
+  td:nth-child(1) { min-width: 6em; }
+  /* Subject */
+  th:nth-child(2),
+  td:nth-child(2) { width: 80%; }
+  /* Date */
+  th:nth-child(3),
+  td:nth-child(3) { width: 20%; }
+  /* Status */
+  th:nth-child(4),
+  td:nth-child(4) { min-width: 10em; }
+}
