@@ -122,13 +122,13 @@ class AllocationsView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class TeamView(BaseApiView):
 
-    def get(self, request, project_id):
+    def get(self, request, project_name):
         """Returns usernames for project team
 
         : returns: {'usernames': usernames}
         : rtype: dict
         """
-        usernames = get_usernames(project_id)
+        usernames = get_usernames(project_name)
         return JsonResponse({'usernames': usernames}, safe=False)
 
 

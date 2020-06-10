@@ -1,27 +1,60 @@
-
 #appBrowser-wrapper {
-  padding-top: 8px;
-  border-bottom: 1px solid #707070;
+  /* As a flex item */
+  flex-grow: 1;
+  flex-shrink: 0; /* Prevent Safari from shrinking this element (FP-389) */
+
+  /* As a flex container */
   display: flex;
   flex-direction: row;
-  padding-bottom: 5px;
+  align-items: stretch;
+
+  border-bottom: 1px solid #707070;
+}
+#appBrowser-sidebar,
+#appBrowser-tray .apps-grid-list {
+  --vertical-buffer: 10px;
+  --max-item-count: 5;
+  --item-height: 35px; /* (~30px design * 1.2 design-to-app ratio) */
+  /* i.e. ( items * item height ) + ( top space & bottom space ) */
+  --height: calc(( var(--max-item-count) * var(--item-height) ) + ( var(--vertical-buffer) * 2 ));
+
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(var(--max-item-count), min-content);
+  height: var(--height);
+  padding-top: var(--vertical-buffer);
+  padding-bottom: var(--vertical-buffer);
 }
 
 #appBrowser-sidebar {
-    width: 230px;
-    max-width: 230px;
-    min-width: 230px;
-    border-right: 1px solid rgba(112, 112, 112, .25);
+    /* FP-404: All Portal section sidebars should use this value. */
+    --min-width: 200px;
+
     margin-left: -20px;
-    border-bottom: none;
-    padding-right: 0;
+}
+#appBrowser-sidebar .nav-item {
+    /* Define minimum width of list and minimum width of columns in list */
+    /* NOTE: Wes B. does not know how to do this using CSS Grid. Help is welcome. */
+    min-width: var(--min-width);
+}
+/* Overwrite browser styles */
+/* FAQ: Combining ID and classname is overspecific, but it is accurate,
+        because only with `ul` should these styles be overwritten */
+ul#appBrowser-sidebar {
+  padding-left: 0;
+  list-style: none;
 }
 
 #appBrowser-sidebar .nav-link, #appBrowser-tray .nav-link {
+  /* Overwrite Bootstrap, match UI design */
+  padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
+
   color: #707070;
   border-radius: 0;
-  cursor: pointer;
+  cursor: pointer; /* RFE: Add `href` on links to both avoid needing this style and provide URL to app state */
   border: none;
+
+  white-space: nowrap;
 }
 
 #appBrowser-sidebar .nav-link.active, #appBrowser-tray .nav-link.active {
@@ -35,33 +68,27 @@
 }
 
 #appBrowser-tray {
-  width: 100%;
-}
+  flex-grow: 1;
 
-#appBrowser-tray .apps-grid-list {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-#appBrowser-sidebar .nav-content {
-  padding-left: 10px;
-}
-#appBrowser-tray .nav-content {
-  display: flex;
-  align-items: center;
+  background-color: #f4f4f4;
+  border-left: 1px solid rgba(112, 112, 112, .25);
 }
 
 #appBrowser-sidebar .nav-text, #appBrowser-tray .nav-text {
   padding-left: 15px;
-  font-size: .78em;
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
   font-weight: 500;
 }
 
-.app-icon {
-  font-size: 1.5em;
-  display: flex;
-}
+.app-icon,
+.category-icon {
+  /* Styles copied from .side-nav-icon because:
+     - CSS architecture does not facilitate `@extend`
+     - CSS modules not available yet to provide `composes`
+     - Styles of `.side-nav-icon` match prupose (though name does not) */
+  width: 1em;
+  font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
+  vertical-align: middle;
 
-.apps-grid-item {
-  width: 200px;
+  &[class*="icon-"]::before { display: block }
 }

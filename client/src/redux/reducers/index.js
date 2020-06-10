@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { spinner, jobs } from './jobs.reducers';
+import jobs from './jobs.reducers';
 import { app, apps } from './apps.reducers';
 import { systems, files } from './datafiles.reducers';
 import {
@@ -14,7 +14,6 @@ import authenticatedUser from './authenticated_user.reducer';
 import { pushKeys } from './systems.reducers';
 
 export default combineReducers({
-  spinner,
   jobs,
   systems,
   systemMonitor,
