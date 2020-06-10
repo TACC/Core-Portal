@@ -13,6 +13,15 @@ function FileInputDropZoneFormField({
   maxSize
 }) {
   const [field, , helpers] = useField(id);
+
+  const onSetFiles = acceptedFiles => {
+    helpers.setValue([...field.value, ...acceptedFiles]);
+  };
+  const onRemoveFile = fileIndex => {
+    const files = field.value;
+    files.splice(fileIndex, 1);
+    helpers.setValue(files);
+  };
   return (
     <FormGroup>
       <Label
@@ -26,7 +35,8 @@ function FileInputDropZoneFormField({
       <FileInputDropZone
         id={id}
         files={field.value}
-        onSetFiles={helpers.setValue}
+        onSetFiles={onSetFiles}
+        onRemoveFile={onRemoveFile}
         isSubmitted={isSubmitted}
         maxSizeMessage={maxSizeMessage}
         maxSize={maxSize}
