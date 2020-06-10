@@ -17,7 +17,7 @@ const InfiniteScrollLoadingRow = ({ isLoading }) => {
   return (
     <tr className="-status">
       <td>
-        <LoadingSpinner placement="inline" />
+        <LoadingSpinner />
       </td>
     </tr>
   );
