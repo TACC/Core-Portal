@@ -25,6 +25,17 @@ export function* watchTicketListFetch() {
   yield takeLatest('TICKET_LIST_FETCH', fetchTickets);
 }
 
+export function* displayMoreTickets(action) {
+  yield put({
+    type: 'TICKET_LIST_DISPLAY_UPDATE',
+    payload: action.params.offset + action.params.limit
+  });
+}
+
+export function* watchTicketListMore() {
+  yield takeLatest('TICKET_LIST_MORE', displayMoreTickets);
+}
+
 function getLastEntry(history) {
   if (Array.isArray(history) && history.length > 0) {
     return history[history.length - 1];
