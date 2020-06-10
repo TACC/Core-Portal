@@ -4,6 +4,27 @@ import PropTypes from 'prop-types';
 import LoadingSpinner from '../LoadingSpinner';
 import './InfiniteScrollTable.scss';
 
+/**
+ * Get a modifier for a class name, based on given conditions
+ * @param {string} baseName - A className on which to append the modifier name
+ * @param {object} conditions - Conditions to allow modifier name to be determined
+ * @param {object} conditions.isLoading - Whether data is loading
+ * @param {object} conditions.hasData - Whether data is available
+ */
+function getClassNameModifier(baseName, { isLoading, hasData }) {
+  let modifier;
+
+  if (isLoading) {
+    modifier = 'is-loading';
+  } else if (hasData) {
+    modifier = 'has-data';
+  } else {
+    modifier = 'no-data';
+  }
+
+  return modifier ? baseName + modifier : null;
+}
+
 const rowContentPropType = PropTypes.oneOfType([
   PropTypes.string,
   PropTypes.element,
@@ -53,6 +74,11 @@ const InfiniteScrollTable = ({
 }) => {
   const columns = React.useMemo(() => tableColumns, []);
   const data = React.useMemo(() => tableData, [tableData]);
+  const hasData = tableData.length !== 0;
+  const modifierClassName = getClassNameModifier('InfiniteScrollTable--', {
+    isLoading,
+    hasData
+  });
 
   const {
     getTableProps,
@@ -71,7 +97,10 @@ const InfiniteScrollTable = ({
   };
 
   return (
-    <table {...getTableProps()} className={`${className} InfiniteScrollTable`}>
+    <table
+      {...getTableProps()}
+      className={`${className}  InfiniteScrollTable ${modifierClassName}`}
+    >
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -94,7 +123,7 @@ const InfiniteScrollTable = ({
         })}
         <InfiniteScrollLoadingRow isLoading={isLoading} />
         <InfiniteScrollNoDataRow
-          display={!isLoading && tableData.length === 0}
+          display={!isLoading && !hasData}
           noDataText={noDataText}
         />
       </tbody>
