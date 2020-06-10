@@ -20,7 +20,7 @@ export function ticketList(state = initialTicketList, action) {
       return {
         ...state,
         displayed: action.payload
-      }
+      };
     case 'TICKET_LIST_FETCH_SUCCESS':
       return {
         ...state,

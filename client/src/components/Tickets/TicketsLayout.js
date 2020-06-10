@@ -47,7 +47,7 @@ function TicketsView() {
     </>
   );
   useEffect(() => {
-    dispatch({ type: 'TICKET_LIST_MORE', params: { offset: 0, limit: limit } });
+    dispatch({ type: 'TICKET_LIST_MORE', params: { offset: 0, limit } });
   }, [dispatch]);
 
   const infiniteScrollCallback = useCallback(offset => {
@@ -103,7 +103,9 @@ function TicketsView() {
       headerStyle: { textAlign: 'left' },
       accessor: d => new Date(d.Created),
       Cell: el => (
-        <span id={`ticketDate${el.row.index}`}>{`${formatDate(el.value)}`}</span>
+        <span id={`ticketDate${el.row.index}`}>{`${formatDate(
+          el.value
+        )}`}</span>
       ),
       id: 'ticketDateCol',
       width: 100
