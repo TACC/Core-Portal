@@ -21,13 +21,17 @@ RejectedFileMessage.propTypes = {
   numberOfFiles: PropTypes.number.isRequired
 };
 
+/**
+ * FileInputDropZone is a component where users can select files via file browser or by
+ * drag/drop.  an area to drop files. If `file` property is set then files are listed
+ * and user can manage (e.g. delete those files) directly in this component.
+ */
 function FileInputDropZone({
   files,
   onSetFiles,
   onRejectedFiles,
   maxSize,
   maxSizeMessage,
-  hideFileList,
   onRemoveFile,
   isSubmitted
 }) {
@@ -55,7 +59,7 @@ function FileInputDropZone({
     }
   };
 
-  const showFileList = files.length > 0 && !hideFileList;
+  const showFileList = files && files.length > 0;
 
   if (isSubmitted && numberRejectedFiles > 0) {
     // reset number of rejected files when files is submitted
@@ -70,9 +74,7 @@ function FileInputDropZone({
         <div className="no-attachment-view">
           <i className="icon-action-upload" />
           <br />
-          {!hideFileList && (
-            <RejectedFileMessage numberOfFiles={numberRejectedFiles} />
-          )}
+          {files && <RejectedFileMessage numberOfFiles={numberRejectedFiles} />}
           <Button outline onClick={open} className="select-files-button">
             Select File(s)
           </Button>
@@ -112,18 +114,17 @@ function FileInputDropZone({
 }
 
 FileInputDropZone.propTypes = {
-  files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  files: PropTypes.arrayOf(PropTypes.object),
   onSetFiles: PropTypes.func.isRequired,
   onRejectedFiles: PropTypes.func,
   onRemoveFile: PropTypes.func,
   isSubmitted: PropTypes.bool,
   maxSizeMessage: PropTypes.string.isRequired,
-  maxSize: PropTypes.number.isRequired,
-  hideFileList: PropTypes.bool
+  maxSize: PropTypes.number.isRequired
 };
 
 FileInputDropZone.defaultProps = {
-  hideFileList: false,
+  files: null,
   isSubmitted: false,
   onRejectedFiles: null,
   onRemoveFile: null

@@ -101,7 +101,7 @@ const DataFilesUploadModal = () => {
       newFiles.push({ data: file, id: uuidv4() });
     });
     setUploadedFiles(files => [...files, ...newFiles]);
-  }
+  };
 
   return (
     <Modal
@@ -114,12 +114,10 @@ const DataFilesUploadModal = () => {
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
       <ModalBody>
         <FileInputDropZone
-          hideFileList
           onSetFiles={selectFiles}
           onRejectedFiles={onRejectedFiles}
           maxSize={524288000}
           maxSizeMessage="Max File Size: 500MB"
-          files={placeHolderFiles}
         />
 
         <div hidden={uploadedFiles.length === 0} style={{ marginTop: '10px' }}>
