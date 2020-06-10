@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import ReactTable from 'react-table-6';
-import 'react-table-6/react-table.css';
-import { LoadingSpinner } from '_common';
+import { InfiniteScrollTable } from '_common';
 import { formatDate } from 'utils/timeFormat';
 import * as ROUTES from '../../constants/routes';
 import './TicketsLayout.scss';
@@ -31,17 +29,41 @@ export function getStatusText(status) {
 
 function TicketsView() {
   const dispatch = useDispatch();
-  const loading = useSelector(state => state.ticketList.loading);
+  const isLoading = useSelector(state => state.ticketList.loading);
+  const displayed = useSelector(state => state.ticketList.displayed);
   const tickets = useSelector(state => state.ticketList.content);
   const loadingError = useSelector(state => state.ticketList.loadingError);
+  const limit = 20;
+  const noDataText = (
+    <>
+      No tickets. You can add a ticket{' '}
+      <Link
+        className="wb-link"
+        to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create/`}
+      >
+        here
+      </Link>
+      .
+    </>
+  );
+  useEffect(() => {
+    dispatch({ type: 'TICKET_LIST_MORE', params: { offset: 0, limit: limit } });
+  }, [dispatch]);
+
+  const infiniteScrollCallback = useCallback(offset => {
+    // The only way we have some semblance of
+    // knowing whether or not there are more jobs
+    // is if the number of jobs is not a multiple
+    // of the scroll size limit.
+    // i.e., you asked for 100 jobs but got 96.
+    if (offset % 20 === 0) {
+      dispatch({ type: 'TICKET_LIST_MORE', params: { offset, limit } });
+    }
+  }, []);
 
   useEffect(() => {
     dispatch({ type: 'TICKET_LIST_FETCH' });
   }, [dispatch]);
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
 
   if (loadingError) {
     return (
@@ -68,9 +90,9 @@ function TicketsView() {
       accessor: 'Subject',
       Cell: el => (
         <Link
-          to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/${el.original.id}`}
+          to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/${el.row.original.id}`}
         >
-          <Button color="link" id={`ticketSubject${el.index}`}>
+          <Button color="link" id={`ticketSubject${el.row.index}`}>
             <span title={el.value}>{el.value}</span>
           </Button>
         </Link>
@@ -81,7 +103,7 @@ function TicketsView() {
       headerStyle: { textAlign: 'left' },
       accessor: d => new Date(d.Created),
       Cell: el => (
-        <span id={`ticketDate${el.index}`}>{`${formatDate(el.value)}`}</span>
+        <span id={`ticketDate${el.row.index}`}>{`${formatDate(el.value)}`}</span>
       ),
       id: 'ticketDateCol',
       width: 100
@@ -109,42 +131,14 @@ function TicketsView() {
   ];
 
   return (
-    <>
-      <ReactTable
-        keyField="id"
-        data={tickets}
-        columns={columns}
-        resizable={false}
-        resolveData={data => data.map(row => row)}
-        pageSize={tickets.length}
-        showPagination={false}
-        className="ticketsList -striped -highlight"
-        defaultSorted={[{ id: 'ticketDateCol', desc: true }]}
-        getTrProps={(state, rowInfo, instance) => {
-          if (rowInfo) {
-            return {
-              className:
-                rowInfo.original.Status === 'user_wait'
-                  ? 'ticket-reply-required'
-                  : ''
-            };
-          }
-          return {};
-        }}
-        noDataText={
-          <>
-            No tickets. You can add a ticket{' '}
-            <Link
-              className="wb-link"
-              to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create/`}
-            >
-              here
-            </Link>
-            .
-          </>
-        }
-      />
-    </>
+    <InfiniteScrollTable
+      tableColumns={columns}
+      tableData={tickets.slice(0, displayed)}
+      onInfiniteScroll={infiniteScrollCallback}
+      isLoading={isLoading}
+      className="tickets-view"
+      noDataText={noDataText}
+    />
   );
 }
 
