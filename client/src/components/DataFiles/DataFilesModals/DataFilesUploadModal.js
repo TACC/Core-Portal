@@ -96,11 +96,6 @@ const DataFilesUploadModal = () => {
   };
 
   const onRejectedFiles = rejectedFiles => {
-    const newFiles = [];
-    rejectedFiles.forEach(file => {
-      newFiles.push({ data: file, id: uuidv4() });
-    });
-    setUploadedFiles(files => [...files, ...newFiles]);
   };
 
   return (
