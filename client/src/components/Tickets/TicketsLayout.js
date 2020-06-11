@@ -74,11 +74,9 @@ function TicketsView() {
 
   const columns = [
     {
-      Header: 'Ticket Number',
+      Header: 'Number',
       accessor: 'id',
-      Cell: el => <span id={`ticketID${el.index}`}>{el.value}</span>,
-      width: 115,
-      maxWidth: 115
+      Cell: el => <span id={`ticketID${el.index}`}>{el.value}</span>
     },
     {
       Header: 'Subject',
@@ -102,8 +100,7 @@ function TicketsView() {
           el.value
         )}`}</span>
       ),
-      id: 'ticketDateCol',
-      width: 100
+      id: 'ticketDateCol'
     },
     {
       Header: 'Ticket Status',
@@ -122,8 +119,7 @@ function TicketsView() {
           {el.value.text}
         </span>
       ),
-      id: 'ticketStatusCol',
-      width: 105
+      id: 'ticketStatusCol'
     }
   ];
 
