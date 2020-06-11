@@ -51,12 +51,7 @@ function TicketsView() {
   }, [dispatch]);
 
   const infiniteScrollCallback = useCallback(offset => {
-    // The only way we have some semblance of
-    // knowing whether or not there are more jobs
-    // is if the number of jobs is not a multiple
-    // of the scroll size limit.
-    // i.e., you asked for 100 jobs but got 96.
-    if (offset % 20 === 0) {
+    if (offset < tickets.length) {
       dispatch({ type: 'TICKET_LIST_MORE', params: { offset, limit } });
     }
   }, []);
