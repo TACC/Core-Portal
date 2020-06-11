@@ -127,6 +127,13 @@ function TicketsView() {
     }
   ];
 
+  const rowProps = row => {
+    return {
+      className:
+        row.original.Status === 'user_wait' ? 'ticket-reply-required' : ''
+    };
+  };
+
   return (
     <InfiniteScrollTable
       tableColumns={columns}
@@ -135,6 +142,7 @@ function TicketsView() {
       isLoading={isLoading}
       className="tickets-view"
       noDataText={noDataText}
+      getRowProps={rowProps}
     />
   );
 }
