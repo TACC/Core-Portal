@@ -1,25 +1,42 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
-import { LoadingSpinner, AppIcon } from '_common';
+import { AppIcon, InfiniteScrollTable } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
 function JobsView() {
   const dispatch = useDispatch();
-  const { spinnerState, jobs } = useSelector(state => ({
-    spinnerState: state.spinner,
-    jobs: state.jobs.list
-  }));
+  const isLoading = useSelector(state => state.jobs.loading);
+  const jobs = useSelector(state => state.jobs.list);
+  const limit = 20;
+  const noDataText = (
+    <>
+      No recent jobs. You can submit jobs from the{' '}
+      <Link
+        to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
+        className="wb-link"
+      >
+        Applications Page
+      </Link>
+      .
+    </>
+  );
   useEffect(() => {
-    dispatch({ type: 'GET_JOBS', params: { limit: 100 } });
+    dispatch({ type: 'GET_JOBS', params: { limit } });
   }, [dispatch]);
 
-  if (spinnerState) {
-    return <LoadingSpinner />;
-  }
+  const infiniteScrollCallback = useCallback(offset => {
+    // The only way we have some semblance of
+    // knowing whether or not there are more jobs
+    // is if the number of jobs is not a multiple
+    // of the scroll size limit.
+    // i.e., you asked for 100 jobs but got 96.
+    if (offset % 20 === 0) {
+      dispatch({ type: 'GET_JOBS', params: { offset, limit } });
+    }
+  }, []);
 
   const columns = [
     {
@@ -36,7 +53,11 @@ function JobsView() {
       Header: 'Job Name',
       accessor: 'name',
       Cell: el => (
-        <span title={el.value} id={`jobID${el.index}`}>
+        <span
+          title={el.value}
+          id={`jobID${el.row.index}`}
+          className="job__name"
+        >
           {el.value}
         </span>
       )
@@ -54,7 +75,7 @@ function JobsView() {
         return outputPath !== 'listings' ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
-            className="wb-link"
+            className="wb-link job__path"
           >
             {outputPath}
           </Link>
@@ -96,27 +117,13 @@ function JobsView() {
   ];
 
   return (
-    <ReactTable
-      keyField="id"
-      data={jobs}
-      columns={columns}
-      resizable={false}
-      resolveData={data => data.map(row => row)}
-      pageSize={jobs.length}
-      className="jobsList -striped -highlight"
-      defaultSorted={[{ id: 'jobDateCol', desc: true }]}
-      noDataText={
-        <>
-          No recent jobs. You can submit jobs from the{' '}
-          <Link
-            to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}`}
-            className="wb-link"
-          >
-            Applications Page
-          </Link>
-          .
-        </>
-      }
+    <InfiniteScrollTable
+      tableColumns={columns}
+      tableData={jobs}
+      onInfiniteScroll={infiniteScrollCallback}
+      isLoading={isLoading}
+      className="jobs-view"
+      noDataText={noDataText}
     />
   );
 }

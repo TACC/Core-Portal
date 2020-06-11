@@ -61,22 +61,25 @@
     width: fit-content;
     border-right: 1px solid rgba(112, 112, 112, .25);
     font-family: Roboto;
+    width: 215px;
+
+    /* !!!: This link is `40px`, which is taller than other sidebar links (which are ~`35px`) */
     .nav-link {
-        padding: 8px 0 8px 30px;
+        /* NOTE: These styles match `.nav-content`. That class is not used in
+                 the markup for this sidebar because it is extraneous */
+        /* RFE: Resolve discrepancy when common Sidebar component exists */
         display: flex;
         align-items: center;
-        width: 215px;
-    }
-    a {
+
         color: #707070;
-        padding-left: 1.5em;
-        height: 2.5em;
+        padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
+
         .link-icon {
-            font-size: 1.2em;
+            font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
             width: 1em;
         }
         .link-text {
-            font-size: 0.78em;
+            font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
             font-weight: 500;
             padding-left: 16px;
             vertical-align: middle;
