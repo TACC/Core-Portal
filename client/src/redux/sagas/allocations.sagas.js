@@ -3,7 +3,8 @@ import { flatten } from 'lodash';
 import { fetchUtil } from 'utils/fetchUtil';
 import 'cross-fetch';
 
-const getTeams = allocations => {
+const getTeams = data => {
+  const allocations = { active: data.active, inactive: data.inactive };
   const teams = flatten(Object.values(allocations)).reduce(
     (obj, item) => ({ ...obj, [item.projectId]: {} }),
     {}
@@ -16,26 +17,6 @@ const getTeams = allocations => {
 
   return { teams, loadingTeams };
 };
-
-export function* getAllocations(action) {
-  yield put({ type: 'START_ADD_ALLOCATIONS' });
-  try {
-    const { response } = yield call(fetchUtil, {
-      url: '/api/users/allocations/'
-    });
-    const { active, inactive } = response;
-    yield put({ type: 'ADD_ALLOCATIONS', payload: response });
-    yield put({
-      type: 'POPULATE_TEAMS',
-      payload: getTeams({
-        active,
-        inactive
-      })
-    });
-  } catch (error) {
-    yield put({ type: 'ADD_ALLOCATIONS_ERROR', payload: error });
-  }
-}
 
 const getTeamPayload = (id, obj, error = false, usageData = {}) => {
   const loading = { [id]: false };
@@ -54,9 +35,9 @@ const getTeamPayload = (id, obj, error = false, usageData = {}) => {
         const individualUsage = usageData.filter(
           val => val.username === username
         );
-        if (!individualUsage) {
-          return user;
-        }
+
+        if (!individualUsage) return user;
+
         return {
           ...user,
           usageData: individualUsage.map(val => ({
@@ -69,15 +50,52 @@ const getTeamPayload = (id, obj, error = false, usageData = {}) => {
   return { data, loading };
 };
 
+const getAllocationsUtil = async () => {
+  const res = await fetchUtil({
+    url: '/api/users/allocations/'
+  });
+  const json = res.response;
+  return json;
+};
+
+const getTeamsUtil = async team => {
+  const res = await fetchUtil({ url: `/api/users/team/${team}` });
+  const json = res.response;
+  return json;
+};
+
+const getUsageUtil = async params => {
+  const res = await fetchUtil({
+    url: `/api/users/team/usage/${params.id}`
+  });
+  const data = res.response
+    .map(user => {
+      return { ...user, resource: params.system.host };
+    })
+    .filter(Boolean);
+  return data;
+};
+
+export function* getAllocations(action) {
+  yield put({ type: 'START_ADD_ALLOCATIONS' });
+  try {
+    const json = yield call(getAllocationsUtil);
+    yield put({ type: 'ADD_ALLOCATIONS', payload: json });
+    yield put({
+      type: 'POPULATE_TEAMS',
+      payload: getTeams(json)
+    });
+  } catch (error) {
+    yield put({ type: 'ADD_ALLOCATIONS_ERROR', payload: error });
+  }
+}
+
 function* getUsernames(action) {
   try {
-    const res = yield call(fetchUtil, {
-      url: `/api/users/team/${action.payload.name}`
-    });
-    const json = res.response;
+    const json = yield call(getTeamsUtil, action.payload.name);
 
     const { allocationIds } = action.payload;
-    const usageCalls = allocationIds.map(params => usageUtil(params));
+    const usageCalls = allocationIds.map(params => getUsageUtil(params));
     const usage = yield all(usageCalls);
 
     const payload = getTeamPayload(
@@ -95,18 +113,6 @@ function* getUsernames(action) {
     });
   }
 }
-
-const usageUtil = async params => {
-  const res = await fetchUtil({
-    url: `/api/users/team/usage/${params.id}`
-  });
-  const data = res.response
-    .map(user => {
-      return { ...user, resource: params.system.host };
-    })
-    .filter(Boolean);
-  return data;
-};
 
 export function* watchAllocationData() {
   yield takeEvery('GET_ALLOCATIONS', getAllocations);
