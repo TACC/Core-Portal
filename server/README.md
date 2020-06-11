@@ -17,4 +17,6 @@ Any _`italic`_ directories are dynamically created, thus should be ignored by ve
 
 The `cms/media` & `cms/static` directories are read by the CMS that creates the website (and shared header). During local CMS development, you may update these directories to reflect CMS changes to the Portal.
 
+You may learn more about [How To Have Local Portal Use Local CMS](https://confluence.tacc.utexas.edu/x/OoC2C).
+
 The `./media` & `./static` directories are read by the _temporary_ CMS scaffold that hosts the Portal client app. They should not be manipulated during runtime. They will become moot when the Portal client app is hosted without a CMS scaffold.
