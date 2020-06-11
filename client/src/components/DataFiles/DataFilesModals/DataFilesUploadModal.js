@@ -95,8 +95,7 @@ const DataFilesUploadModal = () => {
     setUploadedFiles(files => [...files, ...newFiles]);
   };
 
-  const onRejectedFiles = rejectedFiles => {
-  };
+  const onRejectedFiles = rejectedFiles => {};
 
   return (
     <Modal
