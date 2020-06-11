@@ -3,10 +3,3 @@
   display: flex;
   align-items: center;
 }
-
-/* IMPORTANT: Only used by `Sidebar.scss`, but the intent is a global style */
-.icon-nav {
-  font-size: 1.2em; /* 16px design * 1.2 design-to-app ratio (rounded) */
-  display: flex;
-  height: 1em;
-}
