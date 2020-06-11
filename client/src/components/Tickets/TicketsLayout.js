@@ -85,9 +85,7 @@ function TicketsView() {
         <Link
           to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/${el.row.original.id}`}
         >
-          <Button color="link" id={`ticketSubject${el.row.index}`}>
-            <span title={el.value}>{el.value}</span>
-          </Button>
+          <span title={el.value}>{el.value}</span>
         </Link>
       )
     },
