@@ -350,7 +350,7 @@ module.exports = {
 
     // CUSTOM PROPERTY
     // Require or disallow an empty line before custom properties (Autofixable).
-    // 'custom-property-empty-line-before': null,
+    'custom-property-empty-line-before': null,
 
     // PROPERTY
     // Specify lowercase or uppercase for properties (Autofixable).
