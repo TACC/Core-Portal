@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -29,10 +29,8 @@ export function getStatusText(status) {
 function TicketsView() {
   const dispatch = useDispatch();
   const isLoading = useSelector(state => state.ticketList.loading);
-  const displayed = useSelector(state => state.ticketList.displayed);
   const tickets = useSelector(state => state.ticketList.content);
   const loadingError = useSelector(state => state.ticketList.loadingError);
-  const limit = 20;
   const noDataText = (
     <>
       No tickets. You can add a ticket{' '}
@@ -45,15 +43,6 @@ function TicketsView() {
       .
     </>
   );
-  useEffect(() => {
-    dispatch({ type: 'TICKET_LIST_MORE', params: { offset: 0, limit } });
-  }, [dispatch]);
-
-  const infiniteScrollCallback = useCallback(offset => {
-    if (offset < tickets.length) {
-      dispatch({ type: 'TICKET_LIST_MORE', params: { offset, limit } });
-    }
-  }, []);
 
   useEffect(() => {
     dispatch({ type: 'TICKET_LIST_FETCH' });
@@ -130,8 +119,7 @@ function TicketsView() {
   return (
     <InfiniteScrollTable
       tableColumns={columns}
-      tableData={tickets.slice(0, displayed)}
-      onInfiniteScroll={infiniteScrollCallback}
+      tableData={tickets}
       isLoading={isLoading}
       className="tickets-view"
       noDataText={noDataText}

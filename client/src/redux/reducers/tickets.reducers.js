@@ -1,6 +1,5 @@
 const initialTicketList = {
   content: [],
-  displayed: 0,
   loading: false,
   loadingError: false,
   loadingErrorMessage: ''
@@ -15,11 +14,6 @@ export function ticketList(state = initialTicketList, action) {
         loading: true,
         loadingError: false,
         loadingErrorMessage: ''
-      };
-    case 'TICKET_LIST_DISPLAY_UPDATE':
-      return {
-        ...state,
-        displayed: action.payload
       };
     case 'TICKET_LIST_FETCH_SUCCESS':
       return {

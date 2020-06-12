@@ -22,7 +22,6 @@ import watchSystemMonitor from './systemMonitor.sagas';
 import watchProfile from './profile.sagas';
 import {
   watchTicketListFetch,
-  watchTicketListMore,
   watchTicketDetailedView,
   watchTicketDetailedViewFetchHistory,
   watchTicketDetailedViewFetchSubject,
@@ -54,7 +53,6 @@ export default function* rootSaga() {
     watchPostTicketReply(),
     ...watchProfile,
     watchTicketListFetch(),
-    watchTicketListMore(),
     watchTicketDetailedView(),
     watchTicketDetailedViewFetchHistory(),
     watchTicketDetailedViewFetchSubject(),
