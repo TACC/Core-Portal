@@ -94,14 +94,11 @@ ul#appBrowser-sidebar {
 
 .app-icon,
 .category-icon {
-  /* Styles copied from .side-nav-icon because:
-     - CSS architecture does not facilitate `@extend`
-     - CSS modules not available yet to provide `composes`
-     - Styles of `.side-nav-icon` match prupose (though name does not) */
+  /* Styles copied from `.icon` */
+  /* FP-455: Do not duplicate styles */
   width: 1em;
   font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
   vertical-align: middle;
-
-  /* FP-130: Should delete this line */
-  &[class*="icon-"]::before { display: block; }
+  display: inline-flex; /* `flex` to align `::before`; `inline` to not trigger new line */
+                        /* a modern slimmer alternative to `&::before { display: block; }` */
 }
