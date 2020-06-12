@@ -75,7 +75,7 @@ const DataFilesSidebar = () => {
                   <FontAwesomeIcon
                     icon={faDesktop}
                     size="1x"
-                    className="side-nav-icon"
+                    className="icon"
                   />
                   <span className="nav-text">My Data</span>
                 </span>
