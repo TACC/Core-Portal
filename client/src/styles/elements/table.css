@@ -1,0 +1,5 @@
+/* ELEMENTS: Table */
+
+/* TODO: Extract global table element styles to here */
+/* IDEA: Wait until after all `react-table-6` tables use `react-table-7`,
+         so there is less to break in the UI and less to juggle in the mind */

@@ -1,45 +1,54 @@
-.InfiniteScrollTable {
+/* Every one of these tables must have a fixed header (composition requires a class name) */
+.root { composes: o-fixed-header-table from '../../../styles/objects/o-fixed-header-table.css'; }
+.body { composes: o-fixed-header-table__body from '../../../styles/objects/o-fixed-header-table.css'; }
+.row  { composes: o-fixed-header-table__row from '../../../styles/objects/o-fixed-header-table.css'; }
+
+.root {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
-  /* TODO: After, FP-103, use `composes:` not `@extend` */
-  @extend .o-fixed-header-table;
 
   position: relative;
-  align-items: stretch;
   width: 100%;
-  overflow: scroll;
   border-bottom: 1px solid #707070;
   max-height: inherit; /* inherit max-height from parent wrapper */
 
   thead {
+    /* TODO: After all tables use `react-table-7`, move these styles to `elements/table.css` for `thead`? */
     user-select: none;
-    color: #707070;
-    border-bottom: 1px solid #707070;
+    color: var(--global-color-primary--dark);
+    border-bottom: 1px solid var(--global-color-primary--dark);
 
-    .-sort-asc, .sort-desc {
-      color: #484848;
-    }
-
-    /* Match horizontal padding of `td` elements in table to align properly */
     th {
+      /* Match horizontal padding of `td` elements in table to align properly */
       padding-left: var(--cell-horizontal-padding);
       padding-right: var(--cell-horizontal-padding);
+
+      /* TODO: Revisit when sorting is available */
+      /*
+      &.-sort-asc,
+      &.-sort-desc {
+        color: #484848;
+      }
+      */
     }
   }
 
   tbody {
-    overflow-y: scroll;
-    tr:not([class=-status]) {
+    /* TODO: After all tables use `react-table-7`, move these styles to `elements/table.css` for `thead`? */
+    /* TODO: Design should define colors instead of opacity, these should use variables */
+    tr {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
-
-    tr:nth-child(odd):not([class=-status]) {
+    tr:nth-child(even) {
       background-color: rgba(0, 0, 0, 0.03);
     }
-    tr:hover:not([class=-status]) {
+
+    tr:not(.status):hover {
       background-color: rgba(0, 0, 0, 0.05);
     }
 
     td {
+      /* TODO: After all tables use `react-table-7`,
+               move these styles to `elements/table.css` for `thead`? */
       display: flex;
       align-content: center;
       padding: 0.5em var(--cell-horizontal-padding);
@@ -49,90 +58,18 @@
       white-space: nowrap;
 
       /* Contain children to cell size and add ellipsis to overflow by default */
-      >:only-child {
+      /* WARNING: Unexpected behavior with child text nodes `<td>…<a>…</a>…</td>` */
+      & > :only-child {
         overflow: hidden;
         text-overflow: ellipsis;
       }
     }
-
-    .-status {
-      width: 100%;
-      display:block;
-      box-sizing:border-box;
-      td {
-        /* FAQ: Because widths can be defined by component that uses this one,
-                and those width might not use a class, we must overwrite it */
-        width: 100% !important /* override allowed `td:nth-child(N)` width */;
-
-        padding-top: 0.5em;
-        padding-bottom: 0.5em;
-        text-align: justify;
-        display:block;
-        box-sizing:border-box;
-        clear: both;
-      }
-    }
-    .-status__message {
-      text-align: center;
-    }
-  }
-  /* Allow `.o-fixed-header-table td` width to apply to common inline elements */
-  /* Allow `.u-ellipsis` usage to have effect on common inline elements */
-  & td > a,
-  & td > span {
-    display: inline-block;
-
-    /* Stretch cell content to fit available space */
-    /* WARNING: Unexpected behavior with child text nodes `<td>…<a>…</a>…</td>` */
-    width: 100%;
   }
 }
 
-
-
-
-
-/*
-Fixed Header Table
-
-A table with a header that does not move, and a body that scrolls.
-
-> __Warning__: This forces table to become a fixed layout, and requires manually calculated column widths
-
-Markup:
-<table class="fixed-header-table">
-    <thead>
-      <tr>
-        <th>A</th>
-        <th>B</th>
-        <th>C</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>A</td>
-        <td>B</td>
-        <td>C</td>
-      </tr>
-    </thead>
-</table>
-
-Styleguide Objects.FixedHeaderTable
-*/
-.o-fixed-header-table {
-  table-layout: fixed;
-  border-collapse: collapse;
-}
-
-/* Make table rows act like table rows, even though `tbody` has become a block */
-.o-fixed-header-table tr {
-  display: flex;
-  flex-direction: row;
-}
-/* Allow table body to scroll (which also pins the table head in place) */
-.o-fixed-header-table tbody {
+.status {
   display: block;
-  overflow: auto;
-  width: 100%;
-  max-height: inherit; /* inherit max-height from InfiniteScrollTable */
+}
+.status__message {
+  text-align: center;
 }
