@@ -1,8 +1,3 @@
-/* Every one of these tables must have a fixed header (composition requires a class name) */
-.root { composes: o-fixed-header-table from '../../../styles/objects/o-fixed-header-table.css'; }
-.body { composes: o-fixed-header-table__body from '../../../styles/objects/o-fixed-header-table.css'; }
-.row  { composes: o-fixed-header-table__row from '../../../styles/objects/o-fixed-header-table.css'; }
-
 .root {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
 

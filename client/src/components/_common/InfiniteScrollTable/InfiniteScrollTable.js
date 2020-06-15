@@ -51,6 +51,8 @@ const InfiniteScrollTable = ({
   className,
   noDataText
 }) => {
+  // tableData = [];
+  // isLoading = true;
   const columns = React.useMemo(() => tableColumns, []);
   const data = React.useMemo(() => tableData, [tableData]);
 
@@ -74,22 +76,29 @@ const InfiniteScrollTable = ({
     <table
       {...getTableProps()}
       styleName="root"
-      className={`${className} InfiniteScrollTable o-fixed-header-table`}
+      className={`${className}  o-fixed-header-table`}
     >
       <thead>
         {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()} styleName="row">
+          <tr
+            {...headerGroup.getHeaderGroupProps()}
+            className="o-fixed-header-table__row"
+          >
             {headerGroup.headers.map(column => (
               <th {...column.getHeaderProps()}>{column.render('Header')}</th>
             ))}
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()} onScroll={onScroll} styleName="body">
+      <tbody
+        {...getTableBodyProps()}
+        onScroll={onScroll}
+        className="o-fixed-header-table__body"
+      >
         {rows.map(row => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()} styleName="row">
+            <tr {...row.getRowProps()} className="o-fixed-header-table__row">
               {row.cells.map(cell => {
                 return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
               })}

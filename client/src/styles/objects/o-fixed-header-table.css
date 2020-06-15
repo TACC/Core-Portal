@@ -3,7 +3,7 @@ Fixed Header Table
 
 A table with a header that does not move, and a body that scrolls.
 
-> __Warning__: This forces table to become a fixed layout, and requires manually calculated column widths
+> __Warning__: This forces table to become a fixed layout, and requires manually-calculated column widths
 
 Markup:
 <table class="fixed-header-table">
