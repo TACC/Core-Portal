@@ -2,7 +2,7 @@ import React from 'react';
 import { useTable } from 'react-table';
 import PropTypes from 'prop-types';
 import LoadingSpinner from '../LoadingSpinner';
-import './InfiniteScrollTable.scss';
+import './InfiniteScrollTable.module.scss';
 
 const rowContentPropType = PropTypes.oneOfType([
   PropTypes.string,
