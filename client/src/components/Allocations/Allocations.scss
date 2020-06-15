@@ -138,6 +138,20 @@
         font-size: 11px;
     }
 }
+.usage-table {
+    tbody{
+        tr {
+            td{
+                padding: 0.25rem;
+                vertical-align: middle;
+            }
+        }
+        tr:nth-child(odd) {
+            background-color: rgba(112, 112, 112, 0.1);
+        }
+    }
+    
+}
 #pending {
     @extend .allocations-table;
 }
@@ -187,9 +201,9 @@
     .modal-right {
         display: flex;
         padding: 1em;
-        max-width: 500px;
         overflow: auto;
         .contact-card {
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             font: 16px Roboto, sans-serif;

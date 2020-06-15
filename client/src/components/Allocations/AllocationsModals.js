@@ -183,13 +183,14 @@ export const ContactCard = ({ listing }) => {
   const { firstName, lastName, email, username } = listing;
   return (
     <div className="contact-card">
-      <div>
+      <div className="contact-card-item">
         <strong>
           {capitalize(firstName)} {capitalize(lastName)} <br />
         </strong>
       </div>
-      <div>Username: {username}</div>
-      <div>Email: {email}</div>
+      <div className="contact-card-item">
+        Username: {username} | Email: {email}
+      </div>
       {!isEmpty(listing.usageData) && (
         <UsageTable rawData={listing.usageData} />
       )}
@@ -209,38 +210,58 @@ export const UsageTable = ({ rawData }) => {
         accessor: 'resource'
       },
       { Header: 'Usage', accessor: 'usage' },
-      { Header: '% of Allocation' }
+      {
+        Header: '% of Allocation',
+        accessor: entry => {
+          if (entry.percentUsed >= 1) {
+            return `${entry.percentUsed}%`;
+          }
+          return `< 1%`;
+        }
+      }
     ],
     [rawData]
   );
-  const { getTableBodyProps, rows, prepareRow, headerGroups } = useTable({
+  const {
+    getTableBodyProps,
+    rows,
+    prepareRow,
+    headerGroups,
+    getTableProps
+  } = useTable({
     columns,
     data
   });
   return (
-    <Table striped hover>
-      <thead>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
-              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map(row => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map(cell => (
-                <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+    <div className="allocations-table">
+      <table
+        {...getTableProps({
+          className: 'usage-table'
+        })}
+      >
+        <thead>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
               ))}
             </tr>
-          );
-        })}
-      </tbody>
-    </Table>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map(row => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 };
 UsageTable.propTypes = {
