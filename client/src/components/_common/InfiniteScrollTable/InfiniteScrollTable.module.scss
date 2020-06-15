@@ -30,7 +30,7 @@
   tbody {
     /* TODO: After all tables use `react-table-7`, move these styles to `elements/table.css` for `thead`? */
     /* TODO: Design should define colors instead of opacity, these should use variables */
-    tr {
+    tr:not(:only-child) {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
     tr:nth-child(even) {
