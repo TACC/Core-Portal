@@ -31,20 +31,24 @@ const rowContentPropType = PropTypes.oneOfType([
   PropTypes.oneOf([React.Fragment])
 ]);
 
-const InfiniteScrollLoadingRow = ({ isLoading }) => {
+const InfiniteScrollLoadingRow = ({ isLoading, hasData }) => {
   if (!isLoading) {
     return null;
   }
+
+  const placement = hasData ? 'inline' : 'section';
+
   return (
     <tr className="-status">
       <td>
-        <LoadingSpinner />
+        <LoadingSpinner placement={placement} />
       </td>
     </tr>
   );
 };
 InfiniteScrollLoadingRow.propTypes = {
-  isLoading: PropTypes.bool.isRequired
+  isLoading: PropTypes.bool.isRequired,
+  hasData: PropTypes.bool.isRequired
 };
 
 const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
@@ -121,7 +125,7 @@ const InfiniteScrollTable = ({
             </tr>
           );
         })}
-        <InfiniteScrollLoadingRow isLoading={isLoading} />
+        <InfiniteScrollLoadingRow isLoading={isLoading} hasData={hasData} />
         <InfiniteScrollNoDataRow
           display={!isLoading && !hasData}
           noDataText={noDataText}
