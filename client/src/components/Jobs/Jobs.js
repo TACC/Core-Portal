@@ -53,9 +53,13 @@ function JobsView() {
       Header: 'Job Name',
       accessor: 'name',
       Cell: el => (
-        <>
+        <span
+          title={el.value}
+          id={`jobID${el.row.index}`}
+          className="job__name"
+        >
           {el.value}
-        </>
+        </span>
       )
     },
     {

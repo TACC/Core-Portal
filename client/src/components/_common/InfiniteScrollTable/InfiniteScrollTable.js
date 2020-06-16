@@ -51,8 +51,6 @@ const InfiniteScrollTable = ({
   className,
   noDataText
 }) => {
-  // tableData = [];
-  // isLoading = true;
   const columns = React.useMemo(() => tableColumns, []);
   const data = React.useMemo(() => tableData, [tableData]);
 
