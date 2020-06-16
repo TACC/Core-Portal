@@ -207,7 +207,15 @@ export const UsageTable = ({ rawData }) => {
     () => [
       {
         Header: 'System',
-        accessor: 'resource'
+        accessor: entry => {
+          const system = entry.resource.split('.')[0];
+          const sysNum = system.match(/\d+$/);
+          const sysName = capitalize(system.replace(/[0-9]/g, ''));
+          if (sysNum) {
+            return `${sysName} ${sysNum[0]}`;
+          }
+          return sysName;
+        }
       },
       { Header: 'Usage', accessor: 'usage' },
       {
