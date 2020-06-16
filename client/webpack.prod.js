@@ -20,7 +20,31 @@ module.exports = merge(common, {
   module: {
     rules: [
       {
-        test: /\.s?[ac]ss$/i,
+        test: /^(.)*\.module\.(css|sass|scss)$/i,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              modules: {
+                localIdentName: '[name]__[local]--[hash:base64:10]'
+              },
+              localsConvention: 'camelCase'
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true
+            }
+          }
+        ]
+      },
+      {
+        test: /^((?!\.module).)*\.(css|sass|scss)$/i,
         use: [
           {
             loader: MiniCssExtractPlugin.loader

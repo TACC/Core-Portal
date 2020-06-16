@@ -36,7 +36,30 @@ module.exports = merge.smart(common, {
   module: {
     rules: [
       {
-        test: /\.s?[ac]ss$/i,
+        test: /^(.)*\.module\.(css|sass|scss)$/i,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              modules: {
+                localIdentName: '[name]__[local]--[hash:base64:10]'
+              }
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true
+            }
+          }
+        ]
+      },
+      {
+        test: /^((?!\.module).)*\.(css|sass|scss)$/i,
         use: [
           {
             loader: 'style-loader'
