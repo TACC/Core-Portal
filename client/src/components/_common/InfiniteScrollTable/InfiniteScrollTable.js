@@ -15,8 +15,8 @@ const InfiniteScrollLoadingRow = ({ isLoading }) => {
     return null;
   }
   return (
-    <tr styleName="status">
-      <td>
+    <tr styleName="status status--is-loading">
+      <td styleName="status__message">
         <LoadingSpinner placement="inline" />
       </td>
     </tr>
@@ -31,9 +31,9 @@ const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
     return null;
   }
   return (
-    <tr styleName="status">
-      <td>
-        <span styleName="status__message">{noDataText}</span>
+    <tr styleName="status status--no-data">
+      <td styleName="status__message  cell cell--has-text-nodes">
+        {noDataText}
       </td>
     </tr>
   );
@@ -100,7 +100,11 @@ const InfiniteScrollTable = ({
           return (
             <tr {...row.getRowProps()} className="o-fixed-header-table__row">
               {row.cells.map(cell => {
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                return (
+                  <td {...cell.getCellProps()} styleName="cell">
+                    {cell.render('Cell')}
+                  </td>
+                );
               })}
             </tr>
           );

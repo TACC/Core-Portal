@@ -43,16 +43,3 @@ Styleguide Objects.FixedHeaderTable
   width: 100%;
   max-height: inherit; /* inherit max-height from InfiniteScrollTable */
 }
-
-/* For common inline elements:
-    - Allow `.o-fixed-header-table td` width to have effect on cell content
-    - Allow `text-overflow` to have effect on cell content
-*/
-.o-fixed-header-table__body td > a,
-.o-fixed-header-table__body td > span {
-  display: inline-block;
-
-  /* Stretch cell content to fit available space */
-  /* WARNING: Unexpected behavior with child text nodes `<td>…<a>…</a>…</td>` */
-  width: 100%;
-}

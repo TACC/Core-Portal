@@ -1,5 +1,17 @@
+@import '../../../styles/tools/mixins.scss';
+
 .root {
-  --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
+  --cell-horizontal-padding: 0.35em; /* for inter-column buffer */
+  --cell-vertical-padding: 8px; /* for row size */
+  --row-height: 37px; /* 16px design * 1.2 design-to-app ratio (rounded) */
+
+  /* FAQ: This manually-calculated value equals the auto-calculated value (21px),
+          but only until units are refactored and font-sizes are fixed. See
+          https://confluence.tacc.utexas.edu/x/PoCiCQ */
+  --line-height: calc(
+    var(--row-height)
+    - (var(--cell-vertical-padding) * 2)
+  );
 
   position: relative;
   width: 100%;
@@ -30,7 +42,7 @@
   tbody {
     /* TODO: After all tables use `react-table-7`, move these styles to `elements/table.css` for `thead`? */
     /* TODO: Design should define colors instead of opacity, these should use variables */
-    tr:not(:only-child) {
+    tr:not(:last-child) {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
     tr:nth-child(even) {
@@ -40,31 +52,42 @@
     tr:not(.status):hover {
       background-color: rgba(0, 0, 0, 0.05);
     }
-
-    td {
-      /* TODO: After all tables use `react-table-7`,
-               move these styles to `elements/table.css` for `thead`? */
-      display: flex;
-      align-content: center;
-      padding: 0.5em var(--cell-horizontal-padding);
-      margin: auto 0; /* vertically center span content */
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-
-      /* Contain children to cell size and add ellipsis to overflow by default */
-      /* WARNING: Unexpected behavior with child text nodes `<td>…<a>…</a>…</td>` */
-      & > :only-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
   }
+}
+
+.cell {
+  padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
+  line-height: var(--line-height);
+  white-space: nowrap;
+  overflow: hidden; /* contain children to cell width (needed because of `white-space: nowrap`) */
+  text-overflow: ellipsis; /* requires display: block */
+
+  /* WARNING: Child text nodes cause unexpected behavior, example:
+              `<td>You can <a>do some action</a> to get some result.</td>`;
+              The `<a>do some action</a>` appears on its own line.
+              If this use case comes, then add class `cell--has-text-nodes` */
+  &:not(.cell--has-text-nodes) > :only-child {
+    @include truncate-with-ellipsis;
+    display: block;
+  }
+}
+.cell--has-text-nodes {
+  display: inline-block;
+  width: 100%;
 }
 
 .status {
   display: block;
 }
-.status__message {
+.status--no-data .status__message {
   text-align: center;
+}
+.status--is-loading .status__message {
+  --loading-icon-height: 24px; /* or 1.5rem (given root font-size of 16px) */
+  --vertical-buffer: calc( (var(--row-height) - var(--loading-icon-height)) / 2);
+
+  display: block;
+  /* Ensure height matches other rows (loading icon is taller than line-height) */
+  padding-top: var(--vertical-buffer);
+  padding-bottom: var(--vertical-buffer);
 }

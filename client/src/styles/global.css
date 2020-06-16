@@ -7,6 +7,7 @@
 @import url('./settings/border.css');
 
 /* TOOLS */
+/* NOTE: For the most part, allow React components to explicitely import as needed */
 /* … */
 
 /* GENERIC */
