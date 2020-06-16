@@ -1,13 +1,14 @@
 {# @var className, user #}
 
-{# Copied by https://gitlab.tacc.utexas.edu/wma-cms/frontera-cms/blob/master/taccsite_cms/templates/nav_branding_partials/nav.branding.frontera.v2.html #}
-{# Copied by https://bitbucket.org/taccaci/frontera-tech-docs/src/staging/frontera_theme/header.html #}
+{# WARNING: Some markup is duplicated in other repositories #}
+{# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
 <ul class="s-portal-nav  {{ className }}">
   {% if user.is_authenticated %}
   <div class="navbar-nav">
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fas fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
+        <i class="fas fa-user-circle fa-lg nav-icon"></i>
+        {{ user.get_username }}
         <span class="sr-only">Toggle Dropdown</span>
       </a>
       <div class="dropdown-menu dropdown-menu-right">
@@ -25,10 +26,9 @@
   </div>
   {% else %}
   <li class="nav-item">
-    <a class="nav-link" role="button" href="{% url 'portal_auth:agave_oauth' %}">
+    <a class="nav-link" href="{% url 'portal_auth:agave_oauth' %}">
       <i class="fas fa-sign-in-alt nav-icon"></i> Log in
     </a>
   </li>
   {% endif %}
-  <!-- end of user logged in/not logged in if -->
 </ul>
