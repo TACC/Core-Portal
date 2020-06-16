@@ -8,14 +8,11 @@
   /* FAQ: This manually-calculated value equals the auto-calculated value (21px),
           but only until units are refactored and font-sizes are fixed. See
           https://confluence.tacc.utexas.edu/x/PoCiCQ */
-  --line-height: calc(
-    var(--row-height)
-    - (var(--cell-vertical-padding) * 2)
-  );
+  --line-height: calc( var(--row-height) - (var(--cell-vertical-padding) * 2) );
 
   position: relative;
   width: 100%;
-  border-bottom: 1px solid #707070;
+  border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
   max-height: inherit; /* inherit max-height from parent wrapper */
 
   thead {
@@ -41,7 +38,7 @@
 
   tbody {
     /* TODO: After all tables use `react-table-7`, move these styles to `elements/table.css` for `thead`? */
-    /* TODO: Design should define colors instead of opacity, these should use variables */
+    /* TODO: Design should define colors instead of opacity, and then these should use variables */
     tr:not(:last-child) {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
@@ -59,21 +56,21 @@
   padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
   line-height: var(--line-height);
   white-space: nowrap;
-  overflow: hidden; /* contain children to cell width (needed because of `white-space: nowrap`) */
-  text-overflow: ellipsis; /* requires display: block */
+  overflow: hidden; /* contain children to cell width (needed because `white-space: nowrap`) */
+  text-overflow: ellipsis;
 
   /* WARNING: Child text nodes cause unexpected behavior, example:
-              `<td>You can <a>do some action</a> to get some result.</td>`;
-              The `<a>do some action</a>` appears on its own line.
+              In `<td>You can <a>do some action</a> to get some result.</td>`,
+              the `<a>do some action</a>` would appear on its own line.
               If this use case comes, then add class `cell--has-text-nodes` */
   &:not(.cell--has-text-nodes) > :only-child {
     @include truncate-with-ellipsis;
-    display: block;
+    display: block; /* allow ellipsis (from `@include`) *//* stretch cell width */
   }
 }
 .cell--has-text-nodes {
-  display: inline-block;
-  width: 100%;
+  display: inline-block; /* allow `width: 100%` to have effect */
+  width: 100%; /* stretch cell width */
 }
 
 .status {
