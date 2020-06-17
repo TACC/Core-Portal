@@ -1,15 +1,7 @@
-{% load menu_tags cms_tags staticfiles %}
-
-{% comment %}
-Unused Settings
-===
-These settings were used before 2020-01 consolidation of Portal & CMS header.
-They seem useful, and would be re-incoprorated when their usage is necessary.
-
-- settings.PORTAL_NAVBAR_BACKGROUND_FILENAME
-- settings.PORTAL_LOGO_FILENAME
-- settings.PORTAL_NAMESPACE
-{% endcomment %}
+{# NOTE: Removed references to unused settings #}
+{# NOTE: Template includes differs slightly from CMS #}
+{# WARNING: Some markup is duplicated in other repositories #}
+{# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
 
 <!-- Sponsor Logos -->
 <div class="branding-header">
@@ -28,7 +20,7 @@ They seem useful, and would be re-incoprorated when their usage is necessary.
 <nav id="s-header" class="s-header  navbar navbar-expand-lg navbar-dark">
   <!-- Branding Logos -->
   <a class="navbar-brand" href="/">
-    <img class="nav-logo-double nav-logo-frontera-double" src="/static/site_cms/images/org_logos/frontera-white-solo.png" crossorigin="anonymous">
+    <img src="/static/site_cms/images/org_logos/frontera-white-solo.png" alt="Portal Logo" class="nav-logo-double nav-logo-frontera-double" crossorigin="anonymous">
   </a>
   <!-- Navbar Accordian Toggle on Small Screens  -->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,61 +28,8 @@ They seem useful, and would be re-incoprorated when their usage is necessary.
   </button>
   <!-- Navbar Links -->
   <div class="collapse navbar-collapse" id="navbarsExpandTarget">
-    <ul class="s-cms-nav  navbar-nav" id="cms-nav-pages" data-cms-nav-endpoint="/cms/nav/pages/markup/">
-      <!-- All top-level CMS controlled nav elements handled here. -->
-    </ul>
+    {% include "./navigation/cms.html" with className="navbar-nav" only %}
 
-    {# Duplicated at https://gitlab.tacc.utexas.edu/wma-cms/frontera-cms/blob/master/taccsite_cms/templates/nav_branding_partials/nav.branding.frontera.v2.html #}
-    {# Duplicated at https://bitbucket.org/taccaci/frontera-tech-docs/src/staging/frontera_theme/header.html #}
-    <ul class="s-portal-nav  navbar-nav navbar-right  ml-auto">
-      {% if user.is_authenticated %}
-      <div class="navbar-nav">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
-            <span class="sr-only">Toggle Dropdown</span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="{% url 'workbench:dashboard' %}">
-              <i class="fas fa-desktop nav-icon"></i> My Dashboard
-            </a>
-            <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
-              <i class="fas fa-user-circle nav-icon"></i> My Account
-            </a>
-            <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">
-              <i class="fas fa-sign-out-alt nav-icon"></i> Log Out
-            </a>
-          </div>
-        </li>
-      </div>
-      {% else %}
-      <li class="nav-item">
-        <a class="nav-link" role="button" href="{% url 'portal_auth:agave_oauth' %}">
-          <i class="fas fa-sign-in-alt nav-icon"></i> Log in
-        </a>
-      </li>
-      {% endif %}
-      <!-- end of user logged in/not logged in if -->
-    </ul>
+    {% include "./navigation/portal.html" with className="navbar-nav navbar-right  ml-auto" user=user only %}
   </div>
 </nav>
-<script>
-  function includeCMSPagesHTML() {
-    const cmsPagesElement = document.getElementById("cms-nav-pages");
-    cmsPagesEndpoint = cmsPagesElement.dataset.cmsNavEndpoint;
-    if (cmsPagesEndpoint) {
-      fetch(cmsPagesEndpoint).then((response) => {
-        return response.text();
-      }).then((data) => {
-        cmsPagesElement.innerHTML = data;
-      }, (err) => {
-        cmsPagesElement.innerHTML = null;
-      }).finally(() => {
-        cmsPagesElement.removeAttribute("data-cms-nav-endpoint");
-      });
-    }
-  }
-</script>
-<script>
-  includeCMSPagesHTML();
-</script>
