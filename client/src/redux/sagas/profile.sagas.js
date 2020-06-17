@@ -41,7 +41,6 @@ export function* getFormFields(action) {
 
 export function* changePassword(action) {
   yield put({ type: 'CHECKING_PASSWORD' });
-  yield call(action.callback, {});
   try {
     yield call(fetchUtil, {
       url: `${ROOT_SLUG}/change-password/`,
@@ -49,7 +48,6 @@ export function* changePassword(action) {
       body: JSON.stringify(action.values)
     });
     yield put({ type: 'CHECKED_PASSWORD' });
-    yield call(action.callback, { reset: true });
     yield put({ type: 'CHANGED_PASSWORD' });
   } catch (error) {
     yield put({ type: 'CHECKED_PASSWORD' });
