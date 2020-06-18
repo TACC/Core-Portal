@@ -126,6 +126,7 @@ const DataFilesCopyModal = React.memo(() => {
                 data={files.filter(f => f.format === 'folder')}
                 operationName="Copy"
                 operationCallback={copyCallback}
+                operationOnlyForFolders
                 disabled={disabled}
               />
             </div>

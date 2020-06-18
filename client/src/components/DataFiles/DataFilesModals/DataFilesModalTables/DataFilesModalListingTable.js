@@ -50,11 +50,15 @@ const DataFilesModalButtonCell = ({
   format,
   operationName,
   operationCallback,
+  operationOnlyForFolders,
   disabled
 }) => {
   const onClick = () => operationCallback(system, path);
+  const formatSupportsOperation = operationOnlyForFolders
+    ? format === 'folder'
+    : true;
   return (
-    format === 'folder' && (
+    formatSupportsOperation && (
       <span>
         <Button
           disabled={disabled}
@@ -73,6 +77,7 @@ DataFilesModalButtonCell.propTypes = {
   format: PropTypes.string.isRequired,
   operationName: PropTypes.string.isRequired,
   operationCallback: PropTypes.func.isRequired,
+  operationOnlyForFolders: PropTypes.bool.isRequired,
   disabled: PropTypes.bool.isRequired
 };
 
@@ -80,6 +85,7 @@ const DataFilesModalListingTable = ({
   data,
   operationName,
   operationCallback,
+  operationOnlyForFolders,
   disabled
 }) => {
   const dispatch = useDispatch();
@@ -117,6 +123,7 @@ const DataFilesModalListingTable = ({
         format={format}
         operationName={operationName}
         operationCallback={operationCallback}
+        operationOnlyForFolders={operationOnlyForFolders}
         disabled={disabled}
       />
     ),
@@ -174,7 +181,13 @@ DataFilesModalListingTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   operationName: PropTypes.string.isRequired,
   operationCallback: PropTypes.func.isRequired,
-  disabled: PropTypes.bool.isRequired
+  disabled: PropTypes.bool,
+  operationOnlyForFolders: PropTypes.bool
+};
+
+DataFilesModalListingTable.defaultProps = {
+  disabled: false,
+  operationOnlyForFolders: false
 };
 
 export default DataFilesModalListingTable;
