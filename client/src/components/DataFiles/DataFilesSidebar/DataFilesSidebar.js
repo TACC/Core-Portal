@@ -71,14 +71,14 @@ const DataFilesSidebar = () => {
                 to={`${match.path}/tapis/private/`}
                 activeClassName="active"
               >
-                <div className="nav-content">
+                <span className="nav-content">
                   <FontAwesomeIcon
                     icon={faDesktop}
                     size="1x"
-                    className="side-nav-icon"
+                    className="icon"
                   />
                   <span className="nav-text">My Data</span>
-                </div>
+                </span>
               </NavLink>
             </NavItem>
           </Nav>

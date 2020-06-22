@@ -2,7 +2,8 @@ import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
-import './Sidebar.scss';
+import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
+import './Sidebar.module.scss';
 
 /** A navigation list for the application */
 const Sidebar = () => {
@@ -11,17 +12,18 @@ const Sidebar = () => {
   // use path to allow History only in local development (cep.dev)
   const fullPath = window.location.href;
   return (
-    <Nav id="sidebar" className="side-nav" vertical>
+    <Nav styleName="root" vertical>
       <NavItem>
         <NavLink
           tag={RRNavLink}
           exact
           to={`${path}${ROUTES.DASHBOARD}`}
-          activeClassName="active"
+          styleName="link"
+          activeStyleName="link--active"
         >
-          <div className="nav-content">
-            <i className="icon-nav icon-nav-dashboard" />
-            <span className="nav-text">Dashboard</span>
+          <div styleName="content" className="nav-content">
+            <i className="icon icon-nav-dashboard" />
+            <span styleName="text">Dashboard</span>
           </div>
         </NavLink>
       </NavItem>
@@ -29,11 +31,12 @@ const Sidebar = () => {
         <NavLink
           tag={RRNavLink}
           to={`${path}${ROUTES.DATA}`}
-          activeClassName="active"
+          styleName="link"
+          activeStyleName="link--active"
         >
-          <div className="nav-content">
-            <i className="icon-nav icon-nav-folder" />
-            <span className="nav-text">Data Files</span>
+          <div styleName="content" className="nav-content">
+            <i className="icon icon-nav-folder" />
+            <span styleName="text">Data Files</span>
           </div>
         </NavLink>
       </NavItem>
@@ -41,11 +44,12 @@ const Sidebar = () => {
         <NavLink
           tag={RRNavLink}
           to={`${path}${ROUTES.APPLICATIONS}`}
-          activeClassName="active"
+          styleName="link"
+          activeStyleName="link--active"
         >
-          <div className="nav-content">
-            <i className="icon-nav icon-nav-application" />
-            <span className="nav-text">Applications</span>
+          <div styleName="content" className="nav-content">
+            <i className="icon icon-nav-application" />
+            <span styleName="text">Applications</span>
           </div>
         </NavLink>
       </NavItem>
@@ -53,11 +57,12 @@ const Sidebar = () => {
         <NavLink
           tag={RRNavLink}
           to={`${path}${ROUTES.ALLOCATIONS}`}
-          activeClassName="active"
+          styleName="link"
+          activeStyleName="link--active"
         >
-          <div className="nav-content">
-            <i className="icon-nav icon-nav-allocation" />
-            <span className="nav-text">Allocations</span>
+          <div styleName="content" className="nav-content">
+            <i className="icon icon-nav-allocation" />
+            <span styleName="text">Allocations</span>
           </div>
         </NavLink>
       </NavItem>

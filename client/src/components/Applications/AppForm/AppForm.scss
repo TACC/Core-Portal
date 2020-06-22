@@ -19,15 +19,14 @@
 #appForm-wrapper {
     overflow-y: scroll;
     display: flex;
-    flex-grow: 1;
     padding: 0 40px 0 30px;
-    flex: .7 1 0;
+    flex: 0.7 1 0;
     max-width: 780px;
     flex-direction: column;
 }
 
 .appInfo-wrapper {
-    flex: .5 1 0;
+    flex: 0.5 1 0;
     max-width: 400px;
     border-right: 1px solid #989898;
     padding-right: 30px;
@@ -45,6 +44,11 @@
 .appInfo-documentation {
     display: flex;
     align-items: center;
+}
+
+.appForm-textInput label,
+.appForm-select label {
+    font-weight: bold;
 }
 
 .appSchema-header {
