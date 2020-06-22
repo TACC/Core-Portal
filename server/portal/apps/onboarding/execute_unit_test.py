@@ -19,53 +19,39 @@ from portal.apps.onboarding.execute import (
     new_user_setup_check,
     StepExecuteException
 )
-from unittest import skip
 import pytest
 
 
-@pytest.mark.django_db(transaction=True)
-class TestLogSetupState(TestCase):
-    def setUp(self):
-        super(TestLogSetupState, self).setUp()
+pytestmark = pytest.mark.django_db
 
-        # Patch the SetupEvent model, since it requires a
-        # Postgres backend and the test settings use SQLite
-        self.setup_event_patcher = patch('portal.apps.onboarding.execute.SetupEvent')
-        self.mock_setup_event = self.setup_event_patcher.start()
 
-    def tearDown(self):
-        super(TestLogSetupState, self).tearDown()
-        self.setup_event_patcher.stop()
+@pytest.fixture
+def mock_event_create(mocker):
+    yield mocker.patch('portal.apps.onboarding.execute.SetupEvent.objects.create', autospec=True)
 
-    def test_log_setup_state_complete(self):
-        # Create a test user
-        test_user = get_user_model().objects.create_user('test', 'test@user.com', 'test')
 
-        # Set the test user's setup_complete to True
-        test_user.profile = PortalProfile.objects.create(user=test_user, setup_complete=True)
+def test_log_setup_state_complete(authenticated_user, mock_event_create):
+    authenticated_user.profile.setup_complete = True
+    log_setup_state(authenticated_user, "test message")
+    mock_event_create.assert_called_with(
+        user=authenticated_user,
+        step="portal.apps.onboarding.execute.execute_setup_steps",
+        state=SetupState.COMPLETED,
+        message="test message",
+        data={"setup_complete": True}
+    )
 
-        log_setup_state(test_user, "test message")
 
-        # A setup event should have been created
-        self.mock_setup_event.objects.create.assert_called_with(
-            user=test_user,
-            step="portal.apps.onboarding.execute.execute_setup_steps",
-            state=SetupState.COMPLETED,
-            message="test message",
-            data={"setup_complete": True}
-        )
-
-    def test_log_setup_state_incomplete(self):
-        test_user = get_user_model().objects.create_user('test', 'test@user.com', 'test')
-        test_user.profile = PortalProfile.objects.create(user=test_user, setup_complete=False)
-        log_setup_state(test_user, "test message")
-        self.mock_setup_event.objects.create.assert_called_with(
-            user=test_user,
-            step="portal.apps.onboarding.execute.execute_setup_steps",
-            state=SetupState.FAILED,
-            message="test message",
-            data={"setup_complete": False}
-        )
+def test_log_setup_state_incomplete(authenticated_user, mock_event_create):
+    authenticated_user.profile.setup_complete = False
+    log_setup_state(authenticated_user, "test message")
+    mock_event_create.assert_called_with(
+        user=authenticated_user,
+        step="portal.apps.onboarding.execute.execute_setup_steps",
+        state=SetupState.FAILED,
+        message="test message",
+        data={"setup_complete": False}
+    )
 
 
 class TestPrepareSteps(TestCase):
