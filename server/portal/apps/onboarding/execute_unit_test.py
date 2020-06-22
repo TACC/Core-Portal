@@ -68,7 +68,6 @@ class TestLogSetupState(TestCase):
         )
 
 
-@skip('Overwritten message in LogRecord; skpping bc not using Onboarding')
 class TestPrepareSteps(TestCase):
     def setUp(self):
         super(TestPrepareSteps, self).setUp()
