@@ -26,7 +26,7 @@ function JobsView({ showDetails, showFancyStatus }) {
     </>
   );
   useEffect(() => {
-    dispatch({ type: 'GET_JOBS', params: { limit } });
+    dispatch({ type: 'GET_JOBS', params: { offset: 0, limit } });
   }, [dispatch]);
 
   const infiniteScrollCallback = useCallback(offset => {
