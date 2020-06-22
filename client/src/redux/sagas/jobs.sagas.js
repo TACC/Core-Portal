@@ -4,6 +4,10 @@ import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
 
 export function* getJobs(action) {
+  if ('offset' in action.params && action.params.offset === 0) {
+    yield put({ type: 'JOBS_LIST_INIT' });
+  }
+
   yield put({ type: 'JOBS_LIST_START' });
   const url = new URL('/api/workspace/jobs', window.location.origin);
   Object.keys(action.params).forEach(key =>

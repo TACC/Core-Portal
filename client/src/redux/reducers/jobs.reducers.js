@@ -1,12 +1,13 @@
-function jobs(
-  state = {
-    list: [],
-    submit: { submitting: false },
-    loading: false
-  },
-  action
-) {
+const initialState = {
+  list: [],
+  submit: { submitting: false },
+  loading: false
+};
+
+function jobs(state = initialState, action) {
   switch (action.type) {
+    case 'JOBS_LIST_INIT':
+      return initialState;
     case 'JOBS_LIST_START':
       return {
         ...state,
