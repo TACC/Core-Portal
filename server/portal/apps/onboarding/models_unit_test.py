@@ -7,6 +7,18 @@ import pytest
 pytestmark = pytest.mark.django_db
 
 
+@pytest.fixture
+def onboarding_event(authenticated_user):
+    event = SetupEvent.objects.create(
+        user=authenticated_user,
+        state=SetupState.PENDING,
+        step="TestStep",
+        message="test message"
+    )
+    event.save()
+    yield event
+
+
 def test_onboarding_model(authenticated_user, onboarding_event):
     event = SetupEvent.objects.all()[0]
     assert event.user == authenticated_user
