@@ -55,63 +55,50 @@ def test_log_setup_state_incomplete(authenticated_user, mock_event_create):
 
 
 def test_prepare_setup_steps(authenticated_user, mocker, settings):
-    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = ["TestStep"]
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = ['TestStep']
     mock_step = MagicMock(
         last_event=None
     )
     mock_loader = mocker.patch('portal.apps.onboarding.execute.load_setup_step')
     mock_loader.return_value = mock_step
     prepare_setup_steps(authenticated_user)
-    mock_loader.assert_called_with(authenticated_user, "TestStep")
+    mock_loader.assert_called_with(authenticated_user, 'TestStep')
     mock_step.prepare.assert_called()
 
 
-@pytest.mark.django_db(transaction=True)
-class TestStepLoader(TestCase):
-    def setUp(self):
-        super(TestStepLoader, self).setUp()
+def test_step_loader(authenticated_user):
+    step = load_setup_step(
+        authenticated_user,
+        'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
+    )
+    assert step is not None
 
-        # Create a test user
-        User = get_user_model()
-        self.user = User.objects.create_user('test', 'test@test.com', 'test')
 
-        # Clear all prior SetupEvent objects in test db
-        SetupEvent.objects.all().delete()
+def test_invalid_step_function(authenticated_user):
+    """
+    Test an invalid configuration that passes a function instead of a class
 
-    def tearDown(self):
-        super(TestStepLoader, self).tearDown()
-
-    def test_step_loader(self):
-        step = load_setup_step(
-            self.user,
-            'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
+    This may occur due to a legacy setting "portal.apps.accounts.steps.step_one"
+    """
+    with pytest.raises(ValueError):
+        load_setup_step(
+            authenticated_user,
+            'portal.apps.onboarding.steps.test_steps.mock_invalid_step_function'
         )
-        self.assertIsNotNone(step)
 
-    def test_invalid_step_function(self):
-        """
-        Test an invalid configuration that passes a function instead of a class
 
-        This may occur due to a legacy setting "portal.apps.accounts.steps.step_one"
-        """
-        with self.assertRaises(ValueError):
-            load_setup_step(
-                self.user,
-                'portal.apps.onboarding.steps.test_steps.mock_invalid_step_function'
-            )
+def test_invalid_step_class(authenticated_user):
+    """
+    Test an invalid configuration that passes a class that is not
+    a child of AbstractStep
 
-    def test_invalid_step_class(self):
-        """
-        Test an invalid configuration that passes a class that is not
-        a child of AbstractStep
-
-        This may occur due to a legacy setting "portal.apps.accounts.steps.StepThree"
-        """
-        with self.assertRaises(ValueError):
-            load_setup_step(
-                self.user,
-                'portal.apps.onboarding.steps.test_steps.MockInvalidStepClass'
-            )
+    This may occur due to a legacy setting "portal.apps.accounts.steps.StepThree"
+    """
+    with pytest.raises(ValueError):
+        load_setup_step(
+            authenticated_user,
+            'portal.apps.onboarding.steps.test_steps.MockInvalidStepClass'
+        )
 
 
 @pytest.mark.django_db(transaction=True)
