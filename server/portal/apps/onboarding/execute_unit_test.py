@@ -4,7 +4,7 @@ from django.test import (
 )
 from django.contrib.auth import get_user_model
 from django.db.models import signals
-from mock import patch, ANY
+from mock import patch, ANY, MagicMock
 
 from portal.apps.onboarding.steps.test_steps import MockProcessingCompleteStep
 
@@ -54,28 +54,16 @@ def test_log_setup_state_incomplete(authenticated_user, mock_event_create):
     )
 
 
-class TestPrepareSteps(TestCase):
-    def setUp(self):
-        super(TestPrepareSteps, self).setUp()
-
-        # Create a test user
-        User = get_user_model()
-        self.user = User.objects.create_user('test', 'test@test.com', 'test')
-
-        # Clear all prior SetupEvent objects in test db
-        SetupEvent.objects.all().delete()
-
-    def tearDown(self):
-        super(TestPrepareSteps, self).tearDown()
-
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
-        'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
-    ]
+def test_prepare_setup_steps(authenticated_user, mocker, settings):
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = ["TestStep"]
+    mock_step = MagicMock(
+        last_event=None
     )
-    def test_prepare(self):
-        prepare_setup_steps(self.user)
-        setup_events = SetupEvent.objects.all()
-        self.assertEqual(setup_events[0].state, SetupState.PENDING)
+    mock_loader = mocker.patch('portal.apps.onboarding.execute.load_setup_step')
+    mock_loader.return_value = mock_step
+    prepare_setup_steps(authenticated_user)
+    mock_loader.assert_called_with(authenticated_user, "TestStep")
+    mock_step.prepare.assert_called()
 
 
 @pytest.mark.django_db(transaction=True)
