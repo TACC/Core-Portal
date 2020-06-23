@@ -1,20 +1,16 @@
-from django.test import TestCase, RequestFactory, override_settings
-from mock import patch, MagicMock, ANY
-from django.contrib.auth import get_user_model
-from django.db.models import signals
+from django.test import TestCase, RequestFactory
+from mock import MagicMock
 from django.core.exceptions import PermissionDenied
 from django.http import (
+    Http404,
     JsonResponse,
     HttpResponseBadRequest
 )
+from django.contrib.auth import get_user_model
 
 import json
-
-from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.accounts.models import PortalProfile
 from portal.apps.onboarding.models import SetupEvent
-from portal.apps.onboarding.steps.test_steps import MockStep
-
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.api.views import (
     SetupStepView,
@@ -29,258 +25,202 @@ logger = logging.getLogger(__name__)
 pytestmark = pytest.mark.django_db
 
 
-@skip("Need to rewrite onboarding unit tests with fixtures")
-class TestSetupStepView(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Mock Agave OAuth Token validation
-        cls.mock_client_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client')
-        cls.mock_client = cls.mock_client_patcher.start()
+@pytest.fixture(autouse=True)
+def mocked_executor(mocker):
+    yield mocker.patch('portal.apps.onboarding.api.views.execute_setup_steps')
 
-        # Mock asynchronous step executor
-        cls.mock_execute_patcher = patch(
-            'portal.apps.onboarding.api.views.execute_setup_steps'
-        )
-        cls.mock_execute = cls.mock_execute_patcher.start()
-        cls.mock_execute.apply_async = MagicMock()
 
-        cls.rf = RequestFactory()
-        cls.view = SetupStepView()
+@pytest.fixture(autouse=True)
+def mocked_log_setup_state(mocker):
+    yield mocker.patch('portal.apps.onboarding.api.views.log_setup_state')
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.mock_client_patcher.stop()
-        cls.mock_execute_patcher.stop()
 
-    def setUp(self):
-        # Create a regular user
-        super(TestSetupStepView, self).setUp()
-        signals.post_save.disconnect(sender=SetupEvent, dispatch_uid="setup_event")
+@pytest.fixture
+def mock_steps(authenticated_user, settings):
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = ['portal.apps.onboarding.steps.test_steps.MockStep']
+    pending_step = SetupEvent.objects.create(
+        user=authenticated_user,
+        step="portal.apps.onboarding.steps.test_steps.MockStep",
+        state=SetupState.PENDING,
+        message="message"
+    ).save()
 
-        # Create a regular user
-        User = get_user_model()
-        self.user = User.objects.create_user("test", "test@user.com", "test")
-        token = AgaveOAuthToken(
-            token_type="bearer",
-            scope="default",
-            access_token="1234fsf",
-            refresh_token="123123123",
-            expires_in=14400,
-            created=1523633447)
-        token.user = self.user
-        token.save()
-        self.user.profile = PortalProfile.objects.create(user=self.user)
-        self.user.profile.setup_complete = False
-        self.user.profile.save()
-        self.user.save()
+    completed_step = SetupEvent.objects.create(
+        user=authenticated_user,
+        step="portal.apps.onboarding.steps.test_steps.MockStep",
+        state=SetupState.COMPLETED,
+        message="message",
+    ).save()
+    yield (pending_step, completed_step,)
 
-        # Create a staff user
-        self.staff = User.objects.create_user("staff", "staff@user.com", "staff")
-        token = AgaveOAuthToken(
-            token_type="bearer",
-            scope="default",
-            access_token="1234fsf",
-            refresh_token="123123123",
-            expires_in=14400,
-            created=1523633447)
-        token.user = self.staff
-        token.save()
-        self.staff.is_staff = True
-        self.staff.save()
 
-        # Clear previous SetupEvents
-        SetupEvent.objects.all().delete()
+def test_get_user_parameter(rf, authenticated_user):
+    request = RequestFactory().get("/api/onboarding/user/username")
+    request.user = authenticated_user
+    view = SetupStepView()
+    # A user should be able to retrieve themselves
+    assert view.get_user_parameter(request, "username") == authenticated_user
 
-        # Create some setup events for the regular user
-        SetupEvent.objects.create(
-            user=self.user,
-            step="portal.apps.onboarding.steps.test_steps.MockStep",
-            state="pending",
-            message="message"
-        ).save()
+    # A user should not be able to retrieve someone else's setup events
+    with pytest.raises(PermissionDenied):
+        view.get_user_parameter(request, "other")
 
-        SetupEvent.objects.create(
-            user=self.user,
-            step="portal.apps.onboarding.steps.test_steps.MockStep",
-            state=SetupState.COMPLETED,
-            message="message",
-        ).save()
 
-        self.mock_step_loader_patcher = patch(
-            'portal.apps.onboarding.api.views.load_setup_step'
-        )
-        self.mock_step_loader = self.mock_step_loader_patcher.start()
-        self.mock_step_loader.return_value = MockStep(self.user)
+def test_get_user_parameter_as_staff(rf, authenticated_user, staff_user):
+    request = RequestFactory().get("/api/onboarding/user/username")
+    request.user = staff_user
+    view = SetupStepView()
 
-        # Mock log_setup_state due to test DB incompatibility
-        self.log_setup_patcher = patch(
-            'portal.apps.onboarding.api.views.log_setup_state'
-        )
-        self.mock_log_setup = self.log_setup_patcher.start()
+    # A staff user should be able to retrieve another user's setup events
+    assert view.get_user_parameter(request, "username") == authenticated_user
 
-        # Magic Mocked step
-        self.mock_step = MagicMock()
-        self.mock_step.log = MagicMock()
+    # An 404 should be raised when trying to retrieve a non-existent user
+    with pytest.raises(Http404):
+        view.get_user_parameter(request, "other")
 
-        # Test instance
-        self.view = SetupStepView()
 
-    def tearDown(self):
-        super(TestSetupStepView, self).tearDown()
-        self.mock_step_loader_patcher.stop()
-        self.mock_log_setup.stop()
+def test_get_user_as_user(settings, authenticated_user, client, mock_steps):
+    # A user should be able to retrieve their own setup event info
+    client.force_login(authenticated_user)
+    response = client.get("/api/onboarding/user/username", follow=True)
+    result = response.json()
 
-    def test_get_user_parameter(self):
-        request = RequestFactory().get("/api/onboarding/user/test")
-        request.user = self.user
+    # Make sure we got a valid response
+    assert result["username"] == "username"
+    assert "steps" in result
+    assert result["steps"][0]["step"] == 'portal.apps.onboarding.steps.test_steps.MockStep'
+    assert result["steps"][0]["displayName"] == 'Mock Step'
+    assert result["steps"][0]["state"] == SetupState.COMPLETED
+    assert len(result["steps"][0]["events"]) == 2
 
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
-        'portal.apps.onboarding.steps.test_steps.MockStep'
-    ]
+
+def test_get_user_as_staff(settings, staff_user, client, mock_steps):
+    client.force_login(staff_user)
+    response = client.get("/api/onboarding/user/username", follow=True)
+    result = response.json()
+
+    # Make sure result json is correct.
+    assert result["username"] == "username"
+    assert len(result["steps"][0]["events"]) == 2
+
+
+def test_forbidden(client, authenticated_user):
+    client.force_login(authenticated_user)
+    response = client.get("/api/onboarding/user/invalid/", follow=True)
+    # This raises an error, which is caught and converted
+    # into a 500 by portal.views.base
+    assert response.status_code != 200
+
+
+def test_not_found(client, staff_user):
+    client.force_login(staff_user)
+    response = client.get("/api/onboarding/user/invalid/", follow=True)
+    assert response.status_code != 200
+
+
+def test_incomplete_post(rf, authenticated_user):
+    view = SetupStepView()
+
+    # post should return HttpResponseBadRequest if fields are missing
+    request = rf.post(
+        "/api/onboarding/user/username",
+        content_type="application/json",
+        data=json.dumps({"action": "user_confirm"})
     )
-    def test_get_user_as_user(self):
-        # A user should be able to retrieve their own setup event info
-        self.client.login(username='test', password='test')
-        response = self.client.get("/api/onboarding/user/test", follow=True)
-        result = response.json()
+    request.user = authenticated_user
+    response = view.post(request, "username")
+    assert type(response) == HttpResponseBadRequest
 
-        # Make sure result json is correct. Can't compare to
-        # a fixture because timestamps will be different
-        self.assertEqual(result["username"], "test")
-        self.assertEqual(result["email"], "test@user.com")
-        self.assertFalse(result["isStaff"])
-        self.assertIn("steps", result)
-        self.assertFalse(result["setupComplete"])
-        self.assertEqual(
-            result["steps"][0]["step"],
-            "portal.apps.onboarding.steps.test_steps.MockStep"
-        )
-        self.assertEqual(
-            result["steps"][0]["displayName"],
-            "Mock Step"
-        )
-        self.assertEqual(
-            result["steps"][0]["state"],
-            SetupState.COMPLETED
-        )
-        self.assertEqual(len(result["steps"][0]["events"]), 2)
-
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
-        'portal.apps.onboarding.steps.test_steps.MockStep'
-    ]
+    request = rf.post(
+        "/api/onboarding/user/username",
+        content_type="application/json",
+        data=json.dumps({"step": "setupstep"})
     )
-    def test_get_user_as_staff(self):
-        self.client.login(username='staff', password='staff')
-        response = self.client.get("/api/onboarding/user/test", follow=True)
-        result = response.json()
+    request.user = authenticated_user
+    response = view.post(request, "username")
+    assert type(response) == HttpResponseBadRequest
 
-        # Make sure result json is correct.
-        self.assertEqual(result["username"], "test")
-        self.assertIn("steps", result)
-        self.assertEqual(len(result["steps"][0]["events"]), 2)
 
-    def test_forbidden(self):
-        self.client.login(username='test', password='test')
-        response = self.client.get("/api/onboarding/user/invalid/", follow=True)
-        # This raises an error, which is caught and converted
-        # into a 500 by portal.views.base
-        self.assertNotEqual(response.status_code, 200)
+def test_client_action(authenticated_user, rf):
+    view = SetupStepView()
+    mock_step = MagicMock()
+    mock_step.step_name.return_value = "Mock Step"
+    request = rf.post("/api/onboarding/user/username")
+    request.user = authenticated_user
+    view.client_action(
+        request,
+        mock_step,
+        "user_confirm",
+        None
+    )
+    mock_step.log.assert_called()
+    mock_step.client_action.assert_called_with(
+        "user_confirm",
+        None,
+        request
+    )
 
-    def test_not_found(self):
-        self.client.login(username='staff', password='staff')
-        response = self.client.get("/api/onboarding/user/invalid/", follow=True)
-        self.assertNotEqual(response.status_code, 200)
 
-    def test_incomplete_post(self):
-        # post should return HttpResponseBadRequest if fields are missing
-        request = self.rf.post(
-            "/api/onboarding/user/test",
-            content_type="application/json",
-            data=json.dumps({"action": "user_confirm"})
-        )
-        request.user = self.user
-        response = self.view.post(request, "test")
-        self.assertEqual(type(response), HttpResponseBadRequest)
+def test_reset_not_staff(authenticated_user, rf):
+    view = SetupStepView()
+    mock_step = MagicMock()
+    # A user should not be able to perform the reset action
+    with pytest.raises(PermissionDenied):
+        request = rf.post("/api/onboarding/user/username")
+        request.user = authenticated_user
+        view.reset(request, mock_step)
 
-        request = self.rf.post(
-            "/api/onboarding/user/test",
-            content_type="application/json",
-            data=json.dumps({"step": "setupstep"})
-        )
-        request.user = self.user
-        response = self.view.post(request, "test")
-        self.assertEqual(type(response), HttpResponseBadRequest)
 
-    def test_client_action(self):
-        # TODO: This fails
-        self.mock_step.prepare = MagicMock()
-        request = MagicMock()
-        request.user = self.user
-        self.view.client_action(
-            request,
-            self.mock_step,
-            "user_confirm",
-            None
-        )
-        self.mock_step.client_action.assert_called_with(
-            "user_confirm",
-            None,
-            request
-        )
+def test_reset(rf, staff_user, authenticated_user, mocked_log_setup_state):
+    # The reset function should call prepare on a step
+    # and flag the user's setup_complete as False
+    view = SetupStepView()
+    request = rf.post("/api/onboarding/user/username")
+    request.user = staff_user
+    mock_step = MagicMock()
+    mock_step.user = authenticated_user
 
-    def test_reset_not_staff(self):
-        # A user should not be able to perform the reset action
-        with self.assertRaises(PermissionDenied):
-            request = MagicMock()
-            request.user = self.user
-            self.mock_step.state = SetupState.COMPLETED
-            self.view.reset(request, self.mock_step)
-            self.mock_step.log.assert_not_called()
+    # Call reset function
+    view.reset(request, mock_step)
 
-    def test_reset(self):
-        # The reset function should call prepare on a step
-        # and flag the user's setup_complete as False
-        request = MagicMock()
-        request.user = self.staff
-        self.mock_step.prepare = MagicMock()
-        self.view.reset(request, self.mock_step)
-        self.mock_step.prepare.assert_called_with()
-        self.mock_step.log.assert_called_with(ANY)
-        self.mock_log_setup.assert_called_with(ANY, ANY)
-        self.assertEqual(self.mock_step.user.profile.setup_complete, False)
+    mock_step.prepare.assert_called()
+    mock_step.log.assert_called()
+    mocked_log_setup_state.assert_called()
+    assert not mock_step.user.profile.setup_complete
 
-    def test_complete_not_staff(self):
-        with self.assertRaises(PermissionDenied):
-            request = MagicMock()
-            request.user = self.user
-            self.mock_step.state = SetupState.FAILED
-            self.view.complete(request, self.mock_step)
-            self.mock_step.log.assert_not_called()
 
-    def test_complete(self):
-        request = self.rf.post(
-            "/api/onboarding/user/test",
-            content_type='application/json',
-            data=json.dumps({
-                "action": "complete",
-                "step": "portal.apps.onboarding.steps.test_steps.MockStep"
-            })
-        )
-        request.user = self.staff
-        response = self.view.post(request, "test")
+def test_complete_not_staff(rf, authenticated_user):
+    view = SetupStepView()
+    mock_step = MagicMock()
+    request = rf.post("/api/onboarding/user/username")
+    request.user = authenticated_user
+    with pytest.raises(PermissionDenied):
+        view.complete(request, mock_step)
 
-        # set_state should have put MockStep in COMPLETED, as per request
-        events = [event for event in SetupEvent.objects.all()]
-        self.assertEqual(
-            events[-1].step,
-            "portal.apps.onboarding.steps.test_steps.MockStep"
-        )
-        self.assertEqual(events[-1].state, SetupState.COMPLETED)
 
-        # execute_setup_steps should have been run
-        self.mock_execute.apply_async.assert_called_with(args=[self.user.username])
-        last_event = json.loads(response.content)
-        self.assertEqual(last_event["state"], SetupState.COMPLETED)
+def test_complete(rf, staff_user, authenticated_user, mock_steps, mocked_executor):
+    view = SetupStepView()
+
+    request = rf.post(
+        "/api/onboarding/user/username",
+        content_type='application/json',
+        data=json.dumps({
+            "action": "complete",
+            "step": "portal.apps.onboarding.steps.test_steps.MockStep"
+        })
+    )
+    request.user = staff_user
+    response = view.post(request, "username")
+
+    # set_state should have put MockStep in COMPLETED, as per request
+    events = [event for event in SetupEvent.objects.all()]
+    assert events[-1].step == "portal.apps.onboarding.steps.test_steps.MockStep"
+    assert events[-1].state == SetupState.COMPLETED
+
+    # execute_setup_steps should have been run
+    mocked_executor.apply_async.assert_called_with(args=[authenticated_user.username])
+    last_event = json.loads(response.content)
+    assert last_event["state"] == SetupState.COMPLETED
 
 
 @skip("Need to rewrite onboarding unit tests with fixtures")
@@ -288,7 +228,6 @@ class TestSetupAdminViews(TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestSetupAdminViews, cls).setUpClass()
-        signals.post_save.disconnect(sender=SetupEvent, dispatch_uid="setup_event")
 
         cls.User = get_user_model()
         cls.factory = RequestFactory()
@@ -447,4 +386,3 @@ class TestSetupAdminViews(TestCase):
         # Users with no profile should not be returned
         matches = [user for user in users if user['lastName'] == 'no']
         self.assertEqual(len(matches), 0)
-
