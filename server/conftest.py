@@ -1,6 +1,6 @@
 import pytest
 from portal.apps.auth.models import AgaveOAuthToken
-
+from portal.apps.accounts.models import PortalProfile
 
 @pytest.fixture
 def mock_agave_client(mocker):
@@ -20,6 +20,8 @@ def authenticated_user(client, django_user_model, django_db_reset_sequences, moc
         expires_in=14400,
         created=1523633447)
     token.save()
+    profile = PortalProfile.objects.create(user=user)
+    user.save()
     client.login(username="username", password='password')
     yield user
 
@@ -38,5 +40,7 @@ def staff_user(client, django_user_model, django_db_reset_sequences, mock_agave_
         expires_in=14400,
         created=1523633447)
     token.save()
+    profile = PortalProfile.objects.create(user=user)
+    user.save()
     client.login(username="staff", password='password')
     yield user
