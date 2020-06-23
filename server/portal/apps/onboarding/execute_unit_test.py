@@ -3,8 +3,7 @@ from django.test import (
     override_settings
 )
 from django.contrib.auth import get_user_model
-from django.db.models import signals
-from mock import patch, ANY, MagicMock
+from mock import patch, MagicMock
 
 from portal.apps.onboarding.steps.test_steps import MockProcessingCompleteStep
 
@@ -101,196 +100,154 @@ def test_invalid_step_class(authenticated_user):
         )
 
 
-@pytest.mark.django_db(transaction=True)
-class TestExecuteSteps(TestCase):
-    def setUp(self):
-        super(TestExecuteSteps, self).setUp()
-        signals.post_save.disconnect(sender=SetupEvent, dispatch_uid="setup_event")
+def test_successful_step(settings, authenticated_user, mocker):
+    """
+    Test that a step that completes successfully is executed without error
+    """
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = ['portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep']
+    mock_log_setup_state = mocker.patch('portal.apps.onboarding.execute.log_setup_state')
 
-        # Create a test user
-        User = get_user_model()
-        self.user = User.objects.create_user('test', 'test@test.com', 'test')
-        self.user.profile = PortalProfile(user=self.user)
-        self.user.profile.setup_complete = False
-        self.user.profile.save()
+    prepare_setup_steps(authenticated_user)
+    execute_setup_steps(authenticated_user.username)
 
-        # Clear all prior SetupEvent objects in test db
-        SetupEvent.objects.all().delete()
+    # Last event should be COMPLETED for MockPendingCompleteStep
+    setup_event = SetupEvent.objects.all().filter(
+        step="portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep",
+        user=authenticated_user
+    ).latest("time")
+    assert setup_event.message == "Completed"
 
-        self.log_setup_patcher = patch('portal.apps.onboarding.execute.log_setup_state')
-        self.mock_log_setup = self.log_setup_patcher.start()
+    # After last event has completed, setup_complete should be true for user
+    profile_result = PortalProfile.objects.all().filter(user=authenticated_user)[0]
+    assert profile_result.setup_complete
 
-    def tearDown(self):
-        super(TestExecuteSteps, self).tearDown()
-        self.log_setup_patcher.stop()
+    mock_log_setup_state.assert_called()
 
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
-        'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
-    ]
-    )
-    def test_successful_step(self):
-        """
-        Test that a step that completes successfully is executed without error
-        """
-        prepare_setup_steps(self.user)
-        execute_setup_steps(self.user.username)
 
-        # Last event should be COMPLETED for MockPendingCompleteStep
-        setup_event = SetupEvent.objects.all().filter(
-            step="portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep",
-            user=self.user
-        ).latest("time")
-        self.assertEqual(setup_event.message, "Completed")
+def test_fail_step(settings, authenticated_user):
+    """
+    Test that a step that fails halts execution.
 
-        # After last event has completed, setup_complete should be true for user
-        profile_result = PortalProfile.objects.all().filter(user=self.user)[0]
-        self.assertEqual(profile_result.setup_complete, True)
-        self.mock_log_setup.assert_called_with(ANY, ANY)
-
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
+    MockProcessingFailStep should invoke and leave an event,
+    but MockProcessingCompleteStep (which occurs after in the mock setting)
+    should not execute due to the previous step failing.
+    """
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
         'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
     ]
-    )
-    def test_fail_step(self):
-        """
-        Test that a step that fails halts execution.
+    with pytest.raises(StepExecuteException):
+        prepare_setup_steps(authenticated_user)
+        execute_setup_steps(authenticated_user.username)
+        setup_events = SetupEvent.objects.all()
+        assert len(setup_events) == 2
+        setup_event = SetupEvent.objects.all()[1]
+        assert setup_event.step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
+        assert setup_event.message == 'Failure'
 
-        MockProcessingFailStep should invoke and leave an event,
-        but MockProcessingCompleteStep (which occurs after in the mock setting)
-        should not execute due to the previous step failing.
-        """
-        with self.assertRaises(StepExecuteException):
-            prepare_setup_steps(self.user)
-            execute_setup_steps(self.user.username)
-            setup_events = SetupEvent.objects.all()
-            self.assertEqual(len(setup_events), 2)
-            setup_event = SetupEvent.objects.all()[1]
-            self.assertEqual(
-                setup_event.step,
-                "portal.apps.onboarding.steps.test_steps.MockProcessingFailStep"
-            )
-            self.assertEqual(setup_event.message, "Failure")
 
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
+def test_error_step(settings, authenticated_user):
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+        'portal.apps.onboarding.steps.test_steps.MockErrorStep'
+    ]
+    with pytest.raises(StepExecuteException):
+        prepare_setup_steps(authenticated_user)
+        execute_setup_steps(authenticated_user.username)
+
+    exception_event = SetupEvent.objects.all().filter(
+        user=authenticated_user,
+        step='portal.apps.onboarding.steps.test_steps.MockErrorStep',
+        state=SetupState.ERROR
+    )[0]
+    assert exception_event.message == "Exception: MockErrorStep"
+
+
+def test_userwait_step(settings, authenticated_user):
+    """
+    Test that a step in USERWAIT (or really any state that is not PENDING)
+    prevents the rest of the steps from executing
+
+    MockUserWaitStep.prepare should invoke and leave an event,
+    but MockPendingCompleteStep (which occurs after in the mock setting)
+    should not execute due to the first one not being "COMPLETE".
+    """
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'portal.apps.onboarding.steps.test_steps.MockUserStep',
         'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
     ]
-    )
-    def test_userwait_step(self):
-        """
-        Test that a step in USERWAIT (or really any state that is not PENDING)
-        prevents the rest of the steps from executing
+    with pytest.raises(StepExecuteException):
+        prepare_setup_steps(authenticated_user)
+        execute_setup_steps(authenticated_user.username)
 
-        MockUserWaitStep.prepare should invoke and leave an event,
-        but MockPendingCompleteStep (which occurs after in the mock setting)
-        should not execute due to the first one not being "COMPLETE".
-        """
-        with self.assertRaises(StepExecuteException):
-            prepare_setup_steps(self.user)
-            execute_setup_steps(self.user.username)
+    # Setup event log should not progress due to first
+    # step being USERWAIT
+    setup_events = SetupEvent.objects.all()
+    assert len(setup_events) == 2
+    setup_event = SetupEvent.objects.all()[1]
+    assert setup_event.step == 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
+    assert setup_event.state == SetupState.PENDING
 
-        # Setup event log should not progress due to first
-        # step being USERWAIT
+
+def test_sequence(settings, authenticated_user):
+    """
+    Test that execution continues when a step completes
+
+    MockProcessingCompleteStep should complete successfully and log an event.
+    MockProcessingFailStep should execute and fail, and leave a log event.
+    """
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+        'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
+        'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
+    ]
+    with pytest.raises(StepExecuteException):
+        execute_setup_steps(authenticated_user.username)
         setup_events = SetupEvent.objects.all()
-        self.assertEqual(len(setup_events), 2)
-        setup_event = SetupEvent.objects.all()[1]
-        self.assertEqual(
-            setup_event.step,
-            "portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep"
+        assert len(setup_events) == 3
+        assert setup_events[0].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
+        assert setup_events[0].state == SetupState.PROCESSING
+        assert setup_events[1].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
+        assert setup_events[1].state == SetupState.COMPLETED
+        assert setup_events[2].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
+        assert setup_events[2].state == SetupState.FAILED
+
+
+def test_sequence_with_history(settings, authenticated_user):
+    """
+    Test that execution skips a previously completed step
+
+    MockProcessingFailStep should execute and fail, and leave a log event.
+    There should be two log events
+    """
+
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+        'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
+        'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
+    ]
+
+    # Artificially fail MockProcessingCompleteStep
+    mock_complete_step = MockProcessingCompleteStep(authenticated_user)
+    mock_complete_step.fail("Mock Failure")
+
+    # Artificially execute MockPendingCompleteStep
+    # The latest event instance should be a success,
+    # therefore the step should be skipped in the future
+    mock_complete_step = MockProcessingCompleteStep(authenticated_user)
+    mock_complete_step.process()
+
+    with pytest.raises(StepExecuteException):
+        execute_setup_steps(authenticated_user.username)
+        setup_events = SetupEvent.objects.all()
+        assert len(setup_events) == 3
+
+        # MockPendingCompleteStep should appear in the log exactly once
+        complete_events = SetupEvent.objects.all().filter(
+            step='portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
         )
-        self.assertEqual(setup_event.state, SetupState.PENDING)
+        assert len(complete_events) == 3
 
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
-        'portal.apps.onboarding.steps.test_steps.MockErrorStep'
-    ]
-    )
-    def test_error_step(self):
-        with self.assertRaises(StepExecuteException):
-            prepare_setup_steps(self.user)
-            execute_setup_steps(self.user.username)
-
-        exception_event = SetupEvent.objects.all().filter(
-            user=self.user,
-            step='portal.apps.onboarding.steps.test_steps.MockErrorStep',
-            state=SetupState.ERROR
-        )[0]
-        self.assertEqual(exception_event.message, "Exception: MockErrorStep")
-
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
-        'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
-        'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
-    ]
-    )
-    def test_sequence(self):
-        """
-        Test that execution continues when a step completes
-
-        MockProcessingCompleteStep should complete successfully and log an event.
-        MockProcessingFailStep should execute and fail, and leave a log event.
-        """
-        with self.assertRaises(StepExecuteException):
-            execute_setup_steps(self.user.username)
-            setup_events = SetupEvent.objects.all()
-            self.assertEqual(len(setup_events), 3)
-            self.assertEqual(
-                setup_events[0].step,
-                "portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep"
-            )
-            self.assertEqual(setup_events[0].state, SetupState.PROCESSING)
-            self.assertEqual(
-                setup_events[1].step,
-                "portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep"
-            )
-            self.assertEqual(setup_events[1].state, SetupState.COMPLETED)
-            self.assertEqual(
-                setup_events[2].step,
-                "portal.apps.onboarding.steps.test_steps.MockProcessingFailStep"
-            )
-            self.assertEqual(setup_events[2].state, SetupState.FAILED)
-
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[
-        'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
-        'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
-    ]
-    )
-    def test_sequence_with_history(self):
-        """
-        Test that execution skips a previously completed step
-
-        MockProcessingFailStep should execute and fail, and leave a log event.
-        There should be two log events
-        """
-
-        # Artificially fail MockProcessingCompleteStep
-        mock_complete_step = MockProcessingCompleteStep(self.user)
-        mock_complete_step.fail("Mock Failure")
-
-        # Artificially execute MockPendingCompleteStep
-        # The latest event instance should be a success,
-        # therefore the step should be skipped in the future
-        mock_complete_step = MockProcessingCompleteStep(self.user)
-        mock_complete_step.process()
-
-        with self.assertRaises(StepExecuteException):
-            execute_setup_steps(self.user.username)
-            setup_events = SetupEvent.objects.all()
-            self.assertEqual(len(setup_events), 3)
-
-            # MockPendingCompleteStep should appear in the log exactly once
-            complete_events = [
-                event for event in SetupEvent.objects.all()
-                if event.step ==
-                "portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep"
-            ]
-            self.assertEqual(len(complete_events), 3)
-
-            # Last event should be MockPendingFailStep
-            self.assertEqual(
-                setup_events[-1].step,
-                "portal.apps.onboarding.steps.test_steps.MockProcessingFailStep"
-            )
-            self.assertEqual(setup_events[-1].state, SetupState.FAILED)
+        # Last event should be MockPendingFailStep
+        assert setup_events[-1].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
+        assert setup_events[-1].state == SetupState.FAILED
 
 
 @pytest.mark.django_db(transaction=True)
