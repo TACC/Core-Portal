@@ -1,4 +1,3 @@
-from mock import ANY, MagicMock
 from portal.apps.onboarding.steps.mfa import MFAStep
 import pytest
 
@@ -19,22 +18,6 @@ def mock_mfa_complete(mocker):
 
 
 @pytest.fixture
-def mock_mfa_request(mocker):
-    response = MagicMock(
-        json=MagicMock(
-            return_value={
-                "result": [
-                    {"type": "tacc-soft-token"}
-                ]
-            }
-        )
-    )
-    yield mocker.patch('portal.apps.onboarding.steps.mfa.requests.get',
-                       return_value=response,
-                       autospec=True)
-
-
-@pytest.fixture
 def mock_mfa_prepare(mocker):
     yield mocker.patch.object(MFAStep, 'prepare')
 
@@ -48,23 +31,23 @@ def test_mfa_found(authenticated_user, mock_mfa_check, mock_mfa_complete):
     )
 
 
-def test_mfa_not_found(authenticated_user, mock_mfa_check, mock_mfa_log):
+def test_mfa_not_found(mocker, authenticated_user, mock_mfa_check, mock_mfa_log):
     step = MFAStep(authenticated_user)
     mock_mfa_check.return_value = False
     step.process()
-    mock_mfa_log.assert_called_with(ANY, data=ANY)
+    mock_mfa_log.assert_called_with(mocker.ANY, data=mocker.ANY)
 
 
-def test_mfa_check(authenticated_user, mock_mfa_request):
+def test_mfa_check(authenticated_user, requests_mock):
     step = MFAStep(authenticated_user)
-    mock_mfa_request.return_value.json.return_value["result"] = [{"type": "tacc-soft-token"}]
+    requests_mock.get(step.tas_pairings_url(), json={"result": [{"type": "tacc-soft-token"}]})
     result = step.mfa_check()
     assert result is True
 
 
-def test_mfa_check_failure(authenticated_user, mock_mfa_request):
+def test_mfa_check_failure(authenticated_user, requests_mock):
     step = MFAStep(authenticated_user)
-    mock_mfa_request.return_value.json.return_value["result"] = []
+    requests_mock.get(step.tas_pairings_url(), json={"result": []})
     result = step.mfa_check()
     assert result is False
 
