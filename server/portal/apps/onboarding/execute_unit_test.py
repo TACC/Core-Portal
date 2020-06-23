@@ -1,12 +1,5 @@
-from django.test import (
-    TestCase,
-    override_settings
-)
-from django.contrib.auth import get_user_model
-from mock import patch, MagicMock
-
+from mock import MagicMock
 from portal.apps.onboarding.steps.test_steps import MockProcessingCompleteStep
-
 from portal.apps.accounts.models import PortalProfile
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
@@ -30,6 +23,9 @@ def mock_event_create(mocker):
 
 
 def test_log_setup_state_complete(authenticated_user, mock_event_create):
+    """
+    Test that a SetupEvent is logged for setting the user's setup_complete flag to True
+    """
     authenticated_user.profile.setup_complete = True
     log_setup_state(authenticated_user, "test message")
     mock_event_create.assert_called_with(
@@ -42,6 +38,9 @@ def test_log_setup_state_complete(authenticated_user, mock_event_create):
 
 
 def test_log_setup_state_incomplete(authenticated_user, mock_event_create):
+    """
+    Test that a SetupEvent is logged for setting the user's setup_complete flag to False
+    """
     authenticated_user.profile.setup_complete = False
     log_setup_state(authenticated_user, "test message")
     mock_event_create.assert_called_with(
@@ -54,6 +53,9 @@ def test_log_setup_state_incomplete(authenticated_user, mock_event_create):
 
 
 def test_prepare_setup_steps(authenticated_user, mocker, settings):
+    """
+    Test that a step is loaded and prepared for a user that does not have step history
+    """
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = ['TestStep']
     mock_step = MagicMock(
         last_event=None
@@ -66,6 +68,9 @@ def test_prepare_setup_steps(authenticated_user, mocker, settings):
 
 
 def test_step_loader(authenticated_user):
+    """
+    Test the dynamic step loader
+    """
     step = load_setup_step(
         authenticated_user,
         'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
@@ -147,6 +152,9 @@ def test_fail_step(settings, authenticated_user):
 
 
 def test_error_step(settings, authenticated_user):
+    """
+    Assert that when a setup step causes an error that the error is logged
+    """
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'portal.apps.onboarding.steps.test_steps.MockErrorStep'
     ]
@@ -250,33 +258,21 @@ def test_sequence_with_history(settings, authenticated_user):
         assert setup_events[-1].state == SetupState.FAILED
 
 
-@pytest.mark.django_db(transaction=True)
-class TestNewUserSetup(TestCase):
-    def setUp(self):
-        super(TestNewUserSetup, self).setUp()
-        self.user = get_user_model().objects.create_user(
-            username="testuser",
-            first_name="test",
-            last_name="user",
-            email="test@email.com"
-        )
-        self.user.save()
-        self.user.profile = PortalProfile(user=self.user)
-        self.user.profile.save()
+def test_no_setup_steps(settings, authenticated_user):
+    """
+    Assert that when there are no setup steps, a user is flagged as setup_complete
+    """
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = []
+    new_user_setup_check(authenticated_user)
+    profile = PortalProfile.objects.get(user=authenticated_user)
+    assert profile.setup_complete
 
-    def tearDown(self):
-        super(TestNewUserSetup, self).tearDown()
 
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
-    def test_no_setup_steps(self):
-        # Assert that when there are no setup steps,
-        # the setup_complete flag is True
-        new_user_setup_check(self.user)
-        profile = PortalProfile.objects.get(user=self.user)
-        self.assertEqual(profile.setup_complete, True)
-
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=['onboarding.step'])
-    @patch('portal.apps.onboarding.execute.prepare_setup_steps')
-    def test_prepare_setup_steps(self, mock_prepare):
-        new_user_setup_check(self.user)
-        mock_prepare.assert_called_with(self.user)
+def test_setup_steps_prepared_from_list(settings, authenticated_user, mocker):
+    """
+    Assert that when there are setup steps, they are prepared for a user
+    """
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = ['onboarding.step']
+    mock_prepare = mocker.patch('portal.apps.onboarding.execute.prepare_setup_steps')
+    new_user_setup_check(authenticated_user)
+    mock_prepare.assert_called_with(authenticated_user)
