@@ -1,4 +1,3 @@
-from django.test import TestCase, RequestFactory
 from mock import MagicMock
 from django.core.exceptions import PermissionDenied
 from django.http import (
@@ -6,10 +5,7 @@ from django.http import (
     JsonResponse,
     HttpResponseBadRequest
 )
-from django.contrib.auth import get_user_model
-
 import json
-from portal.apps.accounts.models import PortalProfile
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.api.views import (
@@ -18,7 +14,6 @@ from portal.apps.onboarding.api.views import (
 )
 import pytest
 import logging
-from unittest import skip
 
 logger = logging.getLogger(__name__)
 
@@ -54,8 +49,13 @@ def mock_steps(authenticated_user, settings):
     yield (pending_step, completed_step,)
 
 
+"""
+SetupStepView tests
+"""
+
+
 def test_get_user_parameter(rf, authenticated_user):
-    request = RequestFactory().get("/api/onboarding/user/username")
+    request = rf.get("/api/onboarding/user/username")
     request.user = authenticated_user
     view = SetupStepView()
     # A user should be able to retrieve themselves
@@ -67,7 +67,7 @@ def test_get_user_parameter(rf, authenticated_user):
 
 
 def test_get_user_parameter_as_staff(rf, authenticated_user, staff_user):
-    request = RequestFactory().get("/api/onboarding/user/username")
+    request = rf.get("/api/onboarding/user/username")
     request.user = staff_user
     view = SetupStepView()
 
@@ -223,166 +223,86 @@ def test_complete(rf, staff_user, authenticated_user, mock_steps, mocked_executo
     assert last_event["state"] == SetupState.COMPLETED
 
 
-@skip("Need to rewrite onboarding unit tests with fixtures")
-class TestSetupAdminViews(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestSetupAdminViews, cls).setUpClass()
+"""
+SetupAdminView tests
+"""
 
-        cls.User = get_user_model()
-        cls.factory = RequestFactory()
-        cls.view = SetupAdminView()
 
-        # Clear other users
-        cls.User.objects.all().delete()
+def test_admin_route(rf, staff_user):
+    view = SetupAdminView()
 
-        # Create a test user
-        a_user = cls.User.objects.create_user("a_user", "a@user.com", "apassword")
-        a_user.last_name = "a"
-        a_user.first_name = "user"
-        a_user.save()
-        a_user_profile = PortalProfile(user=a_user)
-        a_user.profile.setup_complete = True
-        a_user_profile.save()
+    # If the user is authenticated and is_staff, then the route should
+    # return a JsonResponse
+    request = rf.get("/api/onboarding/admin")
+    request.user = staff_user
 
-        # Create users with setup_complete == False
-        c_user = cls.User.objects.create_user("c_user", "c@user.com", "cpassword")
-        c_user.last_name = "c"
-        c_user.first_name = "user"
-        PortalProfile(user=c_user)
-        c_user.profile.save()
-        c_user.save()
+    # Get the JsonResponse from SetupAdminView.get
+    response = view.get(request)
+    assert type(response) == JsonResponse
 
-        b_user = cls.User.objects.create_user("b_user", "b@user.com", "bpassword")
-        b_user.last_name = "b"
-        b_user.first_name = "user"
-        PortalProfile(user=b_user)
-        b_user.profile.save()
-        b_user.save()
 
-        # User with no Profile. Sometimes these exist (wma_prtl I'm looking at you) and
-        # the view should not return them
-        no_profile_user = cls.User.objects.create_user("no_profile_user", "no@user.com", "nopassword")
-        no_profile_user.last_name = "no"
-        no_profile_user.first_name = "user"
-        no_profile_user.save()
+def test_admin_route_is_protected(rf, authenticated_user, client):
+    # Test to make sure route is protected
+    # If the user is not staff, then the route should return a redirect
+    client.force_login(authenticated_user)
+    response = client.get("/api/onboarding/admin/", follow=False)
+    assert response.status_code == 302
 
-    @classmethod
-    def tearDownClass(cls):
-        super(TestSetupAdminViews, cls).tearDownClass()
-        pass
 
-    def setUp(self):
-        # Create a staff user and login as that user to test routes
-        self.admin_user = self.User.objects.create_user('testadmin', 'test@admin.com', 'admin_password')
-        self.admin_user.is_staff = True
-        self.admin_user.save()
-        self.client.login(username='testadmin', password='admin_password')
+def test_create_user_result(mock_steps, authenticated_user):
+    view = SetupAdminView()
 
-    def test_user_fixtures(self):
-        a_user = self.User.objects.get(username="a_user")
-        self.assertIsNotNone(a_user)
-        self.assertTrue(a_user.profile.setup_complete)
-        b_user = self.User.objects.get(username="b_user")
-        self.assertIsNotNone(b_user)
-        self.assertFalse(b_user.profile.setup_complete)
-        c_user = self.User.objects.get(username="c_user")
-        self.assertIsNotNone(c_user)
-        self.assertFalse(c_user.profile.setup_complete)
+    # Test retrieving a user's events
+    result = view.create_user_result(authenticated_user)
+    assert result["lastEvent"].step == "portal.apps.onboarding.steps.test_steps.MockStep"
 
-    def test_admin_route(self):
-        # Integration test for route
-        # If the user is authenticated and is_staff, then the route should
-        # return a JsonResponse
-        request = self.factory.get("/api/onboarding/admin")
-        request.user = self.admin_user
+    # Test retrieving a user with no events
+    SetupEvent.objects.all().delete()
+    result = view.create_user_result(authenticated_user)
+    assert "lastEvent" not in result
 
-        # Get the JsonResponse from SetupAdminView.get
-        resp = self.view.get(request)
-        logger.debug(resp)
-        self.assertEqual(type(resp), JsonResponse)
 
-    def test_admin_route_is_protected(self):
-        # Integration test to make sure route is protected
-        # If the user is not staff, then the route should return a redirect
-        self.non_admin = self.User.objects.create_user('testuser', 'test@user.com', 'user_password')
-        self.client.login(username='testuser', password='user_password')
-        resp = self.client.get("/api/onboarding/admin/", follow=False)
-        self.assertNotEqual(resp.status_code, 200)
+def test_get_no_profile(rf, staff_user, authenticated_user):
+    view = SetupAdminView()
 
-    def test_create_user_result(self):
-        # Test a user with no events
-        User = get_user_model()
-        b_user = User.objects.get(username="b_user")
-        user_result = self.view.create_user_result(b_user)
-        self.assertEqual(user_result['username'], "b_user")
-        self.assertEqual(user_result['lastName'], "b")
-        self.assertEqual(user_result['email'], "b@user.com")
+    # Test that no object is returned for a user with no profile
+    authenticated_user.profile.delete()
+    request = rf.get("/api/onboarding/admin/")
+    request.user = staff_user
+    response = view.get(request)
+    response_data = json.loads(response.content)
 
-        # Test with an event
-        SetupEvent.objects.create(
-            user=b_user,
-            step="portal.apps.onboarding.steps.test_steps.MockStep",
-            state="complete"
-        )
-        user_result = self.view.create_user_result(b_user)
-        self.assertEqual(
-            user_result['lastEvent'].step,
-            "portal.apps.onboarding.steps.test_steps.MockStep"
-        )
+    # authenticated_user should not appear in results
+    assert not any(
+        [True for user in response_data['users'] if user['username'] == authenticated_user.username]
+    )
 
-    def test_get_no_profile(self):
-        # Test that no object is returned for a user with no profile
-        d_user = get_user_model().objects.create_user("d_user", "d@user.com", "dpassword")
-        d_user.last_name = "d"
-        d_user.first_name = "user"
-        d_user.save()
-        request = self.factory.get("/api/onboarding/admin")
-        response = self.view.get(request)
-        response_data = json.loads(response.content)
 
-        # d_user should not be in the list of users returned
-        d_user_result = [user for user in response_data['users'] if user['username'] == 'd_user']
-        self.assertEqual(len(d_user_result), 0)
+def test_get(rf, staff_user, authenticated_user, mock_steps):
+    authenticated_user.profile.setup_complete = False
+    authenticated_user.profile.save()
 
-    def test_get(self):
-        # Create an event for user b
-        User = get_user_model()
-        b_user = User.objects.get(username="b_user")
-        SetupEvent.objects.create(
-            user=b_user,
-            step="portal.apps.onboarding.steps.test_steps.MockStep",
-            state="complete"
-        )
+    staff_user.profile.setup_complete = True
+    staff_user.profile.save()
 
-        # Unit test for get method. We are using RequestFactory.get, but
-        # really just to generate a request object with an authenticated user
-        request = self.factory.get("/api/onboarding/admin")
-        request.user = self.admin_user
+    view = SetupAdminView()
 
-        # Get the JsonResponse from SetupAdminView.get
-        response = self.view.get(request)
-        result = json.loads(response.content)
+    # Unit test for get method. We are using RequestFactory.get, but
+    # really just to generate a request object with an authenticated user
+    request = rf.get("/api/onboarding/admin/")
+    request.user = staff_user
 
-        users = result["users"]
+    # Get the JsonResponse from SetupAdminView.get
+    response = view.get(request)
+    result = json.loads(response.content)
 
-        # The first result should be user with last name "b", since they have not completed setup and
-        # are alphabetically first, by last name
-        self.assertEqual(users[0]['lastName'], "b")
+    users = result["users"]
 
-        # User b's last event should be MockStep
-        self.assertEqual(
-            users[0]['lastEvent']['step'],
-            "portal.apps.onboarding.steps.test_steps.MockStep"
-        )
+    # The first result should be the authenticated_user, since they have not completed setup
+    assert users[0]["username"] == authenticated_user.username
 
-        # There should be more than two users returned, total
-        self.assertGreater(len(users), 2)
+    # User authenticated_user's last event should be MockStep
+    assert users[0]['lastEvent']['step'] == "portal.apps.onboarding.steps.test_steps.MockStep"
 
-        # There should be two users that do not have setupComplete
-        matches = [user for user in users if user['setupComplete'] is False]
-        self.assertEqual(len(matches), 2)
-
-        # Users with no profile should not be returned
-        matches = [user for user in users if user['lastName'] == 'no']
-        self.assertEqual(len(matches), 0)
+    # There should be two users returned
+    assert len(users) == 2
