@@ -265,7 +265,7 @@ def test_sequence_with_history(settings, authenticated_user):
     setup_events = SetupEvent.objects.all()
     assert len(setup_events) == 5
 
-    # MockPendingCompleteStep should appear in the log exactly once
+    # MockPendingCompleteStep should appear in the log exactly twice
     complete_events = SetupEvent.objects.all().filter(
         step='portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
     )
