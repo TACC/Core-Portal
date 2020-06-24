@@ -318,7 +318,7 @@ PORTAL_WORKSPACE_MANAGERS = {
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
 # TAS Authentication.
-TAS_URL = 'test.com'
+TAS_URL = 'https://test.com'
 TAS_CLIENT_KEY = 'test'
 TAS_CLIENT_SECRET = 'test'
 # Redmine Tracker Authentication.
