@@ -149,6 +149,8 @@ def test_fail_step(settings, authenticated_user):
         setup_event = SetupEvent.objects.all()[1]
         assert setup_event.step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
         assert setup_event.message == 'Failure'
+        profile = PortalProfile.objects.get(user=authenticated_user)
+        assert not profile.setup_complete
 
 
 def test_error_step(settings, authenticated_user):
