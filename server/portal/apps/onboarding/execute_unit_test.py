@@ -144,13 +144,14 @@ def test_fail_step(settings, authenticated_user):
     with pytest.raises(StepExecuteException):
         prepare_setup_steps(authenticated_user)
         execute_setup_steps(authenticated_user.username)
-        setup_events = SetupEvent.objects.all()
-        assert len(setup_events) == 2
-        setup_event = SetupEvent.objects.all()[1]
-        assert setup_event.step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
-        assert setup_event.message == 'Failure'
-        profile = PortalProfile.objects.get(user=authenticated_user)
-        assert not profile.setup_complete
+
+    setup_events = SetupEvent.objects.all()
+    assert len(setup_events) == 4
+    setup_event = SetupEvent.objects.all()[3]
+    assert setup_event.step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
+    assert setup_event.message == 'Failure'
+    profile = PortalProfile.objects.get(user=authenticated_user)
+    assert not profile.setup_complete
 
 
 def test_error_step(settings, authenticated_user):
@@ -210,15 +211,19 @@ def test_sequence(settings, authenticated_user):
         'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
     ]
     with pytest.raises(StepExecuteException):
+        prepare_setup_steps(authenticated_user)
         execute_setup_steps(authenticated_user.username)
-        setup_events = SetupEvent.objects.all()
-        assert len(setup_events) == 3
-        assert setup_events[0].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
-        assert setup_events[0].state == SetupState.PROCESSING
-        assert setup_events[1].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
-        assert setup_events[1].state == SetupState.COMPLETED
-        assert setup_events[2].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
-        assert setup_events[2].state == SetupState.FAILED
+
+    setup_events = SetupEvent.objects.all()
+    assert len(setup_events) == 6
+    assert setup_events[2].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
+    assert setup_events[2].state == SetupState.PROCESSING
+    assert setup_events[3].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
+    assert setup_events[3].state == SetupState.COMPLETED
+    assert setup_events[4].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
+    assert setup_events[4].state == SetupState.PROCESSING
+    assert setup_events[5].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
+    assert setup_events[5].state == SetupState.FAILED
 
 
 def test_sequence_with_history(settings, authenticated_user):
@@ -238,26 +243,37 @@ def test_sequence_with_history(settings, authenticated_user):
     mock_complete_step = MockProcessingCompleteStep(authenticated_user)
     mock_complete_step.fail("Mock Failure")
 
-    # Artificially execute MockPendingCompleteStep
+    # Artificially execute MockProcessingCompleteStep
     # The latest event instance should be a success,
     # therefore the step should be skipped in the future
     mock_complete_step = MockProcessingCompleteStep(authenticated_user)
     mock_complete_step.process()
 
+    # The previous two transactions should create a history with two steps
+    setup_events = SetupEvent.objects.all()
+    assert len(setup_events) == 2
+
+    # A new event should be generated for MockProcessingFail
+    prepare_setup_steps(authenticated_user)
+    setup_events = SetupEvent.objects.all()
+    assert len(setup_events) == 3
+
     with pytest.raises(StepExecuteException):
         execute_setup_steps(authenticated_user.username)
-        setup_events = SetupEvent.objects.all()
-        assert len(setup_events) == 3
 
-        # MockPendingCompleteStep should appear in the log exactly once
-        complete_events = SetupEvent.objects.all().filter(
-            step='portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
-        )
-        assert len(complete_events) == 3
+    # Executing should now generate more events
+    setup_events = SetupEvent.objects.all()
+    assert len(setup_events) == 5
 
-        # Last event should be MockPendingFailStep
-        assert setup_events[-1].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
-        assert setup_events[-1].state == SetupState.FAILED
+    # MockPendingCompleteStep should appear in the log exactly once
+    complete_events = SetupEvent.objects.all().filter(
+        step='portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep'
+    )
+    assert len(complete_events) == 2
+
+    # Last event should be MockPendingFailStep
+    assert setup_events[4].step == 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep'
+    assert setup_events[4].state == SetupState.FAILED
 
 
 def test_no_setup_steps(settings, authenticated_user):
