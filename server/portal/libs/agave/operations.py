@@ -234,7 +234,7 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         client.files.delete(systemId=src_system,
                             filePath=urllib.parse.quote(src_path))
 
-    if os.path.dirname(src_path) != dest_path:
+    if os.path.dirname(src_path) != dest_path or src_path != dest_path:
         agave_indexer.apply_async(kwargs={'systemId': src_system,
                                           'filePath': os.path.dirname(src_path),
                                           'recurse': False},
@@ -372,7 +372,10 @@ def trash(client, system, path):
     try:
         client.files.list(systemId=system,
                           filePath=settings.AGAVE_DEFAULT_TRASH_NAME)
-    except HTTPError:
+    except HTTPError as err:
+        if err.response.status_code != 404:
+            logger.error("Unexpected exception listing .trash path in {}".format(system))
+            raise
         mkdir(client, system, '/', settings.AGAVE_DEFAULT_TRASH_NAME)
 
     try:
@@ -386,6 +389,7 @@ def trash(client, system, path):
         trash_name = '{}_{}{}'.format(_name, now, _ext)
     except HTTPError as err:
         if err.response.status_code != 404:
+            logger.error("Unexpected exception listing path {} under .trash in system {}".format(file_name, system))
             raise
 
     resp = move(client, system, path, system,

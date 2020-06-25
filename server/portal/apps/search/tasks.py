@@ -4,8 +4,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from celery import shared_task
-# from portal.apps.projects.utils import project_id_to_system_id
-# from portal.apps.projects.models import ProjectMetadata
 from portal.libs.agave.utils import service_account
 from portal.libs.elasticsearch.utils import index_listing
 logger = logging.getLogger(__name__)
@@ -26,7 +24,7 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
     try:
         filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).__next__()
     except Exception as exc:
-        logger.debug(exc)
+        logger.error("Error walking files under system {} and path {}".format(systemId, filePath))
         raise self.retry(exc=exc)
 
     index_level(filePath, folders, files, systemId, reindex=reindex)

@@ -82,7 +82,7 @@ def walk_children(system, path, include_parent=True, recurse=False):
     """
     from portal.libs.elasticsearch.docs.base import IndexedFile
     search = IndexedFile.search()
-    search = search.filter(Q({'prefix': {'system._exact': system}}))
+    search = search.filter(Q({'term': {'system._exact': system}}))
     if recurse:
         basepath_query = Q({'prefix': {'basePath._exact': path}})
     else:
@@ -94,7 +94,6 @@ def walk_children(system, path, include_parent=True, recurse=False):
     else:
         search = search.filter(basepath_query)
 
-    print(search.scan())
     for hit in search.scan():
         yield hit
 

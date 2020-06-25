@@ -314,7 +314,6 @@ class TestAgaveUtils(TestCase):
         )
 
         for index, level in enumerate(levels_visited):
-            print(index)
             listing = listings_check[index]
             root = listing[0]['path']
             folders = [f['path'] for f in listing

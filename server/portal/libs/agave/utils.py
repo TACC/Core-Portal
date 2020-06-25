@@ -115,15 +115,17 @@ def iterate_level(client, system, path, limit=100):
         :rtype agavepy.agave.AttrDict
     """
     offset = 0
-    page = True
 
-    while page and (page is True or len(page) == limit):
+    while True:
         page = client.files.list(systemId=system,
                                  filePath=urllib.parse.quote(path),
                                  offset=offset,
                                  limit=limit)
         yield from page
         offset += limit
+        if len(page) != limit:
+            # Break out of the loop if the listing is exhausted.
+            break
 
 
 # pylint: disable=too-many-locals
