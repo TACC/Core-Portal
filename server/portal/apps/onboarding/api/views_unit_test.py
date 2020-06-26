@@ -241,10 +241,9 @@ def test_admin_route(rf, staff_user):
     assert type(response) == JsonResponse
 
 
-def test_admin_route_is_protected(rf, authenticated_user, client):
+def test_admin_route_is_protected(authenticated_user, client):
     # Test to make sure route is protected
     # If the user is not staff, then the route should return a redirect
-    client.force_login(authenticated_user)
     response = client.get("/api/onboarding/admin/", follow=False)
     assert response.status_code == 302
 
