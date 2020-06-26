@@ -1,5 +1,5 @@
-/* 
-  Wrappers 
+/*
+  Wrappers
 */
 .manage-account-wrapper {
   display: flex;
@@ -22,18 +22,20 @@
 }
 .user-profile {
   flex-grow: 1;
+
   @media (min-width: 992px) {
     /* Hide Border when tables stack on one another */
     .user-profile-main {
-      border-right: 1px solid rgba(112, 112, 112, .25);
-    } 
+      border-right: 1px solid rgba(112, 112, 112, 0.25);
+    }
   }
   .btn-link {
     color: #9d85ef;
   }
 }
-/* 
-  Components 
+
+/*
+  Components
 */
 .manage-account-header {
   display: flex;
@@ -67,7 +69,8 @@
   font-size: 14px;
   table-layout: fixed;
   line-height: 2.3rem;
-  td, th {
+  td,
+  th {
     padding: 0;
     width: 50%;
     text-overflow: ellipsis;
@@ -103,9 +106,10 @@
 }
 .profile-component-wrapper {
   margin-top: 1.25rem;
-    /* Override striped bootstrap table */
-  .table-striped>tbody>tr:nth-child(odd) {
-    background-color: rgba(198, 198, 198, 0.1); 
+
+  /* Override striped bootstrap table */
+  .table-striped > tbody > tr:nth-child(odd) {
+    background-color: rgba(198, 198, 198, 0.1);
   }
 }
 .profile-component-header {
@@ -128,7 +132,7 @@
   align-items: center;
   border-radius: 0;
   border: 0;
-  font: Bold 12px Roboto;
+  font: bold 12px Roboto, sans-serif;
   background-color: #9D85EF;
   padding: 0.5rem 1rem;
 }
