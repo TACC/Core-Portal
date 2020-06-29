@@ -45,7 +45,8 @@ ul#appBrowser-sidebar {
   list-style: none;
 }
 
-#appBrowser-sidebar .nav-link, #appBrowser-tray .nav-link {
+#appBrowser-sidebar .nav-link,
+#appBrowser-tray .nav-link {
   /* Overwrite Bootstrap, match UI design */
   padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
 
@@ -57,12 +58,14 @@ ul#appBrowser-sidebar {
   white-space: nowrap;
 }
 
-#appBrowser-sidebar .nav-link.active, #appBrowser-tray .nav-link.active {
+#appBrowser-sidebar .nav-link.active,
+#appBrowser-tray .nav-link.active {
   background: #dfdaf5;
   border: none;
 }
 
-#appBrowser-sidebar .nav-link:hover, #appBrowser-tray .nav-link:hover {
+#appBrowser-sidebar .nav-link:hover,
+#appBrowser-tray .nav-link:hover {
   background: #d9d1ff;
   border: none;
 }
@@ -71,10 +74,19 @@ ul#appBrowser-sidebar {
   flex-grow: 1;
 
   background-color: #f4f4f4;
-  border-left: 1px solid rgba(112, 112, 112, .25);
+  border-left: 1px solid rgba(112, 112, 112, 0.25);
 }
 
-#appBrowser-sidebar .nav-text, #appBrowser-tray .nav-text {
+#appBrowser-sidebar .nav-content {
+  padding-left: 10px;
+}
+#appBrowser-tray .nav-content {
+  display: flex;
+  align-items: center;
+}
+
+#appBrowser-sidebar .nav-text,
+#appBrowser-tray .nav-text {
   padding-left: 15px;
   font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
   font-weight: 500;
@@ -82,13 +94,11 @@ ul#appBrowser-sidebar {
 
 .app-icon,
 .category-icon {
-  /* Styles copied from .side-nav-icon because:
-     - CSS architecture does not facilitate `@extend`
-     - CSS modules not available yet to provide `composes`
-     - Styles of `.side-nav-icon` match prupose (though name does not) */
+  /* Styles copied from `.icon` */
+  /* FP-455: Do not duplicate styles */
   width: 1em;
   font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
   vertical-align: middle;
-
-  &[class*="icon-"]::before { display: block }
+  display: inline-flex; /* `flex` to align `::before`; `inline` to not trigger new line */
+                        /* a modern slimmer alternative to `&::before { display: block; }` */
 }

@@ -2,7 +2,7 @@
     font-size: 13px;
     font-weight: 500;
     width: 100%;
-    padding: .4em 0 .4em 0;
+    padding: 0.4em 0 0.4em 0;
 }
 
 $table-border: 1px solid black;
@@ -12,7 +12,7 @@ $table-border: 1px solid black;
     margin: 0;
     width: 100%;
     tr:hover {
-        background-color: rgba(0,0,0,.05);
+        background-color: rgba(0, 0, 0, 0.05);
     }
     td {
         padding: 5px 8px;
