@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     'portal.apps.notifications',
     'portal.apps.onboarding',
     'portal.apps.search',
+    'portal.apps.signals',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.datafiles',
