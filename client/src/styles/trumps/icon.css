@@ -63,7 +63,7 @@
 .icon-action-move::before {
   content: "\6d";
 }
-.icon-nav-notification::before {
+.icon-nav-bell::before {
   content: "\6e";
 }
 .icon-nav-dashboard::before {

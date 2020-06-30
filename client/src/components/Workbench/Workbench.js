@@ -6,6 +6,7 @@ import Allocations from '../Allocations';
 import Applications from '../Applications';
 import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
+import History from '../History';
 import * as ROUTES from '../../constants/routes';
 import './Workbench.scss';
 
@@ -19,6 +20,7 @@ function Workbench() {
     dispatch({ type: 'GET_ALLOCATIONS' });
     dispatch({ type: 'GET_APPS' });
     dispatch({ type: 'GET_APP_START' });
+    dispatch({ type: 'FETCH_NOTIFICATIONS' });
   }, []);
 
   return (
@@ -40,6 +42,7 @@ function Workbench() {
             path={`${path}${ROUTES.ALLOCATIONS}`}
             component={Allocations}
           />
+          <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
           <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
         </Switch>
       </div>
