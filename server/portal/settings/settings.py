@@ -619,14 +619,9 @@ CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 """
 SETTINGS: DATA DEPOT
 """
-
-PORTAL_DATA_DEPOT_MANAGERS = {
-    'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
-    'shared': 'portal.apps.data_depot.managers.shared.FileManager',
-    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager',
-    'public': 'portal.apps.data_depot.managers.public.FileManager',
-    'google-drive': 'portal.apps.data_depot.managers.google_drive.FileManager'
-}
+PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM = settings_secret._PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+# not being used
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',

@@ -90,6 +90,8 @@ def agave_oauth_callback(request):
         token_data['created'] = int(time.time())
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
+        # get system names
+        systems = list(settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.keys())
 
         if user:
             try:
@@ -111,7 +113,8 @@ def agave_oauth_callback(request):
 
             # Apply asynchronous long onboarding calls
             logger.info("Starting celery task for onboarding {username}".format(username=user.username))
-            setup_user.apply_async(args=[user.username])
+            for system in systems:
+                setup_user.apply_async(args=[user.username, system])
         else:
             messages.error(
                 request,

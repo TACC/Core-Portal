@@ -18,6 +18,8 @@ from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.accounts.models import SSHKeys, Keys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
+from portal.apps.accounts.managers.user_systems import UserSystemsManager
+from portal.apps.accounts.managers.ssh_keys import KeysManager
 from portal.apps.onboarding.execute import execute_setup_steps
 
 # pylint: disable=invalid-name
@@ -44,7 +46,9 @@ def check_user(username):
         )
     return users[0]
 
-
+# Keep?
+# Looks up a class by its string name in the "_lookup_x_manager" functions.
+# This can be replaced by importing our only key manager or system manager.
 def _import_manager(mgr_str):
     """Import Manager
 
@@ -56,7 +60,9 @@ def _import_manager(mgr_str):
     cls = getattr(module, cls_str)
     return cls
 
-
+# Keep?
+# This initializes the keys manager using its string and certain paramters.
+# We could just initialize the class where this function is used.
 def _lookup_keys_manager(user, password, token):
     """Lookup User Home Manager
 
@@ -75,7 +81,8 @@ def _lookup_keys_manager(user, password, token):
     cls = _import_manager(mgr_str)
     return cls(user.username, password, token)
 
-
+# Keep?
+# Do we need to look up our home manager? We could just initalize it instead.
 def _lookup_user_home_manager(user):
     """Lookup User Home Manager
 
@@ -94,7 +101,8 @@ def _lookup_user_home_manager(user):
     cls = _import_manager(mgr_str)
     return cls(user)
 
-
+# Keep?
+# this function does not appear to be used.
 def get_user_home_system_id(user):
     """Gets user home system id
 
@@ -105,12 +113,13 @@ def get_user_home_system_id(user):
     :rtype: str
     """
     if user.is_authenticated:
-        mgr = _lookup_user_home_manager(user)
+        mgr = _lookup_user_home_manager(user) # We could initialize the system manager here
         return mgr.get_system_id()
     return None
 
-
-def setup(username):
+# Called in "setup_user" task. Might be able to iteratively
+# call task for setup on multiple systems.
+def setup(username, system):
     """Fires necessary steps for setup
 
     Called asynchronously from portal.apps.auth.tasks.setup_user
@@ -140,7 +149,7 @@ def setup(username):
 
     return home_dir, home_sys
 
-
+# Revise this...
 def reset_home_system_keys(username, force=False):
     """Reset home system Keys
 
@@ -155,11 +164,13 @@ def reset_home_system_keys(username, force=False):
         and overwrite the `reset_system_keys` method.
     """
     user = check_user(username)
-    mgr = _lookup_user_home_manager(user)
+    mgr = _lookup_user_home_manager(user) # We could initialize the system manager here
     pub_key = mgr.reset_system_keys(user, force=force)
     return pub_key
 
-
+# Need to go over this...
+# we have a "reset_system_keys" function in the systems manager.
+# this is used in the "SystemKeysView"
 def reset_system_keys(username, system_id):
     """Reset system's Keys
 
@@ -285,7 +296,7 @@ def add_pub_key_to_resource(
 
     success = True
     user = check_user(username)
-    mgr = _lookup_keys_manager(
+    mgr = _lookup_keys_manager( # We could initialize the keys manager here
         user,
         password,
         token
@@ -349,6 +360,7 @@ def storage_systems(user, offset=0, limit=100, filter_prefix=True):
     :param int limit: Limit.
     :param bool filter_prefix: Whether or not to filter by prefix.
     """
+    # Should be updated (does not expect to return other systems such as Longhorn)
     prefix = getattr(
         settings,
         'PORTAL_NAMESPACE',
@@ -390,6 +402,7 @@ def execution_systems(user, offset=0, limit=100, filter_prefix=True):
     :param int limit: Limit.
     :param bool filter_prefix: Whether or not to filter by prefix.
     """
+    # Will we have execution systems on Longhorn? If so this will need to be updated.
     prefix = getattr(settings, 'PORTAL_NAMESPACE', '')
     if not prefix or not filter_prefix:
         systems = ExecutionSystem.list(
