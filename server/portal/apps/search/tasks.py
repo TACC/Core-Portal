@@ -88,7 +88,13 @@ def index_my_data(self, reindex=False):
     users = User.objects.all()
     for user in users:
         uname = user.username
-        systemId = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(uname)
+        # get default system prefix
+        default_sys = settings.PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM
+        default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
+        systemId = default_system_prefix.format(uname)
+        # changed to ^^^
+        # systemId = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(uname)
+
         # s = IndexedFile.search()
         # s = s.query("match", **{"system._exact": systemId})
         # resp = s.delete()

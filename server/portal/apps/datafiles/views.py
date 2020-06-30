@@ -3,7 +3,6 @@ from django.http import JsonResponse, HttpResponseForbidden
 from django.conf import settings
 import json
 import logging
-from portal.apps.accounts.managers.accounts import get_user_home_system_id
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
@@ -15,15 +14,20 @@ class SystemListingView(BaseApiView):
     """System Listing View"""
 
     def get(self, request):
-        community_data_system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
-        public_data_system = settings.AGAVE_PUBLIC_DATA_SYSTEM
-        mydata_system = get_user_home_system_id(request.user)
+        # gather local and external storage systems for My Data listing
+        local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
 
-        response = {
-            'private': mydata_system,
-            'community': community_data_system,
-            'public': public_data_system
-        }
+        response = {'system_list': []}
+        for locsys, details in local_systems.items():
+            response['system_list'].append(
+                {
+                    'name': details['name'],
+                    'system': details['prefix'].format(request.user.username),
+                    'scheme': 'private',
+                    'api': 'tapis',
+                    'icon': details['icon']
+                }
+            )
 
         return JsonResponse(response)
 
