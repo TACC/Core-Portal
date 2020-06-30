@@ -15,7 +15,7 @@ from portal.apps.workspace.managers.base import AbstractApplicationsManager
 from portal.utils import encryption as EncryptionUtil
 from portal.apps.accounts.managers.accounts import _lookup_user_home_manager
 from portal.apps.accounts.models import SSHKeys
-from portal.apps.accounts.managers.user_work_home import UserWORKHomeManager
+from portal.apps.accounts.managers.user_systems import UserSystemsManager
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -278,7 +278,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
     ):  # pylint:disable=arguments-differ
         """Initializes Agave execution system
 
-        :param class system: ExecutionSystem instance
+        :param class system_id: ExecutionSystem ID
         :param str allocation: Project allocation for customDirectives
 
         :returns: ExecutionSystem instance
@@ -296,10 +296,11 @@ class UserApplicationsManager(AbstractApplicationsManager):
             username=username
         )
 
-        user_work_home_mgr = UserWORKHomeManager(self.user)
+        system_name = system_id.split('.')[0]
+        user_systems_mgr = UserSystemsManager(self.user, use_work=True)
 
         system.storage.host = system.login.host
-        system.storage.home_dir = user_work_home_mgr.get_home_dir_abs_path()
+        system.storage.home_dir = user_systems_mgr.get_home_dir_abs_path()
         system.storage.port = system.login.port
         system.storage.root_dir = '/'
         system.storage.protocol = 'SFTP'
@@ -310,12 +311,16 @@ class UserApplicationsManager(AbstractApplicationsManager):
         system.login.auth.username = self.user.username
         system.login.auth.type = system.AUTH_TYPES.SSHKEYS
 
-        scratch_hosts = ['data', 'stampede2', 'lonestar5']
+        scratch_hosts = ['data', 'stampede2', 'lonestar5', 'longhorn']
         scratch1_hosts = ['frontera']
         if system.storage.host in [s + '.tacc.utexas.edu' for s in scratch_hosts]:
-            system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch')
+            system.scratch_dir = system.storage.home_dir.replace(
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system.id.split('.')[0]], '/scratch')
+            # system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch')
         elif system.storage.host in [s + '.tacc.utexas.edu' for s in scratch1_hosts]:
-            system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch1')
+            system.scratch_dir = system.storage.home_dir.replace(
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system.id.split('.')[0]], '/scratch')
+            # system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch1')
         else:
             system.scratch_dir = system.storage.home_dir
         system.work_dir = system.storage.home_dir
