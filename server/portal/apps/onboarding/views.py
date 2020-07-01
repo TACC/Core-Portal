@@ -31,7 +31,6 @@ class SetupStatusView(View):
             'email': user.email,
             'username': user.username
         }
-        print(context)
         return render(request, 'portal/apps/onboarding/setup.html', context)
 
 
