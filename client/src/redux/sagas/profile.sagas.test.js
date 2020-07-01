@@ -167,7 +167,6 @@ describe("getFormFields Saga", () => {
 
 describe("Change Password Form", () => {
   const action = {
-    callback: () => null,
     values: {},
   };
   const params = {
@@ -182,7 +181,6 @@ describe("Change Password Form", () => {
       .provide([[matchers.call.fn(fetchUtil, params), {}]])
       .call(fetchUtil, params)
       .put({ type: "CHECKED_PASSWORD" })
-      .call(action.callback, { reset: true })
       .put({ type: "CHANGED_PASSWORD" })
       .hasFinalState({
         ...initialState,

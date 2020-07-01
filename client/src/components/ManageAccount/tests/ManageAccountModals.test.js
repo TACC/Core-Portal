@@ -60,7 +60,8 @@ describe("Change Password", () => {
       getAllByText,
       getByText,
       getByLabelText,
-      getByTestId, rerender
+      getByTestId,
+      rerender
     } = render(
       <Provider store={testStore}>
         <ChangePassword />
@@ -144,22 +145,31 @@ describe("Change Password", () => {
     expect(getByText(/Loading/)).toBeDefined();
 
     // Success
+    const successStore = mockStore({
+      profile: {
+        ...dummyState,
+        success: {
+          password: true,
+        },
+      },
+    });
     rerender(
       <Provider
-        store={mockStore({
-          profile: {
-            ...dummyState,
-            success: {
-              password: true
-            }
-          }
-        })}
+        store={successStore}
       >
         <ChangePassword />
       </Provider>
     );
     expect(getByText(/Your password has been successfully changed!/)).toBeDefined();
 
+    // Close Modal
+    const closeButton = getByLabelText(/Close/);
+    fireEvent.click(closeButton);
+    await wait(() => {
+      const [close, reload] = successStore.getActions();
+      expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
+      expect(reload.type).toEqual('LOAD_PROFILE_DATA');
+    });
   });
 });
 
@@ -246,13 +256,44 @@ describe("Edit Optional Information", () => {
       </Provider>
     );
     expect(getByText(/Loading.../)).toBeDefined();
+  });
+
+  it("should dispatch actions on close", async () => {
+    const store = mockStore({
+      profile: {
+        ...dummyState,
+        fields: {
+          countries: [[230, "United States"]],
+          institutions: [[1, "University of Texas at Austin"]],
+          ethnicities: [["Decline", "Decline to Identify"]],
+          genders: [["Other", "Other"]],
+          professionalLevels: [["Other", "Other"]],
+          titles: [["Other User", "Other User"]],
+        },
+        editing: false,
+        success: { optional: true },
+      },
+    });
+    rerender(
+      <Provider store={store}>
+        <EditOptionalInformation />
+      </Provider>
+    );
+    expect(getByText(/Successfully Edited/)).toBeDefined();
+    const closeButton = getByLabelText(/Close/);
+    fireEvent.click(closeButton);
+    await wait(() => {
+      const [close, reload] = store.getActions();
+      expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
+      expect(reload.type).toEqual('LOAD_PROFILE_DATA');
+    });
   })
 
 });
 
 describe("Edit Required Information", () => {
   const testState = { ...dummyState, modals: { required: true } };
-  let debug, getByText, rerender, getByLabelText;
+  let getByText, rerender, getByLabelText;
   beforeEach(() => {
     const testStore = mockStore({
       profile: testState,
@@ -262,7 +303,6 @@ describe("Edit Required Information", () => {
         <EditRequiredInformation />
       </Provider>
     );
-    debug = utils.debug;
     getByText = utils.getByText;
     rerender = utils.rerender;
     getByLabelText = utils.getByLabelText;
@@ -354,7 +394,6 @@ describe("Edit Required Information", () => {
       expect(getByText(/Please enter a valid email address/)).toBeDefined();
       expect(getByText(/Phone number is not valid/)).toBeDefined();
       expect(clickSpy).not.toHaveBeenCalled();
-      debug();
     });
     
   });
@@ -380,6 +419,37 @@ describe("Edit Required Information", () => {
       </Provider>
     );
     expect(getByText(/Loading.../)).toBeDefined();
+  })
+
+  it("should close and reload the modal on success", async () => {
+    const store = mockStore({
+      profile: {
+        ...dummyState,
+        fields: {
+          countries: [[230, "United States"]],
+          institutions: [[1, "University of Texas at Austin"]],
+          ethnicities: [["Decline", "Decline to Identify"]],
+          genders: [["Other", "Other"]],
+          professionalLevels: [["Other", "Other"]],
+          titles: [["Other User", "Other User"]],
+        },
+        editing: false,
+        success: { required: true },
+      },
+    });
+    rerender(
+      <Provider store={store}>
+        <EditRequiredInformation />
+      </Provider>
+    );
+    expect(getByText(/Successfully Edited/)).toBeDefined();
+    const closeButton = getByLabelText(/Close/);
+    fireEvent.click(closeButton);
+    await wait(() => {
+      const [close, reload] = store.getActions();
+      expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
+      expect(reload.type).toEqual('LOAD_PROFILE_DATA');
+    });
   })
 
 });
