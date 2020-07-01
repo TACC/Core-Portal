@@ -167,7 +167,10 @@ describe("getFormFields Saga", () => {
 
 describe("Change Password Form", () => {
   const action = {
+<<<<<<< HEAD
     callback: () => null,
+=======
+>>>>>>> task/FP-423-frontend-component-tests
     values: {},
   };
   const params = {
@@ -182,7 +185,10 @@ describe("Change Password Form", () => {
       .provide([[matchers.call.fn(fetchUtil, params), {}]])
       .call(fetchUtil, params)
       .put({ type: "CHECKED_PASSWORD" })
+<<<<<<< HEAD
       .call(action.callback, { reset: true })
+=======
+>>>>>>> task/FP-423-frontend-component-tests
       .put({ type: "CHANGED_PASSWORD" })
       .hasFinalState({
         ...initialState,

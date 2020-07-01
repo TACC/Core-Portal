@@ -12,7 +12,11 @@ import {
   ThirdPartyApps,
   OptionalInformation
 } from './ManageAccountTables';
-import ManageAccountModals from './ManageAccountModals';
+import {
+  ChangePassword as ChangePasswordModal,
+  EditOptionalInformation as EditOptionalInformationModal,
+  EditRequiredInformation as EditRequiredInformationModal
+} from './ManageAccountModals';
 import './ManageAccount.scss';
 
 const ManageAccountView = () => {
@@ -49,7 +53,9 @@ const ManageAccountView = () => {
                 )}
                 <RequiredInformation />
                 <OptionalInformation />
-                <ManageAccountModals />
+                <ChangePasswordModal />
+                <EditOptionalInformationModal />
+                <EditRequiredInformationModal />
               </>
             )}
           </Col>

@@ -116,13 +116,3 @@ export const ChangePassword = () => {
     </Modal>
   );
 };
-
-export default () => {
-  return (
-    <>
-      <EditRequiredInformation />
-      <EditOptionalInformation />
-      <ChangePassword />
-    </>
-  );
-};
