@@ -1,9 +1,10 @@
 import { call, takeEvery, takeLatest, put } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
+import ReconnectingWebSocket from 'reconnecting-websocket';
 import { fetchUtil } from 'utils/fetchUtil';
 
 const createNotificationsSocket = () =>
-  new WebSocket(`wss://${window.location.host}/ws/notifications/`);
+  new ReconnectingWebSocket(`wss://${window.location.host}/ws/notifications/`);
 
 function socketEmitter(socket) {
   return eventChannel(emit => {
