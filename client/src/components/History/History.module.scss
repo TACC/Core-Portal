@@ -1,0 +1,87 @@
+/*
+    Components
+*/
+.btn-link {
+    color: #9d85ef;
+    padding-left: 0;
+}
+.history-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 40px 0 20px;
+}
+.history-container {
+    /* As a flex item */
+    flex-grow: 1;
+
+    /* As a flex container */
+    display: flex;
+    flex-direction: row;
+
+    border-top: 1px solid #707070;
+}
+/* Make right-most item fill up remaining horizontal space */
+.history-container > :last-child {
+    flex-grow: 1;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+
+    .header-text {
+        font-size: 1.25rem;
+        display: flex;
+        align-items: flex-end;
+    }
+
+    button {
+        padding: 0;
+    }
+}
+.history-sidebar {
+    --vertical-buffer: 15px;
+    /* FP-404: All Portal section sidebars should use this value. */
+    --min-width: 200px;
+
+    margin-left: -20px;
+    border-right: 1px solid rgba(112, 112, 112, 0.25);
+
+    padding-top: var(--vertical-buffer);
+
+    a {
+        min-width: var(--min-width);
+
+        color: #707070;
+        padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
+
+        .link-icon {
+            font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
+            width: 1em;
+        }
+        .link-text {
+            font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+            font-weight: 500;
+            padding-left: 16px;
+            vertical-align: middle;
+        }
+    }
+    .active {
+        background: rgba(#9d85ef, 0.25);
+    }
+}
+
+.history-badge {
+    height: 1.1em;
+    width: 1.3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9em;
+    border-radius: 30%;
+    background-color: #9d85ef;
+    color: #fff;
+    margin-left: auto;
+    margin-right: 2em;
+}

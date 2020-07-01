@@ -21,7 +21,7 @@ export function* watchSocket() {
 }
 
 export function* handleSocket(action) {
-  yield put({ type: 'ADD_NOTIFICATION', payload: action });
+  yield put({ type: 'NEW_NOTIFICATION', payload: action });
 }
 
 export function* fetchNotifications() {

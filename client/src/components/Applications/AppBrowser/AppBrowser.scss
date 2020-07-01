@@ -47,9 +47,6 @@ ul#appBrowser-sidebar {
 
 #appBrowser-sidebar .nav-link,
 #appBrowser-tray .nav-link {
-  /* Overwrite Bootstrap, match UI design */
-  padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
-
   color: #707070;
   border-radius: 0;
   cursor: pointer; /* RFE: Add `href` on links to both avoid needing this style and provide URL to app state */
@@ -75,14 +72,6 @@ ul#appBrowser-sidebar {
 
   background-color: #f4f4f4;
   border-left: 1px solid rgba(112, 112, 112, 0.25);
-}
-
-#appBrowser-sidebar .nav-content {
-  padding-left: 10px;
-}
-#appBrowser-tray .nav-content {
-  display: flex;
-  align-items: center;
 }
 
 #appBrowser-sidebar .nav-text,

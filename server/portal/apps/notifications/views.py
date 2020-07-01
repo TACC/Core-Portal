@@ -49,9 +49,9 @@ class ManageNotificationsView(BaseApiView):
         """Mark notifications as read.
         """
         body = json.loads(request.body)
-        nid = body['id']
-        read = body['read']
-        event_type = body['eventType']
+        nid = body.get('id')
+        read = body.get('read', True)
+        event_type = body.get('eventType', None)
 
         if nid == 'all' and read is True:
             if event_type is not None:

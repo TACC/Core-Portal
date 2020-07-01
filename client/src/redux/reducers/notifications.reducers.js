@@ -1,5 +1,10 @@
 const initialState = {
-  list: [],
+  list: {
+    notifs: [],
+    unread: 0,
+    total: 0,
+    page: 0
+  },
   loading: false,
   loadingError: false,
   loadingErrorMessage: ''
@@ -7,10 +12,19 @@ const initialState = {
 
 export default function notifications(state = initialState, action) {
   switch (action.type) {
-    case 'NOTIFICATIONS_LIST_FETCH_SUCCESS':
+    case 'NEW_NOTIFICATION':
       return {
         ...state,
-        list: action.payload,
+        list: {
+          ...state.list,
+          notifs: state.list.notifs.concat(action.payload),
+          unread: state.list.unread + 1,
+          total: state.list.total + 1
+        }
+      };
+    case 'NOTIFICATIONS_LIST_FETCH_SUCCESS':
+      return {
+        list: { ...action.payload },
         loading: false,
         loadingError: false,
         loadingErrorMessage: ''
