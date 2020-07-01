@@ -289,14 +289,20 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
         file_name = src_path.strip('/').split('/')[-1]
 
     try:
-        client.files.list(systemId=dest_system,
-                          filePath="{}/{}".format(dest_path, file_name))
+        # list the directory and check if file_name exists
+        file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
 
-        # Destination path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        file_name = '{}_{}{}'.format(_name, now, _ext)
+        if len([x['name'] for x in file_listing if x['name']==file_name]) > 0:
+            inc = 1
+            _ext = os.path.splitext(file_name)[1].lower()
+            _name = os.path.splitext(file_name)[0]
+            _inc = "({})".format(inc)
+            file_name = '{}{}{}'.format(_name, _inc, _ext)
+
+            while len([x['name'] for x in file_listing if x['name']==file_name]) > 0:
+                inc+=1
+                _inc = "({})".format(inc)
+                file_name = '{}{}{}'.format(_name, _inc, _ext)
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
