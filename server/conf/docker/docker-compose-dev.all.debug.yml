@@ -94,10 +94,6 @@ services:
       - ../../../.:/srv/www/portal
       - ../../static:/var/www/portal/server/static
       - ../../media:/var/www/portal/server/media
-      - ../nginx/certificates/frontera.dev.crt:/etc/ssl/frontera.dev.crt
-      - ../nginx/certificates/frontera.dev.key:/etc/ssl/frontera.dev.key
-    ports:
-      - 6000:6000
     dns:
       - 8.8.8.8
       - 8.8.4.4
