@@ -5,11 +5,6 @@
     color: #9d85ef;
     padding-left: 0;
 }
-.history-wrapper {
-    display: flex;
-    flex-direction: column;
-    padding: 20px 40px 0 20px;
-}
 .history-container {
     /* As a flex item */
     flex-grow: 1;
@@ -70,18 +65,4 @@
     .active {
         background: rgba(#9d85ef, 0.25);
     }
-}
-
-.history-badge {
-    height: 1.1em;
-    width: 1.3em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9em;
-    border-radius: 30%;
-    background-color: #9d85ef;
-    color: rgb(253, 241, 241);
-    margin-left: auto;
-    margin-right: 2em;
 }

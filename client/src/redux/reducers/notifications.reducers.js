@@ -1,4 +1,4 @@
-const initialState = {
+export const initialState = {
   list: {
     notifs: [],
     unread: 0,
