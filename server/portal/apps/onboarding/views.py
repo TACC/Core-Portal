@@ -8,7 +8,6 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 
-@method_decorator(login_required, name='dispatch')
 class SetupStatusView(View):
     """User setup steps view
     """
@@ -32,7 +31,7 @@ class SetupStatusView(View):
             'email': user.email,
             'username': user.username
         }
-
+        print(context)
         return render(request, 'portal/apps/onboarding/setup.html', context)
 
 

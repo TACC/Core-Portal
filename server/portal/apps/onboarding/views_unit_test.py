@@ -1,9 +1,4 @@
-from builtins import type
-
-from django.http import HttpResponseRedirect
-from portal.apps.onboarding.views import SetupStatusView
 import pytest
-
 
 pytestmark = pytest.mark.django_db
 
@@ -12,59 +7,20 @@ pytestmark = pytest.mark.django_db
 # a placeholder.
 
 
-@pytest.fixture
-def render_mock(mocker):
-    yield mocker.patch('portal.apps.onboarding.views.render')
-
-
-@pytest.fixture
-def logout_mock(mocker):
-    yield mocker.patch('portal.apps.onboarding.views.logout')
-
-
-def test_get_self(rf, authenticated_user, render_mock):
+def test_get_self(rf, client, authenticated_user, mock_steps):
     # Test when view is called with a username parameter that matches
     # the requesting user, but the requester is not a staff member
-    request = rf.get("/accounts/setup")
-    request.user = authenticated_user
-
-    view = SetupStatusView()
-    view.get(request, authenticated_user.username)
-    render_mock.assert_called_with(
-        request,
-        'portal/apps/onboarding/setup.html',
-        {
-            "first_name": authenticated_user.first_name,
-            "last_name": authenticated_user.last_name,
-            "email":  authenticated_user.email,
-            "username": authenticated_user.username
-        }
-    )
+    client.force_login(authenticated_user)
+    response = client.get("/onboarding/setup/{}/".format(authenticated_user.username))
+    assert response.status_code == 200
 
 
-def test_get_as_staff(rf, user2, staff_user, render_mock):
+def test_get_as_staff(client, authenticated_staff, regular_user, mock_steps):
     # Test when a staff member gets another user
-    request = rf.get("/accounts/setup")
-    request.user = staff_user
-    view = SetupStatusView()
-    view.get(request, user2.username)
-    render_mock.assert_called_with(
-        request,
-        'portal/apps/onboarding/setup.html',
-        {
-            "first_name": user2.first_name,
-            "last_name": user2.last_name,
-            "email":  user2.email,
-            "username": user2.username
-        }
-    )
+    response = client.get("/onboarding/setup/{}/".format(regular_user.username))
+    assert response.status_code == 200
 
 
-def test_get_forbidden(mocker, rf, authenticated_user, user2, logout_mock):
-    # Test when a non-staff user tries to get another user
-    request = rf.get("/accounts/setup")
-    request.user = authenticated_user
-    view = SetupStatusView()
-    response = view.get(request, user2.username)
-    logout_mock.assert_called_with(mocker.ANY)
-    assert type(response) == HttpResponseRedirect
+def test_get_forbidden(client, mocker, rf, authenticated_user, staff_user, mock_steps):
+    response = client.get("/accounts/setup/{}".format(staff_user.username))
+    assert response.status_code == 301
