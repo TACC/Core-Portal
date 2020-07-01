@@ -12,10 +12,9 @@ const Sidebar = () => {
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
 
-  const { unread } = useSelector(
-    state => state.notifications.list,
-    shallowEqual
-  );
+  const {
+    list: { unread }
+  } = useSelector(state => state.notifications, shallowEqual);
 
   return (
     <Nav styleName="root" vertical>
