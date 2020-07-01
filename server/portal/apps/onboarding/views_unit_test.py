@@ -7,6 +7,10 @@ import pytest
 
 pytestmark = pytest.mark.django_db
 
+#  These tests use frontend code that doesn't exist. They only
+# run now as we mock the render function.  They are basically just
+# a placeholder.
+
 
 @pytest.fixture
 def render_mock(mocker):
