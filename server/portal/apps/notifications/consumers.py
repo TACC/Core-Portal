@@ -19,12 +19,13 @@ class NotificationsConsumer(AsyncJsonWebsocketConsumer):
         Called when the websocket is handshaking as part of initial connection.
         """
 
-        if self.scope["user"].is_anonymous:
+        user = self.scope["user"]
+        if user.is_anonymous:
             # Reject the connection if not logged in
             await self.close()
         else:
             # Add channel connection to username and general groups
-            await self.channel_layer.group_add(self.scope['user'].username,
+            await self.channel_layer.group_add(user.username,
                                                self.channel_name)
             await self.channel_layer.group_add('portal_events',
                                                self.channel_name)
@@ -34,7 +35,14 @@ class NotificationsConsumer(AsyncJsonWebsocketConsumer):
         """
         Called when the WebSocket closes for any reason.
         """
-        pass
+        await self.channel_layer.group_discard(
+            group=self.scope["user"].username,
+            channel=self.channel_name
+        )
+        await self.channel_layer.group_discard(
+            group='portal_events',
+            channel=self.channel_name
+        )
 
     async def portal_notification(self, event):
         """
@@ -49,4 +57,4 @@ class NotificationsConsumer(AsyncJsonWebsocketConsumer):
         Called when we get a text frame. Channels will JSON-decode the payload
         for us and pass it as the first argument.
         """
-        pass
+        await self.send_json(content)

@@ -39,6 +39,7 @@ pycryptodome==3.9.0
 pyOpenSSL==19.1.0
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.4.0#egg=pytas
 pytest==5.3.1
+pytest-asyncio==0.14.0
 pytest-cov==2.8.1
 pytest-django==3.7.0
 pytest-mock==2.0.0
