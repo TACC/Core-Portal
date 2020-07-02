@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
 import { capitalize, has, isEmpty } from 'lodash';
+import AllocationsUsageTable from './AllocationsUsageTable';
 
 const MODAL_PROPTYPES = {
   isOpen: bool.isRequired,
@@ -192,7 +193,7 @@ export const ContactCard = ({ listing }) => {
         Username: {username} | Email: {email}
       </div>
       {!isEmpty(listing.usageData) && (
-        <UsageTable rawData={listing.usageData} />
+        <AllocationsUsageTable rawData={listing.usageData} />
       )}
     </div>
   );
@@ -200,83 +201,3 @@ export const ContactCard = ({ listing }) => {
 
 ContactCard.propTypes = { listing: USER_LISTING_PROPTYPES };
 ContactCard.defaultProps = { listing: {} };
-
-export const UsageTable = ({ rawData }) => {
-  const data = React.useMemo(() => rawData, [rawData]);
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: 'System',
-        accessor: entry => {
-          const system = entry.resource.split('.')[0];
-          const sysNum = system.match(/\d+$/);
-          const sysName = capitalize(system.replace(/[0-9]/g, ''));
-          if (sysNum) {
-            return `${sysName} ${sysNum[0]}`;
-          }
-          return sysName;
-        }
-      },
-      { Header: 'Usage', accessor: 'usage' },
-      {
-        Header: '% of Allocation',
-        accessor: entry => {
-          if (entry.percentUsed >= 1) {
-            return `${entry.percentUsed}%`;
-          }
-          return `< 1%`;
-        }
-      }
-    ],
-    [rawData]
-  );
-  const {
-    getTableBodyProps,
-    rows,
-    prepareRow,
-    headerGroups,
-    getTableProps
-  } = useTable({
-    columns,
-    data
-  });
-  return (
-    <div className="allocations-table">
-      <table
-        {...getTableProps({
-          className: 'usage-table'
-        })}
-      >
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map(row => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => (
-                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                ))}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-UsageTable.propTypes = {
-  rawData: arrayOf(
-    shape({
-      resource: string,
-      usage: number
-    })
-  ).isRequired
-};
