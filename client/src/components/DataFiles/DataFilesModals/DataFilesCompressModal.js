@@ -1,9 +1,85 @@
 import React, { useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { LoadingSpinner } from '_common';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Form,
+  Input,
+  FormGroup
+} from 'reactstrap';
+import { LoadingSpinner, FormField } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
-import { isString } from 'lodash';
+import { isString, chain } from 'lodash';
+import { Formik } from 'formik';
+import PropTypes from 'prop-types';
+import * as yup from 'yup';
+
+const DataFilesCompressForm = ({ first, formRef }) => {
+  const initialValues = {
+    filename: `${first}.zip`,
+    filetype: 'zip'
+  };
+  const validationSchema = yup.object().shape({
+    filename: yup.string().required('The filename is required')
+  });
+
+  return (
+    <Formik
+      innerRef={formRef}
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+    >
+      {({ values, setFieldValue, ...props }) => {
+        const handleSelectChange = e => {
+          const ext = e.target.value;
+          setFieldValue('filetype', ext);
+          if (!values.filename.includes(ext) && ext === 'tar.gz') {
+            const newFileName = chain(values.filename.split('.'))
+              .initial()
+              .push(ext)
+              .value()
+              .join('.');
+            setFieldValue('filename', newFileName);
+          } else {
+            const newFileName = chain(values.filename.split('.'))
+              .initial()
+              .initial()
+              .push(ext)
+              .value()
+              .join('.');
+            setFieldValue('filename', newFileName);
+          }
+        };
+        return (
+          <Form>
+            <FormField label="Filename" name="filename" />
+            <FormGroup>
+              <Input
+                type="select"
+                name="filetype"
+                bsSize="sm"
+                onChange={handleSelectChange}
+              >
+                <option value="zip">zip</option>
+                <option value="tar.gz">tar.gz</option>
+              </Input>
+            </FormGroup>
+          </Form>
+        );
+      }}
+    </Formik>
+  );
+};
+DataFilesCompressForm.propTypes = {
+  first: PropTypes.string.isRequired,
+  formRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.any })
+  ]).isRequired
+};
 
 const DataFilesCompressModal = () => {
   const history = useHistory();
@@ -20,20 +96,21 @@ const DataFilesCompressModal = () => {
   );
 
   const isOpen = useSelector(state => state.files.modals.compress);
-  const selectedFiles = useSelector(({ files: { selected, listing } }) =>
-    selected.FilesListing.map(i => ({
-      ...listing.FilesListing[i]
-    }))
+  const selectedFiles = useSelector(
+    ({ files: { selected, listing } }) =>
+      selected.FilesListing.map(i => ({
+        ...listing.FilesListing[i]
+      })),
+    shallowEqual
   );
   const selected = useMemo(() => selectedFiles, [isOpen]);
-
+  const formRef = React.useRef();
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'compress', props: {} }
     });
 
-  // TODO: Add listing of files to be compressed
   const onOpened = () => {
     dispatch({
       type: 'FETCH_FILES_MODAL',
@@ -53,9 +130,10 @@ const DataFilesCompressModal = () => {
   };
 
   const compressCallback = () => {
+    const { filename } = formRef.current.values;
     dispatch({
       type: 'DATA_FILES_COMPRESS',
-      payload: { files: selected }
+      payload: { filename, files: selected }
     });
   };
 
@@ -69,7 +147,10 @@ const DataFilesCompressModal = () => {
     >
       <ModalHeader toggle={toggle}>Compress Files</ModalHeader>
       <ModalBody>
-        {/* TODO: Form for filename and filetype */}
+        <DataFilesCompressForm
+          formRef={formRef}
+          first={(selectedFiles[0] && selectedFiles[0].name) || ''}
+        />
         <p>
           A job to compress your files will be submitted on your behalf. You can
           check the status of this job on your Dashboard, and your compressed
@@ -88,7 +169,11 @@ const DataFilesCompressModal = () => {
           disabled={status === 'RUNNING'}
           style={{ display: 'flex' }}
         >
-          {status === 'RUNNING' && <LoadingSpinner placement="inline" />}
+          {status === 'RUNNING' && (
+            <>
+              <LoadingSpinner placement="inline" />{' '}
+            </>
+          )}
           <span>Compress</span>
         </Button>
         <Button

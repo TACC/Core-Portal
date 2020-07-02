@@ -97,7 +97,11 @@ const DataFilesToolbar = ({ scheme }) => {
     selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
   const canTrash = selectedFiles.length > 0 && scheme === 'private';
   const canCompress = selectedFiles.length > 0 && scheme === 'private';
-  const canExtract = canDownload && selectedFiles[0].name.includes('.zip');
+  const isArchive =
+    selectedFiles.length > 0 &&
+    (selectedFiles[0].name.includes('.zip') ||
+      selectedFiles[0].name.includes('tar.gz'));
+  const canExtract = canDownload && isArchive;
 
   return (
     <>

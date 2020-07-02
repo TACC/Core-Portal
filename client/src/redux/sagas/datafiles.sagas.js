@@ -615,6 +615,7 @@ const getExtractParams = async file => {
     parameters: {}
   });
 };
+
 export function* extractFiles(action) {
   try {
     const params = yield call(getExtractParams, action.payload.file);
@@ -645,7 +646,7 @@ export function* watchExtract() {
 /**
  * Create JSON string of job params
  */
-const getCompressParams = async files => {
+const getCompressParams = async (files, zipfileName) => {
   const res = await fetchUtil({
     url: '/api/workspace/apps',
     params: { publicOnly: true }
@@ -667,7 +668,7 @@ const getCompressParams = async files => {
   };
   const parameters = {
     filenames: files.reduce((names, file) => `${names}"${file.name}" `, ''),
-    zipfileName: `${files[0].name}.zip`
+    zipfileName
   };
   const archivePath = `agave://${files[0].system}${files[0].path.substring(
     0,
@@ -688,7 +689,11 @@ const getCompressParams = async files => {
 
 export function* compressFiles(action) {
   try {
-    const params = yield call(getCompressParams, action.payload.files);
+    const params = yield call(
+      getCompressParams,
+      action.payload.files,
+      action.payload.filename
+    );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'compress' }

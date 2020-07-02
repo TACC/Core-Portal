@@ -84,7 +84,11 @@ const DataFilesCompressModal = () => {
           disabled={status === 'RUNNING'}
           style={{ display: 'flex' }}
         >
-          {status === 'RUNNING' && <LoadingSpinner placement="inline" />}
+          {status === 'RUNNING' && (
+            <>
+              <LoadingSpinner placement="inline" />{' '}
+            </>
+          )}
           <span>Extract</span>
         </Button>
         <Button
