@@ -6,6 +6,7 @@ import { LoadingSpinner } from '_common';
 import { has } from 'lodash';
 import AllocationsTeamTable from './AllocationsTeamTable';
 import AllocationsContactCard from './AllocationsContactCard';
+import './AllocationsTeamViewModal.module.scss';
 
 const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
   const { teams, loadingUsernames, errors } = useSelector(
@@ -15,12 +16,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
   const [card, setCard] = useState(null);
   const isLoading = loadingUsernames[pid] && loadingUsernames[pid].loading;
   return (
-    <Modal
-      isOpen={isOpen}
-      toggle={toggle}
-      className="team-view-modal-wrapper"
-      size="lg"
-    >
+    <Modal isOpen={isOpen} toggle={toggle} styleName="root" size="lg">
       <ModalHeader
         toggle={toggle}
         charCode="x"
@@ -38,7 +34,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
             </Row>
           ) : (
             <Row>
-              <Col className="modal-left" lg={5}>
+              <Col styleName="listing-wrapper" lg={5}>
                 {isLoading ? (
                   <LoadingSpinner />
                 ) : (
@@ -49,7 +45,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
                   />
                 )}
               </Col>
-              <Col className="modal-right">
+              <Col styleName="information-wrapper">
                 {isLoading ? (
                   <span>Loading user list. This may take a moment.</span>
                 ) : (

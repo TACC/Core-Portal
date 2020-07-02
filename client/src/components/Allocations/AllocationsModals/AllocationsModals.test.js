@@ -3,19 +3,22 @@ import { render, fireEvent } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
-import { NewAllocReq, TeamView } from "../AllocationsModals";
+import { AllocationsRequestModal, AllocationsTeamViewModal } from './index'
 
 const mockStore = configureStore();
 
 describe("New Allocations Request Modal", () => {
   test("Allocations Request UI", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <BrowserRouter>
-        <NewAllocReq isOpen toggle={() => null} />
+        <AllocationsRequestModal isOpen toggle={() => null} />
       </BrowserRouter>
     );
-    expect(getByText("Manage Allocations")).toBeDefined();
-    expect(getByTestId("request-body")).toBeDefined();
+    const xrasLink = 'https://tacc-submit.xras.xsede.org/'
+    expect(getByText(/Manage Allocations/)).toBeDefined();
+    expect(getByText(/You can manage your allocation/)).toBeDefined();
+    expect(getByText(xrasLink)).toBeDefined();
+    expect(getByText(xrasLink).href).toBe(xrasLink);
   });
 });
 
@@ -43,7 +46,7 @@ describe("View Team Modal", () => {
     });
     const { getByText } = render(
       <Provider store={testStore}>
-        <TeamView {...testProps} />
+        <AllocationsTeamViewModal {...testProps} />
       </Provider>
     );
 
@@ -100,7 +103,7 @@ describe("View Team Modal", () => {
     // Render Modal
     const { getByText, queryByText, getByRole } = render(
       <Provider store={testStore}>
-        <TeamView {...testProps} />
+        <AllocationsTeamViewModal {...testProps} />
       </Provider>
     );
 
@@ -139,7 +142,7 @@ describe("View Team Modal", () => {
 
     const { getByText } = render(
       <Provider store={testStore}>
-        <TeamView {...testProps} />
+        <AllocationsTeamViewModal {...testProps} />
       </Provider>
     );
     

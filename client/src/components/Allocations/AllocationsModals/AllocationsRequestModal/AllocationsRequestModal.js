@@ -11,7 +11,7 @@ export const AllocationsRequestModal = ({ isOpen, toggle }) => (
     >
       <span>Manage Allocations</span>
     </ModalHeader>
-    <ModalBody className="allocations-request-body" data-testid="request-body">
+    <ModalBody className="allocations-request-body">
       <p>
         You can manage your allocation, your team members, or request more time
         on a machine by using your TACC user account credentials to access the
