@@ -15,6 +15,7 @@ import {
 import { LoadingSpinner } from '_common';
 import { isEmpty } from 'lodash';
 import { arrayOf, string } from 'prop-types';
+import './DataFilesCarouselModal.module.scss';
 
 const DataFilesCarousel = ({ links }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -54,21 +55,18 @@ const DataFilesCarousel = ({ links }) => {
         const current = idx === activeIndex;
         return (
           <CarouselItem
+            styleName="item"
             key={link}
             onExiting={() => setAnimating(true)}
             onExited={() => setAnimating(false)}
           >
             {!loaded && current && (
-              <div
-                style={{
-                  height: '200px',
-                  backgroundColor: 'grey'
-                }}
-              >
+              <div styleName="loading">
                 <LoadingSpinner />
               </div>
             )}
             <img
+              styleName="item"
               src={link}
               alt={`Selected Images ${idx + 1}/${arr.length}`}
               onLoad={() => setLoaded(true)}
