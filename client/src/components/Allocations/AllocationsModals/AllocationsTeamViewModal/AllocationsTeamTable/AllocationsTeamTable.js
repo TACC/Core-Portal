@@ -3,36 +3,36 @@ import { string, func, shape, arrayOf, object } from 'prop-types';
 import { Table } from 'reactstrap';
 import { useTable } from 'react-table';
 import { capitalize } from 'lodash';
-
-const UserCell = ({ cell: { value } }) => {
-  const { firstName, lastName } = value;
-  return (
-    <span className="user-name">
-      {`${capitalize(firstName)} ${capitalize(lastName)}`}
-    </span>
-  );
-};
-UserCell.propTypes = {
-  cell: shape({
-    value: shape({
-      firstName: string.isRequired,
-      lastName: string.isRequired
-    }).isRequired
-  }).isRequired
-};
+import './AllocationsTeamTable.module.scss';
 
 const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
   const data = React.useMemo(() => rawData, [rawData]);
   const columns = React.useMemo(
     () => [
       {
-        Header: 'name',
-        accessor: row => row,
-        UserCell
+        Header: 'listing',
+        accessor: el => el,
+        Cell: el => {
+          const { firstName, lastName } = el.value;
+          return (
+            <span styleName="content">
+              {capitalize(firstName)} {capitalize(lastName)}
+            </span>
+          );
+        }
       }
     ],
     [rawData]
   );
+  const getStyleName = listing => {
+    if (
+      visible &&
+      listing.firstName === visible.firstName &&
+      listing.lastName === visible.lastName
+    )
+      return 'active-user';
+    return 'row';
+  };
   const { getTableProps, getTableBodyProps, rows, prepareRow } = useTable({
     columns,
     data
@@ -45,14 +45,14 @@ const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
           return (
             <tr
               {...row.getRowProps({
-                className: row.values.name === visible ? 'active-user' : '',
                 onClick: () => {
-                  clickHandler(row.values.name);
+                  clickHandler(row.values.listing);
                 }
               })}
+              styleName={getStyleName(row.values.listing)}
             >
               {row.cells.map(cell => (
-                <td {...cell.getCellProps()}>{cell.render('UserCell')}</td>
+                <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
               ))}
             </tr>
           );
