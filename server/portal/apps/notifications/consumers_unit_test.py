@@ -1,8 +1,6 @@
 import pytest
-from django.test import Client
 from channels.testing import WebsocketCommunicator
 from .consumers import NotificationsConsumer
-# from portal.routing import application
 from channels.layers import get_channel_layer
 
 
