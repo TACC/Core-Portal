@@ -17,14 +17,16 @@
   position: relative;
 }
 
-.scroll-fade:after {
+.scroll-fade::after {
   position: absolute;
   bottom: 0;
   height: 70px;
   width: 100%;
   content: "";
-  background: linear-gradient( to top,
-    rgba(255, 255, 255, 0.7) 20%, rgba(255, 255, 255, 0) 95%
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.7) 20%,
+    rgba(255, 255, 255, 0) 95%
   );
   pointer-events: none;
 }

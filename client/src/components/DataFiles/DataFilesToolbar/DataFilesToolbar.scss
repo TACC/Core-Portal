@@ -12,21 +12,20 @@
       padding-right: 5px;
       font-size: 1.3em;
     }
-  }
-.data-files-toolbar-button:not(.disabled):hover{
+    & + .data-files-toolbar-button {
+      margin-left: 5px;
+    }
+}
+.data-files-toolbar-button:not(.disabled):hover {
     background-color: #AFAFAF;
     color: #484848;
     border-color: #484848;
     border-radius: 0;
-  }
-
-.data-files-toolbar-button + .data-files-toolbar-button {
-    margin-left: 5px;
 }
 
 .toolbar-button-text {
   padding-left: 5px;
-  font: Bold 15px/25px Roboto;
+  font: bold 15px/25px Roboto, sans-serif;
   display: flex;
 }
 
