@@ -2,13 +2,14 @@
 
 {# WARNING: Some markup is duplicated in other repositories #}
 {# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
+{# NOTE: The `id` attr's in the CMS version are not necessary here #}
 <ul class="s-portal-nav  {{ className }}">
   {% if user.is_authenticated %}
   <div class="navbar-nav">
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fas fa-user-circle fa-lg nav-icon"></i>
-        {{ user.get_username }}
+        <span>{{ user.get_username }}</span>
         <span class="sr-only">Toggle Dropdown</span>
       </a>
       <div class="dropdown-menu dropdown-menu-right">

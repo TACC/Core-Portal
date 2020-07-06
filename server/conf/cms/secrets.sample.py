@@ -34,8 +34,6 @@ _DATABASE_PORT = 5432
 _SITE_ID = 1
 _CMS_TEMPLATES = (
     # Customize this
-    # ('base.html', 'Base'),
-    # ('cms_menu.html', 'CMS Menu'),
     ('fullwidth.html', 'Fullwidth'),
     ('sidebar_left.html', 'Sidebar Left'),
     ('sidebar_right.html', 'Sidebar Right')
