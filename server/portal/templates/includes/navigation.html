@@ -1,35 +1,55 @@
 {# NOTE: Removed references to unused settings #}
-{# NOTE: Template includes differs slightly from CMS #}
 {# WARNING: Some markup is duplicated in other repositories #}
 {# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
+{# FAQ: Extra space added to make easier a comparison with CMS template #}
+
 
 <!-- Sponsor Logos -->
 <div class="branding-header">
-  <a href="https://www.nsf.gov/" target="_blank">
-    <img class="nav-logo-header nav-logo-nsf-double" src="/static/site_cms/images/org_logos/nsf-white.png" crossorigin="anonymous">
-  </a>
-  <a href="https://www.tacc.utexas.edu/" target="_blank">
-    <img class="nav-logo-header nav-logo-border-left nav-logo-tacc-double" src="/static/site_cms/images/org_logos/tacc-white.png" crossorigin="anonymous">
-  </a>
-  <a href="https://www.utexas.edu/">
-    <img class="nav-logo-header nav-logo-border-left nav-logo-utaustin-double" src="/static/site_cms/images/org_logos/utaustin-white.png" crossorigin="anonymous">
-  </a>
+
+
+
+
+
+        <a href="https://www.tacc.utexas.edu/" target="">
+          <img class="branding-logo branding-tacc" src="/static/site_cms/images/org_logos/tacc-white.png" crossorigin="anonymous" alt="TACC Logo">
+        </a>
+
+
+        <span class="branding-seperator"></span>
+        <a href="https://www.utexas.edu/" target="">
+          <img class="branding-logo branding-utaustin" src="/static/site_cms/images/org_logos/utaustin-white.png" crossorigin="anonymous" alt="University of Texas at Austin Logo">
+        </a>
+
+
+
+
 </div>
+
+
 
 <!-- Navigation Bar -->
 <nav id="s-header" class="s-header  navbar navbar-expand-lg navbar-dark">
-  <!-- Branding Logos -->
-  <a class="navbar-brand" href="/">
-    <img src="/static/site_cms/images/org_logos/frontera-white-solo.png" alt="Portal Logo" class="nav-logo-double nav-logo-frontera-double" crossorigin="anonymous">
-  </a>
+  <!-- Portal Logo -->
+
+
+    <a class="navbar-brand" href="/" target="">
+    <img class="portal-logo " src="/static/site_cms/images/org_logos/frontera-white-solo.png" crossorigin="anonymous" alt="Frontera Logo">
+    </a>
+
+
+
   <!-- Navbar Accordian Toggle on Small Screens  -->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+
   <!-- Navbar Links -->
   <div class="collapse navbar-collapse" id="navbarsExpandTarget">
-    {% include "./navigation/cms.html" with className="navbar-nav" only %}
+    {# FAQ: Only the version of this template _from the CMS repo_ can not use `only`; here can #}
+    {% include "nav_cms.html" with className="navbar-nav" only %}
 
-    {% include "./navigation/portal.html" with className="navbar-nav navbar-right  ml-auto" user=user only %}
+    {% include "nav_portal.html" with className="navbar-nav navbar-right  ml-auto" user=user only %}
   </div>
 </nav>
+
