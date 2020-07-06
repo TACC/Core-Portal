@@ -137,7 +137,7 @@ _TACC_BRANDING = [
     "True"
 ]
 
-_UTEXAS_BRANDING =  [
+_UTEXAS_BRANDING = [
     "utexas",
     "site_cms/images/org_logos/utaustin-white.png",
     "branding-utaustin",
@@ -159,7 +159,7 @@ _UHAWAII_BRANDING = [
     "True"
 ]
 
-_BRANDING = [ _TACC_BRANDING, _UTEXAS_BRANDING ]        # Default TACC Portal.
+_BRANDING = [_TACC_BRANDING, _UTEXAS_BRANDING]        # Default TACC Portal.
 # _BRANDING = [ _NSF_BRANDING, _TACC_BRANDING, _UTEXAS_BRANDING ]       # NSF Funded TACC Portal.
 # _BRANDING = [ _TACC_BRANDING, _UTEXAS_BRANDING, _UHAWAII_BRANDING ]        # TACC Portal w/ Specific Partners.
 # _BRANDING = [ _NSF_BRANDING, _TACC_BRANDING, _UTEXAS_BRANDING, _UHAWAII_BRANDING ]        # NSF Funded Portal w/ Specific Partners.
@@ -167,7 +167,7 @@ _BRANDING = [ _TACC_BRANDING, _UTEXAS_BRANDING ]        # Default TACC Portal.
 ########################
 # LOGOS.
 
-_PORTAL_LOGO =  [
+_PORTAL_LOGO = [
     "portal",
     "site_cms/images/portal.png",
     "",
@@ -189,7 +189,7 @@ _LCCF_LOGO = [
     "True"
 ]
 
-_TAPISIO_LOGO =  [
+_TAPISIO_LOGO = [
     "tapisio",
     "site_cms/images/org_logos/tapis-logo-navbar.png",
     "",
@@ -200,7 +200,7 @@ _TAPISIO_LOGO =  [
     "True"
 ]
 
-_TEXASCALE_LOGO =  [
+_TEXASCALE_LOGO = [
     "texascale",
     "site_cms/images/org_logos/texascale-wordmark.png",
     "",
