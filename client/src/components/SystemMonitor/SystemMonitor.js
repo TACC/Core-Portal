@@ -5,7 +5,8 @@ import { LoadingSpinner } from '_common';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { Display, Operational, Load } from './SystemMonitorCells';
-import './SystemMonitor.scss';
+import './SystemMonitor.module.scss';
+import './SystemMonitor.css';
 
 const SystemsList = () => {
   const systemList = useSelector(state => state.systemMonitor.list);
@@ -17,13 +18,13 @@ const SystemsList = () => {
         accessor: 'display_name',
         Header: 'Name',
         Cell: Display,
-        className: 'left-aligned'
+        styleName: 'left-aligned'
       },
       {
         accessor: 'is_operational',
         Header: 'Status',
         Cell: Operational,
-        className: 'operational-cell left-aligned'
+        styleName: 'operational-cell left-aligned'
       },
       {
         accessor: 'load_percentage',
@@ -44,7 +45,7 @@ const SystemsList = () => {
 
   if (loadingError) {
     return (
-      <div className="system-monitor__error" data-testid="loading-error">
+      <div styleName="error" data-testid="loading-error">
         <FontAwesomeIcon
           icon={faExclamationTriangle}
           style={{ marginRight: '10px' }}
@@ -65,17 +66,12 @@ const SystemsList = () => {
     data
   });
   return (
-    <table
-      {...getTableProps({
-        className: 'multi-system system-monitor'
-      })}
-    >
+    <table {...getTableProps()} styleName="root" className="multi-system">
       <thead>
         {headerGroups.map(headerGroup => (
           <tr
-            {...headerGroup.getHeaderGroupProps({
-              className: 'system-monitor-header'
-            })}
+            {...headerGroup.getHeaderGroupProps()}
+            styleName="system-monitor-header"
           >
             {headerGroup.headers.map(column => (
               <th key={column.Header}>{column.render('Header')}</th>
@@ -87,19 +83,13 @@ const SystemsList = () => {
         {rows.length ? (
           rows.map((row, idx) => {
             prepareRow(row);
-            const className = idx % 2 === 0 ? 'odd-row' : null;
+            const styleName = idx % 2 === 0 ? 'odd-row' : null;
             return (
-              <tr
-                {...row.getRowProps({
-                  className
-                })}
-              >
+              <tr {...row.getRowProps()} styleName={styleName}>
                 {row.cells.map(cell => (
                   <td
-                    {...cell.getCellProps({
-                      className: cell.column.className,
-                      test: cell.column.testProp
-                    })}
+                    {...cell.getCellProps({ test: cell.column.testProp })}
+                    styleName={cell.column.styleName}
                   >
                     {cell.render('Cell')}
                   </td>

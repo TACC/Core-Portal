@@ -1,14 +1,7 @@
-.multi-system .label-system-status {
-    font-size: 13px;
-    font-weight: 500;
-    width: 100%;
-    padding: 0.4em 0 0.4em 0;
-}
+.root {
+    --table-border: 1px solid black;
 
-$table-border: 1px solid black;
-
-.system-monitor {
-    border-bottom: $table-border;
+    border-bottom: var(--table-border);
     margin: 0;
     width: 100%;
     tr:hover {
@@ -18,7 +11,7 @@ $table-border: 1px solid black;
         padding: 5px 8px;
     }
     .system-monitor-header {
-        border-bottom: $table-border;
+        border-bottom: var(--table-border);
     }
     .left-aligned {
         padding-left: 0;
@@ -31,7 +24,7 @@ $table-border: 1px solid black;
     }
 }
 
-.system-monitor__error {
+.error {
     display: flex;
     justify-content: center;
     align-items: center;
