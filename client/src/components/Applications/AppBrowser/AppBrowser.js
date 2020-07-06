@@ -4,10 +4,7 @@ import { useSelector, shallowEqual } from 'react-redux';
 // import PropTypes from 'prop-types';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faDesktop,
-  faExclamationTriangle
-} from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { AppIcon } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
@@ -65,11 +62,7 @@ const AppBrowser = () => {
               }}
             >
               <span className="nav-content">
-                <FontAwesomeIcon
-                  icon={faDesktop}
-                  size="1x"
-                  className="side-nav-icon"
-                />
+                <i className="icon-nav-application  category-icon" />
                 <span className="nav-text">{`${category} [${categoryDict[category].length}]`}</span>
               </span>
             </NavLink>
@@ -87,12 +80,12 @@ const AppBrowser = () => {
                     to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.value.definition.id}`}
                     activeClassName="active"
                   >
-                    <div className="nav-content">
+                    <span className="nav-content">
                       <AppIcon appId={app.value.definition.id} />
                       <span className="nav-text">
                         {app.value.definition.label}
                       </span>
-                    </div>
+                    </span>
                   </NavLink>
                 </div>
               ))}

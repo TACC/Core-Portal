@@ -142,14 +142,16 @@ Follow the Confluence pages below to set up Projects, Notifications, and Elastic
 
 ### Linting and Formatting Conventions
 
-Client-side Javascript code is linted via eslint, and is enforced on commits to the repo. To see a list of linting issues, run `npm run lint` in the console under the `client` folder.
+Client-side code is linted (JavaScript via `eslint`, CSS via `stylelint`), and is enforced on commits to the repo. To see a list of linting issues, in the console:
 
-You may need to globally install eslint for these to work: `npm install -g eslint`
+1. Navigate to `client/` directory.
+1. Run `npm run lint`, which is the same as linting both languages independently:
+    - `npm run lint:js`
+    - `npm run lint:css`
 
-You may auto-fix your linting errors to conform with Prettier standards via:
-```
-eslint ./client --fix
-```
+You may auto-fix your linting errors to conform with configured standards, for specific languages, via:
+- `npm run lint:js -- --fix`
+- `npm run lint:js -- --fix`
 
 Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 master | flake8 --diff` from the command line.
 This requires that you have a local python virtual environemnt setup with this project's dependencies installed:
