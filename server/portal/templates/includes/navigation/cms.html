@@ -6,6 +6,7 @@
     {# All top-level CMS controlled nav elements handled here. #}
     {# Content populated via JavaScript, below #}
 </ul>
+{# RFE: Use `insertAdjacentHTML` (not `innerHTML`) to replace placeholder markup with desired markup #}
 <script>
   (function includeCMSPagesHTML() {
     const cmsPagesElement = document.getElementById("cms-nav-pages");
