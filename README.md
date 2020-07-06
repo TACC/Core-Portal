@@ -63,8 +63,10 @@ Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
     python3 manage.py migrate
     python3 manage.py createsuperuser
     python3 manage.py collectstatic
-    TACC VPN or physical connection to the TACC network is required To log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
-    Create a home page in the CMS
+
+TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used.
+
+Create a home page in the CMS.
 
 
 ### Setup local access to the portal:

@@ -47,9 +47,9 @@
   <!-- Navbar Links -->
   <div class="collapse navbar-collapse" id="navbarsExpandTarget">
     {# FAQ: Only the version of this template _from the CMS repo_ can not use `only`; here can #}
-    {% include "nav_cms.html" with className="navbar-nav" only %}
+    {% include "includes/nav_cms.html" with className="navbar-nav" only %}
 
-    {% include "nav_portal.html" with className="navbar-nav navbar-right  ml-auto" user=user only %}
+    {% include "includes/nav_portal.html" with className="navbar-nav navbar-right  ml-auto" user=user only %}
   </div>
 </nav>
 
