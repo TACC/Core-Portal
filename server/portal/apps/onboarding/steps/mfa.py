@@ -60,4 +60,4 @@ class MFAStep(AbstractStep):
             self.prepare()
 
     def tas_pairings_url(self):
-        return "{0}/tup/users/{1}/pairings".format(settings.TAS_URL, self.user.username);
+        return "{0}/tup/users/{1}/pairings".format(settings.TAS_URL, self.user.username)
