@@ -44,7 +44,6 @@ function JobsView({ showDetails, showFancyStatus }) {
     {
       Header: '',
       accessor: 'appId',
-      width: 30,
       Cell: el => (
         <span>
           <AppIcon appId={el.value} />
@@ -119,11 +118,11 @@ function JobsView({ showDetails, showFancyStatus }) {
         </span>
       ),
       id: 'jobDateCol',
-      width: 150
     },
     {
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
+      show: true,
       accessor: d =>
         d.status.substr(0, 1).toUpperCase() + d.status.substr(1).toLowerCase(),
       Cell: el => {
@@ -136,17 +135,18 @@ function JobsView({ showDetails, showFancyStatus }) {
         return el.value;
       },
       id: 'jobStatusCol',
-      width: 100
     }
   ];
 
+  const filterColumns = columns.filter(f => f.show !== false);
+
   return (
     <InfiniteScrollTable
-      tableColumns={columns}
+      tableColumns={filterColumns}
       tableData={jobs}
       onInfiniteScroll={infiniteScrollCallback}
       isLoading={isLoading}
-      className="jobs-view"
+      className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
       noDataText={noDataText}
     />
   );
