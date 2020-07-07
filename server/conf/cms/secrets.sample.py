@@ -211,7 +211,19 @@ _TEXASCALE_LOGO = [
     "True"
 ]
 
-_LOGO = _PORTAL_LOGO                # Default Portal Logo.
+_FRONTERA_LOGO = [
+    "frontera",
+    "site_cms/images/org_logos/frontera-white-solo.png",
+    "",
+    "/",
+    "_self",
+    "Frontera Logo",
+    "anonymous",
+    "True"
+]
+
+# _LOGO = _PORTAL_LOGO                # Default Portal Logo.
 # _LOGO = _LCCF_LOGO
 # _LOGO = _TAPISIO_LOGO
 # _LOGO = _TEXASCALE_LOGO
+_LOGO = _FRONTERA_LOGO
