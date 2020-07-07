@@ -50,6 +50,13 @@ Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
 -  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 12.x and not an earlier version._
 
 
+#### Copy local CMS static assets into place:
+
+    cp -r ../server/conf/cms/assets/* ../server/cms/static/build/
+
+-  _Note: This is a temporary step [until the CMS Makefile has a full build step](https://tacc-team.slack.com/archives/GMERCL6P2/p1594068853049200?thread_ts=1594065852.034400&cid=GMERCL6P2)._
+
+
 #### Initialize the application in the `frontera_prtl_django` container:
 
     docker exec -it frontera_prtl_django /bin/bash
