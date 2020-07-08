@@ -8,11 +8,12 @@ import './Sidebar.module.scss';
 
 /** A navigation list for the application */
 const Sidebar = () => {
-  const workbenchStatus = useSelector(state => state.workbench.status);
+  // show History only in local development
+  const showHistory = useSelector(state =>
+    state.workbench.status ? state.workbench.status.debug : false
+  );
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
-  // show History only in local development
-  const showHistory = workbenchStatus ? workbenchStatus.debug : false;
   return (
     <Nav styleName="root" vertical>
       <NavItem>

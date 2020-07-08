@@ -13,9 +13,10 @@ import './Workbench.scss';
 function Workbench() {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
-  const workbenchStatus = useSelector(state => state.workbench.status);
   // show History only in local development
-  const showHistory = workbenchStatus ? workbenchStatus.debug : false;
+  const showHistory = useSelector(state =>
+    state.workbench.status ? state.workbench.status.debug : false
+  );
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({ type: 'FETCH_SYSTEMS' });
