@@ -1,10 +1,11 @@
 import React, { useEffect, useCallback } from 'react';
-import { Badge } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import 'react-table-6/react-table.css';
 import { AppIcon, InfiniteScrollTable } from '_common';
+
+import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
@@ -117,24 +118,16 @@ function JobsView({ showDetails, showFancyStatus }) {
           })}`}
         </span>
       ),
-      id: 'jobDateCol',
+      id: 'jobDateCol'
     },
     {
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
-      show: true,
-      accessor: d =>
-        d.status.substr(0, 1).toUpperCase() + d.status.substr(1).toLowerCase(),
+      accessor: 'status',
       Cell: el => {
-        const isFailed = el.value === 'Failed';
-        const isFinished = el.value === 'Finished';
-        if (showFancyStatus && (isFailed || isFinished))
-          return (
-            <Badge color={isFailed ? 'danger' : 'success'}>{el.value}</Badge>
-          );
-        return el.value;
+        return <JobsStatus status={el.value} fancy={showFancyStatus} />;
       },
-      id: 'jobStatusCol',
+      id: 'jobStatusCol'
     }
   ];
 
