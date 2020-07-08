@@ -622,7 +622,6 @@ SETTINGS: DATA DEPOT
 """
 PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM = settings_secret._PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM
 PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
-# not being used
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
