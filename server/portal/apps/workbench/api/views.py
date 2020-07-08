@@ -5,4 +5,5 @@ from django.http import JsonResponse
 
 @login_required
 def workbench_state(request):
-    return JsonResponse({'debug': settings.DEBUG})
+    data = {'debug': settings.DEBUG}
+    return JsonResponse({'response': data})

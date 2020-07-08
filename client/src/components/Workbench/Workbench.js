@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Dashboard from '../Dashboard';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
@@ -11,14 +11,16 @@ import * as ROUTES from '../../constants/routes';
 import './Workbench.scss';
 
 function Workbench() {
-  // use path to allow History only in local development (cep.dev)
-  const fullPath = window.location.href;
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
+  const workbenchStatus = useSelector(state => state.workbench.status);
+  // show History only in local development
+  const showHistory = workbenchStatus ? workbenchStatus.debug : false;
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({ type: 'FETCH_SYSTEMS' });
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
+    dispatch({ type: 'FETCH_WORKBENCH' });
     dispatch({ type: 'GET_ALLOCATIONS' });
     dispatch({ type: 'GET_APPS' });
     dispatch({ type: 'GET_APP_START' });
@@ -43,7 +45,7 @@ function Workbench() {
             path={`${path}${ROUTES.ALLOCATIONS}`}
             component={Allocations}
           />
-          {fullPath.startsWith('https://cep.dev/') && (
+          {showHistory && (
             <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
           )}
           <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />

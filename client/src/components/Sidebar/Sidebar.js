@@ -1,16 +1,18 @@
 import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import * as ROUTES from '../../constants/routes';
 import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
 import './Sidebar.module.scss';
 
 /** A navigation list for the application */
 const Sidebar = () => {
+  const workbenchStatus = useSelector(state => state.workbench.status);
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
-  // use path to allow History only in local development (cep.dev)
-  const fullPath = window.location.href;
+  // show History only in local development
+  const showHistory = workbenchStatus ? workbenchStatus.debug : false;
   return (
     <Nav styleName="root" vertical>
       <NavItem>
@@ -66,7 +68,7 @@ const Sidebar = () => {
           </div>
         </NavLink>
       </NavItem>
-      {fullPath.startsWith('https://cep.dev/') && (
+      {showHistory && (
         <NavItem>
           <NavLink
             tag={RRNavLink}
