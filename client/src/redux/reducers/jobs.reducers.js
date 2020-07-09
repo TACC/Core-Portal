@@ -16,7 +16,8 @@ function jobs(
     case 'JOBS_LIST':
       return {
         ...state,
-        list: state.list.concat(action.payload)
+        list: state.list.concat(action.payload),
+        error: null
       };
     case 'JOBS_LIST_ERROR':
       return {
