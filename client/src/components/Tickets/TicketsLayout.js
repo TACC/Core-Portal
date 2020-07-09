@@ -72,7 +72,7 @@ function TicketsView() {
       Cell: el => (
         <Link
           to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/${el.row.original.id}`}
-          className="btn-link"
+          className="wb-link"
         >
           <span title={el.value}>{el.value}</span>
         </Link>
