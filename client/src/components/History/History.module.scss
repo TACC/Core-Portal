@@ -5,7 +5,7 @@
     color: #9d85ef;
     padding-left: 0;
 }
-.history-container {
+.container {
     /* As a flex item */
     flex-grow: 1;
 
@@ -16,11 +16,11 @@
     border-top: 1px solid #707070;
 }
 /* Make right-most item fill up remaining horizontal space */
-.history-container > :last-child {
+.container > :last-child {
     flex-grow: 1;
 }
 
-.history-header {
+.header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.5rem;
@@ -35,7 +35,7 @@
         padding: 0;
     }
 }
-.history-sidebar {
+.sidebar {
     --vertical-buffer: 15px;
     /* FP-404: All Portal section sidebars should use this value. */
     --min-width: 200px;

@@ -7,7 +7,7 @@ import './HistoryRoutes.module.scss';
 const HistoryRoutes = () => {
   const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
   return (
-    <div styleName="history-wrapper" data-testid="history-router">
+    <div styleName="root" data-testid="history-router">
       <Switch>
         <Route exact path={`${root}/jobs`}>
           <Layout page="jobs" />

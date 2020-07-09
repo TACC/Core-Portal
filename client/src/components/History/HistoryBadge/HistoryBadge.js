@@ -5,9 +5,9 @@ import './HistoryBadge.module.scss';
 const HistoryBadge = ({ unread }) => {
   if (unread) {
     return (
-      <div styleName="history-badge" data-testid="history-badge">
+      <span styleName="root" data-testid="history-badge">
         {unread}
-      </div>
+      </span>
     );
   }
   return <></>;

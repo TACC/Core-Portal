@@ -5,7 +5,7 @@ from channels.layers import get_channel_layer
 
 
 @pytest.mark.asyncio
-async def test_can_connect_to_server(authenticated_user, settings):
+async def test_can_connect_to_server(authenticated_user):
 
         communicator = await auth_connect(authenticated_user)
         # Close
@@ -13,7 +13,7 @@ async def test_can_connect_to_server(authenticated_user, settings):
 
 
 @pytest.mark.asyncio
-async def test_can_send_and_receive_messages(authenticated_user, settings):
+async def test_can_send_and_receive_messages(authenticated_user):
 
         communicator = await auth_connect(authenticated_user)
         message = {
@@ -27,7 +27,7 @@ async def test_can_send_and_receive_messages(authenticated_user, settings):
 
 
 @pytest.mark.asyncio
-async def test_can_send_and_receive_broadcast_messages(authenticated_user, settings):
+async def test_can_send_and_receive_broadcast_messages(authenticated_user):
 
         communicator = await auth_connect(authenticated_user)
         message = {

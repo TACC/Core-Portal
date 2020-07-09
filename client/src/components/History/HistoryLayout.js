@@ -15,7 +15,7 @@ export const Header = ({ page }) => {
   const dispatch = useDispatch();
 
   return (
-    <div styleName="history-header">
+    <div styleName="header">
       <div styleName="header-text">
         History
         <span>&nbsp;/&nbsp;</span>
@@ -46,7 +46,7 @@ export const Sidebar = () => {
     shallowEqual
   );
   return (
-    <Nav styleName="history-sidebar" vertical>
+    <Nav styleName="sidebar" vertical>
       <NavItem>
         <NavLink
           tag={RRNavLink}
@@ -95,7 +95,7 @@ export const Layout = ({ page }) => {
     return (
       <>
         <Header page={page} />
-        <div styleName="history-container">
+        <div styleName="container">
           <Sidebar />
           <LoadingSpinner />
         </div>
@@ -104,7 +104,7 @@ export const Layout = ({ page }) => {
   return (
     <>
       <Header page={page} />
-      <div styleName="history-container">
+      <div styleName="container">
         <Sidebar />
         <HistoryTable page={page} />
       </div>
