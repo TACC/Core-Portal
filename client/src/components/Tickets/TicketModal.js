@@ -90,6 +90,8 @@ function TicketHistoryReply({ ticketId }) {
               id="attachments"
               isSubmitted={isSubmitting}
               description="Error reports and screenshots can be helpful for diagnostics"
+              maxSizeMessage="Max File Size: 3MB"
+              maxSize={3145728}
             />
             <FormGroup className="ticket-reply-button">
               <Button
