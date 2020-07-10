@@ -1,21 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { default as MessageIcon } from './MessageIcon';
+import './Message.module.css';
 
-const TYPES = PropTypes.oneOf(['info', 'warning', 'error']);
 const TYPE_ICON_MAP = {
-  info: undefined,
-  warning: 'alert',
+  info: 'info',
+  warn: 'alert',
   error: 'alert'
 };
+const TYPES = PropTypes.oneOf(Object.keys(TYPE_ICON_MAP));
 
 const Message = ({ type, text }) => {
-  const iconName = TYPE_ICON_MAP[type];
-  const modiferName = `is-${type}`;
+  const iconName = TYPE_ICON_MAP[type] || undefined;
+  const containerStyleName = `container is-${type}`;
 
   return (
-    <span styleName={`root ${modiferName}`} data-testid="root">
-      <MessageIcon name={iconName} data-testid="icon" />
+    <span styleName={containerStyleName} data-testid="message">
+      <MessageIcon styleName="icon" name={iconName} />
       <span styleName="text" data-testid="text">
         {text}
       </span>

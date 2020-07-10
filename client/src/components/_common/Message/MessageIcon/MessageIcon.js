@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const MessageIcon = ({ name }) => {
   const className = `icon-${name}`;
 
-  return <i className={className} data-testid="root" />;
+  return <i className={className} data-testid="icon" />;
 };
 MessageIcon.propTypes = {
   name: PropTypes.string.isRequired

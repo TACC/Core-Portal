@@ -1,0 +1,12 @@
+.container {}
+.is-info {}
+
+.is-error {}
+
+.is-warn {
+    color: yellow;
+}
+
+.text {}
+
+.icon {}
