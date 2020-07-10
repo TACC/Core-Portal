@@ -17,14 +17,13 @@ const SystemsList = () => {
       {
         accessor: 'display_name',
         Header: 'Name',
-        Cell: Display,
-        styleName: 'left-aligned'
+        Cell: Display
       },
       {
         accessor: 'is_operational',
         Header: 'Status',
         Cell: Operational,
-        styleName: 'operational-cell left-aligned'
+        styleName: 'status'
       },
       {
         accessor: 'load_percentage',
@@ -69,10 +68,7 @@ const SystemsList = () => {
     <table {...getTableProps()} styleName="root" className="multi-system">
       <thead>
         {headerGroups.map(headerGroup => (
-          <tr
-            {...headerGroup.getHeaderGroupProps()}
-            styleName="system-monitor-header"
-          >
+          <tr {...headerGroup.getHeaderGroupProps()} styleName="header">
             {headerGroup.headers.map(column => (
               <th key={column.Header}>{column.render('Header')}</th>
             ))}
@@ -83,9 +79,8 @@ const SystemsList = () => {
         {rows.length ? (
           rows.map((row, idx) => {
             prepareRow(row);
-            const styleName = idx % 2 === 0 ? 'odd-row' : null;
             return (
-              <tr {...row.getRowProps()} styleName={styleName}>
+              <tr {...row.getRowProps()}>
                 {row.cells.map(cell => (
                   <td
                     {...cell.getCellProps({ test: cell.column.testProp })}

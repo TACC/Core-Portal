@@ -4,26 +4,27 @@
     border-bottom: var(--table-border);
     margin: 0;
     width: 100%;
+
+    tr:nth-child(odd) {
+        background-color: rgba(#c6c6c6, 0.1);
+    }
     tr:hover {
         background-color: rgba(0, 0, 0, 0.05);
     }
     td {
         padding: 5px 8px;
     }
-    .system-monitor-header {
-        border-bottom: var(--table-border);
-    }
-    .left-aligned {
-        padding-left: 0;
-    }
-    .operational-cell {
-        width: 100px;
-    }
-    .odd-row {
-        background-color: rgba(#c6c6c6, 0.1);
-    }
+}
+.header {
+    border-bottom: var(--table-border);
 }
 
+/* Columns */
+.status {
+    width: 100px;
+}
+
+/* Messaging */
 .error {
     display: flex;
     justify-content: center;
