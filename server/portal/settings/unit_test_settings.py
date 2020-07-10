@@ -350,6 +350,8 @@ ES_HOSTS = ['test.com']
 ES_AUTH = "user:password"
 ES_INDEX_PREFIX = "test-staging-{}"
 
+SYSTEM_MONITOR_URL = "https://sysmon.example.com/foo.json"
+
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': ('haystack.backends.elasticsearch_backend.'
