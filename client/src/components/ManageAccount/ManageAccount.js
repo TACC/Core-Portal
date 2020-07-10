@@ -13,9 +13,9 @@ import {
   OptionalInformation
 } from './ManageAccountTables';
 import {
-  ChangePassword as ChangePasswordModal,
-  EditOptionalInformation as EditOptionalInformationModal,
-  EditRequiredInformation as EditRequiredInformationModal
+  ChangePasswordModal,
+  EditOptionalInformationModal,
+  EditRequiredInformationModal
 } from './ManageAccountModals';
 import './ManageAccount.scss';
 

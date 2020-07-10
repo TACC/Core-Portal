@@ -6,7 +6,7 @@ import {
 } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { ChangePassword, EditOptionalInformation, EditRequiredInformation } from "../ManageAccountModals";
+import { ChangePasswordModal, EditOptionalInformationModal, EditRequiredInformationModal } from "../ManageAccountModals";
 
 const dummyState = {
   isLoading: false,
@@ -64,7 +64,7 @@ describe("Change Password", () => {
       rerender
     } = render(
       <Provider store={testStore}>
-        <ChangePassword />
+        <ChangePasswordModal />
       </Provider>
     );
     // Check for Modal Header to Be Visible
@@ -139,7 +139,7 @@ describe("Change Password", () => {
           }
         })}
       >
-        <ChangePassword />
+        <ChangePasswordModal />
       </Provider>
     );
     expect(getByText(/Loading/)).toBeDefined();
@@ -157,7 +157,7 @@ describe("Change Password", () => {
       <Provider
         store={successStore}
       >
-        <ChangePassword />
+        <ChangePasswordModal />
       </Provider>
     );
     expect(getByText(/Your password has been successfully changed!/)).toBeDefined();
@@ -185,7 +185,7 @@ describe("Edit Optional Information", () => {
     const testStore = mockStore({ profile: testState });
     const utils = render(
       <Provider store={testStore}>
-        <EditOptionalInformation />
+        <EditOptionalInformationModal />
       </Provider>
     );
     getByText = utils.getByText;
@@ -212,7 +212,7 @@ describe("Edit Optional Information", () => {
     const storeWithFields = mockStore({ profile: stateWithFields });
     rerender(
       <Provider store={storeWithFields}>
-        <EditOptionalInformation />
+        <EditOptionalInformationModal />
       </Provider>
     );
 
@@ -252,7 +252,7 @@ describe("Edit Optional Information", () => {
           },
         })}
       >
-        <EditOptionalInformation />
+        <EditOptionalInformationModal />
       </Provider>
     );
     expect(getByText(/Loading.../)).toBeDefined();
@@ -276,7 +276,7 @@ describe("Edit Optional Information", () => {
     });
     rerender(
       <Provider store={store}>
-        <EditOptionalInformation />
+        <EditOptionalInformationModal />
       </Provider>
     );
     expect(getByText(/Successfully Edited/)).toBeDefined();
@@ -300,7 +300,7 @@ describe("Edit Required Information", () => {
     });
     const utils = render(
       <Provider store={testStore}>
-        <EditRequiredInformation />
+        <EditRequiredInformationModal />
       </Provider>
     );
     getByText = utils.getByText;
@@ -329,7 +329,7 @@ describe("Edit Required Information", () => {
 
     rerender(
       <Provider store={storeWithFields}>
-        <EditRequiredInformation />
+        <EditRequiredInformationModal />
       </Provider>
     );
 
@@ -368,7 +368,7 @@ describe("Edit Required Information", () => {
 
     rerender(
       <Provider store={storeWithFields}>
-        <EditRequiredInformation />
+        <EditRequiredInformationModal />
       </Provider>
     );
     
@@ -415,7 +415,7 @@ describe("Edit Required Information", () => {
 
     rerender(
       <Provider store={storeWithFields}>
-        <EditRequiredInformation />
+        <EditRequiredInformationModal />
       </Provider>
     );
     expect(getByText(/Loading.../)).toBeDefined();
@@ -439,7 +439,7 @@ describe("Edit Required Information", () => {
     });
     rerender(
       <Provider store={store}>
-        <EditRequiredInformation />
+        <EditRequiredInformationModal />
       </Provider>
     );
     expect(getByText(/Successfully Edited/)).toBeDefined();
