@@ -4,7 +4,7 @@ import os
 import pytz
 from datetime import datetime
 from django.conf import settings
-from portal.apps.system_monitor.views import _system_status_endpoint
+from portal.apps.system_monitor.views import settings
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def system_status_missing_frontera(scope="module"):
 @pytest.mark.django_db()
 def test_system_monitor_get(client, settings, requests_mock, system_status):
     settings.SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
-    requests_mock.get(_system_status_endpoint(), json=system_status)
+    requests_mock.get(settings.SYSTEM_MONITOR_URL, json=system_status)
     response = client.get('/api/system-monitor/')
     assert response.status_code == 200
     system = response.json()[0]
@@ -46,7 +46,7 @@ def test_system_monitor_get(client, settings, requests_mock, system_status):
 @pytest.mark.django_db()
 def test_system_monitor_get_old_timestamp_triggers_non_operational(client, settings, requests_mock, system_status_old):
     settings.SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
-    requests_mock.get(_system_status_endpoint(), json=system_status_old)
+    requests_mock.get(settings.SYSTEM_MONITOR_URL, json=system_status_old)
     response = client.get('/api/system-monitor/')
     assert response.status_code == 200
     system = response.json()[0]
@@ -58,7 +58,7 @@ def test_system_monitor_get_old_timestamp_triggers_non_operational(client, setti
 @pytest.mark.django_db()
 def test_system_monitor_when_missing_system(client, settings, requests_mock, system_status_missing_frontera):
     settings.SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
-    requests_mock.get(_system_status_endpoint(), json=system_status_missing_frontera)
+    requests_mock.get(settings.SYSTEM_MONITOR_URL, json=system_status_missing_frontera)
     response = client.get('/api/system-monitor/')
     assert response.status_code == 200
     system = response.json()[0]
@@ -72,7 +72,7 @@ def test_system_monitor_when_missing_system(client, settings, requests_mock, sys
 @pytest.mark.django_db()
 def test_system_monitor_when_display_list_is_empty(client, settings, requests_mock, system_status):
     settings.SYSTEM_MONITOR_DISPLAY_LIST = []
-    requests_mock.get(_system_status_endpoint(), json=system_status)
+    requests_mock.get(settings.SYSTEM_MONITOR_URL, json=system_status)
     response = client.get('/api/system-monitor/')
     assert response.status_code == 200
     assert response.json() == []
@@ -81,6 +81,6 @@ def test_system_monitor_when_display_list_is_empty(client, settings, requests_mo
 @pytest.mark.django_db()
 def test_system_monitor_when_status_endpoint_fails(client, settings, requests_mock):
     settings.SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
-    requests_mock.get(_system_status_endpoint(), exc=Exception)
+    requests_mock.get(settings.SYSTEM_MONITOR_URL, exc=Exception)
     response = client.get('/api/system-monitor/')
     assert response.status_code == 500
