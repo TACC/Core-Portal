@@ -2,7 +2,8 @@ function jobs(
   state = {
     list: [],
     submit: { submitting: false },
-    loading: false
+    loading: false,
+    error: null
   },
   action
 ) {
@@ -10,12 +11,18 @@ function jobs(
     case 'JOBS_LIST_START':
       return {
         ...state,
+        error: null,
         loading: true
       };
     case 'JOBS_LIST':
       return {
         ...state,
         list: state.list.concat(action.payload)
+      };
+    case 'JOBS_LIST_ERROR':
+      return {
+        ...state,
+        error: action.payload
       };
     case 'JOBS_LIST_FINISH':
       return {
