@@ -791,6 +791,8 @@ ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
 SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_secret, '_SYSTEM_MONITOR_DISPLAY_LIST', [])
 
+SYSTEM_MONITOR_URL = getattr(settings_secret, '_SYSTEM_MONITOR_URL', 'https://portal.tacc.utexas.edu/commnq/index.json')
+
 """
 SETTINGS: EXPORTS
 """

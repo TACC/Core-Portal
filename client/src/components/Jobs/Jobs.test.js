@@ -42,4 +42,19 @@ describe('Jobs View', () => {
     const { getByText } = renderJobsComponent(store);
     expect(getByText(/test-job-name-1/)).toBeDefined();
   });
+
+  it('renders errors when jobs cannot be retrieved', () => {
+    const store = mockStore({
+      jobs: {
+        ...initialMockState,
+        error: "error"
+      },
+      apps: {
+        ...appIconMockState
+      }
+    });
+
+    const { getByText } = renderJobsComponent(store);
+    expect(getByText(/unable to retrieve your jobs/)).toBeDefined();
+  })
 });
