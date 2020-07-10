@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { default as MessageIcon } from './MessageIcon';
+import MessageIcon from './MessageIcon';
 import './Message.module.css';
 
 const TYPE_ICON_MAP = {

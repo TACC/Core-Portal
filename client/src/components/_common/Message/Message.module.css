@@ -1,11 +1,7 @@
 .container {}
 .is-info {}
-
 .is-error {}
-
-.is-warn {
-    color: yellow;
-}
+.is-warn {}
 
 .text {}
 
