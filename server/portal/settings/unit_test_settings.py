@@ -281,7 +281,7 @@ PORTAL_PROJECTS_PRIVATE_KEY = ('-----BEGIN RSA PRIVATE KEY-----'
 PORTAL_PROJECTS_PUBLIC_KEY = 'ssh-rsa change this'
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    'portal.apps.accounts.steps.test_steps.MockStep'
+    'portal.apps.onboarding.steps.test_steps.MockStep'
 ]
 PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = 'dev'
 
@@ -318,7 +318,7 @@ PORTAL_WORKSPACE_MANAGERS = {
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
 # TAS Authentication.
-TAS_URL = 'test.com'
+TAS_URL = 'https://test.com'
 TAS_CLIENT_KEY = 'test'
 TAS_CLIENT_SECRET = 'test'
 # Redmine Tracker Authentication.
