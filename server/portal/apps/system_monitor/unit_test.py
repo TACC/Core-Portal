@@ -4,7 +4,6 @@ import os
 import pytz
 from datetime import datetime
 from django.conf import settings
-from portal.apps.system_monitor.views import settings
 
 
 @pytest.fixture
