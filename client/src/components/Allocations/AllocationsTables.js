@@ -97,7 +97,7 @@ const ErrorMessage = () => {
 };
 
 export const AllocationsTable = ({ page }) => {
-  const { errors } = useSelector(state => state.allocations.errors);
+  const { errors } = useSelector(state => state.allocations);
   const tableAttributes = useAllocations(page);
   const {
     getTableProps,
@@ -136,12 +136,12 @@ export const AllocationsTable = ({ page }) => {
             <tr>
               <td colSpan={headerGroups[0].headers.length}>
                 <center style={{ padding: '1rem' }}>
-                  {errors ? (
+                  {errors.listing ? (
                     <ErrorMessage />
                   ) : (
                     <span>
-                      You have no{' '}
-                      {`${page[0].toLocaleUpperCase()}${page.slice(1)}`}
+                      You have no
+                      {` ${page[0].toLocaleUpperCase()}${page.slice(1)} `}
                       allocations.
                     </span>
                   )}

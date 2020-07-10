@@ -18,11 +18,14 @@ export function* getJobs(action) {
       credentials: 'same-origin',
       ...action.options
     });
+    if (res.status !== 200) {
+      throw new Error('Could not retrieve jobs');
+    }
     const json = yield res.json();
     yield put({ type: 'JOBS_LIST', payload: json.response });
     yield put({ type: 'JOBS_LIST_FINISH' });
   } catch {
-    yield put({ type: 'JOBS_LIST', payload: [{ error: 'err!' }] });
+    yield put({ type: 'JOBS_LIST_ERROR', payload: 'error' });
     yield put({ type: 'JOBS_LIST_FINISH' });
   }
 }

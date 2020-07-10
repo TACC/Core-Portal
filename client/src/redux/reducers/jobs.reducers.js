@@ -1,22 +1,33 @@
 const initialState = {
   list: [],
   submit: { submitting: false },
-  loading: false
+  loading: false,
+  error: null
 };
 
 function jobs(state = initialState, action) {
   switch (action.type) {
     case 'JOBS_LIST_INIT':
-      return initialState;
+      return {
+        ...state,
+        list: [],
+        error: null
+      };
     case 'JOBS_LIST_START':
       return {
         ...state,
+        error: null,
         loading: true
       };
     case 'JOBS_LIST':
       return {
         ...state,
         list: state.list.concat(action.payload)
+      };
+    case 'JOBS_LIST_ERROR':
+      return {
+        ...state,
+        error: action.payload
       };
     case 'JOBS_LIST_FINISH':
       return {

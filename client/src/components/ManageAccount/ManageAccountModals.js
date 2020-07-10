@@ -7,7 +7,7 @@ import {
   EditOptionalInformationForm
 } from './ManageAccountForms';
 
-export const EditRequiredInformation = () => {
+export const EditRequiredInformationModal = () => {
   const { required: open, success, error } = useSelector(({ profile }) => {
     return {
       ...profile.modals,
@@ -46,7 +46,7 @@ export const EditRequiredInformation = () => {
     </Modal>
   );
 };
-export const EditOptionalInformation = () => {
+export const EditOptionalInformationModal = () => {
   const { optional: open, success, error } = useSelector(({ profile }) => {
     return {
       ...profile.modals,
@@ -82,7 +82,7 @@ export const EditOptionalInformation = () => {
     </Modal>
   );
 };
-export const ChangePassword = () => {
+export const ChangePasswordModal = () => {
   const { password: open, error, success } = useSelector(state => {
     return {
       ...state.profile.modals,
@@ -114,15 +114,5 @@ export const ChangePassword = () => {
         <ChangePasswordForm />
       </ModalBody>
     </Modal>
-  );
-};
-
-export default () => {
-  return (
-    <>
-      <EditRequiredInformation />
-      <EditOptionalInformation />
-      <ChangePassword />
-    </>
   );
 };
