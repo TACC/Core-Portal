@@ -16,13 +16,36 @@ from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
 
-
+# Need to make some big changes here.
+# Consider changing removing/changing some of the secrets to hold configurables to return user
+# related settings such as the user's **home directory** on a specefic storage system...
 class UserSystemsManager():
     """User Systems Manager
-
     Any functionality needed to manage a user's home directory and systems
     is implemented here. This is mainly used when setting up a new account
     or to renew keys.
+
+    Systems Config:
+    You can find an object of "PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS" in 
+    settings_secret. The systems are indexed by the name of the system
+    (ex: frontera). Each object has settings for managing a user's
+    storage system.
+        'localsystem1': {
+            'name': 'My Data (Local System One)', <----------- The name to appear in the "My Data" section.
+            'prefix': 'localsystem1.home.{username}', <------- Used to get the system ID for a user
+            'host': 'localsystem1.tacc.utexas.edu', <--------- System host
+            'abs_home_directory': '/path/to/home_dirs/', <---- User's absolute home directory path
+            'home_directory': '/home', <---------------------- User's home directory
+            'relative_path': 'home_dirs', <------------------- User's relative home directory
+            'icon': None <------------------------------------ The CSS class for the icon used in "My Data".
+        }
+
+    Default System:
+    The "PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM" will be the name of
+    one of the systems in "PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS". This system
+    will be used when a system is not provided.
+    .. seealso::
+    :class:`server.portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager`
     """
 
     def __init__(
@@ -46,6 +69,13 @@ class UserSystemsManager():
             logger.debug('available systems: {}'.format(list(settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.keys())))
             return None
 
+        # refactor this tas_client stuff...
+        # maybe make this into its own portal.libs function or something
+        # this will be important later if TAS gets an upgrade and we need it 
+        # changed everywhere that uses it. Also, maybe we should bring up
+        # weather or not any portal from now on should have its own virtual
+        # MyData spaces on corral. I don't think they should for several reasons
+        #  - JChuah
         if use_work:
             self.tas_client = TASClient(
                 baseURL=settings.TAS_URL,
@@ -56,27 +86,11 @@ class UserSystemsManager():
             )
             self.tas_user = self.tas_client.get_user(username=self.user.username)
 
-            
-
-    def mkdir(self, *args, **kwargs):
-        """Create user's home directory
-
-        :param user: User instance
-
-        :returns: Agave response for the folder created
-        """
-        agc = service_account()
-        username = self.user.username
-        body = {
-            'action': 'mkdir',
-            'path': username
-        }
-        home_dir = agc.files.manage(
-            systemId=self.system['storage_system'],
-            filePath=self.system['relative_path'],
-            body=body)
-        return home_dir
-
+    # Refactor... do not use 'storage_system': 'frontera.storage.default'
+    # (previously: AGAVE_STORAGE_SYSTEM) in anything!!!
+    # This does not work for /work or /home1 based storage systems...
+    # currently uses {system}.storage.default
+    # needs to use {system}.storage.{username}
     def get_dir(self, *args, **kwargs):
         """Gets user's home directory
 
@@ -87,31 +101,38 @@ class UserSystemsManager():
         agc = service_account()
         username = self.user.username
         home_dir = agc.files.list(
-            systemId=self.system['storage_system'],
+            systemId=self.system['home_directory'],
             filePath=username)
+        # need to return:
+        # system['home_directory'] + {id} + {username}
+        # ex: /home1/12345/keiths/
         return home_dir
 
+    # this and get_dir should be merged and refactored
+    # Can this function be repurposed instead to support different
+    # PORTAL_STORAGE_SYSTEMS that may require a virtual home? if
+    # that's what we want to support. if not, we should probably
+    # get rid of this "get_or_create" business. The whole point of
+    # get_or_create is to trigger a possible side effect of creating
+    # a directory on behalf of the user, and it makes tracing what's
+    # actually happening on the HPC side difficult.
+    # - JChuah
     def get_or_create_dir(self, *args, **kwargs):
         """Gets or creates user's home directory
 
         :param user: User instance
-        :param tas_user: User instance for $WORK
 
         :returns: Agave response for the folder
+
+        .. note::
+            We do not need to create the directory instead we check we
+            have a value in
+            `homeDirectory` from `TAS`
         """
-        try:
-            path = self.tas_user['homeDirectory']
-            assert self.tas_user
-            assert self.user.username in path
-            return path
-        except:
-            try:
-                home_dir = self.get_dir(self.user)
-                return home_dir
-            except HTTPError as exc:
-                if exc.response.status_code == 404:
-                    home_dir = self.mkdir(self.user)
-                    return home_dir
+        path = self.tas_user['homeDirectory']
+        assert self.tas_user
+        assert self.user.username in path
+        return path
 
     def _save_user_keys(
             self,
@@ -161,6 +182,10 @@ class UserSystemsManager():
                 pub_key=pub_key
             )
 
+    # How does this interact with PORTAL_STORAGE_SYSTEMS? On longhorn
+    # it will be /home1/group_id/user, but on stockyard based systems
+    # such as stampede2 it will be /work/group_id/user
+    # - JChuah
     def get_home_dir_abs_path(self, *args, **kwargs):
         """Returns home directory absolute path
 
@@ -228,16 +253,17 @@ class UserSystemsManager():
         system.storage.auth.private_key = priv_key_str
         return system
 
-    def get_storage_host(self, *args, **kwargs):
-        """Returns storage host
+    # replace this with method from user_work_home.py
+    # def get_storage_host(self, *args, **kwargs):
+    #     """Returns storage host
 
-        Every Agave System definition has a *Storage Host* to which it connects
-         to.
+    #     Every Agave System definition has a *Storage Host* to which it connects
+    #      to.
 
-        :returns: Storage Host to connect to
-        :rtype: str
-        """
-        return self.system['host']
+    #     :returns: Storage Host to connect to
+    #     :rtype: str
+    #     """
+    #     return self.system['host']
 
     def get_storage_username(
             self,
