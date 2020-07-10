@@ -2,41 +2,29 @@ import { Badge } from 'reactstrap';
 import React from 'react';
 import PropTypes from 'prop-types';
 
+const STATUS_TEXT_MAP = {
+  ACCEPTED: 'Accepted',
+  PENDING: 'Pending',
+  PROCESSING_INPUTS: 'Processing',
+  STAGING_INPUTS: 'Staging Inputs',
+  STAGED: 'Staged',
+  STAGING_JOB: 'Staging Job',
+  SUBMITTING: 'Submitted',
+  QUEUED: 'Queued',
+  RUNNING: 'Running',
+  CLEANING_UP: 'Cleaning Up',
+  ARCHIVING: 'Archiving',
+  FINISHED: 'Finished',
+  STOPPED: 'Stopped',
+  FAILED: 'Failure',
+  BLOCKED: 'Blocked'
+};
+
 export function getStatusText(status) {
-  switch (status) {
-    case 'ACCEPTED':
-      return 'Accepted';
-    case 'PENDING':
-      return 'Pending';
-    case 'PROCESSING_INPUTS':
-      return 'Processing';
-    case 'STAGING_INPUTS':
-      return 'Staging Inputs';
-    case 'STAGED':
-      return 'Staged';
-    case 'STAGING_JOB':
-      return 'Staging Job';
-    case 'SUBMITTING':
-      return 'Submitted';
-    case 'QUEUED':
-      return 'Queued';
-    case 'RUNNING':
-      return 'Running';
-    case 'CLEANING_UP':
-      return 'Cleaning Up';
-    case 'ARCHIVING':
-      return 'Archiving';
-    case 'FINISHED':
-      return 'Finished';
-    case 'STOPPED':
-      return 'Stopped';
-    case 'FAILED':
-      return 'Failure';
-    case 'BLOCKED':
-      return 'Blocked';
-    default:
-      return 'Unknown';
+  if (status in STATUS_TEXT_MAP) {
+    return STATUS_TEXT_MAP[status];
   }
+  return 'Unknown';
 }
 
 export function getBadgeColor(status) {
