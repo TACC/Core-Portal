@@ -75,7 +75,7 @@ const SystemsList = () => {
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()}>
+      <tbody {...getTableBodyProps()} styleName="rows">
         {rows.length ? (
           rows.map((row, idx) => {
             prepareRow(row);

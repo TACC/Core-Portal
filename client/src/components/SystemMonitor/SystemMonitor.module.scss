@@ -4,7 +4,9 @@
     border-bottom: var(--table-border);
     margin: 0;
     width: 100%;
+}
 
+.rows {
     tr:nth-child(odd) {
         background-color: rgba(#c6c6c6, 0.1);
     }
@@ -15,6 +17,7 @@
         padding: 5px 8px;
     }
 }
+
 .header {
     border-bottom: var(--table-border);
 }
