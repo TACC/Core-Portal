@@ -11,7 +11,7 @@ const TYPE_ICON_MAP = {
 const TYPES = PropTypes.oneOf(Object.keys(TYPE_ICON_MAP));
 
 const Message = ({ type, text }) => {
-  const iconName = TYPE_ICON_MAP[type] || undefined;
+  const iconName = TYPE_ICON_MAP[type];
   const containerStyleName = `container is-${type}`;
 
   return (

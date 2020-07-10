@@ -17,8 +17,8 @@ function testClassnamesByType(type, getByTestId) {
 describe('Message', () => {
   it('has correct text', () => {
     const { getByTestId } = render(<Message type={TYPE} text={CONTENT} />);
-    const node = getByTestId('text');
-    expect(node.textContent).toEqual(CONTENT);
+    const text = getByTestId('text');
+    expect(text.textContent).toEqual(CONTENT);
   });
 
   describe('set of expected elements', () => {
