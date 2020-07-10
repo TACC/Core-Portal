@@ -6,7 +6,7 @@ const HistoryBadge = ({ unread }) => {
   if (unread) {
     return (
       <span styleName="root" data-testid="history-badge">
-        {unread}
+        {unread < 1000 ? unread : '999+'}
       </span>
     );
   }
