@@ -47,8 +47,8 @@ describe('System Monitor Component', () => {
   });
   it('renders error when there is an error ', () => {
     const store = mockStore({ systemMonitor: { list: [], loading: false, error:"Problem" } });
-    const { getByTestId } = renderSystemMonitor(store);
-    expect(getByTestId('loading-error'));
+    const { getByText } = renderSystemMonitor(store);
+    expect(getByText('Unable to gather system information'));
   });
   it('should display the system name in each row', () => {
     const store = mockStore({ systemMonitor: { list, loading: false } });

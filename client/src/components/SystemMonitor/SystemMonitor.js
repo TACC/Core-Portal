@@ -44,7 +44,7 @@ const SystemsList = () => {
 
   if (loadingError) {
     return (
-      <div styleName="error" data-testid="loading-error">
+      <div styleName="error">
         <FontAwesomeIcon
           icon={faExclamationTriangle}
           style={{ marginRight: '10px' }}
