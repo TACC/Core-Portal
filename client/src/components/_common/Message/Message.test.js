@@ -24,7 +24,7 @@ describe('Message', () => {
   describe('set of expected elements', () => {
     it('includes icon', () => {
       const { getByTestId } = render(<Message type={TYPE} text={CONTENT} />);
-      const icon = getByTestId('icon'); // WARN: Relies on `MessageIcon`
+      const icon = getByTestId('icon'); // WARNING: Relies on `Icon`
       expect(icon).toBeDefined();
     });
     it('includes text', () => {

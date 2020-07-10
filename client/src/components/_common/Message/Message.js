@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import MessageIcon from './MessageIcon';
+import Icon from '_common/Icon';
 import './Message.module.css';
 
 const TYPE_ICON_MAP = {
@@ -16,7 +16,7 @@ const Message = ({ type, text }) => {
 
   return (
     <span styleName={containerStyleName} data-testid="message">
-      <MessageIcon styleName="icon" name={iconName} />
+      <Icon styleName="icon" name={iconName} />
       <span styleName="text" data-testid="text">
         {text}
       </span>

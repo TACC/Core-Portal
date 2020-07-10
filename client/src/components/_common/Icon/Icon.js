@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const MessageIcon = ({ name }) => {
+const Icon = ({ name }) => {
   const className = `icon-${name}`;
 
   return <i className={className} data-testid="icon" />;
 };
-MessageIcon.propTypes = {
+Icon.propTypes = {
   name: PropTypes.string.isRequired
 };
 
-export default MessageIcon;
+export default Icon;
