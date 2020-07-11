@@ -110,7 +110,8 @@ module.exports = {
   // A list of paths to directories that Jest should use to search for files in
   roots: [
     '<rootDir>/src/components/_common/Message',
-    '<rootDir>/src/components/_common/Icon'
+    '<rootDir>/src/components/_common/Icon',
+    '<rootDir>/src/components/_common/AppIcon'
   ],
 
   // Allows you to use a custom runner instead of Jest's default test runner

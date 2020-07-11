@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import Icon from '_common/Icon';
 import './AppIcon.scss';
 
 const AppIcon = ({ appId }) => {
@@ -15,12 +16,7 @@ const AppIcon = ({ appId }) => {
     return appIcon;
   };
 
-  return (
-    <i
-      className={`app-icon icon-nav-${findAppIcon(appId)}`}
-      data-testid="app-icon"
-    />
-  );
+  return <Icon name={`nav-${findAppIcon(appId)}`} className="app-icon" />;
 };
 AppIcon.propTypes = {
   appId: PropTypes.string.isRequired
