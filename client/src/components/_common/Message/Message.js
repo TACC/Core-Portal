@@ -5,7 +5,8 @@ import './Message.module.scss';
 
 const TYPE_ICON_MAP = {
   info: {
-    name: 'alert',
+    // WARNING: No official design
+    name: 'alert', // WARNING: FP-288: Provide and test icon
     text: 'Notice'
   },
   success: {

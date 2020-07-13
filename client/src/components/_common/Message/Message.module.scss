@@ -15,10 +15,10 @@
 
 /* Types */
 .is-info {
-  color: var(--global-color-primary--x-dark);
+  color: var(--global-color-primary--x-dark); /* WARNING: No official design */
 }
 .is-warn {
-  color: var(--global-color-accent--normal);
+  color: var(--global-color-warning--normal);
 }
 .is-error {
   color: var(--global-color-danger--normal);

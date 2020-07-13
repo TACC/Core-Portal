@@ -13,8 +13,11 @@ const Icon = ({ children, name, className }) => {
   );
 };
 Icon.propTypes = {
+  /** Name of icon from icon font (without the (`icon-` prefix) */
   name: PropTypes.string.isRequired,
+  /** Additional className for the icon */
   className: PropTypes.string,
+  /** A text alternative to the icon (visually hidden) (for accessibility) */
   children: PropTypes.string
 };
 Icon.defaultProps = {
