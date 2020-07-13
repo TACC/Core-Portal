@@ -50,7 +50,7 @@ function TicketsView() {
 
   if (loadingError) {
     return (
-      <div className="appDetail-error">
+      <div className="ticket__error">
         <FontAwesomeIcon
           icon={faExclamationTriangle}
           style={{ marginRight: '10px' }}
