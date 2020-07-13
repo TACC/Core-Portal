@@ -69,7 +69,31 @@ function* submitJob(action) {
   }
 }
 
+export function* getJobDetails(action) {
+  const { jobId } = action.payload;
+  yield put({
+    type: 'JOB_DETAILS_FETCH_STARTED',
+    payload: jobId
+  });
+  try {
+    const res = yield call(fetchUtil, {
+      url: `/api/workspace/jobs/`,
+      params: { job_id: jobId }
+    });
+    yield put({
+      type: 'JOB_DETAILS_FETCH_SUCCESS',
+      payload: res.response
+    });
+  } catch (error) {
+    yield put({
+      type: 'JOB_DETAILS_FETCH_ERROR',
+      payload: error
+    });
+  }
+}
+
 export function* watchJobs() {
   yield takeLatest('GET_JOBS', getJobs);
   yield takeLeading('SUBMIT_JOB', submitJob);
+  yield takeLatest('GET_JOB_DETAILS', getJobDetails);
 }

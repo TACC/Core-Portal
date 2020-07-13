@@ -1,0 +1,45 @@
+.root {
+  --table-border: 1px solid black;
+
+  border-bottom: var(--table-border);
+  margin: 0;
+  width: 100%;
+}
+
+.container {
+  display: inline-flex;
+  flex-direction: row;
+}
+
+.panel {
+  border-right: 1px solid rgba(112, 112, 112, 0.25);
+  width: 125px;
+}
+
+.rows {
+  tr:nth-child(odd) {
+    background-color: rgba(#c6c6c6, 0.1);
+  }
+  td {
+    padding: 5px 8px;
+  }
+}
+
+.header {
+  border-bottom: var(--table-border);
+}
+
+.side
+/* Columns */
+.status {
+  width: 100px;
+}
+
+/* Messaging */
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #9d85ef;
+  padding: 30px;
+}

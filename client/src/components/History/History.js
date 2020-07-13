@@ -79,7 +79,7 @@ const History = () => {
         <HistorySidebar />
         <div className="history-content">
           <Switch>
-            <Route exact path={`${root}/jobs`}>
+            <Route path={`${root}/jobs`}>
               <JobHistory />
             </Route>
             <Route exact path={`${root}/uploads`}>

@@ -5,7 +5,7 @@ const initialState = {
   error: null
 };
 
-function jobs(state = initialState, action) {
+export function jobs(state = initialState, action) {
   switch (action.type) {
     case 'JOBS_LIST_INIT':
       return {
@@ -59,4 +59,40 @@ function jobs(state = initialState, action) {
   }
 }
 
-export default jobs;
+const initialJobDetail = {
+  jobId: null,
+  content: null,
+  loading: false,
+  loadingError: false,
+  loadingErrorMessage: ''
+};
+
+export function jobDetail(state = initialJobDetail, action) {
+  switch (action.type) {
+    case 'JOB_DETAILS_FETCH_STARTED':
+      return {
+        jobId: action.payload.jobId,
+        content: null,
+        loading: true,
+        loadingError: false,
+        loadingErrorMessage: ''
+      };
+    case 'JOB_DETAILS_FETCH_SUCCESS':
+      return {
+        ...state,
+        content: action.payload,
+        loading: false,
+        loadingError: false,
+        loadingErrorMessage: ''
+      };
+    case 'JOB_DETAILS_FETCH_ERROR':
+      return {
+        ...state,
+        loadingError: true,
+        loadingErrorMessage: action.payload,
+        loading: false
+      };
+    default:
+      return state;
+  }
+}
