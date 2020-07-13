@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Icon from '_common/Icon';
 import './Message.module.scss';
 
-const TYPE_ICON_MAP = {
+export const TYPE_ICON_MAP = {
   info: {
     // WARNING: No official design
     name: 'alert', // WARNING: FP-288: Provide and test icon

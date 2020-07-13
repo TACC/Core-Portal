@@ -1,17 +1,20 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import Message from './Message';
+import Message, { TYPE_ICON_MAP } from './Message';
 
 const CONTENT = '…';
 const TYPE = 'info';
 
 function testClassnamesByType(type, getByTestId) {
+  const root = getByTestId('message');
+  const icon = getByTestId('icon'); // WARNING: Relies on `Icon`
   const text = getByTestId('text');
   const modifierClassnamePattern = new RegExp(`is-${type}`);
-  const root = getByTestId('message');
-  expect(root.className).toMatch(/container/);
+  const iconName = TYPE_ICON_MAP[type].name;
+  expect(root.className).toMatch('container');
   expect(root.className).toMatch(modifierClassnamePattern);
-  expect(text.className).toMatch(/text/);
+  expect(icon.className).toMatch(iconName);
+  expect(text.className).toMatch('text');
 }
 
 describe('Message', () => {
