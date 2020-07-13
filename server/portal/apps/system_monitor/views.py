@@ -11,6 +11,15 @@ import pytz
 logger = logging.getLogger(__name__)
 
 
+def _get_unoperational_system(hostname):
+    return {'hostname': hostname,
+            'display_name': hostname.split('.')[0].capitalize(),
+            'is_operational': False,
+            'load_percentage': 0,
+            'jobs': {'running': 0, 'queued': 0, 'other': 0},
+            }
+
+
 class SysmonDataView(BaseApiView):
 
     def get(self, request):
@@ -19,16 +28,18 @@ class SysmonDataView(BaseApiView):
         '''
         systems = []
         requested_systems = settings.SYSTEM_MONITOR_DISPLAY_LIST
-        system_status_endpoint = getattr(settings, 'SYSMON_URL', 'https://portal.tacc.utexas.edu/commnq/index.json')
-        systems_json = requests.get(system_status_endpoint).json()
-        for sys in systems_json:
+        systems_json = requests.get(settings.SYSTEM_MONITOR_URL).json()
+        for sys in requested_systems:
+            if sys not in systems_json:
+                logger.info('System information for {} is missing. Assuming not operational status.'.format(sys))
+                systems.append(_get_unoperational_system(sys))
+                continue
             try:
-                system = System(systems_json.get(sys)).to_dict()
-                if system.get('hostname') in requested_systems:
-                    systems.append(system)
-            except Exception as exc:
-                logger.error(exc)
-
+                system = System(systems_json[sys]).to_dict()
+                systems.append(system)
+            except Exception:
+                logger.exception('Problem gather system information for {}: Assuming not operational status'.format(sys))
+                systems.append(_get_unoperational_system(sys))
         return JsonResponse(systems, safe=False)
 
 
@@ -48,8 +59,7 @@ class System:
                 self.resource_type = 'compute'
                 self.jobs = system_dict.get('jobs')
                 self.load_percentage = system_dict.get('load')
-                if isinstance(self.load_percentage, float) or \
-                        isinstance(self.load_percentage, int):
+                if isinstance(self.load_percentage, (float, int)):
                     self.load_percentage = int((self.load_percentage * 100))
                 else:
                     self.load_percentage = None

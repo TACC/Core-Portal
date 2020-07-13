@@ -2,6 +2,8 @@ import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import 'react-table-6/react-table.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { AppIcon, InfiniteScrollTable } from '_common';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
@@ -10,6 +12,7 @@ function JobsView() {
   const dispatch = useDispatch();
   const isLoading = useSelector(state => state.jobs.loading);
   const jobs = useSelector(state => state.jobs.list);
+  const error = useSelector(state => state.jobs.error);
   const limit = 20;
   const noDataText = (
     <>
@@ -24,7 +27,7 @@ function JobsView() {
     </>
   );
   useEffect(() => {
-    dispatch({ type: 'GET_JOBS', params: { limit } });
+    dispatch({ type: 'GET_JOBS', params: { offset: 0, limit } });
   }, [dispatch]);
 
   const infiniteScrollCallback = useCallback(offset => {
@@ -37,6 +40,18 @@ function JobsView() {
       dispatch({ type: 'GET_JOBS', params: { offset, limit } });
     }
   }, []);
+
+  if (error) {
+    return (
+      <div className="appDetail-error">
+        <FontAwesomeIcon
+          icon={faExclamationTriangle}
+          style={{ marginRight: '10px' }}
+        />
+        <div>We were unable to retrieve your jobs!</div>
+      </div>
+    );
+  }
 
   const columns = [
     {
