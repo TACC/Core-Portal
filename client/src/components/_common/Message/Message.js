@@ -4,28 +4,43 @@ import Icon from '_common/Icon';
 import './Message.module.css';
 
 const TYPE_ICON_MAP = {
-  info: 'info',
-  warn: 'alert',
-  error: 'alert'
+  info: {
+    name: 'info',
+    text: 'Notice'
+  },
+  warn: {
+    name: 'alert',
+    text: 'Warning'
+  },
+  error: {
+    name: 'alert',
+    text: 'Error'
+  }
 };
 const TYPES = PropTypes.oneOf(Object.keys(TYPE_ICON_MAP));
 
-const Message = ({ type, text }) => {
-  const iconName = TYPE_ICON_MAP[type];
+/** Show an event-based message to the user */
+const Message = ({ children, type }) => {
+  const iconName = TYPE_ICON_MAP[type].name;
+  const iconText = TYPE_ICON_MAP[type].text;
   const containerStyleName = `container is-${type}`;
 
   return (
     <span styleName={containerStyleName} data-testid="message">
-      <Icon styleName="icon" name={iconName} />
+      <Icon styleName="icon" name={iconName}>
+        {iconText}
+      </Icon>
       <span styleName="text" data-testid="text">
-        {text}
+        {children}
       </span>
     </span>
   );
 };
 Message.propTypes = {
+  /** Message type or severity */
   type: TYPES.isRequired,
-  text: PropTypes.string.isRequired
+  /** Message text (as child node) */
+  children: PropTypes.string.isRequired
 };
 
 export default Message;
