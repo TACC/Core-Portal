@@ -1,8 +1,17 @@
-.container {}
-.is-info {}
-.is-error {}
-.is-warn {}
+.container {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+}
+.is-info {
+  /* … */
+}
+.is-error,
+.is-warn {
+  color: var(--global-color-accent--normal);
+}
 
 .text {}
-
-.icon {}
+.icon {
+  margin-right: 0.25em; /* ~4px (3.5px design * 1.2 design-to-app ratio) */
+}
