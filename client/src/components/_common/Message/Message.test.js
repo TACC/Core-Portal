@@ -41,6 +41,11 @@ describe('Message', () => {
         const { getByTestId } = render(<Message type={type} text="…" />);
         testClassnamesByType(type, getByTestId);
       });
+      test('"success"', () => {
+        const type = 'success';
+        const { getByTestId } = render(<Message type={type} text="…" />);
+        testClassnamesByType(type, getByTestId);
+      });
       test('"warn"', () => {
         const type = 'warn';
         const { getByTestId } = render(<Message type={type} text="…" />);

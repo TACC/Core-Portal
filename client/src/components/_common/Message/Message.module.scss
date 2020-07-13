@@ -1,0 +1,34 @@
+.container {
+  /* Vertically center child elements */
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* Children */
+.text {
+  /* … */
+}
+.icon {
+  margin-right: 0.25em; /* ~4px */
+}
+
+/* Types */
+.is-info {
+  /* No style is designed */
+}
+.is-success {
+  padding: 0.5rem 1rem;
+  border: var(--global-border-width--normal) solid var(--global-color-success--alt);
+
+  & .icon {
+    margin-right: 1rem;
+
+    color: var(--global-color-success--alt);
+  }
+}
+.is-error,
+.is-warn {
+  color: var(--global-color-accent--normal);
+}
+

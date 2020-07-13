@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Icon from '_common/Icon';
-import './Message.module.css';
+import './Message.module.scss';
 
 const TYPE_ICON_MAP = {
   info: {
@@ -30,7 +30,7 @@ const Message = ({ children, type }) => {
   const containerStyleName = `container is-${type}`;
   let optionalIcon;
 
-  if (!iconName) {
+  if (iconName) {
     optionalIcon = (
       <Icon styleName="icon" name={iconName}>
         {iconText}
@@ -51,7 +51,7 @@ Message.propTypes = {
   /** Message type or severity */
   type: TYPES.isRequired,
   /** Message text (as child node) */
-  children: PropTypes.string.isRequired
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired
 };
 
 export default Message;
