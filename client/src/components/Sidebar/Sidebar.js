@@ -75,7 +75,7 @@ const Sidebar = () => {
             tag={RRNavLink}
             to={`${path}${ROUTES.HISTORY}`}
             styleName="link"
-            activeClassName="link--active"
+            activeStyleName="link--active"
           >
             <div styleName="content" className="nav-content">
               <i className="icon icon-nav icon-nav-notification" />
