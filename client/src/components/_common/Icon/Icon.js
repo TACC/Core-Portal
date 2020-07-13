@@ -17,7 +17,7 @@ Icon.propTypes = {
   name: PropTypes.string.isRequired,
   /** Additional className for the icon */
   className: PropTypes.string,
-  /** A text alternative to the icon (visually hidden) (for accessibility) */
+  /** A text alternative to the icon (for accessibility) */
   children: PropTypes.string
 };
 Icon.defaultProps = {
