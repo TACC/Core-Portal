@@ -34,14 +34,14 @@ describe('AppIcon', () => {
     const { getByTestId } = renderAppIcon("jupyter");
     expect(getByTestId(/icon/)).toHaveAttribute(
       'class',
-      'app-icon icon-nav-jupyter'
+      'app-icon icon icon-nav-jupyter'
     );
   });
   it('should show generic icons for apps with no appIcon', () => {
     const { getByTestId } = renderAppIcon("vasp");
     expect(getByTestId(/icon/)).toHaveAttribute(
       'class',
-      'app-icon icon-nav-application'
+      'app-icon icon icon-nav-application'
     )
   });
   it('should render icons for prtl.clone apps', () => {
@@ -50,7 +50,7 @@ describe('AppIcon', () => {
     );
     expect(getByTestId(/icon/)).toHaveAttribute(
       'class',
-      'app-icon icon-nav-jupyter'
+      'app-icon icon icon-nav-jupyter'
     )
   });
 });
