@@ -5,15 +5,19 @@ import './Message.module.css';
 
 const TYPE_ICON_MAP = {
   info: {
-    name: 'info',
+    name: false,
+    text: 'Notice'
+  },
+  success: {
+    name: 'approved-reverse', // WARNING: FP-288: Provide and test icon
     text: 'Notice'
   },
   warn: {
-    name: 'alert',
+    name: 'alert', // WARNING: FP-288: Provide and test icon
     text: 'Warning'
   },
   error: {
-    name: 'alert',
+    name: 'alert', // WARNING: FP-288: Provide and test icon
     text: 'Error'
   }
 };
@@ -24,12 +28,19 @@ const Message = ({ children, type }) => {
   const iconName = TYPE_ICON_MAP[type].name;
   const iconText = TYPE_ICON_MAP[type].text;
   const containerStyleName = `container is-${type}`;
+  let optionalIcon;
 
-  return (
-    <span styleName={containerStyleName} data-testid="message">
+  if (!iconName) {
+    optionalIcon = (
       <Icon styleName="icon" name={iconName}>
         {iconText}
       </Icon>
+    );
+  }
+
+  return (
+    <span styleName={containerStyleName} data-testid="message">
+      {optionalIcon}
       <span styleName="text" data-testid="text">
         {children}
       </span>
