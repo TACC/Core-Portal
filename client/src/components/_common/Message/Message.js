@@ -5,7 +5,7 @@ import './Message.module.scss';
 
 const TYPE_ICON_MAP = {
   info: {
-    name: false,
+    name: 'alert',
     text: 'Notice'
   },
   success: {
@@ -28,19 +28,12 @@ const Message = ({ children, type }) => {
   const iconName = TYPE_ICON_MAP[type].name;
   const iconText = TYPE_ICON_MAP[type].text;
   const containerStyleName = `container is-${type}`;
-  let optionalIcon;
-
-  if (iconName) {
-    optionalIcon = (
-      <Icon styleName="icon" name={iconName}>
-        {iconText}
-      </Icon>
-    );
-  }
 
   return (
     <span styleName={containerStyleName} data-testid="message">
-      {optionalIcon}
+      <Icon styleName="icon" name={iconName}>
+        {iconText}
+      </Icon>
       <span styleName="text" data-testid="text">
         {children}
       </span>

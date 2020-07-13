@@ -16,19 +16,19 @@ function testClassnamesByType(type, getByTestId) {
 
 describe('Message', () => {
   it('has correct text', () => {
-    const { getByTestId } = render(<Message type={TYPE} text={CONTENT} />);
+    const { getByTestId } = render(<Message type={TYPE}>{CONTENT}</Message>);
     const text = getByTestId('text');
     expect(text.textContent).toEqual(CONTENT);
   });
 
   describe('set of expected elements', () => {
     it('includes icon', () => {
-      const { getByTestId } = render(<Message type={TYPE} text={CONTENT} />);
+      const { getByTestId } = render(<Message type={TYPE}>{CONTENT}</Message>);
       const icon = getByTestId('icon'); // WARNING: Relies on `Icon`
       expect(icon).toBeDefined();
     });
     it('includes text', () => {
-      const { getByTestId } = render(<Message type={TYPE} text={CONTENT} />);
+      const { getByTestId } = render(<Message type={TYPE}>{CONTENT}</Message>);
       const text = getByTestId('text');
       expect(text).toBeDefined();
     });
@@ -38,22 +38,22 @@ describe('Message', () => {
     describe('are accurate when type is:', () => {
       test('"info"', () => {
         const type = 'info';
-        const { getByTestId } = render(<Message type={type} text="…" />);
+        const { getByTestId } = render(<Message type={type}>…</Message>);
         testClassnamesByType(type, getByTestId);
       });
       test('"success"', () => {
         const type = 'success';
-        const { getByTestId } = render(<Message type={type} text="…" />);
+        const { getByTestId } = render(<Message type={type}>…</Message>);
         testClassnamesByType(type, getByTestId);
       });
       test('"warn"', () => {
         const type = 'warn';
-        const { getByTestId } = render(<Message type={type} text="…" />);
+        const { getByTestId } = render(<Message type={type}>…</Message>);
         testClassnamesByType(type, getByTestId);
       });
       test('"error"', () => {
         const type = 'error';
-        const { getByTestId } = render(<Message type={type} text="…" />);
+        const { getByTestId } = render(<Message type={type}>…</Message>);
         testClassnamesByType(type, getByTestId);
       });
     });

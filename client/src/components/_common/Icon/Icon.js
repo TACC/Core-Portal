@@ -15,10 +15,11 @@ const Icon = ({ children, name, className }) => {
 Icon.propTypes = {
   name: PropTypes.string.isRequired,
   className: PropTypes.string,
-  children: PropTypes.string.isRequired
+  children: PropTypes.string
 };
 Icon.defaultProps = {
-  className: ''
+  className: '',
+  children: ''
 };
 
 export default Icon;

@@ -15,7 +15,13 @@
 
 /* Types */
 .is-info {
-  /* No style is designed */
+  color: var(--global-color-primary--x-dark);
+}
+.is-warn {
+  color: var(--global-color-accent--normal);
+}
+.is-error {
+  color: var(--global-color-danger--normal);
 }
 .is-success {
   padding: 0.5rem 1rem;
@@ -27,8 +33,3 @@
     color: var(--global-color-success--alt);
   }
 }
-.is-error,
-.is-warn {
-  color: var(--global-color-accent--normal);
-}
-
