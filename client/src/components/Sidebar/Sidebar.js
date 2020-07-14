@@ -20,7 +20,7 @@ const Sidebar = () => {
           activeStyleName="link--active"
         >
           <div styleName="content" className="nav-content">
-            <i className="icon icon-nav-dashboard" />
+            <i className="icon icon-dashboard" />
             <span styleName="text">Dashboard</span>
           </div>
         </NavLink>
@@ -33,7 +33,7 @@ const Sidebar = () => {
           activeStyleName="link--active"
         >
           <div styleName="content" className="nav-content">
-            <i className="icon icon-nav-folder" />
+            <i className="icon icon-folder" />
             <span styleName="text">Data Files</span>
           </div>
         </NavLink>
@@ -46,7 +46,7 @@ const Sidebar = () => {
           activeStyleName="link--active"
         >
           <div styleName="content" className="nav-content">
-            <i className="icon icon-nav-application" />
+            <i className="icon icon-applications" />
             <span styleName="text">Applications</span>
           </div>
         </NavLink>
@@ -59,7 +59,7 @@ const Sidebar = () => {
           activeStyleName="link--active"
         >
           <div styleName="content" className="nav-content">
-            <i className="icon icon-nav-allocation" />
+            <i className="icon icon-allocations" />
             <span styleName="text">Allocations</span>
           </div>
         </NavLink>
