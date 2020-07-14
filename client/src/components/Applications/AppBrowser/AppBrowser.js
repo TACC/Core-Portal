@@ -62,7 +62,7 @@ const AppBrowser = () => {
               }}
             >
               <span className="nav-content">
-                <i className="icon-nav-application  category-icon" />
+                <i className="icon-applications  category-icon" />
                 <span className="nav-text">{`${category} [${categoryDict[category].length}]`}</span>
               </span>
             </NavLink>
