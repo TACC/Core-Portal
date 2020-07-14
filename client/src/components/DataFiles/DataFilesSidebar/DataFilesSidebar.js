@@ -48,7 +48,7 @@ const DataFilesSidebar = () => {
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem onClick={toggleMkdirModal}>
-                <i className="icon-nav-folder" /> Folder
+                <i className="icon-folder" /> Folder
               </DropdownItem>
               <DropdownItem
                 className="complex-dropdown-item"

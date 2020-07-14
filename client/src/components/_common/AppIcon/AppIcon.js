@@ -7,7 +7,7 @@ import './AppIcon.scss';
 const AppIcon = ({ appId }) => {
   const appIcons = useSelector(state => state.apps.appIcons);
   const findAppIcon = id => {
-    let appIcon = 'application';
+    let appIcon = 'applications';
     Object.keys(appIcons).forEach(appName => {
       if (id.includes(appName)) {
         appIcon = appIcons[appName].toLowerCase();
@@ -15,8 +15,9 @@ const AppIcon = ({ appId }) => {
     });
     return appIcon;
   };
+  const iconName = findAppIcon(appId);
 
-  return <Icon name={`nav-${findAppIcon(appId)}`} className="app-icon" />;
+  return <Icon name={iconName} className="app-icon" />;
 };
 AppIcon.propTypes = {
   appId: PropTypes.string.isRequired
