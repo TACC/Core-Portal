@@ -3,9 +3,7 @@ import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { useSelector, shallowEqual } from 'react-redux';
 // import PropTypes from 'prop-types';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { AppIcon } from '_common';
+import { Icon, AppIcon } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
@@ -25,10 +23,7 @@ const AppBrowser = () => {
   if (error.isError) {
     return (
       <div className="appDetail-error">
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          style={{ marginRight: '10px' }}
-        />
+        <Icon name="alert">Error</Icon>
         {error.message ? (
           <div>{error.message}</div>
         ) : (
