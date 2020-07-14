@@ -54,7 +54,7 @@ const DataFilesSidebar = () => {
                 className="complex-dropdown-item"
                 onClick={toggleUploadModal}
               >
-                <i className="icon-action-upload" />
+                <i className="icon-upload" />
                 <span className="multiline-menu-item-wrapper">
                   Upload
                   <small> Up to 500mb </small>
