@@ -145,7 +145,7 @@ const SystemsPushKeysModal = () => {
                 onClick={pushKeys}
                 disabled={submitting}
               >
-                {buttonIcon} Authenticate
+                {buttonIcon} <span>Authenticate</span>
               </Button>
               <Button color="secondary" onClick={toggle}>
                 Close
