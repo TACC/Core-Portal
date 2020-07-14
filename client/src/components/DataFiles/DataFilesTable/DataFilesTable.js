@@ -7,12 +7,10 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import './DataFilesTable.scss';
 
 // What to render if there are no files to display
@@ -37,54 +35,40 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     );
   }
   if (err === '502') {
+    const Action = ({ children }) => (
+      <a
+        className="data-files-nav-link"
+        type="button"
+        href="#"
+        onClick={pushKeys}
+      >
+        {children}
+      </a>
+    );
+    Action.propTypes = { children: PropTypes.string.isRequired };
+
     return (
       <div className="h-100 listing-placeholder">
-        <span className="text-center">
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            style={{ marginRight: '10px' }}
-            color="#9d85ef"
-          />
+        <Message type="warn">
           There was a problem accessing this file system. If this is your first
-          time logging in, you may need to{' '}
-          <a
-            className="data-files-nav-link"
-            type="button"
-            href="#"
-            onClick={pushKeys}
-          >
-            push your keys
-          </a>
-          .
-        </span>
+          time logging in, you may need to <Action>push your keys</Action>.
+        </Message>
       </div>
     );
   }
   if (err === '404') {
     return (
       <div className="h-100 listing-placeholder">
-        <span style={{ color: '#9d85ef' }}>
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            style={{ marginRight: '10px' }}
-            color="#9d85ef"
-          />
+        <Message type="warn">
           The file or folder that you are attempting to access does not exist.
-        </span>
+        </Message>
       </div>
     );
   }
   if (filesLength === 0) {
     return (
       <div className="h-100 listing-placeholder">
-        <span style={{ color: '#9d85ef' }}>
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            style={{ marginRight: '10px' }}
-            color="#9d85ef"
-          />
-          No files or folders to show.
-        </span>
+        <Message type="warn">No files or folders to show.</Message>
       </div>
     );
   }

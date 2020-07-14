@@ -1,0 +1,35 @@
+.container {
+  /* Vertically center child elements */
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* Children */
+.text {
+  /* … */
+}
+.icon {
+  margin-right: 0.25em; /* ~4px */
+}
+
+/* Types */
+.is-info {
+  color: var(--global-color-primary--x-dark); /* WARNING: No official design */
+}
+.is-warn {
+  color: var(--global-color-warning--normal);
+}
+.is-error {
+  color: var(--global-color-danger--normal);
+}
+.is-success {
+  padding: 0.5rem 1rem;
+  border: var(--global-border-width--normal) solid var(--global-color-success--alt);
+
+  & .icon {
+    margin-right: 1rem;
+
+    color: var(--global-color-success--alt);
+  }
+}
