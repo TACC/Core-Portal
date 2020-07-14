@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
 import { useSelector, useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
+import { Icon } from '_common';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
@@ -72,26 +71,25 @@ export const useAllocations = page => {
 
 const ErrorMessage = () => {
   const dispatch = useDispatch();
+  const action = (
+    <a
+      href="#"
+      style={{ color: '#9d85ef' }}
+      onClick={e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dispatch({ type: 'GET_ALLOCATIONS' });
+      }}
+    >
+      Try reloading the page.
+    </a>
+  );
   return (
     <>
       <span style={{ color: '#9d85ef' }}>
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          style={{ marginRight: '10px' }}
-        />
-        Unable to retrieve your allocations.&nbsp;
-      </span>
-      <a
-        href="#"
-        style={{ color: '#9d85ef' }}
-        onClick={e => {
-          e.preventDefault();
-          e.stopPropagation();
-          dispatch({ type: 'GET_ALLOCATIONS' });
-        }}
-      >
-        Try reloading the page.
-      </a>
+        <Icon name="alert">Warn</Icon> Unable to retrieve your allocations.
+      </span>{' '}
+      {action}
     </>
   );
 };

@@ -2,10 +2,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link, NavLink as RRNavLink } from 'react-router-dom';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboard, faDesktop } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
-import { LoadingSpinner } from '_common';
+import { Icon, LoadingSpinner } from '_common';
 import { AllocationsTable } from './AllocationsTables';
 import { NewAllocReq } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
@@ -41,7 +39,7 @@ export const Sidebar = () => (
         to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/approved`}
         activeClassName="active"
       >
-        <FontAwesomeIcon icon={faClipboard} size="1x" className="link-icon" />
+        <Icon name="approved-reverse" className="link-icon" />
         <span className="link-text">Approved</span>
       </NavLink>
     </NavItem>
@@ -51,7 +49,7 @@ export const Sidebar = () => (
         to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/expired`}
         activeClassName="active"
       >
-        <FontAwesomeIcon icon={faDesktop} size="1x" className="link-icon" />
+        <Icon name="pending" className="link-icon" />
         <span className="link-text">Expired</span>
       </NavLink>
     </NavItem>
