@@ -1,12 +1,17 @@
 import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import * as ROUTES from '../../constants/routes';
 import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
 import './Sidebar.module.scss';
 
 /** A navigation list for the application */
 const Sidebar = () => {
+  // show History only in local development
+  const showHistory = useSelector(state =>
+    state.workbench.status ? state.workbench.status.debug : false
+  );
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
   return (
@@ -64,6 +69,21 @@ const Sidebar = () => {
           </div>
         </NavLink>
       </NavItem>
+      {showHistory && (
+        <NavItem>
+          <NavLink
+            tag={RRNavLink}
+            to={`${path}${ROUTES.HISTORY}`}
+            styleName="link"
+            activeStyleName="link--active"
+          >
+            <div styleName="content" className="nav-content">
+              <i className="icon icon-nav icon-nav-notification" />
+              <span styleName="text">History</span>
+            </div>
+          </NavLink>
+        </NavItem>
+      )}
     </Nav>
   );
 };
