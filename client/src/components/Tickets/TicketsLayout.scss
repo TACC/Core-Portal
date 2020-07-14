@@ -1,5 +1,6 @@
 .ticket-reply-required {
-  .rt-td, .btn-link{
+  .rt-td,
+  .btn-link {
     font-weight: 500;
   }
 }
@@ -7,3 +8,12 @@
 .ticket-unknown-status {
   font-family: monospace;
 }
+
+.ticket__error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #9d85ef;
+  padding: 30px;
+}
+

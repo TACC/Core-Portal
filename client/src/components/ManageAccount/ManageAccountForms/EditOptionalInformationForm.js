@@ -40,16 +40,34 @@ export default function() {
       validationSchema={formSchema}
       onSubmit={handleSubmit}
     >
-      <Form>
-        <ManageAccountInput label="Website" name="website" />
-        <ManageAccountInput label="Orcid ID" name="orcidId" />
+      <Form aria-label="edit-optional-information-form">
+        <ManageAccountInput
+          label="Website"
+          name="website"
+          aria-label="website"
+        />
+        <ManageAccountInput
+          label="Orcid ID"
+          name="orcidId"
+          aria-label="orcid-id"
+        />
         <ManageAccountInput
           label="Professional Level"
           name="professionalLevel"
           type="select"
+          aria-label="professional-level"
         />
-        <ManageAccountInput label="Bio" name="bio" type="textarea" />
-        <Button type="submit" className="manage-account-submit-button">
+        <ManageAccountInput
+          label="Bio"
+          name="bio"
+          type="textarea"
+          aria-label="bio"
+        />
+        <Button
+          type="submit"
+          className="manage-account-submit-button"
+          aria-label="edit-optional-information-submit-button"
+        >
           {isEditing && <LoadingSpinner placement="inline" />}
           <span style={isEditing ? { marginLeft: '1rem' } : {}}>Submit</span>
         </Button>

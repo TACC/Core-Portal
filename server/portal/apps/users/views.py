@@ -116,7 +116,7 @@ class AllocationsView(BaseApiView):
         """
         data = get_allocations(request.user.username)
 
-        return JsonResponse({"response": data, "status": 200})
+        return JsonResponse({"response": data})
 
 
 @method_decorator(login_required, name='dispatch')
