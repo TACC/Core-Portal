@@ -6,7 +6,7 @@ import './Message.module.scss';
 export const TYPE_ICON_MAP = {
   info: {
     // WARNING: No official design
-    name: 'alert', // WARNING: FP-288: Provide and test icon
+    name: 'conversation', // WARNING: FP-288: Provide and test icon
     text: 'Notice'
   },
   success: {
