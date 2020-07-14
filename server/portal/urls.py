@@ -54,6 +54,7 @@ urlpatterns = [
 
     # api
     path('api/users/', include('portal.apps.users.urls', namespace='users')),
+    path('api/workbench/', include('portal.apps.workbench.api.urls', namespace='workbench_api')),
     path('api/workspace/', include('portal.apps.workspace.api.urls', namespace='workspace_api')),
     path('api/tickets/', include('portal.apps.tickets.api.urls', namespace='portal_tickets_api')),
     path('api/datafiles/', include('portal.apps.datafiles.urls', namespace='datafiles')),
