@@ -68,7 +68,7 @@ const SystemsPushKeysModal = () => {
     buttonIcon = <LoadingSpinner placement="inline" />;
   }
   if (error) {
-    buttonIcon = <Icon name="alert">Error</Icon>;
+    buttonIcon = <Icon name="alert">Warning</Icon>;
   }
 
   return (

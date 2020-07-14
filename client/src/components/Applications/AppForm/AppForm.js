@@ -402,7 +402,7 @@ const AppSchemaForm = ({ app }) => {
                     <LoadingSpinner placement="inline" />
                   )}{' '}
                   {(Object.keys(errors).length || jobSubmission.error) && (
-                    <Icon name="alert">Error</Icon>
+                    <Icon name="alert">Warning</Icon>
                   )}{' '}
                   <span>Submit</span>
                 </Button>

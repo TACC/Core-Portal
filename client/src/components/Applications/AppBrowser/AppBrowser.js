@@ -23,7 +23,7 @@ const AppBrowser = () => {
   if (error.isError) {
     return (
       <div className="appDetail-error">
-        <Icon name="alert">Error</Icon>
+        <Icon name="alert">Warning</Icon>
         {error.message ? (
           <div>{error.message}</div>
         ) : (
