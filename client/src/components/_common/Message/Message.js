@@ -25,13 +25,17 @@ export const TYPE_ICON_MAP = {
 const TYPES = PropTypes.oneOf(Object.keys(TYPE_ICON_MAP));
 
 /** Show an event-based message to the user */
-const Message = ({ children, type }) => {
+const Message = ({ children, className, type }) => {
   const iconName = TYPE_ICON_MAP[type].name;
   const iconText = TYPE_ICON_MAP[type].text;
   const containerStyleName = `container is-${type}`;
 
   return (
-    <span styleName={containerStyleName} data-testid="message">
+    <span
+      styleName={containerStyleName}
+      className={className}
+      data-testid="message"
+    >
       <Icon styleName="icon" name={iconName}>
         {iconText}
       </Icon>
@@ -42,10 +46,15 @@ const Message = ({ children, type }) => {
   );
 };
 Message.propTypes = {
-  /** Message type or severity */
-  type: TYPES.isRequired,
   /** Message text (as child node) */
-  children: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
+  /** Additional className for the root element */
+  className: PropTypes.string,
+  /** Message type or severity */
+  type: TYPES.isRequired
+};
+Message.defaultProps = {
+  className: ''
 };
 
 export default Message;
