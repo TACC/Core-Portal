@@ -5,6 +5,7 @@ import Dashboard from '../Dashboard';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
 import History from '../History/History';
+import UIPatterns from '../UIPatterns';
 import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
 import * as ROUTES from '../../constants/routes';
@@ -14,9 +15,11 @@ function Workbench() {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   // show History only in local development
-  const showHistory = useSelector(state =>
+  const isDebug = useSelector(state =>
     state.workbench.status ? state.workbench.status.debug : false
   );
+  const showHistory = isDebug;
+  const showUIPatterns = isDebug;
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({ type: 'FETCH_SYSTEMS' });
@@ -48,6 +51,9 @@ function Workbench() {
           />
           {showHistory && (
             <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
+          )}
+          {showUIPatterns && (
+            <Route path={`${path}${ROUTES.UI}`} component={UIPatterns} />
           )}
           <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
         </Switch>
