@@ -128,6 +128,7 @@ const DataFilesMoveModal = React.memo(() => {
                 operationName="Move"
                 operationCallback={moveCallback}
                 operationOnlyForFolders
+                operationAllowedOnRootFolder
                 disabled={disabled}
               />
             </div>

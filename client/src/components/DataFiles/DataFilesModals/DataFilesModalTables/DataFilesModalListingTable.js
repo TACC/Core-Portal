@@ -131,12 +131,14 @@ const DataFilesModalListingTable = ({
   operationName,
   operationCallback,
   operationOnlyForFolders,
+  operationAllowedOnRootFolder,
   disabled
 }) => {
   const dispatch = useDispatch();
   const params = useSelector(state => state.files.params.modal, shallowEqual);
 
   const alteredData = useMemo(() => {
+    const isNotRoot = params.path.length > 0;
     const result = data.map(d => {
       const entry = d;
       entry.isCurrentDirectory = false;
@@ -144,9 +146,9 @@ const DataFilesModalListingTable = ({
     });
 
     /* Add an entry to represent the current sub-directory */
-    if (params.path.length > 0) {
+    if (!isNotRoot || operationAllowedOnRootFolder) {
       const currentFolderEntry = {
-        name: getCurrentDirectory(params.path),
+        name: isNotRoot ? getCurrentDirectory(params.path) : 'My Data',
         format: 'folder',
         system: params.system,
         path: params.path,
@@ -255,12 +257,14 @@ DataFilesModalListingTable.propTypes = {
   operationName: PropTypes.string.isRequired,
   operationCallback: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-  operationOnlyForFolders: PropTypes.bool
+  operationOnlyForFolders: PropTypes.bool,
+  operationAllowedOnRootFolder: PropTypes.bool
 };
 
 DataFilesModalListingTable.defaultProps = {
   disabled: false,
-  operationOnlyForFolders: false
+  operationOnlyForFolders: false,
+  operationAllowedOnRootFolder: false
 };
 
 export default DataFilesModalListingTable;
