@@ -5,20 +5,19 @@ import './Message.module.scss';
 
 export const TYPE_ICON_MAP = {
   info: {
-    // WARNING: No official design
-    name: 'conversation', // WARNING: FP-288: Provide and test icon
+    name: 'conversation',
     text: 'Notice'
   },
   success: {
-    name: 'approved-reverse', // WARNING: FP-288: Provide and test icon
+    name: 'approved-reverse',
     text: 'Notice'
   },
   warn: {
-    name: 'alert', // WARNING: FP-288: Provide and test icon
+    name: 'alert',
     text: 'Warning'
   },
   error: {
-    name: 'alert', // WARNING: FP-288: Provide and test icon
+    name: 'alert',
     text: 'Error'
   }
 };
