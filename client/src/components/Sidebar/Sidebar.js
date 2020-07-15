@@ -8,10 +8,12 @@ import './Sidebar.module.scss';
 
 /** A navigation list for the application */
 const Sidebar = () => {
-  // show History only in local development
-  const showHistory = useSelector(state =>
+  // Show some entries only in local development
+  const isDebug = useSelector(state =>
     state.workbench.status ? state.workbench.status.debug : false
   );
+  const showHistory = isDebug;
+  const showUIPatterns = isDebug;
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
   return (
@@ -80,6 +82,21 @@ const Sidebar = () => {
             <div styleName="content" className="nav-content">
               <i className="icon icon-nav icon-history" />
               <span styleName="text">History</span>
+            </div>
+          </NavLink>
+        </NavItem>
+      )}
+      {showUIPatterns && (
+        <NavItem>
+          <NavLink
+            tag={RRNavLink}
+            to={`${path}${ROUTES.UI}`}
+            styleName="link"
+            activeStyleName="link--active"
+          >
+            <div styleName="content" className="nav-content">
+              <i className="icon icon-nav icon-copy" />
+              <span styleName="text">UI Patterns</span>
             </div>
           </NavLink>
         </NavItem>
