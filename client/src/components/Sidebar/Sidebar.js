@@ -95,7 +95,7 @@ const Sidebar = () => {
             activeStyleName="link--active"
           >
             <div styleName="content" className="nav-content">
-              <i className="icon icon-nav icon-action-copy" />
+              <i className="icon icon-nav icon-copy" />
               <span styleName="text">UI Patterns</span>
             </div>
           </NavLink>
