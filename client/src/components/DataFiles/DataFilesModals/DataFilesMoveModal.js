@@ -135,22 +135,6 @@ const DataFilesMoveModal = React.memo(() => {
           </div>
         </div>
       </ModalBody>
-      <ModalFooter>
-        <Button
-          disabled={disabled}
-          onClick={() => moveCallback(modalParams.system, modalParams.path)}
-          className="data-files-btn"
-        >
-          Move to {modalParams.path || '/'}
-        </Button>
-        <Button
-          color="secondary"
-          className="data-files-btn-cancel"
-          onClick={toggle}
-        >
-          Close
-        </Button>
-      </ModalFooter>
     </Modal>
   );
 });
