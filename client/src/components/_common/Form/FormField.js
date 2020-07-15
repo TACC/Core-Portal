@@ -55,7 +55,7 @@ const FormField = ({ label, description, required, agaveFile, ...props }) => {
                 size="sm"
                 color="secondary"
                 type="button"
-                onClick={setOpenAgaveFileModal}
+                onClick={() => setOpenAgaveFileModal(true)}
               >
                 Select
               </Button>
