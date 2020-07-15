@@ -39,7 +39,7 @@ function JobsView({ showDetails, showFancyStatus }) {
     // is if the number of jobs is not a multiple
     // of the scroll size limit.
     // i.e., you asked for 100 jobs but got 96.
-    if (offset % 20 === 0) {
+    if (offset % limit === 0) {
       dispatch({ type: 'GET_JOBS', params: { offset, limit } });
     }
   }, []);
