@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import {shallowEqual, useDispatch, useSelector} from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
@@ -14,7 +14,11 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     shallowEqual
   );
   const onOpened = () => {
-    const systemParams = {api:'tapis', scheme:'private', system: systems.private};
+    const systemParams = {
+      api: 'tapis',
+      scheme: 'private',
+      system: systems.private
+    };
     dispatch({
       type: 'FETCH_FILES_MODAL',
       payload: { ...systemParams, section: 'modal' }

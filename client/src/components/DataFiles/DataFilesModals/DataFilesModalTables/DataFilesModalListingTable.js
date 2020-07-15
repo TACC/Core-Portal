@@ -8,7 +8,7 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
   const dispatch = useDispatch();
   const parentPath = currentPath.substr(0, currentPath.lastIndexOf('/'));
 
-  const onClick = e => {
+  const onClick = () => {
     dispatch({
       type: 'FETCH_FILES',
       payload: {
@@ -21,18 +21,16 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <span>
-      <a className="breadcrumb-link" /* TODO style */ onClick={onClick}>
-        Back
-      </a>
-    </span>
+    <Button color="link" onClick={onClick}>
+      Back
+    </Button>
   );
 };
 BackLink.propTypes = {
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
-  currentPath: PropTypes.string.isRequired,
+  currentPath: PropTypes.string.isRequired
 };
 
 const DataFilesModalListingNameCell = ({
@@ -180,12 +178,12 @@ const DataFilesModalListingTable = ({
         Header: BackHeader,
         accessor: 'name',
         width: 0.7,
-        Cell: NameCell,
+        Cell: NameCell
       },
       {
         id: 'button',
         width: 0.3,
-        Cell: ButtonCell,
+        Cell: ButtonCell
       }
     ],
     [data]
