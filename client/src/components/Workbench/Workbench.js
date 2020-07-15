@@ -14,7 +14,7 @@ import './Workbench.scss';
 function Workbench() {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
-  // show History only in local development
+  // Show some entries only in local development
   const isDebug = useSelector(state =>
     state.workbench.status ? state.workbench.status.debug : false
   );
