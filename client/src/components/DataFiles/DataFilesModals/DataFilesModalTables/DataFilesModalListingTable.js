@@ -3,10 +3,18 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
+import { FileIconCell } from '../../DataFilesListing/DataFilesListingCells';
+
+function getCurrentDirectory(path) {
+  return path.split('/').pop();
+}
+
+function getParentPath(currentPath) {
+  return currentPath.substr(0, currentPath.lastIndexOf('/'));
+}
 
 const BackLink = ({ api, scheme, system, currentPath }) => {
   const dispatch = useDispatch();
-  const parentPath = currentPath.substr(0, currentPath.lastIndexOf('/'));
 
   const onClick = () => {
     dispatch({
@@ -15,7 +23,7 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
         api,
         scheme,
         system,
-        path: parentPath,
+        path: getParentPath(currentPath),
         section: 'modal'
       }
     });
@@ -39,7 +47,8 @@ const DataFilesModalListingNameCell = ({
   system,
   path,
   name,
-  format
+  format,
+  isCurrentDirectory
 }) => {
   const dispatch = useDispatch();
   const onClick = e => {
@@ -51,17 +60,24 @@ const DataFilesModalListingNameCell = ({
     });
   };
 
-  if (format === 'folder') {
-    return (
-      <span className="data-files-name">
-        <a href="" onClick={onClick} className="data-files-nav-link">
-          {' '}
-          {name}{' '}
-        </a>
-      </span>
-    );
-  }
-  return <span className="data-files-name">{name}</span>;
+  const isFolderButNotCurrentFolder =
+    format === 'folder' && !isCurrentDirectory;
+  const cell = { value: format };
+  return (
+    <div>
+      <FileIconCell cell={cell} />
+      {isFolderButNotCurrentFolder && (
+        <span className="data-files-name">
+          <a href="" onClick={onClick} className="data-files-nav-link">
+            {name}
+          </a>
+        </span>
+      )}
+      {!isFolderButNotCurrentFolder && (
+        <span className="data-files-name">{name}</span>
+      )}
+    </div>
+  );
 };
 DataFilesModalListingNameCell.propTypes = {
   api: PropTypes.string.isRequired,
@@ -69,7 +85,8 @@ DataFilesModalListingNameCell.propTypes = {
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  format: PropTypes.string.isRequired
+  format: PropTypes.string.isRequired,
+  isCurrentDirectory: PropTypes.bool.isRequired
 };
 
 const DataFilesModalButtonCell = ({
@@ -119,10 +136,31 @@ const DataFilesModalListingTable = ({
   const dispatch = useDispatch();
   const params = useSelector(state => state.files.params.modal, shallowEqual);
 
+  const alteredData = useMemo(() => {
+    const result = data.map(d => {
+      const entry = d;
+      entry.isCurrentDirectory = false;
+      return entry;
+    });
+
+    /* Add an entry to represent the current sub-directory */
+    if (params.path.length > 0) {
+      const currentFolderEntry = {
+        name: getCurrentDirectory(params.path),
+        format: 'folder',
+        system: params.system,
+        path: params.path,
+        isCurrentDirectory: true
+      };
+      result.unshift(currentFolderEntry);
+    }
+    return result;
+  }, [data, params]);
+
   const NameCell = useCallback(
     ({
       row: {
-        original: { name, format, path }
+        original: { name, format, path, isCurrentDirectory }
       }
     }) => (
       <DataFilesModalListingNameCell
@@ -132,6 +170,7 @@ const DataFilesModalListingTable = ({
         path={path}
         name={name}
         format={format}
+        isCurrentDirectory={isCurrentDirectory}
       />
     ),
     [params]
@@ -203,7 +242,7 @@ const DataFilesModalListingTable = ({
   return (
     <DataFilesTable
       hideHeader={!hasBackButton}
-      data={data}
+      data={alteredData}
       columns={columns}
       rowSelectCallback={rowSelectCallback}
       scrollBottomCallback={scrollBottomCallback}
