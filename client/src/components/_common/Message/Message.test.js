@@ -2,8 +2,9 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Message, { TYPE_ICON_MAP } from './Message';
 
-const CONTENT = '…';
-const TYPE = 'info';
+const TEST_CONTENT = '…';
+const TEST_TYPE = 'info';
+const TYPES = Object.keys(TYPE_ICON_MAP);
 
 function testClassnamesByType(type, getByTestId) {
   const root = getByTestId('message');
@@ -18,47 +19,26 @@ function testClassnamesByType(type, getByTestId) {
 }
 
 describe('Message', () => {
-  it('has correct text', () => {
-    const { getByTestId } = render(<Message type={TYPE}>{CONTENT}</Message>);
-    const text = getByTestId('text');
-    expect(text.textContent).toEqual(CONTENT);
+  it.each(TYPES)('has correct text for type %s', type => {
+    const { getByTestId } = render(<Message type={type}>{TEST_CONTENT}</Message>);
+    expect(getByTestId('text').textContent).toEqual(TEST_CONTENT);
   });
 
-  describe('set of expected elements', () => {
-    it('includes icon', () => {
-      const { getByTestId } = render(<Message type={TYPE}>{CONTENT}</Message>);
-      const icon = getByTestId('icon'); // WARNING: Relies on `Icon`
-      expect(icon).toBeDefined();
+  describe('elements', () => {
+    it.each(TYPES)('include icon when type is %s', type => {
+      const { getByTestId } = render(<Message type={type}>{TEST_CONTENT}</Message>);
+      expect(getByTestId('icon')).toBeDefined(); // WARNING: Relies on `Icon`
     });
-    it('includes text', () => {
-      const { getByTestId } = render(<Message type={TYPE}>{CONTENT}</Message>);
-      const text = getByTestId('text');
-      expect(text).toBeDefined();
+    it.each(TYPES)('include text when type is %s', type => {
+      const { getByTestId } = render(<Message type={type}>{TEST_CONTENT}</Message>);
+      expect(getByTestId('text')).toBeDefined();
     });
   });
-  
-  describe('classNames', () => {
-    describe('are accurate when type is:', () => {
-      test('"info"', () => {
-        const type = 'info';
-        const { getByTestId } = render(<Message type={type}>…</Message>);
-        testClassnamesByType(type, getByTestId);
-      });
-      test('"success"', () => {
-        const type = 'success';
-        const { getByTestId } = render(<Message type={type}>…</Message>);
-        testClassnamesByType(type, getByTestId);
-      });
-      test('"warn"', () => {
-        const type = 'warn';
-        const { getByTestId } = render(<Message type={type}>…</Message>);
-        testClassnamesByType(type, getByTestId);
-      });
-      test('"error"', () => {
-        const type = 'error';
-        const { getByTestId } = render(<Message type={type}>…</Message>);
-        testClassnamesByType(type, getByTestId);
-      });
+
+  describe('className', () => {
+    it.each(TYPES)('is accurate when type is %s', type => {
+      const { getByTestId } = render(<Message type={type}>{TEST_CONTENT}</Message>);
+      testClassnamesByType(type, getByTestId);
     });
   });
 });
