@@ -72,6 +72,7 @@ const DataFilesSelectedTable = ({ data, operation }) => {
       rowSelectCallback={rowSelectCallback}
       scrollBottomCallback={scrollBottomCallback}
       section="modalSelected"
+      hideHeader
     />
   );
 };
