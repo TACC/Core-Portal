@@ -3,7 +3,37 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
-import { FileIconCell } from '../../DataFilesListing/DataFilesListingCells';
+
+const BackLink = ({ api, scheme, system, currentPath }) => {
+  const dispatch = useDispatch();
+  const parentPath = currentPath.substr(0, currentPath.lastIndexOf('/'));
+
+  const onClick = e => {
+    dispatch({
+      type: 'FETCH_FILES',
+      payload: {
+        api,
+        scheme,
+        system,
+        path: parentPath,
+        section: 'modal'
+      }
+    });
+  };
+  return (
+    <span>
+      <a className="breadcrumb-link" /* TODO style */ onClick={onClick}>
+        Back
+      </a>
+    </span>
+  );
+};
+BackLink.propTypes = {
+  api: PropTypes.string.isRequired,
+  scheme: PropTypes.string.isRequired,
+  system: PropTypes.string.isRequired,
+  currentPath: PropTypes.string.isRequired,
+};
 
 const DataFilesModalListingNameCell = ({
   api,
@@ -130,27 +160,32 @@ const DataFilesModalListingTable = ({
     [params, operationName, operationCallback, disabled]
   );
 
+  const hasBackButton = params.path.length > 0;
+
+  const BackHeader = useCallback(
+    () => (
+      <BackLink
+        system={params.system}
+        currentPath={params.path}
+        api={params.api}
+        scheme={params.scheme}
+      />
+    ),
+    [params]
+  );
+
   const columns = useMemo(
     () => [
       {
-        id: 'icon',
-        accessor: 'format',
-        width: 0.05,
-        minWidth: 20,
-        maxWidth: 30,
-        Cell: FileIconCell
-      },
-      {
-        Header: 'Name',
+        Header: BackHeader,
         accessor: 'name',
-        width: 0.65,
-        Cell: NameCell
+        width: 0.7,
+        Cell: NameCell,
       },
       {
-        Header: '',
         id: 'button',
         width: 0.3,
-        Cell: ButtonCell
+        Cell: ButtonCell,
       }
     ],
     [data]
@@ -169,6 +204,7 @@ const DataFilesModalListingTable = ({
   }, [dispatch, data.length]);
   return (
     <DataFilesTable
+      hideHeader={!hasBackButton}
       data={data}
       columns={columns}
       rowSelectCallback={rowSelectCallback}

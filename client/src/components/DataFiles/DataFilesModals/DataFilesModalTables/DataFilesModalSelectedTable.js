@@ -52,12 +52,11 @@ const DataFilesSelectedTable = ({ data, operation }) => {
         Cell: FileIconCell
       },
       {
-        Header: 'Name',
         accessor: 'name',
         width: 0.55,
         Cell: DataFilesSelectedNameCell
       },
-      { Header: 'Size', accessor: 'length', Cell: FileLengthCell, width: 0.2 },
+      { accessor: 'length', Cell: FileLengthCell, width: 0.2 },
       {
         id: 'status',
         width: 0.2,
