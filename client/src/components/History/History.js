@@ -42,7 +42,7 @@ const HistorySidebar = () => (
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/uploads`} activeClassName="active">
         <div className="nav-content">
-          <i className="icon icon-action-upload history-sidebar__icon-nav" />
+          <i className="icon icon-action-upload" />
           <span className="nav-text">Uploads</span>
         </div>
       </NavLink>
@@ -50,7 +50,7 @@ const HistorySidebar = () => (
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/files`} activeClassName="active">
         <div className="nav-content">
-          <i className="icon icon-nav-folder history-sidebar__icon-nav" />
+          <i className="icon icon-nav-folder" />
           <span className="nav-text">Files</span>
         </div>
       </NavLink>
