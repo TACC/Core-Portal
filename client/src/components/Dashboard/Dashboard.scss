@@ -5,14 +5,14 @@
     padding: 20px 40px 0 25px;
 }
 .dashboard-items {
-    /* Styles as a flex child */
+    /* As a flex item */
     flex-grow: 1;
 
-    /* Styles as a flex parent */
+    /* As a flex container */
     display: flex;
     flex-direction: column;
 }
-/* Make bottom item fill up remaining vertical space */
+/* Make bottom-most item fill up remaining vertical space */
 .dashboard-items > :last-child {
     flex-grow: 1;
 }
@@ -20,17 +20,20 @@
 /* FAQ: Inner wraps of specific `.dash-grid-items` */
 /* RFC: Implement `max-height: …` in a modular manner */
 /* SEE: https://tacc-team.slack.com/archives/GQW4Q8HLG/p1578514280032300?thread_ts=1578511498.030900&cid=GQW4Q8HLG */
+/* TODO: re-work this container and table to properly lay-out and contain elements within this
+         wrapper's height and width */
 .jobs-wrapper {
-    max-height: 45vh;
+    max-height: 40vh;
     /* RFC: Implement `margin-bottom: 38px` independent of `.jobs-wrapper` */
-    margin-bottom: 38px;
+    margin-bottom: 60px;
 }
 .tickets-wrapper {
     max-height: 27vh;
     margin-bottom: 38px;
 }
 
-.dashboard-header, .dashboard-item-header {
+.dashboard-header,
+.dashboard-item-header {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -62,6 +65,7 @@
     padding: 0;
 }
 
-.dashboard-items .ReactTable .rt-th, .dashboard-items .ReactTable .rt-td {
+.dashboard-items .ReactTable .rt-th,
+.dashboard-items .ReactTable .rt-td {
     color: #707070;
 }

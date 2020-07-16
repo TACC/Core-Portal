@@ -1,26 +1,38 @@
-export function spinner(state = false, action) {
-  switch (action.type) {
-    case 'SHOW_SPINNER':
-      return true;
-    case 'HIDE_SPINNER':
-      return false;
-    default:
-      return state;
-  }
-}
+const initialState = {
+  list: [],
+  submit: { submitting: false },
+  loading: false,
+  error: null
+};
 
-export function jobs(
-  state = {
-    list: [],
-    submit: { submitting: false }
-  },
-  action
-) {
+function jobs(state = initialState, action) {
   switch (action.type) {
+    case 'JOBS_LIST_INIT':
+      return {
+        ...state,
+        list: [],
+        error: null
+      };
+    case 'JOBS_LIST_START':
+      return {
+        ...state,
+        error: null,
+        loading: true
+      };
     case 'JOBS_LIST':
       return {
         ...state,
-        list: action.payload
+        list: state.list.concat(action.payload)
+      };
+    case 'JOBS_LIST_ERROR':
+      return {
+        ...state,
+        error: action.payload
+      };
+    case 'JOBS_LIST_FINISH':
+      return {
+        ...state,
+        loading: false
       };
     case 'TOGGLE_SUBMITTING':
       return {
@@ -46,3 +58,5 @@ export function jobs(
       return state;
   }
 }
+
+export default jobs;

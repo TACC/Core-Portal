@@ -1,4 +1,5 @@
-.ticket-detailed-view-container, .ticket-detailed-view-container .row{
+.ticket-detailed-view-container,
+.ticket-detailed-view-container .row {
   height: 100%;
 }
 
@@ -17,19 +18,17 @@
   flex-direction: column;
 }
 
-.ticket-reply-group{
+.ticket-reply-group {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
 }
 
 .ticket-reply-text-area {
-  resize: none;
-  flex-grow: 1;
   min-height: 5em;
 }
 
-.ticket-reply-button, toggle-icon {
+.ticket-reply-button {
   text-align: right;
 }
 
@@ -39,6 +38,11 @@
   font-size: 0.75rem;
   height: 90vh;
   min-height: 535px;
+
+  /* alter bootstrap size to match font-size for rest of ticket forms */
+  .col-form-label-sm {
+    font-size: 0.75rem;
+  }
 
   .card-header {
     background-color: white;
@@ -53,9 +57,10 @@
   }
 
   .ticket-responder {
-    color: #9d85ef
+    color: #9d85ef;
   }
 
+  /* FP-426: Avoid all these styles by using `LoadingSpinner` */
   .ticket-history-loading-icon {
     display: flex;
     height: 100%;
@@ -71,21 +76,10 @@
     font-size: 0.75rem;
   }
 
+  /* Override Bootstrap `.form-text` (being used in _common/Form/FormField.js), because we need the field text to be the
+  same size as the field label */
   .form-text {
     font-size: 0.75rem;
-    font-style: italic;
-  }
-
-  .form-validation-error {
-    color: #eb6e6e;
-  }
-
-  .ticket-reply-form-label {
-    display: flex;
-    align-items: center;
-    .required-badge {
-      margin-left: 10px;
-    }
   }
 
   .modal-header {
@@ -93,11 +87,23 @@
   }
 
   /* Ensure that modal title takes up space but allows room for close button */
-  .modal-title{
-    width: 90%
+  .modal-title {
+    width: 90%;
   }
   .modal-header-title {
-    width: 100%
+    width: 100%;
+  }
+
+  /* ticket header specific styles */
+  .ticket-id {
+    color: #707070;
+  }
+  /* Visual separation for subject preceded by ID */
+  .ticket-id + .ticket-subject::before {
+    content: '|';
+    display: inline-block;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
   }
 
   /* make bootstrap dialog wider */

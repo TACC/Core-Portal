@@ -8,7 +8,7 @@ import {
   faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons';
 import { faFile } from '@fortawesome/free-regular-svg-icons';
-import { LoadingSpinner } from '_common';
+import { FormField, LoadingSpinner } from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
 import './AppForm.scss';
@@ -16,7 +16,6 @@ import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
 import FormSchema from './AppFormSchema';
 import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
-import FormField from './AppFormFields';
 
 const appShape = PropTypes.shape({
   id: PropTypes.string,
@@ -309,7 +308,7 @@ const AppSchemaForm = ({ app }) => {
                                 val = tmp;
                               }
                               return Object.entries(val).map(([key, value]) => (
-                                <option key={key} value={value}>
+                                <option key={key} value={key}>
                                   {value}
                                 </option>
                               ));

@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import ReactTable from 'react-table-6';
-import 'react-table-6/react-table.css';
-import { LoadingSpinner } from '_common';
+import { InfiniteScrollTable } from '_common';
 import { formatDate } from 'utils/timeFormat';
 import * as ROUTES from '../../constants/routes';
 import './TicketsLayout.scss';
@@ -31,21 +28,29 @@ export function getStatusText(status) {
 
 function TicketsView() {
   const dispatch = useDispatch();
-  const loading = useSelector(state => state.ticketList.loading);
+  const isLoading = useSelector(state => state.ticketList.loading);
   const tickets = useSelector(state => state.ticketList.content);
   const loadingError = useSelector(state => state.ticketList.loadingError);
+  const noDataText = (
+    <>
+      No tickets. You can add a ticket{' '}
+      <Link
+        className="wb-link"
+        to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create/`}
+      >
+        here
+      </Link>
+      .
+    </>
+  );
 
   useEffect(() => {
     dispatch({ type: 'TICKET_LIST_FETCH' });
   }, [dispatch]);
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
   if (loadingError) {
     return (
-      <div className="appDetail-error">
+      <div className="ticket__error">
         <FontAwesomeIcon
           icon={faExclamationTriangle}
           style={{ marginRight: '10px' }}
@@ -57,22 +62,19 @@ function TicketsView() {
 
   const columns = [
     {
-      Header: 'Ticket Number',
+      Header: 'Number',
       accessor: 'id',
-      Cell: el => <span id={`ticketID${el.index}`}>{el.value}</span>,
-      width: 115,
-      maxWidth: 115
+      Cell: el => <span id={`ticketID${el.index}`}>{el.value}</span>
     },
     {
       Header: 'Subject',
       accessor: 'Subject',
       Cell: el => (
         <Link
-          to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/${el.original.id}`}
+          to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/${el.row.original.id}`}
+          className="wb-link"
         >
-          <Button color="link" id={`ticketSubject${el.index}`}>
-            <span title={el.value}>{el.value}</span>
-          </Button>
+          <span title={el.value}>{el.value}</span>
         </Link>
       )
     },
@@ -81,10 +83,11 @@ function TicketsView() {
       headerStyle: { textAlign: 'left' },
       accessor: d => new Date(d.Created),
       Cell: el => (
-        <span id={`ticketDate${el.index}`}>{`${formatDate(el.value)}`}</span>
+        <span id={`ticketDate${el.row.index}`}>{`${formatDate(
+          el.value
+        )}`}</span>
       ),
-      id: 'ticketDateCol',
-      width: 100
+      id: 'ticketDateCol'
     },
     {
       Header: 'Ticket Status',
@@ -103,47 +106,26 @@ function TicketsView() {
           {el.value.text}
         </span>
       ),
-      id: 'ticketStatusCol',
-      width: 105
+      id: 'ticketStatusCol'
     }
   ];
 
+  const rowProps = row => {
+    return {
+      className:
+        row.original.Status === 'user_wait' ? 'ticket-reply-required' : ''
+    };
+  };
+
   return (
-    <>
-      <ReactTable
-        keyField="id"
-        data={tickets}
-        columns={columns}
-        resizable={false}
-        resolveData={data => data.map(row => row)}
-        pageSize={tickets.length}
-        className="ticketsList -striped -highlight"
-        defaultSorted={[{ id: 'ticketDateCol', desc: true }]}
-        getTrProps={(state, rowInfo, instance) => {
-          if (rowInfo) {
-            return {
-              className:
-                rowInfo.original.Status === 'user_wait'
-                  ? 'ticket-reply-required'
-                  : ''
-            };
-          }
-          return {};
-        }}
-        noDataText={
-          <>
-            No tickets. You can add a ticket{' '}
-            <Link
-              className="wb-link"
-              to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create/`}
-            >
-              here
-            </Link>
-            .
-          </>
-        }
-      />
-    </>
+    <InfiniteScrollTable
+      tableColumns={columns}
+      tableData={tickets}
+      isLoading={isLoading}
+      className="tickets-view"
+      noDataText={noDataText}
+      getRowProps={rowProps}
+    />
   );
 }
 

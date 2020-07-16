@@ -5,7 +5,7 @@
     button {
         border-radius: 0;
         border: 0;
-        font: Bold 12px Roboto;
+        font: bold 12px Roboto, sans-serif;
         background-color: #9D85EF;
         padding: 0.5rem 1rem;
     }
@@ -18,20 +18,31 @@
     padding-left: 0;
 }
 #allocations-wrapper {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+
     padding-right: 32px;
 }
 #allocations-container {
+    /* As a flex item */
+    flex-grow: 1;
+
+    /* As a flex container */
     display: flex;
     flex-direction: row;
+
     border-top: 1px solid #707070;
-    height: calc(100vh - 116px);
 }
+/* Make right-most item fill up remaining horizontal space */
+#allocations-container > :last-child {
+    flex-grow: 1;
+}
+
 #allocations-header {
     @include alloc-button();
     display: flex;
     justify-content: space-between;
-    margin: 21px auto 0.5rem 1.75rem;
+    margin: 21px 0 0.5rem 1.75rem;
     padding-left: 0.2em;
     #header-text {
         font-size: 1.25rem;
@@ -47,25 +58,27 @@
     }
 }
 #allocations-sidebar {
-    width: fit-content;
-    border-right: 1px solid rgba(112, 112, 112, .25);
-    font-family: Roboto;
+    width: 215px;
+    border-right: 1px solid rgba(112, 112, 112, 0.25);
+    font-family: Roboto, sans-serif;
+
+    /* !!!: This link is `40px`, which is taller than other sidebar links (which are ~`35px`) */
     .nav-link {
-        padding: 8px 0 8px 30px;
+        /* NOTE: These styles match `.nav-content`. That class is not used in
+                 the markup for this sidebar because it is extraneous */
+        /* RFE: Resolve discrepancy when common Sidebar component exists */
         display: flex;
         align-items: center;
-        width: 215px;
-    }
-    a {
+
         color: #707070;
-        padding-left: 1.5em;
-        height: 2.5em;
+        padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
+
         .link-icon {
-            font-size: 1.2em;
+            font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
             width: 1em;
         }
         .link-text {
-            font-size: 0.78em;
+            font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
             font-weight: 500;
             padding-left: 16px;
             vertical-align: middle;
@@ -91,7 +104,7 @@
                 padding: 0;
                 vertical-align: text-top;
             }
-            border-bottom: 1px solid rgba(#707070,0.25);
+            border-bottom: 1px solid rgba(#707070, 0.25);
             margin-bottom: 24px;
         }
         thead {
@@ -105,11 +118,13 @@
             }
         }
         .sub-table-row {
+            /* FP-457: Will fix this *//* stylelint-disable no-descending-specificity */
             :nth-child(even) {
                 background-color: white;
             }
+            /* stylelint-enable no-descending-specificity */
             color: #707070;
-            font: 14px Roboto;
+            font: 14px Roboto, sans-serif;
         }
         .sub-table-cell {
             background-color: rgba(#c6c6c6, 0.1);
@@ -141,6 +156,7 @@
 .team-view-modal-wrapper {
     .table-hover {
         tbody {
+            /* FP-457: Will fix this *//* stylelint-disable no-descending-specificity */
             tr {
                 height: 35px;
                 cursor: pointer;
@@ -151,6 +167,7 @@
                     vertical-align: middle;
                 }
             }
+            /* stylelint-enable no-descending-specificity */
             tr:hover {
                 background-color: #dfdaf5;
             }
@@ -165,7 +182,7 @@
         overflow-y: scroll;
         padding-left: 0;
         padding-right: 0;
-        border-right: 1px solid rgba(112, 112, 112, .25);
+        border-right: 1px solid rgba(112, 112, 112, 0.25);
     }
     .modal-right {
         display: flex;
@@ -175,7 +192,7 @@
         .contact-card {
             display: flex;
             flex-direction: column;
-            font: 16px Roboto;
+            font: 16px Roboto, sans-serif;
             height: 100%;
             overflow: auto;
             div {
@@ -191,4 +208,10 @@
     .active-user {
         background-color: #dfdaf5;
     }
+}
+
+/* HACK: The loading icon should not need height set, but it fixes Safari here */
+/* FP-426: Do not use `height: 100%` or isolate usage pending solution to bigger problem */
+#allocations-wrapper .loading-icon {
+    height: auto;
 }
