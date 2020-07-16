@@ -1,5 +1,5 @@
-/* this is an attempt to follow AppBrowser.scss including FP-389 while checking Allocations.scss */
-
+/* This is an attempt to follow AppBrowser.scss including FP-389 while checking Allocations.scss */
+/* Styles that are ineffectual or from (and specific to) AppBrowser.scss have been removed */
 
 .history-wrapper {
   /* As a flex item */
@@ -17,6 +17,7 @@
   /* FP-404: All Portal section sidebars should use this value. */
   --min-width: 200px;
 
+  min-width: var(--min-width);
   margin-left: -20px;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -24,43 +25,15 @@
   border-right: 1px solid rgba(112, 112, 112, 0.25);
 }
 
-.history-sidebar .nav-item {
-  /* Define minimum width of list and minimum width of columns in list */
-  /* NOTE: Wes B. does not know how to do this using CSS Grid. Help is welcome. */
-  min-width: var(--min-width);
-}
-
 .history-sidebar .nav-link {
-  padding: 5px 25px 5px 20px; /* overwrite Bootstrap, match UI design */
+  padding-left: 20px;
 
   color: #707070;
-  border-radius: 0;
-  cursor: pointer; /* RFE: Add `href` on links to both avoid needing this style and provide URL to app state */
-  border: none;
-
-  white-space: nowrap;
 }
 
-.history-sidebar .nav-link.active {
-  background: #dfdaf5;
-  border: none;
-}
-
-.history-sidebar .nav-link.hover {
-  background: #d9d1ff;
-  border: none;
-}
-
+.history-sidebar .nav-link.active,
 .history-sidebar .nav-link:hover {
-  background: #d9d1ff;
-  border: none;
-}
-
-.history-sidebar .nav-content {
-  padding-left: 10px;
-
-  display: flex;
-  align-items: center;
+  background: var(--global-color-accent--light);
 }
 
 .history-sidebar .nav-text {
@@ -75,6 +48,8 @@
   justify-content: space-between;
   width: 100%;
   border-bottom: 1px solid #707070;
+  /* FAQ: Design is inconsistent, but most of the time uses `10.5px` */
+  padding-bottom: 0.75rem; /* ~10px * design * 1.2 design-to-app ratio */
 }
 
 .history-header__text {
@@ -98,7 +73,8 @@
 }
 
 .history-content {
-  padding-top: 10px;
+  /* FAQ: Design is inconsistent, but averages about `10.5px` */
+  padding-top: 0.75rem; /* ~10px * design * 1.2 design-to-app ratio */
   padding-left: 1em;
   width: 100%;
   height: 100%;
