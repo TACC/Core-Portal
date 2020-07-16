@@ -1,23 +1,42 @@
 import React from 'react';
 import { Message } from '_common';
-import './UIPatternsMessages.module.css';
 
 function UIPatternsMessages() {
   return (
-    <div styleName="container">
-      <Message type="info" styleName="item">
-        All your information, are belong to us.
-      </Message>
-      <Message type="success" styleName="item">
-        All your success, are belong to us.
-      </Message>
-      <Message type="warn" styleName="item">
-        All your warning, are come from us.
-      </Message>
-      <Message type="error" styleName="item">
-        All your error, are belong to you.
-      </Message>
-    </div>
+    <dl styleName="container">
+      <dt>
+        Information (<code>info</code>)
+      </dt>
+      <dd>
+        <Message type="info" styleName="item">
+          All your information, are belong to us.
+        </Message>
+      </dd>
+      <dt>
+        Success (<code>success</code>)
+      </dt>
+      <dd>
+        <Message type="success" styleName="item">
+          All your success, are belong to us.
+        </Message>
+      </dd>
+      <dt>
+        Warning (<code>warn</code>)
+      </dt>
+      <dd>
+        <Message type="warn" styleName="item">
+          All your warning, are come from us.
+        </Message>
+      </dd>
+      <dt>
+        Error (<code>error</code>)
+      </dt>
+      <dd>
+        <Message type="error" styleName="item">
+          All your error, are belong to you.
+        </Message>
+      </dd>
+    </dl>
   );
 }
 
