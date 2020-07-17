@@ -1,11 +1,10 @@
 import { put, takeLatest, call } from 'redux-saga/effects';
 import { omit, isEmpty } from 'lodash';
-import 'cross-fetch';
 import { fetchUtil } from 'utils/fetchUtil';
 
 const ROOT_SLUG = '/accounts/api/profile';
 
-const getPasswordStatus = h => {
+export const getPasswordStatus = h => {
   const passwordChanged = h.filter(entry =>
     entry.comment.includes('Password changed')
   );
@@ -42,7 +41,6 @@ export function* getFormFields(action) {
 
 export function* changePassword(action) {
   yield put({ type: 'CHECKING_PASSWORD' });
-  yield call(action.callback, {});
   try {
     yield call(fetchUtil, {
       url: `${ROOT_SLUG}/change-password/`,
@@ -50,7 +48,6 @@ export function* changePassword(action) {
       body: JSON.stringify(action.values)
     });
     yield put({ type: 'CHECKED_PASSWORD' });
-    yield call(action.callback, { reset: true });
     yield put({ type: 'CHANGED_PASSWORD' });
   } catch (error) {
     yield put({ type: 'CHECKED_PASSWORD' });

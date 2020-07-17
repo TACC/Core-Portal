@@ -1,11 +1,25 @@
 import React from 'react';
-import { MemoryRouter, Route, BrowserRouter } from 'react-router-dom';
+import {BrowserRouter, MemoryRouter, Route} from 'react-router-dom';
+import { Provider } from "react-redux";
 import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
+import { initialState as workbench } from '../../redux/reducers/workbench.reducers'
+import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import Sidebar from './index';
 import '@testing-library/jest-dom/extend-expect';
-import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
+
+
+function renderSideBar(store) {
+  return render(
+    <Provider store={store}>
+      <MemoryRouter initialEntries={['/workbench']}>
+        <Route path='/workbench'>
+          <Sidebar />
+        </Route>
+      </MemoryRouter>
+    </Provider>
+  );
+}
 
 describe('workbench sidebar', () => {
   const mockStore = configureStore();
@@ -16,14 +30,8 @@ describe('workbench sidebar', () => {
     'Allocations',
     'History',
   ])('should have a link to the %s page', (page) => {
-    const { getByText, queryByTestId } = render(
-      <Provider store={mockStore({ notifications })}>
-        <MemoryRouter initialEntries={['/workbench']}>
-          <Route path="/workbench">
-            <Sidebar />
-          </Route>
-        </MemoryRouter>
-      </Provider>
+    const { getByText, queryByTestId } = renderSideBar(
+      mockStore({ workbench, notifications })
     );
     expect(getByText(page)).toBeDefined();
     expect(getByText(page).closest('a')).toHaveAttribute(
@@ -34,17 +42,13 @@ describe('workbench sidebar', () => {
   });
 
   it('should have a notification badge', () => {
-    const { getByTestId } = render(
-      <Provider
-        store={mockStore({
-          notifications: { list: { unread: 1 } },
-        })}
-      >
-        <MemoryRouter initialEntries={['/workbench']}>
-          <Sidebar />
-        </MemoryRouter>
-      </Provider>
+    const { getByTestId } = renderSideBar(
+      mockStore({
+        workbench,
+        notifications: { list: { unread: 1 } },
+      })
     );
+
     expect(getByTestId('history-badge')).toBeDefined();
     expect(getByTestId('history-badge')).toHaveTextContent(/1/);
   });
