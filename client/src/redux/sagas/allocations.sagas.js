@@ -122,6 +122,7 @@ const teamPayloadUtil = (
           ...user,
           usageData: currentProject.systems.map(system => {
             return {
+              type: system.type,
               usage: `0 ${system.type === 'HPC' ? 'SU' : 'GB'}`,
               resource: system.host,
               allocationId: system.allocation.id,
@@ -135,19 +136,19 @@ const teamPayloadUtil = (
           usageData: userData.usageData.map(entry => {
             const current = find(individualUsage, { resource: entry.resource });
             if (current) {
-              const { computeAllocated, type } = chain(allocations)
+              const totalAllocated = chain(allocations)
                 .map('systems')
                 .flatten()
                 .filter({ host: current.resource })
                 .map('allocation')
                 .filter({ id: current.allocationId })
                 .head()
-                .value();
+                .value().computeAllocated;
               return {
-                usage: `${current.usage} ${type === 'HPC' ? 'SU' : 'GB'}`,
+                usage: `${current.usage} ${entry.type === 'HPC' ? 'SU' : 'GB'}`,
                 resource: current.resource,
                 allocationId: current.allocationId,
-                percentUsed: current.usage / computeAllocated
+                percentUsed: current.usage / totalAllocated
               };
             }
             return entry;
