@@ -6,17 +6,9 @@ import {
   all,
   select
 } from 'redux-saga/effects';
-import { chain, flatten } from 'lodash';
+import { chain, flatten, isEmpty, find } from 'lodash';
 import { fetchUtil } from 'utils/fetchUtil';
 import 'cross-fetch';
-
-const getAllocationsUtil = async () => {
-  const res = await fetchUtil({
-    url: '/api/users/allocations/'
-  });
-  const json = res.response;
-  return json;
-};
 
 export function* getAllocations(action) {
   yield put({ type: 'START_ADD_ALLOCATIONS' });
@@ -31,6 +23,33 @@ export function* getAllocations(action) {
     yield put({ type: 'ADD_ALLOCATIONS_ERROR', payload: error });
   }
 }
+
+const getAllocationsUtil = async () => {
+  const res = await fetchUtil({
+    url: '/api/users/allocations/'
+  });
+  const json = res.response;
+  return json;
+};
+const getTeamsUtil = async team => {
+  const res = await fetchUtil({ url: `/api/users/team/${team}` });
+  const json = res.response;
+  return json;
+};
+const populateTeamsUtil = data => {
+  const allocations = { active: data.active, inactive: data.inactive };
+  const teams = flatten(Object.values(allocations)).reduce(
+    (obj, item) => ({ ...obj, [item.projectId]: {} }),
+    {}
+  );
+
+  const loadingTeams = Object.keys(teams).reduce(
+    (obj, teamID) => ({ ...obj, [teamID]: { loading: true } }),
+    {}
+  );
+
+  return { teams, loadingTeams };
+};
 
 function* getUsernames(action) {
   try {
@@ -59,20 +78,18 @@ function* getUsernames(action) {
     });
   }
 }
-
-const populateTeamsUtil = data => {
-  const allocations = { active: data.active, inactive: data.inactive };
-  const teams = flatten(Object.values(allocations)).reduce(
-    (obj, item) => ({ ...obj, [item.projectId]: {} }),
-    {}
-  );
-
-  const loadingTeams = Object.keys(teams).reduce(
-    (obj, teamID) => ({ ...obj, [teamID]: { loading: true } }),
-    {}
-  );
-
-  return { teams, loadingTeams };
+const getUsageUtil = async params => {
+  const res = await fetchUtil({
+    url: `/api/users/team/usage/${params.id}`
+  });
+  const data = res.response
+    .map(user => ({
+      ...user,
+      resource: params.system.host,
+      allocationId: params.id
+    }))
+    .filter(Boolean);
+  return data;
 };
 
 const teamPayloadUtil = (
@@ -98,49 +115,47 @@ const teamPayloadUtil = (
         const individualUsage = usageData.filter(
           val => val.username === username
         );
-
-        if (!individualUsage) return user;
-        return {
+        const currentProject = allocations.find(
+          allocation => allocation.projectId === id
+        );
+        const userData = {
           ...user,
-          usageData: individualUsage.map(val => {
-            const totalAllocated = chain(allocations)
-              .map('systems')
-              .flatten()
-              .filter({ host: val.resource })
-              .map('allocation')
-              .filter({ id: val.allocationId })
-              .head()
-              .value().computeAllocated;
-
+          usageData: currentProject.systems.map(system => {
             return {
-              usage: val.usage,
-              resource: val.resource,
-              allocationId: val.allocationId,
-              percentUsed: val.usage / totalAllocated
+              usage: `0 ${system.type === 'HPC' ? 'SU' : 'GB'}`,
+              resource: system.host,
+              allocationId: system.allocation.id,
+              percentUsed: 0
             };
+          })
+        };
+        if (isEmpty(individualUsage)) return userData;
+        return {
+          ...userData,
+          usageData: userData.usageData.map(entry => {
+            const current = find(individualUsage, { resource: entry.resource });
+            if (current) {
+              const { computeAllocated, type } = chain(allocations)
+                .map('systems')
+                .flatten()
+                .filter({ host: current.resource })
+                .map('allocation')
+                .filter({ id: current.allocationId })
+                .head()
+                .value();
+              return {
+                usage: `${current.usage} ${type === 'HPC' ? 'SU' : 'GB'}`,
+                resource: current.resource,
+                allocationId: current.allocationId,
+                percentUsed: current.usage / computeAllocated
+              };
+            }
+            return entry;
           })
         };
       })
   };
   return { data, loading };
-};
-
-const getTeamsUtil = async team => {
-  const res = await fetchUtil({ url: `/api/users/team/${team}` });
-  const json = res.response;
-  return json;
-};
-
-const getUsageUtil = async params => {
-  const res = await fetchUtil({
-    url: `/api/users/team/usage/${params.id}`
-  });
-  const data = res.response
-    .map(user => {
-      return { ...user, resource: params.system.host, allocationId: params.id };
-    })
-    .filter(Boolean);
-  return data;
 };
 
 export function* watchAllocationData() {

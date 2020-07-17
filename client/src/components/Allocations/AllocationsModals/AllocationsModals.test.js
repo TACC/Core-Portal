@@ -76,13 +76,13 @@ describe("View Team Modal", () => {
               email: "user2@gmail.com",
               usageData: [
                 {
-                  usage: 0.5,
+                  usage: '0.5 SU',
                   resource: "stampede2.tacc.utexas.edu",
                   allocationId: 1,
                   percentUsed: 0.005,
                 },
                 {
-                  usage: 10,
+                  usage: '10 SU',
                   resource: "frontera.tacc.utexas.edu",
                   allocationId: 2,
                   percentUsed: 10,
@@ -116,11 +116,12 @@ describe("View Team Modal", () => {
     fireEvent.click(getByText(/Test User1/));
     expect(getByText(/Username:/)).toBeDefined();
     expect(getByText(/Email:/)).toBeDefined();
-    expect(queryByText(/Usage/)).toBeNull();
+    expect(queryByText(/Usage/)).toBeDefined();
 
     // View information for the user with usage
     fireEvent.click(getByText(/Test User2/));
-    expect(getByText(/Usage/)).toBeDefined();
+    expect(getByText(/Frontera/)).toBeDefined();
+    expect(getByText(/Stampede 2/)).toBeDefined();
   });
 
   test("View Team Modal Errors", () => {

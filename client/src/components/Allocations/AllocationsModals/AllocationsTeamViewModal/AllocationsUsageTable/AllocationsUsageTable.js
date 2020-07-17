@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTable } from 'react-table';
 import { capitalize } from 'lodash';
-import { arrayOf, shape, string, number } from 'prop-types';
+import { arrayOf, shape, string } from 'prop-types';
 import './AllocationsUsageTable.module.scss';
 
 const AllocationsUsageTable = ({ rawData }) => {
@@ -20,18 +20,19 @@ const AllocationsUsageTable = ({ rawData }) => {
           return sysName;
         }
       },
-      { Header: 'Usage', accessor: 'usage' },
+      { Header: 'Individual Usage', accessor: 'usage' },
       {
         Header: '% of Allocation',
         accessor: entry => {
           if (entry.percentUsed >= 1) {
             return `${entry.percentUsed}%`;
           }
+          if (entry.percentUsed === 0) return '0%';
           return `< 1%`;
         }
       }
     ],
-    [rawData]
+    []
   );
   const {
     getTableBodyProps,
@@ -77,9 +78,10 @@ AllocationsUsageTable.propTypes = {
   rawData: arrayOf(
     shape({
       resource: string,
-      usage: number
+      usage: string
     })
-  ).isRequired
+  )
 };
+AllocationsUsageTable.defaultProps = { rawData: [] };
 
 export default AllocationsUsageTable;
