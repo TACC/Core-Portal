@@ -54,10 +54,10 @@ urlpatterns = [
 
     # api
     path('api/users/', include('portal.apps.users.urls', namespace='users')),
+    path('api/workbench/', include('portal.apps.workbench.api.urls', namespace='workbench_api')),
     path('api/workspace/', include('portal.apps.workspace.api.urls', namespace='workspace_api')),
     path('api/tickets/', include('portal.apps.tickets.api.urls', namespace='portal_tickets_api')),
     path('api/datafiles/', include('portal.apps.datafiles.urls', namespace='datafiles')),
-    path('api/search/', include('portal.apps.search.api.urls', namespace='search')),
     path('api/system-monitor/', include('portal.apps.system_monitor.urls', namespace='system_monitor')),
     path('api/notifications/', include('portal.apps.notifications.urls', namespace='notifications')),
 

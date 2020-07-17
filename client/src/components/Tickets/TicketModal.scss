@@ -1,4 +1,5 @@
-.ticket-detailed-view-container, .ticket-detailed-view-container .row{
+.ticket-detailed-view-container,
+.ticket-detailed-view-container .row {
   height: 100%;
 }
 
@@ -17,11 +18,17 @@
   flex-direction: column;
 }
 
+.ticket-reply-group {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .ticket-reply-text-area {
   min-height: 5em;
 }
 
-.ticket-reply-button, toggle-icon {
+.ticket-reply-button {
   text-align: right;
 }
 
@@ -50,7 +57,7 @@
   }
 
   .ticket-responder {
-    color: #9d85ef
+    color: #9d85ef;
   }
 
   /* FP-426: Avoid all these styles by using `LoadingSpinner` */
@@ -80,11 +87,11 @@
   }
 
   /* Ensure that modal title takes up space but allows room for close button */
-  .modal-title{
-    width: 90%
+  .modal-title {
+    width: 90%;
   }
   .modal-header-title {
-    width: 100%
+    width: 100%;
   }
 
   /* ticket header specific styles */
