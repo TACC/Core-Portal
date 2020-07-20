@@ -74,7 +74,7 @@ const InfiniteScrollTable = ({
   return (
     <table
       {...getTableProps()}
-      styleName="root"
+      styleName="container"
       className={`${className}  o-fixed-header-table`}
     >
       <thead>

@@ -1,6 +1,6 @@
 @import '../../../styles/tools/mixins.scss';
 
-.root {
+.container {
   --cell-horizontal-padding: 0.35em; /* for inter-column buffer */
   --cell-vertical-padding: 8px; /* for row size */
   --row-height: 37px; /* 16px design * 1.2 design-to-app ratio (rounded) */
