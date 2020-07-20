@@ -1,0 +1,102 @@
+@import '../../../styles/tools/mixins.scss';
+
+/* Container & Child Markup */
+.root {
+  --cell-horizontal-padding: 0.35em; /* for inter-column buffer */
+  --cell-vertical-padding: 8px; /* for row size */
+  --cell-height: 37px; /* manually copied from browser-calculated height */
+
+  position: relative;
+  width: 100%;
+  max-height: inherit; /* inherit max-height from parent wrapper */
+
+  thead {
+    /* TODO: After all tables use `react-table-7`, move these styles to `elements/table.css` for `thead`? */
+    user-select: none;
+    color: var(--global-color-primary--dark);
+    border-bottom: 1px solid var(--global-color-primary--dark);
+
+    th {
+      /* Match horizontal padding of `td` elements in table to align properly */
+      padding-left: var(--cell-horizontal-padding);
+      padding-right: var(--cell-horizontal-padding);
+
+      /* TODO: Revisit when sorting is available */
+      /*
+      &.-sort-asc,
+      &.-sort-desc {
+        color: #484848;
+      }
+      */
+    }
+  }
+
+  tbody {
+    /* TODO: After all tables use `react-table-7`, move these styles to `elements/table.css` for `thead`? */
+    /* TODO: Design should define colors instead of opacity, and then these should use variables */
+    tr:not(:last-child) {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    tr:nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    tr:not(.status):hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+}
+
+
+/* Children */
+
+/* Children: Cell */
+.cell {
+  padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
+  white-space: nowrap;
+  overflow: hidden; /* contain children to cell width (needed because `white-space: nowrap`) */
+  text-overflow: ellipsis;
+
+  /* RFE: Remove complexity that requires `.cell--has-text-nodes` class */
+  /* WARNING: Child text nodes cause unexpected behavior, example:
+              In `<td>You can <a>do some action</a> to get some result.</td>`,
+              the `<a>do some action</a>` would appear on its own line.
+              If this use case comes, then add class `cell--has-text-nodes` */
+  &:not(.cell--has-text-nodes) > :only-child {
+    @include truncate-with-ellipsis;
+    display: block; /* allow ellipsis (from `@include`) *//* stretch cell width */
+  }
+}
+.cell--has-text-nodes {
+  display: inline-block; /* allow `width: 100%` to have effect */
+  width: 100%; /* stretch cell width */
+}
+
+/* Children: Status */
+.status {
+  display: block;
+}
+
+
+/* Types */
+
+/* Only a table with content may have a border */
+.has-data { border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark); }
+.no-data { border-bottom: none; }
+
+/* Prevent jittery srollbar (because of spinning icon boundary box) */
+.is-loading .status { overflow: hidden; }
+
+/* Horizontal alignment of status (method depends on status element which depends on module state) */
+.is-loading .status__message { display: block; }
+.no-data .status__message { text-align: center; }
+
+/* Vertical spacing of status (method depends on status element which depends on module state) */
+.no-data.is-loading .status__message {
+  /* A table loading icon should not touch any table borders */
+  padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
+}
+.has-data.is-loading .status__message {
+  /* A loading table row status message should match the height of a cell */
+  height: var(--cell-height);
+}

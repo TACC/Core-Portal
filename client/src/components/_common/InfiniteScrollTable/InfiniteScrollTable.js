@@ -2,7 +2,7 @@ import React from 'react';
 import { useTable } from 'react-table';
 import PropTypes from 'prop-types';
 import LoadingSpinner from '../LoadingSpinner';
-import './InfiniteScrollTable.scss';
+import './InfiniteScrollTable.module.scss';
 
 /**
  * Get a modifier for a class name, based on given conditions
@@ -12,17 +12,21 @@ import './InfiniteScrollTable.scss';
  * @param {object} conditions.hasData - Whether data is available
  */
 function getClassNameModifier(baseName, { isLoading, hasData }) {
-  let modifier;
+  let modifiers = [];
 
   if (isLoading) {
-    modifier = 'is-loading';
-  } else if (hasData) {
-    modifier = 'has-data';
+    modifiers.push('is-loading');
+  }
+  if (hasData) {
+    modifiers.push('has-data');
   } else {
-    modifier = 'no-data';
+    modifiers.push('no-data');
   }
 
-  return modifier ? baseName + modifier : null;
+  // Add the base name
+  modifiers = modifiers.map(modifier => modifier + baseName);
+
+  return modifiers.join(' ');
 }
 
 const rowContentPropType = PropTypes.oneOfType([
@@ -39,8 +43,8 @@ const InfiniteScrollLoadingRow = ({ isLoading, hasData }) => {
   const placement = hasData ? 'inline' : 'section';
 
   return (
-    <tr className="-status">
-      <td>
+    <tr styleName="status">
+      <td styleName="status__message">
         <LoadingSpinner placement={placement} />
       </td>
     </tr>
@@ -56,9 +60,9 @@ const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
     return null;
   }
   return (
-    <tr className="-status">
-      <td>
-        <span className="-status__message">{noDataText}</span>
+    <tr styleName="status">
+      <td styleName="status__message  cell cell--has-text-nodes">
+        {noDataText}
       </td>
     </tr>
   );
@@ -77,10 +81,13 @@ const InfiniteScrollTable = ({
   noDataText,
   getRowProps
 }) => {
+  // HACK: TEMP: FP-471: Testing
+  // isLoading = true;
+  // tableData = [];
   const columns = React.useMemo(() => tableColumns, []);
   const data = React.useMemo(() => tableData, [tableData]);
   const hasData = tableData.length !== 0;
-  const modifierClassName = getClassNameModifier('InfiniteScrollTable--', {
+  const modifierStyleName = getClassNameModifier('', {
     isLoading,
     hasData
   });
@@ -104,24 +111,40 @@ const InfiniteScrollTable = ({
   return (
     <table
       {...getTableProps()}
-      className={`${className}  InfiniteScrollTable ${modifierClassName}`}
+      className={`${className} o-fixed-header-table`}
+      styleName={`root ${modifierStyleName}`}
     >
       <thead>
         {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
+          <tr
+            {...headerGroup.getHeaderGroupProps()}
+            className="o-fixed-header-table__row"
+          >
             {headerGroup.headers.map(column => (
               <th {...column.getHeaderProps()}>{column.render('Header')}</th>
             ))}
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()} onScroll={onScroll}>
+      <tbody
+        {...getTableBodyProps()}
+        onScroll={onScroll}
+        className="o-fixed-header-table__body"
+      >
         {rows.map(row => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()} {...getRowProps(row)}>
+            <tr
+              {...row.getRowProps()}
+              {...getRowProps(row)}
+              className="o-fixed-header-table__row"
+            >
               {row.cells.map(cell => {
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                return (
+                  <td {...cell.getCellProps()} styleName="cell">
+                    {cell.render('Cell')}
+                  </td>
+                );
               })}
             </tr>
           );
