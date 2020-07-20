@@ -35,23 +35,22 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     );
   }
   if (err === '502') {
-    const Action = ({ children }) => (
+    const link = strings => (
       <a
         className="data-files-nav-link"
         type="button"
         href="#"
         onClick={pushKeys}
       >
-        {children}
+        {strings[0]}
       </a>
     );
-    Action.propTypes = { children: PropTypes.string.isRequired };
 
     return (
       <div className="h-100 listing-placeholder">
         <Message type="warn">
           There was a problem accessing this file system. If this is your first
-          time logging in, you may need to <Action>push your keys</Action>.
+          time logging in, you may need to {link`push your keys`}.
         </Message>
       </div>
     );
