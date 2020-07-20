@@ -6,7 +6,7 @@ import 'react-table-6/react-table.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { AppIcon, InfiniteScrollTable } from '_common';
-
+import getOutputPathFromHref from 'utils/jobsUtil';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
@@ -97,12 +97,8 @@ function JobsView({ showDetails, showFancyStatus }) {
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
       Cell: el => {
-        const outputPath = el.value
-          .split('/')
-          .slice(7)
-          .filter(Boolean)
-          .join('/');
-        return outputPath !== 'listings' ? (
+        const outputPath = getOutputPathFromHref(el.value);
+        return outputPath ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
             className="wb-link job__path"

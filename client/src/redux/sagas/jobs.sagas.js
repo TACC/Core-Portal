@@ -69,6 +69,25 @@ function* submitJob(action) {
   }
 }
 
+/*
+if (!param.value.visible || param.id.startsWith('_')) {
+  return;
+}
+function getParameterInputInformatin(id, value, appEntryInfo){
+  const result = { name: id, value, visible: true };
+  if (id.startsWith('_')) {
+    result.visible = false;
+  }
+  derive better name for ui from app definition if therje is one
+  and if visible
+  and if enum get key
+  if(appInfo && result.visible) {
+  }
+
+  return result;
+}
+*/
+
 export function* getJobDetails(action) {
   const { jobId } = action.payload;
   yield put({
@@ -76,13 +95,46 @@ export function* getJobDetails(action) {
     payload: jobId
   });
   try {
-    const res = yield call(fetchUtil, {
+    const jobsReponse = yield call(fetchUtil, {
       url: `/api/workspace/jobs/`,
       params: { job_id: jobId }
     });
+    const job = jobsReponse.response;
+    const display = {
+      applicationName: job.appId,
+      systemName: job.systemId,
+      inputs: Object.entries(job.inputs).map(([key, val]) => ({
+        label: key,
+        id: key,
+        value: val
+      })),
+      parameters: Object.entries(job.parameters).map(([key, val]) => ({
+        label: key,
+        id: key,
+        value: val
+      }))
+    };
+
+    let app = null;
+    try {
+      const res = yield call(fetchUtil, {
+        url: '/api/workspace/apps',
+        params: { app_id: job.appId }
+      });
+      app = res.response;
+
+      // Improve any values with app information
+      display.applicationName = app.label;
+
+      // Improve input/parameters
+      // TODO
+    } catch (error) {
+      /* ignore if we can't get app info */
+    }
+
     yield put({
       type: 'JOB_DETAILS_FETCH_SUCCESS',
-      payload: res.response
+      payload: { app, job, display }
     });
   } catch (error) {
     yield put({

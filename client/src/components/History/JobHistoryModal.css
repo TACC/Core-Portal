@@ -1,0 +1,5 @@
+/* Overrides Bootstrap `.modal-body`, because we need to
+   "undo" the padding added there */
+.job-history-modal .modal-body {
+    padding: 0 0 0 0
+}

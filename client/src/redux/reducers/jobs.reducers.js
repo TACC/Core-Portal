@@ -61,7 +61,9 @@ export function jobs(state = initialState, action) {
 
 const initialJobDetail = {
   jobId: null,
-  content: null,
+  app: null,
+  job: null,
+  display: null,
   loading: false,
   loadingError: false,
   loadingErrorMessage: ''
@@ -72,7 +74,9 @@ export function jobDetail(state = initialJobDetail, action) {
     case 'JOB_DETAILS_FETCH_STARTED':
       return {
         jobId: action.payload.jobId,
-        content: null,
+        app: null,
+        job: null,
+        display: null,
         loading: true,
         loadingError: false,
         loadingErrorMessage: ''
@@ -80,7 +84,9 @@ export function jobDetail(state = initialJobDetail, action) {
     case 'JOB_DETAILS_FETCH_SUCCESS':
       return {
         ...state,
-        content: action.payload,
+        app: action.payload.app,
+        job: action.payload.job,
+        display: action.payload.display,
         loading: false,
         loadingError: false,
         loadingErrorMessage: ''
