@@ -33,7 +33,7 @@
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    tr:nth-child(odd):not([class=-status]) {
+    tr:nth-child(even):not([class=-status]) {
       background-color: rgba(0, 0, 0, 0.03);
     }
     tr:hover:not([class=-status]) {
