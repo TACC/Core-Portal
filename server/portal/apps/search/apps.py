@@ -9,8 +9,6 @@ class SearchConfig(AppConfig):
 
     def ready(self):
         from elasticsearch_dsl.connections import connections
-        from django.conf import settings
-
         HOSTS = settings.ES_HOSTS
 
         connections.create_connection('default',

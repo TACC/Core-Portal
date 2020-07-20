@@ -3,26 +3,18 @@
    :synopsis: Wrapper classes for ES different doc types.
 """
 import logging
-import copy
-import json
-import os
 import datetime
 from django.conf import settings
-from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl import (Search, Document, Date, Nested,
-                               analyzer, Object, Text, Long,
-                               Boolean, Keyword)
-from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError
-from portal.libs.elasticsearch import utils as ESUtils
-from portal.libs.elasticsearch.exceptions import DocumentNotFound
+from elasticsearch_dsl import (Document, Date, Object, Text, Long, Boolean,
+                               Keyword)
 from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, file_pattern_analyzer, reverse_file_analyzer
+from portal.libs.elasticsearch.utils import file_uuid_sha256
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
-
+"""
 class IndexedProject(Document):
     title = Text(fields={'_exact': Keyword()})
     description = Text()
@@ -77,9 +69,14 @@ class IndexedProject(Document):
 
     class Index:
         name = settings.ES_INDEX_PREFIX.format('projects')
+"""
 
 
 class IndexedFile(Document):
+    """
+    Elasticsearch document representing an indexed file. Thin wrapper around
+    `elasticsearch_dsl.Document`.
+    """
     name = Text(analyzer=file_analyzer, fields={
         '_exact': Keyword(),
         '_pattern': Text(analyzer=file_pattern_analyzer),
@@ -88,7 +85,7 @@ class IndexedFile(Document):
         '_comps': Text(analyzer=path_analyzer),
         '_exact': Keyword(),
         '_reverse': Text(analyzer=reverse_file_analyzer)},
-        )
+    )
     lastModified = Date()
     length = Long()
     format = Text()
@@ -110,94 +107,76 @@ class IndexedFile(Document):
         })
     })
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
+        """
+        Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.save()
+        """
         self.lastUpdated = datetime.datetime.now()
-        return super(IndexedFile, self).save(**kwargs)
+        return super(IndexedFile, self).save(*args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        """
+        Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.update()
+        """
+        lastUpdated = datetime.datetime.now()
+        return super(IndexedFile, self).update(lastUpdated=lastUpdated, *args, **kwargs)
 
     @classmethod
     def from_path(cls, system, path):
-        search = cls.search()
-        search = search.filter('term', **{'path._exact': path})
-        search = search.filter('term', **{'system._exact': system})
-        try:
-            res = search.execute()
-        except TransportError as exc:
-            if exc.status_code == 404:
-                raise
-        if res.hits.total.value > 1:
-            for doc in res[1:res.hits.total.value]:
-                cls.get(doc.meta.id).delete()
-            return cls.get(res[0].meta.id)
-        elif res.hits.total.value == 1:
-            return cls.get(res[0].meta.id)
-        else:
-            raise DocumentNotFound("No document found for "
-                                   "{}/{}".format(system, path))
+        """
+        Fetches an IndexedFile with the specified system and path.
 
-    @classmethod
-    def children(cls, system, path, limit=100, search_after=None):
-        search = cls.search()
-        search = search.filter('term', **{'basePath._exact': path})
-        search = search.filter('term', **{'system._exact': system})
-        search = search.sort('_id')
-        search = search.extra(size=limit)
-        if search_after:
-            search = search.extra(search_after=search_after)
+        Parameters
+        ----------
+        system: str
+            System attribute of the indexed file.
+        path: str
+            Path attribute of the indexed file.
+        Returns
+        -------
+        IndexedFile
 
-        res = search.execute()
+        Raises
+        ------
+        elasticsearch.exceptions.NotFoundError
+        """
+        uuid = file_uuid_sha256(system, path)
+        return cls.get(uuid)
 
-        if len(res.hits) > 0:
-            wrapped_children = [cls.get(doc.meta.id) for doc in res]
-            sort_key = res.hits.hits[-1]['sort']
-            return wrapped_children, sort_key
-        else:
-            return [], None
+    def children(self):
+        """
+        Yields all children of the indexed file. Non-recursive.
+
+        Yields
+        ------
+        IndexedFile
+        """
+        search = self.search()
+        search = search.filter('term', **{'basePath._exact': self.path})
+        search = search.filter('term', **{'system._exact': self.system})
+
+        for hit in search.scan():
+            yield self.get(hit.meta.id)
+
+    def delete_recursive(self):
+        """
+        Recursively delete an indexed file and all of its children.
+
+        Returns
+        -------
+        Void
+        """
+        for child in self.children():
+            child.delete_recursive()
+        self.delete()
 
     class Index:
         name = settings.ES_INDEX_PREFIX.format('files')
 
 
 class ReindexedFile(IndexedFile):
+    """Identical to IndexedFile, but using a separate index for zero-downtime
+    reindexing applications.
+    """
     class Index:
         name = settings.ES_INDEX_PREFIX.format('files-reindex')
-
-
-class BaseESResource(object):
-    """Base class used to represent an Elastic Search resource.
-
-    This class implements basic wrapping functionality.
-    .. note::
-
-        Params stored in ``_wrapped`` are made available as attributes
-        of the class.
-    """
-    def __init__(self, wrapped_doc=None, **kwargs):
-        self._wrap(wrapped_doc, **kwargs)
-
-    def to_dict(self):
-        """Return wrapped doc as dict"""
-        return self._wrapped.to_dict()
-
-    def _wrap(self, wrapped_doc, **kwargs):
-        if wrapped_doc and kwargs:
-            wrapped_doc.update(**kwargs)
-        object.__setattr__(self, '_wrapped', wrapped_doc)
-
-    def _update(self, **kwargs):
-        self._wrapped.update(**kwargs)
-
-    def __getattr__(self, name):
-        """Custom attribute getter
-        """
-        _wrapped = object.__getattribute__(self, '_wrapped')
-        if _wrapped and hasattr(_wrapped, name):
-            return getattr(_wrapped, name)
-
-    def __setattr__(self, name, value):
-        _wrapped = object.__getattribute__(self, '_wrapped')
-        if _wrapped and hasattr(_wrapped, name):
-            object.__setattr__(self._wrapped, name, value)
-            return
-        else:
-            object.__setattr__(self, name, value)
-            return
