@@ -1,7 +1,6 @@
 @import '../../../styles/tools/mixins.scss';
 
-/* Container & Child Markup */
-.root {
+.container {
   --cell-horizontal-padding: 0.35em; /* for inter-column buffer */
   --cell-vertical-padding: 8px; /* for row size */
   --cell-height: 37px; /* manually copied from browser-calculated height */

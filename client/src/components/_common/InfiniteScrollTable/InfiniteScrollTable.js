@@ -109,7 +109,7 @@ const InfiniteScrollTable = ({
     <table
       {...getTableProps()}
       className={`${className} o-fixed-header-table`}
-      styleName={`root ${modifierStyleName}`}
+      styleName={`container ${modifierStyleName}`}
     >
       <thead>
         {headerGroups.map(headerGroup => (
