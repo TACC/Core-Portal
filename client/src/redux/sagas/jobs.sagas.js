@@ -4,6 +4,10 @@ import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
 
 export function* getJobs(action) {
+  if ('offset' in action.params && action.params.offset === 0) {
+    yield put({ type: 'JOBS_LIST_INIT' });
+  }
+
   yield put({ type: 'JOBS_LIST_START' });
   const url = new URL('/api/workspace/jobs', window.location.origin);
   Object.keys(action.params).forEach(key =>
@@ -14,11 +18,14 @@ export function* getJobs(action) {
       credentials: 'same-origin',
       ...action.options
     });
+    if (res.status !== 200) {
+      throw new Error('Could not retrieve jobs');
+    }
     const json = yield res.json();
     yield put({ type: 'JOBS_LIST', payload: json.response });
     yield put({ type: 'JOBS_LIST_FINISH' });
   } catch {
-    yield put({ type: 'JOBS_LIST', payload: [{ error: 'err!' }] });
+    yield put({ type: 'JOBS_LIST_ERROR', payload: 'error' });
     yield put({ type: 'JOBS_LIST_FINISH' });
   }
 }
