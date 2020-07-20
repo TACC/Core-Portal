@@ -81,9 +81,6 @@ const InfiniteScrollTable = ({
   noDataText,
   getRowProps
 }) => {
-  // HACK: TEMP: FP-471: Testing
-  // isLoading = true;
-  // tableData = [];
   const columns = React.useMemo(() => tableColumns, []);
   const data = React.useMemo(() => tableData, [tableData]);
   const hasData = tableData.length !== 0;
