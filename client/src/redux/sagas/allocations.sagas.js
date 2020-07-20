@@ -23,7 +23,11 @@ export function* getAllocations(action) {
     yield put({ type: 'ADD_ALLOCATIONS_ERROR', payload: error });
   }
 }
-
+/**
+ * Fetch allocations data
+ * @async
+ * @returns {{portal_alloc: String, active: Array, inactive: Array, hosts: Object}}
+ */
 const getAllocationsUtil = async () => {
   const res = await fetchUtil({
     url: '/api/users/allocations/'
@@ -31,11 +35,24 @@ const getAllocationsUtil = async () => {
   const json = res.response;
   return json;
 };
-const getTeamsUtil = async team => {
-  const res = await fetchUtil({ url: `/api/users/team/${team}` });
+
+/**
+ * Fetch user data for a project
+ * @param {String} projectId - project id
+ */
+const getTeamsUtil = async projectId => {
+  const res = await fetchUtil({ url: `/api/users/team/${projectId}` });
   const json = res.response;
   return json;
 };
+
+/**
+ * Generate an empty dictionary to look up users from project ID and map loading state
+ * to each project
+ * @param {{portal_alloc: String, active: Array, inactive: Array, hosts: Object}} data -
+ * Allocations data
+ * @returns {{teams: Object, loadingTeams: {}}}
+ */
 const populateTeamsUtil = data => {
   const allocations = { active: data.active, inactive: data.inactive };
   const teams = flatten(Object.values(allocations)).reduce(
@@ -78,6 +95,14 @@ function* getUsernames(action) {
     });
   }
 }
+
+/**
+ * Fetch Usage For an Allocation and Return an Array of Users with their data,
+ * resource used, and allocation id.
+ * @async
+ * @param {{id: Number, system: Object}} params
+ * @returns {{user: Object, resource: String, allocationId: Number}[]} data
+ */
 const getUsageUtil = async params => {
   const res = await fetchUtil({
     url: `/api/users/team/usage/${params.id}`
@@ -92,6 +117,18 @@ const getUsageUtil = async params => {
   return data;
 };
 
+/**
+ * Generate a payload for the User Data saga.
+ * When there is not an error, this function maps team data to Projects.
+ * Each user has an entry for the resources in the allocation and if they have
+ * usage data, it is added to their entry
+ * @param {Number} id - Project Id
+ * @param {Object} obj - User Data
+ * @param {Boolean} error - Error present
+ * @param {Object} usageData - Usage Data
+ * @param {Array} allocations - All allocations
+ * @returns {{data: Object, loading: Boolean}}
+ */
 const teamPayloadUtil = (
   id,
   obj,
