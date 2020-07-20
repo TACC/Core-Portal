@@ -1,90 +1,205 @@
 """
 Utilities to help on elastic search implementations.
 """
-import json
+
 import os
 import logging
-from portal.libs.agave.utils import walk_levels
+import datetime
+from elasticsearch.helpers import bulk
+from elasticsearch_dsl import Q
+from elasticsearch_dsl.connections import get_connection
+from hashlib import sha256
+from itertools import zip_longest
 # from portal.apps.projects.models import ProjectMetadata
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
-def to_camel_case(input_str):
-    """Convert from snake_case to lowerCamelCase.
-
-    This is mainly used to translate between
-    python_attributes and jsonAttributes.
-    Agavepy returns python dicts with jsonAttrbiutes for keys.
-
-    :param str input_str:
-    :return: lowerCamelCase string
-    :rtype: str
-    """
-    left_cnt = len(input_str) - len(input_str.lstrip('_'))
-    right_cnt = len(input_str) - len(input_str.rstrip('_'))
-    comps = input_str[left_cnt:].split('_')
-    right_side = ''.join(w.title() for w in comps[1:])
-    camel_case = ''.join(['_' * left_cnt, comps[0], right_side, '_' * right_cnt])
-    return camel_case
 
 def index_project(projectId):
-#     from portal.libs.elasticsearch.docs.projects import BaseESProject
-#     project_meta = ProjectMetadata.objects.get(project_id=projectId)
-#     project_meta_dict = project_meta.to_dict()
+    #     from portal.libs.elasticsearch.docs.projects import BaseESProject
+    #     project_meta = ProjectMetadata.objects.get(project_id=projectId)
+    #     project_meta_dict = project_meta.to_dict()
 
-#     doc = BaseESProject(**project_meta_dict)
-#     doc.save()
+    #     doc = BaseESProject(**project_meta_dict)
+    #     doc.save()
     pass
 
-def index_agave(systemId, client, username, filePath='/', update_pems=False):
-    from portal.libs.elasticsearch.docs.files import BaseESFile
 
-    for root, folders, files in walk_levels(client, systemId, filePath, ignore_hidden=True):
-        for obj in folders + files:
-            obj_dict = obj.to_dict()
-            doc = BaseESFile(username, **obj_dict)
-            saved = doc.save()
-            if update_pems:
-                pems = obj.pems_list()
-                doc._wrapped.update(**{'pems': pems})
+def file_uuid_sha256(system, path):
+    """
+    Compute sha256 hash of a system/path combination as a UUID for indexing.
 
-        offset = 0
-        limit = 100
-        es_root = BaseESFile(username, systemId, root)
-        page = [doc for doc in es_root.children(offset=offset, limit=limit)]
-        children_paths = [_file.path for _file in folders + files]
+    Parameters
+    ----------
+    system: str
+        The Tapis system ID.
+    path: str
+        Path to file file being indexed, relative to the storage system root.
 
-        while len(page) > 0:
-            to_delete = [doc for doc in page if
-                        doc is not None and
-                        doc.path not in children_paths]
-            for doc in to_delete:
-                doc.delete()
+    Returns
+    -------
+    str
+    """
 
-            offset += limit
-            page = [doc for doc in es_root.children(offset=offset, limit=limit)]
+    if not path.startswith('/'):
+        path = '/{}'.format(path)
+    # str representation of the hash of e.g. "cep.home.user/path/to/file"
+    return sha256((system + path).encode()).hexdigest()
+
+
+def grouper(iterable, n, fillvalue=None):
+    """
+    Recipe from itertools docs.
+    Collect data into fixed-length chunks or blocks.
+    """
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)
+
+
+def walk_children(system, path, include_parent=True, recurse=False):
+    """
+    Yield an elasticsearch hit for each child of an indexed file.
+
+    Parameters
+    ----------
+    system: str
+        The Tapis system ID.
+    path: str
+        The path relative to the system root.
+    include_parent: bool
+        Whether the listing should include the parent as well as the children.
+    recurse: bool
+        If True, simulate a recursive listing by doing a prefix search on the
+        root path.
+
+    Yields
+    ------
+    elasticsearch_dsl.response.hit.Hit
+
+    """
+    from portal.libs.elasticsearch.docs.base import IndexedFile
+    search = IndexedFile.search()
+    search = search.filter(Q({'term': {'system._exact': system}}))
+    if recurse:
+        basepath_query = Q({'prefix': {'basePath._exact': path}})
+    else:
+        basepath_query = Q({'term': {'basePath._exact': path}})
+
+    if include_parent:
+        path_query = Q({'term': {'path._exact': path}})
+        search = search.filter(basepath_query | path_query)
+    else:
+        search = search.filter(basepath_query)
+
+    for hit in search.scan():
+        yield hit
+
+
+def delete_recursive(system, path):
+    """
+    Recursively delete all Elasticsearch documents in a specified system/path.
+
+    Parameters
+    ----------
+    system: str
+        The Tapis system ID containing files to be deleted.
+    path: str
+        The path relative to the system root. All documents with this path as a
+        prefix will be deleted.
+
+    Returns
+    -------
+    Void
+    """
+    from portal.libs.elasticsearch.docs.base import IndexedFile
+    hits = walk_children(system, path, recurse=True)
+    idx = IndexedFile.Index.name
+    client = get_connection('default')
+
+    # Group children in batches of 100 for bulk deletion.
+    for group in grouper(hits, 100):
+        filtered_group = filter(lambda hit: hit is not None, group)
+        ops = map(lambda hit: {'_index': idx,
+                               '_id': hit.meta.id,
+                               '_op_type': 'delete'},
+                  filtered_group)
+        bulk(client, ops)
+
 
 def index_level(path, folders, files, systemId, reindex=False):
     """
     Index a set of folders and files corresponding to the output from one
     iteration of walk_levels
+
+    Parameters
+    ----------
+    path: str
+        The path to the parent folder being indexed, relative to the system root.
+    folders: list
+        list of Tapis folders (either dict or agavepy.agave.Attrdict)
+    files: list
+        list of Tapis files (either dict or agavepy.agave.Attrdict)
+    systemId: str
+        ID of the Tapis system being indexed.
+
+    Returns
+    -------
+    Void
     """
-    from portal.libs.elasticsearch.docs.files import BaseESFile
-    for obj in folders + files:
-            obj_dict = obj.to_dict()
-            obj_dict['basePath'] = os.path.dirname(obj.path)
-            doc = BaseESFile(reindex=reindex, **obj_dict)
-            saved = doc.save()
 
-            #if update_pems:
-            #    pems = obj.pems_list()
-            #    doc._wrapped.update(**{'pems': pems})
+    index_listing(folders + files)
 
-    children_paths = [_file.path for _file in folders + files]
-    es_root = BaseESFile(systemId, path, reindex=reindex)
-    for doc in es_root.children():
-        if doc is not None and doc.path not in children_paths:
-            doc.delete()
+    children_paths = [_file['path'] for _file in folders + files]
+    for hit in walk_children(systemId, path, recurse=False):
+        if hit['path'] not in children_paths:
+            delete_recursive(hit.system, hit.path)
 
+
+def current_time():
+    """
+    Wraps datetime.datetime.now() for convenience of mocking.
+
+    Returns
+    -------
+    datetime.datetime
+    """
+    return datetime.datetime.now()
+
+
+def index_listing(files):
+    """
+    Index the result of a Tapis listing. Files are indexed with a UUID
+    comprising the SHA256 hash of the system + path.
+
+    Parameters
+    ----------
+    files: list
+        list of Tapis files (either dict or agavepy.agave.Attrdict)
+
+    Returns
+    -------
+    Void
+    """
+    from portal.libs.elasticsearch.docs.base import IndexedFile
+    idx = IndexedFile.Index.name
+    client = get_connection('default')
+    ops = []
+    for _file in files:
+        file_dict = dict(_file)
+        if file_dict['name'][0] == '.':
+            continue
+        file_dict['lastUpdated'] = current_time()
+        file_dict['basePath'] = os.path.dirname(file_dict['path'])
+        file_uuid = file_uuid_sha256(file_dict['system'], file_dict['path'])
+        ops.append({
+            '_index': idx,
+            '_id': file_uuid,
+            'doc': file_dict,
+            '_op_type': 'update',
+            'doc_as_upsert': True
+            })
+
+    bulk(client, ops)

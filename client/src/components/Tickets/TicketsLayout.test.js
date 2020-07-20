@@ -51,7 +51,7 @@ describe('TicketLayout', () => {
     const { getAllByRole } = renderTicketsComponent(store);
 
     const columnHeaders = getAllByRole('columnheader');
-    expect(columnHeaders[0]).toHaveTextContent(/Ticket Number/);
+    expect(columnHeaders[0]).toHaveTextContent(/Number/);
     expect(columnHeaders[1]).toHaveTextContent(/Subject/);
     expect(columnHeaders[2]).toHaveTextContent(/Date Added/);
     expect(columnHeaders[3]).toHaveTextContent(/Ticket Status/);

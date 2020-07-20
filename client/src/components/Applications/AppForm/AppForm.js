@@ -308,7 +308,7 @@ const AppSchemaForm = ({ app }) => {
                                 val = tmp;
                               }
                               return Object.entries(val).map(([key, value]) => (
-                                <option key={key} value={value}>
+                                <option key={key} value={key}>
                                   {value}
                                 </option>
                               ));
