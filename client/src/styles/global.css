@@ -7,6 +7,7 @@
 @import url('./settings/border.css');
 
 /* TOOLS */
+/* NOTE: For the most part, allow React components to explicitely import as needed */
 /* … */
 
 /* GENERIC */
@@ -14,9 +15,11 @@
 
 /* ELEMENTS */
 @import url('./elements/inline-text.css');
+@import url('./elements/table.css');
 
 /* OBJECTS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
+@import url('./objects/o-fixed-header-table.css');
 
 /* COMPONENTS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */

@@ -308,7 +308,7 @@ module.exports = {
     // Require a newline or disallow whitespace on the inside of the parentheses of functions (Autofixable).
     // 'function-parentheses-newline-inside': null,
     // Require a single space or disallow whitespace on the inside of the parentheses of functions (Autofixable).
-    // 'function-parentheses-space-inside': null,
+    'function-parentheses-space-inside': null,
     // Require or disallow quotes for urls.
     // 'function-url-quotes': null,
     // Require or disallow whitespace after functions (Autofixable).

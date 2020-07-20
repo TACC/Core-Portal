@@ -2,7 +2,7 @@ import React from 'react';
 import { useTable } from 'react-table';
 import PropTypes from 'prop-types';
 import LoadingSpinner from '../LoadingSpinner';
-import './InfiniteScrollTable.scss';
+import './InfiniteScrollTable.module.scss';
 
 const rowContentPropType = PropTypes.oneOfType([
   PropTypes.string,
@@ -15,8 +15,8 @@ const InfiniteScrollLoadingRow = ({ isLoading }) => {
     return null;
   }
   return (
-    <tr className="-status">
-      <td>
+    <tr styleName="status status--is-loading">
+      <td styleName="status__message">
         <LoadingSpinner placement="inline" />
       </td>
     </tr>
@@ -31,9 +31,9 @@ const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
     return null;
   }
   return (
-    <tr className="-status">
-      <td>
-        <span className="-status__message">{noDataText}</span>
+    <tr styleName="status status--no-data">
+      <td styleName="status__message  cell cell--has-text-nodes">
+        {noDataText}
       </td>
     </tr>
   );
@@ -72,23 +72,42 @@ const InfiniteScrollTable = ({
   };
 
   return (
-    <table {...getTableProps()} className={`${className} InfiniteScrollTable`}>
+    <table
+      {...getTableProps()}
+      styleName="root"
+      className={`${className}  o-fixed-header-table`}
+    >
       <thead>
         {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
+          <tr
+            {...headerGroup.getHeaderGroupProps()}
+            className="o-fixed-header-table__row"
+          >
             {headerGroup.headers.map(column => (
               <th {...column.getHeaderProps()}>{column.render('Header')}</th>
             ))}
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()} onScroll={onScroll}>
+      <tbody
+        {...getTableBodyProps()}
+        onScroll={onScroll}
+        className="o-fixed-header-table__body"
+      >
         {rows.map(row => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()} {...getRowProps(row)}>
+            <tr
+              {...row.getRowProps()}
+              {...getRowProps(row)}
+              className="o-fixed-header-table__row"
+            >
               {row.cells.map(cell => {
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                return (
+                  <td {...cell.getCellProps()} styleName="cell">
+                    {cell.render('Cell')}
+                  </td>
+                );
               })}
             </tr>
           );
