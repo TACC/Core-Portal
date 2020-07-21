@@ -16,9 +16,11 @@
   width: 1rem;
   height: 1rem;
   font-size: 1.2rem; /* 16px design * 1.2 design-to-app ratio (rounded) */
+  font-weight: normal; /* Prevent external styles from accidentally bolding the icon */
   vertical-align: middle;
   display: inline-flex; /* `flex` to align `::before`; `inline` to not trigger new line */
                         /* a modern slimmer alternative to `&::before { display: block; }` */
+  justify-content: center;
 }
 
 /* FP-455: Try to use selector `.icon, [class*="icon-"]` and update app accordingly */

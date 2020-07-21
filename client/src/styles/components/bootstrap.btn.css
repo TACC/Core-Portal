@@ -8,8 +8,9 @@ See [ReactStrap Buttons](https://reactstrap.github.io/components/buttons/).
 Styleguide Components.Button
 */
 .btn {
-  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
   border-radius: 0;
+  font-weight: 700;
+  /* NOTE: Should set `font-size`, but `.icon`'s `em` adversely changes icon size */
 }
 
 /* Types */
@@ -17,6 +18,8 @@ Styleguide Components.Button
 /* FP-546: Before FP-546 standardizes `_common/Button`,
            these styles are overridden and duplicated by `Workbench.scss` */
 .btn-primary {
+  padding: 7px 12px; /* 6px 10px design * 1.2 design-to-app ratio */
+
   color: var(--global-color-primary--xx-light);
   background-color: var(--global-color-accent--normal);
   border: none;
