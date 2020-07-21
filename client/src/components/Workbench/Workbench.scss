@@ -42,12 +42,13 @@
   color: #9d85ef;
 }
 
+/* FP-546: After FP-546 standardizes `_common/Button`,
+           these styles can likely be deleted. */
 .workbench-content .btn-secondary {
   background-color: #F4F4F4;
   color: #484848;
   border: 1px solid #AFAFAF;
 }
-
 .workbench-content .btn-primary {
   background-color: #9d85ef;
   color: white;

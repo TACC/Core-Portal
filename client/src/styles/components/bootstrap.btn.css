@@ -1,0 +1,34 @@
+/*
+Button (Bootstrap)
+
+Override Bootstrap styles.
+
+See [ReactStrap Buttons](https://reactstrap.github.io/components/buttons/).
+
+Styleguide Components.Button
+*/
+.btn {
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+  border-radius: 0;
+}
+
+/* Types */
+
+/* FP-546: Before FP-546 standardizes `_common/Button`,
+           these styles are overridden and duplicated by `Workbench.scss` */
+.btn-primary {
+  color: var(--global-color-primary--xx-light);
+  background-color: var(--global-color-accent--normal);
+  border: none;
+}
+.btn-secondary {
+  color: var(--global-color-primary--x-dark);
+  background-color: var(--global-color-primary--x-light);
+  border: var(--global-border-width--normal) solid var(--global-color-primary--normal);
+}
+/* WARNING: These styles are NOT defined by Design (origin: DataFiles) — 2020-07-21 */
+.btn-secondary:not(.disabled):hover {
+  color: var(--global-color-primary--x-dark);
+  background-color: var(--global-color-primary--normal);
+  border-color: var(--global-color-primary--x-dark);
+}
