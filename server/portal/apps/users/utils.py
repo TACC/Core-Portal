@@ -4,6 +4,7 @@ from pytas.http import TASClient
 from portal.libs.elasticsearch.docs.base import IndexedAllocation
 from elasticsearch.exceptions import NotFoundError
 from portal.libs.elasticsearch.utils import get_sha256_hash
+import json
 import logging
 import requests
 
@@ -55,69 +56,8 @@ def get_tas_allocations(username):
     )
     tas_projects = tas_client.projects_for_user(username)
 
-    # A dict for translating TAS allocation resources to hostnames
-    tas_to_tacc_resources = {
-        'Stampede4': {
-            'name': 'Stampede 2',
-            'host': 'stampede2.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Corral2': {
-            'name': 'Corral',
-            'host': 'data.tacc.utexas.edu',
-            'type': 'STORAGE'
-        },
-        'Lonestar5': {
-            'name': 'LoneStar 5',
-            'host': 'ls5.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Maverick2': {
-            'name': 'Maverick',
-            'host': 'maverick.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Maverick3': {
-            'name': 'Maverick 2',
-            'host': 'maverick2.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Rodeo2': {
-            'name': 'Rodeo',
-            'host': 'rodeo.tacc.utexas.edu',
-            'type': 'STORAGE'
-        },
-        'Wrangler': {
-            'name': 'Wrangler',
-            'host': 'wrangler.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Wrangler2': {
-            'name': 'Wrangler',
-            'host': 'wrangler.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Wrangler3': {
-            'name': 'Wrangler',
-            'host': 'wrangler.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Frontera': {
-            'name': 'Frontera',
-            'host': 'frontera.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Ranch': {
-            'name': 'Ranch',
-            'host': 'ranch.tacc.utexas.edu',
-            'type': 'STORAGE'
-        },
-        'Hikari': {
-            'name': 'Hikari',
-            'host': 'hikari.tacc.utexas.edu',
-            'type': 'HPC'
-        }
-    }
+    with open('portal/apps/users/tas_to_tacc_resources.json') as f:
+        tas_to_tacc_resources = json.load(f)
 
     hosts = {}
     active_allocations = {}
