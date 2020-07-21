@@ -3,10 +3,10 @@ import { useHistory, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { LoadingSpinner } from '_common';
-import { getStatusText } from "../Jobs/JobsStatus";
 import PropTypes from 'prop-types';
 import getOutputPathFromHref from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
+import { getStatusText } from '../Jobs/JobsStatus';
 import * as ROUTES from '../../constants/routes';
 import './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
@@ -60,7 +60,10 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
           <div styleName="label">Output</div>
           <div>
             {outputPath && (
-              <DataFilesLink path={outputPath} displayText="View in Data Files" />
+              <DataFilesLink
+                path={outputPath}
+                displayText="View in Data Files"
+              />
             )}
             {!outputPath && placeHolder}
           </div>
@@ -77,17 +80,22 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
         <div styleName="section alternating-background">
           <div styleName="label">Inputs</div>
           {jobDisplay.inputs.map(input => (
-            <Entry key={input.id} label={input.label}>{input.value}</Entry>
+            <Entry key={input.id} label={input.label}>
+              {input.value}
+            </Entry>
           ))}
         </div>
         <div styleName="section alternating-background">
           <div styleName="label">Parameters</div>
           {jobDisplay.parameters.map(param => (
-            <Entry key={param.id} label={param.label}>{param.value}</Entry>
+            <Entry key={param.id} label={param.label}>
+              {param.value}
+            </Entry>
           ))}
         </div>
         <div styleName="section alternating-background">
-          Configuration: (Max job runtime, Processors On Each Node, Node count, allocation)
+          Configuration: (Max job runtime, Processors On Each Node, Node count,
+          allocation)
         </div>
         <div styleName="section alternating-background">
           Max job runtime: todo
@@ -95,12 +103,8 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
         <div styleName="section alternating-background">
           Processors On Each Node: todo
         </div>
-        <div styleName="section alternating-background">
-          Node count: todo
-        </div>
-        <div styleName="section alternating-background">
-          Allocation: todo
-        </div>
+        <div styleName="section alternating-background">Node count: todo</div>
+        <div styleName="section alternating-background">Allocation: todo</div>
       </div>
     </div>
   );
@@ -115,18 +119,18 @@ JobHistoryContent.propTypes = {
 
 function JobHistoryModal({ jobId }) {
   const loading = useSelector(state => state.jobDetail.loading);
-  const loadingError = useSelector(state => state.jobDetail.loadingError);
+  // const loadingError = useSelector(state => state.jobDetail.loadingError);
+  /*
   const loadingErrorMessage = useSelector(
     state => state.jobDetail.loadingErrorMessage
   );
+  */
   const job = useSelector(state => state.jobDetail.job);
-  const app = useSelector(state => state.jobDetail.app);
   const display = useSelector(state => state.jobDetail.display);
 
   const jobName = job ? job.name : placeHolder;
   const applicationName = display ? display.applicationName : placeHolder;
   const systemName = display ? display.systemName : placeHolder;
-
 
   const history = useHistory();
   const close = () => {
@@ -134,7 +138,13 @@ function JobHistoryModal({ jobId }) {
   };
 
   return (
-    <Modal isOpen styleName="root" className="job-history-modal" toggle={close} size="lg">
+    <Modal
+      isOpen
+      styleName="root"
+      className="job-history-modal"
+      toggle={close}
+      size="lg"
+    >
       <ModalHeader styleName="header" toggle={close}>
         <div styleName="header-job" className="d-inline-block text-truncate">
           {jobName}
@@ -156,14 +166,16 @@ function JobHistoryModal({ jobId }) {
 
       <ModalBody className="job-history-model--body">
         {loading && <LoadingSpinner />}
-        {!loading && <JobHistoryContent jobDetails={job} jobDisplay={display} />}
+        {!loading && (
+          <JobHistoryContent jobDetails={job} jobDisplay={display} />
+        )}
       </ModalBody>
     </Modal>
   );
 }
 
 JobHistoryModal.propTypes = {
-  jobId: PropTypes.string.isRequired,
+  jobId: PropTypes.string.isRequired
 };
 
 export default JobHistoryModal;
