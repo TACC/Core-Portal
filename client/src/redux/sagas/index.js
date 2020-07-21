@@ -29,6 +29,7 @@ import {
   watchPostTicketCreate
 } from './tickets.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
+import { watchWorkbench } from './workbench.sagas';
 
 export default function* rootSaga() {
   yield all([
@@ -58,6 +59,7 @@ export default function* rootSaga() {
     watchTicketDetailedViewFetchSubject(),
     watchPostTicketReply(),
     watchPostTicketCreate(),
-    watchAuthenticatedUser()
+    watchAuthenticatedUser(),
+    watchWorkbench()
   ]);
 }

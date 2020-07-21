@@ -38,8 +38,7 @@ class MFAStep(AbstractStep):
 
     def mfa_check(self):
         auth = HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
-        url = "{0}/tup/users/{1}/pairings".format(settings.TAS_URL, self.user.username)
-        response = requests.get(url, auth=auth)
+        response = requests.get(self.tas_pairings_url(), auth=auth)
         pairings = response.json()['result']
         return any(pairing['type'] == 'tacc-soft-token' for pairing in pairings)
 
@@ -59,3 +58,6 @@ class MFAStep(AbstractStep):
     def client_action(self, action, data, request):
         if action == "user_confirm" and request.user.username == self.user.username:
             self.prepare()
+
+    def tas_pairings_url(self):
+        return "{0}/tup/users/{1}/pairings".format(settings.TAS_URL, self.user.username)

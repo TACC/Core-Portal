@@ -109,5 +109,9 @@ export const ManageAccountInput = ({ label, ...props }) => {
     </FormGroup>
   );
 };
-ManageAccountInput.propTypes = { label: string.isRequired, type: string };
+ManageAccountInput.propTypes = {
+  label: string.isRequired,
+  name: string.isRequired,
+  type: string
+};
 ManageAccountInput.defaultProps = { type: 'text' };

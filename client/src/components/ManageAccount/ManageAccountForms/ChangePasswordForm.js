@@ -4,11 +4,11 @@ import { Button } from 'reactstrap';
 import { object as obj, string as str, ref } from 'yup';
 import { Formik, Form } from 'formik';
 import { isEmpty } from 'lodash';
-import { bool } from 'prop-types';
+import { bool, oneOfType, func, instanceOf, shape } from 'prop-types';
 import { LoadingSpinner } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
-const ChangePasswordFormBody = ({ canSubmit }) => {
+const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
   const isChecking = useSelector(state => state.profile.checkingPassword);
   const Requirements = () => (
     <div style={{ color: '#707070', fontStyle: 'italic' }}>
@@ -24,22 +24,34 @@ const ChangePasswordFormBody = ({ canSubmit }) => {
     </div>
   );
   return (
-    <Form className="change-password-form">
+    <Form
+      ref={formRef}
+      className="change-password-form"
+      aria-label="change-password-form"
+    >
       <ManageAccountInput
         label="Current Password"
         name="currentPW"
         type="password"
+        aria-label="current-password"
       />
-      <ManageAccountInput label="New Password" name="newPW" type="password" />
+      <ManageAccountInput
+        label="New Password"
+        name="newPW"
+        type="password"
+        aria-label="new-password"
+      />
       <ManageAccountInput
         label="Confirm New Password"
         name="confirmNewPW"
         type="password"
+        aria-label="confirm-new-password"
       />
       <Requirements />
       <Button
         className="manage-account-submit-button"
         type="submit"
+        data-testid="submit-button"
         style={{ alignSelf: 'flex-end' }}
         disabled={!canSubmit}
       >
@@ -51,27 +63,48 @@ const ChangePasswordFormBody = ({ canSubmit }) => {
     </Form>
   );
 };
-ChangePasswordFormBody.propTypes = { canSubmit: bool.isRequired };
+ChangePasswordFormBody.propTypes = {
+  canSubmit: bool.isRequired,
+  formRef: oneOfType([
+    func,
+    shape({
+      current: instanceOf(Element)
+    })
+  ]).isRequired
+};
 
 export default function() {
-  const { restrictions } = useSelector(state => {
+  const { restrictions, checks } = useSelector(state => {
     const { data } = state.profile;
     const { username, firstName, lastName } = data.demographics;
     return {
-      restrictions: { username, firstName, lastName }
+      restrictions: { username, firstName, lastName },
+      checks: {
+        error: state.profile.errors.password,
+        success: state.profile.success.password
+      }
     };
   });
   const dispatch = useDispatch();
+  const formRef = React.useRef(null);
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
     dispatch({
       type: 'CHANGE_PASSWORD',
-      values,
-      callback: params => {
-        setSubmitting(false);
-        if (params.reset) resetForm();
-      }
+      values
     });
+    setSubmitting(false);
   };
+
+  const resetForm = () => {
+    if (checks.success) {
+      const reset = new Event('reset');
+      formRef.current.dispatchEvent(reset);
+    }
+  };
+
+  React.useEffect(() => {
+    resetForm();
+  }, [checks]);
   const formSchema = obj().shape({
     currentPW: str().required('Please enter your current password'),
     newPW: str()
@@ -113,7 +146,12 @@ export default function() {
       onSubmit={handleSubmit}
       validationSchema={formSchema}
     >
-      {({ errors }) => <ChangePasswordFormBody canSubmit={hasErrors(errors)} />}
+      {({ errors }) => (
+        <ChangePasswordFormBody
+          formRef={formRef}
+          canSubmit={hasErrors(errors)}
+        />
+      )}
     </Formik>
   );
 }

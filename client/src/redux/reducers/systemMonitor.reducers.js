@@ -1,15 +1,16 @@
 const initialState = {
   list: [],
-  loading: false
+  loading: false,
+  error: null
 };
 export default function systemMonitor(state = initialState, action) {
   switch (action.type) {
-    case 'LOAD_SYSTEM_MONITOR':
-      return { ...state, loading: true };
-    case 'ADD_SYSTEM_MONITOR':
+    case 'SYSTEM_MONITOR_LOAD':
+      return { ...initialState, loading: true };
+    case 'SYSTEM_MONITOR_SUCCESS':
       return { ...state, list: action.payload, loading: false };
-    case 'REFRESH_SYSTEM_MONITOR':
-      return initialState;
+    case 'SYSTEM_MONITOR_ERROR':
+      return { ...state, error: action.payload, loading: false };
     default:
       return state;
   }
