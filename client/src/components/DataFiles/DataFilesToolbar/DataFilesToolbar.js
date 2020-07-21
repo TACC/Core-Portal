@@ -2,20 +2,21 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import './DataFilesToolbar.scss';
+import './DataFilesToolbar.module.scss';
 
 export const ToolbarButton = ({ text, icon, onClick, disabled }) => {
   return (
     <Button
       disabled={disabled}
       onClick={onClick}
-      className="data-files-toolbar-button"
+      styleName="button"
+      data-testid="button"
     >
       <i
-        className={`${icon.prefix} ${icon.prefix}-${icon.iconName}`}
-        data-testid="toolbar-icon"
+        className={`icon ${icon.prefix} ${icon.prefix}-${icon.iconName}`}
+        styleName="button-icon"
       />
-      <span className="toolbar-button-text">{text}</span>
+      <span styleName="button-text">{text}</span>
     </Button>
   );
 };
@@ -86,7 +87,7 @@ const DataFilesToolbar = ({ scheme }) => {
 
   return (
     <>
-      <div id="data-files-toolbar-button-row">
+      <div styleName="container">
         <ToolbarButton
           text="Rename"
           onClick={toggleRenameModal}
@@ -113,7 +114,7 @@ const DataFilesToolbar = ({ scheme }) => {
         />
         <ToolbarButton
           text="Trash"
-          icon={{ prefix: 'icon-action', iconName: 'rename' }}
+          icon={{ prefix: 'icon-action', iconName: 'trash' }}
           onClick={trash}
           disabled={!canTrash}
         />
