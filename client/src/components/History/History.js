@@ -34,11 +34,7 @@ const HistorySidebar = () => (
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/jobs`} activeClassName="active">
         <div className="nav-content">
-          <FontAwesomeIcon
-            icon={faDesktop}
-            size="1x"
-            className="side-nav-icon"
-          />
+          <FontAwesomeIcon icon={faDesktop} size="1x" />
           <span className="nav-text">Jobs</span>
         </div>
       </NavLink>
@@ -46,7 +42,7 @@ const HistorySidebar = () => (
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/uploads`} activeClassName="active">
         <div className="nav-content">
-          <i className="icon-action-upload side-nav-icon history-sidebar__icon-nav" />
+          <i className="icon icon-action-upload" />
           <span className="nav-text">Uploads</span>
         </div>
       </NavLink>
@@ -54,7 +50,7 @@ const HistorySidebar = () => (
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/files`} activeClassName="active">
         <div className="nav-content">
-          <i className="icon-nav-folder side-nav-icon history-sidebar__icon-nav" />
+          <i className="icon icon-nav-folder" />
           <span className="nav-text">Files</span>
         </div>
       </NavLink>
