@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIconCell } from '../../DataFilesListing/DataFilesListingCells';
+import './DataFilesModalListingTable.module.scss';
 
 function getCurrentDirectory(path) {
   return path.split('/').pop();
@@ -48,7 +49,8 @@ const DataFilesModalListingNameCell = ({
   path,
   name,
   format,
-  isCurrentDirectory
+  isCurrentDirectory,
+  indentSubFilesFolders
 }) => {
   const dispatch = useDispatch();
   const onClick = e => {
@@ -64,14 +66,22 @@ const DataFilesModalListingNameCell = ({
     format === 'folder' && !isCurrentDirectory;
   const cell = { value: format };
   return (
-    <div>
+    <div
+      styleName={
+        indentSubFilesFolders && !isCurrentDirectory
+          ? 'indented container'
+          : 'container'
+      }
+    >
       <FileIconCell cell={cell} />
       {isFolderButNotCurrentFolder && (
-        <span className="data-files-name">
-          <a href="" onClick={onClick} className="data-files-nav-link">
-            {name}
-          </a>
-        </span>
+        <a
+          href=""
+          onClick={onClick}
+          className="data-files-name data-files-nav-link"
+        >
+          {name}
+        </a>
       )}
       {!isFolderButNotCurrentFolder && (
         <span className="data-files-name">{name}</span>
@@ -86,7 +96,8 @@ DataFilesModalListingNameCell.propTypes = {
   path: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   format: PropTypes.string.isRequired,
-  isCurrentDirectory: PropTypes.bool.isRequired
+  isCurrentDirectory: PropTypes.bool.isRequired,
+  indentSubFilesFolders: PropTypes.bool.isRequired
 };
 
 const DataFilesModalButtonCell = ({
@@ -136,9 +147,9 @@ const DataFilesModalListingTable = ({
 }) => {
   const dispatch = useDispatch();
   const params = useSelector(state => state.files.params.modal, shallowEqual);
+  const isNotRoot = params.path.length > 0;
 
   const alteredData = useMemo(() => {
-    const isNotRoot = params.path.length > 0;
     const result = data.map(d => {
       const entry = d;
       entry.isCurrentDirectory = false;
@@ -146,7 +157,7 @@ const DataFilesModalListingTable = ({
     });
 
     /* Add an entry to represent the current sub-directory */
-    if (!isNotRoot || operationAllowedOnRootFolder) {
+    if (isNotRoot || operationAllowedOnRootFolder) {
       const currentFolderEntry = {
         name: isNotRoot ? getCurrentDirectory(params.path) : 'My Data',
         format: 'folder',
@@ -157,7 +168,7 @@ const DataFilesModalListingTable = ({
       result.unshift(currentFolderEntry);
     }
     return result;
-  }, [data, params]);
+  }, [data, params, isNotRoot]);
 
   const NameCell = useCallback(
     ({
@@ -173,6 +184,7 @@ const DataFilesModalListingTable = ({
         name={name}
         format={format}
         isCurrentDirectory={isCurrentDirectory}
+        indentSubFilesFolders={isNotRoot || operationAllowedOnRootFolder}
       />
     ),
     [params]
