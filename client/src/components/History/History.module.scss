@@ -1,29 +1,10 @@
 /*
     Components
 */
-.btn-link {
-    color: #9d85ef;
-    padding-left: 0;
-}
-.container {
-    /* As a flex item */
-    flex-grow: 1;
-
-    /* As a flex container */
-    display: flex;
-    flex-direction: row;
-
-    border-top: 1px solid #707070;
-}
-/* Make right-most item fill up remaining horizontal space */
-.container > :last-child {
-    flex-grow: 1;
-}
-
 .header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
 
     .header-text {
         font-size: 1.25rem;
@@ -33,6 +14,8 @@
 
     button {
         padding: 0;
+        font-size: 0.78em;
+        font-weight: bold;
     }
 }
 .sidebar {
@@ -61,8 +44,12 @@
             padding-left: 16px;
             vertical-align: middle;
         }
+        &:hover {
+            // background: var(--global-color-accent--light);
+        }
     }
     .active {
         background: rgba(#9d85ef, 0.25);
     }
 }
+

@@ -9,6 +9,7 @@
   overflow: scroll;
   border-bottom: 1px solid #707070;
   max-height: inherit; /* inherit max-height from parent wrapper */
+  font-size: 0.78em;
 
   thead {
     user-select: none;
@@ -43,7 +44,7 @@
     td {
       display: flex;
       align-content: center;
-      padding: 0.5em var(--cell-horizontal-padding);
+      padding: 0.7em var(--cell-horizontal-padding);
       margin: auto 0; /* vertically center span content */
       overflow: hidden;
       text-overflow: ellipsis;

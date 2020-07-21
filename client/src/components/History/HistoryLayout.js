@@ -6,21 +6,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDesktop } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
 import { LoadingSpinner } from '_common';
-import { HistoryTable } from './HistoryTable';
 import HistoryBadge from './HistoryBadge';
-import * as ROUTES from '../../constants/routes';
 import './History.module.scss';
 
-export const Header = ({ page }) => {
+export const Header = ({ title }) => {
   const dispatch = useDispatch();
 
   return (
     <div styleName="header">
-      <div styleName="header-text">
-        History
-        <span>&nbsp;/&nbsp;</span>
-        <span>{page[0].toUpperCase() + page.substring(1)}</span>
-      </div>
+      <span styleName="header-text"> History / {title} </span>
       <Button
         color="link"
         onClick={() =>
@@ -38,9 +32,9 @@ export const Header = ({ page }) => {
     </div>
   );
 };
-Header.propTypes = { page: string.isRequired };
+Header.propTypes = { title: string.isRequired };
 
-export const Sidebar = () => {
+export const Sidebar = ({ root }) => {
   const { notifs } = useSelector(
     state => state.notifications.list,
     shallowEqual
@@ -50,7 +44,7 @@ export const Sidebar = () => {
       <NavItem>
         <NavLink
           tag={RRNavLink}
-          to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
+          to={`${root}/jobs`}
           activeStyleName="active"
           className="nav-content"
         >
@@ -66,9 +60,9 @@ export const Sidebar = () => {
       <NavItem>
         <NavLink
           tag={RRNavLink}
-          to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/uploads`}
-          className="nav-content"
+          to={`${root}/uploads`}
           activeStyleName="active"
+          className="nav-content"
         >
           <i className="icon icon-action-upload" />
           <span styleName="link-text">Uploads</span>
@@ -77,7 +71,7 @@ export const Sidebar = () => {
       <NavItem>
         <NavLink
           tag={RRNavLink}
-          to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/files`}
+          to={`${root}/files`}
           activeStyleName="active"
           className="nav-content"
         >
@@ -88,28 +82,14 @@ export const Sidebar = () => {
     </Nav>
   );
 };
+Sidebar.propTypes = {
+  root: string.isRequired
+};
 
 export const Layout = ({ page }) => {
   const loading = useSelector(state => state.notifications.loading);
-  if (loading)
-    return (
-      <>
-        <Header page={page} />
-        <div styleName="container">
-          <Sidebar />
-          <LoadingSpinner />
-        </div>
-      </>
-    );
-  return (
-    <>
-      <Header page={page} />
-      <div styleName="container">
-        <Sidebar />
-        <HistoryTable page={page} />
-      </div>
-    </>
-  );
+  if (loading) return <LoadingSpinner />;
+  return <></>;
 };
 Layout.propTypes = {
   page: string.isRequired

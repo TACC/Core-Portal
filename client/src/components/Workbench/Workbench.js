@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import Dashboard from '../Dashboard';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
-// import History from '../History/History';
 import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
 import History from '../History';
