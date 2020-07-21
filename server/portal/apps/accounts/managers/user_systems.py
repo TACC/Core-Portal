@@ -10,15 +10,12 @@ from portal.apps.accounts.models import SSHKeys
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.agave.utils import service_account
 from portal.utils import encryption as EncryptionUtil
-from pytas.http import TASClient
-from pytas.models.users import User as TASUser
+from portal.apps.users.utils import get_user_data
 from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
 
-# Need to make some big changes here.
-# Consider changing removing/changing some of the secrets to hold configurables to return user
-# related settings such as the user's **home directory** on a specefic storage system...
+
 class UserSystemsManager():
     """User Systems Manager
     Any functionality needed to manage a user's home directory and systems
@@ -34,9 +31,9 @@ class UserSystemsManager():
             'name': 'My Data (Local System One)', <----------- The name to appear in the "My Data" section.
             'prefix': 'localsystem1.home.{username}', <------- Used to get the system ID for a user
             'host': 'localsystem1.tacc.utexas.edu', <--------- System host
-            'abs_home_directory': '/path/to/home_dirs/', <---- User's absolute home directory path
+            #'abs_home_directory': '/path/to/home_dirs/', <---- User's absolute home directory path
             'home_directory': '/home', <---------------------- User's home directory
-            'relative_path': 'home_dirs', <------------------- User's relative home directory
+            #'relative_path': 'home_dirs', <------------------- User's relative home directory
             'icon': None <------------------------------------ The CSS class for the icon used in "My Data".
         }
 
@@ -48,310 +45,177 @@ class UserSystemsManager():
     :class:`server.portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager`
     """
 
-    def __init__(
-        self,
-        user,
-        system_name=settings.PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM,
-        use_work=False
-    ):
+    def __init__(self, user, system_name=None):
         """Initialize Manager
 
         :param user: Django user instance
-        :param system_name: name of system to manage otherwise use default system
-        :param use_work: if True initialize tas_user
+        :param system_name: name of system to manage otherwise default system will be used
         """
         self.user = user
+        self.tas_user = get_user_data(username=self.user.username)
 
-        try:
-            self.system = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system_name.lower()]
-        except KeyError:
-            logger.debug('please provide a valid system name...')
-            logger.debug('available systems: {}'.format(list(settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.keys())))
-            return None
+        if not system_name:
+            # if we don't define a default system as a setting we will have to do some crazy
+            # iteration over the systems to find the default system... something like
+            # next(systems[s] for s in systems if 'default_system' in systems[s])
+            default_sys = settings.PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM
+            all_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+            self.system = all_systems[default_sys]
+        else:
+            try:
+                self.system = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system_name.lower()]
+            except KeyError:
+                logger.debug('please provide a valid system name...')
+                logger.debug('available systems: {}'.format(list(settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.keys())))
+                return None
 
-        # refactor this tas_client stuff...
-        # maybe make this into its own portal.libs function or something
-        # this will be important later if TAS gets an upgrade and we need it 
-        # changed everywhere that uses it. Also, maybe we should bring up
-        # weather or not any portal from now on should have its own virtual
-        # MyData spaces on corral. I don't think they should for several reasons
-        #  - JChuah
-        if use_work:
-            self.tas_client = TASClient(
-                baseURL=settings.TAS_URL,
-                credentials={
-                    'username': settings.TAS_CLIENT_KEY,
-                    'password': settings.TAS_CLIENT_SECRET
-                }
-            )
-            self.tas_user = self.tas_client.get_user(username=self.user.username)
 
-    # Refactor... do not use 'storage_system': 'frontera.storage.default'
-    # (previously: AGAVE_STORAGE_SYSTEM) in anything!!!
-    # This does not work for /work or /home1 based storage systems...
-    # currently uses {system}.storage.default
-    # needs to use {system}.storage.{username}
-    def get_dir(self, *args, **kwargs):
-        """Gets user's home directory
-
-        :param user: User instance
-
-        :returns: Agave response for the folder
-        """
-        agc = service_account()
-        username = self.user.username
-        home_dir = agc.files.list(
-            systemId=self.system['home_directory'],
-            filePath=username)
-        # need to return:
-        # system['home_directory'] + {id} + {username}
-        # ex: /home1/12345/keiths/
-        return home_dir
-
-    # this and get_dir should be merged and refactored
-    # Can this function be repurposed instead to support different
-    # PORTAL_STORAGE_SYSTEMS that may require a virtual home? if
-    # that's what we want to support. if not, we should probably
-    # get rid of this "get_or_create" business. The whole point of
-    # get_or_create is to trigger a possible side effect of creating
-    # a directory on behalf of the user, and it makes tracing what's
-    # actually happening on the HPC side difficult.
-    # - JChuah
-    def get_or_create_dir(self, *args, **kwargs):
-        """Gets or creates user's home directory
-
-        :param user: User instance
-
-        :returns: Agave response for the folder
-
-        .. note::
-            We do not need to create the directory instead we check we
-            have a value in
-            `homeDirectory` from `TAS`
-        """
-        path = self.tas_user['homeDirectory']
-        assert self.tas_user
-        assert self.user.username in path
-        return path
-
-    def _save_user_keys(
-            self,
-            user,
-            system_id,
-            priv_key,
-            pub_key
-    ):  # pylint:disable=no-self-use
-        """Saves a user's ssh keys for a specific system
-
-        :param user: Django user instance
-        :param str priv_key: Private Key
-        :param str pub_key: Public Key
-        """
-        SSHKeys.objects.save_keys(
-            user,
-            system_id=system_id,
-            priv_key=priv_key,
-            pub_key=pub_key
-        )
-
-    def _update_user_keys(
-            self,
-            user,
-            system_id,
-            priv_key,
-            pub_key
-    ):  # pylint:disable=no-self-use
-        """Updates a user's ssh keys for a specific system
-
-        :param user: Django user instance
-        :param str priv_key: Private Key
-        :param str pub_key: Public Key
-        """
-        try:
-            SSHKeys.objects.update_keys(
-                user,
-                system_id=system_id,
-                priv_key=priv_key,
-                pub_key=pub_key
-            )
-        except SSHKeys.DoesNotExist:
-            SSHKeys.objects.save_keys(
-                user,
-                system_id=system_id,
-                priv_key=priv_key,
-                pub_key=pub_key
-            )
-
-    # How does this interact with PORTAL_STORAGE_SYSTEMS? On longhorn
-    # it will be /home1/group_id/user, but on stockyard based systems
-    # such as stampede2 it will be /work/group_id/user
-    # - JChuah
-    def get_home_dir_abs_path(self, *args, **kwargs):
-        """Returns home directory absolute path
-
-        *Home directory* refers to the directory where every user's
-         home directory will live. In some portals we will have a
-         centralized directory.
-         When using $WORK for the home dir init with tas_user
-
-        :returns: Absolute path
+    #NEW ---
+    def get_name(self):
+        """Gets display name for given system
+        :returns: formatted system name
         :rtype: str
         """
-        try:
-            self.tas_user
-            return os.path.join(
-                settings.system['home_directory'],
-                self.tas_user['homeDirectory'],
-            )
-        except:
-            return os.path.join(
-                settings.system['abs_home_directory'],
-                self.user.username
-            )
+        return self.system['name']
 
-    def get_system_id(self, *args, **kwargs):
-        """Returns system Id
+    def get_host(self):
+        """Gets host for given system
+        :returns: system host
+        :rtype: str
+        """
+        return self.system['host']
 
-        *System Id* is a string, unique id for each system.
-        This function returns the system id for a user's home system.
-
-        :returns: System unique id
+    def get_system_id(self):
+        """Gets system ID for given system and user
+        :returns: unique id for a user's home system. ex: [system].home.[username]
         :rtype: str
         """
         return self.system['prefix'].format(self.user.username)
 
+    def get_home_dir(self):
+        """Gets home directory for given system
+        :returns: name of home directory path.
+        :rtype: str
+        """
+        return self.system['home_directory']
+
+    def get_abs_home_dir(self):
+        """Gets path to user's home directory for given system
+        :returns: full path for system home directory. ex: "/[home]/[tasid]/[username]"
+        :rtype: str
+        """
+        return os.path.join(
+                self.system['home_directory'],
+                self.tas_user['homeDirectory'],
+            )
+
+    def get_rel_home_dir(self):
+        """Gets relative path to home directory for given system
+        :returns: relative path for system home directory
+        :rtype: str
+        """
+        return self.system['relative_path']
+    
+    # does not work yet but might be useful...
+    def get_work_dir(self):
+        """Gets user's work directory a for given system
+        :returns: name of home directory path
+        :rtype: str
+        """
+        return self.system['___']
+
+    def setup_private_directory(self, *args, **kwargs):
+        """Create private storage directory for a user
+        :returns: Agave response
+        """
+        agc = service_account()
+        try:
+            # formerly get_dir func
+            home_dir = agc.files.list(
+                systemId=self.system['home_directory'],
+                filePath=self.user.username)
+            return home_dir
+        except HTTPError as exc:
+            if exc.response.status_code == 404:
+                # formerly mkdir func
+                body = {
+                    'action': 'mkdir',
+                    'path': self.user.username
+                }
+                home_dir = agc.files.manage(
+                    systemId=self.get_system_id(), # [systemname].home.[username]
+                    filePath=self.system['relative_path'],
+                    body=body)
+                return home_dir
+
+    def setup_private_system(self, *args, **kwargs):
+        """Create private storage system for a user
+        :returns: Agave response
+        """
+        agc = service_account()
+        try:
+            # formerly get_system func
+            private_system = agc.systems.get(systemId=self.get_system_id())
+            return private_system
+        except HTTPError as exc:
+            if exc.response.status_code == 404:
+                private_key = EncryptionUtil.create_private_key()
+                priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
+                public_key = EncryptionUtil.create_public_key(private_key)
+                publ_key_str = EncryptionUtil.export_key(public_key, 'OpenSSH')
+                private_system = self.get_system_definition(
+                    publ_key_str,
+                    priv_key_str
+                )
+                private_system.validate()
+                private_system.save()
+                private_system.update_role(self.user.username, 'OWNER')
+                SSHKeys.objects.save_keys(
+                    self.user,
+                    system_id=private_system.id,
+                    priv_key=priv_key_str,
+                    pub_key=publ_key_str
+                )
+                return private_system
+    
     def get_system_definition(
             self,
             publ_key_str,
             priv_key_str
-    ):  # pylint:disable=arguments-differ
-        """Returns Agave system definition
-
-        :returns: Agave system definition
+    ):
+        """Get Agave system definition
+        :returns: Agave system definition for provided system
         :rtype: dict
         """
         username = self.user.username
-        # system = 'frontera.home.keiths'
-        # system = 'longhorn.home.keiths'
         system = StorageSystem(
             service_account(),
-            self.get_system_id(self.user)
+            self.get_system_id()
         )
         system.site = 'portal.dev'
         system.description = 'Home system for user: {username}'.format(
             username=username
         )
-        system.name = self.get_system_id(self.user)                         # frontera.home.keiths
+        system.name = self.get_system_id()
         system.storage.port = 22
         system.storage.home_dir = '/'
-        system.storage.root_dir = self.get_home_dir_abs_path(self.user)     # '/corral-repl/tacc/aci/CEP/home_dirs/'
+        system.storage.root_dir = self.get_abs_home_dir()
         system.storage.protocol = 'SFTP'
-        system.storage.host = self.get_storage_host(self.user)              # 'frontera.tacc.utexas.edu'
-        system.storage.auth.username = self.get_storage_username(self.user) # 'keiths'
-        system.storage.auth.type = system.AUTH_TYPES.SSHKEYS                # ???
+        system.storage.host = self.get_host()
+        system.storage.auth.username = username
+        system.storage.auth.type = system.AUTH_TYPES.SSHKEYS #???
         system.storage.auth.public_key = publ_key_str
         system.storage.auth.private_key = priv_key_str
         return system
 
-    # replace this with method from user_work_home.py
-    # def get_storage_host(self, *args, **kwargs):
-    #     """Returns storage host
-
-    #     Every Agave System definition has a *Storage Host* to which it connects
-    #      to.
-
-    #     :returns: Storage Host to connect to
-    #     :rtype: str
-    #     """
-    #     return self.system['host']
-
-    def get_storage_username(
-            self,
-            *args,
-            **kwargs
-    ):
-        """Returns storage username
-
-        Every Agave System definition uses a username
-        and ssh keys (or password) to authenticate to
-        the storage system.
-        This function returns that username
-
-        :returns: Storage username
-        :rtype: str
-        """
-        return self.user.username
-
-    def create_home_system(self, *args, **kwargs):
-        """Create user's home directory
-
-        :param user: User instance
-
-        :returns: Agave response for the folder created
-
-        .. todo::
-            This method should return a :clas:`BaseSystem` instance
-        """
-        private_key = EncryptionUtil.create_private_key()
-        priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
-        public_key = EncryptionUtil.create_public_key(private_key)
-        publ_key_str = EncryptionUtil.export_key(public_key, 'OpenSSH')
-        system = self.get_system_definition(
-            publ_key_str,
-            priv_key_str
-        )
-        system.validate()
-        system.save()
-        system.update_role(self.user.username, 'OWNER')
-        self._save_user_keys(
-            self.user,
-            system.id,
-            priv_key_str,
-            publ_key_str
-        )
-        return system
-
-    def get_system(self, *args, **kwargs):
-        """Gets user's home directory
-
-        :param user: User instance
-
-        :returns: Agave response for the folder
-        """
-        agc = service_account()
-        home_sys = agc.systems.get(
-            systemId=self.get_system_id(
-                self.user
-            )
-        )
-        return home_sys
-
-    def get_or_create_system(self, *args, **kwargs):
-        """Gets or creates user's home directory
-
-        :param user: User instance
-
-        :returns: Agave response for the folder
-        """
-        try:
-            home_sys = self.get_system(self.user)
-            return home_sys
-        except HTTPError as exc:
-            if exc.response.status_code == 404:
-                home_sys = self.create_home_system(self.user)
-                return home_sys
-
     def reset_system_keys(self, *args, **kwargs):
         """Resets home system SSH Keys
-
-        :param user: User instance
-
-        :returns: Public key
+        :returns: public key
         :rtype: str
         """
         home_sys = StorageSystem(
             client=self.user.agave_oauth.client,
-            id=self.get_system_id(self.user)
+            id=self.get_system_id()
         )
 
         private_key = EncryptionUtil.create_private_key()
@@ -364,10 +228,328 @@ class UserSystemsManager():
             priv_key_str,
             publ_key_str
         )
-        self._update_user_keys(
-            self.user,
-            home_sys.id,
-            priv_key_str,
-            publ_key_str,
-        )
+        try:
+            SSHKeys.objects.update_keys(
+                self.user,
+                system_id=home_sys.id,
+                priv_key=priv_key_str,
+                pub_key=publ_key_str
+            )
+        except SSHKeys.DoesNotExist:
+            SSHKeys.objects.save_keys(
+                self.user,
+                system_id=home_sys.id,
+                priv_key=priv_key_str,
+                pub_key=publ_key_str
+            )
+
         return publ_key_str
+
+    # add save/update user keys function here...
+
+    #NEW ---
+
+
+
+    # OLD ---
+
+    # Refactor... do not use 'storage_system': 'frontera.storage.default'
+    # (previously: AGAVE_STORAGE_SYSTEM) in anything!!!
+    # This does not work for /work or /home1 based storage systems...
+    # currently uses {system}.storage.default
+    # needs to use {system}.storage.{username}
+    # USED ONCE - this will always fail --> "/home1/keiths"
+    # def get_dir(self, *args, **kwargs):
+    #     """Gets user's home directory
+    #     :param user: User instance
+    #     :returns: Agave response for the folder
+    #     """
+    #     agc = service_account()
+    #     username = self.user.username
+    #     home_dir = agc.files.list(
+    #         systemId=self.system['home_directory'],
+    #         filePath=username)
+    #     return home_dir
+    
+    # USED ONCE
+    # def mkdir(self, *args, **kwargs):
+    #     """Create user's home directory
+    #     :param user: User instance
+    #     :returns: Agave response for the folder created
+    #     """
+    #     agc = service_account()
+    #     username = self.user.username
+    #     body = {
+    #         'action': 'mkdir',
+    #         'path': username
+    #     }
+    #     home_dir = agc.files.manage(
+    #         systemId=self.get_system_id(), # [systemname].home.[username]
+    #         filePath=self.system['relative_path'],
+    #         body=body)
+    #     return home_dir
+
+    # this and get_dir should be merged and refactored
+    # Can this function be repurposed instead to support different
+    # PORTAL_STORAGE_SYSTEMS that may require a virtual home? if
+    # that's what we want to support. if not, we should probably
+    # get rid of this "get_or_create" business. The whole point of
+    # get_or_create is to trigger a possible side effect of creating
+    # a directory on behalf of the user, and it makes tracing what's
+    # actually happening on the HPC side difficult.
+    # - JChuah
+    # def get_or_create_dir(self, *args, **kwargs):
+    #     """Gets or creates user's home directory
+    #     :param user: User instance
+    #     :returns: Agave response for the folder
+    #     .. note::
+    #         We do not need to create the directory instead we check we
+    #         have a value in
+    #         `homeDirectory` from `TAS`
+    #     """
+    #     # path = self.tas_user['homeDirectory']
+    #     # assert self.tas_user
+    #     # assert self.user.username in path
+    #     # return path
+    #     try:
+    #         home_dir = self.get_dir(self.user)
+    #         return home_dir
+    #     except HTTPError as exc:
+    #         if exc.response.status_code == 404:
+    #             home_dir = self.mkdir(self.user)
+    #             return home_dir
+
+    # USED ONCE - do not need
+    # def _save_user_keys(
+    #         self,
+    #         user,
+    #         system_id,
+    #         priv_key,
+    #         pub_key
+    # ):  # pylint:disable=no-self-use
+    #     """Saves a user's ssh keys for a specific system
+
+    #     :param user: Django user instance
+    #     :param str priv_key: Private Key
+    #     :param str pub_key: Public Key
+    #     """
+    #     SSHKeys.objects.save_keys(
+    #         user,
+    #         system_id=system_id,
+    #         priv_key=priv_key,
+    #         pub_key=pub_key
+    #     )
+
+    # USED ONCE - replaced in reset_system_keys
+    # def _update_user_keys(
+    #         self,
+    #         user,
+    #         system_id,
+    #         priv_key,
+    #         pub_key
+    # ):  # pylint:disable=no-self-use
+    #     """Updates a user's ssh keys for a specific system
+
+    #     :param user: Django user instance
+    #     :param str priv_key: Private Key
+    #     :param str pub_key: Public Key
+    #     """
+    #     try:
+    #         SSHKeys.objects.update_keys(
+    #             user,
+    #             system_id=system_id,
+    #             priv_key=priv_key,
+    #             pub_key=pub_key
+    #         )
+    #     except SSHKeys.DoesNotExist:
+    #         SSHKeys.objects.save_keys(
+    #             user,
+    #             system_id=system_id,
+    #             priv_key=priv_key,
+    #             pub_key=pub_key
+    #         )
+
+
+    # Sal said we will never use the /corral-repl/ path on Frontera
+    # replace with "get_abs_home_dir"
+    # should probably delete this and just return the /[homedir]/[userid]/[username] path
+    # def get_home_dir_abs_path(self, *args, **kwargs):
+    #     """Returns home directory absolute path
+
+    #     *Home directory* refers to the directory where every user's
+    #      home directory will live. In some portals we will have a
+    #      centralized directory.
+    #      When using $WORK for the home dir init with tas_user
+
+    #     :returns: Absolute path
+    #     :rtype: str
+    #     """
+    #     try:
+    #         self.tas_user
+    #         return os.path.join(
+    #             self.system['home_directory'],
+    #             self.tas_user['homeDirectory'], # will return "/home1/05296/keiths"
+    #         )
+    #     # We are not using the following path...
+    #     except:
+    #         return os.path.join(
+    #             self.system['abs_home_directory'], # will return "/corral-repl/tacc/aci/CEP/home_dirs/keiths"
+    #             self.user.username
+    #         )
+
+    # USED ONCE
+    # def get_system_definition(
+    #         self,
+    #         publ_key_str,
+    #         priv_key_str
+    # ):  # pylint:disable=arguments-differ
+    #     """Returns Agave system definition
+
+    #     :returns: Agave system definition
+    #     :rtype: dict
+    #     """
+    #     username = self.user.username
+    #     # system = 'frontera.home.keiths'
+    #     # system = 'longhorn.home.keiths'
+    #     system = StorageSystem(
+    #         service_account(),
+    #         self.get_system_id(self.user)
+    #     )
+    #     system.site = 'portal.dev'
+    #     system.description = 'Home system for user: {username}'.format(
+    #         username=username
+    #     )
+    #     system.name = self.get_system_id(self.user)                         # frontera.home.keiths
+    #     system.storage.port = 22
+    #     system.storage.home_dir = '/'
+    #     system.storage.root_dir = self.get_home_dir_abs_path(self.user)     # '/home1/05296/keiths' or '/corral-repl/tacc/aci/CEP/home_dirs/keiths' ???
+    #     system.storage.protocol = 'SFTP'
+    #     system.storage.host = self.get_storage_host(self.user)              # 'frontera.tacc.utexas.edu'
+    #     system.storage.auth.username = self.get_storage_username(self.user) # why not use the variable "username" instead??
+    #     system.storage.auth.type = system.AUTH_TYPES.SSHKEYS                # ???
+    #     system.storage.auth.public_key = publ_key_str
+    #     system.storage.auth.private_key = priv_key_str
+    #     return system
+
+    # replace with new helper methods
+    # def get_storage_host(self, *args, **kwargs):
+    #     """Returns storage host for system
+
+    #     Every Agave System definition has a *Storage Host* to which it connects
+    #      to.
+
+    #     :returns: Storage Host to connect to
+    #     :rtype: str
+    #     """
+    #     return self.system['host']
+
+    # Flag for delete...
+    # def get_storage_username(
+    #         self,
+    #         *args,
+    #         **kwargs
+    # ):
+    #     """Returns storage username
+
+    #     Every Agave System definition uses a username
+    #     and ssh keys (or password) to authenticate to
+    #     the storage system.
+    #     This function returns that username
+
+    #     :returns: Storage username
+    #     :rtype: str
+    #     """
+    #     return self.user.username
+
+    # USED ONCE
+    # def create_home_system(self, *args, **kwargs):
+    #     """Create user's home directory
+
+    #     :param user: User instance
+
+    #     :returns: Agave response for the folder created
+
+    #     .. todo::
+    #         This method should return a :clas:`BaseSystem` instance
+    #     """
+    #     private_key = EncryptionUtil.create_private_key()
+    #     priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
+    #     public_key = EncryptionUtil.create_public_key(private_key)
+    #     publ_key_str = EncryptionUtil.export_key(public_key, 'OpenSSH')
+    #     system = self.get_system_definition(
+    #         publ_key_str,
+    #         priv_key_str
+    #     )
+    #     system.validate()
+    #     system.save()
+    #     system.update_role(self.user.username, 'OWNER')
+    #     self._save_user_keys(
+    #         self.user,
+    #         system.id,
+    #         priv_key_str,
+    #         publ_key_str
+    #     )
+    #     return system
+
+    # USED ONCE - replaced in setup_private_system
+    # def get_system(self, *args, **kwargs):
+    #     """Gets user's home directory
+
+    #     :param user: User instance
+
+    #     :returns: Agave response for the folder
+    #     """
+    #     agc = service_account()
+    #     home_sys = agc.systems.get(
+    #         systemId=self.get_system_id(
+    #             self.user
+    #         )
+    #     )
+    #     return home_sys
+
+    # replaced with setup_private_system
+    # def get_or_create_system(self, *args, **kwargs):
+    #     """Gets or creates user's home directory
+
+    #     :param user: User instance
+
+    #     :returns: Agave response for the folder
+    #     """
+    #     try:
+    #         home_sys = self.get_system(self.user)
+    #         return home_sys
+    #     except HTTPError as exc:
+    #         if exc.response.status_code == 404:
+    #             home_sys = self.create_home_system(self.user)
+    #             return home_sys
+
+    # def reset_system_keys(self, *args, **kwargs):
+    #     """Resets home system SSH Keys
+
+    #     :param user: User instance
+
+    #     :returns: Public key
+    #     :rtype: str
+    #     """
+    #     home_sys = StorageSystem(
+    #         client=self.user.agave_oauth.client,
+    #         id=self.get_system_id(self.user)
+    #     )
+
+    #     private_key = EncryptionUtil.create_private_key()
+    #     priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
+    #     public_key = EncryptionUtil.create_public_key(private_key)
+    #     publ_key_str = EncryptionUtil.export_key(public_key, 'OpenSSH')
+
+    #     home_sys.set_storage_keys(
+    #         self.user.username,
+    #         priv_key_str,
+    #         publ_key_str
+    #     )
+    #     self._update_user_keys(
+    #         self.user,
+    #         home_sys.id,
+    #         priv_key_str,
+    #         publ_key_str,
+    #     )
+    #     return publ_key_str

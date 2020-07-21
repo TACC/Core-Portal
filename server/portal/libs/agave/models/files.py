@@ -76,6 +76,8 @@ class BaseFile(BaseAgaveResource):
             path='/',
             **kwargs
     ):
+# - Does this AGAVE_STORAGE_SYSTEM need to change if we're showing 
+# files from another storage system? ex: "frontera.storage.default" vs "longhorn.storage.default"
         """Agave File representation
 
         By default this class does not retrieve the file object from Agave.

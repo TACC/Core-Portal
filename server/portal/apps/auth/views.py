@@ -13,7 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from portal.apps.auth.models import AgaveOAuthToken
-from portal.apps.auth.tasks import setup_user
+from portal.apps.auth.tasks import setup_user, check_user_allocations
 from portal.apps.onboarding.execute import new_user_setup_check
 
 logger = logging.getLogger(__name__)
@@ -90,8 +90,7 @@ def agave_oauth_callback(request):
         token_data['created'] = int(time.time())
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
-        # get system names
-        systems = list(settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.keys())
+        systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
 
         if user:
             try:
@@ -113,8 +112,8 @@ def agave_oauth_callback(request):
 
             # Apply asynchronous long onboarding calls
             logger.info("Starting celery task for onboarding {username}".format(username=user.username))
-            for system in systems:
-                setup_user.apply_async(args=[user.username, system])
+            systems_for_user = check_user_allocations.apply_async(args=[user.username, systems]).get()
+            setup_user.apply_async(args=[user.username, systems_for_user])
         else:
             messages.error(
                 request,
