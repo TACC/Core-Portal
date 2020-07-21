@@ -14,18 +14,24 @@ const DataFilesSearchbar = ({ api, scheme, system }) => {
     const qs = query
       ? `?${queryString.stringify({ query_string: query })}`
       : '';
-    history.push(
-      `/workbench/data/${api}/${scheme}/${system}/${qs}`
-    );
+
+    history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
-  const onKeyDown = e => {
-    if (e.key === 'Enter') {
-      routeSearch();
-    }
+  const onSubmit = e => {
+    // TEMPORARY: Testing form submission
+    // console.log('Search query (via `FormData`): ', (new FormData(e.currentTarget)).get('query'));
+    // console.log('Search query (via `query``): ', query);
+
+    routeSearch();
+    e.preventDefault();
   };
   const onChange = e => setQuery(e.target.value);
+
   return (
-    <div className="input-group data-files-searchbar-input-group">
+    <form
+      className="input-group data-files-searchbar-input-group"
+      onSubmit={onSubmit}
+    >
       <div className="input-group-prepend">
         <Button className="data-files-toolbar-button" onClick={routeSearch}>
           {' '}
@@ -34,14 +40,15 @@ const DataFilesSearchbar = ({ api, scheme, system }) => {
         </Button>
       </div>
       <input
+        type="search"
         onChange={onChange}
         value={query}
+        name="query"
         aria-label="search-input"
         className="form-control data-files-searchbar-input"
-        placeholder="Search in My Data"
-        onKeyDown={onKeyDown}
+        placeholder="Search within My Data"
       />
-    </div>
+    </form>
   );
 };
 

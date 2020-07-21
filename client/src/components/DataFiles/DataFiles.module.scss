@@ -1,23 +1,24 @@
-.data-files-wrapper {
-    display: flex;
-    flex-direction: column;
+.container {
+  display: flex;
+  flex-direction: column;
 
-    padding: 20px 40px 0 20px;
+  padding: 20px 40px 0 20px;
 }
-.data-files-items {
-    /* As a flex item */
-    flex-grow: 1;
 
-    /* As a flex container */
-    display: flex;
-    flex-direction: row;
+/* Children */
+.items {
+  /* As a flex item */
+  flex-grow: 1;
+
+  /* As a flex container */
+  display: flex;
+  flex-direction: row;
 }
 /* Make right-most item fill up remaining horizontal space */
-.data-files-items > :last-child {
-    flex-grow: 1;
+.items > :last-child {
+  flex-grow: 1;
 }
-
-.data-files-header {
+.header {
   border-bottom: 1px solid black;
   margin-top: 0;
   margin-left: -20px !important;
@@ -28,19 +29,34 @@
   align-items: baseline;
 }
 
-.data-files-table {
+/* Children: Items */
+.content {
   padding-top: 20px;
   padding-left: 20px;
+
+  display: flex;
+  flex-direction: column;
+}
+.content-toolbar {
+  padding-bottom: 15px; /* ~15px (12px design * 1.2 design-to-app ratio) */
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.content-table {
+  flex-grow: 1;
 }
 
 /* Overrides */
 
+/* NOTE: The selector used to be `.workbench-content .data-files-wrapper .row` */
 /* Override Bootstrap `.row`, because we need to
    "undo" one horizontal instance of Bootstrap `.row`'s. */
 /* The (Bootstrap) problem `Workbench.css` solves is different from DataFiles,
    because they have two different layouts (fault of inconsistent UI designs).
    See https://tacc-team.slack.com/archives/CQUA4D5KJ/p1576532637009700 */
-.workbench-content .data-files-wrapper .row {
+.header {
   /* Override `.workbench-content .row` in `Workbench.css` */
   margin-right: 0 !important;
   /* Override `.workbench-content .row` in `Workbench.css` */

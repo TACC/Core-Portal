@@ -95,15 +95,13 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
   ]);
 
   return (
-    <div className="h-100">
-      <DataFilesTable
-        data={files}
-        columns={columns}
-        rowSelectCallback={rowSelectCallback}
-        scrollBottomCallback={scrollBottomCallback}
-        section="FilesListing"
-      />
-    </div>
+    <DataFilesTable
+      data={files}
+      columns={columns}
+      rowSelectCallback={rowSelectCallback}
+      scrollBottomCallback={scrollBottomCallback}
+      section="FilesListing"
+    />
   );
 };
 DataFilesListing.propTypes = {

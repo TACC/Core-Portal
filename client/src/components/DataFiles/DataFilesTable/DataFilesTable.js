@@ -239,55 +239,59 @@ const DataFilesTable = ({
     [rows]
   );
 
+  // WARNING: Must wrap with a div because flexbox and `<AutoSizer>` conflict
+  // SEE: https://github.com/bvaughn/react-virtualized/blob/master/docs/AutoSizer.md#examples
   return (
-    <AutoSizer
-      onResize={resizeCallback}
-      disableHeight={process.env.NODE_ENV === 'test'}
-      disableWidth={process.env.NODE_ENV === 'test'}
-    >
-      {({ width, height }) => (
-        <div {...getTableProps()}>
-          <div ref={tableHeader}>
-            {headerGroups.map(headerGroup => (
-              <div
-                {...headerGroup.getHeaderGroupProps()}
-                className="tr tr-header"
-                style={{ width }}
-              >
-                {headerGroup.headers.map(column => (
-                  <div {...column.getHeaderProps()} className="td">
-                    {column.render('Header')}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          {/* table body */}
-          <div
-            style={{
-              width,
-              height: itemCount === 0 ? (height || 500) - headerHeight : 0
-            }}
-          >
-            <DataFilesTablePlaceholder section={section} data={data} />
-          </div>
-          <div {...getTableBodyProps()}>
-            {/* fallback if there are no rows */}
-            <FixedSizeList
-              className="data-files-table-body"
-              height={itemCount > 0 ? (height || 500) - headerHeight : 0}
-              itemCount={itemCount}
-              itemSize={rowHeight}
-              width={width || 500}
-              overscanCount={0}
-              onScroll={onScroll}
+    <div className="h-100">
+      <AutoSizer
+        onResize={resizeCallback}
+        disableHeight={process.env.NODE_ENV === 'test'}
+        disableWidth={process.env.NODE_ENV === 'test'}
+      >
+        {({ width, height }) => (
+          <div {...getTableProps()}>
+            <div ref={tableHeader}>
+              {headerGroups.map(headerGroup => (
+                <div
+                  {...headerGroup.getHeaderGroupProps()}
+                  className="tr tr-header"
+                  style={{ width }}
+                >
+                  {headerGroup.headers.map(column => (
+                    <div {...column.getHeaderProps()} className="td">
+                      {column.render('Header')}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            {/* table body */}
+            <div
+              style={{
+                width,
+                height: itemCount === 0 ? (height || 500) - headerHeight : 0
+              }}
             >
-              {React.memo(RenderRow, areEqual)}
-            </FixedSizeList>
+              <DataFilesTablePlaceholder section={section} data={data} />
+            </div>
+            <div {...getTableBodyProps()}>
+              {/* fallback if there are no rows */}
+              <FixedSizeList
+                className="data-files-table-body"
+                height={itemCount > 0 ? (height || 500) - headerHeight : 0}
+                itemCount={itemCount}
+                itemSize={rowHeight}
+                width={width || 500}
+                overscanCount={0}
+                onScroll={onScroll}
+              >
+                {React.memo(RenderRow, areEqual)}
+              </FixedSizeList>
+            </div>
           </div>
-        </div>
-      )}
-    </AutoSizer>
+        )}
+      </AutoSizer>
+    </div>
   );
 };
 DataFilesTable.propTypes = {
