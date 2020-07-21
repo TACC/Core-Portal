@@ -7,7 +7,7 @@
 
   /* Align elements horizontally and vertically */
   display: flex;
-  align-items: center;
+  align-items: center; /* NOTE: `self-end` looks better in FF, but no change in other browsers */
   justify-content: center;
 
   & + & {
