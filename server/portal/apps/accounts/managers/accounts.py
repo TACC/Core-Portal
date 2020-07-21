@@ -69,7 +69,7 @@ def get_user_home_system_id(user):
     :rtype: str
     """
     if user.is_authenticated:
-        mgr = UserSystemsManager(user, use_work=True)
+        mgr = UserSystemsManager(user)
         return mgr.get_system_id()
     return None
 
@@ -95,7 +95,7 @@ def setup(username, system):
     """
 
     user = check_user(username)
-    mgr = UserSystemsManager(user, system, use_work=True)
+    mgr = UserSystemsManager(user, system)
     logger.debug('User Home Manager class: %s', mgr.__class__)
     home_dir = mgr.get_or_create_dir(user)
     home_sys = mgr.get_or_create_system(user)
@@ -122,13 +122,13 @@ def reset_home_system_keys(username, system, force=False):
         and overwrite the `reset_system_keys` method.
     """
     user = check_user(username)
-    mgr = UserSystemsManager(user, system, use_work=True)
+    mgr = UserSystemsManager(user, system)
     pub_key = mgr.reset_system_keys(user, force=force)
     return pub_key
 
-# Need to go over this...
+# Is this needed?
 # we have a "reset_system_keys" function in the systems manager.
-# this is used in the "SystemKeysView"
+# this is used in portal.apps.api.views.systems.SystemKeysView
 def reset_system_keys(username, system_id):
     """Reset system's Keys
 

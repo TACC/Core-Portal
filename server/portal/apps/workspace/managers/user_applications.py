@@ -13,7 +13,7 @@ from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.models.applications import Application
 from portal.apps.workspace.managers.base import AbstractApplicationsManager
 from portal.utils import encryption as EncryptionUtil
-from portal.apps.accounts.managers.accounts import _lookup_user_home_manager
+# from portal.apps.accounts.managers.accounts import _lookup_user_home_manager
 from portal.apps.accounts.models import SSHKeys
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 
@@ -31,7 +31,8 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
     def __init__(self, *args, **kwargs):
         super(UserApplicationsManager, self).__init__(*args, **kwargs)
-        self.home_mgr = _lookup_user_home_manager(self.user)
+        # self.home_mgr = _lookup_user_home_manager(self.user)
+        self.home_mgr = UserSystemsManager(self.user)
 
     def get_clone_system_id(self):
         """Gets system id to deploy cloned app materials to.
@@ -297,10 +298,10 @@ class UserApplicationsManager(AbstractApplicationsManager):
         )
 
         system_name = system_id.split('.')[0]
-        user_systems_mgr = UserSystemsManager(self.user, use_work=True)
+        user_systems_mgr = UserSystemsManager(self.user)
 
         system.storage.host = system.login.host
-        system.storage.home_dir = user_systems_mgr.get_home_dir_abs_path()
+        system.storage.home_dir = user_systems_mgr.get_abs_home_dir()
         system.storage.port = system.login.port
         system.storage.root_dir = '/'
         system.storage.protocol = 'SFTP'
