@@ -14,22 +14,56 @@ import {
 } from 'reactstrap';
 import { LoadingSpinner } from '_common';
 import { isEmpty } from 'lodash';
-import { arrayOf, string } from 'prop-types';
+import { arrayOf, string, func, shape } from 'prop-types';
 import './DataFilesCarouselModal.module.scss';
 
-const DataFilesCarousel = ({ links }) => {
+const DataFilesCarouselThumbnail = ({ link, clickHandler }) => {
+  const [loading, setLoading] = useState(true);
+
+  return (
+    <div styleName={loading ? 'thumbnail-loading' : 'thumbnail'}>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <button type="button" styleName="image-selector" onClick={clickHandler}>
+          &nbsp;
+        </button>
+      )}
+      <img
+        type="image"
+        src={link}
+        styleName="thumbnail-image"
+        style={loading ? { display: 'none' } : null}
+        onLoad={e => {
+          setLoading(false);
+        }}
+        alt="carousel"
+      />
+    </div>
+  );
+};
+DataFilesCarouselThumbnail.propTypes = {
+  link: string.isRequired,
+  clickHandler: func.isRequired
+};
+
+const DataFilesCarousel = ({ images, setModalTitle }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
-
+  const links = images.map(image => image.url);
+  const names = images.map(image => image.name);
+  React.useEffect(() => {
+    setModalTitle(names[activeIndex]);
+  }, [images, activeIndex]);
   const next = () => {
     if (animating) return;
-    const nextIndex = activeIndex === links.length - 1 ? 0 : activeIndex + 1;
+    const nextIndex = activeIndex === images.length - 1 ? 0 : activeIndex + 1;
     setActiveIndex(nextIndex);
   };
 
   const previous = () => {
     if (animating) return;
-    const nextIndex = activeIndex === 0 ? links.length - 1 : activeIndex - 1;
+    const nextIndex = activeIndex === 0 ? images.length - 1 : activeIndex - 1;
     setActiveIndex(nextIndex);
   };
 
@@ -39,64 +73,80 @@ const DataFilesCarousel = ({ links }) => {
   };
 
   return (
-    <Carousel
-      activeIndex={activeIndex}
-      next={next}
-      previous={previous}
-      interval={false}
-    >
-      <CarouselIndicators
-        items={links}
+    <>
+      <Carousel
         activeIndex={activeIndex}
-        onClickHandler={goToIndex}
-      />
-      {links.map((link, idx, arr) => {
-        const [loaded, setLoaded] = useState(false);
-        const current = idx === activeIndex;
-        return (
-          <CarouselItem
-            styleName="item"
-            key={link}
-            onExiting={() => setAnimating(true)}
-            onExited={() => setAnimating(false)}
-          >
-            {!loaded && current && (
-              <div styleName="loading">
-                <LoadingSpinner />
-              </div>
-            )}
-            <img
+        next={next}
+        previous={previous}
+        interval={false}
+        styleName="carousel-root"
+      >
+        <CarouselIndicators
+          items={links}
+          activeIndex={activeIndex}
+          onClickHandler={goToIndex}
+        />
+        {images.map((img, idx, arr) => {
+          const link = img.url;
+          const [loaded, setLoaded] = useState(false);
+          const current = idx === activeIndex;
+          return (
+            <CarouselItem
               styleName="item"
-              src={link}
-              alt={`Selected Images ${idx + 1}/${arr.length}`}
-              onLoad={() => setLoaded(true)}
-            />
+              key={link}
+              onExiting={() => setAnimating(true)}
+              onExited={() => setAnimating(false)}
+            >
+              {!loaded && current && (
+                <div styleName="loading">
+                  <LoadingSpinner />
+                </div>
+              )}
+              <img
+                styleName="item"
+                src={link}
+                alt={img.name}
+                style={loaded ? null : { display: 'none' }}
+                onLoad={() => setLoaded(true)}
+              />
 
-            <CarouselCaption
-              captionText={`Image ${idx + 1} of ${arr.length}`}
-            />
-          </CarouselItem>
-        );
-      })}
-      <CarouselControl
-        direction="prev"
-        directionText="Previous"
-        onClickHandler={previous}
-      />
-      <CarouselControl
-        direction="next"
-        directionText="Next"
-        onClickHandler={next}
-      />
-    </Carousel>
+              {loaded && <CarouselCaption captionText={img.name} />}
+            </CarouselItem>
+          );
+        })}
+        <CarouselControl
+          direction="prev"
+          directionText="Previous"
+          onClickHandler={previous}
+        />
+        <CarouselControl
+          direction="next"
+          directionText="Next"
+          onClickHandler={next}
+        />
+      </Carousel>
+      <div styleName="thumbnail-wrapper">
+        {links.map((link, idx) => (
+          <DataFilesCarouselThumbnail
+            link={link}
+            clickHandler={() => goToIndex(idx)}
+          />
+        ))}
+      </div>
+    </>
   );
 };
-DataFilesCarousel.propTypes = { links: arrayOf(string).isRequired };
+DataFilesCarousel.propTypes = {
+  images: arrayOf(shape({ name: string.isRequired, url: string.isRequired }))
+    .isRequired,
+  setModalTitle: func.isRequired
+};
 
 const DataFilesCarouselModal = () => {
+  const [title, setTitle] = useState('Image Carousel');
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.carousel);
-  const imageURLs = useSelector(state => {
+  const images = useSelector(state => {
     return state.files.imagePreviews;
   });
   const toggle = () => {
@@ -106,15 +156,17 @@ const DataFilesCarouselModal = () => {
     });
     dispatch({ type: 'DATA_FILES_SET_CAROUSEL', payload: [] });
   };
-
+  const setModalTitle = name => {
+    setTitle(name);
+  };
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
-      <ModalHeader toggle={toggle}>Image Carousel</ModalHeader>
+      <ModalHeader toggle={toggle}>{title}</ModalHeader>
       <ModalBody>
-        {isEmpty(imageURLs) ? (
+        {isEmpty(images) ? (
           <LoadingSpinner />
         ) : (
-          <DataFilesCarousel links={imageURLs} />
+          <DataFilesCarousel images={images} setModalTitle={setModalTitle} />
         )}
       </ModalBody>
       <ModalFooter>

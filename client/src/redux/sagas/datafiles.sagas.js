@@ -10,6 +10,7 @@ import {
   race,
   take
 } from 'redux-saga/effects';
+import { last } from 'lodash';
 
 export async function fetchSystemsUtil() {
   const response = await fetch('/api/datafiles/systems/list/');
@@ -454,7 +455,11 @@ export function* carousel(action) {
   const previewCalls = action.payload.map(pc =>
     call(previewUtil, pc.api, pc.scheme, pc.system, pc.path, pc.href)
   );
-  const payload = yield all(previewCalls);
+  const urls = yield all(previewCalls);
+  const payload = action.payload.map((pc, idx) => ({
+    name: last(pc.href.split('/')),
+    url: urls[idx]
+  }));
   yield put({ type: 'DATA_FILES_SET_CAROUSEL', payload });
 }
 export function* watchCarousel() {
