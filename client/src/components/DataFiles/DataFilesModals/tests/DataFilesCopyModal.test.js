@@ -34,7 +34,7 @@ describe("DataFilesCopyModal", () => {
       history
     )
 
-    // Check the modal title
+    // Check the description
     expect(getAllByText(/Copying 1 File/)).toBeDefined();
 
     // Check for the filename to be present

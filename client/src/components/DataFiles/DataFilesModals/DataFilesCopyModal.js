@@ -84,6 +84,10 @@ const DataFilesCopyModal = React.memo(() => {
     [selected, reloadPage, status]
   );
 
+  const actionString = `Copying ${selected.length} File${
+    selected.length > 1 ? 's' : ''
+  }`;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -93,14 +97,12 @@ const DataFilesCopyModal = React.memo(() => {
       size="xl"
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>
-        Copying {selected.length} File(s)
-      </ModalHeader>
+      <ModalHeader toggle={toggle}>Copy</ModalHeader>
       <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-6 d-flex flex-column">
             {/* Table of selected files */}
-            <div className="dataFilesModalColHeader">Source</div>
+            <div className="dataFilesModalColHeader">{actionString}</div>
             <DataFilesBreadcrumbs
               api={params.api}
               scheme={params.scheme}

@@ -70,10 +70,10 @@ const DataFilesCopyModalFixture = {
     modal: true
   },
   modals: {
-    copy: true,
+    copy: true
   },
   modalProps: {
-    copy: {},
+    copy: {}
   },
   previewHref: ''
 };
