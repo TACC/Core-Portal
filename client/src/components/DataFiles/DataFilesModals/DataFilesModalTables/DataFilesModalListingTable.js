@@ -2,11 +2,11 @@ import React, { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
 import './DataFilesModalListingTable.module.scss';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleLeft } from "@fortawesome/free-solid-svg-icons";
 
 function getCurrentDirectory(path) {
   return path.split('/').pop();
@@ -32,7 +32,7 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <div styleName='container'>
+    <div styleName="container">
       <Button color="link" onClick={onClick}>
         <FontAwesomeIcon icon={faAngleLeft} />
         <span styleName="path">Back</span>
@@ -89,7 +89,9 @@ const DataFilesModalListingNameCell = ({
         </a>
       )}
       {!isFolderButNotCurrentFolder && (
-        <span styleName="path" className="data-files-name">{name}</span>
+        <span styleName="path" className="data-files-name">
+          {name}
+        </span>
       )}
     </div>
   );
