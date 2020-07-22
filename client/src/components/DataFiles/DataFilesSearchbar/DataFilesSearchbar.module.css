@@ -12,11 +12,6 @@
 }
 .button-icon {
     composes: c-button__icon--before from '../../../styles/components/c-button.css';
-
-    /* FAQ: Yes, the icons for the action buttons are smaller in the design */
-    /* TODO: Ask design if this is intentional… */
-    /* SEE: https://tacc-team.slack.com/archives/GU12JNQ78/p1595440974029500 */
-    font-size: 1.05rem; /* 16.8px (14px design * 1.2 design-to-app ratio) */
 }
 .input,
 .button-text {

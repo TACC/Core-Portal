@@ -13,11 +13,6 @@
 }
 .button-icon {
     composes: c-button__icon--before from '../../../styles/components/c-button.css';
-
-    /* FAQ: Yes, the icons for the action buttons are smaller in the design */
-    /* TODO: As design if this is intentional… */
-    font-size: 1.05rem !important; /* 16.8px (14px design * 1.2 design-to-app ratio) */
-                                   /* override `.icon` */
 }
 .button-text {
     /* RFE: This style should be inherited from cascade of global styles */
