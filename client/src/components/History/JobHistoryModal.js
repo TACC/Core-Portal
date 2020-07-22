@@ -146,9 +146,7 @@ function JobHistoryModal({ jobId }) {
       size="lg"
     >
       <ModalHeader styleName="header" toggle={close}>
-        <div styleName="header-job" className="d-inline-block text-truncate">
-          {jobName}
-        </div>
+        <div className="d-inline-block text-truncate">{jobName}</div>
         <div>
           <span
             styleName="header-details"
