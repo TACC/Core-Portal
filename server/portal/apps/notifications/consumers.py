@@ -42,8 +42,12 @@ class NotificationsConsumer(AsyncJsonWebsocketConsumer):
         """
         Called when the WebSocket closes for any reason.
         """
+        user = self.scope["user"]
+        if user.is_anonymous:
+            # Connection has no logged in user, nothing to disconnect
+            return
         await self.channel_layer.group_discard(
-            group=self.scope["user"].username,
+            group=user.username,
             channel=self.channel_name
         )
         await self.channel_layer.group_discard(

@@ -380,7 +380,7 @@ LOGGING = {
             'handlers': [
                 'console',
             ],
-            'level': 'DEBUG'
+            'level': 'INFO'
         }
     },
 }
@@ -858,6 +858,12 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
 ASGI_APPLICATION = 'portal.routing.application'
 CHANNEL_LAYERS = {
     'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
+        },
+    },
+    'short-lived': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
