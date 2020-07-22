@@ -10,8 +10,8 @@ const FeedbackButton = () => {
 
   return (
     <>
-      <Button color="primary" onClick={() => setOpenModal(true)}>
-        Manage Allocations
+      <Button color="link" onClick={() => setOpenModal(true)}>
+        Leave Feedback
       </Button>
       {openModal && (
         <FeedbackModal
