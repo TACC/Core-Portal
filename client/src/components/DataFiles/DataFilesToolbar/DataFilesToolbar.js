@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import './DataFilesToolbar.module.scss';
+import './DataFilesToolbar.module.css';
 
 export const ToolbarButton = ({ text, icon, onClick, disabled }) => {
   return (

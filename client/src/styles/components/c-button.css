@@ -1,0 +1,59 @@
+/* FP-545: Move these styles to `_common/Button` */
+/*
+Button
+
+A button that may have icon(s) before and/or after its text.
+
+.c-button--primary - A primary (expected) user action
+.c-button--secondary - For an optional user action
+
+Markup:
+<main>
+    <button class="c-button c-button--secondary">
+      <i class="c-button__icon--before" data-icon="X">(clear input)</i>
+      <span class="c-button__text">Cancel</span>
+    </button>
+    <button class="c-button c-button--primary">
+      <i class="c-button__icon" data-icon="✓">(check input)</i>
+      <span class="c-button__text">Confirm</span>
+      <i class="c-button__icon--after" data-icon="→">(and exit)</i>
+    </button>
+    <button class="c-button c-button--secondary">
+      <span class="c-button__text">Skip</span>
+      <i class="c-button__icon--after" data-icon="→">(and move to next form)</i>
+    </button>
+</main>
+
+Styleguide Components.Button
+*/
+.c-button {
+  composes: btn from './bootstrap.btn.css';
+
+  /* Normalize child element box sizes */
+  display: flex;
+  /* Align elements horizontally and vertically */
+  align-items: center; /* FP-515: Alignment of font icon glyph will be fixed */
+  justify-content: center;
+}
+
+.c-button--primary {
+  composes: btn-primary from './bootstrap.btn.css';
+}
+.c-button--secondary {
+  composes: btn-secondary from './bootstrap.btn.css';
+}
+
+[class*="c-button__icon"] {
+  /* … */
+}
+.c-button__icon--before {
+  margin-right: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+}
+.c-button__icon--after {
+  margin-left: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+  justify-self: end;
+}
+
+.c-button__text {
+  /* … */
+}

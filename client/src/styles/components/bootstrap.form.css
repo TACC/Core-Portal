@@ -1,0 +1,14 @@
+/*
+Form (Bootstrap)
+
+Override Bootstrap styles. See:
+
+- [ReactStrap Forms](https://reactstrap.github.io/components/forms/)
+- [Bootstrap Forms](https://getbootstrap.com/docs/4.4/components/forms/)
+
+Styleguide Components.Bootstrap.Form
+*/
+.form-control {
+  border: var(--global-border--normal);
+  border-radius: 0;
+}
