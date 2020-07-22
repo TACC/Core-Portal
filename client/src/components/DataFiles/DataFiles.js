@@ -61,10 +61,7 @@ const DataFiles = () => {
   return (
     <div styleName="container">
       {/* row containing breadcrumbs and toolbar */}
-      <div
-        styleName="header"
-        className="row align-items-center justify-content-between"
-      >
+      <div styleName="header">
         <DataFilesBreadcrumbs
           api={listingParams.api}
           scheme={listingParams.scheme}
@@ -80,11 +77,9 @@ const DataFiles = () => {
       </div>
       {/* row containing sidebar and listing pane */}
       <div styleName="items">
-        <DataFilesSidebar />
+        <DataFilesSidebar styleName="sidebar" />
         <div styleName="content">
-          <div styleName="content-toolbar">
-            <DataFilesSearchbar />
-          </div>
+          <DataFilesSearchbar styleName="content-toolbar" />
           <div styleName="content-table">
             <DataFilesSwitch />
           </div>

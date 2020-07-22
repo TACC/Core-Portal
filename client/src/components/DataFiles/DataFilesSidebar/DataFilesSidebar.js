@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Nav,
@@ -15,7 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDesktop } from '@fortawesome/free-solid-svg-icons';
 import './DataFilesSidebar.scss';
 
-const DataFilesSidebar = () => {
+const DataFilesSidebar = ({ className }) => {
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -35,7 +36,7 @@ const DataFilesSidebar = () => {
   const match = useRouteMatch();
   return (
     <>
-      <div className="data-files-sidebar">
+      <div className={`data-files-sidebar ${className}`}>
         <div id="add-button-wrapper">
           <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
             <DropdownToggle
@@ -86,6 +87,13 @@ const DataFilesSidebar = () => {
       </div>
     </>
   );
+};
+DataFilesSidebar.propTypes = {
+  /** Additional className for the root element */
+  className: PropTypes.string
+};
+DataFilesSidebar.defaultProps = {
+  className: ''
 };
 
 export default DataFilesSidebar;

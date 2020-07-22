@@ -19,23 +19,32 @@
   flex-grow: 1;
 }
 .header {
-  border-bottom: 1px solid black;
-  margin-top: 0;
-  margin-left: -20px !important;
-  padding-bottom: 10px;
+  border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
+  /* FAQ: Design is inconsistent, but most of the time uses `10.5px` */
+  padding-bottom: 0.75rem; /* ~10px * design * 1.2 design-to-app ratio */
 
   display: flex;
+  flex-wrap: wrap; /* prevent breadcrumbs and action buttons from colliding */
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-end;
 }
 
 /* Children: Items */
-.content {
-  padding-top: 20px;
-  padding-left: 20px;
+.sidebar {
+  /* FP-404: All Portal section sidebars should use this value. */
+  --min-width: 200px;
 
+  width: var(--min-width);
+  padding-top: 10px;
+
+  border-right: var(--global-border--normal);
+}
+.content {
   display: flex;
   flex-direction: column;
+
+  padding-top: 20px;
+  padding-left: 20px;
 }
 .content-toolbar {
   padding-bottom: 15px; /* ~15px (12px design * 1.2 design-to-app ratio) */
@@ -46,19 +55,4 @@
 }
 .content-table {
   flex-grow: 1;
-}
-
-/* Overrides */
-
-/* NOTE: The selector used to be `.workbench-content .data-files-wrapper .row` */
-/* Override Bootstrap `.row`, because we need to
-   "undo" one horizontal instance of Bootstrap `.row`'s. */
-/* The (Bootstrap) problem `Workbench.css` solves is different from DataFiles,
-   because they have two different layouts (fault of inconsistent UI designs).
-   See https://tacc-team.slack.com/archives/CQUA4D5KJ/p1576532637009700 */
-.header {
-  /* Override `.workbench-content .row` in `Workbench.css` */
-  margin-right: 0 !important;
-  /* Override `.workbench-content .row` in `Workbench.css` */
-  margin-left: 0 !important;
 }

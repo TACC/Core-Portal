@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import queryString from 'query-string';
 import './DataFilesSearchbar.module.css';
 
-const DataFilesSearchbar = ({ api, scheme, system }) => {
+const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
+  const [prevQuery, setPrevQuery] = useState('');
   const history = useHistory();
+  const resultCount = 1; // ???: How to increment this?
+  const sectionName = 'My Data';
 
   const routeSearch = () => {
     const qs = query
       ? `?${queryString.stringify({ query_string: query })}`
       : '';
+
+    setPrevQuery(query);
 
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
@@ -27,10 +33,25 @@ const DataFilesSearchbar = ({ api, scheme, system }) => {
   };
   const onChange = e => setQuery(e.target.value);
 
+  const resultSummary = `${resultCount} Results Found for ${prevQuery}`;
+  let resultMessage;
+  if (resultCount) {
+    resultMessage = (
+      <output
+        value={resultSummary}
+        name="query"
+        aria-label="Summary of Search Results"
+        className="data-files-searchbar-output"
+      >
+        {resultSummary}
+      </output>
+    );
+  }
+
   return (
     <form
       data-testid="search-form"
-      className="input-group"
+      className={`input-group ${className}`}
       styleName="container"
       onSubmit={onSubmit}
     >
@@ -55,13 +76,21 @@ const DataFilesSearchbar = ({ api, scheme, system }) => {
         onChange={onChange}
         value={query}
         name="query"
-        aria-label="search-input"
+        aria-label={`Search (within ${sectionName})`}
         styleName="input"
         className="form-control data-files-searchbar-input"
-        placeholder="Search within My Data"
+        placeholder={`Search within ${sectionName}`}
       />
+      {resultMessage}
     </form>
   );
+};
+DataFilesSearchbar.propTypes = {
+  /** Additional className for the root element */
+  className: PropTypes.string
+};
+DataFilesSearchbar.defaultProps = {
+  className: ''
 };
 
 export default DataFilesSearchbar;
