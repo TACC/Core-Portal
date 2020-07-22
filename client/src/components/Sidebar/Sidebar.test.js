@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter, MemoryRouter, Route} from 'react-router-dom';
+import {MemoryRouter, Route} from 'react-router-dom';
 import { Provider } from "react-redux";
 import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';

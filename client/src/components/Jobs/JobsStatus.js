@@ -1,6 +1,7 @@
 import { Badge } from 'reactstrap';
 import React from 'react';
 import PropTypes from 'prop-types';
+import './Jobs.module.scss';
 
 const STATUS_TEXT_MAP = {
   ACCEPTED: 'Accepted',
@@ -45,7 +46,11 @@ function JobsStatus({ status, fancy }) {
   const color = getBadgeColor(status);
   const userStatus = getStatusText(status);
   if (fancy && color) {
-    return <Badge color={color}>{userStatus}</Badge>;
+    return (
+      <Badge color={color} styleName="badge">
+        {userStatus}
+      </Badge>
+    );
   }
   return userStatus;
 }

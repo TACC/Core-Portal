@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { memo } from 'react';
+import {
+  Route,
+  Switch,
+  Redirect,
+  useRouteMatch,
+  NavLink as RRNavLink
+} from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { NavLink as RRNavLink } from 'react-router-dom';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDesktop } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
-import { LoadingSpinner } from '_common';
+
+import JobHistory from './HistoryViews';
+import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
 import './History.module.scss';
 
-export const Header = ({ title }) => {
+const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
+
+const Header = ({ title }) => {
   const dispatch = useDispatch();
 
   return (
@@ -34,7 +44,7 @@ export const Header = ({ title }) => {
 };
 Header.propTypes = { title: string.isRequired };
 
-export const Sidebar = ({ root }) => {
+const Sidebar = () => {
   const { notifs } = useSelector(
     state => state.notifications.list,
     shallowEqual
@@ -82,15 +92,39 @@ export const Sidebar = ({ root }) => {
     </Nav>
   );
 };
-Sidebar.propTypes = {
-  root: string.isRequired
+
+const Routes = () => {
+  const { path } = useRouteMatch();
+  return (
+    <div styleName="content" data-testid="history-router">
+      <Switch>
+        <Route exact path={`${root}/jobs`}>
+          <JobHistory />
+        </Route>
+        {/* Redirect from /workbench/history to /workbench/history/jobs */}
+        <Redirect from={root} to={`${root}/jobs`} />
+        {/* Redirect from an unmatched path in /workbench/history/* to /workbench/history/jobs */}
+        <Redirect from={path} to={`${root}/jobs`} />
+      </Switch>
+    </div>
+  );
 };
 
-export const Layout = ({ page }) => {
-  const loading = useSelector(state => state.notifications.loading);
-  if (loading) return <LoadingSpinner />;
-  return <></>;
+const Layout = () => {
+  const match = useRouteMatch(`${root}/:historyType`);
+  const historyType = match
+    ? match.params.historyType.substring(0, 1).toUpperCase() +
+      match.params.historyType.substring(1).toLowerCase()
+    : '';
+  return (
+    <div styleName="root" data-testid="history-router">
+      <Header title={historyType} />
+      <div styleName="container">
+        <Sidebar />
+        <Routes />
+      </div>
+    </div>
+  );
 };
-Layout.propTypes = {
-  page: string.isRequired
-};
+
+export default memo(Layout);

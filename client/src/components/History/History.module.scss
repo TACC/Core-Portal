@@ -1,3 +1,26 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 40px 0 20px;
+}
+
+.container {
+    /* As a flex item */
+    flex-grow: 1;
+    flex-shrink: 0; /* Prevent Safari from shrinking this element (FP-389) */
+
+    /* As a flex container */
+    display: flex;
+
+    border-top: 1px solid #707070;
+}
+
+.content {
+    /* FAQ: Design is inconsistent, but averages about `10.5px` */
+    padding-top: 0.75rem; /* ~10px * design * 1.2 design-to-app ratio */
+    padding-left: 1.25em;
+}
+
 /*
     Components
 */
