@@ -1,7 +1,7 @@
 .root {
   font-size: 0.75rem;
   color: var(--global-color-primary--x-dark);
-  --border: 1px solid #707070;
+  --border: 1px solid var(--global-color-primary--light);
 }
 
 .link {
@@ -9,11 +9,13 @@
 }
 
 .header {
+  font-weight: 400 !important;
   background: var(--global-color-primary--x-light);
   display: flex;
 }
 
 .header-details {
+  font-weight: 400;
   display: flex;
   font-size: 0.75rem;
 }
@@ -45,7 +47,7 @@
 }
 
 .left-panel {
-  border-right: var(--table-border);
+  border-right: var(--border);
   min-width: 200px;
 }
 
@@ -61,6 +63,8 @@
 .section {
   padding-top: 5px;
   padding-bottom: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 .section-entry {
