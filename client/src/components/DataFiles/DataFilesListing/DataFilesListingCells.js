@@ -143,11 +143,18 @@ LastModifiedCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired
 };
 
-export const FileIconCell = ({ cell }) => {
-  if (cell.value === 'folder') {
+export const FileIcon = ({ format }) => {
+  if (format === 'folder') {
     return <i className="icon-filetype icon-nav-folder" />;
   }
   return <FontAwesomeIcon icon={faFile} color="#707070" />;
+};
+FileIcon.propTypes = {
+  format: PropTypes.string.isRequired
+};
+
+export const FileIconCell = ({ cell }) => {
+  return <FileIcon format={cell.value} />;
 };
 FileIconCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired

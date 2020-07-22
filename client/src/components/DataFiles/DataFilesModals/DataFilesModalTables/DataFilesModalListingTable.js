@@ -3,8 +3,10 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
-import { FileIconCell } from '../../DataFilesListing/DataFilesListingCells';
+import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
 import './DataFilesModalListingTable.module.scss';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleLeft } from "@fortawesome/free-solid-svg-icons";
 
 function getCurrentDirectory(path) {
   return path.split('/').pop();
@@ -30,9 +32,12 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <Button color="link" onClick={onClick}>
-      Back
-    </Button>
+    <div styleName='container'>
+      <Button color="link" onClick={onClick}>
+        <FontAwesomeIcon icon={faAngleLeft} />
+        <span styleName="path">Back</span>
+      </Button>
+    </div>
   );
 };
 BackLink.propTypes = {
@@ -64,7 +69,6 @@ const DataFilesModalListingNameCell = ({
 
   const isFolderButNotCurrentFolder =
     format === 'folder' && !isCurrentDirectory;
-  const cell = { value: format };
   return (
     <div
       styleName={
@@ -73,18 +77,19 @@ const DataFilesModalListingNameCell = ({
           : 'container'
       }
     >
-      <FileIconCell cell={cell} />
+      <FileIcon format={format} />
       {isFolderButNotCurrentFolder && (
         <a
           href=""
           onClick={onClick}
+          styleName="path"
           className="data-files-name data-files-nav-link"
         >
           {name}
         </a>
       )}
       {!isFolderButNotCurrentFolder && (
-        <span className="data-files-name">{name}</span>
+        <span styleName="path" className="data-files-name">{name}</span>
       )}
     </div>
   );
