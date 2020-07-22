@@ -92,13 +92,3 @@ ul#appBrowser-sidebar {
   font-weight: 500;
 }
 
-.app-icon,
-.category-icon {
-  /* Styles copied from `.icon` */
-  /* FP-455: Do not duplicate styles */
-  width: 1em;
-  font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
-  vertical-align: middle;
-  display: inline-flex; /* `flex` to align `::before`; `inline` to not trigger new line */
-                        /* a modern slimmer alternative to `&::before { display: block; }` */
-}

@@ -17,7 +17,7 @@ const AppIcon = ({ appId }) => {
 
   return (
     <i
-      className={`app-icon icon-nav-${findAppIcon(appId)}`}
+      className={`icon icon-nav-${findAppIcon(appId)}`}
       data-testid="app-icon"
     />
   );
