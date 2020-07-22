@@ -4,7 +4,6 @@
     padding: 20px 40px 0 20px;
 }
 
-
 .container {
     /* As a flex item */
     flex-grow: 1;
@@ -12,21 +11,12 @@
 
     /* As a flex container */
     display: flex;
-    flex-direction: row;
 
     border-top: 1px solid #707070;
-}
-/* Make right-most item fill up remaining horizontal space */
-.container > :last-child {
-    // flex-grow: 1;
 }
 
 .content {
     /* FAQ: Design is inconsistent, but averages about `10.5px` */
     padding-top: 0.75rem; /* ~10px * design * 1.2 design-to-app ratio */
     padding-left: 1.25em;
-    // width: 100%;
-    // height: 100%;
-    // font-size: 0.78em;
-    // font-size: 14px;
 }

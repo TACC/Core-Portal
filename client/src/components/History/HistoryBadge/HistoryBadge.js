@@ -5,7 +5,7 @@ import './HistoryBadge.module.scss';
 const HistoryBadge = ({ unread }) => {
   if (unread) {
     return (
-      <span styleName="root" data-testid="history-badge">
+      <span styleName="root" data-testid="history-badge" role="status">
         {unread < 1000 ? unread : '999+'}
       </span>
     );
