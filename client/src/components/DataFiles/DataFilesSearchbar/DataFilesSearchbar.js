@@ -29,6 +29,7 @@ const DataFilesSearchbar = ({ api, scheme, system }) => {
 
   return (
     <form
+      data-testid="search-form"
       className="input-group data-files-searchbar-input-group"
       onSubmit={onSubmit}
     >

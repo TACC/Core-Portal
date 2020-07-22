@@ -15,6 +15,7 @@ export const ToolbarButton = ({ text, icon, onClick, disabled }) => {
       <i
         className={`icon ${icon.prefix} ${icon.prefix}-${icon.iconName}`}
         styleName="button-icon"
+        data-testid="button-icon"
       />
       <span styleName="button-text">{text}</span>
     </Button>
