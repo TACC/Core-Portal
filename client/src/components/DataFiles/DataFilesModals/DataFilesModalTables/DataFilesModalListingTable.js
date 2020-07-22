@@ -32,7 +32,7 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <div styleName="container">
+    <div styleName="container normal-indention">
       <Button color="link" onClick={onClick}>
         <FontAwesomeIcon icon={faAngleLeft} />
         <span styleName="path">Back</span>
@@ -69,14 +69,13 @@ const DataFilesModalListingNameCell = ({
 
   const isFolderButNotCurrentFolder =
     format === 'folder' && !isCurrentDirectory;
+  const indention =
+    indentSubFilesFolders && !isCurrentDirectory
+      ? 'indented'
+      : 'normal-indention';
+
   return (
-    <div
-      styleName={
-        indentSubFilesFolders && !isCurrentDirectory
-          ? 'indented container'
-          : 'container'
-      }
-    >
+    <div styleName={`container ${indention}`}>
       <FileIcon format={format} />
       {isFolderButNotCurrentFolder && (
         <a
