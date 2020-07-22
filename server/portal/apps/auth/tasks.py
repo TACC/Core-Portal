@@ -41,11 +41,11 @@ def check_user_allocations(self, username, systems):
     conditional_systems = {}
 
     # get conditionally configured systems
-    for s in systems:
-        if systems[s]['requires_allocation']:
-            conditional_systems[s] = systems[s]
+    for sys_name in systems:
+        if systems[sys_name]['requires_allocation']:
+            conditional_systems[sys_name] = systems[sys_name]
     else:
-        systems_to_configure.append(s)
+        systems_to_configure.append(sys_name)
 
     # get active user allocations
     for active_alloc in tas_blob['active']: 

@@ -55,7 +55,9 @@ def _lookup_keys_manager(user, password, token):
         settings,
         'PORTAL_KEYS_MANAGER',
     )
-    cls = _import_manager(mgr_str)
+    module_str, cls_str = mgr_str.rsplit('.', 1)
+    module = import_module(module_str)
+    cls = getattr(module, cls_str)
     return cls(user.username, password, token)
 
 # Flag for removal
