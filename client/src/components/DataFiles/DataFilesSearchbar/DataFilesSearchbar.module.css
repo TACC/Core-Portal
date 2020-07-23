@@ -1,5 +1,10 @@
 .container {
     width: 560px; /* 70px + 396px design * 1.2 design-to-app ratio */
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* Children */
@@ -12,9 +17,21 @@
 }
 .button-icon {
     composes: c-button__icon--before from '../../../styles/components/c-button.css';
+
+    font-size: 1.2rem;
 }
-.input,
 .button-text {
+    /* … */
+}
+.output {
+    /* … */
+}
+
+/* Hacks */
+
+.container,
+.button,
+.input {
     /* RFE: This style should be inherited from cascade of global styles */
     font-size: 0.75rem; /* 12px (16px design * 1.2 design-to-app ratio) */
 }

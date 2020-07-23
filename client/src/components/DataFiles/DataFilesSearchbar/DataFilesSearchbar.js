@@ -41,7 +41,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
         value={resultSummary}
         name="query"
         aria-label="Summary of Search Results"
-        className="data-files-searchbar-output"
+        styleName="output"
       >
         {resultSummary}
       </output>
@@ -78,7 +78,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
         name="query"
         aria-label={`Search (within ${sectionName})`}
         styleName="input"
-        className="form-control data-files-searchbar-input"
+        className="form-control"
         placeholder={`Search within ${sectionName}`}
       />
       {resultMessage}
