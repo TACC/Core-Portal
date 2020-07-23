@@ -23,12 +23,23 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
 
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
+  const searchClear = () => {
+    setQuery('');
+    setPrevQuery(query);
+
+    // ???: How to clear search?
+  };
+
   const onSubmit = e => {
     // TEMPORARY: Testing form submission
     // console.log('Search query (via `FormData`): ', (new FormData(e.currentTarget)).get('query'));
     // console.log('Search query (via `query``): ', query);
 
     routeSearch();
+    e.preventDefault();
+  };
+  const onClear = e => {
+    searchClear();
     e.preventDefault();
   };
   const onChange = e => setQuery(e.target.value);
@@ -51,38 +62,52 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   return (
     <form
       data-testid="form"
-      className={`input-group ${className}`}
+      className={className}
       styleName="container"
       onSubmit={onSubmit}
     >
-      <div className="input-group-prepend">
-        <Button
-          className="data-files-toolbar-button"
-          onClick={routeSearch}
-          styleName="button"
+      <fieldset className="input-group" styleName="query-fieldset">
+        <div className="input-group-prepend">
+          <Button onClick={routeSearch} styleName="submit-button">
+            <FontAwesomeIcon
+              icon={faSearch}
+              color="#707070"
+              styleName="button__icon"
+            />
+            <span styleName="button__text">Search</span>
+          </Button>
+        </div>
+        <input
+          type="search"
+          onChange={onChange}
+          value={query}
+          name="query"
+          aria-label={`Search (within ${sectionName})`}
+          styleName="input"
+          className="form-control"
+          placeholder={`Search within ${sectionName}`}
+          data-testid="input"
+        />
+      </fieldset>
+      <fieldset styleName="summary-fieldset">
+        <output
+          value={resultSummary}
+          name="query"
+          aria-label="Summary of Search Results"
+          styleName="output"
         >
-          <FontAwesomeIcon
-            icon={faSearch}
-            color="#707070"
-            styleName="button-icon"
-          />
-          <span className="toolbar-button-text" styleName="button-text">
-            Search
-          </span>
-        </Button>
-      </div>
+          {resultSummary}
+        </output>
+      </fieldset>
+      <fieldset styleName="filter-fieldset">[filter dropdown]</fieldset>
       <input
-        type="search"
-        onChange={onChange}
-        value={query}
-        name="query"
-        aria-label={`Search (within ${sectionName})`}
-        styleName="input"
-        className="form-control"
-        placeholder={`Search within ${sectionName}`}
-        data-testid="input"
+        type="reset"
+        className="btn-link"
+        styleName="clear-button"
+        href="#"
+        onClick={onClear}
+        value="Back to All Files"
       />
-      {resultMessage}
     </form>
   );
 };

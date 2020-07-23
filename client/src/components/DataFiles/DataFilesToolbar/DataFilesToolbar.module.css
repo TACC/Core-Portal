@@ -5,7 +5,6 @@
 
 /* Children */
 .button {
-    composes: c-button from '../../../styles/components/c-button.css';
     composes: c-button--secondary from '../../../styles/components/c-button.css';
 }
 .button + .button {

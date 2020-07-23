@@ -36,24 +36,28 @@ Styleguide Components.Button
   justify-content: center;
 }
 
+/* Types */
 .c-button--primary {
+  composes: c-button;
   composes: btn-primary from './bootstrap.btn.css';
 }
 .c-button--secondary {
+  composes: c-button;
   composes: btn-secondary from './bootstrap.btn.css';
 }
-
-[class*="c-button__icon"] {
-  /* … */
+.c-button--as-link {
+  composes: c-button;
+  composes: btn-link from './bootstrap.btn.css';
 }
+
+/* Children */
+
 .c-button__icon--before {
   margin-right: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
 }
 .c-button__icon--after {
-  margin-left: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
-  justify-self: end;
+  margin-left: auto; /* this is how to "justify-self" on flex children */
 }
-
 .c-button__text {
   /* … */
 }

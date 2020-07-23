@@ -19,13 +19,14 @@ Styleguide Components.Bootstrap.Btn
 
 /* Types */
 
-/* FP-546: Before FP-546 standardizes `_common/Button`,
-            the color/border are overridden and duplicated by `Workbench.scss` */
+/* FP-546: Before FP-546 standardizes `_common/Button`, the color and border
+           styles are overridden and duplicated by `Workbench.scss` */
 .btn-primary {
   color: var(--global-color-primary--xx-light);
   background-color: var(--global-color-accent--normal);
   border: none;
 }
+
 .btn-secondary {
   color: var(--global-color-primary--x-dark);
   background-color: var(--global-color-primary--x-light);
@@ -36,4 +37,10 @@ Styleguide Components.Bootstrap.Btn
   color: var(--global-color-primary--x-dark);
   background-color: var(--global-color-primary--normal);
   border-color: var(--global-color-primary--x-dark);
+}
+
+/* FP-546: Before FP-546 standardizes `_common/Button`, the color
+           styles are overridden and duplicated by `Workbench.scss` */
+.btn-link {
+  color: var(--global-color-accent--normal);
 }
