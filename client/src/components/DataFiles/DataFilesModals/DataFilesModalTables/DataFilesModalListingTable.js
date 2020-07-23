@@ -261,12 +261,13 @@ const DataFilesModalListingTable = ({
   }, [dispatch, data.length]);
   return (
     <DataFilesTable
-      hideHeader={!hasBackButton}
       data={alteredData}
       columns={columns}
       rowSelectCallback={rowSelectCallback}
       scrollBottomCallback={scrollBottomCallback}
       section="modal"
+      hideHeader={!hasBackButton}
+      shadeEvenRows={hasBackButton}
     />
   );
 };
