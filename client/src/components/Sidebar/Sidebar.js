@@ -1,7 +1,7 @@
 import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
-import { FeedbackButton } from '../_common/FeedbackForm';
+import { FeedbackButton } from '../FeedbackForm';
 import * as ROUTES from '../../constants/routes';
 import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
 import './Sidebar.module.scss';

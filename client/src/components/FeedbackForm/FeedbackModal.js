@@ -22,33 +22,26 @@ const FeedbackModal = React.memo(({ isOpen, toggle, authenticatedUser }) => {
       </ModalHeader>
       <ModalBody>
         <p>
-          We want to hear your feedback about Frontera! If you have any
-          comments, suggestions, or feature requests, please use the form below
-          to let us know.
+          User feedback helps to improve the website. If you have suggestions,
+          feature requests, or comments (negative or positive), submit this form
+          and they will be taken into consideration.
         </p>
         <p>
-          If you're looking to learn more about Frontera, please have a look
-          through our <Link
-            to={`userGuideURL`}
-            className="wb-link job__path"
-          >
+          If you need assistance, refer to the{' '}
+          <Link to="userGuideURL" className="wb-link job__path">
             User Guide
-          </Link> where many of your questions may have already
-          been answered.
+          </Link>
+          , or{' '}
+          <Link to="userGuideURL" className="wb-link job__path">
+            submit a ticket.
+          </Link>
         </p>
         <FeedbackForm authenticatedUser={authenticatedUser} />
       </ModalBody>
 
-
       <ModalFooter>
         <Button className="data-files-btn" onClick={sendEmail}>
           Submit
-        </Button>{' '}
-        <Button
-          color="secondary"
-          onClick={toggle}
-        >
-          Close
         </Button>
       </ModalFooter>
     </Modal>

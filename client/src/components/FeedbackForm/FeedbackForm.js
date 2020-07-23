@@ -17,11 +17,11 @@ import * as Yup from 'yup';
 import './FeedbackForm.scss';
 
 const formSchema = Yup.object().shape({
-  comments: Yup.string().required('Required'),
   name: Yup.string().required('Required'),
   email: Yup.string()
     .email('Invalid email')
-    .required('Required')
+    .required('Required'),
+  comments: Yup.string().required('Required')
 });
 
 const FeedbackForm = ({ authenticatedUser }) => {
@@ -37,7 +37,23 @@ const FeedbackForm = ({ authenticatedUser }) => {
   );
 
   return (
-    <Formik enableReinitialize initialValues={defaultValues}>
+    <Formik
+      enableReinitialize
+      initialValues={defaultValues}
+      validationSchema={formSchema}
+      onSubmit={(values, { resetForm }) => {
+        const formData = new FormData();
+        Object.keys(values).forEach(key => formData.append(key, values[key]));
+        dispatch({
+          type: 'TICKET_CREATE',
+          payload: {
+            formData,
+            resetSubmittedForm: resetForm,
+            refreshTickets: isAuthenticated
+          }
+        });
+      }}
+    >
       {({ isSubmitting, isValid }) => {
         return (
           <Form className="feedback-form">
