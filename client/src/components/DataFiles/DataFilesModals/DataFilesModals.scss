@@ -1,5 +1,7 @@
 .dataFilesModalColHeader {
-    font-weight: bold;
+  font-weight: bold;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .dataFilesModal {
@@ -19,7 +21,6 @@
     .filesListing {
       flex-grow: 1;
       outline: 1px solid #707070;
-      padding-top: 10px;
     }
     .tr-header {
         border-bottom-color: #C6C6C6;

@@ -2,8 +2,10 @@ import React, { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
-import { FileIconCell } from '../../DataFilesListing/DataFilesListingCells';
+import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
 import './DataFilesModalListingTable.module.scss';
 
 function getCurrentDirectory(path) {
@@ -30,9 +32,12 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <Button color="link" onClick={onClick}>
-      Back
-    </Button>
+    <div styleName="container normal-indention">
+      <Button color="link" onClick={onClick}>
+        <FontAwesomeIcon icon={faAngleLeft} />
+        <span styleName="path">Back</span>
+      </Button>
+    </div>
   );
 };
 BackLink.propTypes = {
@@ -64,27 +69,28 @@ const DataFilesModalListingNameCell = ({
 
   const isFolderButNotCurrentFolder =
     format === 'folder' && !isCurrentDirectory;
-  const cell = { value: format };
+  const indention =
+    indentSubFilesFolders && !isCurrentDirectory
+      ? 'indented'
+      : 'normal-indention';
+
   return (
-    <div
-      styleName={
-        indentSubFilesFolders && !isCurrentDirectory
-          ? 'indented container'
-          : 'container'
-      }
-    >
-      <FileIconCell cell={cell} />
+    <div styleName={`container ${indention}`}>
+      <FileIcon format={format} />
       {isFolderButNotCurrentFolder && (
         <a
           href=""
           onClick={onClick}
+          styleName="path"
           className="data-files-name data-files-nav-link"
         >
           {name}
         </a>
       )}
       {!isFolderButNotCurrentFolder && (
-        <span className="data-files-name">{name}</span>
+        <span styleName="path" className="data-files-name">
+          {name}
+        </span>
       )}
     </div>
   );
@@ -255,12 +261,13 @@ const DataFilesModalListingTable = ({
   }, [dispatch, data.length]);
   return (
     <DataFilesTable
-      hideHeader={!hasBackButton}
       data={alteredData}
       columns={columns}
       rowSelectCallback={rowSelectCallback}
       scrollBottomCallback={scrollBottomCallback}
       section="modal"
+      hideHeader={!hasBackButton}
+      shadeEvenRows={hasBackButton}
     />
   );
 };
