@@ -169,7 +169,7 @@ JobsView.propTypes = {
 JobsView.defaultProps = {
   showDetails: false,
   showFancyStatus: false,
-  rowProps: null
+  rowProps: row => {}
 };
 
 export default JobsView;

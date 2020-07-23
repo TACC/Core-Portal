@@ -96,7 +96,7 @@ const Layout = () => {
     : '';
 
   return (
-    <div styleName="root" data-testid="history-router">
+    <div styleName="root">
       <Header title={historyType} />
       <div styleName="container">
         <Sidebar />
