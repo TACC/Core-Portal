@@ -17,8 +17,6 @@
 }
 .button-icon {
     composes: c-button__icon--before from '../../../styles/components/c-button.css';
-
-    font-size: 1.2rem;
 }
 .button-text {
     /* … */
