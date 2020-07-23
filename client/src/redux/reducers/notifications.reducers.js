@@ -17,7 +17,7 @@ export default function notifications(state = initialState, action) {
         ...state,
         list: {
           ...state.list,
-          notifs: state.list.notifs.concat(action.payload),
+          notifs: [action.payload, ...state.list.notifs],
           unread: state.list.unread + 1,
           total: state.list.total + 1
         }

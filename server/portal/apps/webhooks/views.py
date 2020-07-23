@@ -98,7 +98,7 @@ class JobsWebhookView(BaseApiView):
             }
 
             archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
-            target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
+            target_path = os.path.join('/workbench/data/', archive_id.strip('/'))
 
             # Verify the job UUID against the username
             valid_state = validate_agave_job(job_id, username)

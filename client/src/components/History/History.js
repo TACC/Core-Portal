@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import {
   Route,
   Switch,
@@ -67,33 +67,11 @@ const Sidebar = () => {
           />
         </NavLink>
       </NavItem>
-      <NavItem>
-        <NavLink
-          tag={RRNavLink}
-          to={`${root}/uploads`}
-          activeStyleName="active"
-          className="nav-content"
-        >
-          <i className="icon icon-action-upload" />
-          <span styleName="link-text">Uploads</span>
-        </NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink
-          tag={RRNavLink}
-          to={`${root}/files`}
-          activeStyleName="active"
-          className="nav-content"
-        >
-          <i className="icon icon-nav-folder" />
-          <span styleName="link-text">Files</span>
-        </NavLink>
-      </NavItem>
     </Nav>
   );
 };
 
-const Routes = () => {
+export const Routes = () => {
   const { path } = useRouteMatch();
   return (
     <div styleName="content" data-testid="history-router">
@@ -116,6 +94,7 @@ const Layout = () => {
     ? match.params.historyType.substring(0, 1).toUpperCase() +
       match.params.historyType.substring(1).toLowerCase()
     : '';
+
   return (
     <div styleName="root" data-testid="history-router">
       <Header title={historyType} />
@@ -127,4 +106,4 @@ const Layout = () => {
   );
 };
 
-export default memo(Layout);
+export default Layout;

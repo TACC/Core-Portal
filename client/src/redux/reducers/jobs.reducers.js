@@ -54,6 +54,12 @@ function jobs(state = initialState, action) {
         ...state,
         submit: { ...state.submit, response: action.payload, error: true }
       };
+    case 'UPDATE_JOB_STATUS': {
+      const event = action.payload.extra;
+      const job = state.list.find(el => el.id === event.id);
+      job.status = event.status;
+      return state;
+    }
     default:
       return state;
   }
