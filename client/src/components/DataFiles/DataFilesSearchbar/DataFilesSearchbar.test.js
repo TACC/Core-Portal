@@ -22,7 +22,7 @@ describe('DataFilesSearchbar', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/api/scheme/system/path');
     const store = mockStore({});
-    const { getByLabelText, getByTestId } = renderComponent(
+    const { getByTestId } = renderComponent(
       <DataFilesSidebar
         api="test-api"
         scheme="test-scheme"
@@ -32,8 +32,8 @@ describe('DataFilesSearchbar', () => {
       history
     );
 
-    const input = getByLabelText('search-input');
-    const form = getByTestId('search-form');
+    const input = getByTestId('input');
+    const form = getByTestId('form');
 
     fireEvent.change(input, { target: { value: 'querystring' } });
     fireEvent.submit(form);

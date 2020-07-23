@@ -50,7 +50,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
 
   return (
     <form
-      data-testid="search-form"
+      data-testid="form"
       className={`input-group ${className}`}
       styleName="container"
       onSubmit={onSubmit}
@@ -80,6 +80,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
         styleName="input"
         className="form-control"
         placeholder={`Search within ${sectionName}`}
+        data-testid="input"
       />
       {resultMessage}
     </form>
