@@ -92,10 +92,14 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
       >
         <>{root}</>
       </BreadcrumbLink>
-      {pathComps.map((pathComp, i) =>
-        i < paths.length - 2 ? (
-          ' /... '
-        ) : (
+      {pathComps.map((pathComp, i) => {
+        if (i < paths.length - 2) {
+          return ' /... ';
+        }
+        if (i === paths.length - 1) {
+          return <span> / {pathComp}</span>;
+        }
+        return (
           <React.Fragment key={pathComp}>
             {' '}
             /{' '}
@@ -109,8 +113,8 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
               <>{pathComp}</>
             </BreadcrumbLink>
           </React.Fragment>
-        )
-      )}
+        );
+      })}
     </div>
   );
 };
