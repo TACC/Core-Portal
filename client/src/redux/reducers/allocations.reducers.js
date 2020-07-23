@@ -14,7 +14,7 @@ function allocations(state = initialState, action) {
     case 'START_ADD_ALLOCATIONS':
       return {
         ...state,
-        errors: { ...state.errors, allocations: undefined },
+        errors: { ...state.errors, listing: undefined },
         loading: true
       };
     case 'ADD_ALLOCATIONS':
@@ -22,7 +22,7 @@ function allocations(state = initialState, action) {
     case 'ADD_ALLOCATIONS_ERROR':
       return {
         ...state,
-        errors: { ...state.errors, allocations: action.payload },
+        errors: { ...state.errors, listing: action.payload },
         loading: false
       };
     case 'POPULATE_TEAMS':

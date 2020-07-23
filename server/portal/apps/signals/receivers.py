@@ -11,11 +11,11 @@ from channels.layers import get_channel_layer
 channel_layer = get_channel_layer()
 
 logger = logging.getLogger(__name__)
-WEBSOCKETS_FACILITY = 'notifications'
 
 
 @receiver(portal_event, dispatch_uid=__name__)
 def portal_event_callback(sender, **kwargs):
+    logger.debug("Received a generic portal event")
     users = kwargs.get('event_users', [])
 
     data = copy.copy(kwargs)
@@ -44,7 +44,7 @@ def portal_event_callback(sender, **kwargs):
 @receiver(post_save, sender=Notification, dispatch_uid='notification_msg')
 def send_notification_ws(sender, instance, created, **kwargs):
     # Only send WS message if it's a new notification not if we're updating.
-    logger.debug('receiver received something.')
+    logger.debug("Received a Notification event")
     if not created:
         return
     try:
@@ -57,11 +57,10 @@ def send_notification_ws(sender, instance, created, **kwargs):
                 'body': instance_dict
             }
         )
-        logger.debug('msg sent to channel: {}'.format(instance_dict))
     except Exception:
-        logger.debug('Exception sending websocket message',
-                     exc_info=True,
-                     extra=instance.to_dict())
+        logger.exception(
+            'Exception sending message to channel: portal_notification',
+            extra=instance.to_dict())
     return
 
 
@@ -104,9 +103,8 @@ def send_setup_event(sender, instance, created, **kwargs):
         #  rp.publish_message(msg, expire=10)
 
     except Exception:
-        logger.debug(
-            'Exception sending websocket message',
-            exc_info=True,
+        logger.exception(
+            'Exception sending message to channel: portal_notification',
             extra=setup_event.to_dict()
         )
     return

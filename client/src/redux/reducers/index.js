@@ -13,6 +13,7 @@ import profile from './profile.reducers';
 import authenticatedUser from './authenticated_user.reducer';
 import { pushKeys } from './systems.reducers';
 import notifications from './notifications.reducers';
+import workbench from './workbench.reducers';
 
 export default combineReducers({
   jobs,
@@ -28,5 +29,6 @@ export default combineReducers({
   app,
   apps,
   pushKeys,
-  notifications
+  notifications,
+  workbench
 });

@@ -22,7 +22,23 @@ export function* watchSocket() {
 }
 
 export function* handleSocket(action) {
-  yield put({ type: 'NEW_NOTIFICATION', payload: action });
+  let eventType = action.event_type.toLowerCase();
+  if (eventType === 'vnc' || eventType === 'web') {
+    eventType = 'interactive';
+  }
+  switch (eventType) {
+    case 'interactive':
+      yield put({ type: 'NEW_NOTIFICATION', payload: action });
+      break;
+    case 'job':
+      yield put({ type: 'UPDATE_JOB_STATUS', payload: action });
+      yield put({ type: 'NEW_NOTIFICATION', payload: action });
+      break;
+    case 'setup_event':
+      break;
+    default:
+      yield put({ type: 'NEW_NOTIFICATION', payload: action });
+  }
 }
 
 export function* fetchNotifications() {

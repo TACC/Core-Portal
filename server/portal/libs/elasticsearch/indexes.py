@@ -7,7 +7,7 @@ import logging
 from django.conf import settings
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections
-from portal.libs.elasticsearch.docs.base import IndexedFile, IndexedProject
+from portal.libs.elasticsearch.docs.base import IndexedFile
 from portal.libs.elasticsearch.analyzers import file_query_analyzer
 
 #pylint: disable=invalid-name
@@ -48,9 +48,11 @@ def setup_indexes(doc_type, reindex=False, force=False):
 
     return index
 
+
 def index_time_string():
     """Get the current string-formatted time for use in index names."""
     return datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+
 
 def setup_files_index(reindex=False, force=False):
     index = setup_indexes('files', reindex, force)
@@ -60,8 +62,11 @@ def setup_files_index(reindex=False, force=False):
         index.settings(number_of_shards=3)
         index.create()
 
+
+"""
 def setup_projects_index(reindex=False, force=False):
     index = setup_indexes('projects', reindex, force)
     if not index.exists():
         index.document(IndexedProject)
         index.create()
+"""

@@ -31,7 +31,7 @@ services:
     container_name: frontera_prtl_memcached
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
     ulimits:
       memlock: -1
     environment:
@@ -41,6 +41,8 @@ services:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - frontera_prtl_es_data:/usr/share/elasticsearch/data
     container_name: frontera_prtl_elasticsearch
+    ports:
+      - 9200:9200
 
   postgres:
     image: postgres:11.5
@@ -86,7 +88,11 @@ services:
       - ../nginx/certificates/frontera.dev.crt:/etc/ssl/frontera.dev.crt
       - ../nginx/certificates/frontera.dev.key:/etc/ssl/frontera.dev.key
     container_name: frontera_prtl_websockets
-    command: 'daphne -b 0.0.0.0 -p 9000 -e ssl:443:privateKey=/etc/ssl/frontera.dev.key:certKey=/etc/ssl/frontera.dev.crt --root-path=/srv/www/portal/server --access-log - --proxy-headers portal.asgi:application'
+    # ** NOTE: Run this daphne command below to run a production-ready daphne server,
+    # ** matching deployed configurations. Be aware there is no autoreload for local
+    # ** development with this enabled.
+    # command: 'daphne -b 0.0.0.0 -p 9000 -e ssl:443:privateKey=/etc/ssl/frontera.dev.key:certKey=/etc/ssl/frontera.dev.crt --root-path=/srv/www/portal/server --access-log - --proxy-headers portal.asgi:application'
+    command: 'python manage.py runserver 0.0.0.0:9000'
 
   django:
     image: taccwma/frontera-portal:local

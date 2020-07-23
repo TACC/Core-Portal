@@ -23,20 +23,31 @@ class NotificationsConsumer(AsyncJsonWebsocketConsumer):
         if user.is_anonymous:
             # Reject the connection if not logged in
             await self.close()
-        else:
-            # Add channel connection to username and general groups
-            await self.channel_layer.group_add(user.username,
+            return
+
+        # Add channel connection to staff and superuser groups if applicable
+        if user.is_staff:
+            await self.channel_layer.group_add('portal_staff',
                                                self.channel_name)
-            await self.channel_layer.group_add('portal_events',
+        if user.is_superuser:
+            await self.channel_layer.group_add('portal_superusers',
                                                self.channel_name)
-            await self.accept()
+
+        # Add channel connection to username and general groups
+        await self.channel_layer.group_add(user.username, self.channel_name)
+        await self.channel_layer.group_add('portal_events', self.channel_name)
+        await self.accept()
 
     async def disconnect(self, close_code):
         """
         Called when the WebSocket closes for any reason.
         """
+        user = self.scope["user"]
+        if user.is_anonymous:
+            # Connection has no logged in user, nothing to disconnect
+            return
         await self.channel_layer.group_discard(
-            group=self.scope["user"].username,
+            group=user.username,
             channel=self.channel_name
         )
         await self.channel_layer.group_discard(

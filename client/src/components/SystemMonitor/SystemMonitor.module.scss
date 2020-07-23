@@ -1,0 +1,38 @@
+.root {
+    --table-border: 1px solid black;
+
+    border-bottom: var(--table-border);
+    margin: 0;
+    width: 100%;
+}
+
+.rows {
+    tr:nth-child(even) {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+    tr:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    td {
+        padding: 5px 8px;
+    }
+}
+
+.header {
+    border-bottom: var(--table-border);
+}
+
+/* Columns */
+.status {
+    width: 100px;
+}
+
+/* Messaging */
+.error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #9d85ef;
+    padding: 30px;
+}
+

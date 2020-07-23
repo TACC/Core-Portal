@@ -380,7 +380,7 @@ LOGGING = {
             'handlers': [
                 'console',
             ],
-            'level': 'DEBUG'
+            'level': 'INFO'
         }
     },
 }
@@ -792,6 +792,8 @@ ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
 SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_secret, '_SYSTEM_MONITOR_DISPLAY_LIST', [])
 
+SYSTEM_MONITOR_URL = getattr(settings_secret, '_SYSTEM_MONITOR_URL', 'https://portal.tacc.utexas.edu/commnq/index.json')
+
 """
 SETTINGS: EXPORTS
 """
@@ -856,6 +858,12 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
 ASGI_APPLICATION = 'portal.routing.application'
 CHANNEL_LAYERS = {
     'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
+        },
+    },
+    'short-lived': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],

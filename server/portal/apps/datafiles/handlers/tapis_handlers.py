@@ -6,10 +6,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 allowed_actions = {
-    'private': ['listing', 'copy', 'download', 'mkdir',
+    'private': ['listing', 'search', 'copy', 'download', 'mkdir',
                 'move', 'rename', 'trash', 'preview', 'upload'],
-    'public': ['listing', 'copy', 'download', 'preview'],
-    'community': ['listing', 'copy', 'download', 'preview'],
+    'public': ['listing', 'search', 'copy', 'download', 'preview'],
+    'community': ['listing', 'search', 'copy', 'download', 'preview'],
 }
 
 
