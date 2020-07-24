@@ -153,6 +153,7 @@ const DataFilesModalListingTable = ({
   disabled
 }) => {
   const dispatch = useDispatch();
+  const loading = useSelector(state => state.files.loading.modal);
   const params = useSelector(state => state.files.params.modal, shallowEqual);
   const isNotRoot = params.path.length > 0;
 
@@ -164,7 +165,7 @@ const DataFilesModalListingTable = ({
     });
 
     /* Add an entry to represent the current sub-directory */
-    if (isNotRoot || operationAllowedOnRootFolder) {
+    if (!loading && (isNotRoot || operationAllowedOnRootFolder)) {
       const currentFolderEntry = {
         name: isNotRoot ? getCurrentDirectory(params.path) : 'My Data',
         format: 'folder',
@@ -175,7 +176,7 @@ const DataFilesModalListingTable = ({
       result.unshift(currentFolderEntry);
     }
     return result;
-  }, [data, params, isNotRoot]);
+  }, [data, params, isNotRoot, loading]);
 
   const NameCell = useCallback(
     ({
