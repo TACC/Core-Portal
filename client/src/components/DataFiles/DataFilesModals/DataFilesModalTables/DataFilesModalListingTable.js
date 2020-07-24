@@ -8,11 +8,11 @@ import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
 import './DataFilesModalListingTable.module.scss';
 
-function getCurrentDirectory(path) {
+export function getCurrentDirectory(path) {
   return path.split('/').pop();
 }
 
-function getParentPath(currentPath) {
+export function getParentPath(currentPath) {
   return currentPath.substr(0, currentPath.lastIndexOf('/'));
 }
 
