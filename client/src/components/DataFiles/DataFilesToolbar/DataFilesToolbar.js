@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import './DataFilesToolbar.module.css';
 
-export const ToolbarButton = ({ text, icon, onClick, disabled }) => {
+export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
+  const iconClassName = `icon-action icon-${iconName}`;
+
   return (
     <Button
       disabled={disabled}
@@ -13,8 +15,8 @@ export const ToolbarButton = ({ text, icon, onClick, disabled }) => {
       data-testid="button"
     >
       <i
-        className={`icon ${icon.prefix} ${icon.prefix}-${icon.iconName}`}
         styleName="button-icon"
+        className={iconClassName}
         data-testid="button-icon"
       />
       <span styleName="button-text">{text}</span>
@@ -29,10 +31,7 @@ ToolbarButton.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   text: PropTypes.string.isRequired,
-  icon: PropTypes.shape({
-    prefix: PropTypes.string,
-    iconName: PropTypes.string
-  }).isRequired
+  iconName: PropTypes.string.isRequired
 };
 
 const DataFilesToolbar = ({ scheme }) => {
@@ -92,30 +91,30 @@ const DataFilesToolbar = ({ scheme }) => {
         <ToolbarButton
           text="Rename"
           onClick={toggleRenameModal}
-          icon={{ prefix: 'icon-action', iconName: 'rename' }}
+          iconName="rename"
           disabled={!canRename}
         />
         <ToolbarButton
           text="Move"
           onClick={toggleMoveModal}
-          icon={{ prefix: 'icon-action', iconName: 'move' }}
+          iconName="move"
           disabled={!canMove}
         />
         <ToolbarButton
           text="Copy"
           onClick={toggleCopyModal}
-          icon={{ prefix: 'icon-action', iconName: 'copy' }}
+          iconName="copy"
           disabled={!canCopy}
         />
         <ToolbarButton
           text="Download"
-          icon={{ prefix: 'icon-action', iconName: 'download' }}
+          iconName="download"
           onClick={download}
           disabled={!canDownload}
         />
         <ToolbarButton
           text="Trash"
-          icon={{ prefix: 'icon-action', iconName: 'trash' }}
+          iconName="trash"
           onClick={trash}
           disabled={!canTrash}
         />

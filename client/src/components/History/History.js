@@ -7,8 +7,6 @@ import {
 } from 'react-router-dom';
 
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import * as ROUTES from '../../constants/routes';
 import JobHistory from './JobHistory';
@@ -34,7 +32,7 @@ const HistorySidebar = () => (
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/jobs`} activeClassName="active">
         <div className="nav-content">
-          <FontAwesomeIcon icon={faDesktop} size="1x" />
+          <i className="icon icon-jobs" />
           <span className="nav-text">Jobs</span>
         </div>
       </NavLink>
@@ -42,7 +40,7 @@ const HistorySidebar = () => (
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/uploads`} activeClassName="active">
         <div className="nav-content">
-          <i className="icon icon-action-upload" />
+          <i className="icon icon-upload" />
           <span className="nav-text">Uploads</span>
         </div>
       </NavLink>
@@ -50,7 +48,7 @@ const HistorySidebar = () => (
     <NavItem>
       <NavLink tag={RRNavLink} to={`${root}/files`} activeClassName="active">
         <div className="nav-content">
-          <i className="icon icon-nav-folder" />
+          <i className="icon icon-folder" />
           <span className="nav-text">Files</span>
         </div>
       </NavLink>

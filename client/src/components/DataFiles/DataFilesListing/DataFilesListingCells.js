@@ -145,7 +145,7 @@ LastModifiedCell.propTypes = {
 
 export const FileIconCell = ({ cell }) => {
   if (cell.value === 'folder') {
-    return <i className="icon-filetype icon-nav-folder" />;
+    return <i className="icon-filetype icon-folder" />;
   }
   return <FontAwesomeIcon icon={faFile} color="#707070" />;
 };
