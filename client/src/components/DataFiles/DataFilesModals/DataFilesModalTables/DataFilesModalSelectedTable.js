@@ -46,7 +46,7 @@ const DataFilesSelectedTable = ({ data, operation }) => {
       {
         id: 'icon',
         accessor: 'format',
-        width: 0.05,
+        width: 0.1,
         minWidth: 20,
         maxWidth: 30,
         Cell: FileIconCell
