@@ -69,6 +69,22 @@ function* submitJob(action) {
   }
 }
 
+export async function fetchJobDetailsUtil(jobId) {
+  const result = await fetchUtil({
+    url: '/api/workspace/jobs/',
+    params: { job_id: jobId }
+  });
+  return result.response;
+}
+
+export async function fetchAppDetailsUtil(appId) {
+  const result = await fetchUtil({
+    url: '/api/workspace/apps',
+    params: { app_id: appId }
+  });
+  return result.response;
+}
+
 export function* getJobDetails(action) {
   const { jobId } = action.payload;
   yield put({
@@ -76,11 +92,7 @@ export function* getJobDetails(action) {
     payload: jobId
   });
   try {
-    const jobsReponse = yield call(fetchUtil, {
-      url: `/api/workspace/jobs/`,
-      params: { job_id: jobId }
-    });
-    const job = jobsReponse.response;
+    const job = yield call(fetchJobDetailsUtil, jobId);
     /* todo filter out any input/params that startsWith('_') */
     const display = {
       applicationName: job.appId,
@@ -100,16 +112,12 @@ export function* getJobDetails(action) {
         }))
         .filter(obj => !obj.id.startsWith('_'))
     };
-
     let app = null;
+
     try {
-      const res = yield call(fetchUtil, {
-        url: '/api/workspace/apps',
-        params: { app_id: job.appId }
-      });
-      app = res.response;
+      app = yield call(fetchAppDetailsUtil, job.appId);
     } catch (error) {
-      /* ignore if we can't get app info */
+      // ignore if we can't get app info
     }
 
     if (app) {
@@ -173,5 +181,8 @@ export function* getJobDetails(action) {
 export function* watchJobs() {
   yield takeLatest('GET_JOBS', getJobs);
   yield takeLeading('SUBMIT_JOB', submitJob);
+}
+
+export function* watchJobDetails() {
   yield takeLatest('GET_JOB_DETAILS', getJobDetails);
 }
