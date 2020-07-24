@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner } from '_common';
+import { func, string } from 'prop-types';
 
 const PreviewModalSpinner = () => (
   <div className="h-100 listing-placeholder">
@@ -9,11 +10,29 @@ const PreviewModalSpinner = () => (
   </div>
 );
 
+const PreviewModalText = ({ onLoad, text }) => {
+  React.useEffect(() => {
+    onLoad();
+  }, [onLoad]);
+  return (
+    <div>
+      <code>
+        <pre>{text}</pre>
+      </code>
+    </div>
+  );
+};
+PreviewModalText.propTypes = {
+  onLoad: func.isRequired,
+  text: string.isRequired
+};
+
 const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.preview);
   const params = useSelector(state => state.files.modalProps.preview);
-  const previewHref = useSelector(state => state.files.previewHref);
+  const previewHref = useSelector(state => state.files.preview.href);
+  const previewContent = useSelector(state => state.files.preview.content);
   const [loadingPreview, setLoadingPreview] = useState(false);
 
   const toggle = () =>
@@ -38,7 +57,10 @@ const DataFilesPreviewModal = () => {
   };
 
   const onClosed = () => {
-    dispatch({ type: 'DATA_FILES_SET_PREVIEW_HREF', payload: { href: '' } });
+    dispatch({
+      type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+      payload: { content: '', href: '' }
+    });
   };
 
   return (
@@ -54,7 +76,12 @@ const DataFilesPreviewModal = () => {
         <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
         <ModalBody>
           {loadingPreview && <PreviewModalSpinner />}
-          {previewHref && (
+          {previewContent ? (
+            <PreviewModalText
+              onLoad={() => setLoadingPreview(false)}
+              text={previewContent}
+            />
+          ) : (
             <div className="embed-responsive embed-responsive-4by3">
               <iframe
                 title="preview"

@@ -436,11 +436,11 @@ export function* watchPreview() {
 
 export function* preview(action) {
   yield put({
-    type: 'DATA_FILES_SET_PREVIEW_HREF',
-    payload: { href: null }
+    type: 'DATA_FILES_SET_PREVIEW',
+    payload: { href: null, content: null }
   });
 
-  const href = yield call(
+  const { content, href } = yield call(
     previewUtil,
     action.payload.api,
     action.payload.scheme,
@@ -450,8 +450,8 @@ export function* preview(action) {
   );
 
   yield put({
-    type: 'DATA_FILES_SET_PREVIEW_HREF',
-    payload: { href }
+    type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+    payload: { content, href }
   });
 }
 
@@ -463,9 +463,8 @@ export async function previewUtil(api, scheme, system, path, href) {
     credentials: 'same-origin',
     body: JSON.stringify({ href })
   });
-
   const requestJson = await request.json();
-  return requestJson.data.href;
+  return requestJson.data;
 }
 
 export async function mkdirUtil(api, scheme, system, path, dirname) {

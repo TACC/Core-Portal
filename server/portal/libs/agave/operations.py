@@ -8,7 +8,7 @@ from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
 from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 from portal.exceptions.api import ApiException
-
+from portal.libs.agave.utils import text_preview
 logger = logging.getLogger(__name__)
 
 
@@ -461,9 +461,10 @@ def preview(client, system, path, href, max_uses=3, lifetime=600):
 
     result = client.postits.create(body=args)
     url = result['_links']['self']['href']
-
+    content = None
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
+        content = text_preview(url)
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
         file_type = 'image'
     elif file_ext in settings.SUPPORTED_OBJECT_PREVIEW_EXTS:
@@ -478,5 +479,7 @@ def preview(client, system, path, href, max_uses=3, lifetime=600):
         url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
     else:
         file_type = 'other'
+        content = text_preview(url)
+        logger.info(content)
 
-    return {'href': url, 'fileType': file_type}
+    return {'href': url, 'fileType': file_type, 'content': content}

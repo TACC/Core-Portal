@@ -240,3 +240,8 @@ describe("scrollFiles", () => {
   });
 
 });
+
+describe("Preview Files", () => {
+  it.todo("should fetch and set previews");
+  it.todo("should be dispatched by an effect creator");
+})
