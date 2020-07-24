@@ -6,10 +6,8 @@
   height: 1em;
   font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
   font-weight: normal; /* Prevent external styles from accidentally bolding the icon */
-  vertical-align: middle;
   display: inline-flex; /* `flex` to align `::before`; `inline` to not trigger new line */
                         /* a modern slimmer alternative to `&::before { display: block; }` */
-  justify-content: center;
 }
 /* Hide accessibile text of non-empty `.icon`'s */
 .icon         { visibility: hidden; }
