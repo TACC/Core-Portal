@@ -102,6 +102,7 @@ def setup(username, system):
     home_dir = mgr.get_or_create_dir(user)
     home_sys = mgr.get_or_create_system(user)
     if not user.profile.setup_complete:
+        # Will this ever run if "profile.setup_complete" is set to True before this is ever called?
         logger.info("Executing setup steps for %s", username)
         execute_setup_steps(user.username)
 
