@@ -33,11 +33,9 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <div styleName="container">
-      <Link to="#" onClick={onClick} styleName="link">
+    <div styleName="container link" onClick={onClick}>
         <FontAwesomeIcon icon={faAngleLeft} />
         <span styleName="path">Back</span>
-      </Link>
     </div>
   );
 };
