@@ -480,6 +480,6 @@ def preview(client, system, path, href, max_uses=3, lifetime=600):
     else:
         file_type = 'other'
         content = text_preview(url)
-        logger.info(content)
+        logger.debug(content)
 
     return {'href': url, 'fileType': file_type, 'content': content}

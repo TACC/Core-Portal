@@ -214,7 +214,10 @@ def text_preview(url):
         resp = requests.get(url)
         if (resp.encoding == 'UTF-8'):
             content = resp.text
+
+            # Raises UnicodeDecodeError for files with non-ascii characters
             content.encode('ascii', 'strict')
-    except Exception as e:
-        logger.debug(e)
+            return content
+    except Exception:
+        logger.exception("Unable to decode file/contains non-ascii characters")
         return 'Unable to show preview for this file.'
