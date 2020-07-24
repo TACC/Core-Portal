@@ -71,9 +71,7 @@ const DataFilesModalListingNameCell = ({
   const isFolderButNotCurrentFolder =
     format === 'folder' && !isCurrentDirectory;
   const indention =
-    indentSubFilesFolders && !isCurrentDirectory
-      ? 'indented'
-      : 'normal-indention';
+    indentSubFilesFolders && !isCurrentDirectory ? 'children' : 'parent';
 
   return (
     <div styleName={`container ${indention}`}>

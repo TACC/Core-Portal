@@ -1,13 +1,14 @@
-.indented {
-  padding-left: 35px;
-}
-
-.normal-indention {
-  padding-left: 10px;
-}
 .container {
   display: flex;
   align-items: center;
+}
+
+.children {
+  padding-left: 35px;
+}
+
+.parent {
+  padding-left: 10px;
 }
 
 .path {
