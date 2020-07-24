@@ -17,6 +17,7 @@
     --global-color-accent--normal: #9D85EF;
         --global-color-accent--light: #9D85EF40; /* Not used, yet. *//* `normal` @ 25% opacity */
     --global-color-success--normal: #43D130;
-    --global-color-warning--normal: #C7CE1D;
+        --global-color-success--alt: #C7CE1D;
+    --global-color-warning--normal: #9D85EF;
     --global-color-danger--normal: #EB6E6E;
 }
