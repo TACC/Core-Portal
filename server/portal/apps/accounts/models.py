@@ -3,11 +3,12 @@
    :synopsis: Account's models
 """
 import logging
-from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField, JSONField
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ObjectDoesNotExist
 from portal.utils import encryption as EncryptionUtil
 
 
@@ -32,6 +33,9 @@ class PortalProfile(models.Model):
     website = models.CharField(max_length=256, default=None, null=True, blank=True)
     orcid_id = models.CharField(max_length=256, default=None, null=True, blank=True)
     professional_level = models.CharField(max_length=256, default=None, null=True)
+    active_systems = models.CharField(max_length=4096, default=None, null=True)
+    active_allocations = models.TextField(max_length=None, default=None, null=True)
+    inactive_allocations = models.TextField(max_length=None, default=None, null=True)
 
     # Default to False. If PORTAL_USER_ACCOUNT_SETUP_STEPS is empty,
     # setup_complete will be set to True on first login

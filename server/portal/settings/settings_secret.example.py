@@ -150,6 +150,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'abs_home_directory': '/path/to/home_dirs/',
         'home_directory': '/home',
         'relative_path': 'home_dirs',
+        'requires_allocation': None,
         'icon': None
     },
     'locsystem2': {
@@ -159,6 +160,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'abs_home_directory': '/path/to/home_dirs/',
         'home_directory': '/home',
         'relative_path': 'home_dirs',
+        'requires_allocation': 'locsystem2resource',
         'icon': None
     },
 }
