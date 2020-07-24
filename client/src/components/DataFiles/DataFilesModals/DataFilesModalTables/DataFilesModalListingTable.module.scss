@@ -1,15 +1,24 @@
-.indented {
-  padding-left: 35px;
-}
-
-.normal-indention {
-  padding-left: 10px;
-}
 .container {
   display: flex;
   align-items: center;
 }
 
+.children {
+  padding-left: 35px;
+}
+
+.parent {
+  padding-left: 10px;
+}
+
 .path {
   padding-left: 15px;
+}
+
+.link {
+  color: var(--global-color-accent--normal);
+  font-weight: normal; /*override bold bootstrap heeader*/
+  /* extra padding to make link (back link in header) similar height to rows*/
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
