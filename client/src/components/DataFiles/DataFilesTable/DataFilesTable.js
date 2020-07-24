@@ -254,7 +254,7 @@ const DataFilesTable = ({
                 width,
                 height: itemCount === 0 ? (height || 500) - headerHeight : 0
               }}
-              >
+            >
               <DataFilesTablePlaceholder section={section} data={data} />
             </div>
             {/* table body */}
