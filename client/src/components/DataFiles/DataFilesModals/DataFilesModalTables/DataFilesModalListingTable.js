@@ -33,10 +33,10 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <div styleName="container link" onClick={onClick}>
-        <FontAwesomeIcon icon={faAngleLeft} />
-        <span styleName="path">Back</span>
-    </div>
+    <Button styleName="link" color="link" onClick={onClick}>
+      <FontAwesomeIcon icon={faAngleLeft} />
+      <span styleName="path">Back</span>
+    </Button>
   );
 };
 BackLink.propTypes = {
