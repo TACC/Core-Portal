@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
@@ -32,11 +33,11 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <div styleName="container normal-indention">
-      <Button color="link" onClick={onClick}>
+    <div styleName="container parent">
+      <Link onClick={onClick} styleName="link">
         <FontAwesomeIcon icon={faAngleLeft} />
         <span styleName="path">Back</span>
-      </Button>
+      </Link>
     </div>
   );
 };
