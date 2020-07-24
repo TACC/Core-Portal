@@ -13,8 +13,8 @@
 
 .link {
   color: var(--global-color-accent--normal);
-  font-weight: normal; /*override bold bootstrap heeader*/
+  font-weight: normal; /*override bold bootstrap header*/
   /* extra padding to make link (back link in header) similar height to rows*/
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
