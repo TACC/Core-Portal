@@ -265,17 +265,17 @@ const DataFilesTable = ({
                 </div>
               ))}
             </div>
-            {/* table body */}
+            {/* fallback if there are no rows */}
             <div
               style={{
                 width,
                 height: itemCount === 0 ? (height || 500) - headerHeight : 0
               }}
-            >
+              >
               <DataFilesTablePlaceholder section={section} data={data} />
             </div>
+            {/* table body */}
             <div {...getTableBodyProps()}>
-              {/* fallback if there are no rows */}
               <FixedSizeList
                 className="data-files-table-body"
                 height={itemCount > 0 ? (height || 500) - headerHeight : 0}
