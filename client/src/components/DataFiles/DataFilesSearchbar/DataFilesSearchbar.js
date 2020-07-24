@@ -99,6 +99,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
           {resultSummary}
         </output>
       </fieldset>
+      {/* FP-505: Implement Filter Dropdown */}
       <fieldset styleName="filter-fieldset">[filter dropdown]</fieldset>
       <Button
         type="reset"
