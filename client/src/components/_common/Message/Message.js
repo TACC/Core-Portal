@@ -30,11 +30,7 @@ const Message = ({ children, className, type }) => {
   const containerStyleName = `container is-${type}`;
 
   return (
-    <span
-      styleName={containerStyleName}
-      className={className}
-      data-testid="message"
-    >
+    <span styleName={containerStyleName} className={className} role="status">
       <Icon styleName="icon" name={iconName}>
         {iconText}
       </Icon>
