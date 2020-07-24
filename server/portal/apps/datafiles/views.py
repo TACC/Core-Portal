@@ -1,6 +1,8 @@
+from portal.apps.accounts.models import PortalProfile
 from portal.views.base import BaseApiView
-from django.http import JsonResponse, HttpResponseForbidden
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.http import JsonResponse, HttpResponseForbidden
 import json
 import logging
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
@@ -16,18 +18,25 @@ class SystemListingView(BaseApiView):
     def get(self, request):
         # gather local and external storage systems for My Data listing
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+        user_allocations = []
+
+        # get user profile and check for allocations
+        user = get_user_model().objects.get(username=request.user.username)
+        profile = PortalProfile.objects.get(user=user)
+        user_active_systems = json.loads(profile.active_systems)
 
         response = {'system_list': []}
         for locsys, details in local_systems.items():
-            response['system_list'].append(
-                {
-                    'name': details['name'],
-                    'system': details['prefix'].format(request.user.username),
-                    'scheme': 'private',
-                    'api': 'tapis',
-                    'icon': details['icon']
-                }
-            )
+            if locsys in user_active_systems:
+                response['system_list'].append(
+                    {
+                        'name': details['name'],
+                        'system': details['prefix'].format(request.user.username),
+                        'scheme': 'private',
+                        'api': 'tapis',
+                        'icon': details['icon']
+                    }
+                )
 
         return JsonResponse(response)
 
