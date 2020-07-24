@@ -32,7 +32,8 @@ describe("ToolbarButton", () => {
 
     expect(getByText(/Rename/)).toBeDefined();
     expect(getByRole('button')).toBeDefined();
-    expect(getByTestId('button-icon')).toHaveClass('icon-action icon-rename');
+    // NOTE: After PR #104, this query MUST change to `getbyRole="img"`
+    expect(getByTestId('icon').className).toMatch('icon-rename');
   });
 });
 

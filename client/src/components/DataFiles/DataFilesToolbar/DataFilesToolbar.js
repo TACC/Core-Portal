@@ -2,23 +2,13 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
+import { Icon } from '_common';
 import './DataFilesToolbar.module.css';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
-  const iconClassName = `icon-action icon-${iconName}`;
-
   return (
-    <Button
-      disabled={disabled}
-      onClick={onClick}
-      styleName="button"
-      data-testid="button"
-    >
-      <i
-        styleName="button-icon"
-        className={iconClassName}
-        data-testid="button-icon"
-      />
+    <Button disabled={disabled} onClick={onClick} styleName="button">
+      <Icon styleName="button-icon" name={iconName} />
       <span styleName="button-text">{text}</span>
     </Button>
   );
