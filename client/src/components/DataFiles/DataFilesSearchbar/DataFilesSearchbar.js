@@ -100,14 +100,14 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
         </output>
       </fieldset>
       <fieldset styleName="filter-fieldset">[filter dropdown]</fieldset>
-      <input
+      <Button
         type="reset"
-        className="btn-link"
+        color="link"
         styleName="clear-button"
-        href="#"
         onClick={onClear}
-        value="Back to All Files"
-      />
+      >
+        Back to All Files
+      </Button>
     </form>
   );
 };
