@@ -26,4 +26,19 @@
     .tr-header {
         border-bottom-color: #C6C6C6;
     }
+
+    /* Overrides tr font-size for modals (being defined in DataFilesTable.scss */
+    .tr {
+      font-size: 12px;
+    }
+
+    /* Overrides bootstrap button */
+    .btn {
+      font-size: 12px;
+    }
+
+    /* Overrides bootstrap modal tittle */
+    .modal-title {
+      font-size: 18px;
+    }
 }
