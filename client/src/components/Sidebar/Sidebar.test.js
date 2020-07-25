@@ -6,10 +6,32 @@ import configureStore from 'redux-mock-store';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers'
 import Sidebar from './index';
 import '@testing-library/jest-dom/extend-expect';
-import SystemsList from "../SystemMonitor/SystemMonitor";
 
 const mockStore = configureStore();
 
+const PUBLIC_PAGES = [
+  'Dashboard',
+  'Data Files',
+  'Applications',
+  'Allocations'
+];
+const DEBUG_PAGES = [
+  'History',
+  'UI Patterns',
+];
+
+function getPath(page) {
+  let path;
+  switch (page) {
+    case 'Data Files':
+      path = 'data'
+      break;
+    default:
+      path = page.toLowerCase().replace(' ', '-');
+      break;
+  }
+  return path;
+}
 function renderSideBar(store) {
   return render(
     <Provider store={store}>
@@ -23,31 +45,28 @@ function renderSideBar(store) {
 }
 
 describe('workbench sidebar', () => {
-  it.each([
-    'Dashboard',
-    'Data Files',
-    'Applications',
-    'Allocations',
-  ])('should have a link to the %s page', page => {
+  it.each(PUBLIC_PAGES)('should have a link to the %s page', page => {
     const { getByText } = renderSideBar(mockStore({workbench}));
+    const path = getPath(page);
     expect(getByText(page)).toBeDefined();
     expect(getByText(page).closest('a')).toHaveAttribute(
       'href',
-      `/workbench/${page === 'Data Files' ? 'data' : page.toLowerCase()}`
+      `/workbench/${path}`
     );
   });
 
-  it('history is not available', () => {
+  it.each(DEBUG_PAGES)('is not available', page => {
     const { queryByText } = renderSideBar(mockStore({workbench}));
-    expect(queryByText("History")).toBeNull();
+    expect(queryByText(page)).toBeNull();
   });
 
-  it('history is available in debug mode', () => {
+  it.each(DEBUG_PAGES)('is available in debug mode', page => {
     const { getByText } = renderSideBar(mockStore({workbench: {status: {debug:true}}}));
-    expect(getByText("History")).toBeDefined();
-    expect(getByText("History").closest('a')).toHaveAttribute(
+    const path = getPath(page);
+    expect(getByText(page)).toBeDefined();
+    expect(getByText(page).closest('a')).toHaveAttribute(
       'href',
-      `/workbench/history`
+      `/workbench/${path}`
     );
   });
 });
