@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import queryString from 'query-string';
 import { createTemplateFunction } from 'utils/taggedTemplates';
+import DataFilesSearchbarStatus from './DataFilesSearchbarStatus';
 import './DataFilesSearchbar.module.css';
 
 export const createMessage = createTemplateFunction`${'count'} Results Found for ${'query'}`;
@@ -13,7 +14,7 @@ export const createMessage = createTemplateFunction`${'count'} Results Found for
 const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
   const [prevQuery, setPrevQuery] = useState('');
-  const [resultCount, setResultCount] = useState('');
+  const [resultCount, setResultCount] = useState(0);
   const history = useHistory();
   const sectionName = 'My Data';
 
@@ -23,7 +24,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
       : '';
 
     setPrevQuery(query);
-    setResultCount(100); // ???: By what value to incremeent this?
+    setResultCount(100); // !!!: By what value to increment this?
 
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
@@ -32,7 +33,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
     setPrevQuery(query);
     setResultCount(0);
 
-    // ???: How to empty the search?
+    // !!!: How to empty the search?
   };
 
   const onSubmit = e => {
@@ -81,13 +82,15 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
           aria-label="Summary of Search Results"
           styleName="output"
         >
-          {resultCount
-            ? createMessage({ count: resultCount, query: prevQuery })
-            : ''}
+          <DataFilesSearchbarStatus count={resultCount} query={prevQuery} />
         </output>
       </fieldset>
       {/* FP-505: Implement Filter Dropdown */}
-      <fieldset styleName="filter-fieldset">[filter dropdown]</fieldset>
+      <fieldset styleName="filter-fieldset">
+        <select>
+          <option>No filter options, yet</option>
+        </select>
+      </fieldset>
       <Button
         type="reset"
         color="link"
