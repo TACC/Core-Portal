@@ -18,21 +18,6 @@ const mockStore = configureStore();
 const mockQueryString = 'querystring';
 
 describe('DataFilesSearchbar', () => {
-  it('has expected elements', () => {
-    const { getByRole, getByTestId } = render(
-      <DataFilesSearchbar
-        api="test-api"
-        scheme="test-scheme"
-        system="test-system"
-      />
-    );
-
-    expect(getByRole('form')).toBeDefined();
-    expect(getByRole('searchbox')).toBeDefined();
-    expect(getByRole('status')).toBeDefined();
-    expect(getByRole('combobox')).toBeDefined();
-    expect(getByTestId('reset')).toBeDefined();
-  });
   it('submits', () => {
     // Render the searchbar, enter a query string, and submit form
     const history = createMemoryHistory();
@@ -57,5 +42,20 @@ describe('DataFilesSearchbar', () => {
       '/workbench/data/test-api/test-scheme/test-system/'
     );
     expect(history.location.search).toEqual(`?query_string=${mockQueryString}`);
+  });
+  it('has expected elements', () => {
+    const { getByRole, getByTestId } = render(
+      <DataFilesSearchbar
+        api="test-api"
+        scheme="test-scheme"
+        system="test-system"
+      />
+    );
+
+    expect(getByRole('form')).toBeDefined();
+    expect(getByRole('searchbox')).toBeDefined();
+    expect(getByRole('status')).toBeDefined();
+    expect(getByRole('combobox')).toBeDefined();
+    expect(getByTestId('reset')).toBeDefined();
   });
 });
