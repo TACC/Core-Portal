@@ -161,5 +161,21 @@ describe("DataFilesListing", () => {
 
     expect(getByText(/No files or folders to show/)).toBeDefined();
   });
+
+  it("renders error message", () => {
+    const history = createMemoryHistory();
+    history.push("/workbench/data/tapis/private/test.system/");
+    const errorMockState = {...initialMockState};
+    errorMockState.files.error.FilesListing='500';
+    const store = mockStore(errorMockState);
+
+    const { getByText } = renderComponent(
+      <DataFilesListing api="tapis" scheme="private" system="test.system" path="/"  />,
+      store,
+      history
+    );
+
+    expect(getByText(/There was a problem accessing this file system./)).toBeDefined();
+  });
   
 });
