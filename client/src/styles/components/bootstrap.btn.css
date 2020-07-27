@@ -32,6 +32,16 @@ Styleguide Components.Bootstrap.Btn
   background-color: var(--global-color-primary--x-light);
   border: var(--global-border--normal);
 }
+.btn-secondary:disabled {
+  /* FP-546: Implementation of this style (which matches design) is pending:
+     - Confirmation from designers (these styles have poor color contrast)
+     - Removal of overly-specific `Workbench.scss` styles (requires FP-546)
+  /*
+  color: var(--global-color-primary--dark);
+  background-color: var(--global-color-primary--light);
+  border: var(--global-color-primary--light);
+  */
+}
 /* WARNING: These styles are NOT defined by Design (origin: DataFiles) — 2020-07-21 */
 .btn-secondary:not(:disabled):hover {
   color: var(--global-color-primary--x-dark);

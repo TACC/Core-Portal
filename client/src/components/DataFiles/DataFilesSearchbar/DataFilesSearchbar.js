@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import queryString from 'query-string';
 import { createTemplateFunction } from 'utils/taggedTemplates';
+import { Icon } from '_common';
 import DataFilesSearchbarStatus from './DataFilesSearchbarStatus';
 import './DataFilesSearchbar.module.css';
 
@@ -59,11 +58,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
       <fieldset className="input-group" styleName="query-fieldset">
         <div className="input-group-prepend">
           <Button onClick={routeSearch} styleName="submit-button">
-            <FontAwesomeIcon
-              icon={faSearch}
-              color="#707070"
-              styleName="button__icon"
-            />
+            <Icon name="search" styleName="button__icon" />
             <span styleName="button__text">Search</span>
           </Button>
         </div>
