@@ -63,6 +63,7 @@ const DataFiles = () => {
       {/* row containing breadcrumbs and toolbar */}
       <div styleName="header">
         <DataFilesBreadcrumbs
+          styleName="header-title"
           api={listingParams.api}
           scheme={listingParams.scheme}
           system={listingParams.system}

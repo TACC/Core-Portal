@@ -57,7 +57,14 @@ BreadcrumbLink.propTypes = {
   children: PropTypes.element.isRequired
 };
 
-const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
+const DataFilesBreadcrumbs = ({
+  api,
+  scheme,
+  system,
+  path,
+  section,
+  className
+}) => {
   const paths = [];
   const pathComps = [];
   path
@@ -82,7 +89,7 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
   })();
 
   return (
-    <div className="breadcrumbs">
+    <div className={`breadcrumbs ${className}`}>
       <BreadcrumbLink
         api={api}
         scheme={scheme}
@@ -119,7 +126,12 @@ DataFilesBreadcrumbs.propTypes = {
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
-  section: PropTypes.string.isRequired
+  section: PropTypes.string.isRequired,
+  /** Additional className for the root element */
+  className: PropTypes.string
+};
+DataFilesBreadcrumbs.defaultProps = {
+  className: ''
 };
 
 export default DataFilesBreadcrumbs;

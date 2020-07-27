@@ -29,6 +29,11 @@
   align-items: flex-end;
 }
 
+/* Children (of `header`) */
+.header-title {
+  font-size: 18px; /* 15px design * 1.2 design-to-app ratio */
+}
+
 /* Children (of `items`) */
 .sidebar {
   /* FP-404: All Portal section sidebars should use this value. */
