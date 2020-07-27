@@ -79,7 +79,12 @@ const DataFiles = () => {
       <div styleName="items">
         <DataFilesSidebar styleName="sidebar" />
         <div styleName="content">
-          <DataFilesSearchbar styleName="content-toolbar" />
+          <DataFilesSearchbar
+            styleName="content-toolbar"
+            api={listingParams.api}
+            scheme={listingParams.scheme}
+            system={listingParams.system}
+          />
           <div styleName="content-table">
             <DataFilesSwitch />
           </div>

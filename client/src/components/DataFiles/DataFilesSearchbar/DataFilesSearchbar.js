@@ -11,8 +11,11 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
   const [prevQuery, setPrevQuery] = useState('');
   const history = useHistory();
-  const resultCount = 1; // ???: How to increment this?
+  const resultCount = 0; // ???: How to increment this?
   const sectionName = 'My Data';
+  const resultSummary = resultCount
+    ? `${resultCount} Results Found for ${prevQuery}`
+    : '';
 
   const routeSearch = () => {
     const qs = query
@@ -23,41 +26,22 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
 
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
-  const searchClear = () => {
+  const emptySearch = () => {
     setQuery('');
     setPrevQuery(query);
 
-    // ???: How to clear search?
+    // ???: How to empty the search?
   };
 
   const onSubmit = e => {
-    // TEMPORARY: Testing form submission
-    // console.log('Search query (via `FormData`): ', (new FormData(e.currentTarget)).get('query'));
-    // console.log('Search query (via `query``): ', query);
-
     routeSearch();
     e.preventDefault();
   };
   const onClear = e => {
-    searchClear();
+    emptySearch();
     e.preventDefault();
   };
   const onChange = e => setQuery(e.target.value);
-
-  const resultSummary = `${resultCount} Results Found for ${prevQuery}`;
-  let resultMessage;
-  if (resultCount) {
-    resultMessage = (
-      <output
-        value={resultSummary}
-        name="query"
-        aria-label="Summary of Search Results"
-        styleName="output"
-      >
-        {resultSummary}
-      </output>
-    );
-  }
 
   return (
     <form
@@ -91,8 +75,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
       </fieldset>
       <fieldset styleName="summary-fieldset">
         <output
-          value={resultSummary}
-          name="query"
+          name="results"
           aria-label="Summary of Search Results"
           styleName="output"
         >
@@ -113,6 +96,10 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   );
 };
 DataFilesSearchbar.propTypes = {
+  /* API endpoint values */
+  api: PropTypes.string.isRequired,
+  scheme: PropTypes.string.isRequired,
+  system: PropTypes.string.isRequired,
   /** Additional className for the root element */
   className: PropTypes.string
 };
