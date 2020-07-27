@@ -5,17 +5,17 @@ import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import queryString from 'query-string';
+import { createTemplateFunction } from 'utils/taggedTemplates';
 import './DataFilesSearchbar.module.css';
+
+export const createMessage = createTemplateFunction`${'count'} Results Found for ${'query'}`;
 
 const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
   const [prevQuery, setPrevQuery] = useState('');
+  const [resultCount, setResultCount] = useState('');
   const history = useHistory();
-  const resultCount = 0; // ???: How to increment this?
   const sectionName = 'My Data';
-  const resultSummary = resultCount
-    ? `${resultCount} Results Found for ${prevQuery}`
-    : '';
 
   const routeSearch = () => {
     const qs = query
@@ -23,12 +23,14 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
       : '';
 
     setPrevQuery(query);
+    setResultCount(100); // ???: By what value to incremeent this?
 
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
   const emptySearch = () => {
     setQuery('');
     setPrevQuery(query);
+    setResultCount(0);
 
     // ???: How to empty the search?
   };
@@ -45,7 +47,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
 
   return (
     <form
-      data-testid="form"
+      aria-label={`${sectionName} Search`}
       className={className}
       styleName="container"
       onSubmit={onSubmit}
@@ -79,7 +81,9 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
           aria-label="Summary of Search Results"
           styleName="output"
         >
-          {resultSummary}
+          {resultCount
+            ? createMessage({ count: resultCount, query: prevQuery })
+            : ''}
         </output>
       </fieldset>
       {/* FP-505: Implement Filter Dropdown */}
@@ -89,6 +93,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
         color="link"
         styleName="clear-button"
         onClick={onClear}
+        data-testid="reset"
       >
         Back to All Files
       </Button>
