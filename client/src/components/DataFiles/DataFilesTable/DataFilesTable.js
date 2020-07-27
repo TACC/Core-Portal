@@ -64,6 +64,15 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       </div>
     );
   }
+  if (err) {
+    return (
+      <div className="h-100 listing-placeholder">
+        <Message type="warn">
+          There was a problem accessing this file system.
+        </Message>
+      </div>
+    );
+  }
   if (filesLength === 0) {
     return (
       <div className="h-100 listing-placeholder">
