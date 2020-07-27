@@ -56,9 +56,16 @@ function jobs(state = initialState, action) {
       };
     case 'UPDATE_JOB_STATUS': {
       const event = action.payload.extra;
-      const job = state.list.find(el => el.id === event.id);
-      job.status = event.status;
-      return state;
+      const list = state.list.map(job => {
+        if (event.id === job.id) {
+          return { ...job, status: event.status };
+        }
+        return job;
+      });
+      return {
+        ...state,
+        list
+      };
     }
     default:
       return state;
