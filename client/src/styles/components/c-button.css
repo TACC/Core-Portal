@@ -32,7 +32,7 @@ Styleguide Components.Button
   /* Normalize child element box sizes */
   display: flex;
   /* Align elements horizontally and vertically */
-  align-items: center; /* FP-515: Alignment of font icon glyph will be fixed */
+  align-items: center;
   justify-content: center;
 }
 
