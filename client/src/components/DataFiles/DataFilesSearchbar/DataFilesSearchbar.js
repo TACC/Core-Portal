@@ -23,6 +23,9 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
       ? `?${queryString.stringify({ query_string: query })}`
       : '';
 
+    // No results found during search (status will reflect this)
+    setResultCount(0);
+
     setPrevQuery(query);
     setResultCount(100); // !!!: By what value to increment this?
 
