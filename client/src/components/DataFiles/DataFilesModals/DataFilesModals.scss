@@ -13,6 +13,8 @@
         padding: 1.3rem;
     }
     .breadcrumbs {
+      font-size: 20px; /* TODO: During FP-120, replace this with commented style below */
+      // font-size: 12px; /* 10px design * 1.2 design-to-app ratio */
       padding: 0 10px 0;
       color: #707070;
     }
