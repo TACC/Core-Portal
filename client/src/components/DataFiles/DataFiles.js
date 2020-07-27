@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 
-import './DataFiles.module.scss';
+import './DataFiles.module.css';
 
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
