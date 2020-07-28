@@ -1,7 +1,8 @@
 const initialSystemState = {
   private: '',
   community: '',
-  public: ''
+  public: '',
+  systems_list: []
 };
 
 export function systems(state = initialSystemState, action) {

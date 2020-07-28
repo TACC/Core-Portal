@@ -21,7 +21,7 @@ class SystemListingView(BaseApiView):
         mydata_system = get_user_home_system_id(request.user)
 
 
-        system_list = [
+        systems_list = [
             {
                 'name': 'My Data',
                 'system': mydata_system,
@@ -31,7 +31,7 @@ class SystemListingView(BaseApiView):
             {
                 'name': 'Community Data',
                 'system': community_data_system,
-                'scheme': 'public',
+                'scheme': 'community',
                 'api': 'tapis'
             },
             {
@@ -47,7 +47,7 @@ class SystemListingView(BaseApiView):
             'private': mydata_system,
             'community': community_data_system,
             'public': public_data_system,
-            'system_list': system_list
+            'systems_list': systems_list
         }
 
         return JsonResponse(response)

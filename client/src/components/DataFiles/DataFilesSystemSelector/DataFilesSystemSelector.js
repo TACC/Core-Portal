@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 import {
+  ButtonDropdown,
   DropdownMenu,
   DropdownToggle,
   DropdownItem
 } from 'reactstrap';
+import { v4 as uuidv4 } from 'uuid';
 import './DataFilesSystemSelector.scss';
 
-const DataFilesSidebar = (system, onSelect) => {
-  const dispatch = useDispatch();
+const DataFilesSystemSelector = ({ systemId, onSelect }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedSystem, setSelectedSystem] = useState(system);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const systems_list = useSelector(state => state.systems.systems_list);
+  const initialSystem = systemId ? systems_list.find(system => system.system === systemId) : systems_list[0];
+  const [selectedSystem, setSelectedSystem] = useState(initialSystem);
   const openSystem = (system) => {
     onSelect(system.system);
+    setSelectedSystem(system);
     setDropdownOpen(false);
   }
 
@@ -26,13 +30,13 @@ const DataFilesSidebar = (system, onSelect) => {
           id="data-files-select-system"
           className="data-files-btn"
         >
-          { selectedSystem }
+          { selectedSystem ? selectedSystem.name : '' }
         </DropdownToggle>
         <DropdownMenu>
           {
             systems_list.map(
               (system) => (
-                <DropdownItem onClick={openSystem(system)}>
+                <DropdownItem key={uuidv4()}>
                   {system.name}
                 </DropdownItem>
               )
@@ -44,4 +48,13 @@ const DataFilesSidebar = (system, onSelect) => {
   );
 };
 
-export default DataFilesSidebar;
+DataFilesSystemSelector.propTypes = {
+  systemId: PropTypes.string,
+  onSelect: PropTypes.func.isRequired
+};
+
+DataFilesSystemSelector.defaultProps = {
+  systemId: null
+}
+
+export default React.memo(DataFilesSystemSelector);
