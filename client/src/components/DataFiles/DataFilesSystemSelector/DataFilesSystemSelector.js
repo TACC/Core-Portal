@@ -1,26 +1,18 @@
 import React, { useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  ButtonDropdown,
-  DropdownMenu,
-  DropdownToggle,
-  DropdownItem
-} from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesSystemSelector.scss';
 
 const DataFilesSystemSelector = ({ systemId, section }) => {
   const dispatch = useDispatch();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const systems_list = useSelector(state => state.systems.systems_list);
-  const initialSystem = systemId ? systems_list.find(system => system.system === systemId) : systems_list[0];
-  const [selectedSystem, setSelectedSystem] = useState(initialSystem);
+  const findSystem = (systemId) => systems_list.find(system => system.system === systemId);
+  const initialSystem = systemId ? findSystem(systemId) : systems_list[0];
 
-  const openSystem = useCallback((system) => {
-    setSelectedSystem(system);
-    setDropdownOpen(false);
+  const openSystem = useCallback((event) => {
+    let systemId = event.target.value;
+    let system = findSystem(systemId);
     dispatch({
       type: 'FETCH_FILES',
       payload: {
@@ -28,30 +20,24 @@ const DataFilesSystemSelector = ({ systemId, section }) => {
         section
       }
     })
-  }, [dispatch, section]);
+  }, [dispatch, section, findSystem, systems_list]);
 
   return (
     <>
-      <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-        <DropdownToggle
-          color="primary"
-          id="data-files-select-system"
-          className="data-files-btn"
-        >
-          { selectedSystem ? selectedSystem.name : '' }
-        </DropdownToggle>
-        <DropdownMenu>
-          {
-            systems_list.map(
-              (system) => (
-                <DropdownItem key={uuidv4()} onClick={() => openSystem(system)}>
-                  {system.name}
-                </DropdownItem>
-              )
+      <select onChange={openSystem} defaultValue={initialSystem}>
+        {
+          systems_list.map(
+            (system) => (
+              <option 
+                key={uuidv4()} 
+                value={system.system}
+              >
+                {system.name}
+              </option>
             )
-          }
-        </DropdownMenu>
-      </ButtonDropdown>
+          )
+        }
+      </select>
     </>
   );
 };
