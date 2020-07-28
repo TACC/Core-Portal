@@ -33,9 +33,6 @@ class PortalProfile(models.Model):
     website = models.CharField(max_length=256, default=None, null=True, blank=True)
     orcid_id = models.CharField(max_length=256, default=None, null=True, blank=True)
     professional_level = models.CharField(max_length=256, default=None, null=True)
-    active_systems = models.CharField(max_length=4096, default=None, null=True)
-    active_allocations = models.TextField(max_length=None, default=None, null=True)
-    inactive_allocations = models.TextField(max_length=None, default=None, null=True)
 
     # Default to False. If PORTAL_USER_ACCOUNT_SETUP_STEPS is empty,
     # setup_complete will be set to True on first login
