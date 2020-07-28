@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Dashboard from '../Dashboard';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
+import UIPatterns from '../UIPatterns';
 import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
 import History from '../History';
@@ -14,7 +15,11 @@ import './Workbench.scss';
 function Workbench() {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
-
+  // Show some entries only in local development
+  const isDebug = useSelector(state =>
+    state.workbench.status ? state.workbench.status.debug : false
+  );
+  const showUIPatterns = isDebug;
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({ type: 'FETCH_SYSTEMS' });
@@ -47,6 +52,9 @@ function Workbench() {
             component={Allocations}
           />
           <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
+          {showUIPatterns && (
+            <Route path={`${path}${ROUTES.UI}`} component={UIPatterns} />
+          )}
           <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
         </Switch>
       </div>
