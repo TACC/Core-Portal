@@ -4,6 +4,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
+import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemSelector';
 
 const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
   const systems = useSelector(state => state.systems, shallowEqual);
@@ -45,7 +46,14 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
       <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-12 d-flex flex-column">
-            <div className="dataFilesModalColHeader">Select Input</div>
+            <div className="dataFilesModalColHeader">
+              Select Input
+              <DataFilesSystemSelector
+                systemId={modalParams.system}
+                section="modal"
+              >
+              </DataFilesSystemSelector>
+            </div>
             <DataFilesBreadcrumbs
               api={modalParams.api}
               scheme={modalParams.scheme}

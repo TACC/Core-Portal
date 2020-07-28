@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   ButtonDropdown,
@@ -10,7 +10,8 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesSystemSelector.scss';
 
-const DataFilesSystemSelector = ({ systemId, onSelect }) => {
+const DataFilesSystemSelector = ({ systemId, section }) => {
+  const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const systems_list = useSelector(state => state.systems.systems_list);
@@ -20,8 +21,14 @@ const DataFilesSystemSelector = ({ systemId, onSelect }) => {
   const openSystem = useCallback((system) => {
     setSelectedSystem(system);
     setDropdownOpen(false);
-    onSelect(system);
-  }, []);
+    dispatch({
+      type: 'FETCH_FILES',
+      payload: {
+        ...system,
+        section
+      }
+    })
+  }, [dispatch, section]);
 
   return (
     <>
@@ -51,7 +58,7 @@ const DataFilesSystemSelector = ({ systemId, onSelect }) => {
 
 DataFilesSystemSelector.propTypes = {
   systemId: PropTypes.string,
-  onSelect: PropTypes.func.isRequired
+  section: PropTypes.string.isRequired
 };
 
 DataFilesSystemSelector.defaultProps = {

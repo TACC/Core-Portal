@@ -1,9 +1,8 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemSelector';
 import './DataFilesBreadcrumbs.scss';
 
 const BreadcrumbLink = ({ api, scheme, system, path, children, section }) => {
@@ -59,7 +58,7 @@ BreadcrumbLink.propTypes = {
   children: PropTypes.element.isRequired
 };
 
-const DataFilesBreadcrumbs = ({ api, scheme, system, path, section, systemSelector }) => {
+const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
   const dispatch = useDispatch();
   const paths = [];
   const pathComps = [];
@@ -84,34 +83,17 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section, systemSelect
     }
   })();
 
-  const onSystemSelect = useCallback((system) => {
-    dispatch({
-      type: 'FETCH_FILES',
-      payload: {
-        ...system,
-        section,
-      }
-    })
-  }, [section, dispatch]);
-
   return (
     <div className="breadcrumbs">
-      {
-        systemSelector ?
-          <DataFilesSystemSelector systemId={system} onSelect={onSystemSelect}>
-          </DataFilesSystemSelector>
-        :
-          <BreadcrumbLink
-            api={api}
-            scheme={scheme}
-            system={system}
-            path=""
-            section={section}
-          >
-            <>{root}</>
-          </BreadcrumbLink>
-      }
-
+      <BreadcrumbLink
+        api={api}
+        scheme={scheme}
+        system={system}
+        path=""
+        section={section}
+      >
+        <>{root}</>
+      </BreadcrumbLink>
       {pathComps.map((pathComp, i) => {
         if (i < paths.length - 2) {
           return ' /... ';
@@ -144,11 +126,6 @@ DataFilesBreadcrumbs.propTypes = {
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
-  systemSelector: PropTypes.bool
 };
-
-DataFilesBreadcrumbs.defaultProps = {
-  systemSelector: false
-}
 
 export default DataFilesBreadcrumbs;
