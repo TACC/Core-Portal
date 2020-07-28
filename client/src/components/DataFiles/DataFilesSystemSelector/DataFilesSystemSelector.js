@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   ButtonDropdown,
@@ -16,11 +16,12 @@ const DataFilesSystemSelector = ({ systemId, onSelect }) => {
   const systems_list = useSelector(state => state.systems.systems_list);
   const initialSystem = systemId ? systems_list.find(system => system.system === systemId) : systems_list[0];
   const [selectedSystem, setSelectedSystem] = useState(initialSystem);
-  const openSystem = (system) => {
-    onSelect(system.system);
+
+  const openSystem = useCallback((system) => {
     setSelectedSystem(system);
     setDropdownOpen(false);
-  }
+    onSelect(system);
+  }, []);
 
   return (
     <>
@@ -36,7 +37,7 @@ const DataFilesSystemSelector = ({ systemId, onSelect }) => {
           {
             systems_list.map(
               (system) => (
-                <DropdownItem key={uuidv4()}>
+                <DropdownItem key={uuidv4()} onClick={() => openSystem(system)}>
                   {system.name}
                 </DropdownItem>
               )

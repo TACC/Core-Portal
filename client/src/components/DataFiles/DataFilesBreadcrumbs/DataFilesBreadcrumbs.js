@@ -7,8 +7,8 @@ import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemS
 import './DataFilesBreadcrumbs.scss';
 
 const BreadcrumbLink = ({ api, scheme, system, path, children, section }) => {
-  const dispatch = useDispatch();
   const onClick = e => {
+    const dispatch = useDispatch();
     e.stopPropagation();
     e.preventDefault();
     dispatch({
@@ -60,6 +60,7 @@ BreadcrumbLink.propTypes = {
 };
 
 const DataFilesBreadcrumbs = ({ api, scheme, system, path, section, systemSelector }) => {
+  const dispatch = useDispatch();
   const paths = [];
   const pathComps = [];
   path
@@ -84,8 +85,14 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section, systemSelect
   })();
 
   const onSystemSelect = useCallback((system) => {
-    console.log(system);
-  });
+    dispatch({
+      type: 'FETCH_FILES',
+      payload: {
+        ...system,
+        section,
+      }
+    })
+  }, [section, dispatch]);
 
   return (
     <div className="breadcrumbs">
@@ -141,7 +148,7 @@ DataFilesBreadcrumbs.propTypes = {
 };
 
 DataFilesBreadcrumbs.defaultProps = {
-  systemSelector: true
+  systemSelector: false
 }
 
 export default DataFilesBreadcrumbs;

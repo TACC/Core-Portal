@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -30,6 +30,9 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     toggle();
   };
 
+  useEffect(() => {
+    dispatch({ type: 'FETCH_SYSTEMS' });
+  }, [dispatch])
   return (
     <Modal
       isOpen={isOpen}
@@ -49,6 +52,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               system={modalParams.system}
               path={modalParams.path || '/'}
               section="modal"
+              systemSelector={true}
             />
             <div className="filesListing">
               <DataFilesModalListingTable

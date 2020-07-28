@@ -123,6 +123,7 @@ const DataFilesMoveModal = React.memo(() => {
               system={modalParams.system}
               path={modalParams.path || '/'}
               section="modal"
+              systemSelector={true}
             />
             <div className="filesListing">
               <DataFilesModalListingTable
