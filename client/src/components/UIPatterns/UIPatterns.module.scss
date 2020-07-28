@@ -1,0 +1,45 @@
+/* This is a CSS Modules, and minimal, version of the Dashboard stylesheet */
+
+.container {
+  display: flex;
+  flex-direction: column;
+
+  padding: 20px 40px 0 25px;
+}
+.items {
+  /* As a flex item */
+  flex-grow: 1;
+
+  /* As a flex container */
+  display: flex;
+  flex-direction: column;
+}
+/* Make bottom-most item fill up remaining vertical space */
+.items > :last-child {
+  flex-grow: 1;
+}
+
+.header,
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.header {
+  border-bottom: 1px solid #707070;
+}
+
+.header h5 {
+  font-weight: 400;
+}
+
+/* FAQ: Indirect child element of `.dashboard-items` */
+/* RFC: Class name `.dashboard-item` (to coincide with `.dashboard-items`) */
+.grid-item {
+  margin-top: 20px;
+}
+
+.items {
+  font-size: 14px;
+}

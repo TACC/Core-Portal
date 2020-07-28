@@ -8,8 +8,6 @@ import {
 } from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
 
 import JobHistory from './HistoryViews';
@@ -58,7 +56,7 @@ const Sidebar = () => {
           activeStyleName="active"
           className="nav-content"
         >
-          <FontAwesomeIcon icon={faDesktop} size="1x" styleName="link-icon" />
+          <i className="icon icon-jobs" />
           <span styleName="link-text">Jobs</span>
           <HistoryBadge
             unread={
