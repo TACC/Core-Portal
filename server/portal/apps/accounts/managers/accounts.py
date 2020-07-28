@@ -99,8 +99,9 @@ def setup(username, system):
     user = check_user(username)
     mgr = UserSystemsManager(user, system)
     logger.debug('User Home Manager class: %s', mgr.__class__)
-    home_dir = mgr.get_or_create_dir(user)
-    home_sys = mgr.get_or_create_system(user)
+    home_dir = mgr.setup_private_directory(user)
+    home_sys = mgr.setup_private_system(user)
+
     if not user.profile.setup_complete:
         # Will this ever run if "profile.setup_complete" is set to True before this is ever called?
         logger.info("Executing setup steps for %s", username)
