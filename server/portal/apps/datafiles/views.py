@@ -1,4 +1,5 @@
 from portal.apps.accounts.models import PortalProfile
+from portal.apps.auth.tasks import check_user_allocations
 from portal.views.base import BaseApiView
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -20,10 +21,19 @@ class SystemListingView(BaseApiView):
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
         user_allocations = []
 
-        # get user profile and check for allocations
-        user = get_user_model().objects.get(username=request.user.username)
-        profile = PortalProfile.objects.get(user=user)
-        user_active_systems = json.loads(profile.active_systems)
+    
+        try:
+            user = get_user_model().objects.get(username=request.user.username)
+            profile = PortalProfile.objects.get(user=user)
+            user_active_systems = json.loads(profile.active_systems)
+        except:
+            # if user does not have active_systems saved in their profile run
+            # check_user_allocations task and display default systems
+            check_user_allocations.apply_async(args=[request.user.username, local_systems]).get()
+            user = get_user_model().objects.get(username=request.user.username)
+            profile = PortalProfile.objects.get(user=user)
+            user_active_systems = json.loads(profile.active_systems)
+
 
         response = {'system_list': []}
         for locsys, details in local_systems.items():
