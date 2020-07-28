@@ -20,10 +20,34 @@ class SystemListingView(BaseApiView):
         public_data_system = settings.AGAVE_PUBLIC_DATA_SYSTEM
         mydata_system = get_user_home_system_id(request.user)
 
+
+        system_list = [
+            {
+                'name': 'My Data',
+                'system': mydata_system,
+                'scheme': 'private',
+                'api': 'tapis',
+            },
+            {
+                'name': 'Community Data',
+                'system': community_data_system,
+                'scheme': 'public',
+                'api': 'tapis'
+            },
+            {
+                'name': 'Public Data',
+                'system': public_data_system,
+                'scheme': 'public',
+                'api': 'tapis'
+            }
+        ]
+
+
         response = {
             'private': mydata_system,
             'community': community_data_system,
-            'public': public_data_system
+            'public': public_data_system,
+            'system_list': system_list
         }
 
         return JsonResponse(response)
