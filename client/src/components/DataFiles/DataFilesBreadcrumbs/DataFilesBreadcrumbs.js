@@ -59,7 +59,6 @@ BreadcrumbLink.propTypes = {
 };
 
 const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
-  const dispatch = useDispatch();
   const paths = [];
   const pathComps = [];
   path
@@ -125,7 +124,7 @@ DataFilesBreadcrumbs.propTypes = {
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
-  section: PropTypes.string.isRequired,
+  section: PropTypes.string.isRequired
 };
 
 export default DataFilesBreadcrumbs;

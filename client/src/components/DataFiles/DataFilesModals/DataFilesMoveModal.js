@@ -122,8 +122,7 @@ const DataFilesMoveModal = React.memo(() => {
               <DataFilesSystemSelector
                 systemId={modalParams.system}
                 section="modal"
-              >
-              </DataFilesSystemSelector>
+              />
             </div>
             <DataFilesBreadcrumbs
               api={modalParams.api}
@@ -131,7 +130,7 @@ const DataFilesMoveModal = React.memo(() => {
               system={modalParams.system}
               path={modalParams.path || '/'}
               section="modal"
-              systemSelector={true}
+              systemSelector
             />
             <div className="filesListing">
               <DataFilesModalListingTable

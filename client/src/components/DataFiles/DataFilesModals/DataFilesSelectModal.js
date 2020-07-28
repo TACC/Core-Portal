@@ -33,7 +33,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
 
   useEffect(() => {
     dispatch({ type: 'FETCH_SYSTEMS' });
-  }, [dispatch])
+  }, [dispatch]);
   return (
     <Modal
       isOpen={isOpen}
@@ -51,8 +51,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               <DataFilesSystemSelector
                 systemId={modalParams.system}
                 section="modal"
-              >
-              </DataFilesSystemSelector>
+              />
             </div>
             <DataFilesBreadcrumbs
               api={modalParams.api}
@@ -60,7 +59,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               system={modalParams.system}
               path={modalParams.path || '/'}
               section="modal"
-              systemSelector={true}
+              systemSelector
             />
             <div className="filesListing">
               <DataFilesModalListingTable
