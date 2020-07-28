@@ -114,9 +114,8 @@ const DataFilesModalButtonCell = ({
   disabled
 }) => {
   const onClick = () => operationCallback(system, path);
-  const formatSupportsOperation = operationOnlyForFolders
-    ? format === 'folder'
-    : true;
+  const formatSupportsOperation =
+    !operationOnlyForFolders || format === 'folder';
   return (
     formatSupportsOperation && (
       <span>
