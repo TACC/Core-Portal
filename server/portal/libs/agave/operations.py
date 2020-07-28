@@ -225,14 +225,20 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         return {'system': src_system, 'path': src_path_full, 'name': file_name}
 
     try:
-        client.files.list(systemId=dest_system,
-                          filePath="{}/{}".format(dest_path, file_name))
+        # list the directory and check if file_name exists
+        file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
 
-        # Destination path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        file_name = '{}_{}{}'.format(_name, now, _ext)
+        if len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
+            inc = 1
+            _ext = os.path.splitext(file_name)[1].lower()
+            _name = os.path.splitext(file_name)[0]
+            _inc = "({})".format(inc)
+            file_name = '{}{}{}'.format(_name, _inc, _ext)
+
+            while len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
+                inc += 1
+                _inc = "({})".format(inc)
+                file_name = '{}{}{}'.format(_name, _inc, _ext)
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
@@ -292,15 +298,15 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
         # list the directory and check if file_name exists
         file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
 
-        if len([x['name'] for x in file_listing if x['name']==file_name]) > 0:
+        if len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
             inc = 1
             _ext = os.path.splitext(file_name)[1].lower()
             _name = os.path.splitext(file_name)[0]
             _inc = "({})".format(inc)
             file_name = '{}{}{}'.format(_name, _inc, _ext)
 
-            while len([x['name'] for x in file_listing if x['name']==file_name]) > 0:
-                inc+=1
+            while len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
+                inc += 1
                 _inc = "({})".format(inc)
                 file_name = '{}{}{}'.format(_name, _inc, _ext)
     except HTTPError as err:
@@ -412,17 +418,23 @@ def trash(client, system, path):
         mkdir(client, system, '/', settings.AGAVE_DEFAULT_TRASH_NAME)
 
     try:
-        client.files.list(systemId=system,
-                          filePath=os.path.join(settings.AGAVE_DEFAULT_TRASH_NAME,
-                                                file_name))
-        # Trash path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        trash_name = '{}_{}{}'.format(_name, now, _ext)
+        # list the defaul trash directory and check if file_name exists
+        file_listing = client.files.list(systemId=system,
+                                         filePath=os.path.join(settings.AGAVE_DEFAULT_TRASH_NAME, file_name))
+
+        if len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
+            inc = 1
+            _ext = os.path.splitext(file_name)[1].lower()
+            _name = os.path.splitext(file_name)[0]
+            _inc = "({})".format(inc)
+            file_name = '{}{}{}'.format(_name, _inc, _ext)
+
+            while len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
+                inc += 1
+                _inc = "({})".format(inc)
+                file_name = '{}{}{}'.format(_name, _inc, _ext)
     except HTTPError as err:
         if err.response.status_code != 404:
-            logger.error("Unexpected exception listing path {} under .trash in system {}".format(file_name, system))
             raise
 
     resp = move(client, system, path, system,
