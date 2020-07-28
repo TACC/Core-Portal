@@ -72,12 +72,16 @@ describe('workbench sidebar', () => {
   });
 
   it.each(DEBUG_PAGES)('is not available', page => {
-    const { queryByText } = renderSideBar(mockStore({workbench}));
+    const { queryByText } = renderSideBar(
+      mockStore({ workbench, notifications })
+    );
     expect(queryByText(page)).toBeNull();
   });
 
   it.each(DEBUG_PAGES)('is available in debug mode', page => {
-    const { getByText } = renderSideBar(mockStore({workbench: {status: {debug:true}}}));
+    const { getByText } = renderSideBar(
+      mockStore({ workbench: { status: { debug: true } }, notifications })
+    );
     const path = getPath(page);
     expect(getByText(page)).toBeDefined();
     expect(getByText(page).closest('a')).toHaveAttribute(
