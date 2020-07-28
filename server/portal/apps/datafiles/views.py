@@ -18,27 +18,13 @@ class SystemListingView(BaseApiView):
     """System Listing View"""
 
     def get(self, request):
-        # gather local and external storage systems for My Data listing
+        # gather local storage systems for My Data listing
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
-        user_allocations = []
-
-    
-        try:
-            user = get_user_model().objects.get(username=request.user.username)
-            profile = PortalProfile.objects.get(user=user)
-            user_active_systems = json.loads(profile.active_systems)
-        except:
-            # if user does not have active_systems saved in their profile run
-            # check_user_allocations task and display default systems
-            check_user_allocations.apply_async(args=[request.user.username, local_systems]).get()
-            user = get_user_model().objects.get(username=request.user.username)
-            profile = PortalProfile.objects.get(user=user)
-            user_active_systems = json.loads(profile.active_systems)
-
+        user_systems = check_user_allocations.apply_async(args=[request.user.username, local_systems]).get()
 
         response = {'system_list': []}
         for locsys, details in local_systems.items():
-            if locsys in user_active_systems:
+            if locsys in user_systems:
                 response['system_list'].append(
                     {
                         'name': details['name'],
