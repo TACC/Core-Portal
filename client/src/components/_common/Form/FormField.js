@@ -38,7 +38,7 @@ const FormField = ({ label, description, required, agaveFile, ...props }) => {
         ) : null}
       </Label>
       {agaveFile ? (
-        <div>
+        <>
           <DataFilesSelectModal
             isOpen={openAgaveFileModal}
             toggle={() => {
@@ -62,7 +62,7 @@ const FormField = ({ label, description, required, agaveFile, ...props }) => {
             </InputGroupAddon>
             <Input {...field} {...props} bsSize="sm" />
           </InputGroup>
-        </div>
+        </>
       ) : (
         <Input {...field} {...props} bsSize="sm" />
       )}
