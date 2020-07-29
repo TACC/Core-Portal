@@ -73,7 +73,7 @@ export function jobDetail(state = initialJobDetail, action) {
   switch (action.type) {
     case 'JOB_DETAILS_FETCH_STARTED':
       return {
-        jobId: action.payload.jobId,
+        jobId: action.payload,
         app: null,
         job: null,
         display: null,
