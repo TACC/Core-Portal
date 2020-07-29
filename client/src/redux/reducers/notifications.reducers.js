@@ -26,7 +26,8 @@ export default function notifications(state = initialState, action) {
           ...state.list,
           notifs: updatedNotifs,
           unread: getNumberOfUnreadNotifications(updatedNotifs),
-          unreadJobs: getNumberOfUnreadJobNotifications(updatedNotifs)
+          unreadJobs: getNumberOfUnreadJobNotifications(updatedNotifs),
+          total: updatedNotifs.length
         }
       };
     }
