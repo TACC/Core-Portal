@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Input as BootstrapInput } from 'reactstrap';
 
-import './DropdownSelector.module.scss';
+import './DropdownSelector.module.css';
 
 export const TYPES = ['', 'single', 'multiple'];
 export const DEFAULT_TYPE = ['single'];
