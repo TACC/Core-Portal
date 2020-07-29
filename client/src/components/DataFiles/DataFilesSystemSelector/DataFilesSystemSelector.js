@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
-import './DataFilesSystemSelector.scss';
+import './DataFilesSystemSelector.module.scss';
 
 const DataFilesSystemSelector = ({ systemId, section }) => {
   const dispatch = useDispatch();
@@ -26,7 +26,7 @@ const DataFilesSystemSelector = ({ systemId, section }) => {
 
   return (
     <>
-      <select onChange={openSystem} defaultValue={initialSystem}>
+      <select onChange={openSystem} defaultValue={initialSystem} styleName="system-select">
         {systemsList.map(system => (
           <option key={uuidv4()} value={system.system}>
             {system.name}
