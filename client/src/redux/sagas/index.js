@@ -1,5 +1,5 @@
 import { all } from 'redux-saga/effects';
-import { watchJobs } from './jobs.sagas';
+import { watchJobs, watchJobDetails } from './jobs.sagas';
 import watchApps from './apps.sagas';
 import watchSystems from './systems.sagas';
 import {
@@ -34,6 +34,7 @@ import { watchWorkbench } from './workbench.sagas';
 export default function* rootSaga() {
   yield all([
     watchJobs(),
+    watchJobDetails(),
     watchFetchSystems(),
     watchPushKeys(),
     watchFetchFiles(),
