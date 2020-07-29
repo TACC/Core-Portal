@@ -1,3 +1,8 @@
+import {
+  getNumberOfUnreadNotifications,
+  getNumberOfUnreadJobNotifications
+} from 'utils/notifications';
+
 export const initialState = {
   list: {
     notifs: [],
@@ -12,17 +17,25 @@ export const initialState = {
 
 export default function notifications(state = initialState, action) {
   switch (action.type) {
-    case 'NEW_NOTIFICATION':
+    case 'NEW_NOTIFICATION': {
+      const updatedNotifs = [action.payload, ...state.list.notifs];
       return {
         ...state,
         list: {
           ...state.list,
-          notifs: [action.payload, ...state.list.notifs]
+          notifs: updatedNotifs,
+          unread: getNumberOfUnreadNotifications(updatedNotifs),
+          unreadJobs: getNumberOfUnreadJobNotifications(updatedNotifs)
         }
       };
+    }
     case 'NOTIFICATIONS_LIST_FETCH_SUCCESS':
       return {
-        list: { ...action.payload },
+        list: {
+          ...action.payload,
+          unread: getNumberOfUnreadNotifications(action.payload),
+          unreadJobs: getNumberOfUnreadJobNotifications(action.payload)
+        },
         loading: false,
         loadingError: false,
         loadingErrorMessage: ''

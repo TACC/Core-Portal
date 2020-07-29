@@ -6,13 +6,12 @@ import {
   useRouteMatch,
   NavLink as RRNavLink
 } from 'react-router-dom';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDesktop } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
 
-import { getNumberOfUnreadJobNotifications } from 'utils/notifications';
 import JobHistory from './HistoryViews';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
@@ -46,11 +45,7 @@ const Header = ({ title }) => {
 Header.propTypes = { title: string.isRequired };
 
 const Sidebar = () => {
-  const { notifs } = useSelector(
-    state => state.notifications.list,
-    shallowEqual
-  );
-  const unread = getNumberOfUnreadJobNotifications(notifs);
+  const unread = useSelector(state => state.notifications.list.unread);
 
   return (
     <Nav styleName="sidebar" vertical>
