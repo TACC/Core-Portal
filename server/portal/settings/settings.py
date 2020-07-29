@@ -745,7 +745,7 @@ PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '
 
 PORTAL_JOB_NOTIFICATION_STATES = getattr(
     settings_secret, "_PORTAL_JOB_NOTIFICATION_STATES", [
-        "PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
+        "ACCEPTED", "STAGING_INPUTS", "RUNNING", "FAILED", "STOPPED", "FINISHED", "BLOCKED"]
 )
 
 # "View in Jupyter Notebook" base URL
