@@ -6,7 +6,7 @@ import './DataFilesSystemSelector.scss';
 
 const DataFilesSystemSelector = ({ systemId, section }) => {
   const dispatch = useDispatch();
-  const systemsList = useSelector(state => state.systems.systems_list);
+  const systemsList = useSelector(state => state.systems.systemsList);
   const findSystem = id => systemsList.find(system => system.system === id);
   const initialSystem = systemId ? findSystem(systemId) : systemsList[0];
 

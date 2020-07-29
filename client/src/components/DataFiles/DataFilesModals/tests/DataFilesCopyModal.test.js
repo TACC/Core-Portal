@@ -1,16 +1,18 @@
 import React from "react";
-import { Router, Route } from "react-router-dom";
-import { render, fireEvent } from "@testing-library/react";
+import { Router } from "react-router-dom";
+import { render } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import  DataFilesCopyModal  from "../DataFilesCopyModal";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import DataFilesCopyModalFixture from './DataFilesCopyModal.fixture';
+import filesModalFixture from '../../fixtures/files.modal.fixture';
+import systemsFixture from '../../fixtures/systems.fixture';
 
 const mockStore = configureStore();
 
 const initialMockState = {
-  files: DataFilesCopyModalFixture
+  files: filesModalFixture,
+  systems: systemsFixture
 };
 
 function renderComponent(component, store, history) {

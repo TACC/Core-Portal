@@ -1,4 +1,4 @@
-const DataFilesCopyModalFixture = {
+const filesModalFixture = {
   loading: {
     FilesListing: false,
     modal: false
@@ -78,4 +78,4 @@ const DataFilesCopyModalFixture = {
   previewHref: ''
 };
 
-export default DataFilesCopyModalFixture;
+export default filesModalFixture;
