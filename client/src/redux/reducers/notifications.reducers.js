@@ -17,9 +17,7 @@ export default function notifications(state = initialState, action) {
         ...state,
         list: {
           ...state.list,
-          notifs: [action.payload, ...state.list.notifs],
-          unread: state.list.unread + 1,
-          total: state.list.total + 1
+          notifs: [action.payload, ...state.list.notifs]
         }
       };
     case 'NOTIFICATIONS_LIST_FETCH_SUCCESS':

@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDesktop } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
 
+import { getNumberOfUnreadJobNotifications } from 'utils/notifications';
 import JobHistory from './HistoryViews';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
@@ -49,6 +50,8 @@ const Sidebar = () => {
     state => state.notifications.list,
     shallowEqual
   );
+  const unread = getNumberOfUnreadJobNotifications(notifs);
+
   return (
     <Nav styleName="sidebar" vertical>
       <NavItem>
@@ -60,11 +63,7 @@ const Sidebar = () => {
         >
           <FontAwesomeIcon icon={faDesktop} size="1x" styleName="link-icon" />
           <span styleName="link-text">Jobs</span>
-          <HistoryBadge
-            unread={
-              notifs.filter(n => !n.read && n.event_type === 'job').length
-            }
-          />
+          <HistoryBadge unread={unread} />
         </NavLink>
       </NavItem>
     </Nav>
