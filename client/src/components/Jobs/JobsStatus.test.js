@@ -7,17 +7,17 @@ import { toHaveClass } from '@testing-library/jest-dom/dist/matchers';
 expect.extend({ toHaveClass });
 describe('JobsStatus', () => {
   it('converts status to proper UI strings', () => {
-    expect(getStatusText('ACCEPTED')).toEqual('Accepted');
-    expect(getStatusText('PENDING')).toEqual('Pending');
+    expect(getStatusText('ACCEPTED')).toEqual('Processing');
+    expect(getStatusText('PENDING')).toEqual('Processing');
     expect(getStatusText('PROCESSING_INPUTS')).toEqual('Processing');
-    expect(getStatusText('STAGING_INPUTS')).toEqual('Staging Inputs');
-    expect(getStatusText('STAGED')).toEqual('Staged');
-    expect(getStatusText('STAGING_JOB')).toEqual('Staging Job');
+    expect(getStatusText('STAGING_INPUTS')).toEqual('Staging');
+    expect(getStatusText('STAGED')).toEqual('Staging');
+    expect(getStatusText('STAGING_JOB')).toEqual('Staging');
     expect(getStatusText('SUBMITTING')).toEqual('Submitted');
     expect(getStatusText('QUEUED')).toEqual('Queued');
     expect(getStatusText('RUNNING')).toEqual('Running');
-    expect(getStatusText('CLEANING_UP')).toEqual('Cleaning Up');
-    expect(getStatusText('ARCHIVING')).toEqual('Archiving');
+    expect(getStatusText('CLEANING_UP')).toEqual('Running');
+    expect(getStatusText('ARCHIVING')).toEqual('Running');
     expect(getStatusText('FINISHED')).toEqual('Finished');
     expect(getStatusText('STOPPED')).toEqual('Stopped');
     expect(getStatusText('FAILED')).toEqual('Failure');
