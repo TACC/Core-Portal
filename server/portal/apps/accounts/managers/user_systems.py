@@ -114,38 +114,15 @@ class UserSystemsManager():
         :rtype: str
         """
         return self.system['relative_path']
-    
-    # does not work yet but might be needed...
-    def get_work_dir(self):
-        """Gets user's work directory a for given system
-        :returns: name of home directory path
-        :rtype: str
-        """
-        return self.system['___']
 
-    def setup_private_directory(self, *args, **kwargs):
-        """Create private storage directory for a user
-        :returns: Agave response
+    def get_private_directory(self, *args, **kwargs):
+        """Gets private storage directory for a user
+        :returns: '{tasid}/{username}'
         """
-        agc = service_account()
-        try:
-            # formerly get_dir func
-            home_dir = agc.files.list(
-                systemId=self.system['home_directory'],
-                filePath=self.user.username)
-            return home_dir
-        except HTTPError as exc:
-            if exc.response.status_code == 404:
-                # formerly mkdir func
-                body = {
-                    'action': 'mkdir',
-                    'path': self.user.username
-                }
-                home_dir = agc.files.manage(
-                    systemId=self.get_system_id(), # [systemname].home.[username]
-                    filePath=self.system['relative_path'],
-                    body=body)
-                return home_dir
+        path = self.tas_user['homeDirectory']
+        assert self.tas_user
+        assert self.user.username in path
+        return path
 
     def setup_private_system(self, *args, **kwargs):
         """Create private storage system for a user
@@ -157,6 +134,7 @@ class UserSystemsManager():
             private_system = agc.systems.get(systemId=self.get_system_id())
             return private_system
         except HTTPError as exc:
+            # Need to test this...
             if exc.response.status_code == 404:
                 private_key = EncryptionUtil.create_private_key()
                 priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
