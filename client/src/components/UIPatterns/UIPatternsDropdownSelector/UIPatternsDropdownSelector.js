@@ -1,8 +1,14 @@
 import React from 'react';
-// import { DropdownSelector } from '_common';
+import { DropdownSelector } from '_common';
 
 function UIPatternsDropdownSelector() {
-  return <>Pending component</>;
+  return (
+    <DropdownSelector>
+      <option value="alice">Alice</option>
+      <option value="bob">Bob</option>
+      <option value="charlie">Charlie</option>
+    </DropdownSelector>
+  );
 }
 
 export default UIPatternsDropdownSelector;
