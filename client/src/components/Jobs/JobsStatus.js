@@ -17,7 +17,8 @@ const STATUS_TEXT_MAP = {
   FINISHED: 'Finished',
   STOPPED: 'Stopped',
   FAILED: 'Failure',
-  BLOCKED: 'Blocked'
+  BLOCKED: 'Blocked',
+  PAUSED: 'Paused'
 };
 
 export function getStatusText(status) {

@@ -22,6 +22,7 @@ describe('JobsStatus', () => {
     expect(getStatusText('STOPPED')).toEqual('Stopped');
     expect(getStatusText('FAILED')).toEqual('Failure');
     expect(getStatusText('BLOCKED')).toEqual('Blocked');
+    expect(getStatusText('PAUSED')).toEqual('Paused');
     expect(getStatusText('random_status')).toEqual('Unknown');
   });
 
