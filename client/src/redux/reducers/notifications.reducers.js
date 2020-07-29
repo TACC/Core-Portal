@@ -7,6 +7,7 @@ export const initialState = {
   list: {
     notifs: [],
     unread: 0,
+    unreadJobs: 0,
     total: 0,
     page: 0
   },
@@ -33,8 +34,8 @@ export default function notifications(state = initialState, action) {
       return {
         list: {
           ...action.payload,
-          unread: getNumberOfUnreadNotifications(action.payload),
-          unreadJobs: getNumberOfUnreadJobNotifications(action.payload)
+          unread: getNumberOfUnreadNotifications(action.payload.notifs),
+          unreadJobs: getNumberOfUnreadJobNotifications(action.payload.notifs)
         },
         loading: false,
         loadingError: false,
