@@ -298,7 +298,9 @@ PORTAL_SEARCH_MANAGERS = {
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
-PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
+PORTAL_JOB_NOTIFICATION_STATES = ["ACCEPTED", "PENDING", "PROCESSING_INPUTS", "STAGING_INPUTS", "STAGED", "STAGING_JOB",
+                                  "SUBMITTING", "QUEUED", "RUNNING", "CLEANING_UP", "ARCHIVING", "BLOCKED", "FAILED",
+                                  "STOPPED", "FINISHED"]
 
 EXTERNAL_RESOURCE_SECRETS = {
     "google-drive": {
