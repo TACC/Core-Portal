@@ -12,6 +12,7 @@
 
 /* GENERIC */
 @import url('./generics/roots.css');
+@import url('./generics/text-semantics.css');
 
 /* ELEMENTS */
 @import url('./elements/inline-text.css');
