@@ -23,7 +23,7 @@ describe('JobsStatus', () => {
     expect(getStatusText('FAILED')).toEqual('Failure');
     expect(getStatusText('BLOCKED')).toEqual('Blocked');
     expect(getStatusText('PAUSED')).toEqual('Paused');
-    expect(getStatusText('random_status')).toEqual('Unknown');
+    expect(getStatusText('random_status')).toEqual('random_status');
   });
 
   it('gets badge color for job status', () => {

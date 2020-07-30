@@ -25,7 +25,7 @@ export function getStatusText(status) {
   if (status in STATUS_TEXT_MAP) {
     return STATUS_TEXT_MAP[status];
   }
-  return 'Unknown';
+  return status;
 }
 
 export function getBadgeColor(status) {
