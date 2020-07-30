@@ -14,4 +14,8 @@
   padding: 0.25rem;
   text-overflow: ellipsis;
   overflow: auto;
+
+  & > strong {
+    font-weight: 500;
+  }
 }
