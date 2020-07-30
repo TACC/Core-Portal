@@ -35,7 +35,6 @@
 /* Unset styles on children */
 .container option,
 .container optgroup {
-  color: var(--global-color-primary--x-dark);
   font-style: normal;
   font-weight: normal;
 }
