@@ -45,7 +45,7 @@ const Header = ({ title }) => {
 Header.propTypes = { title: string.isRequired };
 
 const Sidebar = () => {
-  const unread = useSelector(state => state.notifications.list.unread);
+  const unreadJobs = useSelector(state => state.notifications.list.unreadJobs);
 
   return (
     <Nav styleName="sidebar" vertical>
@@ -58,7 +58,7 @@ const Sidebar = () => {
         >
           <FontAwesomeIcon icon={faDesktop} size="1x" styleName="link-icon" />
           <span styleName="link-text">Jobs</span>
-          <HistoryBadge unread={unread} />
+          <HistoryBadge unread={unreadJobs} />
         </NavLink>
       </NavItem>
     </Nav>

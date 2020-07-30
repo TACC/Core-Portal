@@ -1,8 +1,7 @@
 import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
-import { useSelector, shallowEqual } from 'react-redux';
-import { getNumberOfUnreadNotifications } from 'utils/notifications';
+import { useSelector } from 'react-redux';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from '../History/HistoryBadge';
 import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
@@ -13,11 +12,7 @@ const Sidebar = () => {
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
 
-  const { notifs } = useSelector(
-    state => state.notifications.list,
-    shallowEqual
-  );
-  const unread = getNumberOfUnreadNotifications(notifs);
+  const unread = useSelector(state => state.notifications.list.unread);
 
   return (
     <Nav styleName="root" vertical>
