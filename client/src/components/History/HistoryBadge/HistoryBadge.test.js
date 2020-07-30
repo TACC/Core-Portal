@@ -5,17 +5,17 @@ import '@testing-library/jest-dom/extend-expect';
 
 describe('History Badge', () => {
   it('renders the badge if there are unread notifs', () => {
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <HistoryBadge unread={1}/>
     );
-    expect(getByTestId('history-badge')).toBeDefined();
-    expect(getByTestId('history-badge')).toHaveTextContent(/1/);
+    expect(getByRole('status')).toBeDefined();
+    expect(getByRole('status')).toHaveTextContent(/1/);
   });
 
   it('renders jobs', () => {
-    const { queryByTestId } = render(
+    const { queryByRole } = render(
       <HistoryBadge unread={0}/>
     );
-    expect(queryByTestId('history-badge')).toBeNull();
+    expect(queryByRole('status')).toBeNull();
   });
 });
