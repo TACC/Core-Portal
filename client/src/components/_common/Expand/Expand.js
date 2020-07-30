@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   CardHeader,
@@ -6,6 +6,7 @@ import {
   Card,
   Collapse,
 } from 'reactstrap';
+import './Expand.global.scss';
 import './Expand.module.scss';
 
 const Expand = ({ detail, message }) => {
@@ -20,12 +21,12 @@ const Expand = ({ detail, message }) => {
   return (
     <Card className="mt-1">
       <CardHeader onClick={toggleCallback}>
-        <span className="header d-inline-block text-truncate">
+        <span styleName="header" className="d-inline-block text-truncate">
           <strong>
             {detail}
           </strong>
         </span>
-        <i className={`icon-action icon-action-${isOpen ? 'collapse' : 'expand'}`}/>
+        <i styleName="icon-action" className={`icon-action icon-action-${isOpen ? 'collapse' : 'expand'}`}/>
       </CardHeader>
       <Collapse isOpen={isOpen}>
         <CardBody>{message}</CardBody>
