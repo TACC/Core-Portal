@@ -1,7 +1,14 @@
+/* NOTE: A plugin may be used, instead, when it becomes worthwhile */
+/* PORTABILITY: Only style `<select>` field (not dropdown) because of browser-limitations */
+/* CREDIT: https://github.com/filamentgroup/select-css/blob/8f91fe1/src/select-css.css */
+/* CAVEAT: Known Issues (across supported browsers):
+    - All: The menus have unique styles per browser and/or operating system.
+    - Safari: The element cascades certain styles (`color`, `font-…`) to menu texts, and they cannot be revert-ed nor initial-ed nor unset.
+    - Firefox: A `width: auto` on the field implies a min-width value equal to the longest `optgroup` (not `option`).
+*/
 .container {
   /* Load select-css after Bootstrap overrides, because Bootstrap is like our "base" */
   composes: form-control from '../../../styles/components/bootstrap.form.css';
-  composes: select-css from '../../../styles/components/external.select-css.css';
 
   font-size: 0.75rem; /* ~10px design * 1.2 design-to-app ratio */
                       /* WARNING: "iOS Safari will [force-zoom site] if […] less than 16px" */
@@ -21,6 +28,10 @@
   color: var(--global-color-accent--normal);
   font-style: italic;
   font-weight: 500;
+
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 .container:focus {
   /* border-color: var(--global-color-primary--dark); */
