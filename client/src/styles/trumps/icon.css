@@ -1,91 +1,25 @@
-/*
-  Custom Font Family
-  ===
-  Designed at TACC.
-*/
-@font-face {
-  font-family: 'core-portal'; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
-  src: url('../../fonts/core-portal-V2.1.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
+/* TRUMPS: Icons */
+@import url('./icon.fonts.css');
 
-/* FP-455: Try to use selector `.icon, [class*="icon-"]` and update app accordingly */
 .icon {
-  width: 1rem;
-  height: 1rem;
-  font-size: 1.2rem; /* 16px design * 1.2 design-to-app ratio (rounded) */
-  font-weight: normal; /* Prevent external styles from accidentally bolding the icon */
+  width: 1em;
+  height: 1em;
+  font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
   vertical-align: middle;
   display: inline-flex; /* `flex` to align `::before`; `inline` to not trigger new line */
                         /* a modern slimmer alternative to `&::before { display: block; }` */
   justify-content: center;
 }
+/* Hide accessibile text of non-empty `.icon`'s */
+.icon         { visibility: hidden; }
+.icon::before { visibility: visible; }
 
-/* FP-455: Try to use selector `.icon, [class*="icon-"]` and update app accordingly */
-[class^="icon-"]::before,
-[class*=" icon-"]::before/*,
-[class^="icon-"],
-[class*=" icon-"] */ {
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'core-portal' !important; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Aliases */
+/* .icon-contract */.icon-collapse::before {
+  content: "\e915";
 }
 
-.icon-action-expand::before {
-  content: "\59";
-}
-.icon-nav-allocation::before {
-  content: "\61";
-}
-.icon-action-copy::before {
-  content: "\63";
-}
-.icon-action-download::before {
-  content: "\64";
-}
-.icon-action-rename::before {
-  content: "\65";
-}
-.icon-nav-folder::before {
-  content: "\66";
-}
-.icon-nav-application::before {
-  content: "\69";
-}
-.icon-action-move::before {
-  content: "\6d";
-}
-.icon-nav-notification::before {
-  content: "\6e";
-}
-.icon-nav-dashboard::before {
-  content: "\6f";
-}
-.icon-nav-jupyter::before {
-  content: "\70";
-}
-.icon-action-trash::before {
-  content: "\74";
-}
-.icon-action-upload::before {
-  content: "\79";
-}
-.icon-action-collapse::before {
-  content: "\7A";
-}
-.icon-action-loading::before {
-  content: "\FA";
-}
-.icon-action-close::before {
-  content: "E900";
+/* Disabled */
+/* Icon name is retained, but icon is not desired */.icon-jobs-history::before {
+  content: "";
 }

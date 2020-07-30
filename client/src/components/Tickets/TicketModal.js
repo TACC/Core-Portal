@@ -137,9 +137,9 @@ const TicketHistoryCard = ({
 
   let toggleIcon;
   if (isOpen) {
-    toggleIcon = <i className="icon-action icon-action-collapse" />;
+    toggleIcon = <i className="icon-action icon-collapse" />;
   } else {
-    toggleIcon = <i className="icon-action icon-action-expand" />;
+    toggleIcon = <i className="icon-action icon-expand" />;
   }
 
   const ticketHeaderClassName = ticketCreator
