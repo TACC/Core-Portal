@@ -1,11 +1,13 @@
 import React from 'react';
-import { DescriptionList } from '_common';
+import { DescriptionList, Icon } from '_common';
 
 const DATA = {
   Username: 'bobward500',
   Prefix: 'Mr.',
   Name: 'Bob Ward',
-  Suffix: 'The 5th'
+  Suffix: 'The 5th',
+  'Favorite Numeric Value': 5,
+  Icon: <Icon name="dashboard" />
 };
 
 function UIPatternsDropdownSelector() {

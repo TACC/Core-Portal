@@ -33,8 +33,9 @@ DescriptionList.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
   /** Selector type */
-  /* FAQ: ESLint prevents `PropTypes.object`, so convert values to strings */
-  data: PropTypes.objectOf(PropTypes.string).isRequired,
+  /* FAQ: ESLint prevents `PropTypes.object`, but we want to support anything */
+  // eslint-disable-next-line react/forbid-prop-types
+  data: PropTypes.object.isRequired,
   /** Selector type */
   layout: PropTypes.oneOf(LAYOUTS)
 };
