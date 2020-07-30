@@ -11,11 +11,19 @@ const DescriptionList = ({ className, data, layout }) => {
   const modifierClass = isInline ? 'is-inline' : 'is-block';
 
   return (
-    <dl styleName={`container ${modifierClass}`} className={className}>
+    <dl
+      styleName={`container ${modifierClass}`}
+      className={className}
+      data-testid="list"
+    >
       {Object.keys(data).map(key => (
         <React.Fragment key={key}>
-          <dt styleName="key">{key}</dt>
-          <dd styleName="value">{data[key]}</dd>
+          <dt styleName="key" data-testid="key">
+            {key}
+          </dt>
+          <dd styleName="value" data-testid="value">
+            {data[key]}
+          </dd>
         </React.Fragment>
       ))}
     </dl>
