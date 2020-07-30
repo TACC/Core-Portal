@@ -9,7 +9,7 @@ import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
 import History from '../History';
 import * as ROUTES from '../../constants/routes';
-import NotificationToast from '../Notifications';
+import NotificationToast from '../Toasts';
 import './Workbench.scss';
 
 function Workbench() {
@@ -33,7 +33,7 @@ function Workbench() {
 
   return (
     <div className="workbench-wrapper">
-      <NotificationToast message="This is a test message" />
+      <NotificationToast />
       <Sidebar />
       <div className="workbench-content">
         <Switch>
