@@ -114,8 +114,8 @@ describe("View Team Modal", () => {
 
     // View Information for the user without usage
     fireEvent.click(getByText(/Test User1/));
-    expect(getByText(/Username:/)).toBeDefined();
-    expect(getByText(/Email:/)).toBeDefined();
+    expect(getByText(/Username/)).toBeDefined();
+    expect(getByText(/Email/)).toBeDefined();
     expect(queryByText(/Usage/)).toBeDefined();
 
     // View information for the user with usage
