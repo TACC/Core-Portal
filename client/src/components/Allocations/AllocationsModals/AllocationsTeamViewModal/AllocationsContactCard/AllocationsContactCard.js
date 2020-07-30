@@ -17,7 +17,9 @@ const AllocationsContactCard = ({ listing }) => {
         {capitalize(firstName)} {capitalize(lastName)} <br />
       </div>
       <div styleName="details">
-        <strong>Username</strong>: {username} | <strong>Email</strong>: {email}
+        <strong>Username</strong>: {username}
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <strong>Email</strong>: {email}
       </div>
       <AllocationsUsageTable rawData={listing.usageData} />
     </div>
