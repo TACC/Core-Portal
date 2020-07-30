@@ -5,7 +5,7 @@ import { Input as BootstrapInput } from 'reactstrap';
 import './DropdownSelector.module.css';
 
 export const TYPES = ['', 'single', 'multiple'];
-export const DEFAULT_TYPE = ['single'];
+export const DEFAULT_TYPE = 'single';
 
 // RFE: Support `options` object prop and require either `options` or `children` prop:
 //      - https://stackoverflow.com/a/49682510/11817077
