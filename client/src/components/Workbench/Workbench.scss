@@ -68,99 +68,11 @@
   color: white;
 }
 
-.workbench-content .ReactTable .rt-thead.-header {
-  box-shadow: none;
-  border-bottom: 1px solid #707070;
-  font-weight: 500;
-}
-
-.workbench-content .ReactTable {
-  border: none;
-}
-
-.workbench-content .ReactTable .rt-tbody .rt-tr-group {
-  border-bottom: 1px solid rgba(112, 112, 112, 0.25);
-}
-
-.workbench-content .ReactTable .rt-thead .rt-th.-sort-asc::after,
-.ReactTable .rt-thead .rt-td.-sort-asc::after {
-  margin-left: 5px;
-  font-family: "Font Awesome 5 Free"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
-  content: "\f0dd";
-  display: inline-block;
-  vertical-align: middle;
-  font-weight: 900;
-}
-
-.workbench-content .ReactTable .rt-thead .rt-th.-sort-desc,
-.workbench-content .ReactTable .rt-thead .rt-td.-sort-desc,
-.workbench-content .ReactTable .rt-thead .rt-th.-sort-asc,
-.workbench-content .ReactTable .rt-thead .rt-td.-sort-asc {
-  box-shadow: none;
-  display: flex;
-  color: #484848;
-}
-
-.workbench-content .ReactTable .rt-thead .rt-th.-sort-desc::after,
-.ReactTable .rt-thead .rt-td.-sort-desc::after {
-  margin-left: 5px;
-  font-family: "Font Awesome 5 Free"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
-  content: "\f0de";
-  display: inline-block;
-  vertical-align: middle;
-  font-weight: 900;
-}
-
-.workbench-content .ReactTable .rt-table {
-  border-bottom: 1px solid #707070;
-}
-
-.workbench-content .ReactTable .rt-thead .rt-th,
-.ReactTable .rt-thead .rt-td {
-  border-right: none;
-}
-
-.workbench-content .ReactTable .rt-tbody .rt-td {
-  border-right: none;
-}
-
 /* Overrides Bootstrap `.row`, because we need to
    "undo" two horizontal instances of Bootstrap `.row`'s. */
 .workbench-content .row {
   margin-right: -30px;
   margin-left: -30px;
-}
-
-.workbench-content .ReactTable {
-  max-height: inherit;
-}
-
-.workbench-content .ReactTable .btn {
-  padding: 0;
-  font-size: inherit;
-  width: -webkit-fill-available;
-}
-
-.workbench-content .ReactTable .btn span {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  display: block;
-  width: inherit;
-  text-align: left;
-}
-
-.workbench-content .ReactTable .rt-thead .rt-tr {
-  text-align: left;
-}
-
-.workbench-content .ReactTable .rt-noData {
-  position: relative;
-  pointer-events: inherit;
-  transform: none;
-  -webkit-transform: none;
-  left: auto;
-  top: auto;
 }
 
 /* Align content tables to the left by undoing some Bootstrap */
