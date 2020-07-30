@@ -9,7 +9,8 @@ export const initialState = {
     unread: 0,
     unreadJobs: 0,
     total: 0,
-    page: 0
+    page: 0,
+    toasts: []
   },
   loading: false,
   loadingError: false,
@@ -27,13 +28,15 @@ export default function notifications(state = initialState, action) {
           notifs: updatedNotifs,
           unread: getNumberOfUnreadNotifications(updatedNotifs),
           unreadJobs: getNumberOfUnreadJobNotifications(updatedNotifs),
-          total: updatedNotifs.length
+          total: updatedNotifs.length,
+          toasts: [action.payload, ...state.list.toasts]
         }
       };
     }
     case 'NOTIFICATIONS_LIST_FETCH_SUCCESS':
       return {
         list: {
+          ...state.list,
           ...action.payload,
           unread: getNumberOfUnreadNotifications(action.payload.notifs),
           unreadJobs: getNumberOfUnreadJobNotifications(action.payload.notifs)
@@ -55,6 +58,14 @@ export default function notifications(state = initialState, action) {
         loadingError: true,
         loadingErrorMessage: action.payload,
         loading: false
+      };
+    case 'DISCARD_TOAST':
+      return {
+        ...state,
+        list: {
+          ...state.list,
+          toasts: state.list.toasts.filter(s => s.pk !== action.payload.pk)
+        }
       };
     default:
       return state;

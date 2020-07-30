@@ -94,8 +94,16 @@ export function* deleteNotifications(action) {
   });
 }
 
+export function* discardToast(action) {
+  yield put({
+    type: 'DISCARD_TOAST',
+    payload: action.payload
+  });
+}
+
 export function* watchFetchNotifications() {
   yield takeLatest('FETCH_NOTIFICATIONS', fetchNotifications);
   yield takeEvery('NOTIFICATIONS_DELETE', deleteNotifications);
   yield takeEvery('NOTIFICATIONS_READ', readNotifications);
+  yield takeEvery('NOTIFICATIONS_DISCARD_TOAST', discardToast);
 }
