@@ -27,13 +27,7 @@ class SystemListingView(BaseApiView):
                 'system': mydata_system,
                 'scheme': 'private',
                 'api': 'tapis',
-            },
-            {
-                'name': 'My Data (Longhorn)',
-                'system': mydata_system,
-                'scheme': 'private',
-                'api': 'tapis',
-            },
+            }
         ]
 
         response = {
