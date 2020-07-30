@@ -257,7 +257,6 @@ const AppSchemaForm = ({ app }) => {
           resetForm,
           setSubmitting
         }) => {
-          console.log(errors)
           if (
             jobSubmission.response &&
             jobSubmission.submitting &&

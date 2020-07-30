@@ -51,7 +51,7 @@ const NotificationToast = () => {
       }}
       TransitionComponent={transition}
       open={open}
-      autoHideDuration={100000}
+      autoHideDuration={4000}
       onClose={handleClose}
       onExited={handleExited}
       classes={{
