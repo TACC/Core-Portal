@@ -6,7 +6,7 @@ import {
   useRouteMatch,
   NavLink as RRNavLink
 } from 'react-router-dom';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 
@@ -43,10 +43,8 @@ const Header = ({ title }) => {
 Header.propTypes = { title: string.isRequired };
 
 const Sidebar = () => {
-  const { notifs } = useSelector(
-    state => state.notifications.list,
-    shallowEqual
-  );
+  const unreadJobs = useSelector(state => state.notifications.list.unreadJobs);
+
   return (
     <Nav styleName="sidebar" vertical>
       <NavItem>
@@ -58,11 +56,7 @@ const Sidebar = () => {
         >
           <i className="icon icon-jobs" />
           <span styleName="link-text">Jobs</span>
-          <HistoryBadge
-            unread={
-              notifs.filter(n => !n.read && n.event_type === 'job').length
-            }
-          />
+          <HistoryBadge unread={unreadJobs} />
         </NavLink>
       </NavItem>
     </Nav>
