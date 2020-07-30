@@ -2,9 +2,10 @@
 /* PORTABILITY: Only style `<select>` field (not dropdown) because of browser-limitations */
 /* CREDIT: https://github.com/filamentgroup/select-css/blob/8f91fe1/src/select-css.css */
 /* CAVEAT: Known Issues (across supported browsers):
-    - All: The menus have unique styles per browser and/or operating system.
-    - Safari: The element cascades certain styles (`color`, `font-…`) to menu texts, and they cannot be revert-ed nor initial-ed nor unset.
-    - Firefox: A `width: auto` on the field implies a min-width value equal to the longest `optgroup` (not `option`).
+    1. All: The menus have unique styles per browser and/or operating system.
+    2. Safari: The element cascades certain styles (`color`, `font-…`) to menu texts, and they cannot be revert-ed nor initial-ed nor unset.
+    3. Firefox: A `width: auto` on the field implies a min-width value equal to the longest `optgroup` (not `option`).
+    4. Firefox: Extra horizontal space in field. Options are to hack-a-lot or use a plugin.
 */
 .container {
   /* Load select-css after Bootstrap overrides, because Bootstrap is like our "base" */
