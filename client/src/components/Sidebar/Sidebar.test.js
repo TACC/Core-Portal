@@ -47,7 +47,7 @@ function renderSideBar(store) {
 describe('workbench sidebar', () => {
   const mockStore = configureStore();
   it.each(PUBLIC_PAGES)('should have a link to the %s page', page => {
-    const { getByText, queryByTestId } = renderSideBar(
+    const { getByText, queryByRole } = renderSideBar(
       mockStore({ workbench, notifications })
     );
     const path = getPath(page);
@@ -56,19 +56,19 @@ describe('workbench sidebar', () => {
       'href',
       `/workbench/${path}`
     );
-    expect(queryByTestId('history-badge')).toBeNull();
+    expect(queryByRole('status')).toBeNull();
   });
 
   it('should have a notification badge', () => {
-    const { getByTestId } = renderSideBar(
+    const { getByRole } = renderSideBar(
       mockStore({
         workbench,
         notifications: { list: { unread: 1 } },
       })
     );
 
-    expect(getByTestId('history-badge')).toBeDefined();
-    expect(getByTestId('history-badge')).toHaveTextContent(/1/);
+    expect(getByRole('status')).toBeDefined();
+    expect(getByRole('status')).toHaveTextContent(/1/);
   });
 
   it.each(DEBUG_PAGES)('is not available', page => {

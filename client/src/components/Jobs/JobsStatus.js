@@ -4,21 +4,22 @@ import PropTypes from 'prop-types';
 import './Jobs.module.scss';
 
 const STATUS_TEXT_MAP = {
-  ACCEPTED: 'Accepted',
-  PENDING: 'Pending',
+  ACCEPTED: 'Processing',
+  PENDING: 'Processing',
   PROCESSING_INPUTS: 'Processing',
-  STAGING_INPUTS: 'Staging Inputs',
-  STAGED: 'Staged',
-  STAGING_JOB: 'Staging Job',
+  STAGING_INPUTS: 'Staging',
+  STAGED: 'Staging',
+  STAGING_JOB: 'Staging',
   SUBMITTING: 'Submitted',
   QUEUED: 'Queued',
   RUNNING: 'Running',
-  CLEANING_UP: 'Cleaning Up',
-  ARCHIVING: 'Archiving',
+  CLEANING_UP: 'Running',
+  ARCHIVING: 'Running',
   FINISHED: 'Finished',
   STOPPED: 'Stopped',
   FAILED: 'Failure',
-  BLOCKED: 'Blocked'
+  BLOCKED: 'Blocked',
+  PAUSED: 'Paused'
 };
 
 export function getStatusText(status) {
