@@ -21,10 +21,16 @@ class TestUserApplicationsManager(TestCase):
             autospec=True
         )
         cls.magave = cls.magave_patcher.start()
+        cls.mock_systems_manager_patcher = patch(
+            'portal.apps.workspace.managers.user_applications.UserSystemsManager'
+        )
+        cls.mock_systems_manager = cls.mock_systems_manager_patcher.start()
+        cls.mock_systems_manager.get_system_id.return_value = 'frontera.home.username'
 
     @classmethod
     def tearDownClass(cls):
         cls.magave_patcher.stop()
+        cls.mock_systems_manager_patcher.stop()
 
     def setUp(self):
         user = get_user_model().objects.get(username='username')
