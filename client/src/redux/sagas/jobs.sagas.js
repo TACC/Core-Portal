@@ -164,6 +164,10 @@ export function* getJobDetails(action) {
       });
       // todo fix order of inputs/parameters (?)
       // todo show enum display value but actual value
+
+      if (app.scheduler === 'SLURM') {
+        display.allocation = 'TODO';
+      }
     }
 
     yield put({
