@@ -40,40 +40,38 @@ const NotificationToast = () => {
   };
 
   return (
-    <>
-      <Snackbar
-        key={messageInfo ? messageInfo.pk : undefined}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left'
-        }}
-        TransitionComponent={transition}
-        open={open}
-        autoHideDuration={4000}
-        onClose={handleClose}
-        onExited={handleExited}
-        classes={{
-          anchorOriginBottomLeft: 'notification-toast-container'
-        }}
-        ContentProps={{
-          classes: {
-            root: 'notification-toast',
-            message: 'notification-toast-body'
-          }
-        }}
-        message={
-          <>
-            <div className="notification-toast-icon-wrapper">
-              <i className="icon icon-history" />
-            </div>
-            <div className="notification-toast-content">
-              <span>{messageInfo ? messageInfo.message : undefined}</span>
-            </div>
-          </>
+    <Snackbar
+      key={messageInfo ? messageInfo.pk : undefined}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left'
+      }}
+      TransitionComponent={transition}
+      open={open}
+      autoHideDuration={100000}
+      onClose={handleClose}
+      onExited={handleExited}
+      classes={{
+        anchorOriginBottomLeft: 'notification-toast-container'
+      }}
+      ContentProps={{
+        classes: {
+          root: 'notification-toast',
+          message: 'notification-toast-body'
         }
-        ClickAwayListener={{ mouseEvent: false }}
-      />
-    </>
+      }}
+      message={
+        <>
+          <div className="notification-toast-icon-wrapper">
+            <i className="icon icon-history" />
+          </div>
+          <div className="notification-toast-content">
+            <span>{messageInfo ? messageInfo.message : undefined}</span>
+          </div>
+        </>
+      }
+      ClickAwayListener={{ mouseEvent: false }}
+    />
   );
 };
 
