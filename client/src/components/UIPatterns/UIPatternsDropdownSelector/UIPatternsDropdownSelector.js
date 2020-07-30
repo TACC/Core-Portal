@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { DropdownSelector } from '_common';
 
 function UIPatternsDropdownSelector() {
+
+  const [selectedValue, setSelectedValue] = useState("");
+  const callbackDemo = useCallback(
+    (event) => {
+      setSelectedValue(event.target.value);
+    },
+    [setSelectedValue]
+  )
+
   return (
     <dl>
       <dt>
@@ -9,7 +18,7 @@ function UIPatternsDropdownSelector() {
       </dt>
       <dd>
         <small>Only field (not dropdown) can be styled cross-browser.</small>
-        <DropdownSelector>
+        <DropdownSelector onChange={callbackDemo}>
           <optgroup label="Cryptographic People">
             <option value="alice">Alice</option>
             <option value="bob">Bob</option>
@@ -21,6 +30,9 @@ function UIPatternsDropdownSelector() {
             <option value="grapes">Grapes</option>
           </optgroup>
         </DropdownSelector>
+      </dd>
+      <dd>
+        <small>Selected value: {selectedValue}</small>
       </dd>
       <dt>
         Multiple (<code>multiple</code>)
