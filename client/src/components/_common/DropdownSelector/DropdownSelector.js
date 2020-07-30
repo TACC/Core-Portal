@@ -13,7 +13,7 @@ export const DEFAULT_TYPE = 'single';
 //      - https://www.npmjs.com/package/react-either-property
 //      - "customProp" at https://reactjs.org/docs/typechecking-with-proptypes.html#proptypes
 
-const DropdownSelector = ({ type, ...props }) => {
+const DropdownSelector = ({ type, onChange, ...props }) => {
   const canSelectMany = type === 'multiple';
 
   return (
@@ -21,6 +21,7 @@ const DropdownSelector = ({ type, ...props }) => {
       // FAQ: This is a one-off, so it does not belong in `.eslintrc`
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
+      onChange={onChange}
       type="select"
       styleName="container"
       multiple={canSelectMany}
@@ -32,13 +33,16 @@ const DropdownSelector = ({ type, ...props }) => {
 };
 DropdownSelector.propTypes = {
   /** Selector type */
-  type: PropTypes.oneOf(TYPES)
+  type: PropTypes.oneOf(TYPES),
+  /** Selector type */
+  onChange: PropTypes.func
   /** Options (as children, like Reactstrap) */
   // FAQ: Limiting and documenting this has become a rabbit hole; help welcome — Wes B
   // children: PropTypes.any.isRequired
 };
 DropdownSelector.defaultProps = {
-  type: DEFAULT_TYPE
+  type: DEFAULT_TYPE,
+  onChange: () => {}
 };
 
 export default DropdownSelector;
