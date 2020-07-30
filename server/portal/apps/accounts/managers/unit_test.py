@@ -142,8 +142,8 @@ class TestUserSetup(TestCase):
         # not be executed
         self.mock_user.profile.setup_complete = True
         setup("username", "system")
-        self.mock_systems_manager.get_or_create_dir.assert_called_with("username")
-        self.mock_systems_manager.get_or_create_system.assert_called_with("system")
+        self.mock_systems_manager.return_value.get_private_directory.assert_called_with(self.mock_user)
+        self.mock_systems_manager.return_value.setup_private_system.assert_called_with(self.mock_user)
         self.mock_execute.assert_not_called()
         self.assertEqual(self.mock_user.profile.setup_complete, True)
 
