@@ -4,33 +4,46 @@
 
 /* Children */
 
-.key,
-.value {
-  composes: u-ellipsis from '../../../styles/trumps/_u-ellipsis.scss';
-}
 .key {
+  composes: u-ellipsis from '../../../styles/trumps/_u-ellipsis.scss';
+
   font-weight: 500;
+  text-overflow: ':';
 }
 .key::after {
   content: ':';
   display: inline;
   margin-right: 0.25em;
 }
+.is-horz .value {
+  white-space: nowrap;
+}
 
 /* Types */
 
-.is-inline {
+.is-vert {
+  /* … */
+}
+.is-horz {
   display: flex;
   flex-direction: row;
 }
-.is-inline .key ~ .key::before {
+.is-horz .key ~ .key::before {
   content: '|';
   display: inline-block;
   margin-left: 0.5em;
   margin-right: 0.5em;
 }
 
-.is-block dd.value {
-  margin-left: 2.5rem; /* overwrite Bootstrap `_reboot.scss` */
-                       /* 40px Firefox browser default */
+.is-vert.is-narrow .value {
+  /* TODO: Support mixins, but prevent SCSS pollution in `src/styles/` */
+  /* HACK: CSS Modules will NOT compose with nested classes */
+  /* composes: u-ellipsis from '../../../styles/trumps/_u-ellipsis.scss'; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+/* Overwrite Bootstrap `_reboot.scss` */
+.is-vert.is-narrow .value { margin-left: 0; }
+.is-vert.is-wide .value   { margin-left: 2.5rem; } /* 40px Firefox default */

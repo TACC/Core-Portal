@@ -1,6 +1,8 @@
 import React from 'react';
 import { DescriptionList, Icon } from '_common';
 
+import './UIPatternsDescriptionList.module.css';
+
 const DATA = {
   Username: 'bobward500',
   Prefix: 'Mr.',
@@ -12,20 +14,43 @@ const DATA = {
 
 function UIPatternsDropdownSelector() {
   return (
-    <dl>
-      <dt>
-        Default Layout (<code>block</code>)
-      </dt>
-      <dd>
-        <DescriptionList data={DATA} />
-      </dd>
-      <dt>
-        Inline Layout (<code>inline</code>)
-      </dt>
-      <dd>
-        <DescriptionList data={DATA} layout="inline" />
-      </dd>
-    </dl>
+    <>
+      <div styleName="list-cols">
+        <dl>
+          <dt>Vertical Layout & Default Density</dt>
+          <dd>
+            <DescriptionList data={DATA} />
+          </dd>
+        </dl>
+        <dl>
+          <dt>Vertical Layout & Compact Density</dt>
+          <dd>
+            <DescriptionList
+              data={DATA}
+              density="compact"
+              styleName="item-x-narrow"
+            />
+          </dd>
+        </dl>
+      </div>
+      <div styleName="list-rows">
+        <dl>
+          <dt>Horizontal Layout & Default Density</dt>
+          <dd>
+            <DescriptionList data={DATA} direction="horizontal" />
+          </dd>
+          <dt>Horizontal Layout & Compact Density</dt>
+          <dd>
+            <DescriptionList
+              data={DATA}
+              density="compact"
+              direction="horizontal"
+              styleName="item-narrow"
+            />
+          </dd>
+        </dl>
+      </div>
+    </>
   );
 }
 
