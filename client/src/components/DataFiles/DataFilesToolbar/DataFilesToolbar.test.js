@@ -23,7 +23,7 @@ describe("ToolbarButton", () => {
     const { getByText, getByRole, getByTestId } = renderComponent(
       <ToolbarButton
         text="Rename"
-        icon={{ prefix: 'icon-action', iconName: 'rename' }}
+        iconName="rename"
         onClick={() => {}}
       />,
       store,
@@ -32,7 +32,7 @@ describe("ToolbarButton", () => {
 
     expect(getByText(/Rename/)).toBeDefined();
     expect(getByRole("button")).toBeDefined();
-    expect(getByTestId('toolbar-icon')).toHaveClass('icon-action icon-action-rename');
+    expect(getByTestId('toolbar-icon')).toHaveClass('icon-action icon-rename');
   });
 });
 
