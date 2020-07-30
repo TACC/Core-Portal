@@ -491,3 +491,27 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
 
 DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
+
+PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM = 'frontera'
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
+    'frontera': {
+        'name': 'My Data (Frontera)',
+        'prefix': 'frontera.home.{}',                                   # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
+        'host': 'frontera.tacc.utexas.edu',                             # PORTAL_DATA_DEPOT_STORAGE_HOST
+        'abs_home_directory': '/corral-repl/tacc/aci/CEP/home_dirs/',   # PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH
+        'home_directory': '/home1',                                     # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+        'relative_path': 'home_dirs',                                   # PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH
+        'requires_allocation': None,                                    # Should the default system require allocation to be viewed?
+        'icon': None,
+    },
+    'longhorn': {
+        'name': 'My Data (Longhorn)',
+        'prefix': 'longhorn.home.{}',
+        'host': 'longhorn.tacc.utexas.edu',
+        'abs_home_directory': '/home/',
+        'home_directory': '/home',
+        'relative_path': 'home',
+        'requires_allocation': 'longhorn3',
+        'icon': None,
+    },
+}
