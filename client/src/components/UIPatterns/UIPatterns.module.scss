@@ -4,7 +4,8 @@
   display: flex;
   flex-direction: column;
 
-  padding: 20px 40px 0 25px;
+  // FAQ: Extra padding is added to bottom only for this section
+  padding: 20px 40px 40px 25px;
 }
 .items {
   /* As a flex item */

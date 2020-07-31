@@ -30,9 +30,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-jobs-history:before {
-  content: "\e95a";
-}
 .icon-jobs:before {
   content: "\e95b";
 }
