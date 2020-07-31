@@ -1,10 +1,16 @@
 
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from django.conf import settings
+from requests.exceptions import HTTPError
+from portal.libs.agave.models.systems.storage import StorageSystem
+from portal.apps.accounts.models import SSHKeys, Keys
+from mock import MagicMock
 import pytest
 import json
 import os
 
+
+pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def tas_mock(mocker):
@@ -19,6 +25,17 @@ def tas_mock(mocker):
 def test_manager(tas_mock, regular_user):
     yield UserSystemsManager(regular_user)
 
+
+@pytest.fixture
+def mock_service_account(mocker):
+    mock = mocker.patch('portal.apps.accounts.managers.user_systems.service_account')
+    # Provide the return_value as a fixture, since the service_account
+    # function is always called to create an agave client anyway.
+    # Provides syntactic sugar:
+    #   mock_service_account.systems.get.return_value = "mock"
+    # instead of:
+    #   mock_service_account.return_value.systems.get.return_value = "mock"
+    yield mock.return_value
 
 def test_init(tas_mock, test_manager, regular_user):
     # Assert that the default system will be loaded
@@ -38,3 +55,24 @@ def test_lookup_methods(test_manager):
     assert test_manager.get_abs_home_dir() == '/home1/01234/username'
     assert test_manager.get_rel_home_dir() == 'home_dirs'
     assert test_manager.get_private_directory() == '01234/username'
+
+def test_setup_private_system_exists(test_manager, mock_service_account):
+    mock_service_account.systems.get.return_value = "agave.system"
+    assert test_manager.setup_private_system() == "agave.system"
+
+def test_setup_private_system(test_manager, mock_service_account, regular_user, mocker, monkeypatch):
+    # Mock all the service functions
+    mock_error = HTTPError()
+    monkeypatch.setattr(mock_error, 'response', MagicMock(status_code=404))
+    mock_service_account.systems.get.side_effect = mock_error
+    mock_system_definition = MagicMock(id="frontera.home.username")
+    mock_get_system_definition = MagicMock(return_value=mock_system_definition)
+    monkeypatch.setattr(test_manager, 'get_system_definition', mock_get_system_definition)
+
+    # Run the test
+    assert test_manager.setup_private_system() == mock_system_definition
+    mock_system_definition.update_role.assert_called_with("username", "OWNER")
+    generated_key = SSHKeys.objects.all()[0]
+    assert generated_key.user == regular_user
+    key_object = Keys.objects.get(ssh_keys=generated_key)
+    assert key_object.system == "frontera.home.username"
