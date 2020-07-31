@@ -1,7 +1,7 @@
 import React from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory, NavLink as RRNavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
 import { LoadingSpinner, Expand } from '_common';
 import PropTypes from 'prop-types';
 import getOutputPathFromHref from 'utils/jobsUtil';
@@ -14,25 +14,29 @@ import './JobHistoryModal.css';
 
 const placeHolder = '...';
 
-function DataFilesLink({ path, displayText }) {
+function DataFilesLink({ path, displayText, disabled }) {
   const text = displayText || path;
   return (
-    <Link
+    <NavLink
+      tag={RRNavLink}
       to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${path}`}
       styleName="link"
+      disabled={disabled}
     >
       {text}
-    </Link>
+    </NavLink>
   );
 }
 
 DataFilesLink.propTypes = {
   path: PropTypes.string.isRequired,
-  displayText: PropTypes.string
+  displayText: PropTypes.string,
+  disabled: PropTypes.bool
 };
 
 DataFilesLink.defaultProps = {
-  displayText: null
+  displayText: null,
+  disabled: false
 };
 
 function Entry({ label, isTopLevelEntry, children }) {
@@ -69,12 +73,11 @@ function JobHistoryContent({ jobDetails, jobDisplay, app }) {
     <>
       <div styleName="left-panel panel-content">
         <div styleName="label">Output</div>
-        <div>
-          {outputPath && (
-            <DataFilesLink path={outputPath} displayText="View in Data Files" />
-          )}
-          {!outputPath && placeHolder}
-        </div>
+        <DataFilesLink
+          path={outputPath}
+          displayText="View in Data Files"
+          disabled={outputPath === null}
+        />
       </div>
       <div styleName="right-panel panel-content">
         <div styleName="section">
