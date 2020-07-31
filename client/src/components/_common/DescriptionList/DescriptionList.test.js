@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import DescriptionList, { LAYOUTS } from './DescriptionList';
+import DescriptionList, * as DL from './DescriptionList';
 
 const DATA = {
   Username: 'bobward500',
@@ -10,18 +10,32 @@ const DATA = {
 };
 
 describe('Description List', () => {
-  it.each(LAYOUTS)('has accurate tags when layout is "%s"', async layout => {
-    const { getByTestId, findAllByTestId } = render(<DescriptionList data={DATA} layout={layout} />);
-    const root = getByTestId('list');
+  it('has accurate tags', async () => {
+    const { getByTestId, findAllByTestId } = render(<DescriptionList data={DATA} />);
+    const list = getByTestId('list');
     const keys = await findAllByTestId('key');
     const values = await findAllByTestId('value');
-    expect(root).toBeDefined();
-    expect(root.tagName).toEqual('DL');
+    expect(list).toBeDefined();
+    expect(list.tagName).toEqual('DL');
     keys.forEach( key => {
       expect(key.tagName).toEqual('DT');
     });
     values.forEach( value => {
       expect(value.tagName).toEqual('DD');
     });
+  });
+  it.each(DL.DIRECTIONS)('has accurate className when direction is "%s"', direction => {
+    const { getByTestId, findAllByTestId } = render(<DescriptionList data={DATA} direction={direction} />);
+    const list = getByTestId('list');
+    const className = DL.DIRECTION_CLASS_MAP[direction || DL.DEFAULT_DIRECTION];
+    expect(list).toBeDefined();
+    expect(list.className).toMatch(className);
+  });
+  it.each(DL.DENSITIES)('has accurate className when density is "%s"', density => {
+    const { getByTestId, findAllByTestId } = render(<DescriptionList data={DATA} density={density} />);
+    const list = getByTestId('list');
+    const className = DL.DENSITY_CLASS_MAP[density || DL.DEFAULT_DENSITY];
+    expect(list).toBeDefined();
+    expect(list.className).toMatch(className);
   });
 });

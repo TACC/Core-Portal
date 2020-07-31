@@ -3,15 +3,24 @@ import PropTypes from 'prop-types';
 
 import './DescriptionList.module.css';
 
-export const DIRECTIONS = ['', 'vertical', 'horizontal'];
+export const DIRECTION_CLASS_MAP = {
+  vertical: 'is-vert',
+  horizontal: 'is-horz'
+};
 export const DEFAULT_DIRECTION = 'vertical';
-export const DENSITIES = ['', 'compact', 'default'];
+export const DIRECTIONS = ['', ...Object.keys(DIRECTION_CLASS_MAP)];
+
+export const DENSITY_CLASS_MAP = {
+  compact: 'is-narrow',
+  default: 'is-wide'
+};
 export const DEFAULT_DENSITY = 'default';
+export const DENSITIES = ['', ...Object.keys(DENSITY_CLASS_MAP)];
 
 const DescriptionList = ({ className, data, density, direction }) => {
   const modifierClasses = [];
-  modifierClasses.push(direction === 'horizontal' ? 'is-horz' : 'is-vert');
-  modifierClasses.push(density === 'compact' ? 'is-narrow' : 'is-wide');
+  modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
+  modifierClasses.push(DIRECTION_CLASS_MAP[direction || DEFAULT_DIRECTION]);
   const containerStyleNames = ['container', ...modifierClasses].join(' ');
 
   return (
@@ -37,7 +46,7 @@ DescriptionList.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
   /** Selector type */
-  /* FAQ: ESLint prevents `PropTypes.object`, but we want to support anything */
+  /* FAQ: We can support any values, even a component */
   // eslint-disable-next-line react/forbid-prop-types
   data: PropTypes.object.isRequired,
   /** Layout density */
