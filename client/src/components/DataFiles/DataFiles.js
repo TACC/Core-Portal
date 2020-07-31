@@ -70,7 +70,6 @@ const DataFiles = () => {
           path={listingParams.path || '/'}
           section="FilesListing"
           route
-          className="data-files-breadcrumbs"
         />
         <DataFilesToolbar
           api={listingParams.api}
