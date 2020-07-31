@@ -84,7 +84,8 @@ const DataFilesTableRow = ({
   rowCount,
   row,
   section,
-  rowSelectCallback
+  rowSelectCallback,
+  shadeEvenRows
 }) => {
   const onClick = useCallback(() => rowSelectCallback(index), [index]);
   const onKeyDown = useCallback(
@@ -100,11 +101,13 @@ const DataFilesTableRow = ({
       ? state.files.selected[section].includes(index)
       : false
   );
+  const isShaded = shadeEvenRows ? index % 2 === 0 : index % 2 === 1;
   if (index < rowCount) {
     return (
       <div
         style={style}
-        className={`tr ${index % 2 && 'tr-even'} ${selected && 'tr-selected'}`}
+        className={`tr ${isShaded && 'tr-background-shading'} ${selected &&
+          'tr-selected'}`}
         role="row"
         tabIndex={-1}
         index={row.index}
@@ -139,7 +142,8 @@ DataFilesTableRow.propTypes = {
     cells: PropTypes.array
   }),
   section: PropTypes.string.isRequired,
-  rowSelectCallback: PropTypes.func.isRequired
+  rowSelectCallback: PropTypes.func.isRequired,
+  shadeEvenRows: PropTypes.bool.isRequired
 };
 DataFilesTableRow.defaultProps = { row: {} };
 
@@ -148,7 +152,9 @@ const DataFilesTable = ({
   columns,
   rowSelectCallback,
   scrollBottomCallback,
-  section
+  section,
+  hideHeader,
+  shadeEvenRows
 }) => {
   const [headerHeight, setHeaderHeight] = useState(0);
   const tableHeader = useRef({ clientHeight: 0 });
@@ -216,10 +222,11 @@ const DataFilesTable = ({
           row={row}
           section={section}
           rowSelectCallback={rowSelectCallback}
+          shadeEvenRows={shadeEvenRows}
         />
       );
     },
-    [rows]
+    [rows, shadeEvenRows]
   );
 
   return (
@@ -231,19 +238,21 @@ const DataFilesTable = ({
       {({ width, height }) => (
         <div {...getTableProps()}>
           <div ref={tableHeader}>
-            {headerGroups.map(headerGroup => (
-              <div
-                {...headerGroup.getHeaderGroupProps()}
-                className="tr tr-header"
-                style={{ width }}
-              >
-                {headerGroup.headers.map(column => (
-                  <div {...column.getHeaderProps()} className="td">
-                    {column.render('Header')}
-                  </div>
-                ))}
-              </div>
-            ))}
+            {headerGroups.map(headerGroup => {
+              return hideHeader ? null : (
+                <div
+                  {...headerGroup.getHeaderGroupProps()}
+                  className="tr tr-header"
+                  style={{ width }}
+                >
+                  {headerGroup.headers.map(column => (
+                    <div {...column.getHeaderProps()} className="td">
+                      {column.render('Header')}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
           </div>
           {/* table body */}
           <div
@@ -273,12 +282,20 @@ const DataFilesTable = ({
     </AutoSizer>
   );
 };
+
 DataFilesTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   columns: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   rowSelectCallback: PropTypes.func.isRequired,
   scrollBottomCallback: PropTypes.func.isRequired,
-  section: PropTypes.string.isRequired
+  section: PropTypes.string.isRequired,
+  hideHeader: PropTypes.bool,
+  shadeEvenRows: PropTypes.bool
+};
+
+DataFilesTable.defaultProps = {
+  hideHeader: false,
+  shadeEvenRows: false
 };
 
 export default DataFilesTable;

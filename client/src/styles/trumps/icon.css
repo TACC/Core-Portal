@@ -17,8 +17,3 @@
 /* .icon-contract */.icon-collapse::before {
   content: "\e915";
 }
-
-/* Disabled */
-/* Icon name is retained, but icon is not desired */.icon-jobs-history::before {
-  content: "";
-}
