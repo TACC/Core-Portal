@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.libs.agave.models.applications import Application
 from portal.libs.agave.models.systems.execution import ExecutionSystem
+from unittest import skip
 
 
 class TestUserApplicationsManager(TestCase):
@@ -21,10 +22,16 @@ class TestUserApplicationsManager(TestCase):
             autospec=True
         )
         cls.magave = cls.magave_patcher.start()
+        cls.mock_systems_manager_patcher = patch(
+            'portal.apps.workspace.managers.user_applications.UserSystemsManager'
+        )
+        cls.mock_systems_manager = cls.mock_systems_manager_patcher.start()
+        cls.mock_systems_manager.get_system_id.return_value = 'frontera.home.username'
 
     @classmethod
     def tearDownClass(cls):
         cls.magave_patcher.stop()
+        cls.mock_systems_manager_patcher.stop()
 
     def setUp(self):
         user = get_user_model().objects.get(username='username')
@@ -41,13 +48,16 @@ class TestUserApplicationsManager(TestCase):
         ) as _file:
             self.execution_sys = json.load(_file)
 
-    @patch('portal.apps.workspace.managers.user_applications.UserWORKHomeManager', return_value=Mock(autospec=True))
-    def test_set_system_definition_scratch_path_to_scratch(self, mock_user_work_home):
-        mock_user_work_home().get_home_dir_abs_path.return_value = '/work/1234/username'
+    def test_set_system_definition_scratch_path_to_scratch(self):
+        # Failing due to user_applications.py:318 -- 
+        # need new way of looking up longhorn execution system /work location
+        self.mock_systems_manager.get_abs_home_dir.return_value = '/work/1234/username'
         sys = ExecutionSystem.from_dict(
             self.magave,
             self.execution_sys
         )
+
+        # TODO: Failing due to user_applications.py:318
 
         sys.login.host = 'stampede2.tacc.utexas.edu'
 
@@ -57,8 +67,10 @@ class TestUserApplicationsManager(TestCase):
             self.assertIn('/scratch', exec_sys_def.scratch_dir)
             self.assertNotIn('/work', exec_sys_def.scratch_dir)
 
-    @patch('portal.apps.workspace.managers.user_applications.UserWORKHomeManager', return_value=Mock(autospec=True))
-    def test_set_system_definition_scratch_path_to_work(self, mock_user_work_home):
+    def test_set_system_definition_scratch_path_to_work(self):
+        # Failing due to user_applications.py:318 -- 
+        # need new way of looking up longhorn execution system /work location
+        self.mock_systems_manager.get_abs_home_dir.return_value = '/work/1234/username'
         mock_user_work_home().get_home_dir_abs_path.return_value = '/work/1234/username'
 
         sys = ExecutionSystem.from_dict(
