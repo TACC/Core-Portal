@@ -34,32 +34,41 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       </div>
     );
   }
-  if (err === '502') {
-    const link = strings => (
-      <a
-        className="data-files-nav-link"
-        type="button"
-        href="#"
-        onClick={pushKeys}
-      >
-        {strings[0]}
-      </a>
-    );
+  if (err) {
+    if (err === '502') {
+      const link = strings => (
+        <a
+          className="data-files-nav-link"
+          type="button"
+          href="#"
+          onClick={pushKeys}
+        >
+          {strings[0]}
+        </a>
+      );
 
+      return (
+        <div className="h-100 listing-placeholder">
+          <Message type="warn">
+            There was a problem accessing this file system. If this is your
+            first time logging in, you may need to {link`push your keys`}.
+          </Message>
+        </div>
+      );
+    }
+    if (err === '404') {
+      return (
+        <div className="h-100 listing-placeholder">
+          <Message type="warn">
+            The file or folder that you are attempting to access does not exist.
+          </Message>
+        </div>
+      );
+    }
     return (
       <div className="h-100 listing-placeholder">
         <Message type="warn">
-          There was a problem accessing this file system. If this is your first
-          time logging in, you may need to {link`push your keys`}.
-        </Message>
-      </div>
-    );
-  }
-  if (err === '404') {
-    return (
-      <div className="h-100 listing-placeholder">
-        <Message type="warn">
-          The file or folder that you are attempting to access does not exist.
+          There was a problem accessing this file system.
         </Message>
       </div>
     );
