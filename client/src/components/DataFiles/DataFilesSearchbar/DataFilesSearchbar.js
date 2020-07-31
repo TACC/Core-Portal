@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import queryString from 'query-string';
-import { createTemplateFunction } from 'utils/taggedTemplates';
 import { Icon } from '_common';
 // FP-563: Support count in status message
 // import DataFilesSearchbarStatus from './DataFilesSearchbarStatus';
