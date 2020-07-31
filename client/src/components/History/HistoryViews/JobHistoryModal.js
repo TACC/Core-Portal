@@ -123,6 +123,13 @@ function JobHistoryContent({ jobDetails, jobDisplay, app }) {
             </div>
           </>
         )}
+        {'queue' in jobDisplay && (
+          <div styleName="section alternating-background">
+            <Entry label="Queue" isTopLevelEntry>
+              {jobDisplay.queue}
+            </Entry>
+          </div>
+        )}
         {'allocation' in jobDisplay && (
           <div styleName="section alternating-background">
             <Entry label="Allocation" isTopLevelEntry>
