@@ -91,3 +91,35 @@ def test_get_system_definition(test_manager, mock_service_account, mock_404):
     assert system.storage.auth.public_key == "public_key"
     assert system.storage.auth.private_key == "private_key"
 
+def test_reset_system_keys_no_prexisting(test_manager, mock_agave_client):
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
+        mock_agave_client.systems.get.return_value = json.load(f)
+    
+    # Reseting keys on a system when there were no pre-existing
+    # keys should result in creation of a Key object
+    assert len(Keys.objects.all()) == 0
+    test_manager.reset_system_keys()
+    assert Keys.objects.all()[0].system == "frontera.home.username"
+
+def test_reset_system_keys(test_manager, regular_user, mock_agave_client):
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
+        mock_agave_client.systems.get.return_value = json.load(f)
+    
+    # Create a pre-existing key object for this system
+    SSHKeys.objects.save_keys(
+        regular_user,
+        system_id="frontera.home.username",
+        priv_key="private_key",
+        pub_key="public_key"
+    )
+
+    # Assert out fixtures
+    assert len(Keys.objects.all()) == 1
+    assert Keys.objects.all()[0].public == "public_key"
+
+    test_manager.reset_system_keys()
+    # No new key objects should have been created
+    assert len(Keys.objects.all()) == 1
+
+    # The key value should have changed
+    assert Keys.objects.all()[0].public != "public_key"
