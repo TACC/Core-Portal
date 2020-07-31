@@ -2,11 +2,12 @@ import React from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Expand } from '_common';
 import PropTypes from 'prop-types';
 import getOutputPathFromHref from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
 import { getStatusText } from '../Jobs/JobsStatus';
+
 import * as ROUTES from '../../constants/routes';
 import './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
@@ -62,7 +63,8 @@ function JobHistoryContent({ jobDetails, jobDisplay, app }) {
   const outputPath = getOutputPathFromHref(jobDetails._links.archiveData.href);
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
-
+  const failureStates = ['FAILED', 'BLOCKED'];
+  const isFailed = failureStates.includes(jobDetails.status);
   return (
     <>
       <div styleName="left-panel panel-content">
@@ -80,7 +82,14 @@ function JobHistoryContent({ jobDetails, jobDisplay, app }) {
           <Entry label="Submitted">{created}</Entry>
           <Entry label={getStatusText(jobDetails.status)}>{lastUpdated}</Entry>
         </div>
-        <div styleName="section">Failure Report: Todo</div>
+        {isFailed ? (
+          <div styleName="section">
+            <Expand
+              detail="Failure Report"
+              message={jobDetails.lastStatusMessage}
+            />
+          </div>
+        ) : null}
         <div styleName="section alternating-background">
           <div styleName="label">Inputs</div>
           {jobDisplay.inputs.map(input => (
