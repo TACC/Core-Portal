@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import Expand from './Expand';
 
 describe('Expand component', () => {
-  it('renders job history information given the job ID', () => {
+  it('render message and detail', () => {
     const { getByText } = render(
       <Expand message="My message" detail="Detail header" />
     );
