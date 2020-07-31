@@ -48,8 +48,9 @@ class TestUserApplicationsManager(TestCase):
         ) as _file:
             self.execution_sys = json.load(_file)
 
-    @skip("Failing due to user_applications.py:318 -- need new way of looking up longhorn execution system /work location")
     def test_set_system_definition_scratch_path_to_scratch(self):
+        # Failing due to user_applications.py:318 -- 
+        # need new way of looking up longhorn execution system /work location
         self.mock_systems_manager.get_abs_home_dir.return_value = '/work/1234/username'
         sys = ExecutionSystem.from_dict(
             self.magave,
@@ -66,8 +67,9 @@ class TestUserApplicationsManager(TestCase):
             self.assertIn('/scratch', exec_sys_def.scratch_dir)
             self.assertNotIn('/work', exec_sys_def.scratch_dir)
 
-    @skip("Failing due to user_applications.py:318")
     def test_set_system_definition_scratch_path_to_work(self):
+        # Failing due to user_applications.py:318 -- 
+        # need new way of looking up longhorn execution system /work location
         self.mock_systems_manager.get_abs_home_dir.return_value = '/work/1234/username'
         mock_user_work_home().get_home_dir_abs_path.return_value = '/work/1234/username'
 
