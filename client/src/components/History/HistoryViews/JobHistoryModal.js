@@ -6,9 +6,9 @@ import { LoadingSpinner, Expand } from '_common';
 import PropTypes from 'prop-types';
 import getOutputPathFromHref from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
-import { getStatusText } from '../Jobs/JobsStatus';
+import { getStatusText } from '../../Jobs/JobsStatus';
 
-import * as ROUTES from '../../constants/routes';
+import * as ROUTES from '../../../constants/routes';
 import './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
 
