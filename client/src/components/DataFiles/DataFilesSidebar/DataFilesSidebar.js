@@ -11,8 +11,7 @@ import {
 } from 'reactstrap';
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop } from '@fortawesome/free-solid-svg-icons';
+import Icon from '_common/Icon';
 import './DataFilesSidebar.scss';
 
 const DataFilesSidebar = () => {
@@ -77,10 +76,9 @@ const DataFilesSidebar = () => {
                       key={sys.system}
                     >
                       <div className="nav-content">
-                        <FontAwesomeIcon
-                          icon={faDesktop}
-                          size="1x"
-                          className="side-nav-icon"
+                        <Icon
+                          className={sys.icon ? sys.icon : 'icon-monitor'}
+                          name={sys.name}
                         />
                         <span className="nav-text">{sys.name}</span>
                       </div>
