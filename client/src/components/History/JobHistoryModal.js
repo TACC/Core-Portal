@@ -82,14 +82,12 @@ function JobHistoryContent({ jobDetails, jobDisplay, app }) {
           <Entry label="Submitted">{created}</Entry>
           <Entry label={getStatusText(jobDetails.status)}>{lastUpdated}</Entry>
         </div>
-        {isFailed ? (
-          <div styleName="section">
-            <Expand
-              detail="Failure Report"
-              message={jobDetails.lastStatusMessage}
-            />
-          </div>
-        ) : null}
+        {isFailed && (
+          <Expand
+            detail="Failure Report"
+            message={jobDetails.lastStatusMessage}
+          />
+        )}
         <div styleName="section alternating-background">
           <div styleName="label">Inputs</div>
           {jobDisplay.inputs.map(input => (
