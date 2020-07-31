@@ -1,4 +1,4 @@
-import { call, takeEvery, takeLatest, put } from 'redux-saga/effects';
+import { call, takeEvery, takeLatest, put, select } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { fetchUtil } from 'utils/fetchUtil';
@@ -30,10 +30,22 @@ export function* handleSocket(action) {
     case 'interactive':
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
       break;
-    case 'job':
-      yield put({ type: 'UPDATE_JOB_STATUS', payload: action });
+    case 'job': {
+      // parse current jobs list for job event
+      const jobsList = yield select(state => state.jobs.list);
+      // notification event contains job id and new status
+      const event = action.extra;
+      const jobIds = jobsList.map(job => job.id);
+      if (jobIds.includes(event.id)) {
+        // if event is in current state, update
+        yield put({ type: 'UPDATE_JOB_STATUS', payload: action });
+      } else {
+        // otherwise, refresh job list
+        yield put({ type: 'GET_JOBS', params: { offset: 0, limit: 20 } });
+      }
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
       break;
+    }
     case 'setup_event':
       break;
     default:
@@ -45,7 +57,8 @@ export function* fetchNotifications() {
   yield put({ type: 'NOTIFICATIONS_LIST_FETCH_START' });
   try {
     const res = yield call(fetchUtil, {
-      url: '/api/notifications/'
+      url: '/api/notifications/',
+      params: { read: 'False' }
     });
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_SUCCESS',
