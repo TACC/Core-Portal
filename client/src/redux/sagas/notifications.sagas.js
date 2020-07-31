@@ -22,12 +22,9 @@ export function* watchSocket() {
 }
 
 export function* handleSocket(action) {
-  let eventType = action.event_type.toLowerCase();
-  if (eventType === 'vnc' || eventType === 'web') {
-    eventType = 'interactive';
-  }
+  const eventType = action.event_type.toLowerCase();
   switch (eventType) {
-    case 'interactive':
+    case 'interactive_session_ready':
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
       break;
     case 'job':

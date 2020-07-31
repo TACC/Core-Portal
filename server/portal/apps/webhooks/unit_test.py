@@ -32,14 +32,15 @@ class TestValidateAgaveJob(TestCase):
         pass
 
     def test_valid_job(self):
-        self.assertEqual(validate_agave_job("id", "sal"), True)
+        job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
+        self.assertEqual(validate_agave_job("id", "sal"), job_event)
 
     def test_valid_job_invalid_user(self):
         with self.assertRaises(PortalLibException):
             validate_agave_job("id", "wronguser")
 
     def test_invalid_state(self):
-        self.assertEqual(validate_agave_job("id", "sal", disallowed_states=['STAGING']), False)
+        self.assertEqual(validate_agave_job("id", "sal", disallowed_states=['STAGING']), None)
 
 
 class TestJobsWebhookView(TransactionTestCase):
@@ -54,7 +55,7 @@ class TestJobsWebhookView(TransactionTestCase):
     @patch('portal.apps.webhooks.views.validate_agave_job')
     def test_webhook_job_post(self, mock_validate_agave_job):
         job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
-        mock_validate_agave_job.return_value = True
+        mock_validate_agave_job.return_value = job_event
         response = self.client.post(reverse('webhooks:jobs_wh_handler'),
                                     json.dumps(job_event), content_type='application/json')
         self.assertEqual(response.status_code, 200)
@@ -67,7 +68,7 @@ class TestJobsWebhookView(TransactionTestCase):
     @patch('portal.apps.webhooks.views.validate_agave_job')
     def test_webhook_job_post_invalid_state(self, mock_validate_agave_job):
         job_event = json.load(open(os.path.join(os.path.dirname(__file__), 'fixtures/job_staging.json')))
-        mock_validate_agave_job.return_value = True
+        mock_validate_agave_job.return_value = job_event
         response = self.client.post(reverse('webhooks:jobs_wh_handler'),
                                     json.dumps(job_event), content_type='application/json')
         self.assertEqual(response.status_code, 200)
