@@ -11,14 +11,14 @@
     max-width: var(--toast-width) !important;
     height: var(--toast-height) !important;
     background-color: #D2CCE7 !important;
-    border-radius: 0px !important;
+    border-radius: 0 !important;
     color: #484848 !important;
-    padding: 0px !important;
+    padding: 0 !important;
 }
 
 .notification-toast-body {
     height: var(--toast-height);
-    padding: 0px !important;
+    padding: 0 !important;
     display: grid;
     grid-template-columns: minmax(15px, 13%) 1fr;
     width: 100%;
