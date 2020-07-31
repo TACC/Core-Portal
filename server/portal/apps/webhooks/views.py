@@ -51,6 +51,7 @@ def validate_agave_job(job_uuid, job_owner, disallowed_states=[]):
     return True
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class JobsWebhookView(BaseApiView):
     """
     Dispatches notifications when receiving a POST request from the Agave
@@ -58,15 +59,11 @@ class JobsWebhookView(BaseApiView):
 
     """
 
-    @method_decorator(csrf_exempt)
-    def dispatch(self, *args, **kwargs):
-        return super(JobsWebhookView, self).dispatch(*args, **kwargs)
-
     def post(self, request, *args, **kwargs):
         """Notifies the user of the job status by instantiating and saving
         a Notification instance.
 
-        If the job is finished, we also index the job and  alert the user to the
+        If the job is finished, we also index the job and alert the user to the
         URL of the job's location in the data depot.
 
         Args:
@@ -101,7 +98,7 @@ class JobsWebhookView(BaseApiView):
             }
 
             archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
-            target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
+            target_path = os.path.join('/workbench/data/', archive_id.strip('/'))
 
             # Verify the job UUID against the username
             valid_state = validate_agave_job(job_id, username)
@@ -217,13 +214,11 @@ class JobsWebhookView(BaseApiView):
             return HttpResponse("ERROR", status=400)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class InteractiveWebhookView(BaseApiView):
     """
     Dispatches notifications when receiving a POST request from interactive jobs (e.g. VNC or WEB)
     """
-    @method_decorator(csrf_exempt)
-    def dispatch(self, *args, **kwargs):
-        return super(InteractiveWebhookView, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         """

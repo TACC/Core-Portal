@@ -7,8 +7,8 @@
 }
 
 .rows {
-    tr:nth-child(odd) {
-        background-color: rgba(#c6c6c6, 0.1);
+    tr:nth-child(even) {
+        background-color: rgba(0, 0, 0, 0.03);
     }
     tr:hover {
         background-color: rgba(0, 0, 0, 0.05);
