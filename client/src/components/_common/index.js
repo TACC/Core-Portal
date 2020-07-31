@@ -8,3 +8,4 @@ export { default as AppIcon } from './AppIcon';
 export { default as Expand } from './Expand';
 export { default as Icon } from './Icon';
 export { default as Message } from './Message';
+export { default as DropdownSelector } from './DropdownSelector';

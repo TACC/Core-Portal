@@ -27,6 +27,11 @@ function Dashboard() {
             <div className="jobs-wrapper dash-grid-item">
               <div className="dashboard-item-header">
                 <h6>My Recent Jobs</h6>
+                <Link to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}>
+                  <Button color="link">
+                    <h6>View History</h6>
+                  </Button>
+                </Link>
               </div>
               <JobsView />
             </div>
