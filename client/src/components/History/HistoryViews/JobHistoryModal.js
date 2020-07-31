@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
 import { LoadingSpinner, Expand } from '_common';
 import PropTypes from 'prop-types';
-import getOutputPathFromHref from 'utils/jobsUtil';
+import { getOutputPathFromHref } from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
 import { getStatusText } from '../../Jobs/JobsStatus';
 

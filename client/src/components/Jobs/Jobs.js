@@ -6,7 +6,7 @@ import 'react-table-6/react-table.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { AppIcon, InfiniteScrollTable } from '_common';
-import getOutputPathFromHref from 'utils/jobsUtil';
+import { getOutputPathFromHref } from 'utils/jobsUtil';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';

@@ -1,6 +1,7 @@
 import { put, takeLatest, takeLeading, call } from 'redux-saga/effects';
 import 'cross-fetch';
 import Cookies from 'js-cookie';
+import { getAllocationFromAppId } from 'utils/jobsUtil';
 import { fetchUtil } from 'utils/fetchUtil';
 
 export function* getJobs(action) {
@@ -162,11 +163,14 @@ export function* getJobDetails(action) {
         }
         return true;
       });
-      // todo fix order of inputs/parameters (?)
-      // todo show enum display value but actual value
+
 
       if (app.scheduler === 'SLURM') {
-        display.allocation = 'TODO';
+        const allocation = getAllocationFromAppId(job.appId)
+        if (allocation) {
+          display.allocation = allocation;
+        }
+        display.queue = job.remoteQueue;
       }
     }
 

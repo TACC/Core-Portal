@@ -4,9 +4,9 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import JobHistoryModal from '../JobHistoryModal';
-import jobDetailFixture from '../../../redux/sagas/fixtures/jobdetail.fixture';
-import jobDetailDisplayFixture from '../../../redux/sagas/fixtures/jobdetaildisplay.fixture';
-import appDetailFixture from '../../../redux/sagas/fixtures/appdetail.fixture';
+import jobDetailFixture from '../../../../redux/sagas/fixtures/jobdetail.fixture';
+import jobDetailDisplayFixture from '../../../../redux/sagas/fixtures/jobdetaildisplay.fixture';
+import appDetailFixture from '../../../../redux/sagas/fixtures/appdetail.fixture';
 
 const mockInitialState = {
   jobId: 'job_id',
