@@ -7,9 +7,9 @@
 .session-modal-body {
   display: flex;
   flex-direction: column;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   & > * {
-    margin: 0.5rem;
+    margin: 0.4rem;
   }
 }
 .connect-button {
@@ -17,7 +17,9 @@
   align-self: center;
   font-size: 0.8rem;
   background-color: #9D85EF;
+  margin: 2rem 0;
 }
 .url {
   color: grey;
+  font-style: italic;
 }
