@@ -22,6 +22,7 @@ const initialFilesState = {
     rename: null,
     move: {},
     copy: {},
+    select: {},
     upload: {},
     trash: {}
   },
@@ -55,6 +56,7 @@ const initialFilesState = {
     preview: false,
     move: false,
     copy: false,
+    select: false,
     upload: false,
     mkdir: false,
     rename: false,
@@ -65,6 +67,7 @@ const initialFilesState = {
     preview: {},
     move: {},
     copy: {},
+    select: {},
     upload: {},
     mkdir: {},
     rename: {},
