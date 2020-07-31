@@ -31,8 +31,14 @@
 .is-horz .key ~ .key::before {
   content: '|';
   display: inline-block;
+}
+.is-horz.is-narrow .key ~ .key::before {
   margin-left: 0.5em;
   margin-right: 0.5em;
+}
+.is-horz.is-wide .key ~ .key::before {
+  margin-left: 1em;
+  margin-right: 1em;
 }
 
 .is-vert.is-narrow .value {

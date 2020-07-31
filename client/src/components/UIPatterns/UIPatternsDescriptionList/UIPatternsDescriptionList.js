@@ -25,6 +25,12 @@ function UIPatternsDropdownSelector() {
         <dl>
           <dt>Vertical Layout & Compact Density</dt>
           <dd>
+            <DescriptionList data={DATA} density="compact" />
+          </dd>
+        </dl>
+        <dl>
+          <dt>Vertical Layout & Compact Density - Narrow Container</dt>
+          <dd>
             <DescriptionList
               data={DATA}
               density="compact"
@@ -40,6 +46,14 @@ function UIPatternsDropdownSelector() {
             <DescriptionList data={DATA} direction="horizontal" />
           </dd>
           <dt>Horizontal Layout & Compact Density</dt>
+          <dd>
+            <DescriptionList
+              data={DATA}
+              density="compact"
+              direction="horizontal"
+            />
+          </dd>
+          <dt>Horizontal Layout & Compact Density - Narrow Container</dt>
           <dd>
             <DescriptionList
               data={DATA}
