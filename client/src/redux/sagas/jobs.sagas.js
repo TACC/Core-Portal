@@ -22,6 +22,7 @@ export function* getJobs(action) {
       throw new Error('Could not retrieve jobs');
     }
     const json = yield res.json();
+    yield console.log(json);
     yield put({ type: 'JOBS_LIST', payload: json.response });
     yield put({ type: 'JOBS_LIST_FINISH' });
   } catch {

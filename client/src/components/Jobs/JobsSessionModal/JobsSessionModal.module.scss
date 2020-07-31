@@ -1,0 +1,23 @@
+.session-modal-header {
+  background-color: #f4f4f4;
+  h5 {
+    font-weight: normal;
+  }
+}
+.session-modal-body {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  & > * {
+    margin: 0.5rem;
+  }
+}
+.connect-button {
+  border-radius: 0;
+  align-self: center;
+  font-size: 0.8rem;
+  background-color: #9D85EF;
+}
+.url {
+  color: grey;
+}

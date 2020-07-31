@@ -1,7 +1,8 @@
-import { Badge } from 'reactstrap';
 import React from 'react';
+import { Badge } from 'reactstrap';
 import PropTypes from 'prop-types';
-import './Jobs.module.scss';
+import JobsSessionModal from '../JobsSessionModal';
+import './JobsStatus.module.scss';
 
 const STATUS_TEXT_MAP = {
   ACCEPTED: 'Processing',
@@ -44,21 +45,40 @@ export function getBadgeColor(status) {
 }
 
 function JobsStatus({ status, fancy }) {
+  const [modal, setModal] = React.useState(false);
+  const toggleModal = () => {
+    setModal(!modal);
+  };
   const color = getBadgeColor(status);
   const userStatus = getStatusText(status);
-  if (fancy && color) {
-    return (
-      <Badge color={color} styleName="badge">
-        {userStatus}
-      </Badge>
-    );
-  }
-  return userStatus;
+
+  // TODO: Make this accurate
+  const isRunning = status === 'FINISHED';
+  return (
+    <>
+      {fancy && color ? (
+        <Badge color={color}>{userStatus}</Badge>
+      ) : (
+        <span>{userStatus}</span>
+      )}
+      {/* Check if job is running AND has interactive session */}
+      {isRunning && (
+        <>
+          <button type="button" styleName="open-button" onClick={toggleModal}>
+            <i className="icon icon-new-browser" styleName="open-icon" />
+            Open Session
+          </button>
+          <JobsSessionModal toggle={toggleModal} isOpen={modal} />
+        </>
+      )}
+    </>
+  );
 }
 
 JobsStatus.propTypes = {
   status: PropTypes.string,
   fancy: PropTypes.bool
 };
+JobsStatus.defaultProps = { status: '', fancy: false };
 
 export default JobsStatus;

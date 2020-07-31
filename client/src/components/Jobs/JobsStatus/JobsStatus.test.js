@@ -45,4 +45,5 @@ describe('JobsStatus', () => {
     expect(getByText(/Finished/)).toHaveClass('badge badge-success');
   });
 
+  it.todo("should have a button to enter an interactive session");
 });
