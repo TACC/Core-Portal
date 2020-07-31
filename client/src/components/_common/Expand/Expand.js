@@ -18,9 +18,7 @@ const Expand = ({ detail, message }) => {
         </span>
         <i
           styleName="icon-action"
-          className={`icon-action icon-action-${
-            isOpen ? 'collapse' : 'expand'
-          }`}
+          className={`icon-action ${isOpen ? 'icon-collapse' : 'icon-expand'}`}
         />
       </CardHeader>
       <Collapse isOpen={isOpen}>
