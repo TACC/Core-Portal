@@ -316,10 +316,12 @@ class UserApplicationsManager(AbstractApplicationsManager):
         scratch1_hosts = ['frontera']
         if system.storage.host in [s + '.tacc.utexas.edu' for s in scratch_hosts]:
             system.scratch_dir = system.storage.home_dir.replace(
-                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system.id.split('.')[0]], '/scratch')
+                    # system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch') # WAS THIS
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system.id.split('.')[0]]['home_directory'], '/scratch') # check with Sal on this regarding longhorn
         elif system.storage.host in [s + '.tacc.utexas.edu' for s in scratch1_hosts]:
             system.scratch_dir = system.storage.home_dir.replace(
-                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system.id.split('.')[0]], '/scratch')
+                    # system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch1') WAS THIS
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system.id.split('.')[0]]['home_directory'], '/scratch') # check with Sal on this regarding longhorn
         else:
             system.scratch_dir = system.storage.home_dir
         system.work_dir = system.storage.home_dir

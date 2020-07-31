@@ -102,10 +102,11 @@ def setup(username, system):
     home_dir = mgr.get_private_directory(user)
     home_sys = mgr.setup_private_system(user)
 
-    if not user.profile.setup_complete:
+    # if not user.profile.setup_complete:
         # Will this ever run if "profile.setup_complete" is set to True before this is ever called?
-        logger.info("Executing setup steps for %s", username)
-        execute_setup_steps(user.username)
+        # This can also cause a race condition
+        # logger.info("Executing setup steps for %s", username)
+        # execute_setup_steps(user.username)
 
     return home_dir, home_sys
 

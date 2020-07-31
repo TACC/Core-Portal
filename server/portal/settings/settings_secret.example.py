@@ -141,27 +141,27 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cep.home.{username}": "/tacc-work",
 }
 
-_PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM = 'locsystem1'
+_PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM = 'frontera'
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
-    'locsystem1': {
-        'name': 'My Data (Local System One)',
-        'prefix': 'locsystem1.home.{username}',
-        'host': 'locsystem1.tacc.utexas.edu',
-        'abs_home_directory': '/path/to/home_dirs/',
-        'home_directory': '/home',
+    'frontera': {
+        'name': 'My Data (Frontera)',
+        'prefix': 'frontera.home.{}',
+        'host': 'frontera.tacc.utexas.edu',
+        'abs_home_directory': '/corral-repl/tacc/aci/CEP/home_dirs/',
+        'home_directory': '/home1',
         'relative_path': 'home_dirs',
         'requires_allocation': None,
-        'icon': None
+        'icon': None,
     },
-    'locsystem2': {
-        'name': 'My Data (Local System Two)',
-        'prefix': 'locsystem2.home.{username}',
-        'host': 'locsystem2.tacc.utexas.edu',
-        'abs_home_directory': '/path/to/home_dirs/',
+    'longhorn': {
+        'name': 'My Data (Longhorn)',
+        'prefix': 'longhorn.home.{}',
+        'host': 'longhorn.tacc.utexas.edu',
+        'abs_home_directory': '/home/',
         'home_directory': '/home',
-        'relative_path': 'home_dirs',
-        'requires_allocation': 'locsystem2resource',
-        'icon': None
+        'relative_path': 'home',
+        'requires_allocation': 'longhorn3',
+        'icon': None,
     },
 }
 
