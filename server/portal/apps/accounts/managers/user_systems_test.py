@@ -37,6 +37,13 @@ def mock_service_account(mocker):
     #   mock_service_account.return_value.systems.get.return_value = "mock"
     yield mock.return_value
 
+
+@pytest.fixture
+def mock_404(monkeypatch):
+    mock_error = HTTPError()
+    monkeypatch.setattr(mock_error, 'response', MagicMock(status_code=404))
+    yield mock_error
+
 def test_init(tas_mock, test_manager, regular_user):
     # Assert that the default system will be loaded
     assert test_manager.system == settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS['frontera']
@@ -60,11 +67,9 @@ def test_setup_private_system_exists(test_manager, mock_service_account):
     mock_service_account.systems.get.return_value = "agave.system"
     assert test_manager.setup_private_system() == "agave.system"
 
-def test_setup_private_system(test_manager, mock_service_account, regular_user, mocker, monkeypatch):
+def test_setup_private_system(test_manager, mock_service_account, regular_user, mock_404, monkeypatch):
     # Mock all the service functions
-    mock_error = HTTPError()
-    monkeypatch.setattr(mock_error, 'response', MagicMock(status_code=404))
-    mock_service_account.systems.get.side_effect = mock_error
+    mock_service_account.systems.get.side_effect = mock_404
     mock_system_definition = MagicMock(id="frontera.home.username")
     mock_get_system_definition = MagicMock(return_value=mock_system_definition)
     monkeypatch.setattr(test_manager, 'get_system_definition', mock_get_system_definition)
@@ -76,3 +81,13 @@ def test_setup_private_system(test_manager, mock_service_account, regular_user, 
     assert generated_key.user == regular_user
     key_object = Keys.objects.get(ssh_keys=generated_key)
     assert key_object.system == "frontera.home.username"
+
+def test_get_system_definition(test_manager, mock_service_account, mock_404):
+    mock_service_account.systems.get.side_effect = mock_404
+    system = test_manager.get_system_definition("public_key", "private_key")
+    assert system.name == "frontera.home.username"
+    assert system.storage.host == "frontera.tacc.utexas.edu"
+    assert system.storage.root_dir == "/home1/01234/username"
+    assert system.storage.auth.public_key == "public_key"
+    assert system.storage.auth.private_key == "private_key"
+
