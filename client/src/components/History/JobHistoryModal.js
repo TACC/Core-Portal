@@ -12,7 +12,7 @@ import * as ROUTES from '../../constants/routes';
 import './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
 
-const placeHolder = '-------------';
+const placeHolder = '...';
 
 function DataFilesLink({ path, displayText }) {
   const text = displayText || path;
