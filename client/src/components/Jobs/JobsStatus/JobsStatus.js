@@ -57,9 +57,11 @@ function JobsStatus({ status, fancy }) {
   return (
     <>
       {fancy && color ? (
-        <Badge color={color}>{userStatus}</Badge>
+        <div>
+          <Badge color={color}>{userStatus}</Badge>
+        </div>
       ) : (
-        <span>{userStatus}</span>
+        <div styleName="plain-status">{userStatus}</div>
       )}
       {/* Check if job is running AND has interactive session */}
       {isRunning && (

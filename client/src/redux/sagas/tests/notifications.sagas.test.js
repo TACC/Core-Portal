@@ -35,8 +35,8 @@ describe("Effect Creators", () => {
 });
 
 describe("Sagas", () => {
-  it.todo("Handle Socket")
-  it.todo("Fetch Notifications");
-  it.todo("Read Notifications");
-  it.todo("Delete Notifications");
+  it.todo("should handle sockets")
+  it.todo("fetch notifications");
+  it.todo("read notifications");
+  it.todo("delete notifications");
 })

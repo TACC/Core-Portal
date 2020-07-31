@@ -1,3 +1,10 @@
+@mixin job-status() {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 10em;
+}
+
 .jobs-view {
   /* icon */
   th:nth-child(1),
@@ -13,7 +20,10 @@
   td:nth-child(4) { min-width: 10em; }
   /* status */
   th:nth-child(5),
-  td:nth-child(5) { min-width: 11em; }
+  td:nth-child(5) {
+    @include job-status();
+    width: 55%;
+  }
 }
 
 .jobs-detailed-view {
@@ -34,7 +44,10 @@
   td:nth-child(5) { min-width: 10em; }
   /* status */
   th:nth-child(6),
-  td:nth-child(6) { min-width: 6em; }
+  td:nth-child(6) {
+    @include job-status();
+    width: 35%;
+  }
 }
 
 .job__path {
