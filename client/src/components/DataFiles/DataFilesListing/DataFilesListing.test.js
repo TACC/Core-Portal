@@ -161,5 +161,28 @@ describe("DataFilesListing", () => {
 
     expect(getByText(/No files or folders to show/)).toBeDefined();
   });
-  
+
+  it.each(
+    [
+      ['500', /There was a problem accessing this file system./],
+      ['502', /There was a problem accessing this file system. If this is your first time logging in/],
+      ['404', 'The file or folder that you are attempting to access does not exist.']
+    ])(
+    'Renders "%s" error message correctly',
+    (errorCode, message) => {
+      const history = createMemoryHistory();
+      history.push("/workbench/data/tapis/private/test.system/");
+      const errorMockState = {...initialMockState};
+      errorMockState.files.error.FilesListing=errorCode;
+      const store = mockStore(errorMockState);
+
+      const { getByText } = renderComponent(
+        <DataFilesListing api="tapis" scheme="private" system="test.system" path="/"  />,
+        store,
+        history
+      );
+
+      expect(getByText(message)).toBeDefined();
+    }
+  );
 });

@@ -37,7 +37,7 @@ describe("DataFilesBreadcrumbs", () => {
         .closest("a")
         .getAttribute("href")
     ).toEqual("/workbench/data/tapis/private/test.system/");
-  expect(
+    expect(
       getByText(/the/)
         .closest("a")
         .getAttribute("href")
@@ -45,7 +45,6 @@ describe("DataFilesBreadcrumbs", () => {
     expect(
       getByText(/files/)
         .closest("a")
-        .getAttribute("href")
-    ).toEqual("/workbench/data/tapis/private/test.system/path/to/the/files/");
+    ).toBeNull();
   });
 });

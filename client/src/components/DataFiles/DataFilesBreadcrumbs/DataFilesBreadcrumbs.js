@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
 
 const BreadcrumbLink = ({ api, scheme, system, path, children, section }) => {
@@ -99,11 +100,15 @@ const DataFilesBreadcrumbs = ({
       >
         <>{root}</>
       </BreadcrumbLink>
-      {pathComps.map((pathComp, i) =>
-        i < paths.length - 2 ? (
-          ' /... '
-        ) : (
-          <React.Fragment key={pathComp}>
+      {pathComps.map((pathComp, i) => {
+        if (i < paths.length - 2) {
+          return ' /... ';
+        }
+        if (i === paths.length - 1) {
+          return <span key={uuidv4()}> / {pathComp}</span>;
+        }
+        return (
+          <React.Fragment key={uuidv4()}>
             {' '}
             /{' '}
             <BreadcrumbLink
@@ -116,8 +121,8 @@ const DataFilesBreadcrumbs = ({
               <>{pathComp}</>
             </BreadcrumbLink>
           </React.Fragment>
-        )
-      )}
+        );
+      })}
     </div>
   );
 };

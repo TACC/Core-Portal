@@ -1,5 +1,6 @@
 .dataFilesModalColHeader {
-    font-weight: bold;
+  font-weight: bold;
+  padding-bottom: 10px;
 }
 
 .dataFilesModal {
@@ -13,17 +14,31 @@
         padding: 1.3rem;
     }
     .breadcrumbs {
-      font-size: 20px; /* TODO: During FP-120, replace this with commented style below */
-      // font-size: 12px; /* 10px design * 1.2 design-to-app ratio */
-      padding: 0 10px 0;
+      font-size: 12px;
+      padding-top: 5px;
+      padding-bottom: 5px;
       color: #707070;
     }
     .filesListing {
       flex-grow: 1;
       outline: 1px solid #707070;
-      padding-top: 10px;
     }
     .tr-header {
         border-bottom-color: #C6C6C6;
+    }
+
+    /* Overrides tr font-size for modals (being defined in DataFilesTable.scss */
+    .tr {
+      font-size: 12px;
+    }
+
+    /* Overrides bootstrap button */
+    .btn {
+      font-size: 12px;
+    }
+
+    /* Overrides bootstrap modal tittle */
+    .modal-title {
+      font-size: 18px;
     }
 }
