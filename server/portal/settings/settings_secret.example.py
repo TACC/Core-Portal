@@ -141,16 +141,16 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cep.home.{username}": "/tacc-work",
 }
 
-_PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM = 'locsystem1'
+_PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM = 'frontera'
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
-        'prefix': 'frontera.home.{}',                                   # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
-        'host': 'frontera.tacc.utexas.edu',                             # PORTAL_DATA_DEPOT_STORAGE_HOST
-        'abs_home_directory': '/corral-repl/tacc/aci/CEP/home_dirs/',   # PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH
-        'home_directory': '/home1',                                     # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
-        'relative_path': 'home_dirs',                                   # PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH
-        'requires_allocation': None,                                    # Should the default system require allocation to be viewed?
+        'prefix': 'frontera.home.{}',
+        'host': 'frontera.tacc.utexas.edu',
+        'abs_home_directory': '/corral-repl/tacc/aci/CEP/home_dirs/',
+        'home_directory': '/home1',
+        'relative_path': 'home_dirs',
+        'requires_allocation': None,
         'icon': None,
     },
     'longhorn': {
