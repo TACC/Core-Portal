@@ -1,23 +1,25 @@
 import { Badge } from 'reactstrap';
 import React from 'react';
 import PropTypes from 'prop-types';
+import './Jobs.module.scss';
 
 const STATUS_TEXT_MAP = {
-  ACCEPTED: 'Accepted',
-  PENDING: 'Pending',
+  ACCEPTED: 'Processing',
+  PENDING: 'Processing',
   PROCESSING_INPUTS: 'Processing',
-  STAGING_INPUTS: 'Staging Inputs',
-  STAGED: 'Staged',
-  STAGING_JOB: 'Staging Job',
+  STAGING_INPUTS: 'Staging',
+  STAGED: 'Staging',
+  STAGING_JOB: 'Staging',
   SUBMITTING: 'Submitted',
   QUEUED: 'Queued',
   RUNNING: 'Running',
-  CLEANING_UP: 'Cleaning Up',
-  ARCHIVING: 'Archiving',
+  CLEANING_UP: 'Running',
+  ARCHIVING: 'Running',
   FINISHED: 'Finished',
   STOPPED: 'Stopped',
   FAILED: 'Failure',
-  BLOCKED: 'Blocked'
+  BLOCKED: 'Blocked',
+  PAUSED: 'Paused'
 };
 
 export function getStatusText(status) {
@@ -45,7 +47,11 @@ function JobsStatus({ status, fancy }) {
   const color = getBadgeColor(status);
   const userStatus = getStatusText(status);
   if (fancy && color) {
-    return <Badge color={color}>{userStatus}</Badge>;
+    return (
+      <Badge color={color} styleName="badge">
+        {userStatus}
+      </Badge>
+    );
   }
   return userStatus;
 }
