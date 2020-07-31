@@ -3,10 +3,10 @@ import { eventChannel } from 'redux-saga';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { fetchUtil } from 'utils/fetchUtil';
 
-const createNotificationsSocket = () =>
+export const createNotificationsSocket = () =>
   new ReconnectingWebSocket(`wss://${window.location.host}/ws/notifications/`);
 
-function socketEmitter(socket) {
+export function socketEmitter(socket) {
   return eventChannel(emit => {
     socket.addEventListener('message', e => {
       emit(JSON.parse(e.data));
