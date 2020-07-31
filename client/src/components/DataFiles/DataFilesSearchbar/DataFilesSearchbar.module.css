@@ -6,15 +6,16 @@
 
 /* Children */
 
-/* Each direct child after the first */
-.container > * + * {
-    margin-left: 24px; /* 20px design * 1.2 design-to-app ratio */
+/* Each direct child except the last */
+.container > *:not(:last-child) {
+    margin-right: 24px; /* 20px design * 1.2 design-to-app ratio */
 }
 .query-fieldset {
     width: 560px; /* 70px + 396px design * 1.2 design-to-app ratio */
 }
+/* FP-563: Support count in status message */
 .summary-fieldset {
-    /* … */
+    /* No styles necessary, but defining class for consistency */
 }
 .filter-fieldset {
     margin-left: auto; /* this is how to "justify-self" on flex children */
