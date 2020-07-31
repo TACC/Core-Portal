@@ -11,17 +11,13 @@ function UIPatterns() {
       </div>
       <div styleName="items">
         <div styleName="grid-item">
-          <div styleName="item-header">
-            <h6>Messages</h6>
-          </div>
+          <h6>Messages</h6>
           <UIPatternsMessages />
         </div>
       </div>
       <div styleName="items">
         <div styleName="grid-item">
-          <div styleName="item-header">
-            <h6>DescriptionList</h6>
-          </div>
+          <h6>DescriptionList</h6>
           <UIPatternsDescriptionList />
         </div>
       </div>
