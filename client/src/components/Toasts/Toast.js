@@ -35,7 +35,10 @@ const NotificationToast = () => {
     setMessageInfo(undefined);
   };
 
-  const handleClose = () => {
+  const handleClose = (_event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
     setOpen(false);
   };
 
@@ -70,7 +73,6 @@ const NotificationToast = () => {
           </div>
         </>
       }
-      ClickAwayListener={{ mouseEvent: false }}
     />
   );
 };
