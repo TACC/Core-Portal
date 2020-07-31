@@ -4,7 +4,7 @@ export const createMessage = (count, query) =>
   `${count} Results Found for ${query}`;
 
 const DataFilesSearchbarStatus = ({ query, count }) => {
-  const message = count ? createMessage({ count, query }) : '';
+  const message = count ? createMessage(count, query) : '';
 
   return message;
 };
