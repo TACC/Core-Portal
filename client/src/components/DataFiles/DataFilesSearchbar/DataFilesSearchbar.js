@@ -5,15 +5,13 @@ import { Button } from 'reactstrap';
 import queryString from 'query-string';
 import { createTemplateFunction } from 'utils/taggedTemplates';
 import { Icon } from '_common';
-import DataFilesSearchbarStatus from './DataFilesSearchbarStatus';
-import './DataFilesSearchbar.module.css';
+// FP-563: Support count in status message
+// import DataFilesSearchbarStatus from './DataFilesSearchbarStatus';
 
-export const createMessage = createTemplateFunction`${'count'} Results Found for ${'query'}`;
+import './DataFilesSearchbar.module.css';
 
 const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
-  const [prevQuery, setPrevQuery] = useState('');
-  const [resultCount, setResultCount] = useState(0);
   const history = useHistory();
   const sectionName = 'My Data';
 
@@ -22,21 +20,9 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
       ? `?${queryString.stringify({ query_string: query })}`
       : '';
 
-    // No results found during search (status will reflect this)
-    setResultCount(0);
-
-    setPrevQuery(query);
-    setResultCount(100); // !!!: By what value to increment this?
-
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
-  const emptySearch = () => {
-    setQuery('');
-    setPrevQuery(query);
-    setResultCount(0);
-
-    // !!!: How to empty the search?
-  };
+  const emptySearch = () => {};
 
   const onSubmit = e => {
     routeSearch();
@@ -74,7 +60,8 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
           data-testid="input"
         />
       </fieldset>
-      <fieldset styleName="summary-fieldset">
+      {/* FP-563: Support count in status message */}
+      {/* <fieldset styleName="summary-fieldset">
         <output
           name="results"
           aria-label="Summary of Search Results"
@@ -82,7 +69,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
         >
           <DataFilesSearchbarStatus count={resultCount} query={prevQuery} />
         </output>
-      </fieldset>
+      </fieldset> */}
       {/* FP-505: Implement Filter Dropdown */}
       <fieldset styleName="filter-fieldset">
         <select>
@@ -106,7 +93,7 @@ DataFilesSearchbar.propTypes = {
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
-  /** Additional className for the root element */
+  /** Additional `className` (or transpiled `styleName`) for the root element */
   className: PropTypes.string
 };
 DataFilesSearchbar.defaultProps = {
