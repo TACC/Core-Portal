@@ -42,7 +42,7 @@
 
 .modal-body-container {
   width: 100%;
-  height: 70vh;
+  height: 60vh;
   display: flex;
   flex-direction: row;
 }
@@ -59,6 +59,7 @@
 
 .right-panel {
   width: 100%;
+  overflow-y: scroll;
 }
 
 .panel-content {
