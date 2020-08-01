@@ -2,7 +2,7 @@ import React from 'react';
 import { Router } from 'react-router-dom';
 import { render, fireEvent } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import DataFilesSearchbar, { createMessage } from './DataFilesSearchbar';
+import DataFilesSearchbar from './DataFilesSearchbar';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
@@ -54,7 +54,8 @@ describe('DataFilesSearchbar', () => {
 
     expect(getByRole('form')).toBeDefined();
     expect(getByRole('searchbox')).toBeDefined();
-    expect(getByRole('status')).toBeDefined();
+    // FP-563: Support count in status message
+    // expect(getByRole('status')).toBeDefined();
     expect(getByRole('combobox')).toBeDefined();
     expect(getByTestId('reset')).toBeDefined();
   });

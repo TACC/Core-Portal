@@ -8,7 +8,7 @@ describe('DataFilesSearchbarStatus', () => {
   it('is accurate when count is greater than zero', () => {
     const count = 100;
     const query = mockQuery;
-    const statusMessage = createMessage({ count, query });
+    const statusMessage = createMessage(count, query);
     const { getByText } = render(
       <DataFilesSearchbarStatus {...{ count, query }} />
     );
