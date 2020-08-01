@@ -83,14 +83,16 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Details',
       accessor: 'id',
       show: showDetails,
-      Cell: el => (
-        <Link
-          to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${el.value}`}
-          className="wb-link"
-        >
-          View Details
-        </Link>
-      )
+      Cell: ({ row }) => {
+        return (
+          <Link
+            to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${row.original.id}?name=${row.original.name}`}
+            className="wb-link"
+          >
+            View Details
+          </Link>
+        );
+      }
     },
     {
       Header: 'Output Location',

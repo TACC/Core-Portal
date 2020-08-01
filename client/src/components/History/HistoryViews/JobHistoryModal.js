@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory, NavLink as RRNavLink } from 'react-router-dom';
+import { useHistory, useLocation, NavLink as RRNavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
 import { LoadingSpinner, Expand } from '_common';
@@ -158,10 +158,18 @@ function JobHistoryModal({ jobId }) {
     state => state.jobDetail.loadingErrorMessage
   );
   const { job, display, app } = useSelector(state => state.jobDetail);
+  const { search } = useLocation();
 
-  const jobName = job ? job.name : placeHolder;
   const applicationName = display ? display.applicationName : placeHolder;
   const systemName = display ? display.systemName : placeHolder;
+  let jobName = job ? job.name : placeHolder;
+
+  if (jobName === placeHolder) {
+    const jobNameFromQuery = new URLSearchParams(search).get('name');
+    if (jobNameFromQuery) {
+      jobName = jobNameFromQuery;
+    }
+  }
 
   const history = useHistory();
   const close = () => {
