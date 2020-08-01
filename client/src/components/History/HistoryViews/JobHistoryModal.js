@@ -56,7 +56,7 @@ function Entry({ label, isTopLevelEntry, children }) {
 
 Entry.propTypes = {
   label: PropTypes.string.isRequired,
-  isTopLevelEntry: PropTypes.string.isRequired,
+  isTopLevelEntry: PropTypes.bool.isRequired,
   children: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired
 };
 Entry.defaultProp = {
