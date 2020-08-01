@@ -8,11 +8,14 @@
 
 /* Each direct child except the last */
 .container > *:not(:last-child) {
-    margin-right: 24px; /* 20px design * 1.2 design-to-app ratio */
+    margin-right: 20px; /* 20px design * 1.2 design-to-app ratio */
 }
 .query-fieldset {
     width: 560px; /* 70px + 396px design * 1.2 design-to-app ratio */
 }
+/* Ensure `.clear-button` text does not wrap at (arbitrary) 1280px laptop width */
+/* WARN: Non-standard un-documented first-party breakpoint */
+@media (max-width: 1700px) { .query-fieldset { width: 460px; } }
 /* FP-563: Support count in status message */
 .summary-fieldset {
     /* No styles necessary, but defining class for consistency */
