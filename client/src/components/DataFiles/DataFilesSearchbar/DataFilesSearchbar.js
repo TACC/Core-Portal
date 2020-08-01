@@ -42,7 +42,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
     >
       <fieldset className="input-group" styleName="query-fieldset">
         <div className="input-group-prepend">
-          <Button onClick={routeSearch} styleName="submit-button">
+          <Button type="submit" styleName="submit-button">
             <Icon name="search" styleName="button__icon" />
             <span styleName="button__text">Search</span>
           </Button>
