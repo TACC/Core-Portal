@@ -1,29 +1,12 @@
-/* This is a CSS Modules, and minimal, version of the Dashboard stylesheet */
+/* This is a version of the Dashboard stylesheet with these changes:
+    - CSS Modules
+    - minimal
+    - no flexbox
+*/
 
 .container {
-  display: flex;
-  flex-direction: column;
-
-  padding: 20px 40px 0 25px;
-}
-.items {
-  /* As a flex item */
-  flex-grow: 1;
-
-  /* As a flex container */
-  display: flex;
-  flex-direction: column;
-}
-/* Make bottom-most item fill up remaining vertical space */
-.items > :last-child {
-  flex-grow: 1;
-}
-
-.header,
-.item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  // FAQ: Extra padding is added to bottom only for this section
+  padding: 20px 40px 40px 25px;
 }
 
 .header {
@@ -34,7 +17,7 @@
   font-weight: 400;
 }
 
-/* FAQ: Indirect child element of `.dashboard-items` */
+/* FAQ: Ancestor of `.dashboard-items` */
 /* RFC: Class name `.dashboard-item` (to coincide with `.dashboard-items`) */
 .grid-item {
   margin-top: 20px;

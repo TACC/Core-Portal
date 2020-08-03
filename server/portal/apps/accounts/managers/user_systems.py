@@ -34,7 +34,7 @@ class UserSystemsManager():
             #'abs_home_directory': '/path/to/home_dirs/', <---- User's absolute home directory path
             'home_directory': '/home', <---------------------- User's home directory
             #'relative_path': 'home_dirs', <------------------- User's relative home directory
-            'icon': None <------------------------------------ The CSS class for the icon used in "My Data".
+            'icon': None <------------------------------------ The CSS class name for the icon used in "My Data".
         }
 
     Default System:
@@ -119,10 +119,9 @@ class UserSystemsManager():
         """Gets private storage directory for a user
         :returns: '{tasid}/{username}'
         """
-        path = self.tas_user['homeDirectory']
-        assert self.tas_user
-        assert self.user.username in path
-        return path
+
+        return self.tas_user['homeDirectory']
+
 
     def setup_private_system(self, *args, **kwargs):
         """Create private storage system for a user
@@ -130,7 +129,6 @@ class UserSystemsManager():
         """
         agc = service_account()
         try:
-            # formerly get_system func
             private_system = agc.systems.get(systemId=self.get_system_id())
             return private_system
         except HTTPError as exc:
@@ -180,7 +178,7 @@ class UserSystemsManager():
         system.storage.protocol = 'SFTP'
         system.storage.host = self.get_host()
         system.storage.auth.username = username
-        system.storage.auth.type = system.AUTH_TYPES.SSHKEYS #???
+        system.storage.auth.type = system.AUTH_TYPES.SSHKEYS
         system.storage.auth.public_key = publ_key_str
         system.storage.auth.private_key = priv_key_str
         return system
