@@ -1,17 +1,20 @@
 $font-style: medium 10px;
 
+.root {
+    :first-child {
+      font-size: 100%;
+    }
+  }
+
 .open-icon {
   margin-right: 0.25rem;
   font: $font-style;
 }
 .open-button {
-  margin-left: 0.25rem;
+  margin-left: 0.5rem;
   min-height: 1.25rem;
   background-color: #f4f4f4;
   border: 1px solid #afafaf;
   font: $font-style;
   color: #707070;
-}
-.plain-status {
-  display: inline;
 }

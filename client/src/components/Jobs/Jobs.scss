@@ -21,8 +21,8 @@
   /* status */
   th:nth-child(5),
   td:nth-child(5) {
-    @include job-status();
-    width: 55%;
+    // @include job-status();
+    min-width: 15em;
   }
 }
 
@@ -45,8 +45,8 @@
   /* status */
   th:nth-child(6),
   td:nth-child(6) {
-    @include job-status();
-    width: 35%;
+    // @include job-status();
+    min-width: 15em;
   }
 }
 

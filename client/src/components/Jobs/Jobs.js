@@ -139,9 +139,13 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
-      Cell: el => {
-        return <JobsStatus status={el.value} fancy={showFancyStatus} />;
-      },
+      Cell: el => (
+        <JobsStatus
+          status={el.value}
+          fancy={showFancyStatus}
+          jobId={el.row.original.id}
+        />
+      ),
       id: 'jobStatusCol'
     }
   ];

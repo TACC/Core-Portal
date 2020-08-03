@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Badge } from 'reactstrap';
 import PropTypes from 'prop-types';
 import JobsSessionModal from '../JobsSessionModal';
@@ -44,7 +45,7 @@ export function getBadgeColor(status) {
   }
 }
 
-function JobsStatus({ status, fancy }) {
+function JobsStatus({ status, fancy, jobId }) {
   const [modal, setModal] = React.useState(false);
   const toggleModal = () => {
     setModal(!modal);
@@ -52,35 +53,51 @@ function JobsStatus({ status, fancy }) {
   const color = getBadgeColor(status);
   const userStatus = getStatusText(status);
 
-  // TODO: Make this accurate
-  const isRunning = status === 'FINISHED';
+  const notifs = useSelector(state => state.notifications.list.notifs);
+  let interactiveSessionLink;
+
+  /* Check if job is running AND has interactive session */
+  if (status === 'RUNNING') {
+    const interactiveNotifs = notifs.filter(
+      n =>
+        n.event_type === 'interactive_session_ready' &&
+        n.extra.status === 'RUNNING'
+    );
+    const notif = interactiveNotifs.find(n => n.extra.id === jobId);
+    interactiveSessionLink = notif ? notif.action_link : null;
+  }
+
   return (
-    <>
+    <div styleName="root">
       {fancy && color ? (
-        <div>
-          <Badge color={color}>{userStatus}</Badge>
-        </div>
+        <Badge color={color}>{userStatus}</Badge>
       ) : (
-        <div styleName="plain-status">{userStatus}</div>
+        <span>{userStatus}</span>
       )}
-      {/* Check if job is running AND has interactive session */}
-      {isRunning && (
+      {interactiveSessionLink && (
         <>
           <button type="button" styleName="open-button" onClick={toggleModal}>
             <i className="icon icon-new-browser" styleName="open-icon" />
             Open Session
           </button>
-          <JobsSessionModal toggle={toggleModal} isOpen={modal} />
+          <JobsSessionModal
+            toggle={toggleModal}
+            isOpen={modal}
+            interactiveSessionLink={interactiveSessionLink}
+          />
         </>
       )}
-    </>
+    </div>
   );
 }
 
 JobsStatus.propTypes = {
-  status: PropTypes.string,
-  fancy: PropTypes.bool
+  status: PropTypes.string.isRequired,
+  fancy: PropTypes.bool,
+  jobId: PropTypes.string.isRequired
 };
-JobsStatus.defaultProps = { status: '', fancy: false };
+JobsStatus.defaultProps = {
+  fancy: false
+};
 
 export default JobsStatus;
