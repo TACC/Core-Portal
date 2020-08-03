@@ -40,7 +40,6 @@ describe('getJobDetails Saga', () => {
         payload: {
           app: appDetailFixture,
           job: jobDetailFixture,
-          display: jobDetailDisplayFixture
         }
       })
 

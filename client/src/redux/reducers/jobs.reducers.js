@@ -1,3 +1,5 @@
+import { getJobDisplayInformation } from 'utils/jobsUtil';
+
 export const initialState = {
   list: [],
   submit: { submitting: false },
@@ -100,7 +102,10 @@ export function jobDetail(state = initialJobDetail, action) {
         jobId: action.payload.job.id,
         app: action.payload.app,
         job: action.payload.job,
-        display: action.payload.display,
+        display: getJobDisplayInformation(
+          action.payload.job,
+          action.payload.app
+        ),
         loading: false,
         loadingError: false,
         loadingErrorMessage: ''
