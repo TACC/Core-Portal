@@ -34,7 +34,7 @@ class UserSystemsManager():
             #'abs_home_directory': '/path/to/home_dirs/', <---- User's absolute home directory path
             'home_directory': '/home', <---------------------- User's home directory
             #'relative_path': 'home_dirs', <------------------- User's relative home directory
-            'icon': None <------------------------------------ The CSS class for the icon used in "My Data".
+            'icon': None <------------------------------------ The CSS class name for the icon used in "My Data".
         }
 
     Default System:
@@ -119,10 +119,7 @@ class UserSystemsManager():
         """Gets private storage directory for a user
         :returns: '{tasid}/{username}'
         """
-        path = self.tas_user['homeDirectory']
-        assert self.tas_user
-        assert self.user.username in path
-        return path
+        return self.tas_user['homeDirectory']
 
     def setup_private_system(self, *args, **kwargs):
         """Create private storage system for a user
