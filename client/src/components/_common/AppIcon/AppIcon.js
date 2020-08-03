@@ -17,7 +17,7 @@ const AppIcon = ({ appId }) => {
   };
   const iconName = findAppIcon(appId);
 
-  return <Icon name={iconName} className="app-icon" />;
+  return <Icon name={iconName} />;
 };
 AppIcon.propTypes = {
   appId: PropTypes.string.isRequired

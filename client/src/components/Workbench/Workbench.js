@@ -4,19 +4,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import Dashboard from '../Dashboard';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
-import History from '../History/History';
+import UIPatterns from '../UIPatterns';
 import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
+import History from '../History';
 import * as ROUTES from '../../constants/routes';
 import './Workbench.scss';
 
 function Workbench() {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
-  // show History only in local development
-  const showHistory = useSelector(state =>
+  // Show some entries only in local development
+  const isDebug = useSelector(state =>
     state.workbench.status ? state.workbench.status.debug : false
   );
+  const showUIPatterns = isDebug;
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({ type: 'FETCH_SYSTEMS' });
@@ -25,6 +27,7 @@ function Workbench() {
     dispatch({ type: 'GET_ALLOCATIONS' });
     dispatch({ type: 'GET_APPS' });
     dispatch({ type: 'GET_APP_START' });
+    dispatch({ type: 'FETCH_NOTIFICATIONS' });
   }, []);
 
   return (
@@ -46,8 +49,9 @@ function Workbench() {
             path={`${path}${ROUTES.ALLOCATIONS}`}
             component={Allocations}
           />
-          {showHistory && (
-            <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
+          <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
+          {showUIPatterns && (
+            <Route path={`${path}${ROUTES.UI}`} component={UIPatterns} />
           )}
           <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
         </Switch>

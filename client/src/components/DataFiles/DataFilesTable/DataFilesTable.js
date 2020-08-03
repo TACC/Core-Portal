@@ -7,12 +7,10 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import './DataFilesTable.scss';
 
 // What to render if there are no files to display
@@ -36,55 +34,49 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       </div>
     );
   }
-  if (err === '502') {
+  if (err) {
+    if (err === '502') {
+      const link = strings => (
+        <a
+          className="data-files-nav-link"
+          type="button"
+          href="#"
+          onClick={pushKeys}
+        >
+          {strings[0]}
+        </a>
+      );
+
+      return (
+        <div className="h-100 listing-placeholder">
+          <Message type="warn">
+            There was a problem accessing this file system. If this is your
+            first time logging in, you may need to {link`push your keys`}.
+          </Message>
+        </div>
+      );
+    }
+    if (err === '404') {
+      return (
+        <div className="h-100 listing-placeholder">
+          <Message type="warn">
+            The file or folder that you are attempting to access does not exist.
+          </Message>
+        </div>
+      );
+    }
     return (
       <div className="h-100 listing-placeholder">
-        <span className="text-center">
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            style={{ marginRight: '10px' }}
-            color="#9d85ef"
-          />
-          There was a problem accessing this file system. If this is your first
-          time logging in, you may need to{' '}
-          <a
-            className="data-files-nav-link"
-            type="button"
-            href="#"
-            onClick={pushKeys}
-          >
-            push your keys
-          </a>
-          .
-        </span>
-      </div>
-    );
-  }
-  if (err === '404') {
-    return (
-      <div className="h-100 listing-placeholder">
-        <span style={{ color: '#9d85ef' }}>
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            style={{ marginRight: '10px' }}
-            color="#9d85ef"
-          />
-          The file or folder that you are attempting to access does not exist.
-        </span>
+        <Message type="warn">
+          There was a problem accessing this file system.
+        </Message>
       </div>
     );
   }
   if (filesLength === 0) {
     return (
       <div className="h-100 listing-placeholder">
-        <span style={{ color: '#9d85ef' }}>
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            style={{ marginRight: '10px' }}
-            color="#9d85ef"
-          />
-          No files or folders to show.
-        </span>
+        <Message type="warn">No files or folders to show.</Message>
       </div>
     );
   }
@@ -101,7 +93,8 @@ const DataFilesTableRow = ({
   rowCount,
   row,
   section,
-  rowSelectCallback
+  rowSelectCallback,
+  shadeEvenRows
 }) => {
   const onClick = useCallback(() => rowSelectCallback(index), [index]);
   const onKeyDown = useCallback(
@@ -117,11 +110,13 @@ const DataFilesTableRow = ({
       ? state.files.selected[section].includes(index)
       : false
   );
+  const isShaded = shadeEvenRows ? index % 2 === 0 : index % 2 === 1;
   if (index < rowCount) {
     return (
       <div
         style={style}
-        className={`tr ${index % 2 && 'tr-even'} ${selected && 'tr-selected'}`}
+        className={`tr ${isShaded && 'tr-background-shading'} ${selected &&
+          'tr-selected'}`}
         role="row"
         tabIndex={-1}
         index={row.index}
@@ -156,7 +151,8 @@ DataFilesTableRow.propTypes = {
     cells: PropTypes.array
   }),
   section: PropTypes.string.isRequired,
-  rowSelectCallback: PropTypes.func.isRequired
+  rowSelectCallback: PropTypes.func.isRequired,
+  shadeEvenRows: PropTypes.bool.isRequired
 };
 DataFilesTableRow.defaultProps = { row: {} };
 
@@ -165,7 +161,9 @@ const DataFilesTable = ({
   columns,
   rowSelectCallback,
   scrollBottomCallback,
-  section
+  section,
+  hideHeader,
+  shadeEvenRows
 }) => {
   const [headerHeight, setHeaderHeight] = useState(0);
   const tableHeader = useRef({ clientHeight: 0 });
@@ -233,10 +231,11 @@ const DataFilesTable = ({
           row={row}
           section={section}
           rowSelectCallback={rowSelectCallback}
+          shadeEvenRows={shadeEvenRows}
         />
       );
     },
-    [rows]
+    [rows, shadeEvenRows]
   );
 
   return (
@@ -248,19 +247,21 @@ const DataFilesTable = ({
       {({ width, height }) => (
         <div {...getTableProps()}>
           <div ref={tableHeader}>
-            {headerGroups.map(headerGroup => (
-              <div
-                {...headerGroup.getHeaderGroupProps()}
-                className="tr tr-header"
-                style={{ width }}
-              >
-                {headerGroup.headers.map(column => (
-                  <div {...column.getHeaderProps()} className="td">
-                    {column.render('Header')}
-                  </div>
-                ))}
-              </div>
-            ))}
+            {headerGroups.map(headerGroup => {
+              return hideHeader ? null : (
+                <div
+                  {...headerGroup.getHeaderGroupProps()}
+                  className="tr tr-header"
+                  style={{ width }}
+                >
+                  {headerGroup.headers.map(column => (
+                    <div {...column.getHeaderProps()} className="td">
+                      {column.render('Header')}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
           </div>
           {/* table body */}
           <div
@@ -290,12 +291,20 @@ const DataFilesTable = ({
     </AutoSizer>
   );
 };
+
 DataFilesTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   columns: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   rowSelectCallback: PropTypes.func.isRequired,
   scrollBottomCallback: PropTypes.func.isRequired,
-  section: PropTypes.string.isRequired
+  section: PropTypes.string.isRequired,
+  hideHeader: PropTypes.bool,
+  shadeEvenRows: PropTypes.bool
+};
+
+DataFilesTable.defaultProps = {
+  hideHeader: false,
+  shadeEvenRows: false
 };
 
 export default DataFilesTable;

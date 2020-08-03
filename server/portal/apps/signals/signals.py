@@ -1,4 +1,4 @@
 from django.dispatch import Signal
 
-# portal_event = Signal(providing_args=['session_id', 'event_type', 'event_data'])
+# Generic event signal. Not in use as of 6.29.20
 portal_event = Signal(providing_args=['event_type', 'event_data', 'event_users'])
