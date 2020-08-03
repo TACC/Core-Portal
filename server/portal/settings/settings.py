@@ -56,7 +56,6 @@ ROOT_URLCONF = 'portal.urls'
 # Application definition
 
 INSTALLED_APPS = [
-
     # django CMS admin style must be before django.contrib.admin
     'djangocms_admin_style',
 
@@ -72,6 +71,9 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
+    # Django Channels
+    'channels',
+
     # Django recaptcha.
     'captcha',
 
@@ -84,9 +86,6 @@ INSTALLED_APPS = [
     'bootstrap4',
     'termsandconditions',
     'impersonate',
-
-    # Websockets.
-    'ws4redis',
 
     # Custom apps.
     'portal.apps.accounts',
@@ -167,7 +166,6 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.template.context_processors.static',
                 'django_settings_export.settings_export',
-                'ws4redis.context_processors.default',
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
                 'portal.utils.contextprocessors.messages',
@@ -279,9 +277,6 @@ DATABASES = {
     }
 }
 
-WS4REDIS_CONNECTION = {
-    'host': settings_secret._RESULT_BACKEND_HOST,
-}
 WEBSOCKET_URL = '/ws/'
 
 # TAS Authentication.
@@ -381,6 +376,12 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         },
+        'daphne': {
+            'handlers': [
+                'console',
+            ],
+            'level': 'INFO'
+        }
     },
 }
 
@@ -849,3 +850,21 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
                                 SUPPORTED_IPYNB_PREVIEW_EXTS)
+
+
+# Channels
+ASGI_APPLICATION = 'portal.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
+        },
+    },
+    'short-lived': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
+        },
+    },
+}

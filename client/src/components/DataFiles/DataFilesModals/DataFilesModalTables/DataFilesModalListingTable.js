@@ -2,8 +2,48 @@ import React, { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
-import { FileIconCell } from '../../DataFilesListing/DataFilesListingCells';
+import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
+import './DataFilesModalListingTable.module.scss';
+
+export function getCurrentDirectory(path) {
+  return path.split('/').pop();
+}
+
+export function getParentPath(currentPath) {
+  return currentPath.substr(0, currentPath.lastIndexOf('/'));
+}
+
+const BackLink = ({ api, scheme, system, currentPath }) => {
+  const dispatch = useDispatch();
+
+  const onClick = () => {
+    dispatch({
+      type: 'FETCH_FILES',
+      payload: {
+        api,
+        scheme,
+        system,
+        path: getParentPath(currentPath),
+        section: 'modal'
+      }
+    });
+  };
+  return (
+    <Button styleName="link" color="link" onClick={onClick}>
+      <FontAwesomeIcon icon={faAngleLeft} />
+      <span styleName="path">Back</span>
+    </Button>
+  );
+};
+BackLink.propTypes = {
+  api: PropTypes.string.isRequired,
+  scheme: PropTypes.string.isRequired,
+  system: PropTypes.string.isRequired,
+  currentPath: PropTypes.string.isRequired
+};
 
 const DataFilesModalListingNameCell = ({
   api,
@@ -11,7 +51,9 @@ const DataFilesModalListingNameCell = ({
   system,
   path,
   name,
-  format
+  format,
+  isCurrentDirectory,
+  indentSubFilesFolders
 }) => {
   const dispatch = useDispatch();
   const onClick = e => {
@@ -23,17 +65,33 @@ const DataFilesModalListingNameCell = ({
     });
   };
 
-  if (format === 'folder') {
-    return (
-      <span className="data-files-name">
-        <a href="" onClick={onClick} className="data-files-nav-link">
-          {' '}
-          {name}{' '}
+  const isFolderButNotCurrentFolder =
+    format === 'folder' && !isCurrentDirectory;
+
+  return (
+    <div
+      styleName={`container ${
+        indentSubFilesFolders && !isCurrentDirectory ? 'children' : ''
+      }`}
+    >
+      <FileIcon format={format} />
+      {isFolderButNotCurrentFolder && (
+        <a
+          href=""
+          onClick={onClick}
+          styleName="path"
+          className="data-files-name data-files-nav-link"
+        >
+          {name}
         </a>
-      </span>
-    );
-  }
-  return <span className="data-files-name">{name}</span>;
+      )}
+      {!isFolderButNotCurrentFolder && (
+        <span styleName="path" className="data-files-name">
+          {name}
+        </span>
+      )}
+    </div>
+  );
 };
 DataFilesModalListingNameCell.propTypes = {
   api: PropTypes.string.isRequired,
@@ -41,7 +99,9 @@ DataFilesModalListingNameCell.propTypes = {
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  format: PropTypes.string.isRequired
+  format: PropTypes.string.isRequired,
+  isCurrentDirectory: PropTypes.bool.isRequired,
+  indentSubFilesFolders: PropTypes.bool.isRequired
 };
 
 const DataFilesModalButtonCell = ({
@@ -50,11 +110,14 @@ const DataFilesModalButtonCell = ({
   format,
   operationName,
   operationCallback,
+  operationOnlyForFolders,
   disabled
 }) => {
   const onClick = () => operationCallback(system, path);
+  const formatSupportsOperation =
+    !operationOnlyForFolders || format === 'folder';
   return (
-    format === 'folder' && (
+    formatSupportsOperation && (
       <span>
         <Button
           disabled={disabled}
@@ -73,6 +136,7 @@ DataFilesModalButtonCell.propTypes = {
   format: PropTypes.string.isRequired,
   operationName: PropTypes.string.isRequired,
   operationCallback: PropTypes.func.isRequired,
+  operationOnlyForFolders: PropTypes.bool.isRequired,
   disabled: PropTypes.bool.isRequired
 };
 
@@ -80,15 +144,41 @@ const DataFilesModalListingTable = ({
   data,
   operationName,
   operationCallback,
+  operationOnlyForFolders,
+  operationAllowedOnRootFolder,
   disabled
 }) => {
   const dispatch = useDispatch();
+  const loading = useSelector(state => state.files.loading.modal);
+  const error = useSelector(state => state.files.error.modal);
   const params = useSelector(state => state.files.params.modal, shallowEqual);
+  const isNotRoot = params.path.length > 0;
+
+  const alteredData = useMemo(() => {
+    const result = data.map(d => {
+      const entry = d;
+      entry.isCurrentDirectory = false;
+      return entry;
+    });
+
+    /* Add an entry to represent the current sub-directory */
+    if (!loading && !error && (isNotRoot || operationAllowedOnRootFolder)) {
+      const currentFolderEntry = {
+        name: isNotRoot ? getCurrentDirectory(params.path) : 'My Data',
+        format: 'folder',
+        system: params.system,
+        path: params.path,
+        isCurrentDirectory: true
+      };
+      result.unshift(currentFolderEntry);
+    }
+    return result;
+  }, [data, params, isNotRoot, loading]);
 
   const NameCell = useCallback(
     ({
       row: {
-        original: { name, format, path }
+        original: { name, format, path, isCurrentDirectory }
       }
     }) => (
       <DataFilesModalListingNameCell
@@ -98,6 +188,8 @@ const DataFilesModalListingTable = ({
         path={path}
         name={name}
         format={format}
+        isCurrentDirectory={isCurrentDirectory}
+        indentSubFilesFolders={isNotRoot || operationAllowedOnRootFolder}
       />
     ),
     [params]
@@ -117,30 +209,36 @@ const DataFilesModalListingTable = ({
         format={format}
         operationName={operationName}
         operationCallback={operationCallback}
+        operationOnlyForFolders={operationOnlyForFolders}
         disabled={disabled}
       />
     ),
     [params, operationName, operationCallback, disabled]
   );
 
+  const hasBackButton = params.path.length > 0;
+
+  const BackHeader = useCallback(
+    () => (
+      <BackLink
+        system={params.system}
+        currentPath={params.path}
+        api={params.api}
+        scheme={params.scheme}
+      />
+    ),
+    [params]
+  );
+
   const columns = useMemo(
     () => [
       {
-        id: 'icon',
-        accessor: 'format',
-        width: 0.05,
-        minWidth: 20,
-        maxWidth: 30,
-        Cell: FileIconCell
-      },
-      {
-        Header: 'Name',
+        Header: BackHeader,
         accessor: 'name',
-        width: 0.65,
+        width: 0.7,
         Cell: NameCell
       },
       {
-        Header: '',
         id: 'button',
         width: 0.3,
         Cell: ButtonCell
@@ -162,11 +260,13 @@ const DataFilesModalListingTable = ({
   }, [dispatch, data.length]);
   return (
     <DataFilesTable
-      data={data}
+      data={alteredData}
       columns={columns}
       rowSelectCallback={rowSelectCallback}
       scrollBottomCallback={scrollBottomCallback}
       section="modal"
+      hideHeader={!hasBackButton}
+      shadeEvenRows={hasBackButton}
     />
   );
 };
@@ -174,7 +274,15 @@ DataFilesModalListingTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   operationName: PropTypes.string.isRequired,
   operationCallback: PropTypes.func.isRequired,
-  disabled: PropTypes.bool.isRequired
+  disabled: PropTypes.bool,
+  operationOnlyForFolders: PropTypes.bool,
+  operationAllowedOnRootFolder: PropTypes.bool
+};
+
+DataFilesModalListingTable.defaultProps = {
+  disabled: false,
+  operationOnlyForFolders: false,
+  operationAllowedOnRootFolder: false
 };
 
 export default DataFilesModalListingTable;
