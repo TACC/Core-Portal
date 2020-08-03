@@ -7,7 +7,6 @@ from portal.apps.accounts.managers.accounts import get_user_home_system_id
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
-# Create your views here.
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +37,7 @@ class TapisFilesView(BaseApiView):
 
         response = tapis_get_handler(
             client, scheme, system, path, operation, **request.GET.dict())
+
         return JsonResponse({'data': response})
 
     def put(self, request, operation=None, scheme=None,

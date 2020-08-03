@@ -68,6 +68,9 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
+    # Django Channels
+    'channels',
+
     # Django recaptcha.
     'captcha',
 
@@ -81,9 +84,6 @@ INSTALLED_APPS = [
     'termsandconditions',
     'impersonate',
 
-    # Websockets.
-    'ws4redis',
-
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
@@ -92,7 +92,6 @@ INSTALLED_APPS = [
     'portal.apps.notifications',
     'portal.apps.onboarding',
     'portal.apps.search',
-    'portal.apps.signals',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
@@ -491,3 +490,11 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
 
 DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
+
+# Channels
+ASGI_APPLICATION = 'portal.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}

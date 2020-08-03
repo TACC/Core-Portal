@@ -42,7 +42,9 @@ module.exports = {
 
     // PROPERTY
     // Disallow unknown properties.
-    // 'property-no-unknown': null,
+    'property-no-unknown': [ true, {
+      ignoreProperties: ['composes']
+    }],
 
     // KEYFRAME DECLARATION
     // Disallow !important within keyframe declarations.

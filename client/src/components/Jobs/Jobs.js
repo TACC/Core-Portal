@@ -11,7 +11,7 @@ import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
-function JobsView({ showDetails, showFancyStatus }) {
+function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const dispatch = useDispatch();
   const isLoading = useSelector(state => state.jobs.loading);
   const jobs = useSelector(state => state.jobs.list);
@@ -156,17 +156,20 @@ function JobsView({ showDetails, showFancyStatus }) {
       isLoading={isLoading}
       className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
       noDataText={noDataText}
+      getRowProps={rowProps}
     />
   );
 }
 
 JobsView.propTypes = {
   showDetails: PropTypes.bool,
-  showFancyStatus: PropTypes.bool
+  showFancyStatus: PropTypes.bool,
+  rowProps: PropTypes.func
 };
 JobsView.defaultProps = {
   showDetails: false,
-  showFancyStatus: false
+  showFancyStatus: false,
+  rowProps: row => {}
 };
 
 export default JobsView;
