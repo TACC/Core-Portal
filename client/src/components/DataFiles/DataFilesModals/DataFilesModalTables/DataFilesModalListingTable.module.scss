@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.children {
+  padding-left: 30px;
+}
+
+.path {
+  padding-left: 15px;
+}
+
+.link {
+  /* extra padding to make link (back link in header) similar height to rows */
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

@@ -24,6 +24,7 @@
 
 /* COMPONENTS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
+@import url('./components/bootstrap.form.css');
 
 /* TRUMPS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
