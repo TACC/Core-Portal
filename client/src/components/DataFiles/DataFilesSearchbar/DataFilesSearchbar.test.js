@@ -15,7 +15,6 @@ function renderComponent(component, store, history) {
 }
 
 const mockStore = configureStore();
-const mockQueryString = 'querystring';
 
 describe('DataFilesSearchbar', () => {
   it('submits', () => {
@@ -35,13 +34,13 @@ describe('DataFilesSearchbar', () => {
     const form = getByRole('form');
     const input = getByRole('searchbox');
 
-    fireEvent.change(input, { target: { value: mockQueryString } });
+    fireEvent.change(input, { target: { value: 'querystring' } });
     fireEvent.submit(form);
 
     expect(history.location.pathname).toEqual(
       '/workbench/data/test-api/test-scheme/test-system/'
     );
-    expect(history.location.search).toEqual(`?query_string=${mockQueryString}`);
+    expect(history.location.search).toEqual(`?query_string=querystring`);
   });
   it('has expected elements', () => {
     const { getByRole, getByTestId } = render(
