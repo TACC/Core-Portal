@@ -218,3 +218,10 @@ _PORTAL_LOGO_FILENAME = ''
 # NOTE: Use the _AGAVE_TENANT_ID URL value when setting up the tracking property.
 _GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-XXXXX-Y'
 _GOOGLE_ANALYTICS_PRELOAD = True
+
+########################
+# Elasticsearch
+########################
+_ES_HOSTS = 'frontera_prtl_elasticsearch:9200'
+_ES_AUTH = 'username:password'
+_ES_INDEX_PREFIX = 'frontera-dev-{}'

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -84,6 +84,10 @@ const DataFilesCopyModal = React.memo(() => {
     [selected, reloadPage, status]
   );
 
+  const actionString = `Copying ${selected.length} File${
+    selected.length > 1 ? 's' : ''
+  }`;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -93,14 +97,12 @@ const DataFilesCopyModal = React.memo(() => {
       size="xl"
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>
-        Copying {selected.length} File(s)
-      </ModalHeader>
+      <ModalHeader toggle={toggle}>Copy</ModalHeader>
       <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-6 d-flex flex-column">
             {/* Table of selected files */}
-            <div className="dataFilesModalColHeader">Source</div>
+            <div className="dataFilesModalColHeader">{actionString}</div>
             <DataFilesBreadcrumbs
               api={params.api}
               scheme={params.scheme}
@@ -126,28 +128,14 @@ const DataFilesCopyModal = React.memo(() => {
                 data={files.filter(f => f.format === 'folder')}
                 operationName="Copy"
                 operationCallback={copyCallback}
+                operationOnlyForFolders
+                operationAllowedOnRootFolder
                 disabled={disabled}
               />
             </div>
           </div>
         </div>
       </ModalBody>
-      <ModalFooter>
-        <Button
-          disabled={disabled}
-          onClick={() => copyCallback(modalParams.system, modalParams.path)}
-          className="data-files-btn"
-        >
-          Copy to {modalParams.path || '/'}
-        </Button>
-        <Button
-          color="secondary"
-          className="data-files-btn-cancel"
-          onClick={toggle}
-        >
-          Close
-        </Button>
-      </ModalFooter>
     </Modal>
   );
 });

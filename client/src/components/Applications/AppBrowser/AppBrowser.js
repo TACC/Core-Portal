@@ -3,7 +3,7 @@ import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { useSelector, shallowEqual } from 'react-redux';
 // import PropTypes from 'prop-types';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
-import { Icon, AppIcon } from '_common';
+import { AppIcon, Icon } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
@@ -57,7 +57,7 @@ const AppBrowser = () => {
               }}
             >
               <span className="nav-content">
-                <i className="icon-applications  category-icon" />
+                <Icon name="applications" />
                 <span className="nav-text">{`${category} [${categoryDict[category].length}]`}</span>
               </span>
             </NavLink>
