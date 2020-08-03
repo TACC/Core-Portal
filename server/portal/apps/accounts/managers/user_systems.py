@@ -119,7 +119,9 @@ class UserSystemsManager():
         """Gets private storage directory for a user
         :returns: '{tasid}/{username}'
         """
+
         return self.tas_user['homeDirectory']
+
 
     def setup_private_system(self, *args, **kwargs):
         """Create private storage system for a user

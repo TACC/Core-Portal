@@ -23,7 +23,6 @@ class SystemListingView(BaseApiView):
 
         response = {'system_list': []}
         for locsys, details in local_systems.items():
-            logger.info('DATA TYPE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~> %s' , type(details['icon']))
             if locsys in user_systems:
                 response['system_list'].append(
                     {
