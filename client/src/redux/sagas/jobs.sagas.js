@@ -164,9 +164,8 @@ export function* getJobDetails(action) {
         return true;
       });
 
-
       if (app.scheduler === 'SLURM') {
-        const allocation = getAllocationFromAppId(job.appId)
+        const allocation = getAllocationFromAppId(job.appId);
         if (allocation) {
           display.allocation = allocation;
         }

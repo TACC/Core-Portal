@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { useSelector, shallowEqual } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import JobsView from '../../Jobs';
 import JobHistoryModal from './JobHistoryModal';
 import * as ROUTES from '../../../constants/routes';

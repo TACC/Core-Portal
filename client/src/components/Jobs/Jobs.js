@@ -44,6 +44,22 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     }
   }, []);
 
+  const jobDetailLink = useCallback(
+    ({
+      row: {
+        original: { id, name }
+      }
+    }) => (
+      <Link
+        to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}?name=${name}`}
+        className="wb-link"
+      >
+        View Details
+      </Link>
+    ),
+    []
+  );
+
   if (error) {
     return (
       <div className="appDetail-error">
@@ -83,16 +99,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Details',
       accessor: 'id',
       show: showDetails,
-      Cell: ({ row }) => {
-        return (
-          <Link
-            to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${row.original.id}?name=${row.original.name}`}
-            className="wb-link"
-          >
-            View Details
-          </Link>
-        );
-      }
+      Cell: jobDetailLink
     },
     {
       Header: 'Output Location',
