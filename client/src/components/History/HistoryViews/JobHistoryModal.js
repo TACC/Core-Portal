@@ -1,8 +1,12 @@
 import React from 'react';
-import { useHistory, useLocation, NavLink as RRNavLink } from 'react-router-dom';
+import {
+  useHistory,
+  useLocation,
+  NavLink as RRNavLink
+} from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
-import { LoadingSpinner, Expand } from '_common';
+import { LoadingSpinner, Expand, Message } from '_common';
 import PropTypes from 'prop-types';
 import { getOutputPathFromHref } from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
@@ -56,10 +60,10 @@ function Entry({ label, isTopLevelEntry, children }) {
 
 Entry.propTypes = {
   label: PropTypes.string.isRequired,
-  isTopLevelEntry: PropTypes.bool.isRequired,
+  isTopLevelEntry: PropTypes.bool,
   children: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired
 };
-Entry.defaultProp = {
+Entry.defaultProps = {
   isTopLevelEntry: false
 };
 
@@ -154,9 +158,6 @@ JobHistoryContent.propTypes = {
 function JobHistoryModal({ jobId }) {
   const loading = useSelector(state => state.jobDetail.loading);
   const loadingError = useSelector(state => state.jobDetail.loadingError);
-  const loadingErrorMessage = useSelector(
-    state => state.jobDetail.loadingErrorMessage
-  );
   const { job, display, app } = useSelector(state => state.jobDetail);
   const { search } = useLocation();
 
@@ -204,7 +205,10 @@ function JobHistoryModal({ jobId }) {
       <ModalBody className="job-history-model--body">
         <div styleName="modal-body-container">
           {loading && <LoadingSpinner />}
-          {!loading && (
+          {loadingError && (
+            <Message type="warn">Unable to retrieve job information.</Message>
+          )}
+          {!loading && !loadingError && (
             <JobHistoryContent
               jobDetails={job}
               jobDisplay={display}
