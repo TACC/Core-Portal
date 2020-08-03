@@ -206,7 +206,9 @@ function JobHistoryModal({ jobId }) {
         <div styleName="modal-body-container">
           {loading && <LoadingSpinner />}
           {loadingError && (
-            <Message type="warn">Unable to retrieve job information.</Message>
+            <Message type="warn" styleName="error">
+              Unable to retrieve job information.
+            </Message>
           )}
           {!loading && !loadingError && (
             <JobHistoryContent
