@@ -3,16 +3,10 @@
 .container {
   --cell-horizontal-padding: 0.35em; /* for inter-column buffer */
   --cell-vertical-padding: 8px; /* for row size */
-  --row-height: 37px; /* 16px design * 1.2 design-to-app ratio (rounded) */
-
-  /* FAQ: This manually-calculated value equals the auto-calculated value (21px),
-          but only until units are refactored and font-sizes are fixed. See
-          https://confluence.tacc.utexas.edu/x/PoCiCQ */
-  --line-height: calc( var(--row-height) - (var(--cell-vertical-padding) * 2) );
+  --cell-height: 37px; /* manually copied from browser-calculated height */
 
   position: relative;
   width: 100%;
-  border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
   max-height: inherit; /* inherit max-height from parent wrapper */
 
   font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
@@ -54,13 +48,17 @@
   }
 }
 
+
+/* Children */
+
+/* Children: Cell */
 .cell {
   padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
-  line-height: var(--line-height);
   white-space: nowrap;
   overflow: hidden; /* contain children to cell width (needed because `white-space: nowrap`) */
   text-overflow: ellipsis;
 
+  /* RFE: Remove complexity that requires `.cell--has-text-nodes` class */
   /* WARNING: Child text nodes cause unexpected behavior, example:
               In `<td>You can <a>do some action</a> to get some result.</td>`,
               the `<a>do some action</a>` would appear on its own line.
@@ -75,18 +73,31 @@
   width: 100%; /* stretch cell width */
 }
 
+/* Children: Status */
 .status {
   display: block;
 }
-.status--no-data .status__message {
-  text-align: center;
-}
-.status--is-loading .status__message {
-  --loading-icon-height: 24px; /* or 1.5rem (given root font-size of 16px) */
-  --vertical-buffer: calc( (var(--row-height) - var(--loading-icon-height)) / 2);
 
-  display: block;
-  /* Ensure height matches other rows (loading icon is taller than line-height) */
-  padding-top: var(--vertical-buffer);
-  padding-bottom: var(--vertical-buffer);
+
+/* Types */
+
+/* Only a table with content may have a border */
+.has-data { border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark); }
+.no-data { border-bottom: none; }
+
+/* Prevent jittery srollbar (because of spinning icon boundary box) */
+.is-loading .status { overflow: hidden; }
+
+/* Horizontal alignment of status (method depends on status element which depends on module state) */
+.is-loading .status__message { display: block; }
+.no-data .status__message { text-align: center; }
+
+/* Vertical spacing of status (method depends on status element which depends on module state) */
+.no-data.is-loading .status__message {
+  /* A table loading icon should not touch any table borders */
+  padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
+}
+.has-data.is-loading .status__message {
+  /* A loading table row status message should match the height of a cell */
+  height: var(--cell-height);
 }
