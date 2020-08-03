@@ -10,41 +10,51 @@ import AppIcon from './AppIcon';
 
 const mockStore = configureStore();
 const store = mockStore(
-  { 
-    apps: { 
+  {
+    apps: {
       appIcons: {
         "jupyter": "jupyter"
-      } 
-    } 
+      },
+      categoryIcons: {
+        "Data Processing": "data-processing"
+      }
+    }
   }
 );
 
 expect.extend({ toHaveAttribute });
 
-function renderAppIcon(appId) {
+function renderAppIcon(appId, categoryId) {
   return render(
     <Provider store={store}>
-      <AppIcon appId={appId} />
+      <AppIcon appId={appId} categoryId={categoryId} />
     </Provider>
   );
 }
 
 describe('AppIcon', () => {
-  it('should render icons for known app IDs', () => {
-    const { getByTestId } = renderAppIcon("jupyter");
+  it('should render icon for known app ID', () => {
+    const { getByTestId } = renderAppIcon("jupyter", "Data Processing");
     expect(getByTestId(/icon/)).toHaveAttribute(
       'class',
       'icon icon-jupyter'
     );
   });
-  it('should show generic icons for apps with no appIcon', () => {
-    const { getByTestId } = renderAppIcon("vasp");
+  it('should show category icon for apps with unknown app ID but known category ID', () => {
+    const { getByTestId } = renderAppIcon("Vasp", "Data Processing");
+    expect(getByTestId(/icon/)).toHaveAttribute(
+      'class',
+      'icon icon-data-processing'
+    )
+  });
+  it('should show generic icon for apps with unknown app ID and unknown category ID', () => {
+    const { getByTestId } = renderAppIcon("Vasp");
     expect(getByTestId(/icon/)).toHaveAttribute(
       'class',
       'icon icon-applications'
     )
   });
-  it('should render icons for prtl.clone apps', () => {
+  it('should render icon for prtl.clone app', () => {
     const { getByTestId } = renderAppIcon(
       "prtl.clone.username.allocation.jupyter"
     );

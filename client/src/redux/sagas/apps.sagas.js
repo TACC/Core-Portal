@@ -164,7 +164,19 @@ function sortAppMetaUtil(payload) {
       }
     });
   });
-  return { appDict, categoryDict, appIcons };
+
+  /* Create a categoryIcons dictionary */
+  const categoryIcons = {};
+  Object.keys(categoryDict).forEach(category => {
+    // HACK: Creating just enough data for category icons to exist
+    // RFC: Should a proper category definition object exist?
+    const supportedIcons = ['Data Processing', 'Visualization', 'Simulation'];
+    if (supportedIcons.includes(category)) {
+      categoryIcons[category] = category.toLowerCase().replace(' ', '-');
+    }
+  });
+
+  return { appDict, categoryDict, appIcons, categoryIcons };
 }
 
 function* getApps() {

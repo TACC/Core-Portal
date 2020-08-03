@@ -5,6 +5,7 @@ export { FileInputDropZoneFormField } from './Form';
 export { FileInputDropZone } from './Form';
 export { default as InfiniteScrollTable } from './InfiniteScrollTable';
 export { default as AppIcon } from './AppIcon';
+export { default as AppCategoryIcon } from './AppCategoryIcon';
 export { default as Icon } from './Icon';
 export { default as Message } from './Message';
 export { default as DescriptionList } from './DescriptionList';
