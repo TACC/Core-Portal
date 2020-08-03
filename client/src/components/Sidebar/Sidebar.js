@@ -3,6 +3,7 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import * as ROUTES from '../../constants/routes';
+import HistoryBadge from '../History/HistoryBadge';
 import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
 import './Sidebar.module.scss';
 
@@ -12,10 +13,12 @@ const Sidebar = () => {
   const isDebug = useSelector(state =>
     state.workbench.status ? state.workbench.status.debug : false
   );
-  const showHistory = isDebug;
   const showUIPatterns = isDebug;
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
+
+  const unread = useSelector(state => state.notifications.list.unread);
+
   return (
     <Nav styleName="root" vertical>
       <NavItem>
@@ -71,21 +74,20 @@ const Sidebar = () => {
           </div>
         </NavLink>
       </NavItem>
-      {showHistory && (
-        <NavItem>
-          <NavLink
-            tag={RRNavLink}
-            to={`${path}${ROUTES.HISTORY}`}
-            styleName="link"
-            activeStyleName="link--active"
-          >
-            <div styleName="content" className="nav-content">
-              <i className="icon icon-nav icon-history" />
-              <span styleName="text">History</span>
-            </div>
-          </NavLink>
-        </NavItem>
-      )}
+      <NavItem>
+        <NavLink
+          tag={RRNavLink}
+          to={`${path}${ROUTES.HISTORY}`}
+          styleName="link"
+          activeStyleName="link--active"
+        >
+          <div styleName="content" className="nav-content">
+            <i className="icon icon-history" />
+            <span styleName="text">History</span>
+            <HistoryBadge unread={unread} />
+          </div>
+        </NavLink>
+      </NavItem>
       {showUIPatterns && (
         <NavItem>
           <NavLink
@@ -95,7 +97,7 @@ const Sidebar = () => {
             activeStyleName="link--active"
           >
             <div styleName="content" className="nav-content">
-              <i className="icon icon-nav icon-copy" />
+              <i className="icon icon-copy" />
               <span styleName="text">UI Patterns</span>
             </div>
           </NavLink>
