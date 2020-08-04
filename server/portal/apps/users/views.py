@@ -38,6 +38,7 @@ class AuthenticatedView(BaseApiView):
         return HttpResponse('Unauthorized', status=401)
 
 
+# deprecated
 @method_decorator(login_required, name='dispatch')
 class UsageView(BaseApiView):
 

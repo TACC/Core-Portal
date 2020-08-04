@@ -31,7 +31,6 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
     def __init__(self, *args, **kwargs):
         super(UserApplicationsManager, self).__init__(*args, **kwargs)
-        # self.home_mgr = _lookup_user_home_manager(self.user)
         self.home_mgr = UserSystemsManager(self.user)
 
     def get_clone_system_id(self):
@@ -301,7 +300,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         user_systems_mgr = UserSystemsManager(self.user)
 
         system.storage.host = system.login.host
-        system.storage.home_dir = user_systems_mgr.get_abs_home_dir()
+        system.storage.home_dir = user_systems_mgr.get_sys_tas_usr_dir()
         system.storage.port = system.login.port
         system.storage.root_dir = '/'
         system.storage.protocol = 'SFTP'
@@ -312,14 +311,16 @@ class UserApplicationsManager(AbstractApplicationsManager):
         system.login.auth.username = self.user.username
         system.login.auth.type = system.AUTH_TYPES.SSHKEYS
 
+        # maybe this should be handled in settings...
         scratch_hosts = ['data', 'stampede2', 'lonestar5', 'longhorn']
         scratch1_hosts = ['frontera']
+
         if system.storage.host in [s + '.tacc.utexas.edu' for s in scratch_hosts]:
             system.scratch_dir = system.storage.home_dir.replace(
-                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system.id.split('.')[0]], '/scratch')
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system_name]['home_directory'], '/scratch')
         elif system.storage.host in [s + '.tacc.utexas.edu' for s in scratch1_hosts]:
             system.scratch_dir = system.storage.home_dir.replace(
-                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system.id.split('.')[0]], '/scratch')
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system_name]['home_directory'], '/scratch1')
         else:
             system.scratch_dir = system.storage.home_dir
         system.work_dir = system.storage.home_dir

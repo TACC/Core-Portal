@@ -17,6 +17,6 @@ const systemsFixture = {
       icon: null
     }
   ]
-}
+};
 
 export default systemsFixture;

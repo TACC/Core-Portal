@@ -51,7 +51,7 @@ class TestUserApplicationsManager(TestCase):
     def test_set_system_definition_scratch_path_to_scratch(self):
         # Failing due to user_applications.py:318 -- 
         # need new way of looking up longhorn execution system /work location
-        self.mock_systems_manager.get_abs_home_dir.return_value = '/work/1234/username'
+        self.mock_systems_manager.get_sys_tas_usr_dir.return_value = '/work/1234/username'
         sys = ExecutionSystem.from_dict(
             self.magave,
             self.execution_sys
@@ -70,7 +70,7 @@ class TestUserApplicationsManager(TestCase):
     def test_set_system_definition_scratch_path_to_work(self):
         # Failing due to user_applications.py:318 -- 
         # need new way of looking up longhorn execution system /work location
-        self.mock_systems_manager.get_abs_home_dir.return_value = '/work/1234/username'
+        self.mock_systems_manager.get_sys_tas_usr_dir.return_value = '/work/1234/username'
         mock_user_work_home().get_home_dir_abs_path.return_value = '/work/1234/username'
 
         sys = ExecutionSystem.from_dict(

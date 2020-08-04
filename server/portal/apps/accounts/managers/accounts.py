@@ -307,81 +307,39 @@ def add_pub_key_to_resource(
     return success, message, status
 
 
-def storage_systems(user, offset=0, limit=100, filter_prefix=True):
+def storage_systems(user, offset=0, limit=100):
     """Return all storage systems for a user.
-
-    This function will do a filter using storage system names from
-    `settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS`.
-    It will do a regular listing if :param:`filter_prefix` is `False`.
 
     :param user: Django user's instance
     :param int offset: Offset.
     :param int limit: Limit.
-    :param bool filter_prefix: Whether or not to filter by prefix.
     """
-    # should we filter_prefixes for all available systems on the portal, or just the default?
-    prefixes = list(settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.keys())
     systems = []
-
-    if prefixes and filter_prefix:
-        for prefix in prefixes:
-            res = StorageSystem.search(
-                user.agave_oauth.client,
-                {
-                    'type.eq': StorageSystem.TYPES.STORAGE,
-                    'id.like': '*{}*'.format(prefix.lower())
-                },
-                offset=offset,
-                limit=limit
-            )
-            systems = systems + list(res)
-    else:
-        res = StorageSystem.list(
-            user.agave_oauth.client,
-            type=StorageSystem.TYPES.STORAGE,
-            offset=offset,
-            limit=limit
-        )
-        systems = list(res)
+    res = StorageSystem.list(
+        user.agave_oauth.client,
+        type=StorageSystem.TYPES.STORAGE,
+        offset=offset,
+        limit=limit
+    )
+    systems = list(res)
     return systems
 
 
-def execution_systems(user, offset=0, limit=100, filter_prefix=True):
+def execution_systems(user, offset=0, limit=100):
     """Return all execution systems for a user.
-
-    This function will do a filter using `settings.PORTAL_NAMESPACE`.
-    It will do a regular listing if there's no value for
-    `settings.PORTAL_NAMESPACE` or :param:`filter_prefix` is `False`.
 
     :param user: Django user's instance
     :param int offset: Offset.
     :param int limit: Limit.
-    :param bool filter_prefix: Whether or not to filter by prefix.
     """
-    # should we filter_prefixes for all available systems on the portal, or just the default?
-    prefixes = list(settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.keys())
     systems = []
-
-    if prefixes and filter_prefix:
-        for prefix in prefixes:
-            res = ExecutionSystem.search(
-                user.agave_oauth.client,
-                {
-                    'type.eq': ExecutionSystem.TYPES.EXECUTION,
-                    'id.like': '*{}*'.format(prefix.lower())
-                },
-                offset=offset,
-                limit=limit
-            ) 
-            systems = systems + list(res)
-    else:
-        res = ExecutionSystem.list(
-            user.agave_oauth.client,
-            type=ExecutionSystem.TYPES.EXECUTION,
-            offset=offset,
-            limit=limit
-        )
-        systems = list(res)
+    res = ExecutionSystem.list(
+        user.agave_oauth.client,
+        type=ExecutionSystem.TYPES.EXECUTION,
+        offset=offset,
+        limit=limit
+    )
+    systems = list(res)
     return systems
 
 

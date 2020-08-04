@@ -19,7 +19,8 @@ class SystemListingView(BaseApiView):
     def get(self, request):
         # gather local storage systems for My Data listing
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
-        user_systems = check_user_allocations.apply_async(args=[request.user.username, local_systems]).get()
+        user_systems = list(local_systems.keys()) # placeholder until things are in elasticsearch
+        # user_systems = check_user_allocations.apply_async(args=[request.user.username, local_systems]).get()
 
         response = {'system_list': []}
         for locsys, details in local_systems.items():
