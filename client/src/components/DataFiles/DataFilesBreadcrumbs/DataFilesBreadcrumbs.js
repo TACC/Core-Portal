@@ -68,6 +68,10 @@ const DataFilesBreadcrumbs = ({
 }) => {
   const paths = [];
   const pathComps = [];
+
+  const sysName = system
+    .split('.')[0]
+    .replace(system.charAt(0), system.charAt(0).toUpperCase());
   path
     .split('/')
     .filter(x => x)
@@ -81,7 +85,7 @@ const DataFilesBreadcrumbs = ({
   const root = (() => {
     switch (scheme) {
       case 'private':
-        return 'My Data';
+        return `My Data (${sysName})`;
       case 'community':
         return 'Community Data';
       default:
