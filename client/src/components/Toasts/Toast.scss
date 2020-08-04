@@ -1,14 +1,16 @@
+@import '../../styles/tools/mixins.scss';
+
 .notification-toast-container {
+    --toast-width: 26em;
+    --toast-height: 3em;
     left: 40px !important;
     bottom: 40px !important;
     right: 40px !important;
     display: block !important;
+    max-width: var(--toast-width) !important;
 }
 
 .notification-toast {
-    --toast-width: 30em;
-    --toast-height: 3em;
-    max-width: var(--toast-width) !important;
     height: var(--toast-height) !important;
     background-color: #D2CCE7 !important;
     border-radius: 0 !important;
@@ -20,7 +22,7 @@
     height: var(--toast-height);
     padding: 0 !important;
     display: grid;
-    grid-template-columns: minmax(15px, 13%) 1fr;
+    grid-template-columns: minmax(15px, 16%) 1fr;
     width: 100%;
 }
 
@@ -37,9 +39,7 @@
     display: grid;
     place-items: center left;
     span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        @include truncate-with-ellipsis;
         width: 100%;
         font-size: 1.1em;
     }
