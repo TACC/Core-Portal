@@ -77,12 +77,21 @@ function UIPatternsDropdownSelector() {
                   <DescriptionList data={DATA} direction="vertical" />
                 )
               }}
-              direction="vertical"
             />
           </dd>
           <dt>Horizontal Layout & Nested Data</dt>
           <dd>
-            <small>(pending style fixes)</small>
+            <DescriptionList
+              data={{
+                'Nested List One': (
+                  <DescriptionList data={DATA} direction="horizontal" />
+                ),
+                'Nested List Two': (
+                  <DescriptionList data={DATA} direction="horizontal" />
+                )
+              }}
+              direction="vertical"
+            />
           </dd>
         </dl>
       </div>
