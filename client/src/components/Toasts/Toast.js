@@ -3,11 +3,13 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import Snackbar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 import './Toast.scss';
+import { STATUS_TEXT_MAP } from '../Jobs/JobsStatus';
+import truncateMiddle from '../../utils/truncateMiddle';
 
 const NotificationToast = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-  const [messageInfo, setMessageInfo] = useState(undefined);
+  const [notification, setNotification] = useState(undefined);
   const [transition, setTransition] = React.useState(undefined);
 
   const { toasts } = useSelector(
@@ -16,12 +18,12 @@ const NotificationToast = () => {
   );
 
   useEffect(() => {
-    if (toasts.length && !messageInfo) {
+    if (toasts.length && !notification) {
       // Set a new toast when we don't have an active one
-      setMessageInfo({ ...toasts[0] });
+      setNotification({ ...toasts[0] });
       setTransition(() => props => <Slide {...props} direction="right" />);
       setOpen(true);
-    } else if (toasts.length && messageInfo && open) {
+    } else if (toasts.length && notification && open) {
       // Close an active toast when a new one is added
       setOpen(false);
     }
@@ -30,9 +32,9 @@ const NotificationToast = () => {
   const handleExited = () => {
     dispatch({
       type: 'NOTIFICATIONS_DISCARD_TOAST',
-      payload: { pk: messageInfo.pk }
+      payload: { pk: notification.pk }
     });
-    setMessageInfo(undefined);
+    setNotification(undefined);
   };
 
   const handleClose = (_event, reason) => {
@@ -42,16 +44,32 @@ const NotificationToast = () => {
     setOpen(false);
   };
 
+  /**
+   * Returns a human readable message from a job update event.
+   *
+   * @param {Object} notification - The notification event object
+   * @param {Object} notification.extra - The embedded job status update object
+   * @param {string} notification.extra.id - The job id
+   * @param {string} notification.extra.status - The event status
+   * @return {string} Translated message
+   *
+   * @example
+   * // returns "matlab-v9...20:02:00 is processing"
+   * getToastMessage(n)
+   */
+  const getToastMessage = ({ extra: { id, status } }) =>
+    `${truncateMiddle(id, 20)} ${STATUS_TEXT_MAP.toastMap(status)}`;
+
   return (
     <Snackbar
-      key={messageInfo ? messageInfo.pk : undefined}
+      key={notification ? notification.pk : undefined}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'left'
       }}
       TransitionComponent={transition}
       open={open}
-      autoHideDuration={4000}
+      autoHideDuration={3500}
       onClose={handleClose}
       onExited={handleExited}
       classes={{
@@ -69,7 +87,9 @@ const NotificationToast = () => {
             <i className="icon icon-history" />
           </div>
           <div className="notification-toast-content">
-            <span>{messageInfo ? messageInfo.message : undefined}</span>
+            <span>
+              {notification ? getToastMessage(notification) : undefined}
+            </span>
           </div>
         </>
       }

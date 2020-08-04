@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Jobs.module.scss';
 
-const STATUS_TEXT_MAP = {
+export const STATUS_TEXT_MAP = {
   ACCEPTED: 'Processing',
   PENDING: 'Processing',
   PROCESSING_INPUTS: 'Processing',
@@ -19,7 +19,21 @@ const STATUS_TEXT_MAP = {
   STOPPED: 'Stopped',
   FAILED: 'Failure',
   BLOCKED: 'Blocked',
-  PAUSED: 'Paused'
+  PAUSED: 'Paused',
+  toastMap(status) {
+    /* Post-process mapped status message to get a toast message translation. */
+    const mappedStatus = this[status];
+    switch (mappedStatus) {
+      case 'Running':
+        return 'is now running';
+      case 'Failure' || 'Stopped':
+        return status.toLowerCase();
+      case 'Finished':
+        return 'finished successfully';
+      default:
+        return `is ${mappedStatus.toLowerCase()}`;
+    }
+  }
 };
 
 export function getStatusText(status) {
