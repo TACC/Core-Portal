@@ -1,3 +1,5 @@
+@import '../../../styles/tools/mixins.scss';
+
 .container {
   /* … */
 }
@@ -5,7 +7,7 @@
 /* Children */
 
 .key {
-  composes: u-ellipsis from '../../../styles/trumps/_u-ellipsis.scss';
+  @include truncate-with-ellipsis;
 
   font-weight: 500;
   text-overflow: ':';
@@ -42,12 +44,7 @@
 }
 
 .is-vert.is-narrow .value {
-  /* TODO: Support mixins, but prevent SCSS pollution in `src/styles/` */
-  /* HACK: CSS Modules will NOT compose with nested classes */
-  /* composes: u-ellipsis from '../../../styles/trumps/_u-ellipsis.scss'; */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  @include truncate-with-ellipsis;
 }
 
 /* Overwrite Bootstrap `_reboot.scss` */
