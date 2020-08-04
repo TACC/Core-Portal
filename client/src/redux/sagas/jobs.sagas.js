@@ -108,7 +108,7 @@ export function* getJobDetails(action) {
         call(fetchAppDetailsUtil, job.appId),
         call(fetchSystemUtil, job.systemId)
       ]);
-    } catch (error) {
+    } catch (ignore) {
       // ignore if we cannot get app or execution system information
     }
 

@@ -53,63 +53,71 @@ export function getJobDisplayInformation(job, app, executionSystem) {
   };
 
   if (executionSystem) {
-    display.systemName = getSystemName(executionSystem.login.host);
+    try {
+      display.systemName = getSystemName(executionSystem.login.host);
+    } catch (ignore) {
+      // ignore if there is problem improving the system name
+    }
   }
 
   if (app) {
-    // Improve any values with app information
-    display.applicationName = app.label;
+    try {
+      // Improve any values with app information
+      display.applicationName = app.label;
 
-    // Improve input/parameters
-    display.inputs.forEach(input => {
-      const matchingParameter = app.inputs.find(obj => {
-        return input.id === obj.id;
+      // Improve input/parameters
+      display.inputs.forEach(input => {
+        const matchingParameter = app.inputs.find(obj => {
+          return input.id === obj.id;
+        });
+        if (matchingParameter) {
+          // eslint-disable-next-line no-param-reassign
+          input.label = matchingParameter.details.label;
+        }
       });
-      if (matchingParameter) {
-        // eslint-disable-next-line no-param-reassign
-        input.label = matchingParameter.details.label;
-      }
-    });
-    display.parameters.forEach(input => {
-      const matchingParameter = app.parameters.find(obj => {
-        return input.id === obj.id;
+      display.parameters.forEach(input => {
+        const matchingParameter = app.parameters.find(obj => {
+          return input.id === obj.id;
+        });
+        if (matchingParameter) {
+          // eslint-disable-next-line no-param-reassign
+          input.label = matchingParameter.details.label;
+        }
       });
-      if (matchingParameter) {
-        // eslint-disable-next-line no-param-reassign
-        input.label = matchingParameter.details.label;
-      }
-    });
-    // filter non-visible
-    display.inputs.filter(input => {
-      const matchingParameter = app.inputs.find(obj => {
-        return input.id === obj.id;
+      // filter non-visible
+      display.inputs.filter(input => {
+        const matchingParameter = app.inputs.find(obj => {
+          return input.id === obj.id;
+        });
+        if (matchingParameter) {
+          return matchingParameter.value.visible;
+        }
+        return true;
       });
-      if (matchingParameter) {
-        return matchingParameter.value.visible;
-      }
-      return true;
-    });
-    display.parameters.filter(input => {
-      const matchingParameter = app.parameters.find(obj => {
-        return input.id === obj.id;
+      display.parameters.filter(input => {
+        const matchingParameter = app.parameters.find(obj => {
+          return input.id === obj.id;
+        });
+        if (matchingParameter) {
+          return matchingParameter.value.visible;
+        }
+        return true;
       });
-      if (matchingParameter) {
-        return matchingParameter.value.visible;
-      }
-      return true;
-    });
 
-    if (app.scheduler === 'SLURM') {
-      const allocation = getAllocationFromAppId(job.appId);
-      if (allocation) {
-        display.allocation = allocation;
+      if (app.scheduler === 'SLURM') {
+        const allocation = getAllocationFromAppId(job.appId);
+        if (allocation) {
+          display.allocation = allocation;
+        }
+        display.queue = job.remoteQueue;
       }
-      display.queue = job.remoteQueue;
-    }
 
-    if (app.parallelism === 'PARALLEL') {
-      display.processorsPerNode = job.processorsPerNode;
-      display.nodeCount = job.nodeCount;
+      if (app.parallelism === 'PARALLEL') {
+        display.processorsPerNode = job.processorsPerNode;
+        display.nodeCount = job.nodeCount;
+      }
+    } catch (ignore) {
+      // ignore if there is problem using the app definition to improve display
     }
   }
   return display;
