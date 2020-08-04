@@ -11,11 +11,17 @@ const mockStore = configureStore();
 const exampleToasts = [
   {
     pk: '1',
-    message: 'Test message one occurred',
+    extra: {
+      name: 'RStudio-Stampede2-1.1.423u4_2020-08-04T22:55:35-dcvserver',
+      status: 'RUNNING',
+    },
   },
   {
     pk: '2',
-    message: 'Test message two occurred',
+    extra: {
+      name: 'RStudio-Stampede2-1.1.423u4_2020-08-04T22:55:35-dcvserver',
+      status: 'FINISHED',
+    },
   },
 ];
 
@@ -48,7 +54,7 @@ describe('Notification Toast', () => {
       })
     );
     expect(queryByRole('alert')).toBeDefined();
-    expect(queryByRole('alert')).toHaveTextContent(/Test message one occurred/);
-    expect(queryByRole('alert')).not.toHaveTextContent(/Test message two occurred/);
+    expect(queryByRole('alert')).toHaveTextContent(/RStudio-S...cvserver is now running/);
+    expect(queryByRole('alert')).not.toHaveTextContent(/RStudio-S...cvserver finished successfully/);
   });
 });
