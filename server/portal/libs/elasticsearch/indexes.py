@@ -6,8 +6,7 @@ from datetime import datetime
 import logging
 from django.conf import settings
 from elasticsearch_dsl import Index
-from elasticsearch_dsl.connections import connections
-from portal.libs.elasticsearch.docs.base import IndexedFile
+from portal.libs.elasticsearch.docs.base import IndexedFile, IndexedAllocation
 from portal.libs.elasticsearch.analyzers import file_query_analyzer
 
 #pylint: disable=invalid-name
@@ -61,6 +60,13 @@ def setup_files_index(reindex=False, force=False):
         index.analyzer(file_query_analyzer)
         index.settings(number_of_shards=3)
         index.create()
+
+
+def setup_allocations_index(reindex=False, force=False):
+    index = setup_indexes('allocations', reindex, force)
+    if not index.exists():
+            index.document(IndexedAllocation)
+            index.create()
 
 
 """
