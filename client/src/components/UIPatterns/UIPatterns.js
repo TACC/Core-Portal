@@ -1,6 +1,7 @@
 import React from 'react';
-import UIPatternsMessages from './UIPatternsMessages';
+import UIPatternsMessage from './UIPatternsMessage';
 import UIPatternsDescriptionList from './UIPatternsDescriptionList';
+import UIPatternsDropdownSelector from './UIPatternsDropdownSelector';
 import './UIPatterns.module.scss';
 
 function UIPatterns() {
@@ -11,17 +12,23 @@ function UIPatterns() {
       </div>
       <div styleName="items">
         <div styleName="grid-item">
-          <div styleName="item-header">
-            <h6>Messages</h6>
-          </div>
-          <UIPatternsMessages />
+          <h6>Message</h6>
+          <UIPatternsMessage />
+        </div>
+        <div styleName="grid-item">
+          <h6>DropdownSelector</h6>
+          <UIPatternsDropdownSelector />
         </div>
       </div>
       <div styleName="items">
         <div styleName="grid-item">
-          <div styleName="item-header">
-            <h6>DescriptionList</h6>
-          </div>
+          <h6>DescriptionList</h6>
+          <UIPatternsDescriptionList />
+        </div>
+      </div>
+      <div styleName="items">
+        <div styleName="grid-item">
+          <h6>DescriptionList</h6>
           <UIPatternsDescriptionList />
         </div>
       </div>
