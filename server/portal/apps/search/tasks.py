@@ -8,7 +8,6 @@ from portal.libs.agave.utils import service_account
 from portal.libs.elasticsearch.utils import index_listing
 from portal.apps.users.utils import get_tas_allocations
 from portal.libs.elasticsearch.docs.base import IndexedAllocation
-from elasticsearch.exceptions import NotFoundError
 from portal.libs.elasticsearch.utils import get_sha256_hash
 logger = logging.getLogger(__name__)
 
