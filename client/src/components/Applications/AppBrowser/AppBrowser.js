@@ -5,7 +5,7 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { AppIcon } from '_common';
+import { AppIcon, Icon } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
@@ -62,10 +62,9 @@ const AppBrowser = () => {
               }}
             >
               <span className="nav-content">
-                <i
-                  className={`icon icon-${category
-                    .replace(' ', '-')
-                    .toLowerCase()} icon-applications`}
+                <Icon
+                  name="applications"
+                  className={`icon-${category.replace(' ', '-').toLowerCase()}`}
                 />
                 <span className="nav-text">{`${category} [${categoryDict[category].length}]`}</span>
               </span>
