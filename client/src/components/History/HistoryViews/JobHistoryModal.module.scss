@@ -24,22 +24,6 @@
   font-weight: 800;
 }
 
-/* Visual separation for details value preceded by details subject */
-.header-details-key + .header-details-value::before {
-  content: ':';
-  display: inline-block;
-  padding-left: 0.1em;
-  padding-right: 0.3em;
-}
-
-/* Visual separation for details value preceded by details subject */
-.header-details-value + .header-details-key::before {
-  content: '|';
-  display: inline-block;
-  padding-left: 0.3em;
-  padding-right: 0.3em;
-}
-
 .modal-body-container {
   width: 100%;
   height: 60vh;

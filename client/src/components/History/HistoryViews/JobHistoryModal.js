@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
-import { LoadingSpinner, Expand, Message } from '_common';
+import { DescriptionList, LoadingSpinner, Expand, Message } from '_common';
 import PropTypes from 'prop-types';
 import { getOutputPathFromHref } from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
@@ -175,6 +175,12 @@ function JobHistoryModal({ jobId }) {
     history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}`);
   };
 
+  const headerData = {
+    'Job ID': jobId,
+    Application: applicationName,
+    System: systemName
+  };
+
   return (
     <Modal
       isOpen
@@ -185,19 +191,11 @@ function JobHistoryModal({ jobId }) {
     >
       <ModalHeader styleName="header" toggle={close}>
         <div className="d-inline-block text-truncate">{jobName}</div>
-        <div>
-          <span
-            styleName="header-details"
-            className="d-inline-block text-truncate"
-          >
-            <span styleName="header-details-key">Job ID</span>
-            <span styleName="header-details-value">{jobId}</span>
-            <span styleName="header-details-key">Application</span>
-            <span styleName="header-details-value">{applicationName}</span>
-            <span styleName="header-details-key">System</span>
-            <span styleName="header-details-value">{systemName}</span>
-          </span>
-        </div>
+        <DescriptionList
+          data={headerData}
+          direction="horizontal"
+          styleName="header-details"
+        />
       </ModalHeader>
 
       <ModalBody className="job-history-model--body">
