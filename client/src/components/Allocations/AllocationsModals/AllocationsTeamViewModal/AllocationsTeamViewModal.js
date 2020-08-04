@@ -15,8 +15,17 @@ const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
   const error = has(errors.teams, pid);
   const [card, setCard] = useState(null);
   const isLoading = loadingUsernames[pid] && loadingUsernames[pid].loading;
+  const resetCard = () => {
+    setCard(null);
+  };
   return (
-    <Modal isOpen={isOpen} toggle={toggle} styleName="root" size="lg">
+    <Modal
+      isOpen={isOpen}
+      toggle={toggle}
+      styleName="root"
+      size="lg"
+      onClosed={resetCard}
+    >
       <ModalHeader
         toggle={toggle}
         charCode="x"
