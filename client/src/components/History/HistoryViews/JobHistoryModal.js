@@ -67,7 +67,7 @@ Entry.defaultProps = {
   isTopLevelEntry: false
 };
 
-function JobHistoryContent({ jobDetails, jobDisplay, app }) {
+function JobHistoryContent({ jobDetails, jobDisplay }) {
   const outputPath = getOutputPathFromHref(jobDetails._links.archiveData.href);
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
@@ -113,19 +113,19 @@ function JobHistoryContent({ jobDetails, jobDisplay, app }) {
             {jobDetails.maxHours}
           </Entry>
         </div>
-        {app.parallelism === 'PARALLEL' && (
-          <>
-            <div styleName="section alternating-background">
-              <Entry label="Processors On Each Node" isTopLevelEntry>
-                {jobDetails.processorsPerNode}{' '}
-              </Entry>
-            </div>
-            <div styleName="section alternating-background">
-              <Entry label="Node Count" isTopLevelEntry>
-                {jobDetails.nodeCount}
-              </Entry>
-            </div>
-          </>
+        {'processorsPerNode' in jobDisplay && (
+          <div styleName="section alternating-background">
+            <Entry label="Processors On Each Node" isTopLevelEntry>
+              {jobDisplay.processorsPerNode}
+            </Entry>
+          </div>
+        )}
+        {'nodeCount' in jobDisplay && (
+          <div styleName="section alternating-background">
+            <Entry label="Node Count" isTopLevelEntry>
+              {jobDisplay.nodeCount}
+            </Entry>
+          </div>
         )}
         {'queue' in jobDisplay && (
           <div styleName="section alternating-background">
@@ -150,15 +150,13 @@ JobHistoryContent.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   jobDetails: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  jobDisplay: PropTypes.object.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  app: PropTypes.object.isRequired
+  jobDisplay: PropTypes.object.isRequired
 };
 
 function JobHistoryModal({ jobId }) {
   const loading = useSelector(state => state.jobDetail.loading);
   const loadingError = useSelector(state => state.jobDetail.loadingError);
-  const { job, display, app } = useSelector(state => state.jobDetail);
+  const { job, display } = useSelector(state => state.jobDetail);
   const { search } = useLocation();
 
   const applicationName = display ? display.applicationName : placeHolder;
@@ -211,11 +209,7 @@ function JobHistoryModal({ jobId }) {
             </Message>
           )}
           {!loading && !loadingError && (
-            <JobHistoryContent
-              jobDetails={job}
-              jobDisplay={display}
-              app={app}
-            />
+            <JobHistoryContent jobDetails={job} jobDisplay={display} />
           )}
         </div>
       </ModalBody>

@@ -100,11 +100,11 @@ export function jobDetail(state = initialJobDetail, action) {
       return {
         ...state,
         jobId: action.payload.job.id,
-        app: action.payload.app,
         job: action.payload.job,
         display: getJobDisplayInformation(
           action.payload.job,
-          action.payload.app
+          action.payload.app,
+          action.payload.executionSystem
         ),
         loading: false,
         loadingError: false,

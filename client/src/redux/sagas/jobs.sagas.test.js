@@ -5,11 +5,13 @@ import { jobDetail as jobDetailReducer } from '../reducers/jobs.reducers';
 import {
   fetchJobDetailsUtil,
   fetchAppDetailsUtil,
+  fetchSystemUtil,
   getJobDetails,
   watchJobDetails
 } from './jobs.sagas';
 import jobDetailFixture from './fixtures/jobdetail.fixture';
 import appDetailFixture from './fixtures/appdetail.fixture';
+import executionSystemDetailFixture from './fixtures/executionsystemdetail.fixture';
 import jobDetailDisplayFixture from './fixtures/jobdetaildisplay.fixture';
 
 jest.mock('cross-fetch');
@@ -30,16 +32,19 @@ describe('getJobDetails Saga', () => {
       .withReducer(jobDetailReducer)
       .provide([
         [matchers.call.fn(fetchJobDetailsUtil), jobDetailFixture],
-        [matchers.call.fn(fetchAppDetailsUtil), appDetailFixture]
+        [matchers.call.fn(fetchAppDetailsUtil), appDetailFixture],
+        [matchers.call.fn(fetchSystemUtil), executionSystemDetailFixture]
       ])
       .put({ type: 'JOB_DETAILS_FETCH_STARTED', payload: 'job_id' })
       .call(fetchJobDetailsUtil, 'job_id')
       .call(fetchAppDetailsUtil, 'prtl.clone.username.FORK.compress-0.1u3-3.0')
+      .call(fetchSystemUtil, 'username.FORK.exec.stampede2.CLI')
       .put({
         type: 'JOB_DETAILS_FETCH_SUCCESS',
         payload: {
           app: appDetailFixture,
           job: jobDetailFixture,
+          executionSystem: executionSystemDetailFixture
         }
       })
 
@@ -49,7 +54,6 @@ describe('getJobDetails Saga', () => {
         loading: false,
         loadingError: false,
         loadingErrorMessage: '',
-        app: appDetailFixture,
         job: jobDetailFixture,
         display: jobDetailDisplayFixture
       })

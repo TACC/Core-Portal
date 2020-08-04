@@ -1,6 +1,6 @@
 const jobDetailDisplayFixture = {
   applicationName: 'Compress folder',
-  systemName: 'username.FORK.exec.stampede2.CLI',
+  systemName: 'Stampede2',
   inputs: [
     {
       label: 'Target Path to be Compressed',

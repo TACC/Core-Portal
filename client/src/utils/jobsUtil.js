@@ -24,10 +24,15 @@ export function getAllocationFromAppId(appId) {
   return null;
 }
 
+export function getSystemName(host) {
+  const systemName = host.split('.')[0];
+  return systemName.substring(0, 1).toUpperCase() + systemName.slice(1);
+}
+
 /**
- * Get display values from job and app info
+ * Get display values from job, app and execution system info
  */
-export function getJobDisplayInformation(job, app) {
+export function getJobDisplayInformation(job, app, executionSystem) {
   const display = {
     applicationName: job.appId,
     systemName: job.systemId,
@@ -46,6 +51,10 @@ export function getJobDisplayInformation(job, app) {
       }))
       .filter(obj => !obj.id.startsWith('_'))
   };
+
+  if (executionSystem) {
+    display.systemName = getSystemName(executionSystem.login.host);
+  }
 
   if (app) {
     // Improve any values with app information
@@ -96,6 +105,11 @@ export function getJobDisplayInformation(job, app) {
         display.allocation = allocation;
       }
       display.queue = job.remoteQueue;
+    }
+
+    if (app.parallelism === 'PARALLEL') {
+      display.processorsPerNode = job.processorsPerNode;
+      display.nodeCount = job.nodeCount;
     }
   }
   return display;
