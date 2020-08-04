@@ -25,12 +25,7 @@ const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
     [rawData]
   );
   const getStyleName = listing => {
-    if (
-      visible &&
-      listing.firstName === visible.firstName &&
-      listing.lastName === visible.lastName
-    )
-      return 'active-user';
+    if (visible && listing.username === visible.username) return 'active-user';
     return 'row';
   };
   const { getTableProps, getTableBodyProps, rows, prepareRow } = useTable({

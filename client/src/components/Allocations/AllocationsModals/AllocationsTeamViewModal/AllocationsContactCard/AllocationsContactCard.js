@@ -6,9 +6,7 @@ import './AllocationsContactCard.module.scss';
 
 const AllocationsContactCard = ({ listing }) => {
   if (!listing)
-    return (
-      <span>Click on a user’s name to view their contact information.</span>
-    );
+    return <span>Click on a user’s name to view their allocation usage.</span>;
   const { firstName, lastName, email, username } = listing;
 
   return (
