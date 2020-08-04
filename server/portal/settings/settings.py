@@ -618,6 +618,52 @@ CELERY_TASK_DEFAULT_EXCHANGE = 'default'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
 """
+SETTINGS: EXECUTION SYSTEMS
+"""
+PORTAL_EXEC_SYSTEMS = {
+    'data': {
+        'scratch_dir_base_path': '/scratch/{}',
+        'storage_root_dir': '/',
+        'storage_protocol': 'SFTP',
+        'login_protocol': 'SSH',
+        'description': 'Exec system for user: {}',
+        'site': 'portal.dev',
+    },
+    'stampede2': {
+        'scratch_dir_base_path': '/scratch/{}',
+        'storage_root_dir': '/',
+        'storage_protocol': 'SFTP',
+        'login_protocol': 'SSH',
+        'description': 'Exec system for user: {}',
+        'site': 'portal.dev',
+    },
+    'lonestar5': {
+        'scratch_dir_base_path': '/scratch/{}',
+        'storage_root_dir': '/',
+        'storage_protocol': 'SFTP',
+        'login_protocol': 'SSH',
+        'description': 'Exec system for user: {}',
+        'site': 'portal.dev',
+    },
+    'longhorn': {
+        'scratch_dir_base_path': '/scratch/{}',
+        'storage_root_dir': '/',
+        'storage_protocol': 'SFTP',
+        'login_protocol': 'SSH',
+        'description': 'Exec system for user: {}',
+        'site': 'portal.dev',
+    },
+    'frontera': {
+        'scratch_dir_base_path': '/scratch1/{}',
+        'storage_root_dir': '/',
+        'storage_protocol': 'SFTP',
+        'login_protocol': 'SSH',
+        'description': 'Exec system for user: {}',
+        'site': 'portal.dev',
+    },
+}
+
+"""
 SETTINGS: DATA DEPOT
 """
 PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM = settings_secret._PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM

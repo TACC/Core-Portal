@@ -285,45 +285,30 @@ class UserApplicationsManager(AbstractApplicationsManager):
         :rtype: class ExecutionSystem
         """
         username = self.user.username
-
         system = self.get_exec_system(system_id)
+        user_systems_mgr = UserSystemsManager(self.user)
 
         if not system.available:
             system.enable()
 
-        system.site = 'portal.dev'
-        system.description = 'Exec system for user: {username}'.format(
-            username=username
-        )
+        settings_key = system.login.host.split('.')[0]
+        exec_settings = settings.PORTAL_EXEC_SYSTEMS[settings_key]
 
-        system_name = system_id.split('.')[0]
-        user_systems_mgr = UserSystemsManager(self.user)
-
+        system.site = exec_settings['site']
+        system.description = exec_settings['description'].format(username)
         system.storage.host = system.login.host
         system.storage.home_dir = user_systems_mgr.get_sys_tas_usr_dir()
         system.storage.port = system.login.port
-        system.storage.root_dir = '/'
-        system.storage.protocol = 'SFTP'
+        system.storage.root_dir = exec_settings['storage_root_dir']
+        system.storage.protocol = exec_settings['storage_protocol']
         system.storage.auth.username = self.user.username
         system.storage.auth.type = system.AUTH_TYPES.SSHKEYS
-
-        system.login.protocol = 'SSH'
+        system.login.protocol = exec_settings['login_protocol']
         system.login.auth.username = self.user.username
         system.login.auth.type = system.AUTH_TYPES.SSHKEYS
-
-        # maybe this should be handled in settings...
-        scratch_hosts = ['data', 'stampede2', 'lonestar5', 'longhorn']
-        scratch1_hosts = ['frontera']
-
-        if system.storage.host in [s + '.tacc.utexas.edu' for s in scratch_hosts]:
-            system.scratch_dir = system.storage.home_dir.replace(
-                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system_name]['home_directory'], '/scratch')
-        elif system.storage.host in [s + '.tacc.utexas.edu' for s in scratch1_hosts]:
-            system.scratch_dir = system.storage.home_dir.replace(
-                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[system_name]['home_directory'], '/scratch1')
-        else:
-            system.scratch_dir = system.storage.home_dir
         system.work_dir = system.storage.home_dir
+        system.scratch_dir = exec_settings['scratch_dir_base_path'].format(
+            user_systems_mgr.get_private_directory())
 
         if system.scheduler == 'SLURM':
             for queue in system.queues.all():
