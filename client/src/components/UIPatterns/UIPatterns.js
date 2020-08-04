@@ -26,12 +26,6 @@ function UIPatterns() {
           <UIPatternsDescriptionList />
         </div>
       </div>
-      <div styleName="items">
-        <div styleName="grid-item">
-          <h6>DescriptionList</h6>
-          <UIPatternsDescriptionList />
-        </div>
-      </div>
     </div>
   );
 }
