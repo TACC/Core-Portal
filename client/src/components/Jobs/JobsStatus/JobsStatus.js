@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Badge } from 'reactstrap';
 import PropTypes from 'prop-types';
+import { Icon } from '_common';
 import JobsSessionModal from '../JobsSessionModal';
 import './JobsStatus.module.scss';
 
@@ -77,7 +78,7 @@ function JobsStatus({ status, fancy, jobId }) {
       {interactiveSessionLink && (
         <>
           <button type="button" styleName="open-button" onClick={toggleModal}>
-            <i className="icon icon-new-browser" styleName="open-icon" />
+            <Icon name="new-browser" styleName="open-icon" />
             Open Session
           </button>
           <JobsSessionModal

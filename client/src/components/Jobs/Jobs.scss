@@ -1,52 +1,61 @@
-@mixin job-status() {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-width: 10em;
-}
-
 .jobs-view {
   /* icon */
   th:nth-child(1),
-  td:nth-child(1) { min-width: 2em; }
+  td:nth-child(1) {
+    min-width: 2em;
+  }
   /* name */
   th:nth-child(2),
-  td:nth-child(2) { width: 50%; }
-  /* path */
-  th:nth-child(3),
-  td:nth-child(3) { width: 50%; }
-  /* date */
-  th:nth-child(4),
-  td:nth-child(4) { min-width: 10em; }
+  td:nth-child(2) {
+    width: 50%;
+  }
   /* status */
+  th:nth-child(3),
+  td:nth-child(3) {
+    min-width: 15em;
+  }
+  /* path */
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 50%;
+  }
+  /* date */
   th:nth-child(5),
   td:nth-child(5) {
-    // @include job-status();
-    min-width: 15em;
+    min-width: 10em;
   }
 }
 
 .jobs-detailed-view {
   /* icon */
   th:nth-child(1),
-  td:nth-child(1) { min-width: 2em; }
+  td:nth-child(1) {
+    min-width: 2em;
+  }
   /* name */
   th:nth-child(2),
-  td:nth-child(2) { width: 50%; }
-  /* details */
-  th:nth-child(3),
-  td:nth-child(3) { min-width: 7em; }
-  /* path */
-  th:nth-child(4),
-  td:nth-child(4) { width: 50%; }
-  /* date */
-  th:nth-child(5),
-  td:nth-child(5) { min-width: 10em; }
+  td:nth-child(2) {
+    width: 50%;
+  }
   /* status */
+  th:nth-child(3),
+  td:nth-child(3) {
+    min-width: 15em;
+  }
+  /* details */
+  th:nth-child(4),
+  td:nth-child(4) {
+    min-width: 7em;
+  }
+  /* path */
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 50%;
+  }
+  /* date */
   th:nth-child(6),
   td:nth-child(6) {
-    // @include job-status();
-    min-width: 15em;
+    min-width: 10em;
   }
 }
 
