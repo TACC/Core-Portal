@@ -28,8 +28,8 @@ describe('JobsStatus', () => {
     expect(getStatusText('SUBMITTING')).toEqual('Submitted');
     expect(getStatusText('QUEUED')).toEqual('Queued');
     expect(getStatusText('RUNNING')).toEqual('Running');
-    expect(getStatusText('CLEANING_UP')).toEqual('Running');
-    expect(getStatusText('ARCHIVING')).toEqual('Running');
+    expect(getStatusText('CLEANING_UP')).toEqual('Finishing');
+    expect(getStatusText('ARCHIVING')).toEqual('Finishing');
     expect(getStatusText('FINISHED')).toEqual('Finished');
     expect(getStatusText('STOPPED')).toEqual('Stopped');
     expect(getStatusText('FAILED')).toEqual('Failure');
