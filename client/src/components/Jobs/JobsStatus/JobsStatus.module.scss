@@ -1,20 +1,22 @@
-$font-style: medium 10px;
+$font-weight: 500;
 
 .root {
-    :first-child {
-      font-size: 100%;
-    }
+  :first-child {
+    font-size: 100%;
   }
+}
 
 .open-icon {
   margin-right: 0.25rem;
-  font: $font-style;
+  font-weight: $font-weight;
 }
 .open-button {
   margin-left: 0.5rem;
   min-height: 1.25rem;
   background-color: #f4f4f4;
   border: 1px solid #afafaf;
-  font: $font-style;
+  font-weight: $font-weight;
   color: #707070;
+  position: absolute;
+  margin-top: -2px;
 }
