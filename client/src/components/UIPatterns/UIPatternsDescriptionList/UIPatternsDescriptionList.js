@@ -64,6 +64,37 @@ function UIPatternsDropdownSelector() {
           </dd>
         </dl>
       </div>
+      <div styleName="list-rows">
+        <dl>
+          <dt>Vertical Layout & Nested Data</dt>
+          <dd>
+            <DescriptionList
+              data={{
+                'Nested List One': (
+                  <DescriptionList data={DATA} direction="vertical" />
+                ),
+                'Nested List Two': (
+                  <DescriptionList data={DATA} direction="vertical" />
+                )
+              }}
+            />
+          </dd>
+          <dt>Horizontal Layout & Nested Data</dt>
+          <dd>
+            <DescriptionList
+              data={{
+                'Nested List One': (
+                  <DescriptionList data={DATA} direction="horizontal" />
+                ),
+                'Nested List Two': (
+                  <DescriptionList data={DATA} direction="horizontal" />
+                )
+              }}
+              direction="vertical"
+            />
+          </dd>
+        </dl>
+      </div>
     </>
   );
 }
