@@ -67,7 +67,7 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
   if (isFailed) {
     statusDataObj['Failure Report'] = (
       <Expand
-        detail="System Output"
+        detail="Last Status Message"
         message={<pre>${jobDetails.lastStatusMessage}</pre>}
       />
     );
