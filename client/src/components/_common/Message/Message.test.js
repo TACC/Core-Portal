@@ -3,12 +3,11 @@ import { render } from '@testing-library/react';
 import Message, { TYPE_ICON_MAP } from './Message';
 
 const TEST_CONTENT = '…';
-const TEST_TYPE = 'info';
 const TYPES = Object.keys(TYPE_ICON_MAP);
 
-function testClassnamesByType(type, getByTestId) {
-  const root = getByTestId('message');
-  const icon = getByTestId('icon'); // WARNING: Relies on `Icon`
+function testClassnamesByType(type, getByRole, getByTestId) {
+  const root = getByRole('status');
+  const icon = getByRole('img'); // WARNING: Relies on `Icon`
   const text = getByTestId('text');
   const modifierClassnamePattern = new RegExp(`is-${type}`);
   const iconName = TYPE_ICON_MAP[type].name;
@@ -26,8 +25,8 @@ describe('Message', () => {
 
   describe('elements', () => {
     it.each(TYPES)('include icon when type is %s', type => {
-      const { getByTestId } = render(<Message type={type}>{TEST_CONTENT}</Message>);
-      expect(getByTestId('icon')).toBeDefined(); // WARNING: Relies on `Icon`
+      const { getByRole } = render(<Message type={type}>{TEST_CONTENT}</Message>);
+      expect(getByRole('img')).toBeDefined(); // WARNING: Relies on `Icon`
     });
     it.each(TYPES)('include text when type is %s', type => {
       const { getByTestId } = render(<Message type={type}>{TEST_CONTENT}</Message>);
@@ -37,8 +36,8 @@ describe('Message', () => {
 
   describe('className', () => {
     it.each(TYPES)('is accurate when type is %s', type => {
-      const { getByTestId } = render(<Message type={type}>{TEST_CONTENT}</Message>);
-      testClassnamesByType(type, getByTestId);
+      const { getByRole, getByTestId } = render(<Message type={type}>{TEST_CONTENT}</Message>);
+      testClassnamesByType(type, getByRole, getByTestId);
     });
   });
 });
