@@ -64,16 +64,16 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
     ...reduceInputParameters(jobDisplay.parameters)
   };
 
+  if (isFailed) {
+    statusDataObj['Failure Report'] = (
+      <Expand detail="System Output" message={jobDetails.lastStatusMessage} />
+    );
+  }
+
   const data = {
     Status: <DescriptionList data={statusDataObj} />,
     Inputs: <DescriptionList data={inputAndParamsDataObj} />
   };
-
-  if (isFailed) {
-    data.FailureReport = (
-      <Expand detail="Failure Report" message={jobDetails.lastStatusMessage} />
-    );
-  }
 
   data['Max Hours'] = jobDetails.maxHours;
 
