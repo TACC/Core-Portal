@@ -8,12 +8,9 @@ const Icon = ({ children, className, name }) => {
   const fullClassName = className
     ? [className, iconClassName].join(' ')
     : iconClassName;
+  const label = children;
 
-  return (
-    <i className={fullClassName} data-testid="icon">
-      {children}
-    </i>
-  );
+  return <i className={fullClassName} role="img" aria-label={label} />;
 };
 Icon.propTypes = {
   /** A text alternative to the icon (for accessibility) */
