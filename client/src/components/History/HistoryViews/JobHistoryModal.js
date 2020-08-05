@@ -124,8 +124,6 @@ function JobHistoryModal({ jobId }) {
   const { job, display } = useSelector(state => state.jobDetail);
   const { search } = useLocation();
 
-  const applicationName = display ? display.applicationName : placeHolder;
-  const systemName = display ? display.systemName : placeHolder;
   let jobName = job ? job.name : placeHolder;
 
   if (jobName === placeHolder) {
@@ -142,8 +140,8 @@ function JobHistoryModal({ jobId }) {
 
   const headerData = {
     'Job ID': jobId,
-    Application: applicationName,
-    System: systemName
+    Application: display ? display.applicationName : placeHolder,
+    System: display ? display.systemName : placeHolder
   };
 
   return (
