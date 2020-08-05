@@ -15,6 +15,7 @@ from django.shortcuts import render
 from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.auth.tasks import setup_user
 from portal.apps.onboarding.execute import new_user_setup_check
+from portal.apps.search.tasks import index_allocations
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -112,6 +113,7 @@ def agave_oauth_callback(request):
             # Apply asynchronous long onboarding calls
             logger.info("Starting celery task for onboarding {username}".format(username=user.username))
             setup_user.apply_async(args=[user.username])
+            index_allocations.apply_async(args=[user.username])
         else:
             messages.error(
                 request,

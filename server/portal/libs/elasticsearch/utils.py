@@ -27,6 +27,22 @@ def index_project(projectId):
     pass
 
 
+def get_sha256_hash(string):
+    """
+    Compute sha256 hash of a string as a UUID for indexing.
+
+    Parameters
+    ----------
+    string: str
+        String to hash.
+
+    Returns
+    -------
+    str
+    """
+    return sha256((string).encode()).hexdigest()
+
+
 def file_uuid_sha256(system, path):
     """
     Compute sha256 hash of a system/path combination as a UUID for indexing.

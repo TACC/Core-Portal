@@ -22,7 +22,7 @@ export const STATUS_TEXT_MAP = {
   PAUSED: 'Paused',
   toastMap(status) {
     /* Post-process mapped status message to get a toast message translation. */
-    const mappedStatus = this[status];
+    const mappedStatus = getStatusText(status);
     switch (mappedStatus) {
       case 'Running':
         return 'is now running';
@@ -30,6 +30,8 @@ export const STATUS_TEXT_MAP = {
         return status.toLowerCase();
       case 'Finished':
         return 'finished successfully';
+      case 'Unknown':
+        return 'is in an unknown state';
       default:
         return `is ${mappedStatus.toLowerCase()}`;
     }
