@@ -100,13 +100,7 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
           disabled={outputPath === null}
         />
       </div>
-      <div styleName="right-panel panel-content">
-        <dl>
-          <dd>
-            <DescriptionList data={data} />
-          </dd>
-        </dl>
-      </div>
+      <DescriptionList styleName="right-panel panel-content" data={data} />
     </>
   );
 }
