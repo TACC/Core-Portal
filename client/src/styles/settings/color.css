@@ -15,9 +15,10 @@
 
     /* Distinct Hues */
     --global-color-accent--normal: #9D85EF;
-        /* TODO: Use `--light` not `hack` (search for manual instances */
+        /* TODO: Use `--light` not `--light-hack` (search for manual instances */
         --global-color-accent--light-hack: #9D85EF40; /* Not used, yet. Equals `--normal` @ 25% opacity */
         --global-color-accent--light: #dfdaf5;
+        --global-color-accent--x-light: #D2CCE7;
     --global-color-success--normal: #43D130;
         --global-color-success--alt: #C7CE1D;
     --global-color-warning--normal: #9D85EF;
