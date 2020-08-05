@@ -16,6 +16,7 @@ import { isString, chain } from 'lodash';
 import { Formik } from 'formik';
 import PropTypes from 'prop-types';
 import * as yup from 'yup';
+import './DataFilesCompressModal.module.scss';
 
 const DataFilesCompressForm = ({ first, formRef }) => {
   const initialValues = {
@@ -167,14 +168,12 @@ const DataFilesCompressModal = () => {
           onClick={compressCallback}
           className="data-files-btn"
           disabled={status === 'RUNNING'}
-          style={{ display: 'flex' }}
+          styleName="submit-button"
         >
-          {status === 'RUNNING' && (
-            <>
-              <LoadingSpinner placement="inline" />{' '}
-            </>
-          )}
-          <span>Compress</span>
+          {status === 'RUNNING' && <LoadingSpinner placement="inline" />}
+          <span styleName={status === 'RUNNING' ? 'with-spinner' : ''}>
+            Compress
+          </span>
         </Button>
         <Button
           color="secondary"

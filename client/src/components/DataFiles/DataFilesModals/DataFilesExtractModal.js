@@ -4,6 +4,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { isString } from 'lodash';
+import './DataFilesCompressModal.module.scss';
 
 const DataFilesCompressModal = () => {
   const history = useHistory();
@@ -82,14 +83,12 @@ const DataFilesCompressModal = () => {
           onClick={extractCallback}
           className="data-files-btn"
           disabled={status === 'RUNNING'}
-          style={{ display: 'flex' }}
+          styleName="submit-button"
         >
-          {status === 'RUNNING' && (
-            <>
-              <LoadingSpinner placement="inline" />{' '}
-            </>
-          )}
-          <span>Extract</span>
+          {status === 'RUNNING' && <LoadingSpinner placement="inline" />}
+          <span styleName={status === 'RUNNING' ? 'with-spinner' : ''}>
+            Extract
+          </span>
         </Button>
         <Button
           color="secondary"

@@ -590,12 +590,19 @@ const getExtractParams = async file => {
     .filter(app => app.id.includes('extract-frontera'))
     .reduce(
       (latest, app) => {
-        if (app.revision > latest.revision) {
+        if (app.version > latest.version) {
+          return app;
+        }
+        if (app.version < latest.version) {
+          return latest;
+        }
+        // Same version of app
+        if (app.revision >= latest.revision) {
           return app;
         }
         return latest;
       },
-      { revision: null }
+      { revision: null, version: null }
     );
   const inputFile = `agave://${file.system}${file.path}`;
   const archivePath = `agave://${file.system}${file.path.substring(
@@ -645,6 +652,10 @@ export function* watchExtract() {
 
 /**
  * Create JSON string of job params
+ * @async
+ * @param {Array<Object>} files
+ * @param {String} zipfileName
+ * @returns {String}
  */
 const getCompressParams = async (files, zipfileName) => {
   const res = await fetchUtil({
@@ -656,12 +667,19 @@ const getCompressParams = async (files, zipfileName) => {
     .filter(app => app.id.includes('zippy-frontera'))
     .reduce(
       (latest, app) => {
-        if (app.revision > latest.revision) {
+        if (app.version > latest.version) {
+          return app;
+        }
+        if (app.version < latest.version) {
+          return latest;
+        }
+        // Same version of app
+        if (app.revision >= latest.revision) {
           return app;
         }
         return latest;
       },
-      { revision: null }
+      { revision: null, version: null }
     );
   const inputs = {
     inputFiles: files.map(file => `agave://${file.system}${file.path}`)
@@ -698,7 +716,7 @@ export function* compressFiles(action) {
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'compress' }
     });
-    const submission = yield call(jobHelper, params); // TODO: dispatch 'SUBMIT_JOB'
+    const submission = yield call(jobHelper, params);
     if (submission.status === 'ACCEPTED') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',

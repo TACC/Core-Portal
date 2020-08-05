@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
+import getFilePermissions from 'utils/filePermissions';
 import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
@@ -13,7 +14,7 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
       onClick={onClick}
       className="data-files-toolbar-button"
     >
-      <i className={iconClassName} data-testid="toolbar-icon" />
+      {iconName && <i className={iconClassName} data-testid="toolbar-icon" />}
       <span className="toolbar-button-text">{text}</span>
     </Button>
   );
@@ -90,18 +91,14 @@ const DataFilesToolbar = ({ scheme }) => {
     });
   };
 
-  const canRename = selectedFiles.length === 1 && scheme === 'private';
-  const canMove = selectedFiles.length > 0 && scheme === 'private';
-  const canCopy = selectedFiles.length > 0 && scheme === 'private';
-  const canDownload =
-    selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
-  const canTrash = selectedFiles.length > 0 && scheme === 'private';
-  const canCompress = selectedFiles.length > 0 && scheme === 'private';
-  const isArchive =
-    selectedFiles.length > 0 &&
-    (selectedFiles[0].name.includes('.zip') ||
-      selectedFiles[0].name.includes('tar.gz'));
-  const canExtract = canDownload && isArchive;
+  const permissionParams = { files: selectedFiles, scheme };
+  const canRename = getFilePermissions('rename', permissionParams);
+  const canMove = getFilePermissions('move', permissionParams);
+  const canCopy = getFilePermissions('copy', permissionParams);
+  const canDownload = getFilePermissions('download', permissionParams);
+  const canTrash = getFilePermissions('trash', permissionParams);
+  const canCompress = getFilePermissions('compress', permissionParams);
+  const canExtract = getFilePermissions('extract', permissionParams);
 
   return (
     <>
@@ -109,13 +106,13 @@ const DataFilesToolbar = ({ scheme }) => {
         <ToolbarButton
           text="Extract"
           onClick={toggleExtractModal}
-          icon={{}}
+          iconName=""
           disabled={!canExtract}
         />
         <ToolbarButton
           text="Compress"
           onClick={toggleCompressModal}
-          icon={{}}
+          iconName=""
           disabled={!canCompress}
         />
         <ToolbarButton
