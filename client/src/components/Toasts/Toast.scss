@@ -18,6 +18,10 @@
     max-width: var(--toast-width);
 }
 .MuiSnackbar-anchorOriginBottomLeft.notification-toast-container {
+    /* Without `display: block`+`right: …px`, notification width is too short */
+    display: block;
+    right: 40px;
+
     left: 40px;
     bottom: 40px;
     max-width: var(--toast-width);
