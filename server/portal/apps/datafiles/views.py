@@ -1,8 +1,6 @@
-from portal.apps.accounts.models import PortalProfile
-from portal.apps.auth.tasks import check_user_allocations
+from portal.apps.auth.tasks import get_user_storage_systems
 from portal.views.base import BaseApiView
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.http import JsonResponse, HttpResponseForbidden
 import json
 import logging
@@ -17,11 +15,10 @@ class SystemListingView(BaseApiView):
     """System Listing View"""
 
     def get(self, request):
-        # gather local storage systems for My Data listing
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
-        user_systems = list(local_systems.keys()) # placeholder until things are in elasticsearch
-        # user_systems = check_user_allocations.apply_async(args=[request.user.username, local_systems]).get()
+        user_systems = get_user_storage_systems(request.user.username, local_systems)
 
+        # compare available storage systems to the systems a user can access
         response = {'system_list': []}
         for locsys, details in local_systems.items():
             if locsys in user_systems:

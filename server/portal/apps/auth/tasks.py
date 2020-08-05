@@ -1,7 +1,7 @@
 from portal.apps.accounts.models import PortalProfile
 from celery import shared_task
 from django.contrib.auth import get_user_model
-from portal.apps.users.utils import get_user_data, get_allocations
+from portal.apps.users.utils import get_allocations, get_tas_allocations
 import json
 import logging
 
@@ -22,15 +22,15 @@ def setup_user(self, username, systems):
     profile.setup_complete = True
     profile.save()
 
-    system_names = check_user_allocations(username, systems)
+    system_names = get_user_storage_systems(username, systems)
 
     from portal.apps.accounts.managers.accounts import setup
     for system in system_names:
         logger.info("Async setup task for {username} launched on {system}".format(username=username, system=system))
         setup(username, system)
 
-def check_user_allocations(username, systems):
-    """Create list of accessible storage systems for a user
+def get_user_storage_systems(username, systems):
+    """Create list of accessible storage system names for a user
 
         Returns a list of storage systems a user can access. In
         settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS, each system which
@@ -39,21 +39,25 @@ def check_user_allocations(username, systems):
 
         :param str username: string username to check allocations for
         :param obj systems: systems object from portal settings
-        :returns: list of of sysems to setup for user
+        :returns: list of of systems to setup for user
     """
-    tas_info = get_allocations(username)
+    try:
+        user_allocations = get_allocations(username)
+    except:
+        user_allocations = get_tas_allocations(username)
+
     systems_to_configure = []
-    user_allocations = []
+    user_resources = []
 
     # get list of user's allocation resources
-    for alloc in tas_info['active'] + tas_info['inactive']:
+    for alloc in user_allocations['active'] + user_allocations['inactive']:
         for sys in alloc['systems']:
-            user_allocations.append(sys['allocation']['resource'].lower())
+            user_resources.append(sys['allocation']['resource'].lower())
 
     # return systems on this portal that user has allocations for
     for sys_name in systems:
         if "requires_allocation" in systems[sys_name]:
-            if systems[sys_name]['requires_allocation'] in user_allocations:
+            if systems[sys_name]['requires_allocation'] in user_resources:
                 systems_to_configure.append(sys_name)
         else:
             systems_to_configure.append(sys_name)
