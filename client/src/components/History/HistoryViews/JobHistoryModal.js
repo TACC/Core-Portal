@@ -43,30 +43,6 @@ DataFilesLink.defaultProps = {
   disabled: false
 };
 
-function Entry({ label, isTopLevelEntry, children }) {
-  return (
-    <div styleName="entry-row-container" key={label}>
-      <div
-        styleName={`entry-label ${
-          isTopLevelEntry ? 'top-level-entry' : 'lower-level-entry'
-        }`}
-      >
-        {label}
-      </div>
-      <div styleName="entry-value">{children}</div>
-    </div>
-  );
-}
-
-Entry.propTypes = {
-  label: PropTypes.string.isRequired,
-  isTopLevelEntry: PropTypes.bool,
-  children: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired
-};
-Entry.defaultProps = {
-  isTopLevelEntry: false
-};
-
 const reduceInputParameters = data =>
   data.reduce((acc, item) => {
     acc[item.label] = item.value;

@@ -16,13 +16,9 @@
 
 .header-details {
   font-weight: 400;
-  display: flex;
   font-size: 0.75rem;
 }
 
-.header-details-key {
-  font-weight: 800;
-}
 
 .modal-body-container {
   width: 100%;
@@ -48,41 +44,6 @@
 
 .panel-content {
   padding: 20px;
-}
-
-.section {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.entry-row-container{
-  display: flex;
-  flex-direction: row;
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-
-.entry-label {
-  flex-basis: 30%;
-}
-.entry-value {
-  flex-basis: 70%;
-}
-
-.lower-level-entry{
-  padding-left: 15px;
-}
-
-.top-level-entry{
-  font-weight: 800;
-}
-
-.alternating-background:nth-child(odd) {
-  background: var(--global-color-primary--x-light);
-  border-top: var(--border);
-  border-bottom: var(--border);
 }
 
 .label {
