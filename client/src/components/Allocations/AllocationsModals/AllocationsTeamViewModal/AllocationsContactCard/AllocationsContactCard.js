@@ -1,6 +1,7 @@
 import React from 'react';
 import { string, shape, arrayOf, object } from 'prop-types';
 import { capitalize } from 'lodash';
+import { DescriptionList } from '_common';
 import AllocationsUsageTable from '../AllocationsUsageTable';
 import './AllocationsContactCard.module.scss';
 
@@ -12,13 +13,17 @@ const AllocationsContactCard = ({ listing }) => {
   return (
     <div styleName="root">
       <div styleName="title">
-        {capitalize(firstName)} {capitalize(lastName)} <br />
+        {capitalize(firstName)} {capitalize(lastName)}
       </div>
-      <div styleName="details">
-        <strong>Username</strong>: {username}
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        <strong>Email</strong>: {email}
-      </div>
+      <DescriptionList
+        styleName="details"
+        data={{
+          Username: username,
+          Email: email
+        }}
+        direction="horizontal"
+        density="compact"
+      />
       <AllocationsUsageTable rawData={listing.usageData} />
     </div>
   );
