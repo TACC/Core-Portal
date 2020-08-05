@@ -17,36 +17,33 @@
   display: inline;
   margin-right: 0.25em;
 }
-.is-horz .value {
+.is-horz > .value {
   white-space: nowrap;
 }
 
 /* Types */
 
-.is-vert {
-  /* … */
-}
 .is-horz {
   display: flex;
   flex-direction: row;
 }
-.is-horz .key ~ .key::before {
+.is-horz > .key ~ .key::before {
   content: '|';
   display: inline-block;
 }
-.is-horz.is-narrow .key ~ .key::before {
+.is-horz.is-narrow > .key ~ .key::before {
   margin-left: 0.5em;
   margin-right: 0.5em;
 }
-.is-horz.is-wide .key ~ .key::before {
+.is-horz.is-wide > .key ~ .key::before {
   margin-left: 1em;
   margin-right: 1em;
 }
 
-.is-vert.is-narrow .value {
+.is-vert.is-narrow > .value {
   @include truncate-with-ellipsis;
 }
 
 /* Overwrite Bootstrap `_reboot.scss` */
-.is-vert.is-narrow .value { margin-left: 0; }
-.is-vert.is-wide .value   { margin-left: 2.5rem; } /* 40px Firefox default */
+.is-vert.is-narrow > .value { margin-left: 0; }
+.is-vert.is-wide > .value   { margin-left: 2.5rem; } /* 40px Firefox default */
