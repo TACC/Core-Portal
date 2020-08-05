@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import './DescriptionList.module.css';
+import './DescriptionList.module.scss';
 
 export const DIRECTION_CLASS_MAP = {
   vertical: 'is-vert',
