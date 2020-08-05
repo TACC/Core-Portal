@@ -67,12 +67,53 @@ Entry.defaultProps = {
   isTopLevelEntry: false
 };
 
+const reduceInputParameters = data =>
+  data.reduce((acc, item) => {
+    acc[item.label] = item.value;
+    return acc;
+  }, {});
+
 function JobHistoryContent({ jobDetails, jobDisplay }) {
   const outputPath = getOutputPathFromHref(jobDetails._links.archiveData.href);
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const failureStates = ['FAILED', 'BLOCKED'];
   const isFailed = failureStates.includes(jobDetails.status);
+  const statusDataObj = {
+    Submitted: created,
+    [`${getStatusText(jobDetails.status)}`]: lastUpdated
+  };
+  const inputAndParamsDataObj = {
+    ...reduceInputParameters(jobDisplay.inputs),
+    ...reduceInputParameters(jobDisplay.parameters)
+  };
+
+  const data = {
+    Status: <DescriptionList data={statusDataObj} />,
+    Inputs: <DescriptionList data={inputAndParamsDataObj} />
+  };
+
+  if (isFailed) {
+    data.FailureReport = (
+      <Expand detail="Failure Report" message={jobDetails.lastStatusMessage} />
+    );
+  }
+
+  data['Max Hours'] = jobDetails.maxHours;
+
+  if ('processorsPerNode' in jobDisplay) {
+    data['Processors On Each Node'] = jobDisplay.processorsPerNode;
+  }
+  if ('nodeCount' in jobDisplay) {
+    data['Node Count'] = jobDisplay.nodeCount;
+  }
+  if ('queue' in jobDisplay) {
+    data.Queue = jobDisplay.queue;
+  }
+  if ('allocation' in jobDisplay) {
+    data.Allocation = jobDisplay.allocation;
+  }
+
   return (
     <>
       <div styleName="left-panel panel-content">
@@ -84,63 +125,11 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
         />
       </div>
       <div styleName="right-panel panel-content">
-        <div styleName="section">
-          <div styleName="label">Status</div>
-          <Entry label="Submitted">{created}</Entry>
-          <Entry label={getStatusText(jobDetails.status)}>{lastUpdated}</Entry>
-        </div>
-        {isFailed && (
-          <Expand
-            detail="Failure Report"
-            message={jobDetails.lastStatusMessage}
-          />
-        )}
-        <div styleName="section alternating-background">
-          <div styleName="label">Inputs</div>
-          {jobDisplay.inputs.map(input => (
-            <Entry key={input.id} label={input.label}>
-              {input.value}
-            </Entry>
-          ))}
-          {jobDisplay.parameters.map(param => (
-            <Entry key={param.id} label={param.label}>
-              {param.value}
-            </Entry>
-          ))}
-        </div>
-        <div styleName="section alternating-background">
-          <Entry label="Max Hours" isTopLevelEntry>
-            {jobDetails.maxHours}
-          </Entry>
-        </div>
-        {'processorsPerNode' in jobDisplay && (
-          <div styleName="section alternating-background">
-            <Entry label="Processors On Each Node" isTopLevelEntry>
-              {jobDisplay.processorsPerNode}
-            </Entry>
-          </div>
-        )}
-        {'nodeCount' in jobDisplay && (
-          <div styleName="section alternating-background">
-            <Entry label="Node Count" isTopLevelEntry>
-              {jobDisplay.nodeCount}
-            </Entry>
-          </div>
-        )}
-        {'queue' in jobDisplay && (
-          <div styleName="section alternating-background">
-            <Entry label="Queue" isTopLevelEntry>
-              {jobDisplay.queue}
-            </Entry>
-          </div>
-        )}
-        {'allocation' in jobDisplay && (
-          <div styleName="section alternating-background">
-            <Entry label="Allocation" isTopLevelEntry>
-              {jobDisplay.allocation}
-            </Entry>
-          </div>
-        )}
+        <dl>
+          <dd>
+            <DescriptionList data={data} />
+          </dd>
+        </dl>
       </div>
     </>
   );
