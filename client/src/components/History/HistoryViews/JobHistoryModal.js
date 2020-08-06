@@ -49,7 +49,7 @@ const reduceInputParameters = data =>
     return acc;
   }, {});
 
-function JobHistoryContent({ jobDetails, jobDisplay }) {
+function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   const outputPath = getOutputPathFromHref(jobDetails._links.archiveData.href);
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
@@ -64,6 +64,10 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
     ...reduceInputParameters(jobDisplay.parameters)
   };
   const configDataObj = {};
+  const outputDataObj = {
+    'Job Name': jobName,
+    'Output Location': outputPath
+  };
 
   if (isFailed) {
     statusDataObj['Failure Report'] = (
@@ -93,7 +97,8 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
   const data = {
     Status: <DescriptionList data={statusDataObj} />,
     Inputs: <DescriptionList data={inputAndParamsDataObj} />,
-    Configuration: <DescriptionList data={configDataObj} />
+    Configuration: <DescriptionList data={configDataObj} />,
+    Output: <DescriptionList data={outputDataObj} />
   };
 
   return (
@@ -118,10 +123,14 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
 }
 
 JobHistoryContent.propTypes = {
+  jobName: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   jobDetails: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   jobDisplay: PropTypes.object.isRequired
+};
+JobHistoryContent.defaultProps = {
+  jobName: ''
 };
 
 function JobHistoryModal({ jobId }) {
