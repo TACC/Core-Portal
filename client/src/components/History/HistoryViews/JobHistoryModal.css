@@ -6,6 +6,6 @@
 
 /* Overrides Bootstrap `.nav-link:hover`, because the `<NavLink>`
    component is only mostly for routing (not styling) */
-.nav-link:hover {
+.job-history-modal .nav-link:hover {
     text-decoration: underline;
 }
