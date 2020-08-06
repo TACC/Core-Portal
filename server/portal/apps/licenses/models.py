@@ -26,7 +26,7 @@ class BaseLicense(models.Model):
         abstract = True
 
     def __str__(self):
-        return str(self)
+        return self.user.username
 
     def license_as_str(self):
         self.license_file_content = self.license_file_content.replace('\r\n', '\n')
