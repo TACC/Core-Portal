@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 import './Toast.scss';
@@ -74,6 +75,18 @@ const NotificationToast = () => {
       default:
         return message;
     }
+  };
+  getToastMessage.propTypes = {
+    extra: PropTypes.shape({
+      name: PropTypes.string,
+      status: PropTypes.string
+    }),
+    event_type: PropTypes.string.isRequired,
+    message: PropTypes.string
+  };
+  getToastMessage.defaultProps = {
+    extra: {},
+    message: ''
   };
 
   return (
