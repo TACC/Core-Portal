@@ -24,7 +24,7 @@ class UserSystemsManager():
     or to renew keys.
 
     Systems Config:
-    You can find an object of "PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS" in 
+    You can find an object of "PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS" in
     settings_secret. The systems are indexed by the name of the system
     (ex: frontera). Each object has settings for managing a user's
     storage system.
@@ -39,7 +39,7 @@ class UserSystemsManager():
         }
 
     Default System:
-    The "PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM" will be the name of
+    The "PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT" will be the name of
     one of the systems in "PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS". This system
     will be used when a system is not provided.
     .. seealso::
@@ -59,7 +59,7 @@ class UserSystemsManager():
             # if we don't define a default system as a setting we will have to do some crazy
             # iteration over the systems to find the default system... something like
             # next(systems[s] for s in systems if 'default_system' in systems[s])
-            default_sys = settings.PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM
+            default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
             all_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
             self.system = all_systems[default_sys]
         else:
@@ -167,7 +167,7 @@ class UserSystemsManager():
                 return private_system
             else:
                 raise
-    
+
     def get_system_definition(
             self,
             publ_key_str,

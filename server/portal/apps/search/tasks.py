@@ -88,7 +88,7 @@ def index_my_data(self, reindex=False):
     users = User.objects.all()
     for user in users:
         uname = user.username
-        default_sys = settings.PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM
+        default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
         default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
         systemId = default_system_prefix.format(uname)
 
