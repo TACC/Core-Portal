@@ -14,13 +14,11 @@ const Expand = ({ detail, message }) => {
   return (
     <Card styleName="container">
       <CardHeader onClick={toggleCallback}>
-        <span styleName="header">
-          <strong>{detail}</strong>
-        </span>
+        <strong styleName="header">{detail}</strong>
         <Icon name={isOpen ? 'collapse' : 'expand'} />
       </CardHeader>
-      <Collapse isOpen={isOpen}>
-        <CardBody>{message}</CardBody>
+      <Collapse isOpen={isOpen} tag={CardBody}>
+        {message}
       </Collapse>
     </Card>
   );
