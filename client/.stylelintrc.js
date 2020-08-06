@@ -1,5 +1,5 @@
 module.exports = {
-  ignoreFiles: ['build/**/*', 'coverage/**/*'],
+  ignoreFiles: ['build/**/*', 'coverage/**/*', '**/icon.fonts.css'],
 
   // `stylelint-config-recommended` turns on all the "possible errors" rules
   // SEE: Rules: https://stylelint.io/user-guide/rules/list#possible-errors
@@ -42,7 +42,9 @@ module.exports = {
 
     // PROPERTY
     // Disallow unknown properties.
-    // 'property-no-unknown': null,
+    'property-no-unknown': [ true, {
+      ignoreProperties: ['composes']
+    }],
 
     // KEYFRAME DECLARATION
     // Disallow !important within keyframe declarations.
@@ -400,7 +402,7 @@ module.exports = {
     // Require a single space or disallow whitespace after the opening brace of blocks (Autofixable).
     // 'block-opening-brace-space-after': 'always-single-line',
     // Require a single space or disallow whitespace before the opening brace of blocks (Autofixable).
-    // 'block-opening-brace-space-before': 'always',
+    'block-opening-brace-space-before': null, // FAQ: Allow alignment of related single line rules with different selectors
 
     // SELECTOR
     // Require a single space or disallow whitespace on the inside of the brackets within attribute selectors (Autofixable).

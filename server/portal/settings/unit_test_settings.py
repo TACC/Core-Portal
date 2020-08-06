@@ -68,6 +68,9 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
+    # Django Channels
+    'channels',
+
     # Django recaptcha.
     'captcha',
 
@@ -81,9 +84,6 @@ INSTALLED_APPS = [
     'termsandconditions',
     'impersonate',
 
-    # Websockets.
-    'ws4redis',
-
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
@@ -92,7 +92,6 @@ INSTALLED_APPS = [
     'portal.apps.notifications',
     'portal.apps.onboarding',
     'portal.apps.search',
-    'portal.apps.signals',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
@@ -281,7 +280,7 @@ PORTAL_PROJECTS_PRIVATE_KEY = ('-----BEGIN RSA PRIVATE KEY-----'
 PORTAL_PROJECTS_PUBLIC_KEY = 'ssh-rsa change this'
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    'portal.apps.accounts.steps.test_steps.MockStep'
+    'portal.apps.onboarding.steps.test_steps.MockStep'
 ]
 PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = 'dev'
 
@@ -299,7 +298,8 @@ PORTAL_SEARCH_MANAGERS = {
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
-PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
+                                  "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
 
 EXTERNAL_RESOURCE_SECRETS = {
     "google-drive": {
@@ -318,7 +318,7 @@ PORTAL_WORKSPACE_MANAGERS = {
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
 # TAS Authentication.
-TAS_URL = 'test.com'
+TAS_URL = 'https://test.com'
 TAS_CLIENT_KEY = 'test'
 TAS_CLIENT_SECRET = 'test'
 # Redmine Tracker Authentication.
@@ -349,6 +349,8 @@ AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
 ES_HOSTS = ['test.com']
 ES_AUTH = "user:password"
 ES_INDEX_PREFIX = "test-staging-{}"
+
+SYSTEM_MONITOR_URL = "https://sysmon.example.com/foo.json"
 
 HAYSTACK_CONNECTIONS = {
     'default': {
@@ -489,3 +491,11 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
 
 DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
+
+# Channels
+ASGI_APPLICATION = 'portal.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
