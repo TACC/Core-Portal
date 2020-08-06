@@ -67,6 +67,10 @@ const NotificationToast = () => {
         return `${truncateMiddle(name, 20)} ${STATUS_TEXT_MAP.toastMap(
           status
         )}`;
+      case 'interative_session_ready':
+        return `${truncateMiddle(name, 20)} ${
+          message ? message.toLowerCase() : 'session ready to view.'
+        }`;
       default:
         return message;
     }
