@@ -1,9 +1,14 @@
+@import '../../../styles/tools/mixins.scss';
 
-.header {
-  padding-right: 1em;
+/* Prevent from butting up against its label (like inside `DescriptionList`) */
+dd .container {
+  margin-top: 0.25rem; /* copied from Bootstrap `.mt-1` styles */
 }
 
-.icon-action {
-  font-size: 1.4em;
-  display: flex;
+.header {
+  display: inline-block;
+
+  padding-right: 1em;
+
+  @include truncate-with-ellipsis;
 }

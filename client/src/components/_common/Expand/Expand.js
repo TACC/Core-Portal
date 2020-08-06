@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { CardHeader, CardBody, Card, Collapse } from 'reactstrap';
+import Icon from '../Icon';
 import './Expand.global.scss';
 import './Expand.module.scss';
 
@@ -11,15 +12,12 @@ const Expand = ({ detail, message }) => {
   }, [isOpen, setIsOpen]);
 
   return (
-    <Card className="mt-1">
+    <Card styleName="container">
       <CardHeader onClick={toggleCallback}>
-        <span styleName="header" className="d-inline-block text-truncate">
+        <span styleName="header">
           <strong>{detail}</strong>
         </span>
-        <i
-          styleName="icon-action"
-          className={`icon-action ${isOpen ? 'icon-collapse' : 'icon-expand'}`}
-        />
+        <Icon name={isOpen ? 'collapse' : 'expand'} />
       </CardHeader>
       <Collapse isOpen={isOpen}>
         <CardBody>{message}</CardBody>
