@@ -15,7 +15,8 @@ export default function systemAccessor(arr, header) {
           type === 'HPC'
             ? Math.round(allocation.computeAllocated - allocation.computeUsed)
             : Math.round(allocation.storageAllocated);
-        const ratio = remaining / allocation.computeAllocated || 0;
+        const ratio =
+          type === 'HPC' ? remaining / allocation.computeAllocated || 0 : 1;
         return {
           id: allocation.id,
           remaining,
