@@ -7,7 +7,7 @@ import { Icon } from '_common';
 
 import './DataFilesSearchbar.module.css';
 
-const DataFilesSearchbar = ({ api, scheme, system }) => {
+const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
   const history = useHistory();
   const sectionName = 'My Data';
@@ -34,6 +34,7 @@ const DataFilesSearchbar = ({ api, scheme, system }) => {
   return (
     <form
       aria-label={`${sectionName} Search`}
+      className={className}
       styleName="container"
       onSubmit={onSubmit}
     >
@@ -72,7 +73,12 @@ DataFilesSearchbar.propTypes = {
   /* API endpoint values */
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
-  system: PropTypes.string.isRequired
+  system: PropTypes.string.isRequired,
+  /** Additional `className` (or transpiled `styleName`) for the root element */
+  className: PropTypes.string
+};
+DataFilesSearchbar.defaultProps = {
+  className: ''
 };
 
 export default DataFilesSearchbar;
