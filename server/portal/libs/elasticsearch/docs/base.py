@@ -8,7 +8,7 @@ from django.conf import settings
 from elasticsearch_dsl import (Document, Date, Object, Text, Long, Boolean,
                                Keyword)
 from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, file_pattern_analyzer, reverse_file_analyzer
-from portal.libs.elasticsearch.utils import file_uuid_sha256
+from portal.libs.elasticsearch.utils import file_uuid_sha256, get_sha256_hash
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -180,3 +180,36 @@ class ReindexedFile(IndexedFile):
     """
     class Index:
         name = settings.ES_INDEX_PREFIX.format('files-reindex')
+
+
+class IndexedAllocation(Document):
+    """
+    Elasticsearch document representing cached allocations. Thin wrapper around
+    `elasticsearch_dsl.Document`.
+    """
+
+    username = Text(fields={'_exact': Keyword()})
+    value = Object()
+
+    @classmethod
+    def from_username(cls, username):
+        """
+        Fetches indexed allocations for a user.
+
+        Parameters
+        ----------
+        username: str
+            TACC username to fetch allocations for.
+        Returns
+        -------
+        IndexedAllocation
+
+        Raises
+        ------
+        elasticsearch.exceptions.NotFoundError
+        """
+        uuid = get_sha256_hash(username)
+        return cls.get(uuid)
+
+    class Index:
+        name = settings.ES_INDEX_PREFIX.format('allocations')
