@@ -6,9 +6,9 @@ import './DataFilesSystemSelector.module.scss';
 
 const DataFilesSystemSelector = ({ systemId, section }) => {
   const dispatch = useDispatch();
-  const systemsList = useSelector(state => state.systems.systemsList);
-  const findSystem = id => systemsList.find(system => system.system === id);
-  const initialSystem = systemId ? findSystem(systemId) : systemsList[0];
+  const systemList = useSelector(state => state.systems.systemList);
+  const findSystem = id => systemList.find(system => system.system === id);
+  const initialSystem = systemId ? findSystem(systemId) : systemList[0];
 
   const openSystem = useCallback(
     event => {
@@ -21,13 +21,13 @@ const DataFilesSystemSelector = ({ systemId, section }) => {
         }
       });
     },
-    [dispatch, section, findSystem, systemsList]
+    [dispatch, section, findSystem, systemList]
   );
 
   return (
     <>
       <select onChange={openSystem} defaultValue={initialSystem} styleName="system-select">
-        {systemsList.map(system => (
+        {systemList.map(system => (
           <option key={uuidv4()} value={system.system}>
             {system.name}
           </option>

@@ -19,10 +19,10 @@ class SystemListingView(BaseApiView):
         user_systems = get_user_storage_systems(request.user.username, local_systems)
 
         # compare available storage systems to the systems a user can access
-        response = {'system_list': []}
+        response = {'systemList': []}
         for locsys, details in local_systems.items():
             if locsys in user_systems:
-                response['system_list'].append(
+                response['systemList'].append(
                     {
                         'name': details['name'],
                         'system': details['prefix'].format(request.user.username),

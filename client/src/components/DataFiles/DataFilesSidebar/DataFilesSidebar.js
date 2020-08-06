@@ -25,7 +25,7 @@ const DataFilesSidebar = () => {
     });
   };
   const err = useSelector(state => state.files.error.FilesListing);
-  const systems = useSelector(state => state.systems.system_list, shallowEqual);
+  const systems = useSelector(state => state.systems.systemList, shallowEqual);
 
   const toggleMkdirModal = () => {
     dispatch({

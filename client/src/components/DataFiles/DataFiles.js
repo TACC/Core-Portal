@@ -11,7 +11,7 @@ import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
 
 const PrivateDataRedirect = () => {
-  const systems = useSelector(state => state.systems.system_list, shallowEqual);
+  const systems = useSelector(state => state.systems.systemList, shallowEqual);
   const history = useHistory();
   useEffect(() => {
     history.push(`/workbench/data/tapis/private/${systems[0].system}/`);
