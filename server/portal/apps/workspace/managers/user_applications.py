@@ -13,9 +13,9 @@ from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.models.applications import Application
 from portal.apps.workspace.managers.base import AbstractApplicationsManager
 from portal.utils import encryption as EncryptionUtil
-from portal.apps.accounts.managers.accounts import _lookup_user_home_manager
+# from portal.apps.accounts.managers.accounts import _lookup_user_home_manager
 from portal.apps.accounts.models import SSHKeys
-from portal.apps.accounts.managers.user_work_home import UserWORKHomeManager
+from portal.apps.accounts.managers.user_systems import UserSystemsManager
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
     def __init__(self, *args, **kwargs):
         super(UserApplicationsManager, self).__init__(*args, **kwargs)
-        self.home_mgr = _lookup_user_home_manager(self.user)
+        self.home_mgr = UserSystemsManager(self.user)
 
     def get_clone_system_id(self):
         """Gets system id to deploy cloned app materials to.
@@ -278,47 +278,37 @@ class UserApplicationsManager(AbstractApplicationsManager):
     ):  # pylint:disable=arguments-differ
         """Initializes Agave execution system
 
-        :param class system: ExecutionSystem instance
+        :param class system_id: ExecutionSystem ID
         :param str allocation: Project allocation for customDirectives
 
         :returns: ExecutionSystem instance
         :rtype: class ExecutionSystem
         """
         username = self.user.username
-
         system = self.get_exec_system(system_id)
+        user_systems_mgr = UserSystemsManager(self.user)
 
         if not system.available:
             system.enable()
 
-        system.site = 'portal.dev'
-        system.description = 'Exec system for user: {username}'.format(
-            username=username
-        )
+        settings_key = system.login.host.split('.')[0]
+        exec_settings = settings.PORTAL_EXEC_SYSTEMS[settings_key]
 
-        user_work_home_mgr = UserWORKHomeManager(self.user)
-
+        system.site = exec_settings['site']
+        system.description = exec_settings['description'].format(username)
         system.storage.host = system.login.host
-        system.storage.home_dir = user_work_home_mgr.get_home_dir_abs_path()
+        system.storage.home_dir = user_systems_mgr.get_sys_tas_usr_dir()
         system.storage.port = system.login.port
-        system.storage.root_dir = '/'
-        system.storage.protocol = 'SFTP'
+        system.storage.root_dir = exec_settings['storage_root_dir']
+        system.storage.protocol = exec_settings['storage_protocol']
         system.storage.auth.username = self.user.username
         system.storage.auth.type = system.AUTH_TYPES.SSHKEYS
-
-        system.login.protocol = 'SSH'
+        system.login.protocol = exec_settings['login_protocol']
         system.login.auth.username = self.user.username
         system.login.auth.type = system.AUTH_TYPES.SSHKEYS
-
-        scratch_hosts = ['data', 'stampede2', 'lonestar5']
-        scratch1_hosts = ['frontera']
-        if system.storage.host in [s + '.tacc.utexas.edu' for s in scratch_hosts]:
-            system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch')
-        elif system.storage.host in [s + '.tacc.utexas.edu' for s in scratch1_hosts]:
-            system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch1')
-        else:
-            system.scratch_dir = system.storage.home_dir
         system.work_dir = system.storage.home_dir
+        system.scratch_dir = exec_settings['scratch_dir_base_path'].format(
+            user_systems_mgr.get_private_directory())
 
         if system.scheduler == 'SLURM':
             for queue in system.queues.all():

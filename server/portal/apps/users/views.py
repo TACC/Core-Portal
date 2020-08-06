@@ -38,12 +38,19 @@ class AuthenticatedView(BaseApiView):
         return HttpResponse('Unauthorized', status=401)
 
 
+# deprecated
 @method_decorator(login_required, name='dispatch')
 class UsageView(BaseApiView):
 
     def get(self, request):
         username = request.user.username
-        system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
+        # get default system prefix
+        default_sys = settings.PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM
+        default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
+        system = default_system_prefix.format(username)
+        # changed to ^^^
+        # system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
+        
         search = IndexedFile.search()
         # search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
         search = search.filter(Q('term', **{"system._exact": system}))

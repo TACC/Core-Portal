@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import {
   Nav,
   NavItem,
@@ -11,8 +11,7 @@ import {
 } from 'reactstrap';
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop } from '@fortawesome/free-solid-svg-icons';
+import Icon from '_common/Icon';
 import './DataFilesSidebar.scss';
 
 const DataFilesSidebar = () => {
@@ -26,6 +25,8 @@ const DataFilesSidebar = () => {
     });
   };
   const err = useSelector(state => state.files.error.FilesListing);
+  const systems = useSelector(state => state.systems.system_list, shallowEqual);
+
   const toggleMkdirModal = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -66,20 +67,24 @@ const DataFilesSidebar = () => {
         <div className="data-files-nav">
           <Nav vertical>
             <NavItem>
-              <NavLink
-                tag={RRNavLink}
-                to={`${match.path}/tapis/private/`}
-                activeClassName="active"
-              >
-                <span className="nav-content">
-                  <FontAwesomeIcon
-                    icon={faDesktop}
-                    size="1x"
-                    className="icon"
-                  />
-                  <span className="nav-text">My Data</span>
-                </span>
-              </NavLink>
+              {systems
+                ? systems.map(sys => (
+                    <NavLink
+                      tag={RRNavLink}
+                      to={`${match.path}/${sys.api}/${sys.scheme}/${sys.system}/`}
+                      activeClassName="active"
+                      key={sys.system}
+                    >
+                      <div className="nav-content">
+                        <Icon
+                          className={sys.icon ? sys.icon : 'icon-monitor'}
+                          name={sys.name}
+                        />
+                        <span className="nav-text">{sys.name}</span>
+                      </div>
+                    </NavLink>
+                  ))
+                : null}
             </NavItem>
           </Nav>
         </div>

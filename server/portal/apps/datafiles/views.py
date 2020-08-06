@@ -1,13 +1,12 @@
+from portal.apps.auth.tasks import get_user_storage_systems
 from portal.views.base import BaseApiView
-from django.http import JsonResponse, HttpResponseForbidden
 from django.conf import settings
+from django.http import JsonResponse, HttpResponseForbidden
 import json
 import logging
-from portal.apps.accounts.managers.accounts import get_user_home_system_id
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
-# Create your views here.
 
 logger = logging.getLogger(__name__)
 
@@ -16,26 +15,22 @@ class SystemListingView(BaseApiView):
     """System Listing View"""
 
     def get(self, request):
-        community_data_system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
-        public_data_system = settings.AGAVE_PUBLIC_DATA_SYSTEM
-        mydata_system = get_user_home_system_id(request.user)
+        local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+        user_systems = get_user_storage_systems(request.user.username, local_systems)
 
-        # Needs to be merged with FP-214
-        systems_list = [
-            {
-                'name': 'My Data',
-                'system': mydata_system,
-                'scheme': 'private',
-                'api': 'tapis',
-            }
-        ]
-
-        response = {
-            'private': mydata_system,
-            'community': community_data_system,
-            'public': public_data_system,
-            'systemsList': systems_list
-        }
+        # compare available storage systems to the systems a user can access
+        response = {'system_list': []}
+        for locsys, details in local_systems.items():
+            if locsys in user_systems:
+                response['system_list'].append(
+                    {
+                        'name': details['name'],
+                        'system': details['prefix'].format(request.user.username),
+                        'scheme': 'private',
+                        'api': 'tapis',
+                        'icon': details['icon']
+                    }
+                )
 
         return JsonResponse(response)
 
@@ -49,6 +44,7 @@ class TapisFilesView(BaseApiView):
 
         response = tapis_get_handler(
             client, scheme, system, path, operation, **request.GET.dict())
+
         return JsonResponse({'data': response})
 
     def put(self, request, operation=None, scheme=None,

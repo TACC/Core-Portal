@@ -1,4 +1,4 @@
-const initialState = {
+export const initialState = {
   list: [],
   submit: { submitting: false },
   loading: false,
@@ -54,6 +54,19 @@ function jobs(state = initialState, action) {
         ...state,
         submit: { ...state.submit, response: action.payload, error: true }
       };
+    case 'UPDATE_JOB_STATUS': {
+      const event = action.payload.extra;
+      const list = state.list.map(job => {
+        if (event.id === job.id) {
+          return { ...job, status: event.status };
+        }
+        return job;
+      });
+      return {
+        ...state,
+        list
+      };
+    }
     default:
       return state;
   }

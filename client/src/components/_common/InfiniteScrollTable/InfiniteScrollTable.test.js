@@ -1,12 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import InfiniteScrollTable from './InfiniteScrollTable';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
-import { BrowserRouter } from 'react-router-dom';
 
-const mockStore = configureStore();
 
 const tableData = [
   {
@@ -37,9 +33,9 @@ const tableColumns = [
 describe('InfiniteScrollTable', () => {
   it('renders a table', () => {
     const { getByText } = render(
-      <InfiniteScrollTable 
-        tableColumns={tableColumns} 
-        tableData={tableData} 
+      <InfiniteScrollTable
+        tableColumns={tableColumns}
+        tableData={tableData}
       />
     );
 
@@ -49,8 +45,8 @@ describe('InfiniteScrollTable', () => {
   it('renders a loading spinner', () => {
     const { getByTestId } = render(
       <InfiniteScrollTable
-        tableColumns={tableColumns} 
-        tableData={tableData} 
+        tableColumns={tableColumns}
+        tableData={tableData}
         isLoading={true}
       />
     )

@@ -33,7 +33,7 @@ const initialFilesState = {
   },
   error: {
     FilesListing: false,
-    modal: []
+    modal: false
   },
   listing: {
     FilesListing: [],
