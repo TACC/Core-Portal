@@ -32,11 +32,6 @@
   min-width: 200px;
 }
 
-.left-panel.n {
-  border-right: var(--border);
-  min-width: 200px;
-}
-
 .right-panel {
   width: 100%;
   overflow-y: scroll;
@@ -45,9 +40,14 @@
 .panel-content {
   padding: 20px;
 }
-
-.label {
-  font-weight: 800;
+/* The `dl` comes from the `DescriptionList` component */
+dl.panel-content {
+  margin-bottom: 0; /* overwrite Bootstrap's `_reboot.scss` */
+}
+/* Any preformatted values (like system output) should use a `pre` tag */
+.panel-content pre {
+  white-space: pre-wrap;
+  margin-bottom: 0; /* overwrite Bootstrap's `_code.scss` */
 }
 
 /* Messaging */
