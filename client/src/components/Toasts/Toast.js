@@ -52,6 +52,8 @@ const NotificationToast = () => {
    * @param {Object} notification.extra - The embedded job status update object
    * @param {string} notification.extra.name - The job name
    * @param {string} notification.extra.status - The event status
+   * @param {string} notification.message - The event message
+   * @param {string} notification.event_type - The event type
    * @return {string} Message
    *
    * @example
