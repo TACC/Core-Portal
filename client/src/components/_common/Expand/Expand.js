@@ -19,8 +19,8 @@ const Expand = ({ className, detail, message }) => {
         <strong styleName="header">{detail}</strong>
         <Icon name={isOpen ? 'collapse' : 'expand'} />
       </CardHeader>
-      <Collapse isOpen={isOpen} tag={CardBody}>
-        {message}
+      <Collapse isOpen={isOpen}>
+        <CardBody>{message}</CardBody>
       </Collapse>
     </Card>
   );
