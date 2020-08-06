@@ -51,14 +51,26 @@ const NotificationToast = () => {
    * @param {Object} notification.extra - The embedded job status update object
    * @param {string} notification.extra.name - The job name
    * @param {string} notification.extra.status - The event status
-   * @return {string} Translated message
+   * @return {string} Message
    *
    * @example
    * // returns "matlab-v9...20:02:00 is processing"
    * getToastMessage(n)
    */
-  const getToastMessage = ({ extra: { name, status } }) =>
-    `${truncateMiddle(name, 20)} ${STATUS_TEXT_MAP.toastMap(status)}`;
+  const getToastMessage = ({
+    extra: { name, status },
+    event_type: eventType,
+    message
+  }) => {
+    switch (eventType) {
+      case 'job':
+        return `${truncateMiddle(name, 20)} ${STATUS_TEXT_MAP.toastMap(
+          status
+        )}`;
+      default:
+        return message;
+    }
+  };
 
   return (
     <Snackbar

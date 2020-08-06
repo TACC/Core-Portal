@@ -3,10 +3,10 @@ import { eventChannel } from 'redux-saga';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { fetchUtil } from 'utils/fetchUtil';
 
-const createNotificationsSocket = () =>
+export const createNotificationsSocket = () =>
   new ReconnectingWebSocket(`wss://${window.location.host}/ws/notifications/`);
 
-function socketEmitter(socket) {
+export function socketEmitter(socket) {
   return eventChannel(emit => {
     socket.addEventListener('message', e => {
       emit(JSON.parse(e.data));
@@ -22,13 +22,11 @@ export function* watchSocket() {
 }
 
 export function* handleSocket(action) {
-  let eventType = action.event_type.toLowerCase();
-  if (eventType === 'vnc' || eventType === 'web') {
-    eventType = 'interactive';
-  }
+  const eventType = action.event_type.toLowerCase();
   switch (eventType) {
-    case 'interactive':
+    case 'interactive_session_ready':
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
+      yield put({ type: 'ADD_TOAST', payload: action });
       break;
     case 'job': {
       // parse current jobs list for job event
@@ -44,6 +42,7 @@ export function* handleSocket(action) {
         yield put({ type: 'GET_JOBS', params: { offset: 0, limit: 20 } });
       }
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
+      yield put({ type: 'ADD_TOAST', payload: action });
       break;
     }
     case 'setup_event':
@@ -57,8 +56,7 @@ export function* fetchNotifications() {
   yield put({ type: 'NOTIFICATIONS_LIST_FETCH_START' });
   try {
     const res = yield call(fetchUtil, {
-      url: '/api/notifications/',
-      params: { read: 'False' }
+      url: '/api/notifications/'
     });
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_SUCCESS',

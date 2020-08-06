@@ -10,6 +10,9 @@
  * truncateMiddle('this is a long string', 10)
  */
 export default function truncateMiddle(s, maxLen) {
+  if (!s) {
+    return '';
+  }
   if (maxLen < 5) {
     throw new Error(
       'Cannot middle truncate string with a maximum length less than 5.'
