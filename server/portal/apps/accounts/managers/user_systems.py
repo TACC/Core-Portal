@@ -32,8 +32,7 @@ class UserSystemsManager():
             'name': 'My Data (Local System One)', <----------- The name to appear in the "My Data" section.
             'prefix': 'localsystem1.home.{username}', <------- Used to get the system ID for a user
             'host': 'localsystem1.tacc.utexas.edu', <--------- System host
-            'home_directory': '/home', <---------------------- User's home directory
-            'relative_path': 'home_dirs', <------------------- User's relative home directory
+            'home_dir': '/home', <---------------------- User's home directory
             'storage_port': 22, <----------------------------- System storage port
             'icon': None <------------------------------------ The CSS class name for the icon used in "My Data".
         }
@@ -70,7 +69,6 @@ class UserSystemsManager():
                 logger.debug('available systems: {}'.format(list(settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS.keys())))
                 return None
 
-
     def get_name(self):
         """Gets display name for given system
         :returns: formatted system name
@@ -97,24 +95,14 @@ class UserSystemsManager():
         :returns: name of home directory path.
         :rtype: str
         """
-        return self.system['home_directory']
+        return self.system['home_dir']
 
-    def get_sys_tas_usr_dir(self):
+    def get_sys_tas_user_dir(self):
         """Gets path to user's home directory for given system
         :returns: full path for system home directory. ex: "/[home]/[tasid]/[username]"
         :rtype: str
         """
-        return os.path.join(
-                self.system['home_directory'],
-                self.tas_user['homeDirectory'],
-            )
-
-    def get_rel_home_dir(self):
-        """Gets relative path to home directory for given system
-        :returns: relative path for system home directory
-        :rtype: str
-        """
-        return self.system['relative_path']
+        return os.path.join(self.system['home_dir'], self.tas_user['homeDirectory'])
 
     def get_private_directory(self, *args, **kwargs):
         """Gets private storage directory for a user
@@ -122,7 +110,6 @@ class UserSystemsManager():
         """
 
         return self.tas_user['homeDirectory']
-
 
     def setup_private_system(self, *args, **kwargs):
         """Create private storage system for a user
@@ -189,7 +176,7 @@ class UserSystemsManager():
         system.name = self.get_system_id()
         system.storage.port = self.system['storage_port']
         system.storage.home_dir = '/'
-        system.storage.root_dir = self.get_sys_tas_usr_dir()
+        system.storage.root_dir = self.get_sys_tas_user_dir()
         system.storage.protocol = 'SFTP'
         system.storage.host = self.get_host()
         system.storage.auth.username = username

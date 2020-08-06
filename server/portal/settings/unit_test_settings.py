@@ -505,8 +505,7 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'name': 'My Data (Frontera)',
         'prefix': 'frontera.home.{}',                                   # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
         'host': 'frontera.tacc.utexas.edu',                             # PORTAL_DATA_DEPOT_STORAGE_HOST
-        'home_directory': '/home1',                                     # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
-        'relative_path': 'home_dirs',                                   # PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH
+        'home_dir': '/home1',                                     # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
         'storage_port': 22,
         'icon': None,
     },
@@ -514,8 +513,7 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'name': 'My Data (Longhorn)',
         'prefix': 'longhorn.home.{}',
         'host': 'longhorn.tacc.utexas.edu',
-        'home_directory': '/home',
-        'relative_path': 'home',
+        'home_dir': '/home',
         'storage_port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,

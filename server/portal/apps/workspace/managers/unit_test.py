@@ -49,7 +49,7 @@ class TestUserApplicationsManager(TestCase):
             self.execution_sys = json.load(_file)
 
     def test_set_system_definition_scratch_path_to_scratch(self):
-        self.mock_systems_manager.get_sys_tas_usr_dir.return_value = '/home/1234/username'
+        self.mock_systems_manager.get_sys_tas_user_dir.return_value = '/home/1234/username'
         self.mock_systems_manager.get_private_directory.return_value = '1234/username'
         sys = ExecutionSystem.from_dict(
             self.magave,
@@ -66,7 +66,7 @@ class TestUserApplicationsManager(TestCase):
 
     # removing until we add a system with '/work' in it's scratch path
     # def test_set_system_definition_scratch_path_to_work(self):
-    #     self.mock_systems_manager.get_sys_tas_usr_dir.return_value = '/home/1234/username'
+    #     self.mock_systems_manager.get_sys_tas_user_dir.return_value = '/home/1234/username'
     #     self.mock_systems_manager.get_private_directory.return_value = '1234/username'
 
     #     sys = ExecutionSystem.from_dict(

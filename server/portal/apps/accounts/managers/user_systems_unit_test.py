@@ -59,8 +59,7 @@ def test_lookup_methods(test_manager):
     assert test_manager.get_host() == 'frontera.tacc.utexas.edu'
     assert test_manager.get_system_id() == 'frontera.home.username'
     assert test_manager.get_home_dir() == '/home1'
-    assert test_manager.get_sys_tas_usr_dir() == '/home1/01234/username'
-    assert test_manager.get_rel_home_dir() == 'home_dirs'
+    assert test_manager.get_sys_tas_user_dir() == '/home1/01234/username'
     assert test_manager.get_private_directory() == '01234/username'
 
 def test_setup_private_system_exists(test_manager, mock_service_account):
@@ -94,7 +93,7 @@ def test_get_system_definition(test_manager, mock_service_account, mock_404):
 def test_reset_system_keys_no_prexisting(test_manager, mock_agave_client):
     with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
         mock_agave_client.systems.get.return_value = json.load(f)
-    
+
     # Reseting keys on a system when there were no pre-existing
     # keys should result in creation of a Key object
     assert len(Keys.objects.all()) == 0
@@ -104,7 +103,7 @@ def test_reset_system_keys_no_prexisting(test_manager, mock_agave_client):
 def test_reset_system_keys(test_manager, regular_user, mock_agave_client):
     with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
         mock_agave_client.systems.get.return_value = json.load(f)
-    
+
     # Create a pre-existing key object for this system
     SSHKeys.objects.save_keys(
         regular_user,

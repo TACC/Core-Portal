@@ -297,7 +297,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         system.site = exec_settings['site']
         system.description = exec_settings['description'].format(username)
         system.storage.host = system.login.host
-        system.storage.home_dir = user_systems_mgr.get_sys_tas_usr_dir()
+        system.storage.home_dir = user_systems_mgr.get_sys_tas_user_dir()
         system.storage.port = system.login.port
         system.storage.root_dir = exec_settings['storage_root_dir']
         system.storage.protocol = exec_settings['storage_protocol']
