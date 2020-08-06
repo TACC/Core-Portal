@@ -53,9 +53,6 @@ describe('DataFilesSearchbar', () => {
 
     expect(getByRole('form')).toBeDefined();
     expect(getByRole('searchbox')).toBeDefined();
-    // FP-563: Support count in status message
-    // expect(getByRole('status')).toBeDefined();
-    expect(getByRole('combobox')).toBeDefined();
     expect(getByTestId('reset')).toBeDefined();
   });
 });
