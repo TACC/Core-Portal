@@ -3,7 +3,8 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from portal.apps.auth.models import AgaveOAuthToken
 from pytas.http import TASClient
-from portal.apps.users.utils import get_allocations
+from portal.apps.users.utils import get_tas_allocations, get_allocations
+from elasticsearch.exceptions import NotFoundError
 
 
 class AttrDict(dict):
@@ -197,5 +198,21 @@ class TestGetAllocations(TestCase):
             'portal_alloc': 'test'
         }
 
-        data = get_allocations("username")
+        data = get_tas_allocations("username")
         self.assertEqual(data, data_expected)
+
+
+class TestGetIndexedAllocations(TestCase):
+
+    @patch('portal.apps.users.utils.IndexedAllocation')
+    def test_checks_allocations(self, mock_idx):
+        get_allocations('testuser')
+        mock_idx.from_username.assert_called_with('testuser')
+
+    @patch('portal.apps.users.utils.IndexedAllocation')
+    @patch('portal.apps.users.utils.get_tas_allocations')
+    def test_allocation_fallback(self, mock_get_alloc, mock_idx):
+        mock_idx.from_username.side_effect = NotFoundError
+        get_allocations('testuser')
+        mock_get_alloc.assert_called_with('testuser')
+        mock_idx().save.assert_called_with()
