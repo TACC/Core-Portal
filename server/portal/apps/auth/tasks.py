@@ -56,8 +56,9 @@ def get_user_storage_systems(username, systems):
 
     # return systems on this portal that user has allocations for
     for sys_name in systems:
-        if "requires_allocation" in systems[sys_name]:
-            if systems[sys_name]['requires_allocation'] in user_resources:
+        system = systems[sys_name]
+        if "requires_allocation" in system and system["requires_allocation"]:
+            if system['requires_allocation'] in user_resources:
                 systems_to_configure.append(sys_name)
         else:
             systems_to_configure.append(sys_name)
