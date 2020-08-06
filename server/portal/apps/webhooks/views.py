@@ -285,21 +285,22 @@ class InteractiveWebhookView(BaseApiView):
         n = Notification.objects.create(**event_data)
         n.save()
 
+        # NOTE: The below metadata creation is disabled for now, as it is unused by our current frontend
         # create metadata for interactive connection and save to agave metadata
-        try:
-            agave_job_meta = {
-                'name': 'interactiveJobDetails',
-                'value': {
-                    Notification.ACTION_LINK: event_data[Notification.ACTION_LINK]
-                },
-                'associationIds': [job_uuid],
-            }
-            user = get_user_model().objects.get(username=job_owner)
-            agave = user.agave_oauth.client
-            agave.meta.addMetadata(body=json.dumps(agave_job_meta))
+        # try:
+        #     agave_job_meta = {
+        #         'name': 'interactiveJobDetails',
+        #         'value': {
+        #             Notification.ACTION_LINK: event_data[Notification.ACTION_LINK]
+        #         },
+        #         'associationIds': [job_uuid],
+        #     }
+        #     user = get_user_model().objects.get(username=job_owner)
+        #     agave = user.agave_oauth.client
+        #     agave.meta.addMetadata(body=json.dumps(agave_job_meta))
 
-        except (HTTPError, AgaveException) as e:
-            logger.exception(e)
-            return HttpResponse("ERROR", status=400)
+        # except (HTTPError, AgaveException) as e:
+        #     logger.exception(e)
+        #     return HttpResponse("ERROR", status=400)
 
         return HttpResponse('OK')
