@@ -92,12 +92,17 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
 
   return (
     <>
-      <div styleName="left-panel panel-content">
-        <div styleName="label">Output</div>
-        <DataFilesLink path={outputPath} disabled={outputPath === null}>
-          View in Data Files
-        </DataFilesLink>
-      </div>
+      <DescriptionList
+        styleName="left-panel panel-content"
+        density="compact"
+        data={{
+          Output: (
+            <DataFilesLink path={outputPath} disabled={outputPath === null}>
+              View in Data Files
+            </DataFilesLink>
+          )
+        }}
+      />
       <DescriptionList styleName="right-panel panel-content" data={data} />
     </>
   );

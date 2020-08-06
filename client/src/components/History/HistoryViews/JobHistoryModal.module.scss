@@ -40,9 +40,9 @@
 .panel-content {
   padding: 20px;
 }
-
-.label {
-  font-weight: 800;
+/* The `dl` comes from the `DescriptionList` component */
+dl.panel-content {
+  margin-bottom: 0; /* overwrite Bootstrap's `_reboot.scss` */
 }
 
 /* Messaging */
