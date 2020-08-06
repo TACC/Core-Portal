@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch';
-import queryString from 'query-string';
+import { stringify } from 'query-string';
 import Cookies from 'js-cookie';
 import {
   takeLatest,
@@ -80,10 +80,12 @@ export async function fetchFilesUtil(
   system,
   path,
   offset = 0,
-  limit = 100
+  limit = 100,
+  queryString = ''
 ) {
-  const q = queryString.stringify({ limit, offset });
-  const url = `/api/datafiles/${api}/listing/${scheme}/${system}/${path}?${q}`;
+  const operation = queryString ? 'search' : 'listing';
+  const q = stringify({ limit, offset, query_string: queryString });
+  const url = `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`;
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -116,7 +118,8 @@ export function* fetchFiles(action) {
       action.payload.system,
       action.payload.path || '',
       action.payload.offset,
-      action.payload.limit
+      action.payload.limit,
+      action.payload.queryString
     );
     yield put({
       type: 'FETCH_FILES_SUCCESS',
@@ -156,7 +159,8 @@ export function* scrollFiles(action) {
     action.payload.system,
     action.payload.path || '',
     action.payload.offset,
-    action.payload.limit
+    action.payload.limit,
+    action.payload.queryString
   );
   yield put({
     type: 'SCROLL_FILES_SUCCESS',

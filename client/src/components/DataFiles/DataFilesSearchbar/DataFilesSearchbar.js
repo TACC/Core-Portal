@@ -19,15 +19,15 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
 
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
-  const emptySearch = () => {};
 
   const onSubmit = e => {
     routeSearch();
     e.preventDefault();
   };
   const onClear = e => {
-    emptySearch();
     e.preventDefault();
+    setQuery('');
+    history.push(`/workbench/data/${api}/${scheme}/${system}/`);
   };
   const onChange = e => setQuery(e.target.value);
 
