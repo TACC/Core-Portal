@@ -6,7 +6,7 @@ import {
   all,
   select
 } from 'redux-saga/effects';
-import { chain, flatten, isEmpty, find } from 'lodash';
+import { chain, flatten, isEmpty } from 'lodash';
 import { fetchUtil } from 'utils/fetchUtil';
 import 'cross-fetch';
 
@@ -78,15 +78,16 @@ function* getUsernames(action) {
       ...state.allocations.active,
       ...state.allocations.inactive
     ]);
+    const payload = teamPayloadUtil(
+      action.payload.projectId,
+      json,
+      false,
+      flatten(usage),
+      allocations
+    );
     yield put({
       type: 'ADD_USERNAMES_TO_TEAM',
-      payload: teamPayloadUtil(
-        action.payload.projectId,
-        json,
-        false,
-        flatten(usage),
-        allocations
-      )
+      payload
     });
   } catch (error) {
     yield put({
@@ -144,6 +145,7 @@ const teamPayloadUtil = (
     };
   }
 
+  // Add usage entries for a project
   const data = {
     [id]: obj
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
@@ -158,11 +160,11 @@ const teamPayloadUtil = (
         const userData = {
           ...user,
           usageData: currentProject.systems.map(system => {
+            // Create empty entry for each resource
             return {
               type: system.type,
               usage: `0 ${system.type === 'HPC' ? 'SU' : 'GB'}`,
               resource: system.host,
-              allocationId: system.allocation.id,
               percentUsed: 0
             };
           })
@@ -171,21 +173,30 @@ const teamPayloadUtil = (
         return {
           ...userData,
           usageData: userData.usageData.map(entry => {
-            const current = find(individualUsage, { resource: entry.resource });
-            if (current) {
+            const current = individualUsage.filter(
+              d => d.resource === entry.resource
+            );
+            if (!isEmpty(current)) {
+              // Add usage data to empty entries
               const totalAllocated = chain(allocations)
                 .map('systems')
                 .flatten()
-                .filter({ host: current.resource })
+                .filter({ host: entry.resource })
                 .map('allocation')
-                .filter({ id: current.allocationId })
-                .head()
-                .value().computeAllocated;
+                .filter({ projectId: id })
+                .reduce(
+                  (sum, { computeAllocated }) => sum + computeAllocated,
+                  0
+                )
+                .value();
+              const totalUsed = current.reduce(
+                (sum, { usage }) => sum + usage,
+                0
+              );
               return {
-                usage: `${current.usage} ${entry.type === 'HPC' ? 'SU' : 'GB'}`,
-                resource: current.resource,
-                allocationId: current.allocationId,
-                percentUsed: current.usage / totalAllocated
+                usage: `${totalUsed} ${entry.type === 'HPC' ? 'SU' : 'GB'}`,
+                resource: entry.resource,
+                percentUsed: totalUsed / totalAllocated
               };
             }
             return entry;
