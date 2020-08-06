@@ -52,8 +52,6 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   const outputPath = `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
-  const failureStates = ['FAILED', 'BLOCKED'];
-  const isFailed = failureStates.includes(jobDetails.status);
   const statusDataObj = {
     Submitted: created,
     [`${getStatusText(jobDetails.status)}`]: lastUpdated
@@ -68,7 +66,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     'Output Location': outputPath
   };
 
-  if (isFailed) {
+  if (jobDetails.status === 'FAILED') {
     statusDataObj['Failure Report'] = (
       <Expand
         detail="Last Status Message"
