@@ -27,7 +27,11 @@ const DataFilesSystemSelector = ({ systemId, section }) => {
 
   return (
     <>
-      <DropdownSelector onChange={openSystem} defaultValue={initialSystem} styleName="system-select">
+      <DropdownSelector
+        onChange={openSystem}
+        defaultValue={initialSystem}
+        styleName="system-select"
+      >
         {systemList.map(system => (
           <option key={uuidv4()} value={system.system}>
             {system.name}
