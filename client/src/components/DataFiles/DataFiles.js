@@ -14,7 +14,7 @@ const PrivateDataRedirect = () => {
   const systems = useSelector(state => state.systems.systemList, shallowEqual);
   const history = useHistory();
   useEffect(() => {
-    if (systems.length == 0) return;
+    if (systems.length === 0) return;
     history.push(`/workbench/data/tapis/private/${systems[0].system}/`);
   }, [systems]);
   return <></>;
