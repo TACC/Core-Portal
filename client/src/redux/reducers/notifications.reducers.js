@@ -28,8 +28,7 @@ export default function notifications(state = initialState, action) {
           notifs: updatedNotifs,
           unread: getNumberOfUnreadNotifications(updatedNotifs),
           unreadJobs: getNumberOfUnreadJobNotifications(updatedNotifs),
-          total: updatedNotifs.length,
-          toasts: [action.payload, ...state.list.toasts]
+          total: updatedNotifs.length
         }
       };
     }
@@ -58,6 +57,14 @@ export default function notifications(state = initialState, action) {
         loadingError: true,
         loadingErrorMessage: action.payload,
         loading: false
+      };
+    case 'ADD_TOAST':
+      return {
+        ...state,
+        list: {
+          ...state.list,
+          toasts: [action.payload, ...state.list.toasts]
+        }
       };
     case 'DISCARD_TOAST':
       return {

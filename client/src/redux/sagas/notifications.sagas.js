@@ -26,6 +26,7 @@ export function* handleSocket(action) {
   switch (eventType) {
     case 'interactive_session_ready':
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
+      yield put({ type: 'ADD_TOAST', payload: action });
       break;
     case 'job': {
       // parse current jobs list for job event
@@ -41,6 +42,7 @@ export function* handleSocket(action) {
         yield put({ type: 'GET_JOBS', params: { offset: 0, limit: 20 } });
       }
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
+      yield put({ type: 'ADD_TOAST', payload: action });
       break;
     }
     case 'setup_event':
@@ -54,8 +56,7 @@ export function* fetchNotifications() {
   yield put({ type: 'NOTIFICATIONS_LIST_FETCH_START' });
   try {
     const res = yield call(fetchUtil, {
-      url: '/api/notifications/',
-      params: { read: 'False' }
+      url: '/api/notifications/'
     });
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_SUCCESS',
