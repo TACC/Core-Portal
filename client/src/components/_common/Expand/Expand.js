@@ -5,7 +5,7 @@ import Icon from '../Icon';
 import './Expand.global.scss';
 import './Expand.module.scss';
 
-const Expand = ({ detail, message }) => {
+const Expand = ({ className, detail, message }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleCallback = useCallback(() => {
     setIsOpen(!isOpen);
@@ -14,7 +14,7 @@ const Expand = ({ detail, message }) => {
   // TODO: Use `details/summary` tags, when `onToggle` support is "last 2 versions"
   // SEE: https://github.com/facebook/react/issues/15486#issuecomment-669674869
   return (
-    <Card styleName="container" tag="div">
+    <Card styleName="container" className={className} tag="div">
       <CardHeader styleName="summary" onClick={toggleCallback} tag="div">
         <strong styleName="header">{detail}</strong>
         <Icon name={isOpen ? 'collapse' : 'expand'} />
@@ -27,8 +27,14 @@ const Expand = ({ detail, message }) => {
 };
 
 Expand.propTypes = {
+  /** Additional className for the root element */
+  className: PropTypes.string,
+
   detail: PropTypes.string.isRequired,
   message: PropTypes.string.isRequired
+};
+Expand.defaultProps = {
+  className: ''
 };
 
 export default Expand;
