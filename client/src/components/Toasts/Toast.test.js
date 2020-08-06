@@ -11,6 +11,8 @@ const mockStore = configureStore();
 const exampleToasts = [
   {
     pk: '1',
+    event_type: 'job',
+    message: 'This is a test message',
     extra: {
       name: 'RStudio-Stampede2-1.1.423u4_2020-08-04T22:55:35-dcvserver',
       status: 'RUNNING',
@@ -18,6 +20,8 @@ const exampleToasts = [
   },
   {
     pk: '2',
+    event_type: 'job',
+    message: 'This is another test message',
     extra: {
       name: 'RStudio-Stampede2-1.1.423u4_2020-08-04T22:55:35-dcvserver',
       status: 'FINISHED',
