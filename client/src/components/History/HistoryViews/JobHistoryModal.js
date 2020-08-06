@@ -49,7 +49,7 @@ const reduceInputParameters = data =>
     return acc;
   }, {});
 
-function JobHistoryContent({ jobDetails, jobDisplay }) {
+function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   const outputPath = getOutputPathFromHref(jobDetails._links.archiveData.href);
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
@@ -63,6 +63,11 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
     ...reduceInputParameters(jobDisplay.inputs),
     ...reduceInputParameters(jobDisplay.parameters)
   };
+  const configDataObj = {};
+  const outputDataObj = {
+    'Job Name': jobName,
+    'Output Location': outputPath
+  };
 
   if (isFailed) {
     statusDataObj['Failure Report'] = (
@@ -73,25 +78,28 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
     );
   }
 
-  const data = {
-    Status: <DescriptionList data={statusDataObj} />,
-    Inputs: <DescriptionList data={inputAndParamsDataObj} />
-  };
+  if ('queue' in jobDisplay) {
+    configDataObj.Queue = jobDisplay.queue;
+  }
 
-  data['Max Hours'] = jobDetails.maxHours;
+  configDataObj['Max Hours'] = jobDetails.maxHours;
 
   if ('processorsPerNode' in jobDisplay) {
-    data['Processors On Each Node'] = jobDisplay.processorsPerNode;
+    configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
   }
   if ('nodeCount' in jobDisplay) {
-    data['Node Count'] = jobDisplay.nodeCount;
-  }
-  if ('queue' in jobDisplay) {
-    data.Queue = jobDisplay.queue;
+    configDataObj['Node Count'] = jobDisplay.nodeCount;
   }
   if ('allocation' in jobDisplay) {
-    data.Allocation = jobDisplay.allocation;
+    configDataObj.Allocation = jobDisplay.allocation;
   }
+
+  const data = {
+    Status: <DescriptionList data={statusDataObj} />,
+    Inputs: <DescriptionList data={inputAndParamsDataObj} />,
+    Configuration: <DescriptionList data={configDataObj} />,
+    Output: <DescriptionList data={outputDataObj} />
+  };
 
   return (
     <>
@@ -112,10 +120,14 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
 }
 
 JobHistoryContent.propTypes = {
+  jobName: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   jobDetails: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   jobDisplay: PropTypes.object.isRequired
+};
+JobHistoryContent.defaultProps = {
+  jobName: ''
 };
 
 function JobHistoryModal({ jobId }) {
@@ -170,7 +182,11 @@ function JobHistoryModal({ jobId }) {
             </Message>
           )}
           {!loading && !loadingError && (
-            <JobHistoryContent jobDetails={job} jobDisplay={display} />
+            <JobHistoryContent
+              jobName={jobName}
+              jobDetails={job}
+              jobDisplay={display}
+            />
           )}
         </div>
       </ModalBody>
