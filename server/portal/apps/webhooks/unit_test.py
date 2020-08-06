@@ -125,7 +125,7 @@ class TestInteractiveWebhookView(TestCase):
                                     content_type='application/x-www-form-urlencoded')
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(self.mock_agave_client.meta.addMetadata.called)
+        self.assertFalse(self.mock_agave_client.meta.addMetadata.called)
         self.assertEqual(Notification.objects.count(), 1)
 
         n = Notification.objects.last()
@@ -144,7 +144,7 @@ class TestInteractiveWebhookView(TestCase):
                                     content_type='application/x-www-form-urlencoded')
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(self.mock_agave_client.meta.addMetadata.called)
+        self.assertFalse(self.mock_agave_client.meta.addMetadata.called)
         self.assertEqual(Notification.objects.count(), 1)
 
         n = Notification.objects.last()
