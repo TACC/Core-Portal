@@ -37,7 +37,7 @@ const DataFilesSearchbar = ({ api, scheme, system }) => {
       styleName="container"
       onSubmit={onSubmit}
     >
-      <fieldset className="input-group" styleName="query-fieldset">
+      <div className="input-group" styleName="query-fieldset">
         <div className="input-group-prepend">
           <Button type="submit" styleName="submit-button">
             <Icon name="search" styleName="button__icon" />
@@ -55,7 +55,7 @@ const DataFilesSearchbar = ({ api, scheme, system }) => {
           placeholder={`Search within ${sectionName}`}
           data-testid="input"
         />
-      </fieldset>
+      </div>
       <Button
         type="reset"
         color="link"
