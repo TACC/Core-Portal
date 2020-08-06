@@ -4,14 +4,14 @@ import { CardHeader, CardBody, Card, Collapse } from 'reactstrap';
 import './Expand.global.scss';
 import './Expand.module.scss';
 
-const Expand = ({ detail, message }) => {
+const Expand = ({ className, detail, message }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleCallback = useCallback(() => {
     setIsOpen(!isOpen);
   }, [isOpen, setIsOpen]);
 
   return (
-    <Card className="mt-1">
+    <Card className={`mt-1 ${className}`}>
       <CardHeader onClick={toggleCallback}>
         <span styleName="header" className="d-inline-block text-truncate">
           <strong>{detail}</strong>
@@ -29,8 +29,14 @@ const Expand = ({ detail, message }) => {
 };
 
 Expand.propTypes = {
+  /** Additional className for the root element */
+  className: PropTypes.string,
+
   detail: PropTypes.string.isRequired,
   message: PropTypes.string.isRequired
+};
+Expand.defaultProps = {
+  className: ''
 };
 
 export default Expand;
