@@ -18,7 +18,7 @@
 .key::after {
   content: ':';
   display: inline;
-  margin-right: 0.25em;
+  padding-right: 0.25em;
 }
 .is-horz > .value {
   white-space: nowrap;
@@ -35,18 +35,20 @@
   display: inline-block;
 }
 .is-horz.is-narrow > .key ~ .key::before {
-  margin-left: 0.5em;
-  margin-right: 0.5em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 .is-horz.is-wide > .key ~ .key::before {
-  margin-left: 1em;
-  margin-right: 1em;
-}
-
-.is-vert.is-narrow > .value {
-  @include truncate-with-ellipsis;
+  padding-left: 1em;
+  padding-right: 1em;
 }
 
 /* Overwrite Bootstrap `_reboot.scss` */
-.is-vert.is-narrow > .value { margin-left: 0; }
-.is-vert.is-wide > .value   { margin-left: 2.5rem; } /* 40px Firefox default */
+.is-vert > .value { margin-left: 0; }
+.is-vert.is-narrow > .value { padding-left: 0; }
+.is-vert.is-wide > .value   { padding-left: 2.5rem; } /* 40px Firefox default margin */
+
+/* Truncate specific edge case */
+.is-vert.is-narrow > .value {
+  @include truncate-with-ellipsis;
+}

@@ -18,8 +18,8 @@ import './JobHistoryModal.css';
 
 const placeHolder = '...';
 
-function DataFilesLink({ path, displayText, disabled }) {
-  const text = displayText || path;
+function DataFilesLink({ path, children, disabled }) {
+  const text = children || path;
   return (
     <NavLink
       tag={RRNavLink}
@@ -34,12 +34,12 @@ function DataFilesLink({ path, displayText, disabled }) {
 
 DataFilesLink.propTypes = {
   path: PropTypes.string.isRequired,
-  displayText: PropTypes.string,
+  children: PropTypes.string,
   disabled: PropTypes.bool
 };
 
 DataFilesLink.defaultProps = {
-  displayText: null,
+  children: null,
   disabled: false
 };
 
@@ -49,7 +49,7 @@ const reduceInputParameters = data =>
     return acc;
   }, {});
 
-function JobHistoryContent({ jobDetails, jobDisplay }) {
+function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   const outputPath = getOutputPathFromHref(jobDetails._links.archiveData.href);
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
@@ -63,59 +63,71 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
     ...reduceInputParameters(jobDisplay.inputs),
     ...reduceInputParameters(jobDisplay.parameters)
   };
-
-  const data = {
-    Status: <DescriptionList data={statusDataObj} />,
-    Inputs: <DescriptionList data={inputAndParamsDataObj} />
+  const configDataObj = {};
+  const outputDataObj = {
+    'Job Name': jobName,
+    'Output Location': outputPath
   };
 
   if (isFailed) {
-    data.FailureReport = (
-      <Expand detail="Failure Report" message={jobDetails.lastStatusMessage} />
+    statusDataObj['Failure Report'] = (
+      <Expand
+        detail="Last Status Message"
+        message={<pre>${jobDetails.lastStatusMessage}</pre>}
+      />
     );
   }
 
-  data['Max Hours'] = jobDetails.maxHours;
+  if ('queue' in jobDisplay) {
+    configDataObj.Queue = jobDisplay.queue;
+  }
+
+  configDataObj['Max Hours'] = jobDetails.maxHours;
 
   if ('processorsPerNode' in jobDisplay) {
-    data['Processors On Each Node'] = jobDisplay.processorsPerNode;
+    configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
   }
   if ('nodeCount' in jobDisplay) {
-    data['Node Count'] = jobDisplay.nodeCount;
-  }
-  if ('queue' in jobDisplay) {
-    data.Queue = jobDisplay.queue;
+    configDataObj['Node Count'] = jobDisplay.nodeCount;
   }
   if ('allocation' in jobDisplay) {
-    data.Allocation = jobDisplay.allocation;
+    configDataObj.Allocation = jobDisplay.allocation;
   }
+
+  const data = {
+    Status: <DescriptionList data={statusDataObj} />,
+    Inputs: <DescriptionList data={inputAndParamsDataObj} />,
+    Configuration: <DescriptionList data={configDataObj} />,
+    Output: <DescriptionList data={outputDataObj} />
+  };
 
   return (
     <>
-      <div styleName="left-panel panel-content">
-        <div styleName="label">Output</div>
-        <DataFilesLink
-          path={outputPath}
-          displayText="View in Data Files"
-          disabled={outputPath === null}
-        />
-      </div>
-      <div styleName="right-panel panel-content">
-        <dl>
-          <dd>
-            <DescriptionList data={data} />
-          </dd>
-        </dl>
-      </div>
+      <DescriptionList
+        styleName="left-panel panel-content"
+        density="compact"
+        data={{
+          Output: (
+            <DataFilesLink path={outputPath} disabled={outputPath === null}>
+              View in Data Files
+            </DataFilesLink>
+          )
+        }}
+      />
+      <DescriptionList styleName="right-panel panel-content" data={data} />
     </>
   );
 }
 
 JobHistoryContent.propTypes = {
+  jobName: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   jobDetails: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   jobDisplay: PropTypes.object.isRequired
+};
+JobHistoryContent.defaultProps = {
+  jobName: ''
 };
 
 function JobHistoryModal({ jobId }) {
@@ -170,7 +182,11 @@ function JobHistoryModal({ jobId }) {
             </Message>
           )}
           {!loading && !loadingError && (
-            <JobHistoryContent jobDetails={job} jobDisplay={display} />
+            <JobHistoryContent
+              jobName={jobName}
+              jobDetails={job}
+              jobDisplay={display}
+            />
           )}
         </div>
       </ModalBody>

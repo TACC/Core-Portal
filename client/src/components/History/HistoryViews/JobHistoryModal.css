@@ -3,3 +3,9 @@
 .job-history-modal .modal-body {
     padding: 0;
 }
+
+/* Overrides Bootstrap `.nav-link:hover`, because the `<NavLink>`
+   component is only mostly for routing (not styling) */
+.job-history-modal .nav-link:hover {
+    text-decoration: underline;
+}
