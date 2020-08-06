@@ -18,8 +18,8 @@ import './JobHistoryModal.css';
 
 const placeHolder = '...';
 
-function DataFilesLink({ path, displayText, disabled }) {
-  const text = displayText || path;
+function DataFilesLink({ path, children, disabled }) {
+  const text = children || path;
   return (
     <NavLink
       tag={RRNavLink}
@@ -34,12 +34,12 @@ function DataFilesLink({ path, displayText, disabled }) {
 
 DataFilesLink.propTypes = {
   path: PropTypes.string.isRequired,
-  displayText: PropTypes.string,
+  children: PropTypes.string,
   disabled: PropTypes.bool
 };
 
 DataFilesLink.defaultProps = {
-  displayText: null,
+  children: null,
   disabled: false
 };
 
@@ -73,7 +73,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     statusDataObj['Failure Report'] = (
       <Expand
         detail="Last Status Message"
-        message={jobDetails.lastStatusMessage}
+        message={<pre>${jobDetails.lastStatusMessage}</pre>}
       />
     );
   }
@@ -103,21 +103,18 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
 
   return (
     <>
-      <div styleName="left-panel panel-content">
-        <div styleName="label">Output</div>
-        <DataFilesLink
-          path={outputPath}
-          displayText="View in Data Files"
-          disabled={outputPath === null}
-        />
-      </div>
-      <div styleName="right-panel panel-content">
-        <dl>
-          <dd>
-            <DescriptionList data={data} />
-          </dd>
-        </dl>
-      </div>
+      <DescriptionList
+        styleName="left-panel panel-content"
+        density="compact"
+        data={{
+          Output: (
+            <DataFilesLink path={outputPath} disabled={outputPath === null}>
+              View in Data Files
+            </DataFilesLink>
+          )
+        }}
+      />
+      <DescriptionList styleName="right-panel panel-content" data={data} />
     </>
   );
 }
