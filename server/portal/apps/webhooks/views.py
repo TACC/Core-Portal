@@ -289,7 +289,9 @@ class InteractiveWebhookView(BaseApiView):
         try:
             agave_job_meta = {
                 'name': 'interactiveJobDetails',
-                'value': event_data,
+                'value': {
+                    Notification.ACTION_LINK: event_data[Notification.ACTION_LINK]
+                },
                 'associationIds': [job_uuid],
             }
             user = get_user_model().objects.get(username=job_owner)
