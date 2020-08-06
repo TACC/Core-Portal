@@ -78,7 +78,7 @@ function JobsStatus({ status, fancy, jobId }) {
     const interactiveNotifs = notifs.filter(
       n =>
         n.event_type === 'interactive_session_ready' &&
-        n.extra.status === 'RUNNING'
+        n.extra.status !== 'FAILED' // need to account for the possibility of session ready and job status notifs coming out of order
     );
     const notif = interactiveNotifs.find(n => n.extra.id === jobId);
     interactiveSessionLink = notif ? notif.action_link : null;
