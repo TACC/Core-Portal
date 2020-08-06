@@ -96,6 +96,19 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       )
     },
     {
+      Header: 'Job Status',
+      headerStyle: { textAlign: 'left' },
+      accessor: 'status',
+      Cell: el => (
+        <JobsStatus
+          status={el.value}
+          fancy={showFancyStatus}
+          jobId={el.row.original.id}
+        />
+      ),
+      id: 'jobStatusCol'
+    },
+    {
       Header: 'Job Details',
       accessor: 'id',
       show: showDetails,
@@ -139,15 +152,6 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         </span>
       ),
       id: 'jobDateCol'
-    },
-    {
-      Header: 'Job Status',
-      headerStyle: { textAlign: 'left' },
-      accessor: 'status',
-      Cell: el => {
-        return <JobsStatus status={el.value} fancy={showFancyStatus} />;
-      },
-      id: 'jobStatusCol'
     }
   ];
 
