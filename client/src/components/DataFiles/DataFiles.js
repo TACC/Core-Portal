@@ -1,6 +1,13 @@
 import React, { useEffect } from 'react';
-import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
+import {
+  Switch,
+  Route,
+  useRouteMatch,
+  useHistory,
+  useLocation
+} from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { parse } from 'query-string';
 
 import './DataFiles.module.css';
 
@@ -23,6 +30,7 @@ const PrivateDataRedirect = () => {
 const DataFilesSwitch = React.memo(() => {
   const dispatch = useDispatch();
   const { path } = useRouteMatch();
+  const queryString = parse(useLocation().search).query_string;
   return (
     <Switch>
       <Route
@@ -32,6 +40,7 @@ const DataFilesSwitch = React.memo(() => {
             type: 'FETCH_FILES',
             payload: {
               ...params,
+              queryString,
               section: 'FilesListing'
             }
           });

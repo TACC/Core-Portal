@@ -2,6 +2,8 @@ import React, { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
+import { useLocation } from 'react-router-dom';
+import { parse } from 'query-string';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
@@ -247,12 +249,14 @@ const DataFilesModalListingTable = ({
     [data]
   );
 
+  const queryString = parse(useLocation().search).query_string;
   const rowSelectCallback = () => {};
   const scrollBottomCallback = useCallback(() => {
     dispatch({
       type: 'SCROLL_FILES',
       payload: {
         ...params,
+        queryString,
         section: 'modal',
         offset: data.length
       }
