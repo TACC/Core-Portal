@@ -1,24 +1,28 @@
 export default function systemAccessor(arr, header) {
   switch (header) {
     case 'Awarded':
-      return arr.map(({ allocation: { computeAllocated, id }, type }) => ({
-        awarded: Math.round(computeAllocated),
+      return arr.map(({ allocation, type }) => ({
+        awarded:
+          type === 'HPC'
+            ? Math.round(allocation.computeAllocated)
+            : Math.round(allocation.storageAllocated),
         type,
-        id
+        id: allocation.id
       }));
     case 'Remaining':
-      return arr.map(
-        ({ allocation: { id, computeAllocated, computeUsed }, type }) => {
-          const remaining = Math.round(computeAllocated - computeUsed);
-          const ratio = remaining / computeAllocated || 0;
-          return {
-            id,
-            remaining,
-            ratio,
-            type
-          };
-        }
-      );
+      return arr.map(({ allocation, type }) => {
+        const remaining =
+          type === 'HPC'
+            ? Math.round(allocation.computeAllocated - allocation.computeUsed)
+            : Math.round(allocation.storageAllocated);
+        const ratio = remaining / allocation.computeAllocated || 0;
+        return {
+          id: allocation.id,
+          remaining,
+          ratio,
+          type
+        };
+      });
     case 'Expires':
       return arr.map(({ allocation: { end, id } }) => ({
         id,
