@@ -1,6 +1,6 @@
 from mock import patch, MagicMock
 from django.test import TestCase
-from portal.libs.elasticsearch.docs.base import IndexedFile
+from portal.libs.elasticsearch.docs.base import IndexedFile, IndexedAllocation
 
 
 class TestIndexedFile(TestCase):
@@ -60,3 +60,11 @@ class TestIndexedFile(TestCase):
         parent.delete_recursive()
 
         self.assertEqual(mock_delete.call_count, 2)
+
+
+class TestIndexedAllocation(TestCase):
+
+    @patch('portal.libs.elasticsearch.docs.base.IndexedAllocation.get')
+    def test_from_username(self, mock_get):
+        IndexedAllocation.from_username('testuser')
+        mock_get.assert_called_once_with('ae5deb822e0d71992900471a7199d0d95b8e7c9d05c40a8245a281fd2c1d6684')
