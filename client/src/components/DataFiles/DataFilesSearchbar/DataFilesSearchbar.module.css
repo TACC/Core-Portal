@@ -24,7 +24,9 @@
 .summary-fieldset {
     /* No styles necessary, but defining class for consistency */
 }
-.filter-fieldset {
+/* NOTE: Whenever filter and/or status message are restored, this selector must select the rightmost element of those */
+.clear-button {
+/* .filter-fieldset { */
     margin-left: auto; /* this is how to "justify-self" on flex children */
 }
 .clear-button {
