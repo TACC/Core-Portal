@@ -15,7 +15,7 @@ const Expand = ({ detail, message }) => {
   // SEE: https://github.com/facebook/react/issues/15486#issuecomment-669674869
   return (
     <Card styleName="container" tag="div">
-      <CardHeader onClick={toggleCallback} tag="div">
+      <CardHeader styleName="summary" onClick={toggleCallback} tag="div">
         <strong styleName="header">{detail}</strong>
         <Icon name={isOpen ? 'collapse' : 'expand'} />
       </CardHeader>
