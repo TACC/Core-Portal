@@ -63,32 +63,38 @@ function JobHistoryContent({ jobDetails, jobDisplay }) {
     ...reduceInputParameters(jobDisplay.inputs),
     ...reduceInputParameters(jobDisplay.parameters)
   };
-
-  const data = {
-    Status: <DescriptionList data={statusDataObj} />,
-    Inputs: <DescriptionList data={inputAndParamsDataObj} />
-  };
+  const configDataObj = {};
 
   if (isFailed) {
-    data.FailureReport = (
-      <Expand detail="Failure Report" message={jobDetails.lastStatusMessage} />
+    statusDataObj['Failure Report'] = (
+      <Expand
+        detail="Last Status Message"
+        message={jobDetails.lastStatusMessage}
+      />
     );
   }
 
-  data['Max Hours'] = jobDetails.maxHours;
+  if ('queue' in jobDisplay) {
+    configDataObj.Queue = jobDisplay.queue;
+  }
+
+  configDataObj['Max Hours'] = jobDetails.maxHours;
 
   if ('processorsPerNode' in jobDisplay) {
-    data['Processors On Each Node'] = jobDisplay.processorsPerNode;
+    configDataObj['Processors On Each Node'] = jobDisplay.processorsPerNode;
   }
   if ('nodeCount' in jobDisplay) {
-    data['Node Count'] = jobDisplay.nodeCount;
-  }
-  if ('queue' in jobDisplay) {
-    data.Queue = jobDisplay.queue;
+    configDataObj['Node Count'] = jobDisplay.nodeCount;
   }
   if ('allocation' in jobDisplay) {
-    data.Allocation = jobDisplay.allocation;
+    configDataObj.Allocation = jobDisplay.allocation;
   }
+
+  const data = {
+    Status: <DescriptionList data={statusDataObj} />,
+    Inputs: <DescriptionList data={inputAndParamsDataObj} />,
+    Configuration: <DescriptionList data={configDataObj} />
+  };
 
   return (
     <>
@@ -170,7 +176,11 @@ function JobHistoryModal({ jobId }) {
             </Message>
           )}
           {!loading && !loadingError && (
-            <JobHistoryContent jobDetails={job} jobDisplay={display} />
+            <JobHistoryContent
+              jobName={jobName}
+              jobDetails={job}
+              jobDisplay={display}
+            />
           )}
         </div>
       </ModalBody>
