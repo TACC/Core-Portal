@@ -11,9 +11,11 @@ const Expand = ({ detail, message }) => {
     setIsOpen(!isOpen);
   }, [isOpen, setIsOpen]);
 
+  // TODO: Use `details/summary` tags, when `onToggle` support is "last 2 versions"
+  // SEE: https://github.com/facebook/react/issues/15486#issuecomment-669674869
   return (
-    <Card styleName="container">
-      <CardHeader onClick={toggleCallback}>
+    <Card styleName="container" tag="div">
+      <CardHeader onClick={toggleCallback} tag="div">
         <strong styleName="header">{detail}</strong>
         <Icon name={isOpen ? 'collapse' : 'expand'} />
       </CardHeader>
