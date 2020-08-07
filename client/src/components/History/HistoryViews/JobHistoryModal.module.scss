@@ -94,10 +94,6 @@ dl.panel-content > dd {
   padding-top: calc(var(--buffer-vert) / 2);
   padding-bottom: var(--buffer-vert);
 }
-/* Remove the colon from top-level labels */
-dl.panel-content > dt::after { display: none; }
-/* Prevent adding extra space to existing `dl.panel-content` padding */
-dl.panel-content > dt:first-of-type { padding-top: 0; }
 
 /* Top-Level: Right Panel */
 dl.right-panel > dt,
@@ -115,3 +111,8 @@ dl.right-panel > dt:nth-of-type(even),
 dl.right-panel > dd:nth-of-type(even) {
   background-color: var(--global-color-primary--x-light);
 }
+
+/* Remove the colon from top-level labels */
+dl.panel-content > dt::after { display: none; }
+/* Prevent adding extra space to existing `dl.panel-content` padding */
+dl.panel-content > dt:first-of-type { padding-top: 0; }
