@@ -287,7 +287,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
             system.enable()
 
         settings_key = system.login.host.split('.')[0]
-        exec_settings = settings.PORTAL_EXEC_SYSTEMS.getattr(settings_key, {})
+        exec_settings = settings.PORTAL_EXEC_SYSTEMS.get(settings_key, {})
 
         system.site = settings.PORTAL_DOMAIN
         system.name = "Execution system for user {}".format(self.user.username)
