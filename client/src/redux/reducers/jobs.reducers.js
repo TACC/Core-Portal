@@ -56,12 +56,9 @@ function jobs(state = initialState, action) {
       };
     case 'UPDATE_JOB_STATUS': {
       const event = action.payload.extra;
-      const list = state.list.map(job => {
-        if (event.id === job.id) {
-          return { ...job, status: event.status };
-        }
-        return job;
-      });
+      const list = state.list.map(job =>
+        job.id === event.id ? { ...job, status: event.status } : job
+      );
       return {
         ...state,
         list
