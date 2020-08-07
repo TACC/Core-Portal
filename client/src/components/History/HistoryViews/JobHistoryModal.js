@@ -153,7 +153,13 @@ function JobHistoryModal({ jobId }) {
   };
 
   return (
-    <Modal isOpen styleName="root" toggle={close} size="lg">
+    <Modal
+      isOpen
+      styleName="root"
+      className="job-history-modal"
+      toggle={close}
+      size="lg"
+    >
       <ModalHeader styleName="header" toggle={close}>
         <div className="d-inline-block text-truncate">{jobName}</div>
         <DescriptionList
