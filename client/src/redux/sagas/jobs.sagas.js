@@ -2,6 +2,7 @@ import { put, takeLatest, takeLeading, call, all } from 'redux-saga/effects';
 import 'cross-fetch';
 import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
+import { fetchAppDefinitionUtil } from './apps.sagas';
 
 export function* getJobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
@@ -77,14 +78,6 @@ export async function fetchJobDetailsUtil(jobId) {
   return result.response;
 }
 
-export async function fetchAppDetailsUtil(appId) {
-  const result = await fetchUtil({
-    url: '/api/workspace/apps',
-    params: { app_id: appId }
-  });
-  return result.response;
-}
-
 export async function fetchSystemUtil(system) {
   const result = await fetchUtil({
     url: `/api/accounts/systems/${system}/`
@@ -105,7 +98,7 @@ export function* getJobDetails(action) {
 
     try {
       [app, executionSystem] = yield all([
-        call(fetchAppDetailsUtil, job.appId),
+        call(fetchAppDefinitionUtil, job.appId),
         call(fetchSystemUtil, job.systemId)
       ]);
     } catch (ignore) {
