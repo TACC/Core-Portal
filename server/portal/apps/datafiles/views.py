@@ -15,22 +15,24 @@ class SystemListingView(BaseApiView):
     """System Listing View"""
 
     def get(self, request):
+        portal_systems = settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+
         user_systems = get_user_storage_systems(request.user.username, local_systems)
 
         # compare available storage systems to the systems a user can access
         response = {'systemList': []}
-        for locsys, details in local_systems.items():
-            if locsys in user_systems:
-                response['systemList'].append(
-                    {
-                        'name': details['name'],
-                        'system': details['prefix'].format(request.user.username),
-                        'scheme': 'private',
-                        'api': 'tapis',
-                        'icon': details['icon']
-                    }
-                )
+        for _, details in user_systems.items():
+            response['systemList'].append(
+                {
+                    'name': details['name'],
+                    'system': details['prefix'].format(request.user.username),
+                    'scheme': 'private',
+                    'api': 'tapis',
+                    'icon': details['icon']
+                }
+            )
+        response['systemList'] += portal_systems
 
         return JsonResponse(response)
 

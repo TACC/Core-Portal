@@ -247,14 +247,14 @@ class JobsView(BaseApiView):
                 if parsed.netloc:
                     job_post['archiveSystem'] = parsed.netloc
                 else:
-                    default_sys = settings.PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM
+                    default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
                     default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
                     job_post['archiveSystem'] = default_system_prefix.format(request.user.username)
             else:
                 job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         timezone.now().strftime('%Y-%m-%d'))
-                default_sys = settings.PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM
+                default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
                 default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
                 job_post['archiveSystem'] = default_system_prefix.format(request.user.username)
 
@@ -264,6 +264,8 @@ class JobsView(BaseApiView):
                 _, license_models = get_license_info()
                 license_model = [x for x in license_models if x.license_type == lic_type][0]
                 lic = license_model.objects.filter(user=request.user).first()
+                if not lic:
+                    raise ApiException("You are missing the required license for this application.")
                 job_post['parameters']['_license'] = lic.license_as_str()
 
             # url encode inputs

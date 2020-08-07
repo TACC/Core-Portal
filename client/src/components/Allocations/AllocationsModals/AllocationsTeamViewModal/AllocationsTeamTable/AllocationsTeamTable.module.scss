@@ -1,0 +1,20 @@
+.row {
+  height: 35px;
+  cursor: pointer;
+  color: #484848;
+  td {
+    font-weight: 500;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+}
+.row:hover {
+  background-color: #dfdaf5;
+}
+.content {
+  margin-left: 1.5rem;
+}
+.active-user {
+  @extend .row;
+  background-color: #dfdaf5;
+}

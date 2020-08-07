@@ -1,12 +1,12 @@
-import { call, takeEvery, takeLatest, put } from 'redux-saga/effects';
+import { call, takeEvery, takeLatest, put, select } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { fetchUtil } from 'utils/fetchUtil';
 
-const createNotificationsSocket = () =>
+export const createNotificationsSocket = () =>
   new ReconnectingWebSocket(`wss://${window.location.host}/ws/notifications/`);
 
-function socketEmitter(socket) {
+export function socketEmitter(socket) {
   return eventChannel(emit => {
     socket.addEventListener('message', e => {
       emit(JSON.parse(e.data));
@@ -22,18 +22,29 @@ export function* watchSocket() {
 }
 
 export function* handleSocket(action) {
-  let eventType = action.event_type.toLowerCase();
-  if (eventType === 'vnc' || eventType === 'web') {
-    eventType = 'interactive';
-  }
+  const eventType = action.event_type.toLowerCase();
   switch (eventType) {
-    case 'interactive':
+    case 'interactive_session_ready':
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
+      yield put({ type: 'ADD_TOAST', payload: action });
       break;
-    case 'job':
-      yield put({ type: 'UPDATE_JOB_STATUS', payload: action });
+    case 'job': {
+      // parse current jobs list for job event
+      const jobsList = yield select(state => state.jobs.list);
+      // notification event contains job id and new status
+      const event = action.extra;
+      const jobIds = jobsList.map(job => job.id);
+      if (jobIds.includes(event.id)) {
+        // if event is in current state, update
+        yield put({ type: 'UPDATE_JOB_STATUS', payload: action });
+      } else {
+        // otherwise, refresh job list
+        yield put({ type: 'GET_JOBS', params: { offset: 0, limit: 20 } });
+      }
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
+      yield put({ type: 'ADD_TOAST', payload: action });
       break;
+    }
     case 'setup_event':
       break;
     default:
@@ -94,8 +105,16 @@ export function* deleteNotifications(action) {
   });
 }
 
+export function* discardToast(action) {
+  yield put({
+    type: 'DISCARD_TOAST',
+    payload: action.payload
+  });
+}
+
 export function* watchFetchNotifications() {
   yield takeLatest('FETCH_NOTIFICATIONS', fetchNotifications);
   yield takeEvery('NOTIFICATIONS_DELETE', deleteNotifications);
   yield takeEvery('NOTIFICATIONS_READ', readNotifications);
+  yield takeEvery('NOTIFICATIONS_DISCARD_TOAST', discardToast);
 }
