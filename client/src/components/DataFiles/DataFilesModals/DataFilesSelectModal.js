@@ -7,7 +7,7 @@ import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalLis
 import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemSelector';
 
 const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
-  const systems = useSelector(state => state.systems, shallowEqual);
+  const systems = useSelector(state => state.systems.systemList, shallowEqual);
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
   const dispatch = useDispatch();
   const modalParams = useSelector(
