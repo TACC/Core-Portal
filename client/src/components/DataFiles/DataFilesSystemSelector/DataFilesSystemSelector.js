@@ -9,7 +9,7 @@ const DataFilesSystemSelector = ({ systemId, section }) => {
   const dispatch = useDispatch();
   const systemList = useSelector(state => state.systems.systemList);
   const findSystem = id => systemList.find(system => system.system === id);
-  const [ selectedSystem, setSelectedSystem ] = useState(systemId);
+  const [selectedSystem, setSelectedSystem] = useState(systemId);
 
   const openSystem = useCallback(
     event => {
@@ -26,11 +26,9 @@ const DataFilesSystemSelector = ({ systemId, section }) => {
     [dispatch, section, findSystem, setSelectedSystem]
   );
 
-  useEffect(
-    () => {
-      setSelectedSystem(systemId);
-    }
-  )
+  useEffect(() => {
+    setSelectedSystem(systemId);
+  });
 
   return (
     <>
