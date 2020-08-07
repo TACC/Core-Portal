@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -29,9 +29,6 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       .
     </>
   );
-  useEffect(() => {
-    dispatch({ type: 'GET_JOBS', params: { offset: 0, limit } });
-  }, [dispatch]);
 
   const infiniteScrollCallback = useCallback(offset => {
     // The only way we have some semblance of

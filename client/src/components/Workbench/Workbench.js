@@ -28,7 +28,6 @@ function Workbench() {
     dispatch({ type: 'GET_ALLOCATIONS' });
     dispatch({ type: 'GET_APPS' });
     dispatch({ type: 'GET_APP_START' });
-    dispatch({ type: 'GET_JOBS', params: { offset: 0, limit: 20 } });
     dispatch({ type: 'FETCH_NOTIFICATIONS' });
   }, []);
 
