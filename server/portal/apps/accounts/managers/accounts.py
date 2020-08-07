@@ -92,29 +92,7 @@ def setup(username, system):
     return home_dir, home_sys
 
 
-# This calls reset_system_keys from UserSystemsManager...
-# need to sort out the difference between the "reset_system_keys" here
-# and the "reset_system_keys" from UserSystemsManager.
-def reset_home_system_keys(username, system, force=False):
-    """Reset home system Keys
-
-    Creates a new set of keys, saves the set of keys to the DB
-    and updates the Agave system
-
-    .. note::
-        If this functionality needs to be overridden it must be done
-        in a :class:`~portal.apps.accounts.managers.
-        user_home.UserHomeManager` or :class:`~portal.apps.accounts.
-        managers.abstract.AbstractUserHomeManager` subclass
-        and overwrite the `reset_system_keys` method.
-    """
-    user = check_user(username)
-    mgr = UserSystemsManager(user, system)
-    pub_key = mgr.reset_system_keys(user, force=force)
-    return pub_key
-
-
-# Is this needed?
+# Is this needed? - Yes, need to merge this functionality with that existing in user_systems.
 # we have a "reset_system_keys" function in the systems manager.
 # this is used in portal.apps.api.views.systems.SystemKeysView
 def reset_system_keys(username, system_id):
