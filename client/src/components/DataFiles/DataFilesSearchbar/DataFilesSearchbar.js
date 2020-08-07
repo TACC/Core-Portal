@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import queryString from 'query-string';
 import { Icon } from '_common';
@@ -10,6 +10,7 @@ import './DataFilesSearchbar.module.css';
 const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
   const history = useHistory();
+  const hasQuery = queryString.parse(useLocation().search).query_string;
   const sectionName = 'My Data';
 
   const routeSearch = () => {
@@ -55,18 +56,20 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
           className="form-control"
           placeholder={`Search within ${sectionName}`}
           data-testid="input"
-          autocomplete="off"
+          autoComplete="off"
         />
       </div>
-      <Button
-        type="reset"
-        color="link"
-        styleName="clear-button"
-        onClick={onClear}
-        data-testid="reset"
-      >
-        Back to All Files
-      </Button>
+      {hasQuery && (
+        <Button
+          type="reset"
+          color="link"
+          styleName="clear-button"
+          onClick={onClear}
+          data-testid="reset"
+        >
+          Back to All Files
+        </Button>
+      )}
     </form>
   );
 };

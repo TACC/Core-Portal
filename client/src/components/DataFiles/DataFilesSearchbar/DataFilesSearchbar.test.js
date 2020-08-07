@@ -43,12 +43,17 @@ describe('DataFilesSearchbar', () => {
     expect(history.location.search).toEqual(`?query_string=querystring`);
   });
   it('has expected elements', () => {
-    const { getByRole, getByTestId } = render(
+    const history = createMemoryHistory();
+    history.push('/workbench/data/api/scheme/system/path?query_string=testquery');
+    const store = mockStore({});
+    const { getByRole, getByTestId } = renderComponent(
       <DataFilesSearchbar
         api="test-api"
         scheme="test-scheme"
         system="test-system"
-      />
+      />,
+      store,
+      history
     );
 
     expect(getByRole('form')).toBeDefined();
