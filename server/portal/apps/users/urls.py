@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.urls import path
-from portal.apps.users.views import SearchView, AuthenticatedView, UsageView, AllocationsView, TeamView, UserDataView
+from portal.apps.users.views import SearchView, AuthenticatedView, UsageView, AllocationsView, TeamView, UserDataView, AllocationUsageView
 
 app_name = 'users'
 urlpatterns = [
@@ -9,5 +9,6 @@ urlpatterns = [
     path('usage/<slug:system_id>', UsageView.as_view(), name='user_usage'),
     url(r'^allocations/$', AllocationsView.as_view(), name='user_allocations'),
     path('team/<slug:project_name>', TeamView.as_view(), name='user_team'),
-    path('team/user/<slug:username>', UserDataView.as_view(), name='user_data')
+    path('team/user/<slug:username>', UserDataView.as_view(), name='user_data'),
+    path('team/usage/<slug:allocation_id>', AllocationUsageView.as_view(), name='allocation_usage')
 ]

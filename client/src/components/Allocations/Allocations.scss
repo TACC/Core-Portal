@@ -135,7 +135,7 @@
         }
     }
     .alloc-badge {
-        font-size: 11px;
+        font-size: 14px;
     }
 }
 #pending {
@@ -153,65 +153,11 @@
 .allocations-request-body {
     color: #484848;
 }
-.team-view-modal-wrapper {
-    .table-hover {
-        tbody {
-            /* FP-457: Will fix this *//* stylelint-disable no-descending-specificity */
-            tr {
-                height: 35px;
-                cursor: pointer;
-                color: #484848;
-                td {
-                    font-weight: 500;
-                    font-size: 14px;
-                    vertical-align: middle;
-                }
-            }
-            /* stylelint-enable no-descending-specificity */
-            tr:hover {
-                background-color: #dfdaf5;
-            }
-        }
-    }
-    .modal-body {
-        overflow-y: initial !important;
-    }
-    .modal-left {
-        height: 50vh;
-        max-width: 230px;
-        overflow-y: scroll;
-        padding-left: 0;
-        padding-right: 0;
-        border-right: 1px solid rgba(112, 112, 112, 0.25);
-    }
-    .modal-right {
-        display: flex;
-        padding: 1em;
-        max-width: 500px;
-        overflow: auto;
-        .contact-card {
-            display: flex;
-            flex-direction: column;
-            font: 16px Roboto, sans-serif;
-            height: 100%;
-            overflow: auto;
-            div {
-                padding: 0.25rem;
-                text-overflow: ellipsis;
-                overflow: auto;
-            }
-        }
-    }
-    .user-name {
-        margin-left: 1.5rem;
-    }
-    .active-user {
-        background-color: #dfdaf5;
-    }
-}
-
 /* HACK: The loading icon should not need height set, but it fixes Safari here */
 /* FP-426: Do not use `height: 100%` or isolate usage pending solution to bigger problem */
 #allocations-wrapper .loading-icon {
     height: auto;
+}
+.system-cell {
+    width: 120px;
 }
