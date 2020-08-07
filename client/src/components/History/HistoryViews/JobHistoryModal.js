@@ -52,6 +52,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   const outputPath = `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
+  const hasFailedStatus = jobDetails.status === 'FAILED';
   const statusDataObj = {
     Submitted: created,
     [`${getStatusText(jobDetails.status)}`]: lastUpdated
@@ -66,14 +67,12 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     'Output Location': outputPath
   };
 
-  if (jobDetails.status === 'FAILED') {
-    statusDataObj['Failure Report'] = (
-      <Expand
-        detail="Last Status Message"
-        message={<pre>${jobDetails.lastStatusMessage}</pre>}
-      />
-    );
-  }
+  statusDataObj[hasFailedStatus ? 'Failure Report' : 'Last Status Message'] = (
+    <Expand
+      detail={hasFailedStatus ? 'Last Status Message' : 'System Output'}
+      message={<pre>${jobDetails.lastStatusMessage}</pre>}
+    />
+  );
 
   if ('queue' in jobDisplay) {
     configDataObj.Queue = jobDisplay.queue;
