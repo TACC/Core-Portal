@@ -16,10 +16,9 @@ from portal.utils import encryption as EncryptionUtil
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
-from portal.apps.accounts.models import SSHKeys, Keys
+from portal.apps.accounts.models import SSHKeys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
-from portal.apps.accounts.managers.ssh_keys import KeysManager
 from portal.apps.onboarding.execute import execute_setup_steps
 
 logger = logging.getLogger(__name__)
@@ -44,6 +43,7 @@ def check_user(username):
         )
     return users[0]
 
+
 def _lookup_keys_manager(user, password, token):
     """Lookup Keys Manager
     This function allows to use a custom `KeysManager` class
@@ -60,23 +60,7 @@ def _lookup_keys_manager(user, password, token):
     cls = getattr(module, cls_str)
     return cls(user.username, password, token)
 
-# Flag for removal
-def get_user_home_system_id(user):
-    """Gets user home system id
 
-    Shortcut method to return the user's home system id
-
-    :param user: Django user instance
-    :return: System id
-    :rtype: str
-    """
-    if user.is_authenticated:
-        mgr = UserSystemsManager(user)
-        return mgr.get_system_id()
-    return None
-
-# Called in "setup_user" task. Might be able to iteratively
-# call task for setup on multiple systems.
 def setup(username, system):
     """Fires necessary steps for setup
 
@@ -98,17 +82,15 @@ def setup(username, system):
 
     user = check_user(username)
     mgr = UserSystemsManager(user, system)
-    logger.debug('User Home Manager class: %s', mgr.__class__)
     home_dir = mgr.get_private_directory(user)
     home_sys = mgr.setup_private_system(user)
 
-    # if not user.profile.setup_complete:
-        # Will this ever run if "profile.setup_complete" is set to True before this is ever called?
-        # This can also cause a race condition
-        # logger.info("Executing setup steps for %s", username)
-        # execute_setup_steps(user.username)
+    if not user.profile.setup_complete:
+        logger.info("Executing setup steps for %s", username)
+        execute_setup_steps(user.username)
 
     return home_dir, home_sys
+
 
 # This calls reset_system_keys from UserSystemsManager...
 # need to sort out the difference between the "reset_system_keys" here
@@ -130,6 +112,7 @@ def reset_home_system_keys(username, system, force=False):
     mgr = UserSystemsManager(user, system)
     pub_key = mgr.reset_system_keys(user, force=force)
     return pub_key
+
 
 # Is this needed?
 # we have a "reset_system_keys" function in the systems manager.
