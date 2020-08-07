@@ -162,6 +162,17 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     },
 }
 
+# Configurable list of non-private systems that appear on the frontend
+_PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+    {
+        'name': 'Community Data',
+        'system': _AGAVE_COMMUNITY_DATA_SYSTEM,
+        'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    }
+]
+
 #######################
 # PROJECTS SETTING
 #######################
