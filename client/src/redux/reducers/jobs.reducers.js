@@ -103,8 +103,7 @@ export function jobDetail(state = initialJobDetail, action) {
         job: action.payload.job,
         display: getJobDisplayInformation(
           action.payload.job,
-          action.payload.app,
-          action.payload.executionSystem
+          action.payload.app
         ),
         loading: false,
         loadingError: false,

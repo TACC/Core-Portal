@@ -1,4 +1,4 @@
-import { put, takeLatest, takeLeading, call, all } from 'redux-saga/effects';
+import { put, takeLatest, takeLeading, call } from 'redux-saga/effects';
 import 'cross-fetch';
 import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
@@ -94,20 +94,16 @@ export function* getJobDetails(action) {
   try {
     const job = yield call(fetchJobDetailsUtil, jobId);
     let app = null;
-    let executionSystem = null;
 
     try {
-      [app, executionSystem] = yield all([
-        call(fetchAppDefinitionUtil, job.appId),
-        call(fetchSystemUtil, job.systemId)
-      ]);
+      app = yield call(fetchAppDefinitionUtil, job.appId);
     } catch (ignore) {
       // ignore if we cannot get app or execution system information
     }
 
     yield put({
       type: 'JOB_DETAILS_FETCH_SUCCESS',
-      payload: { app, job, executionSystem }
+      payload: { app, job }
     });
   } catch (error) {
     yield put({

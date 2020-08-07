@@ -32,7 +32,7 @@ export function getSystemName(host) {
 /**
  * Get display values from job, app and execution system info
  */
-export function getJobDisplayInformation(job, app, executionSystem) {
+export function getJobDisplayInformation(job, app) {
   const display = {
     applicationName: job.appId,
     systemName: job.systemId,
@@ -52,17 +52,15 @@ export function getJobDisplayInformation(job, app, executionSystem) {
       .filter(obj => !obj.id.startsWith('_'))
   };
 
-  if (executionSystem) {
-    try {
-      display.systemName = getSystemName(executionSystem.login.host);
-    } catch (ignore) {
-      // ignore if there is problem improving the system name
-    }
-  }
-
   if (app) {
+    // Improve any values with app information
     try {
-      // Improve any values with app information
+      try {
+        display.systemName = getSystemName(app.exec_sys.login.host);
+      } catch (ignore) {
+        // ignore if there is problem improving the system name
+      }
+
       display.applicationName = app.label;
 
       // Improve input/parameters
