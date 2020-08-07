@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
 
 const BreadcrumbLink = ({ api, scheme, system, path, children, section }) => {
+  const dispatch = useDispatch();
   const onClick = e => {
-    const dispatch = useDispatch();
     e.stopPropagation();
     e.preventDefault();
     dispatch({
