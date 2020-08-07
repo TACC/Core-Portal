@@ -55,6 +55,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
           className="form-control"
           placeholder={`Search within ${sectionName}`}
           data-testid="input"
+          autocomplete="off"
         />
       </div>
       <Button
