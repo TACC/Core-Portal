@@ -135,7 +135,7 @@
         }
     }
     .alloc-badge {
-        font-size: 11px;
+        font-size: 14px;
     }
 }
 #pending {
@@ -157,4 +157,7 @@
 /* FP-426: Do not use `height: 100%` or isolate usage pending solution to bigger problem */
 #allocations-wrapper .loading-icon {
     height: auto;
+}
+.system-cell {
+    width: 120px;
 }
