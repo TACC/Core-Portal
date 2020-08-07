@@ -119,10 +119,6 @@ const DataFilesMoveModal = React.memo(() => {
           <div className="col-md-6 d-flex flex-column">
             <div className="dataFilesModalColHeader">
               Destination
-              <DataFilesSystemSelector
-                systemId={modalParams.system}
-                section="modal"
-              />
             </div>
             <DataFilesBreadcrumbs
               api={modalParams.api}
