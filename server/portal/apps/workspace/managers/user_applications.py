@@ -12,9 +12,6 @@ from django.conf import settings
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.models.applications import Application
 from portal.apps.workspace.managers.base import AbstractApplicationsManager
-from portal.utils import encryption as EncryptionUtil
-# from portal.apps.accounts.managers.accounts import _lookup_user_home_manager
-from portal.apps.accounts.models import SSHKeys
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 
 # pylint: disable=invalid-name
@@ -31,7 +28,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
     def __init__(self, *args, **kwargs):
         super(UserApplicationsManager, self).__init__(*args, **kwargs)
-        self.home_mgr = UserSystemsManager(self.user)
+        self.user_systems_mgr = UserSystemsManager(self.user)
 
     def get_clone_system_id(self):
         """Gets system id to deploy cloned app materials to.
@@ -43,7 +40,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         :rtype: str
         """
 
-        id = self.home_mgr.get_system_id()
+        id = self.user_systems_mgr.get_system_id()
         return id
 
     def get_application(self, appId):
@@ -284,31 +281,26 @@ class UserApplicationsManager(AbstractApplicationsManager):
         :returns: ExecutionSystem instance
         :rtype: class ExecutionSystem
         """
-        username = self.user.username
         system = self.get_exec_system(system_id)
-        user_systems_mgr = UserSystemsManager(self.user)
 
         if not system.available:
             system.enable()
 
         settings_key = system.login.host.split('.')[0]
-        exec_settings = settings.PORTAL_EXEC_SYSTEMS[settings_key]
+        exec_settings = settings.PORTAL_EXEC_SYSTEMS.getattr(settings_key, {})
 
-        system.site = exec_settings['site']
-        system.description = exec_settings['description'].format(username)
-        system.storage.host = system.login.host
-        system.storage.home_dir = user_systems_mgr.get_sys_tas_user_dir()
+        system.site = settings.PORTAL_DOMAIN
+        system.name = "Execution system for user {}".format(self.user.username)
+        system.storage.home_dir = self.user_systems_mgr.get_sys_tas_user_dir()
         system.storage.port = system.login.port
-        system.storage.root_dir = exec_settings['storage_root_dir']
-        system.storage.protocol = exec_settings['storage_protocol']
+        system.storage.root_dir = '/'
         system.storage.auth.username = self.user.username
         system.storage.auth.type = system.AUTH_TYPES.SSHKEYS
-        system.login.protocol = exec_settings['login_protocol']
         system.login.auth.username = self.user.username
         system.login.auth.type = system.AUTH_TYPES.SSHKEYS
-        system.work_dir = system.storage.home_dir
+        system.work_dir = '/work/{}'.format(self.user_systems_mgr.get_private_directory())
         system.scratch_dir = exec_settings['scratch_dir_base_path'].format(
-            user_systems_mgr.get_private_directory())
+            self.user_systems_mgr.get_private_directory()) if 'scratch_dir_base_path' in exec_settings else ''
 
         if system.scheduler == 'SLURM':
             for queue in system.queues.all():

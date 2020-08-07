@@ -622,45 +622,20 @@ SETTINGS: EXECUTION SYSTEMS
 """
 PORTAL_EXEC_SYSTEMS = {
     'data': {
-        'scratch_dir_base_path': '/scratch/{}',
-        'storage_root_dir': '/',
-        'storage_protocol': 'SFTP',
-        'login_protocol': 'SSH',
-        'description': 'Exec system for user: {}',
-        'site': 'portal.dev',
+        'scratch_dir': '/scratch/{}'
     },
     'stampede2': {
-        'scratch_dir_base_path': '/scratch/{}',
-        'storage_root_dir': '/',
-        'storage_protocol': 'SFTP',
-        'login_protocol': 'SSH',
-        'description': 'Exec system for user: {}',
-        'site': 'portal.dev',
+        'scratch_dir': '/scratch/{}'
     },
     'lonestar5': {
-        'scratch_dir_base_path': '/scratch/{}',
-        'storage_root_dir': '/',
-        'storage_protocol': 'SFTP',
-        'login_protocol': 'SSH',
-        'description': 'Exec system for user: {}',
-        'site': 'portal.dev',
+        'scratch_dir': '/scratch/{}'
     },
     'longhorn': {
-        'scratch_dir_base_path': '/scratch/{}',
-        'storage_root_dir': '/',
-        'storage_protocol': 'SFTP',
-        'login_protocol': 'SSH',
-        'description': 'Exec system for user: {}',
-        'site': 'portal.dev',
+        'scratch_dir': '/scratch/{}'
     },
     'frontera': {
-        'scratch_dir_base_path': '/scratch1/{}',
-        'storage_root_dir': '/',
-        'storage_protocol': 'SFTP',
-        'login_protocol': 'SSH',
-        'description': 'Exec system for user: {}',
-        'site': 'portal.dev',
-    },
+        'scratch_dir': '/scratch1/{}'
+    }
 }
 
 """
