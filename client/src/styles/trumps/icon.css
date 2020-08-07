@@ -10,9 +10,6 @@
                         /* a modern slimmer alternative to `&::before { display: block; }` */
   justify-content: center;
 }
-/* Hide accessibile text of non-empty `.icon`'s */
-.icon         { visibility: hidden; }
-.icon::before { visibility: visible; }
 
 /* Aliases */
 /* .icon-contract */.icon-collapse::before {

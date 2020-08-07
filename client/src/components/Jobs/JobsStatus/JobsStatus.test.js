@@ -1,8 +1,20 @@
 import React from 'react';
+import configureStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import JobsStatus, { getStatusText, getBadgeColor } from './JobsStatus';
 import { toHaveClass } from '@testing-library/jest-dom/dist/matchers';
+import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
 
+const mockStore = configureStore();
+
+function renderJobsStatus(store, props) {
+  return render(
+    <Provider store={store}>
+      <JobsStatus {...props} />
+    </Provider>
+  );
+}
 
 expect.extend({ toHaveClass });
 describe('JobsStatus', () => {
@@ -16,8 +28,8 @@ describe('JobsStatus', () => {
     expect(getStatusText('SUBMITTING')).toEqual('Submitted');
     expect(getStatusText('QUEUED')).toEqual('Queued');
     expect(getStatusText('RUNNING')).toEqual('Running');
-    expect(getStatusText('CLEANING_UP')).toEqual('Running');
-    expect(getStatusText('ARCHIVING')).toEqual('Running');
+    expect(getStatusText('CLEANING_UP')).toEqual('Finishing');
+    expect(getStatusText('ARCHIVING')).toEqual('Finishing');
     expect(getStatusText('FINISHED')).toEqual('Finished');
     expect(getStatusText('STOPPED')).toEqual('Stopped');
     expect(getStatusText('FAILED')).toEqual('Failure');
@@ -35,14 +47,18 @@ describe('JobsStatus', () => {
   });
 
   it('renders Finished', () => {
-    const { getByText } = render(<JobsStatus status={"FINISHED"} fancy={false}/>);
+    const { getByText } = renderJobsStatus(mockStore({notifications}),{status: "FINISHED", fancy: false});
     expect(getByText(/Finished/)).toBeDefined();
   });
 
   it('renders Finished with success badge', () => {
-    const { getByText } = render(<JobsStatus status={"FINISHED"} fancy/>);
+    const { getByText } = renderJobsStatus(
+      mockStore({ notifications }),
+      { status: 'FINISHED', fancy: true }
+    );
     expect(getByText(/Finished/)).toBeDefined();
     expect(getByText(/Finished/)).toHaveClass('badge badge-success');
   });
 
+  it.todo("should have a button to enter an interactive session");
 });
