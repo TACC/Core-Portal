@@ -7,7 +7,7 @@ import { faClipboard, faDesktop } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
 import { LoadingSpinner } from '_common';
 import { AllocationsTable } from './AllocationsTables';
-import { NewAllocReq } from './AllocationsModals';
+import { AllocationsRequestModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
 
 export const Header = ({ page }) => {
@@ -23,7 +23,7 @@ export const Header = ({ page }) => {
         Manage Allocations
       </Button>
       {openModal && (
-        <NewAllocReq
+        <AllocationsRequestModal
           isOpen={openModal}
           toggle={() => setOpenModal(!openModal)}
         />

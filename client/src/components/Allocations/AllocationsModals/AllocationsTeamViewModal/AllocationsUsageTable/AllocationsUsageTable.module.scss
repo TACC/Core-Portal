@@ -1,0 +1,31 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+.root {
+  width: 100%;
+  border: 0;
+  font-size: 14px;
+}
+.header {
+  tr {
+    border-bottom: 1px solid #707070;
+    height: 2.25rem;
+  }
+}
+.body {
+  tr:nth-child(odd) {
+    background-color: rgba(112, 112, 112, 0.1);
+  }
+}
+.row {
+  height: 2.25rem;
+}
+.cell {
+  vertical-align: middle;
+}
+.content {
+  padding: 0.25rem;
+}
+
