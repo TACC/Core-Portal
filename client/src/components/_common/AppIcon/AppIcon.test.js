@@ -33,32 +33,32 @@ function renderAppIcon(appId, categoryId) {
 }
 
 describe('AppIcon', () => {
-  it('should render icon for known app ID', () => {
-    const { getByTestId } = renderAppIcon("jupyter", "Data Processing");
-    expect(getByTestId(/icon/)).toHaveAttribute(
+  it('should render icons for known app IDs', () => {
+    const { getByRole } = renderAppIcon("jupyter", "Data Processing");
+    expect(getByRole('img')).toHaveAttribute(
       'class',
       'icon icon-jupyter'
     );
   });
-  it('should show category icon for apps with unknown app ID but known category ID', () => {
-    const { getByTestId } = renderAppIcon("Vasp", "Data Processing");
+  it('should show category icons for apps with unknown app ID but known category ID', () => {
+    const { getByTestId } = renderAppIcon("vasp", "Data Processing");
     expect(getByTestId(/icon/)).toHaveAttribute(
       'class',
       'icon icon-data-processing'
     )
   });
-  it('should show generic icon for apps with unknown app ID and unknown category ID', () => {
-    const { getByTestId } = renderAppIcon("Vasp");
-    expect(getByTestId(/icon/)).toHaveAttribute(
+  it('should show generic icons for apps with no appIcon', () => {
+    const { getByRole } = renderAppIcon("vasp");
+    expect(getByRole('img')).toHaveAttribute(
       'class',
       'icon icon-applications'
     )
   });
-  it('should render icon for prtl.clone app', () => {
-    const { getByTestId } = renderAppIcon(
+  it('should render icons for prtl.clone apps', () => {
+    const { getByRole } = renderAppIcon(
       "prtl.clone.username.allocation.jupyter"
     );
-    expect(getByTestId(/icon/)).toHaveAttribute(
+    expect(getByRole('img')).toHaveAttribute(
       'class',
       'icon icon-jupyter'
     )
