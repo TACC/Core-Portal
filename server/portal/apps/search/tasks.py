@@ -46,9 +46,10 @@ def index_community_data(self, reindex=False):
     # s = IndexedFile.search()
     # s = s.query("match", **{"system._exact": settings.AGAVE_COMMUNITY_DATA_SYSTEM})
     # resp = s.delete()
-    logger.info('INDEXING COMMUNITY DATA SYSTEM')
-    agave_indexer.apply_async(args=[settings.AGAVE_COMMUNITY_DATA_SYSTEM], kwargs={'reindex': reindex})
-    agave_indexer.apply_async(args=[settings.AGAVE_PUBLIC_DATA_SYSTEM], kwargs={'reindex': reindex})
+    for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
+        if sys.api == 'tapis':
+            logger.info('INDEXING {} SYSTEM'.format(sys.name))
+            agave_indexer.apply_async(args=[sys.system], kwargs={'reindex': reindex})
 
 # @shared_task(bind=True, queue='indexing')
 # def project_indexer(self, projectId):

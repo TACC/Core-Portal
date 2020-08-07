@@ -299,8 +299,8 @@ class UserApplicationsManager(AbstractApplicationsManager):
         system.login.auth.username = self.user.username
         system.login.auth.type = system.AUTH_TYPES.SSHKEYS
         system.work_dir = '/work/{}'.format(self.user_systems_mgr.get_private_directory())
-        system.scratch_dir = exec_settings['scratch_dir_base_path'].format(
-            self.user_systems_mgr.get_private_directory()) if 'scratch_dir_base_path' in exec_settings else ''
+        system.scratch_dir = exec_settings['scratch_dir'].format(
+            self.user_systems_mgr.get_private_directory()) if 'scratch_dir' in exec_settings else ''
 
         if system.scheduler == 'SLURM':
             for queue in system.queues.all():
