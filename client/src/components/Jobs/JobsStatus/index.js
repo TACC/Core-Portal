@@ -1,1 +1,1 @@
-export { default } from './JobsStatus';
+export { default, getStatusText } from './JobsStatus';
