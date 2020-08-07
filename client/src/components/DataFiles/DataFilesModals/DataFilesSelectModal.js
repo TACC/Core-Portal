@@ -18,7 +18,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     const systemParams = {
       api: 'tapis',
       scheme: 'private',
-      system: systems.private
+      system: systems[0].system
     };
     dispatch({
       type: 'FETCH_FILES_MODAL',
