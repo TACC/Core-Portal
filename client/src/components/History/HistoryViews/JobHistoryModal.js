@@ -169,7 +169,7 @@ function JobHistoryModal({ jobId }) {
         />
       </ModalHeader>
 
-      <ModalBody className="job-history-model--body">
+      <ModalBody>
         <div styleName="modal-body-container">
           {loading && <LoadingSpinner />}
           {loadingError && (
