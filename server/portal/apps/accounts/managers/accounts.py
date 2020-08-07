@@ -19,7 +19,7 @@ from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.accounts.models import SSHKeys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
-from portal.apps.onboarding.execute import execute_setup_steps
+# from portal.apps.onboarding.execute import execute_setup_steps
 
 logger = logging.getLogger(__name__)
 
@@ -85,9 +85,11 @@ def setup(username, system):
     home_dir = mgr.get_private_directory(user)
     home_sys = mgr.setup_private_system(user)
 
-    if not user.profile.setup_complete:
-        logger.info("Executing setup steps for %s", username)
-        execute_setup_steps(user.username)
+    # Will this ever run if "profile.setup_complete" is set to True before this is ever called?
+    # This can also cause a race condition
+    # if not user.profile.setup_complete:
+    #     logger.info("Executing setup steps for %s", username)
+    #     execute_setup_steps(user.username)
 
     return home_dir, home_sys
 
