@@ -5,7 +5,7 @@ const initialSystemState = {
 export function systems(state = initialSystemState, action) {
   switch (action.type) {
     case 'FETCH_SYSTEMS_SUCCESS':
-      return { ...action.payload };
+      return { systemList: action.payload.system_list };
     default:
       return state;
   }

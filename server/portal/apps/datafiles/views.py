@@ -21,9 +21,9 @@ class SystemListingView(BaseApiView):
         user_systems = get_user_storage_systems(request.user.username, local_systems)
 
         # compare available storage systems to the systems a user can access
-        response = {'systemList': []}
+        response = {'system_list': []}
         for _, details in user_systems.items():
-            response['systemList'].append(
+            response['system_list'].append(
                 {
                     'name': details['name'],
                     'system': details['prefix'].format(request.user.username),
@@ -32,7 +32,7 @@ class SystemListingView(BaseApiView):
                     'icon': details['icon']
                 }
             )
-        response['systemList'] += portal_systems
+        response['system_list'] += portal_systems
 
         return JsonResponse(response)
 
