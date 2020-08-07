@@ -91,7 +91,11 @@
 }
 
 
-
+/* FP-471: Integrate this style (preferably without `!important`) */
+/* FAQ: All by itself to reduce complexity of merge conflict with FP-471 */
+tr.highlight {
+  background: var(--global-color-accent--light) !important; /* override `:nth-child`, etc */
+}
 
 
 /*
