@@ -112,7 +112,7 @@ class AddPubKeyTests(TestCase):
 
 
 class TestUserSetup(TestCase):
-    fixtures = [ 'users', 'auth' ]
+    fixtures = ['users', 'auth']
 
     def setUp(self):
         super(TestUserSetup, self).setUp()
@@ -128,31 +128,21 @@ class TestUserSetup(TestCase):
         self.mock_systems_manager_patcher = patch('portal.apps.accounts.managers.accounts.UserSystemsManager')
         self.mock_systems_manager = self.mock_systems_manager_patcher.start()
 
-        # Mock execute_setup_steps
-        self.mock_execute_patcher = patch('portal.apps.accounts.managers.accounts.execute_setup_steps')
-        self.mock_execute = self.mock_execute_patcher.start()
-
         self.addCleanup(self.mock_check_user_patcher.stop)
         self.addCleanup(self.mock_systems_manager_patcher.stop)
-        self.addCleanup(self.mock_execute_patcher.stop)
 
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
     def test_setup(self):
-        # If the user is already setup_complete, steps should
-        # not be executed
-        self.mock_user.profile.setup_complete = True
         setup("username", "system")
         self.mock_systems_manager.return_value.get_private_directory.assert_called_with(self.mock_user)
         self.mock_systems_manager.return_value.setup_private_system.assert_called_with(self.mock_user)
-        self.mock_execute.assert_not_called()
-        self.assertEqual(self.mock_user.profile.setup_complete, True)
 
     @skip("No onboarding steps are called right now")
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=['fake.setup.setup_class'])
     def test_setup_user(self):
         # A user with setup_complete == False should cause setup steps to run
         self.mock_user.profile.setup_complete = False
-        setup("username")
+        setup("username", "system")
         self.mock_execute.assert_called_with(ANY)
 
     @skip("No onboarding steps are called right now")
@@ -160,5 +150,5 @@ class TestUserSetup(TestCase):
     def test_skip_setup(self):
         # A user that has setup_complete should not execute setup steps
         self.mock_user.profile.setup_complete = True
-        setup("username")
+        setup("username", "system")
         self.mock_execute.assert_not_called()

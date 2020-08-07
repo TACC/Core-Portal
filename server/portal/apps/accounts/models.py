@@ -4,7 +4,6 @@
 """
 import logging
 from django.conf import settings
-from django.contrib.postgres.fields import ArrayField, JSONField
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.db import models

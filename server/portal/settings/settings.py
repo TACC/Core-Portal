@@ -398,8 +398,6 @@ AGAVE_CLIENT_KEY = settings_secret._AGAVE_CLIENT_KEY
 AGAVE_CLIENT_SECRET = settings_secret._AGAVE_CLIENT_SECRET
 AGAVE_SUPER_TOKEN = settings_secret._AGAVE_SUPER_TOKEN
 AGAVE_STORAGE_SYSTEM = settings_secret._AGAVE_STORAGE_SYSTEM
-AGAVE_COMMUNITY_DATA_SYSTEM = settings_secret._AGAVE_COMMUNITY_DATA_SYSTEM
-AGAVE_PUBLIC_DATA_SYSTEM = settings_secret._AGAVE_PUBLIC_DATA_SYSTEM
 
 PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 
@@ -622,52 +620,28 @@ SETTINGS: EXECUTION SYSTEMS
 """
 PORTAL_EXEC_SYSTEMS = {
     'data': {
-        'scratch_dir_base_path': '/scratch/{}',
-        'storage_root_dir': '/',
-        'storage_protocol': 'SFTP',
-        'login_protocol': 'SSH',
-        'description': 'Exec system for user: {}',
-        'site': 'portal.dev',
+        'scratch_dir': '/scratch/{}'
     },
     'stampede2': {
-        'scratch_dir_base_path': '/scratch/{}',
-        'storage_root_dir': '/',
-        'storage_protocol': 'SFTP',
-        'login_protocol': 'SSH',
-        'description': 'Exec system for user: {}',
-        'site': 'portal.dev',
+        'scratch_dir': '/scratch/{}'
     },
     'lonestar5': {
-        'scratch_dir_base_path': '/scratch/{}',
-        'storage_root_dir': '/',
-        'storage_protocol': 'SFTP',
-        'login_protocol': 'SSH',
-        'description': 'Exec system for user: {}',
-        'site': 'portal.dev',
+        'scratch_dir': '/scratch/{}'
     },
     'longhorn': {
-        'scratch_dir_base_path': '/scratch/{}',
-        'storage_root_dir': '/',
-        'storage_protocol': 'SFTP',
-        'login_protocol': 'SSH',
-        'description': 'Exec system for user: {}',
-        'site': 'portal.dev',
+        'scratch_dir': '/scratch/{}'
     },
     'frontera': {
-        'scratch_dir_base_path': '/scratch1/{}',
-        'storage_root_dir': '/',
-        'storage_protocol': 'SFTP',
-        'login_protocol': 'SSH',
-        'description': 'Exec system for user: {}',
-        'site': 'portal.dev',
-    },
+        'scratch_dir': '/scratch1/{}'
+    }
 }
 
 """
 SETTINGS: DATA DEPOT
 """
-PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM = settings_secret._PORTAL_DATA_DEPOT_DEFAULT_LOCAL_STORAGE_SYSTEM
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
 PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', [])
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',

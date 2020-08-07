@@ -1,33 +1,22 @@
-from portal.apps.accounts.models import PortalProfile
 from celery import shared_task
-from django.contrib.auth import get_user_model
 from portal.apps.users.utils import get_allocations, get_tas_allocations
-import json
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 @shared_task(bind=True, max_retries=None)
-def setup_user(self, username, systems):
+def setup_user(self, username, system):
     """Setup workflow for each user
 
         Called asynchronously from portal.apps.auth.views.agave_oauth_callback
         :param str username: string username to setup systems for
         :param dict systems: dict of systems from settings
     """
-    user = get_user_model().objects.get(username=username)
-    profile = PortalProfile.objects.get(user=user)
-    # If this is always set to "True" here, why do check for it in accounts.setup()?
-    profile.setup_complete = True
-    profile.save()
-
-    system_names = get_user_storage_systems(username, systems)
-
     from portal.apps.accounts.managers.accounts import setup
-    for system in system_names:
-        logger.info("Async setup task for {username} launched on {system}".format(username=username, system=system))
-        setup(username, system)
+    logger.info("Async setup task for {username} launched on {system}".format(username=username, system=system))
+    setup(username, system)
+
 
 def get_user_storage_systems(username, systems):
     """Create list of accessible storage system names for a user
@@ -39,14 +28,14 @@ def get_user_storage_systems(username, systems):
 
         :param str username: string username to check allocations for
         :param obj systems: systems object from portal settings
-        :returns: list of of systems to setup for user
+        :returns: filtered object of systems to setup for user
     """
     try:
         user_allocations = get_allocations(username)
-    except:
+    except Exception:
         user_allocations = get_tas_allocations(username)
 
-    systems_to_configure = []
+    systems_to_configure = {}
     user_resources = []
 
     # get list of user's allocation resources
@@ -55,11 +44,9 @@ def get_user_storage_systems(username, systems):
             user_resources.append(sys['allocation']['resource'].lower())
 
     # return systems on this portal that user has allocations for
-    for sys_name in systems:
-        if "requires_allocation" in systems[sys_name]:
-            if systems[sys_name]['requires_allocation'] in user_resources:
-                systems_to_configure.append(sys_name)
-        else:
-            systems_to_configure.append(sys_name)
+    for sys_name, sys_detail in systems.items():
+        required_allocation = sys_detail.get('requires_allocation', None)
+        if not required_allocation or (required_allocation and required_allocation in user_resources):
+            systems_to_configure[sys_name] = sys_detail
 
     return systems_to_configure
