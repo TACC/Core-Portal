@@ -8,8 +8,10 @@ import parse from 'html-react-parser';
 import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import FormSchema from './AppFormSchema';
 import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
+import * as ROUTES from '../../../constants/routes';
 
 const appShape = PropTypes.shape({
   id: PropTypes.string,
@@ -170,7 +172,10 @@ const AppSchemaForm = ({ app }) => {
             </Alert>
           ) : (
             <Alert color="info" isOpen={visible} toggle={onDismiss}>
-              Your job has submitted successfully!
+              Your job has submitted successfully! See details in&nbsp;
+              <Link to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}>
+                <Button color="link">History &gt; Jobs.</Button>
+              </Link>
             </Alert>
           )}
         </div>
