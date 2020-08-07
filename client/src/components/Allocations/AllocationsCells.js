@@ -3,7 +3,7 @@ import { object, shape, array, number, string } from 'prop-types';
 import { Button, Badge } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { TeamView } from './AllocationsModals';
+import { AllocationsTeamViewModal } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
   cell: shape({
@@ -31,7 +31,7 @@ export const Team = ({ cell: { value } }) => {
       >
         View Team
       </Button>
-      <TeamView
+      <AllocationsTeamViewModal
         isOpen={openModal}
         pid={projectId}
         toggle={() => setOpenModal(!openModal)}
