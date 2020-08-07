@@ -2,7 +2,8 @@
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from django.conf import settings
 from requests.exceptions import HTTPError
-from portal.apps.accounts.models import SSHKeys, Keys
+from portal.libs.agave.models.systems.storage import StorageSystem
+from portal.apps.accounts.models import SSHKeys, Keys, HostKeys
 from mock import MagicMock
 import pytest
 import json
@@ -67,23 +68,30 @@ def test_setup_private_system_exists(test_manager, mock_service_account):
     with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
         system = json.load(f)
         mock_service_account.systems.get.return_value = system
-        assert test_manager.setup_private_system() == system
+        assert test_manager.setup_private_system().id == system['id']
 
 
 def test_setup_private_system(test_manager, mock_service_account, regular_user, mock_404, monkeypatch):
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')) as f:
+        system = json.load(f)
     # Mock all the service functions
     mock_service_account.systems.get.side_effect = mock_404
-    mock_system_definition = MagicMock(id="frontera.home.username")
-    mock_get_system_definition = MagicMock(return_value=mock_system_definition)
+    system_definition = StorageSystem.from_dict(mock_service_account, system)
+    mock_get_system_definition = MagicMock(return_value=system_definition)
     monkeypatch.setattr(test_manager, 'get_system_definition', mock_get_system_definition)
 
     # Run the test
-    assert test_manager.setup_private_system() == mock_system_definition
-    mock_system_definition.update_role.assert_called_with("username", "OWNER")
-    generated_key = SSHKeys.objects.all()[0]
-    assert generated_key.user == regular_user
-    key_object = Keys.objects.get(ssh_keys=generated_key)
-    assert key_object.system == "frontera.home.username"
+    assert test_manager.setup_private_system().id == system_definition.id
+
+    mock_service_account.systems.updateRole.assert_called_with(
+        body={'role': "OWNER", 'username': regular_user.username},
+        systemId=system_definition.id)
+    system_key = SSHKeys.objects.all()[0]
+    assert system_key.user == regular_user
+    host_key = HostKeys.objects.all()[0]
+    assert host_key.hostname == system['storage']['host']
+    key_object = Keys.objects.get(ssh_keys=system_key)
+    assert key_object.system == system['id']
 
 
 def test_get_system_definition(test_manager, mock_service_account, mock_404):
