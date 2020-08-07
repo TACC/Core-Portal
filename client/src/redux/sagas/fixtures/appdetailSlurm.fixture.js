@@ -1,6 +1,6 @@
-const appdetailWithAllocation = {
-  id: 'prtl.clone.nathanf.TACC-ACI.qgis-3.48-5.0',
-  name: 'prtl.clone.nathanf.TACC-ACI.qgis-3.48',
+const appDetailSlurmFixture = {
+  id: 'prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0',
+  name: 'prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48',
   icon: null,
   uuid: '713780412274774506-242ac115-0001-005',
   parallelism: 'PARALLEL',
@@ -14,7 +14,7 @@ const appdetailWithAllocation = {
   isPublic: false,
   helpURI: null,
   label: 'QGIS',
-  owner: 'nathanf',
+  owner: 'maxmunstermann',
   shortDescription: 'Run an interactive QGIS session on Stampede2.',
   longDescription:
     'Run an interactive QGIS session on Stampede2 for 4 hours. Be sure to exit the QGIS application when you are finished with the session or any files saved will not be archived with the job.',
@@ -32,9 +32,9 @@ const appdetailWithAllocation = {
   ],
   ontology: [],
   executionType: 'HPC',
-  executionSystem: 'nathanf.TACC-ACI.exec.stampede2.HPC',
-  deploymentPath: '.APPDATA/prtl.clone.nathanf.TACC-ACI.qgis-3.48-5.0',
-  deploymentSystem: 'frontera.home.nathanf',
+  executionSystem: 'maxmunstermann.TACC-ACI.exec.stampede2.HPC',
+  deploymentPath: '.APPDATA/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0',
+  deploymentSystem: 'frontera.home.maxmunstermann',
   templatePath: 'wrapper.sh',
   testPath: 'test/test.sh',
   checkpointable: false,
@@ -130,47 +130,49 @@ const appdetailWithAllocation = {
   _links: {
     self: {
       href:
-        'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.nathanf.TACC-ACI.qgis-3.48-5.0'
+        'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0'
     },
     executionSystem: {
       href:
-        'https://portals-api.tacc.utexas.edu/systems/v2/nathanf.TACC-ACI.exec.stampede2.HPC'
+        'https://portals-api.tacc.utexas.edu/systems/v2/maxmunstermann.TACC-ACI.exec.stampede2.HPC'
     },
     storageSystem: {
       href:
-        'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.nathanf'
+        'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.maxmunstermann'
     },
     history: {
       href:
-        'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.nathanf.TACC-ACI.qgis-3.48-5.0/history'
+        'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0/history'
     },
     metadata: {
       href:
         'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%22713780412274774506-242ac115-0001-005%22%7D'
     },
-    owner: { href: 'https://portals-api.tacc.utexas.edu/profiles/v2/nathanf' },
+    owner: {
+      href: 'https://portals-api.tacc.utexas.edu/profiles/v2/maxmunstermann'
+    },
     permissions: {
       href:
-        'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.nathanf.TACC-ACI.qgis-3.48-5.0/pems'
+        'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmunstermann.TACC-ACI.qgis-3.48-5.0/pems'
     }
   },
   resource: 'stampede2.tacc.utexas.edu',
   scheduler: 'SLURM',
   exec_sys: {
     uuid: '8646989280067907095-242ac116-0001-006',
-    id: 'nathanf.TACC-ACI.exec.stampede2.HPC',
-    owner: 'nathanf',
+    id: 'maxmunstermann.TACC-ACI.exec.stampede2.HPC',
+    owner: 'maxmunstermann',
     type: 'EXECUTION',
     name: 'Stampede2 SLURM Execution Host',
     site: 'portal.dev',
     available: true,
-    description: 'Exec system for user: nathanf',
+    description: 'Exec system for user: maxmunstermann',
     environment: null,
     executionType: 'HPC',
     maxSystemJobs: 50,
     maxSystemJobsPerUser: 4,
     scheduler: 'SLURM',
-    scratchDir: '/scratch/05724/nathanf/',
+    scratchDir: '/scratch/05724/maxmunstermann/',
     startupScript: './bashrc',
     status: 'UP',
     login: {
@@ -267,10 +269,10 @@ const appdetailWithAllocation = {
       publicAppsDir: null,
       host: 'stampede2.tacc.utexas.edu',
       rootDir: '/',
-      homeDir: '/work/05724/nathanf',
+      homeDir: '/work/05724/maxmunstermann',
       auth: { type: 'SSHKEYS', username: '', publicKey: '', privateKey: '' }
     },
-    workDir: '/work/05724/nathanf/',
+    workDir: '/work/05724/maxmunstermann/',
     revision: 1,
     default: false,
     public: false,
@@ -279,3 +281,5 @@ const appdetailWithAllocation = {
   },
   license: { type: null }
 };
+
+export default appDetailSlurmFixture;

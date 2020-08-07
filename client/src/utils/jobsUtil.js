@@ -10,16 +10,16 @@ export function getOutputPathFromHref(href) {
   return path;
 }
 
-export function getAllocationFromAppId(appId) {
+export function getAllocatonFromDirective(directive) {
   /* Return allocation
 
-   App id has the form: prtl.clone.{username}.{allocation} like
-   the following: prtl.clone.nathanf.TACC-ACI.namd-frontera-2.1.3-8.0
+   queue directive has form: '-A TACC-ACI'
 
    */
-  const parts = appId.split('.');
-  if (appId.startsWith(`prtl.clone.`) && parts.length >= 6) {
-    return parts[3];
+  const parts = directive.split(' ');
+  const allocationArgIndex = parts.findIndex(obj => obj === '-A') + 1;
+  if (allocationArgIndex !== 0 && allocationArgIndex < parts.length) {
+    return parts[allocationArgIndex];
   }
   return null;
 }
@@ -103,7 +103,12 @@ export function getJobDisplayInformation(job, app) {
       });
 
       if (app.scheduler === 'SLURM') {
-        const allocation = getAllocationFromAppId(job.appId);
+        const matchingQueue = app.exec_sys.queues.find(
+          queue => queue.name === job.remoteQueue
+        );
+        const allocation = getAllocatonFromDirective(
+          matchingQueue.customDirectives
+        );
         if (allocation) {
           display.allocation = allocation;
         }

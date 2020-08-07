@@ -1,14 +1,24 @@
-import { getAllocationFromAppId, getSystemName } from './jobsUtil';
+import { getAllocatonFromDirective, getSystemName, getJobDisplayInformation } from './jobsUtil';
+import jobDetailFixture from '../redux/sagas/fixtures/jobdetail.fixture';
+import jobDetailSlurmFixture from '../redux/sagas/fixtures/jobdetailSlurm.fixture';
+import appDetailFixture from '../redux/sagas/fixtures/appdetail.fixture';
+import appDetailSlurmFixture from '../redux/sagas/fixtures/appdetailSlurm.fixture'
+import jobDetailDisplayFixture from '../redux/sagas/fixtures/jobdetaildisplay.fixture';
+import jobDisplaySlurmFixture from '../redux/sagas/fixtures/jobdetaildisplaySlurm.fixture';
 
 describe('jobsUtil', () => {
-  it('get allocation from app id', () => {
-    expect(getAllocationFromAppId('prtl.clone.nathanf.TACC-ACI.namd-frontera-2.1.3-8.0')).toEqual('TACC-ACI');
-    expect(getAllocationFromAppId('prtl.clone.nathanf.TACC-ACI.WRONG')).toEqual(null);
-    expect(getAllocationFromAppId('my_private_app')).toEqual(null);
+  it('get allocation from execution system queue directive', () => {
+    expect(getAllocatonFromDirective('-A TACC-ACI')).toEqual('TACC-ACI');
+    expect(getAllocatonFromDirective('-A TACC-ACI -Foo Bar')).toEqual('TACC-ACI');
+    expect(getAllocatonFromDirective('-Ab Test')).toEqual(null);
+    expect(getAllocatonFromDirective('')).toEqual(null);
   });
-});
 
-describe('jobsUtil', () => {
+  it('get app display information', () => {
+    expect(getJobDisplayInformation(jobDetailSlurmFixture, appDetailSlurmFixture)).toEqual(jobDisplaySlurmFixture);
+    expect(getJobDisplayInformation(jobDetailFixture, appDetailFixture)).toEqual(jobDetailDisplayFixture);
+  });
+
   it('get system name from host', () => {
     expect(getSystemName('stampede2.tacc.utexas.edu')).toEqual('Stampede2');
   });

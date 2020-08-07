@@ -1,18 +1,18 @@
 const executionSystemDetailFixture = {
   uuid: '7451060998492066281-242ac116-0001-006',
-  id: 'nathanf.FORK.exec.stampede2.CLI',
-  owner: 'nathanf',
+  id: 'maxmunstermann.FORK.exec.stampede2.CLI',
+  owner: 'maxmunstermann',
   type: 'EXECUTION',
   name: 'Stampede2 CLI Execution Host',
   site: 'portal.dev',
   available: true,
-  description: 'Exec system for user: nathanf',
+  description: 'Exec system for user: maxmunstermann',
   environment: null,
   executionType: 'CLI',
   maxSystemJobs: 50,
   maxSystemJobsPerUser: 4,
   scheduler: 'FORK',
-  scratchDir: '/work/05724/nathanf/',
+  scratchDir: '/work/05724/maxmunstermann/',
   startupScript: './bashrc',
   status: 'UP',
   login: {
@@ -48,7 +48,7 @@ const executionSystemDetailFixture = {
     publicAppsDir: null,
     host: 'stampede2.tacc.utexas.edu',
     rootDir: '/',
-    homeDir: '/work/05724/nathanf',
+    homeDir: '/work/05724/maxmunstermann',
     auth: {
       type: 'SSHKEYS',
       username: '',
@@ -56,7 +56,7 @@ const executionSystemDetailFixture = {
       privateKey: ''
     }
   },
-  workDir: '/work/05724/nathanf/',
+  workDir: '/work/05724/maxmunstermann/',
   revision: 1,
   default: false,
   public: false,
