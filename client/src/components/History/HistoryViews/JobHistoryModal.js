@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
 import { DescriptionList, LoadingSpinner, Expand, Message } from '_common';
 import PropTypes from 'prop-types';
-import { getOutputPathFromHref } from 'utils/jobsUtil';
 import { formatDateTime } from 'utils/timeFormat';
 import { getStatusText } from '../../Jobs/JobsStatus';
 
@@ -50,7 +49,7 @@ const reduceInputParameters = data =>
   }, {});
 
 function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
-  const outputPath = getOutputPathFromHref(jobDetails._links.archiveData.href);
+  const outputPath = `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const failureStates = ['FAILED', 'BLOCKED'];
