@@ -11,7 +11,7 @@ from django.conf import settings
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
-from portal.apps.users.utils import get_allocations, get_usernames, get_user_data
+from portal.apps.users.utils import get_allocations, get_usernames, get_user_data, get_per_user_allocation_usage
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +136,7 @@ class TeamView(BaseApiView):
         : rtype: dict
         """
         usernames = get_usernames(project_name)
-        return JsonResponse({'usernames': usernames}, safe=False)
+        return JsonResponse({'response': usernames}, safe=False)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -145,3 +145,11 @@ class UserDataView(BaseApiView):
     def get(self, request, username):
         user_data = get_user_data(username)
         return JsonResponse({username: user_data})
+
+
+@method_decorator(login_required, name='dispatch')
+class AllocationUsageView(BaseApiView):
+
+    def get(self, request, allocation_id):
+        usage = get_per_user_allocation_usage(allocation_id)
+        return JsonResponse({'response': usage})

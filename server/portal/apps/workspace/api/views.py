@@ -264,6 +264,8 @@ class JobsView(BaseApiView):
                 _, license_models = get_license_info()
                 license_model = [x for x in license_models if x.license_type == lic_type][0]
                 lic = license_model.objects.filter(user=request.user).first()
+                if not lic:
+                    raise ApiException("You are missing the required license for this application.")
                 job_post['parameters']['_license'] = lic.license_as_str()
 
             # url encode inputs

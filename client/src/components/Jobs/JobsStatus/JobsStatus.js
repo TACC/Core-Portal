@@ -6,7 +6,7 @@ import { Icon } from '_common';
 import JobsSessionModal from '../JobsSessionModal';
 import './JobsStatus.module.scss';
 
-const STATUS_TEXT_MAP = {
+export const STATUS_TEXT_MAP = {
   ACCEPTED: 'Processing',
   PENDING: 'Processing',
   PROCESSING_INPUTS: 'Processing',
@@ -22,7 +22,23 @@ const STATUS_TEXT_MAP = {
   STOPPED: 'Stopped',
   FAILED: 'Failure',
   BLOCKED: 'Blocked',
-  PAUSED: 'Paused'
+  PAUSED: 'Paused',
+  toastMap(status) {
+    /* Post-process mapped status message to get a toast message translation. */
+    const mappedStatus = getStatusText(status);
+    switch (mappedStatus) {
+      case 'Running':
+        return 'is now running';
+      case 'Failure' || 'Stopped':
+        return status.toLowerCase();
+      case 'Finished':
+        return 'finished successfully';
+      case 'Unknown':
+        return 'is in an unknown state';
+      default:
+        return `is ${mappedStatus.toLowerCase()}`;
+    }
+  }
 };
 
 export function getStatusText(status) {
@@ -59,10 +75,17 @@ function JobsStatus({ status, fancy, jobId }) {
 
   /* Check if job is running AND has interactive session */
   if (status === 'RUNNING') {
+    const jobConcluded = [
+      'CLEANING_UP',
+      'ARCHIVING',
+      'FINISHED',
+      'STOPPED',
+      'FAILED'
+    ];
     const interactiveNotifs = notifs.filter(
       n =>
         n.event_type === 'interactive_session_ready' &&
-        n.extra.status === 'RUNNING'
+        !jobConcluded.includes(n.extra.status) // need to account for the possibility of session ready and job status notifs coming out of order
     );
     const notif = interactiveNotifs.find(n => n.extra.id === jobId);
     interactiveSessionLink = notif ? notif.action_link : null;
