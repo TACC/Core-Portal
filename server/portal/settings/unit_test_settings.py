@@ -535,3 +535,13 @@ PORTAL_EXEC_SYSTEMS = {
         'scratch_dir': '/scratch1/{}'
     }
 }
+
+PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+    {
+        'name': 'Community Data',
+        'system': 'portal.storage.community',
+        'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    }
+]

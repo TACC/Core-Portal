@@ -19,7 +19,6 @@ from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.accounts.models import SSHKeys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
-# from portal.apps.onboarding.execute import execute_setup_steps
 
 logger = logging.getLogger(__name__)
 
@@ -88,9 +87,6 @@ def setup(username, system):
     return home_dir, home_sys
 
 
-# Is this needed? - Yes, need to merge this functionality with that existing in user_systems.
-# we have a "reset_system_keys" function in the systems manager.
-# this is used in portal.apps.api.views.systems.SystemKeysView
 def reset_system_keys(username, system_id):
     """Reset system's Keys
 
