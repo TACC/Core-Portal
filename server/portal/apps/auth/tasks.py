@@ -38,7 +38,6 @@ def get_user_storage_systems(username, systems):
     systems_to_configure = {}
     user_resources = []
 
-    # HISAL
     # get list of user's allocation resources
     for alloc in user_allocations['active'] + user_allocations['inactive']:
         for sys in alloc['systems']:
@@ -46,7 +45,7 @@ def get_user_storage_systems(username, systems):
 
     # return systems on this portal that user has allocations for
     for sys_name, sys_detail in systems.items():
-        required_allocation = sys_detail.getattr('requires_allocation', None)
+        required_allocation = sys_detail.get('requires_allocation', None)
         if not required_allocation or (required_allocation and required_allocation in user_resources):
             systems_to_configure[sys_name] = sys_detail
 

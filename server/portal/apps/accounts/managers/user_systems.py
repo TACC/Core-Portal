@@ -13,6 +13,7 @@ from portal.libs.agave.utils import service_account
 from portal.utils import encryption as EncryptionUtil
 from portal.apps.users.utils import get_user_data
 from requests.exceptions import HTTPError
+from django.core.exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
@@ -108,52 +109,68 @@ class UserSystemsManager():
         """Gets private storage directory for a user
         :returns: '{tasid}/{username}'
         """
-
         return self.tas_user['homeDirectory']
 
     def setup_private_system(self, *args, **kwargs):
         """Create private storage system for a user
         :returns: Agave response
         """
-        agc = service_account()
         try:
-            private_system = agc.systems.get(systemId=self.get_system_id())
-            # not sure if we should auto activate a deactivated system...
-            # if not private_system['available']:
-            #     # set private system to available if it is not.
-            #     tenant_base_url = settings.AGAVE_TENANT_BASEURL
-            #     token = settings.AGAVE_SUPER_TOKEN
-            #     url = "{base}/systems/v2/{system_id}".format(base=tenant_base_url, system_id=self.get_system_id())
-            #     headers = {'Authorization': 'Bearer %s' % token}
-            #     body = {"action": "enable"}
-            #     private_system = requests.put(url, data=body, headers=headers)
-            #     return private_system
-            #     if response.status_code != 200:
-            #         raise
-            # else:
+            private_system = StorageSystem(service_account(), self.get_system_id(), ignore_error=None)
+            # If system exists and is disabled, reset with config and enable
+            if not private_system.available:
+                private_system = self.validate_storage_system(private_system.id)
             return private_system
         except HTTPError as exc:
             if exc.response.status_code == 404:
-                private_key = EncryptionUtil.create_private_key()
-                priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
-                public_key = EncryptionUtil.create_public_key(private_key)
-                publ_key_str = EncryptionUtil.export_key(public_key, 'OpenSSH')
-                private_system = self.get_system_definition(
-                    publ_key_str,
-                    priv_key_str
-                )
-                private_system.validate()
-                private_system.save()
-                private_system.update_role(self.user.username, 'OWNER')
-                SSHKeys.objects.save_keys(
-                    self.user,
-                    system_id=private_system.id,
-                    priv_key=priv_key_str,
-                    pub_key=publ_key_str
-                )
+                private_system = self.validate_storage_system(self.get_system_id())
                 return private_system
             else:
                 raise
+
+    def validate_storage_system(self, system_id):
+        # Check if host keys already exist for user for storage host
+        try:
+            keys = self.user.ssh_keys.for_hostname(hostname=self.get_host())
+            priv_key_str = keys.private_key()
+            publ_key_str = keys.public
+        except ObjectDoesNotExist:
+            private_key = EncryptionUtil.create_private_key()
+            priv_key_str = EncryptionUtil.export_key(private_key, 'PEM')
+            public_key = EncryptionUtil.create_public_key(private_key)
+            publ_key_str = EncryptionUtil.export_key(public_key, 'OpenSSH')
+
+        system = self.get_system_definition(
+            publ_key_str,
+            priv_key_str
+        )
+
+        # Save a new system, or update an existing one if it was disabled
+        try:
+            system.save()
+        except ValueError:
+            system.update()
+
+        # Ensure user is OWNER
+        system.update_role(self.user.username, 'OWNER')
+
+        # Enable a disabled system
+        if not system.available:
+            system.enable()
+
+        SSHKeys.objects.update_hostname_keys(
+            self.user,
+            hostname=system.storage.host,
+            priv_key=priv_key_str,
+            pub_key=publ_key_str
+        )
+        SSHKeys.objects.update_keys(
+            self.user,
+            system_id=system.id,
+            priv_key=priv_key_str,
+            pub_key=publ_key_str
+        )
+        return system
 
     def get_system_definition(
             self,

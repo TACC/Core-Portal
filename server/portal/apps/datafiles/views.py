@@ -32,7 +32,7 @@ class SystemListingView(BaseApiView):
                     'icon': details['icon']
                 }
             )
-        response['system_list'].append(portal_systems)
+        response['system_list'] += portal_systems
 
         return JsonResponse(response)
 
