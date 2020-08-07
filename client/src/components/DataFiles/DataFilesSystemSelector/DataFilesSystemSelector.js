@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,10 +10,12 @@ const DataFilesSystemSelector = ({ systemId, section }) => {
   const systemList = useSelector(state => state.systems.systemList);
   const findSystem = id => systemList.find(system => system.system === id);
   const initialSystem = systemId ? findSystem(systemId) : systemList[0];
+  const [ selectedSystem, setSelectedSystem ] = useState(initialSystem.system);
 
   const openSystem = useCallback(
     event => {
       const system = findSystem(event.target.value);
+      setSelectedSystem(system.system);
       dispatch({
         type: 'FETCH_FILES',
         payload: {
@@ -22,14 +24,15 @@ const DataFilesSystemSelector = ({ systemId, section }) => {
         }
       });
     },
-    [dispatch, section, findSystem, systemList]
+    [dispatch, section, findSystem, setSelectedSystem]
   );
 
   return (
     <>
+      {selectedSystem.system}
       <DropdownSelector
         onChange={openSystem}
-        defaultValue={initialSystem}
+        value={selectedSystem}
         styleName="system-select"
       >
         {systemList.map(system => (
