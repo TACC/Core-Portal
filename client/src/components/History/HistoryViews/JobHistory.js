@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
-import PropTypes from 'prop-types';
 import JobsView from '../../Jobs';
+import './HistoryViews.scss';
 
-const JobHistory = ({ className }) => {
+const JobHistory = () => {
   const { notifs } = useSelector(
     state => state.notifications.list,
     shallowEqual
@@ -13,25 +13,15 @@ const JobHistory = ({ className }) => {
     .map(n => n.extra.id);
   const rowProps = row => {
     return {
-      className: unreadIds.includes(row.original.id) ? 'highlight' : ''
+      className: unreadIds.includes(row.original.id) ? 'unread' : ''
     };
   };
 
   return (
-    <JobsView
-      className={className}
-      showDetails
-      showFancyStatus
-      rowProps={rowProps}
-    />
+    <div className="job-history">
+      <JobsView showDetails showFancyStatus rowProps={rowProps} />
+    </div>
   );
-};
-JobHistory.propTypes = {
-  /** Additional className for the root element */
-  className: PropTypes.string
-};
-JobHistory.defaultProps = {
-  className: ''
 };
 
 export default JobHistory;
