@@ -90,7 +90,7 @@ const DataFilesMkdirModal = () => {
               <Message
                 type="warn"
                 hidden={dirname === '' || validated}
-                style={{ paddingTop: '10px' }}
+                className="dataFilesValidationMessage"
               >
                 Valid characters are: <kbd>A-Z a-z 0-9 . _ -</kbd>
               </Message>
