@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
 import { useSelector, useDispatch } from 'react-redux';
 import { string } from 'prop-types';
-import { Icon } from '_common';
+import { Message } from '_common';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
@@ -80,26 +80,23 @@ export const useAllocations = page => {
 
 const ErrorMessage = () => {
   const dispatch = useDispatch();
-  const action = (
-    <a
-      href="#"
-      style={{ color: '#9d85ef' }}
-      onClick={e => {
-        e.preventDefault();
-        e.stopPropagation();
-        dispatch({ type: 'GET_ALLOCATIONS' });
-      }}
-    >
-      Try reloading the page.
-    </a>
-  );
+
   return (
-    <>
-      <span style={{ color: '#9d85ef' }}>
-        <Icon name="alert">Warn</Icon> Unable to retrieve your allocations.
-      </span>{' '}
-      {action}
-    </>
+    <Message type="warn">
+      Try{' '}
+      <a
+        href="#"
+        style={{ color: '#9d85ef' }}
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+          dispatch({ type: 'GET_ALLOCATIONS' });
+        }}
+      >
+        reloading the page
+      </a>
+      .
+    </Message>
   );
 };
 
