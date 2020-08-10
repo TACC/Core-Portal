@@ -1,14 +1,13 @@
 import os
 import json
 from django.conf import settings
-from mock import patch, Mock
+from mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.libs.agave.models.applications import Application
 from portal.libs.agave.models.systems.execution import ExecutionSystem
-from unittest import skip
 
 
 class TestUserApplicationsManager(TestCase):
