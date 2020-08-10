@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { parse } from 'query-string';
+import { useLocation } from 'react-router-dom';
 import {
   CheckboxCell,
   CheckboxHeaderCell,
@@ -14,6 +16,7 @@ import DataFilesTable from '../DataFilesTable/DataFilesTable';
 const DataFilesListing = ({ api, scheme, system, path }) => {
   // Redux hooks
   const dispatch = useDispatch();
+  const queryString = parse(useLocation().search).query_string;
   const files = useSelector(
     state => state.files.listing.FilesListing,
     shallowEqual
@@ -28,7 +31,8 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
         system,
         path: path || '/',
         section: 'FilesListing',
-        offset: files.length
+        offset: files.length,
+        queryString
       }
     });
   }, [dispatch, files.length]);
@@ -95,15 +99,13 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
   ]);
 
   return (
-    <div className="h-100">
-      <DataFilesTable
-        data={files}
-        columns={columns}
-        rowSelectCallback={rowSelectCallback}
-        scrollBottomCallback={scrollBottomCallback}
-        section="FilesListing"
-      />
-    </div>
+    <DataFilesTable
+      data={files}
+      columns={columns}
+      rowSelectCallback={rowSelectCallback}
+      scrollBottomCallback={scrollBottomCallback}
+      section="FilesListing"
+    />
   );
 };
 DataFilesListing.propTypes = {
