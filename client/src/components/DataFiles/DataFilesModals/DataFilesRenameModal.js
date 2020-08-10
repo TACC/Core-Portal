@@ -13,7 +13,7 @@ import {
   Label
 } from 'reactstrap';
 import PropTypes from 'prop-types';
-import { LoadingSpinner, Message, Icon } from '_common';
+import { LoadingSpinner, Message } from '_common';
 
 const DataFilesRenameStatus = ({ status }) => {
   switch (status) {
