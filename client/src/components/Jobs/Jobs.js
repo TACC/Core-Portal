@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -6,7 +6,7 @@ import 'react-table-6/react-table.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { AppIcon, InfiniteScrollTable } from '_common';
-
+import { getOutputPathFromHref } from 'utils/jobsUtil';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
@@ -29,9 +29,6 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       .
     </>
   );
-  useEffect(() => {
-    dispatch({ type: 'GET_JOBS', params: { offset: 0, limit } });
-  }, [dispatch]);
 
   const infiniteScrollCallback = useCallback(offset => {
     // The only way we have some semblance of
@@ -43,6 +40,22 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       dispatch({ type: 'GET_JOBS', params: { offset, limit } });
     }
   }, []);
+
+  const jobDetailLink = useCallback(
+    ({
+      row: {
+        original: { id, name }
+      }
+    }) => (
+      <Link
+        to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}?name=${name}`}
+        className="wb-link"
+      >
+        View Details
+      </Link>
+    ),
+    []
+  );
 
   if (error) {
     return (
@@ -96,26 +109,15 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Details',
       accessor: 'id',
       show: showDetails,
-      Cell: el => (
-        <Link
-          to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${el.value}`}
-          className="wb-link"
-        >
-          View Details
-        </Link>
-      )
+      Cell: jobDetailLink
     },
     {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
       Cell: el => {
-        const outputPath = el.value
-          .split('/')
-          .slice(7)
-          .filter(Boolean)
-          .join('/');
-        return outputPath !== 'listings' ? (
+        const outputPath = getOutputPathFromHref(el.value);
+        return outputPath ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
             className="wb-link job__path"
