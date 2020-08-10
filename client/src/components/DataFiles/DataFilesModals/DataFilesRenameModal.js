@@ -107,7 +107,7 @@ const DataFilesRenameModal = () => {
         <ModalBody>
           <FormGroup>
             <Label>Enter the new name for this file:</Label>
-            <div className="input-group mb-3">
+            <div className="input-group">
               <Input
                 onChange={validate}
                 className="form-control"
