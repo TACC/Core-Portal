@@ -23,7 +23,7 @@ $frontera-portal-color-primary: #9d85ef;
   font-weight: 500;
 }
 
-/* HACK: Quick solution to prevent styles from cascading into header dropdown */
+/* HACK: Quick solution (via FP-579) to prevent styles from cascading into header dropdown */
 .data-files-sidebar {
 
   .data-files-btn {
