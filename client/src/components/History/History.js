@@ -11,6 +11,7 @@ import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 
 import JobHistory from './HistoryViews';
+import JobHistoryModal from './HistoryViews/JobHistoryModal';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
 import './History.module.scss';
@@ -65,11 +66,25 @@ const Sidebar = () => {
 
 export const Routes = () => {
   const { path } = useRouteMatch();
+  const dispatch = useDispatch();
+
   return (
     <div styleName="content" data-testid="history-router">
       <Switch>
         <Route path={`${root}/jobs`}>
           <JobHistory />
+          <Switch>
+            <Route
+              path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
+              render={({ match: { params } }) => {
+                dispatch({
+                  type: 'GET_JOB_DETAILS',
+                  payload: { jobId: params.jobId }
+                });
+                return <JobHistoryModal jobId={params.jobId} />;
+              }}
+            />
+          </Switch>
         </Route>
         {/* Redirect from /workbench/history to /workbench/history/jobs */}
         <Redirect from={root} to={`${root}/jobs`} />
