@@ -25,86 +25,87 @@ $frontera-portal-color-primary: #9d85ef;
 
 /* HACK: Quick solution (via FP-579) to prevent styles from cascading into header dropdown */
 .data-files-sidebar {
+/* FAQ: No indent, so that diff is less frightening */
+/* TODO: Fix indentation (as necessary) when converting to CSS Module */
+.data-files-btn {
+  background-color: #9d85ef;
+  border-color: #9d85ef;
+  border-radius: 0;
+}
 
-  .data-files-btn {
-    background-color: #9d85ef;
-    border-color: #9d85ef;
-    border-radius: 0;
-  }
+.data-files-btn-cancel {
+  border-radius: 0;
+}
 
-  .data-files-btn-cancel {
-    border-radius: 0;
-  }
+#data-files-add {
+  width: 140px;
+}
 
-  #data-files-add {
-    width: 140px;
-  }
+.data-files-nav {
+  padding-top: 20px;
+  /* Pull back sidebar to the left, so it can use (as UI design dictactes)
+      the negative space created from `data-files-wrapper`'s `padding` */
+  margin-left: -$data-files-wrapper-horizontal-padding;
+}
 
-  .data-files-nav {
-    padding-top: 20px;
-    /* Pull back sidebar to the left, so it can use (as UI design dictactes)
-        the negative space created from `data-files-wrapper`'s `padding` */
-    margin-left: -$data-files-wrapper-horizontal-padding;
-  }
+.dropdown-menu {
+  border-color: $frontera-portal-color-primary;
+  border-radius: 0;
+  margin-top: 11px;
+  padding: 0;
+  width: 200px;
+  vertical-align: top;
+}
+.dropdown-menu::before {
+  position: absolute;
+  top: -10px;
+  left: 65px;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid $frontera-portal-color-primary;
+  border-left: 10px solid transparent;
+  content: '';
+}
+.dropdown-menu::after {
+  position: absolute;
+  top: -9px;
+  left: 66px;
+  border-right: 9px solid transparent;
+  border-bottom: 9px solid #ffffff;
+  border-left: 9px solid transparent;
+  content: '';
+}
 
-  .dropdown-menu {
-    border-color: $frontera-portal-color-primary;
-    border-radius: 0;
-    margin-top: 11px;
-    padding: 0;
-    width: 200px;
-    vertical-align: top;
-  }
-  .dropdown-menu::before {
-    position: absolute;
-    top: -10px;
-    left: 65px;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid $frontera-portal-color-primary;
-    border-left: 10px solid transparent;
-    content: '';
-  }
-  .dropdown-menu::after {
-    position: absolute;
-    top: -9px;
-    left: 66px;
-    border-right: 9px solid transparent;
-    border-bottom: 9px solid #ffffff;
-    border-left: 9px solid transparent;
-    content: '';
-  }
+.complex-dropdown-item {
+  border-top: 1px solid #707070;
+  display: flex;
+}
 
-  .complex-dropdown-item {
-    border-top: 1px solid #707070;
-    display: flex;
+.multiline-menu-item-wrapper {
+  display: inline-block;
+  padding-left: 5px;
+  line-height: 1.1em;
+  small {
+    display: block;
+    color: #484848;
   }
+}
 
-  .multiline-menu-item-wrapper {
-    display: inline-block;
-    padding-left: 5px;
-    line-height: 1.1em;
-    small {
-      display: block;
-      color: #484848;
-    }
+.dropdown-item {
+  padding: 10px 6px;
+  color: #707070;
+  font-size: 14px;
+  i {
+      padding-right: 19px;
+      font-size: 20px;
+      vertical-align: middle;
   }
-
-  .dropdown-item {
-    padding: 10px 6px;
+  &:hover {
     color: #707070;
-    font-size: 14px;
-    i {
-        padding-right: 19px;
-        font-size: 20px;
-        vertical-align: middle;
-    }
-    &:hover {
-      color: #707070;
-    }
   }
+}
 
-  .dropdown-item:focus,
-  .dropdown-item:hover {
-    background-color: #E6E0FB;
-  }
+.dropdown-item:focus,
+.dropdown-item:hover {
+  background-color: #E6E0FB;
+}
 }
