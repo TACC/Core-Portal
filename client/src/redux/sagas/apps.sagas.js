@@ -167,6 +167,14 @@ function sortAppMetaUtil(payload) {
   return { appDict, categoryDict, appIcons };
 }
 
+export async function fetchAppDefinitionUtil(appId) {
+  const result = await fetchUtil({
+    url: '/api/workspace/apps',
+    params: { app_id: appId }
+  });
+  return result.response;
+}
+
 function* getApps() {
   yield put({ type: 'GET_APPS_START' });
   try {
@@ -230,11 +238,8 @@ function* getApp(action) {
     });
   } else {
     try {
-      const res = yield call(fetchUtil, {
-        url: '/api/workspace/apps',
-        params: { app_id: appId }
-      });
-      yield put({ type: 'LOAD_APP', payload: res.response });
+      const app = yield call(fetchAppDefinitionUtil, appId);
+      yield put({ type: 'LOAD_APP', payload: app });
     } catch (error) {
       yield put({ type: 'GET_APP_ERROR', payload: error });
     }
