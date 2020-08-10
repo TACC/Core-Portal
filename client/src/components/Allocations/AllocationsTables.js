@@ -83,7 +83,7 @@ const ErrorMessage = () => {
 
   return (
     <Message type="warn">
-      Try{' '}
+      Unable to retrieve your allocations. Try{' '}
       <a
         href="#"
         style={{ color: '#9d85ef' }}
