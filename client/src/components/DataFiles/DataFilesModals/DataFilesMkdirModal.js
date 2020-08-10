@@ -12,8 +12,7 @@ import {
   Input,
   Label
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { Message } from '_common';
 
 const DataFilesMkdirModal = () => {
   const dispatch = useDispatch();
@@ -88,19 +87,14 @@ const DataFilesMkdirModal = () => {
                 className="form-control"
                 value={dirname}
               />
-              <div
+              <Message
+                type="warn"
                 hidden={dirname === '' || validated}
                 style={{ paddingTop: '10px' }}
               >
-                <span style={{ color: '#9d85ef' }}>
-                  <FontAwesomeIcon
-                    icon={faExclamationTriangle}
-                    style={{ marginRight: '10px' }}
-                    color="#9d85ef"
-                  />
-                  Valid characters for folder names are <b>A-Z a-z 0-9 . _ -</b>
-                </span>
-              </div>
+                Valid characters for folder names are:{' '}
+                <kbd>A-Z a-z 0-9 . _ -</kbd>
+              </Message>
             </FormGroup>
           </ModalBody>
           <ModalFooter>
