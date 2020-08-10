@@ -3,7 +3,7 @@ import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { useSelector, shallowEqual } from 'react-redux';
 // import PropTypes from 'prop-types';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
-import { AppIcon, Icon } from '_common';
+import { AppIcon, Icon, Message } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
@@ -22,14 +22,9 @@ const AppBrowser = () => {
 
   if (error.isError) {
     return (
-      <div className="appDetail-error">
-        <Icon name="alert">Warning</Icon>
-        {error.message ? (
-          <div>{error.message}</div>
-        ) : (
-          <div>Something went wrong!</div>
-        )}
-      </div>
+      <Message type="warn" className="appDetail-error">
+        {error.message ? error.message : 'Something went wrong!'}
+      </Message>
     );
   }
 

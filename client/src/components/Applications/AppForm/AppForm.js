@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, FormGroup, Alert } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { AppIcon, FormField, Icon, LoadingSpinner } from '_common';
+import { AppIcon, FormField, Icon, LoadingSpinner, Message } from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
 import './AppForm.scss';
@@ -56,9 +56,9 @@ const AppDetail = () => {
     const errorText = error.message ? error.message : 'Something went wrong!';
 
     return (
-      <div className="appDetail-error">
-        <Icon name="alert">Warning</Icon> <div>{errorText}</div>
-      </div>
+      <Message type="warn" className="appDetail-error">
+        {errorText}
+      </Message>
     );
   }
 

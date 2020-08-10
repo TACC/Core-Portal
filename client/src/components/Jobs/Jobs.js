@@ -3,9 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import 'react-table-6/react-table.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { AppIcon, InfiniteScrollTable } from '_common';
+import { AppIcon, InfiniteScrollTable, Message } from '_common';
 
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
@@ -46,13 +44,9 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
 
   if (error) {
     return (
-      <div className="appDetail-error">
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          style={{ marginRight: '10px' }}
-        />
-        <div>We were unable to retrieve your jobs!</div>
-      </div>
+      <Message type="warn" className="appDetail-error">
+        We were unable to retrieve your jobs!
+      </Message>
     );
   }
 
