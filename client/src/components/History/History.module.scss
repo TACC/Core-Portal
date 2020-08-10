@@ -7,15 +7,24 @@
 .container {
     /* As a flex item */
     flex-grow: 1;
-    flex-shrink: 0; /* Prevent Safari from shrinking this element (FP-389) */
 
     /* As a flex container */
     display: flex;
+    flex-direction: row;
+
+    /* Allow children to `overflow: scroll` but match height of this parent */
+    overflow: auto;
 
     border-top: 1px solid #707070;
 }
+/* Make right-most item fill up remaining horizontal space */
+.container > :last-child {
+    flex-grow: 1;
+}
 
 .content {
+    overflow-y: auto;
+
     padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
     padding-left: 1.25em;
 }
