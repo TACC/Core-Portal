@@ -83,7 +83,7 @@ const ErrorMessage = () => {
 
   return (
     <Message type="warn">
-      Unable to retrieve your allocations. Try{' '}
+      Unable to retrieve your allocations.{' '}
       <a
         href="#"
         style={{ color: '#9d85ef' }}
@@ -93,9 +93,8 @@ const ErrorMessage = () => {
           dispatch({ type: 'GET_ALLOCATIONS' });
         }}
       >
-        reloading the page
+        Try reloading the page.
       </a>
-      .
     </Message>
   );
 };
