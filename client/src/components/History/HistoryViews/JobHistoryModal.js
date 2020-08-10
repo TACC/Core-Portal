@@ -166,7 +166,6 @@ function JobHistoryModal({ jobId }) {
           data={headerData}
           direction="horizontal"
           styleName="header-details"
-          density="compact"
         />
       </ModalHeader>
 
