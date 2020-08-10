@@ -195,6 +195,7 @@
 .icon-multiple-coversation:before {
   content: "\e930";
 }
+/* TACC: This is meant for non-published storage. regardless of which system it lives on */
 .icon-my-data:before {
   content: "\e931";
 }
