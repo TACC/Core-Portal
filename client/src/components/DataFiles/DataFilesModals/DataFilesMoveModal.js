@@ -124,6 +124,14 @@ const DataFilesMoveModal = React.memo(() => {
                 section="modal"
               />
             </div>
+            <DataFilesBreadcrumbs
+              api={modalParams.api}
+              scheme={modalParams.scheme}
+              system={modalParams.system}
+              path={modalParams.path || '/'}
+              section="modal"
+              systemSelector
+            />
             <div className="filesListing">
               <DataFilesModalListingTable
                 data={files.filter(f => f.format === 'folder')}
