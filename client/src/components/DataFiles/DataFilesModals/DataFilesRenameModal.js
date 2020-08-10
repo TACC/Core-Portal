@@ -13,9 +13,7 @@ import {
   Label
 } from 'reactstrap';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message, Icon } from '_common';
 
 const DataFilesRenameStatus = ({ status }) => {
   switch (status) {
@@ -124,19 +122,13 @@ const DataFilesRenameModal = () => {
                 </div>
               )}
             </div>
-            <div
+            <Message
+              type="warn"
               hidden={newName === '' || validated}
               style={{ paddingTop: '10px' }}
             >
-              <span style={{ color: '#9d85ef' }}>
-                <FontAwesomeIcon
-                  icon={faExclamationTriangle}
-                  style={{ marginRight: '10px' }}
-                  color="#9d85ef"
-                />
-                Valid characters are <b>A-Z a-z 0-9 . _ -</b>
-              </span>
-            </div>
+              Valid characters are: <kbd>A-Z a-z 0-9 . _ -</kbd>
+            </Message>
           </FormGroup>
         </ModalBody>
         <ModalFooter>
