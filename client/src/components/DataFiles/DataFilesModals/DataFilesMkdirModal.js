@@ -92,8 +92,7 @@ const DataFilesMkdirModal = () => {
                 hidden={dirname === '' || validated}
                 style={{ paddingTop: '10px' }}
               >
-                Valid characters for folder names are:{' '}
-                <kbd>A-Z a-z 0-9 . _ -</kbd>
+                Valid characters are: <kbd>A-Z a-z 0-9 . _ -</kbd>
               </Message>
             </FormGroup>
           </ModalBody>
