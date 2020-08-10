@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
 import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
+import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemSelector';
 
 const DataFilesCopyModal = React.memo(() => {
   const history = useHistory();
@@ -115,13 +116,20 @@ const DataFilesCopyModal = React.memo(() => {
             </div>
           </div>
           <div className="col-md-6 d-flex flex-column">
-            <div className="dataFilesModalColHeader">Destination</div>
+            <div className="dataFilesModalColHeader">
+              Destination
+              <DataFilesSystemSelector
+                systemId={modalParams.system}
+                section="modal"
+              />
+            </div>
             <DataFilesBreadcrumbs
               api={modalParams.api}
               scheme={modalParams.scheme}
               system={modalParams.system}
               path={modalParams.path || '/'}
               section="modal"
+              systemSelector
             />
             <div className="filesListing">
               <DataFilesModalListingTable

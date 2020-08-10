@@ -25,7 +25,7 @@ describe('DataFiles', () => {
       systems: systemsFixture,
       files: filesFixture
     });
-    const { getByText } = renderComponent(
+    const { getByText, getAllByText } = renderComponent(
       <DataFiles />,
       store,
       history
@@ -33,7 +33,7 @@ describe('DataFiles', () => {
     expect(history.location.pathname).toEqual(
       '/workbench/data/tapis/private/frontera.home.username/'
     );
-    expect(getByText(/My Data \(Frontera\)/)).toBeDefined();
+    expect(getAllByText(/My Data \(Frontera\)/)).toBeDefined();
     expect(getByText(/My Data \(Longhorn\)/)).toBeDefined();
   });
 });
