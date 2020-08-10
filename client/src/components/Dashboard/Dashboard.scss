@@ -3,6 +3,8 @@
     flex-direction: column;
 
     padding: 20px 40px 0 25px;
+
+    overflow: auto;
 }
 .dashboard-items {
     /* As a flex item */
