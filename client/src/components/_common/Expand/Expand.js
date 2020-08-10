@@ -31,8 +31,7 @@ Expand.propTypes = {
   className: PropTypes.string,
 
   detail: PropTypes.string.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  message: PropTypes.object.isRequired
+  message: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired
 };
 Expand.defaultProps = {
   className: ''
