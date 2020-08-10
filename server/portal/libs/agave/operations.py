@@ -5,8 +5,11 @@ from django.conf import settings
 from requests.exceptions import HTTPError
 import logging
 from elasticsearch_dsl import Q
+from agavepy.async import AgaveAsyncResponse, Error
 from portal.libs.elasticsearch.indexes import IndexedFile
 from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
+from portal.exceptions.api import ApiException
+
 
 logger = logging.getLogger(__name__)
 
@@ -231,8 +234,29 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
             fileName=str(file_name),
             urlToIngest=src_url
         )
-        client.files.delete(systemId=src_system,
-                            filePath=urllib.parse.quote(src_path))
+        logger.debug(
+            "Starting import operation from {} to {}: {}".format(
+                src_system, dest_system, move_result
+            )
+        )
+        try:
+            async_resp = AgaveAsyncResponse(client, move_result)
+            async_status = async_resp.result(600)
+            if async_status == u'FAILED':
+                raise ApiException(
+                    "Failed to transfer data from {} to {}".format(
+                        src_system, dest_system
+                    )
+                )
+        except (Error, ApiException) as err:
+            logger.error(err)
+            raise err
+
+
+        client.files.delete(
+            systemId=src_system,
+            filePath=urllib.parse.quote(src_path)
+        )
 
     if os.path.dirname(src_path) != dest_path or src_path != dest_path:
         agave_indexer.apply_async(kwargs={'systemId': src_system,

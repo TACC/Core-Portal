@@ -85,6 +85,30 @@ class TestOperations(TestCase):
 
         self.assertEqual(mock_indexer.apply_async.call_count, 3)
 
+    @patch('portal.libs.agave.operations.AgaveAsyncResponse')
+    @patch('portal.libs.agave.operations.agave_indexer')
+    def test_cross_system_move(self, mock_indexer, mock_async):
+        mock_async.return_value.result.return_value = u'SUCCESS'
+        client = MagicMock()
+        client.files.list.side_effect = HTTPError(response=MagicMock(status_code=404))
+        client.files.importData.return_value = {'nativeFormat': 'dir'}
+
+        move(client, 'test.system', '/path/to/src', 'test.remote.system', '/path/to/dest')
+
+        client.files.importData.assert_called_with(
+            systemId='test.remote.system',
+            filePath='/path/to/dest',
+            fileName='src',
+            urlToIngest='agave://test.system//path/to/src'
+        )
+
+        client.files.delete.assert_called_with(
+            systemId='test.system',
+            filePath='/path/to/src'
+        )
+
+        self.assertEqual(mock_indexer.apply_async.call_count, 3)
+
     @patch('portal.libs.agave.operations.agave_indexer')
     def test_copy(self, mock_indexer):
         client = MagicMock()
