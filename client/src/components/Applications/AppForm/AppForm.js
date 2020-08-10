@@ -172,10 +172,14 @@ const AppSchemaForm = ({ app }) => {
             </Alert>
           ) : (
             <Alert color="info" isOpen={visible} toggle={onDismiss}>
-              Your job has submitted successfully! See details in&nbsp;
-              <Link to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}>
-                <Button color="link">History &gt; Jobs.</Button>
+              Your job has submitted successfully. See details in{' '}
+              <Link
+                to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
+                className="wb-link"
+              >
+                History &gt; Jobs
               </Link>
+              .
             </Alert>
           )}
         </div>

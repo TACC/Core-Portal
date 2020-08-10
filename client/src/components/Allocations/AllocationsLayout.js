@@ -5,7 +5,7 @@ import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 import { Icon, LoadingSpinner } from '_common';
 import { AllocationsTable } from './AllocationsTables';
-import { NewAllocReq } from './AllocationsModals';
+import { AllocationsRequestModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
 
 export const Header = ({ page }) => {
@@ -21,7 +21,7 @@ export const Header = ({ page }) => {
         Manage Allocations
       </Button>
       {openModal && (
-        <NewAllocReq
+        <AllocationsRequestModal
           isOpen={openModal}
           toggle={() => setOpenModal(!openModal)}
         />

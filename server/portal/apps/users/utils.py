@@ -7,6 +7,8 @@ from portal.libs.elasticsearch.utils import get_sha256_hash
 import logging
 import requests
 
+from portal.exceptions.api import ApiException
+
 logger = logging.getLogger(__name__)
 
 
@@ -201,10 +203,11 @@ def get_usernames(project_name):
     auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
     r = requests.get('{0}/v1/projects/name/{1}/users'.format(settings.TAS_URL, project_name), auth=auth)
     resp = r.json()
+    logger.debug(resp)
     if resp['status'] == 'success':
         return resp['result']
     else:
-        raise Exception('Failed to get project users', resp['message'])
+        raise ApiException('Failed to get project users', resp['message'])
 
 
 def get_user_data(username):
@@ -218,7 +221,18 @@ def get_user_data(username):
         credentials={
             'username': settings.TAS_CLIENT_KEY,
             'password': settings.TAS_CLIENT_SECRET
-            }
+        }
     )
     user_data = tas_client.get_user(username=username)
     return user_data
+
+
+def get_per_user_allocation_usage(allocation_id):
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    r = requests.get('{0}/v1/allocations/{1}/usage'.format(settings.TAS_URL, allocation_id), auth=auth)
+    resp = r.json()
+    logger.debug(resp)
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise ApiException('Failed to get project users', resp['message'])

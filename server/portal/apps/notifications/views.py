@@ -16,11 +16,17 @@ class ManageNotificationsView(BaseApiView):
         """
         limit = request.GET.get('limit', 0)
         page = request.GET.get('page', 0)
+        read = request.GET.get('read')
+
+        query_params = {}
+        if read is not None:
+            query_params['read'] = read
 
         if event_type is not None:
             notifs = Notification.objects.filter(event_type=event_type,
                                                  deleted=False,
-                                                 user=request.user.username).order_by('-datetime')
+                                                 user=request.user.username,
+                                                 **query_params).order_by('-datetime')
             total = Notification.objects.filter(event_type=event_type,
                                                 deleted=False,
                                                 user=request.user.username).count()
@@ -30,7 +36,8 @@ class ManageNotificationsView(BaseApiView):
                                                  user=request.user.username).count()
         else:
             notifs = Notification.objects.filter(deleted=False,
-                                                 user=request.user.username).order_by('-datetime')
+                                                 user=request.user.username,
+                                                 **query_params).order_by('-datetime')
             total = Notification.objects.filter(deleted=False,
                                                 user=request.user.username).count()
             unread = Notification.objects.filter(deleted=False,
