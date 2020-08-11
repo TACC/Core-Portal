@@ -11,7 +11,7 @@ import {
 } from 'reactstrap';
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
-import Icon from '_common/Icon';
+import { Icon } from '_common';
 import './DataFilesSidebar.scss';
 
 const DataFilesSidebar = () => {
@@ -67,6 +67,7 @@ const DataFilesSidebar = () => {
         <div className="data-files-nav">
           <Nav vertical>
             <NavItem>
+<<<<<<< HEAD
               {systems
                 ? systems.map(sys => (
                     <NavLink
@@ -85,6 +86,18 @@ const DataFilesSidebar = () => {
                     </NavLink>
                   ))
                 : null}
+=======
+              <NavLink
+                tag={RRNavLink}
+                to={`${match.path}/tapis/private/`}
+                activeClassName="active"
+              >
+                <span className="nav-content">
+                  <Icon name="my-data" />
+                  <span className="nav-text">My Data</span>
+                </span>
+              </NavLink>
+>>>>>>> master
             </NavItem>
           </Nav>
         </div>
