@@ -23,10 +23,6 @@ $frontera-portal-color-primary: #9d85ef;
   font-weight: 500;
 }
 
-/* HACK: Quick solution (via FP-579) to prevent styles from cascading into header dropdown */
-.data-files-sidebar {
-/* FAQ: No indent, so that diff is less frightening */
-/* TODO: Fix indentation (as necessary) when converting to CSS Module */
 .data-files-btn {
   background-color: #9d85ef;
   border-color: #9d85ef;
@@ -48,31 +44,52 @@ $frontera-portal-color-primary: #9d85ef;
   margin-left: -$data-files-wrapper-horizontal-padding;
 }
 
-.dropdown-menu {
-  border-color: $frontera-portal-color-primary;
-  border-radius: 0;
-  margin-top: 11px;
-  padding: 0;
-  width: 200px;
-  vertical-align: top;
-}
-.dropdown-menu::before {
-  position: absolute;
-  top: -10px;
-  left: 65px;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid $frontera-portal-color-primary;
-  border-left: 10px solid transparent;
-  content: '';
-}
-.dropdown-menu::after {
-  position: absolute;
-  top: -9px;
-  left: 66px;
-  border-right: 9px solid transparent;
-  border-bottom: 9px solid #ffffff;
-  border-left: 9px solid transparent;
-  content: '';
+/* HACK: Quick solution to prevent styles from cascading into header dropdown */
+.data-files-sidebar {
+  .dropdown-menu {
+    border-color: $frontera-portal-color-primary;
+    border-radius: 0;
+    margin-top: 11px;
+    padding: 0;
+    width: 200px;
+    vertical-align: top;
+  }
+  .dropdown-menu::before {
+    position: absolute;
+    top: -10px;
+    left: 65px;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid $frontera-portal-color-primary;
+    border-left: 10px solid transparent;
+    content: '';
+  }
+  .dropdown-menu::after {
+    position: absolute;
+    top: -9px;
+    left: 66px;
+    border-right: 9px solid transparent;
+    border-bottom: 9px solid #ffffff;
+    border-left: 9px solid transparent;
+    content: '';
+  }
+
+  .dropdown-item {
+    padding: 10px 6px;
+    color: #707070;
+    font-size: 14px;
+    i {
+        padding-right: 19px;
+        font-size: 20px;
+        vertical-align: middle;
+    }
+    &:hover {
+      color: #707070;
+    }
+  }  
+  .dropdown-item:focus,
+  .dropdown-item:hover {
+    background-color: #E6E0FB;
+  }
 }
 
 .complex-dropdown-item {
@@ -88,24 +105,4 @@ $frontera-portal-color-primary: #9d85ef;
     display: block;
     color: #484848;
   }
-}
-
-.dropdown-item {
-  padding: 10px 6px;
-  color: #707070;
-  font-size: 14px;
-  i {
-      padding-right: 19px;
-      font-size: 20px;
-      vertical-align: middle;
-  }
-  &:hover {
-    color: #707070;
-  }
-}
-
-.dropdown-item:focus,
-.dropdown-item:hover {
-  background-color: #E6E0FB;
-}
 }
