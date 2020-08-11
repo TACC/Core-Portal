@@ -39,7 +39,7 @@ export const Sidebar = () => (
         to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/approved`}
         activeClassName="active"
       >
-        <Icon name="approved" className="link-icon" />
+        <Icon name="approved-reverse" className="link-icon" />
         <span className="link-text">Approved</span>
       </NavLink>
     </NavItem>
@@ -49,7 +49,7 @@ export const Sidebar = () => (
         to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/expired`}
         activeClassName="active"
       >
-        <Icon name="denied" className="link-icon" />
+        <Icon name="denied-reverse" className="link-icon" />
         <span className="link-text">Expired</span>
       </NavLink>
     </NavItem>
