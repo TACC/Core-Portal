@@ -121,6 +121,7 @@ const DataFilesCopyModal = React.memo(() => {
               <DataFilesSystemSelector
                 systemId={modalParams.system}
                 section="modal"
+                disabled={disabled}
               />
             </div>
             <DataFilesBreadcrumbs
