@@ -5,6 +5,7 @@ from agavepy.agave import AttrDict
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.response import Hit
 from portal.libs.agave.operations import listing, search, mkdir, move, copy, rename
+from portal.exceptions.api import ApiException
 
 
 class TestOperations(TestCase):
@@ -84,6 +85,11 @@ class TestOperations(TestCase):
         })
 
         self.assertEqual(mock_indexer.apply_async.call_count, 3)
+
+    def test_cross_system_move(self):
+        client = MagicMock()
+        with self.assertRaises(ApiException):
+            move(client, 'test.system', '/path/to/src', 'other.system', '/path/to/dest')
 
     @patch('portal.libs.agave.operations.agave_indexer')
     def test_copy(self, mock_indexer):
