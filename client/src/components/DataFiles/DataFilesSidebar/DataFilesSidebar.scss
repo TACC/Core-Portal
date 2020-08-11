@@ -4,7 +4,6 @@ $frontera-portal-color-primary: #9d85ef;
 .data-files-sidebar {
   width: 165px;
   background: #ffffff;
-  border-right: #dfdfdf;
   padding-top: 10px;
   border-right: 1px solid rgba(112, 112, 112, 0.25);
 }
@@ -20,10 +19,14 @@ $frontera-portal-color-primary: #9d85ef;
 
 .data-files-sidebar .nav-text {
   padding-left: 15px;
-  font-size: 0.78em;
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
   font-weight: 500;
 }
 
+/* HACK: Quick solution (via FP-579) to prevent styles from cascading into header dropdown */
+.data-files-sidebar {
+/* FAQ: No indent, so that diff is less frightening */
+/* TODO: Fix indentation (as necessary) when converting to CSS Module */
 .data-files-btn {
   background-color: #9d85ef;
   border-color: #9d85ef;
@@ -53,7 +56,7 @@ $frontera-portal-color-primary: #9d85ef;
   width: 200px;
   vertical-align: top;
 }
-.dropdown-menu:before {
+.dropdown-menu::before {
   position: absolute;
   top: -10px;
   left: 65px;
@@ -62,14 +65,14 @@ $frontera-portal-color-primary: #9d85ef;
   border-left: 10px solid transparent;
   content: '';
 }
-.dropdown-menu:after {
+.dropdown-menu::after {
   position: absolute;
-	top: -9px;
-	left: 66px;
-	border-right: 9px solid transparent;
-	border-bottom: 9px solid #ffffff;
-	border-left: 9px solid transparent;
-	content: '';
+  top: -9px;
+  left: 66px;
+  border-right: 9px solid transparent;
+  border-bottom: 9px solid #ffffff;
+  border-left: 9px solid transparent;
+  content: '';
 }
 
 .complex-dropdown-item {
@@ -103,5 +106,6 @@ $frontera-portal-color-primary: #9d85ef;
 
 .dropdown-item:focus,
 .dropdown-item:hover {
-    background-color: #E6E0FB;
-  }
+  background-color: #E6E0FB;
+}
+}

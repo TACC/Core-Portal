@@ -11,8 +11,7 @@ import {
 } from 'reactstrap';
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop } from '@fortawesome/free-solid-svg-icons';
+import { Icon } from '_common';
 import './DataFilesSidebar.scss';
 
 const DataFilesSidebar = () => {
@@ -48,13 +47,13 @@ const DataFilesSidebar = () => {
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem onClick={toggleMkdirModal}>
-                <i className="icon-nav-folder" /> Folder
+                <i className="icon-folder" /> Folder
               </DropdownItem>
               <DropdownItem
                 className="complex-dropdown-item"
                 onClick={toggleUploadModal}
               >
-                <i className="icon-action-upload" />
+                <i className="icon-upload" />
                 <span className="multiline-menu-item-wrapper">
                   Upload
                   <small> Up to 500mb </small>
@@ -71,14 +70,10 @@ const DataFilesSidebar = () => {
                 to={`${match.path}/tapis/private/`}
                 activeClassName="active"
               >
-                <div className="nav-content">
-                  <FontAwesomeIcon
-                    icon={faDesktop}
-                    size="1x"
-                    className="side-nav-icon"
-                  />
+                <span className="nav-content">
+                  <Icon name="my-data" />
                   <span className="nav-text">My Data</span>
-                </div>
+                </span>
               </NavLink>
             </NavItem>
           </Nav>

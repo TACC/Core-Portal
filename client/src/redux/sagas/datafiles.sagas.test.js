@@ -50,7 +50,7 @@ describe("fetchFiles", () => {
     const fm = fetchMock
       .sandbox()
       .mock(
-        "/api/datafiles/tapis/listing/private/test.system/path/to/file?limit=100&offset=0",
+        "/api/datafiles/tapis/listing/private/test.system/path/to/file?limit=100&offset=0&query_string=",
         {
           body: { data: "200 response" },
           status: 200
@@ -68,7 +68,7 @@ describe("fetchFiles", () => {
         system: "test.system",
         path: "path/to/file",
         offset: 0,
-        limit: 100
+        limit: 100,
       }
     })
       .provide([
@@ -99,7 +99,8 @@ describe("fetchFiles", () => {
         "test.system",
         "path/to/file",
         0,
-        100
+        100,
+        undefined
       )
       .put({
         type: "FETCH_FILES_SUCCESS",
@@ -121,7 +122,7 @@ describe("fetchFiles", () => {
         system: "test.system",
         path: "path/to/file",
         offset: 0,
-        limit: 100
+        limit: 100,
       }
     })
       .provide([[matchers.call.fn(fetchFilesUtil), throwError({message: "404", status: 404})]])
@@ -144,7 +145,8 @@ describe("fetchFiles", () => {
         "test.system",
         "path/to/file",
         0,
-        100
+        100,
+        undefined
       )
       .put({
         type: "FETCH_FILES_ERROR",
@@ -163,11 +165,12 @@ describe("fetchFiles", () => {
       "test.system",
       "path/to/file",
       0,
-      100
+      100,
+      undefined
     );
     expect(apiResult).resolves.toEqual("200 response");
     expect(fetch).toBeCalledWith(
-      "/api/datafiles/tapis/listing/private/test.system/path/to/file?limit=100&offset=0"
+      "/api/datafiles/tapis/listing/private/test.system/path/to/file?limit=100&offset=0&query_string="
     );
   });
 });
@@ -209,7 +212,8 @@ describe("scrollFiles", () => {
         "test.system",
         "path/to/file",
         0,
-        100
+        100,
+        undefined
       )
       .put({
         type: "SCROLL_FILES_SUCCESS",

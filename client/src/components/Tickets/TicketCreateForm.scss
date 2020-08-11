@@ -42,3 +42,15 @@
 .ticket-link {
   color: #9d85ef;
 }
+
+.form-validation-error {
+  color: #eb6e6e;
+}
+
+.ticket-create-form-label {
+  display: flex;
+  align-items: center;
+  .required-badge {
+    margin-left: 10px;
+  }
+}

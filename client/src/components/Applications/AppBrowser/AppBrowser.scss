@@ -9,12 +9,15 @@
   align-items: stretch;
 
   border-bottom: 1px solid #707070;
+
+  /* FP-404: All Portal section sidebars should use this value. */
+  --min-width: 200px;
 }
 #appBrowser-sidebar,
 #appBrowser-tray .apps-grid-list {
   --vertical-buffer: 10px;
   --max-item-count: 5;
-  --item-height: 34px; /* (~30px design * 1.2 design-to-app ratio) */
+  --item-height: 35px; /* (~30px design * 1.2 design-to-app ratio) */
   /* i.e. ( items * item height ) + ( top space & bottom space ) */
   --height: calc(( var(--max-item-count) * var(--item-height) ) + ( var(--vertical-buffer) * 2 ));
 
@@ -27,15 +30,12 @@
 }
 
 #appBrowser-sidebar {
-    /* FP-404: All Portal section sidebars should use this value. */
-    --min-width: 200px;
-
     margin-left: -20px;
 }
 #appBrowser-sidebar .nav-item {
-    /* Define minimum width of list and minimum width of columns in list */
-    /* NOTE: Wes B. does not know how to do this using CSS Grid. Help is welcome. */
-    min-width: var(--min-width);
+  /* Define minimum width of list and minimum width of columns in list */
+  /* NOTE: Wes B. does not know how to do this using CSS Grid. Help is welcome. */
+  min-width: var(--min-width);
 }
 /* Overwrite browser styles */
 /* FAQ: Combining ID and classname is overspecific, but it is accurate,
@@ -45,9 +45,8 @@ ul#appBrowser-sidebar {
   list-style: none;
 }
 
-#appBrowser-sidebar .nav-link, #appBrowser-tray .nav-link {
-  padding: 5px 25px 5px 20px; /* overwrite Bootstrap, match UI design */
-
+#appBrowser-sidebar .nav-link,
+#appBrowser-tray .nav-link {
   color: #707070;
   border-radius: 0;
   cursor: pointer; /* RFE: Add `href` on links to both avoid needing this style and provide URL to app state */
@@ -56,12 +55,14 @@ ul#appBrowser-sidebar {
   white-space: nowrap;
 }
 
-#appBrowser-sidebar .nav-link.active, #appBrowser-tray .nav-link.active {
+#appBrowser-sidebar .nav-link.active,
+#appBrowser-tray .nav-link.active {
   background: #dfdaf5;
   border: none;
 }
 
-#appBrowser-sidebar .nav-link:hover, #appBrowser-tray .nav-link:hover {
+#appBrowser-sidebar .nav-link:hover,
+#appBrowser-tray .nav-link:hover {
   background: #d9d1ff;
   border: none;
 }
@@ -70,24 +71,16 @@ ul#appBrowser-sidebar {
   flex-grow: 1;
 
   background-color: #f4f4f4;
-  border-left: 1px solid rgba(112, 112, 112, .25);
+  border-left: 1px solid rgba(112, 112, 112, 0.25);
+
+  .apps-grid-item {
+    min-width: var(--min-width);
+  }
 }
 
-#appBrowser-sidebar .nav-content {
-  padding-left: 10px;
-}
-#appBrowser-tray .nav-content {
-  display: flex;
-  align-items: center;
-}
-
-#appBrowser-sidebar .nav-text, #appBrowser-tray .nav-text {
+#appBrowser-sidebar .nav-text,
+#appBrowser-tray .nav-text {
   padding-left: 15px;
-  font-size: .78em;
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
   font-weight: 500;
-}
-
-.app-icon {
-  font-size: 1.5em;
-  display: flex;
 }

@@ -1,5 +1,4 @@
 .custom-scroll {
-
   height: 50%;
 }
 
@@ -12,16 +11,14 @@
   font-size: 16px;
   border-bottom: 1px solid #e0e0e0;
 }
-.tr-even {
+.tr-background-shading {
   background: #F4F4F4;
 }
 .tr-header {
   border-bottom: 1px solid #000000;
-  padding-bottom: 0px;
+  padding-bottom: 0;
   font-weight: bold;
 }
-
-
 
 .scroll {
   display: flex;
@@ -32,10 +29,8 @@
 }
 
 .td {
-  padding: 5px;
-}
-.tr-header .td {
-  padding-top: 0;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 .listing-placeholder {

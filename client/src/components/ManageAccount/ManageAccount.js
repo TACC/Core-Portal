@@ -12,7 +12,11 @@ import {
   ThirdPartyApps,
   OptionalInformation
 } from './ManageAccountTables';
-import ManageAccountModals from './ManageAccountModals';
+import {
+  ChangePasswordModal,
+  EditOptionalInformationModal,
+  EditRequiredInformationModal
+} from './ManageAccountModals';
 import './ManageAccount.scss';
 
 const ManageAccountView = () => {
@@ -28,7 +32,7 @@ const ManageAccountView = () => {
   return (
     <Container fluid className="manage-account-wrapper">
       <Sidebar />
-      <Container fluid>
+      <Container fluid className="manage-account-content">
         <Row className="manage-account-header">
           <h5>Manage Account</h5>
           <Link to="/workbench/dashboard" style={{ fontWeight: '500' }}>
@@ -49,7 +53,9 @@ const ManageAccountView = () => {
                 )}
                 <RequiredInformation />
                 <OptionalInformation />
-                <ManageAccountModals />
+                <ChangePasswordModal />
+                <EditOptionalInformationModal />
+                <EditRequiredInformationModal />
               </>
             )}
           </Col>

@@ -8,7 +8,6 @@ from portal.apps.accounts.managers.accounts import get_user_home_system_id
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
-# Create your views here.
 
 logger = logging.getLogger(__name__)
 
@@ -37,18 +36,10 @@ class TapisFilesView(BaseApiView):
         except AttributeError:
             client = None
 
-        try:
-            response = tapis_get_handler(
-                client, scheme, system, path, operation, **request.GET.dict())
-            return JsonResponse({'data': response})
-        except HTTPError as e:
-            error_status = e.response.status_code
-            error_json = e.response.json()
-            if error_status == 502:
-                # In case of 502, fetch system definition for pushing keys.
-                error_json['system'] = dict(client.systems.get(systemId=system))
+        response = tapis_get_handler(
+            client, scheme, system, path, operation, **request.GET.dict())
 
-            return JsonResponse(error_json, status=error_status)
+        return JsonResponse({'data': response})
 
     def put(self, request, operation=None, scheme=None,
             handler=None, system=None, path='/'):

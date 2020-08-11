@@ -5,4 +5,6 @@ export const ALLOCATIONS = '/allocations';
 export const APPLICATIONS = '/applications';
 export const PUBLICATIONS = '/publications';
 export const HISTORY = '/history';
+export const JOBS = '/jobs';
+export const UI = '/ui-patterns';
 export const WORKBENCH = '/workbench';

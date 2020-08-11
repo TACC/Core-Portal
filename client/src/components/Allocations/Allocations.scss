@@ -5,7 +5,7 @@
     button {
         border-radius: 0;
         border: 0;
-        font: Bold 12px Roboto;
+        font: bold 12px Roboto, sans-serif;
         background-color: #9D85EF;
         padding: 0.5rem 1rem;
     }
@@ -58,25 +58,27 @@
     }
 }
 #allocations-sidebar {
-    width: fit-content;
-    border-right: 1px solid rgba(112, 112, 112, .25);
-    font-family: Roboto;
+    width: 215px;
+    border-right: 1px solid rgba(112, 112, 112, 0.25);
+    font-family: Roboto, sans-serif;
+
+    /* !!!: This link is `40px`, which is taller than other sidebar links (which are ~`35px`) */
     .nav-link {
-        padding: 8px 0 8px 30px;
+        /* NOTE: These styles match `.nav-content`. That class is not used in
+                 the markup for this sidebar because it is extraneous */
+        /* RFE: Resolve discrepancy when common Sidebar component exists */
         display: flex;
         align-items: center;
-        width: 215px;
-    }
-    a {
+
         color: #707070;
-        padding-left: 1.5em;
-        height: 2.5em;
+        padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
+
         .link-icon {
-            font-size: 1.2em;
+            font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
             width: 1em;
         }
         .link-text {
-            font-size: 0.78em;
+            font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
             font-weight: 500;
             padding-left: 16px;
             vertical-align: middle;
@@ -102,7 +104,7 @@
                 padding: 0;
                 vertical-align: text-top;
             }
-            border-bottom: 1px solid rgba(#707070,0.25);
+            border-bottom: 1px solid rgba(#707070, 0.25);
             margin-bottom: 24px;
         }
         thead {
@@ -116,11 +118,13 @@
             }
         }
         .sub-table-row {
+            /* FP-457: Will fix this *//* stylelint-disable no-descending-specificity */
             :nth-child(even) {
                 background-color: white;
             }
+            /* stylelint-enable no-descending-specificity */
             color: #707070;
-            font: 14px Roboto;
+            font: 14px Roboto, sans-serif;
         }
         .sub-table-cell {
             background-color: rgba(#c6c6c6, 0.1);
@@ -131,7 +135,7 @@
         }
     }
     .alloc-badge {
-        font-size: 11px;
+        font-size: 14px;
     }
 }
 #pending {
@@ -149,63 +153,11 @@
 .allocations-request-body {
     color: #484848;
 }
-.team-view-modal-wrapper {
-    .table-hover {
-        tbody {
-            tr {
-                height: 35px;
-                cursor: pointer;
-                color: #484848;
-                td {
-                    font-weight: 500;
-                    font-size: 14px;
-                    vertical-align: middle;
-                }
-            }
-            tr:hover {
-                background-color: #dfdaf5;
-            }
-        }
-    }
-    .modal-body {
-        overflow-y: initial !important;
-    }
-    .modal-left {
-        height: 50vh;
-        max-width: 230px;
-        overflow-y: scroll;
-        padding-left: 0;
-        padding-right: 0;
-        border-right: 1px solid rgba(112, 112, 112, .25);
-    }
-    .modal-right {
-        display: flex;
-        padding: 1em;
-        max-width: 500px;
-        overflow: auto;
-        .contact-card {
-            display: flex;
-            flex-direction: column;
-            font: 16px Roboto;
-            height: 100%;
-            overflow: auto;
-            div {
-                padding: 0.25rem;
-                text-overflow: ellipsis;
-                overflow: auto;
-            }
-        }
-    }
-    .user-name {
-        margin-left: 1.5rem;
-    }
-    .active-user {
-        background-color: #dfdaf5;
-    }
-}
-
 /* HACK: The loading icon should not need height set, but it fixes Safari here */
 /* FP-426: Do not use `height: 100%` or isolate usage pending solution to bigger problem */
 #allocations-wrapper .loading-icon {
     height: auto;
+}
+.system-cell {
+    width: 120px;
 }

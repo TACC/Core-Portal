@@ -1,14 +1,22 @@
 import React, { useEffect } from 'react';
-import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
+import {
+  Switch,
+  Route,
+  useRouteMatch,
+  useHistory,
+  useLocation
+} from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { parse } from 'query-string';
 
-import './DataFiles.scss';
+import './DataFiles.module.css';
 
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
 import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
+import DataFilesSearchbar from './DataFilesSearchbar/DataFilesSearchbar';
 
 const PrivateDataRedirect = () => {
   const systems = useSelector(state => state.systems, shallowEqual);
@@ -22,6 +30,7 @@ const PrivateDataRedirect = () => {
 const DataFilesSwitch = React.memo(() => {
   const dispatch = useDispatch();
   const { path } = useRouteMatch();
+  const queryString = parse(useLocation().search).query_string;
   return (
     <Switch>
       <Route
@@ -31,6 +40,7 @@ const DataFilesSwitch = React.memo(() => {
             type: 'FETCH_FILES',
             payload: {
               ...params,
+              queryString,
               section: 'FilesListing'
             }
           });
@@ -58,10 +68,11 @@ const DataFiles = () => {
   );
 
   return (
-    <div className="data-files-wrapper">
+    <div styleName="container">
       {/* row containing breadcrumbs and toolbar */}
-      <div className="data-files-header row align-items-center justify-content-between">
+      <div styleName="header">
         <DataFilesBreadcrumbs
+          styleName="header-title"
           api={listingParams.api}
           scheme={listingParams.scheme}
           system={listingParams.system}
@@ -75,10 +86,18 @@ const DataFiles = () => {
         />
       </div>
       {/* row containing sidebar and listing pane */}
-      <div className="data-files-items">
-        <DataFilesSidebar />
-        <div className="data-files-table">
-          <DataFilesSwitch />
+      <div styleName="items">
+        <DataFilesSidebar styleName="sidebar" />
+        <div styleName="content">
+          <DataFilesSearchbar
+            styleName="content-toolbar"
+            api={listingParams.api}
+            scheme={listingParams.scheme}
+            system={listingParams.system}
+          />
+          <div styleName="content-table">
+            <DataFilesSwitch />
+          </div>
         </div>
       </div>
       <DataFilesModals />
