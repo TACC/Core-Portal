@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import {
   Nav,
   NavItem,
@@ -25,6 +25,8 @@ const DataFilesSidebar = () => {
     });
   };
   const err = useSelector(state => state.files.error.FilesListing);
+  const systems = useSelector(state => state.systems.systemList, shallowEqual);
+
   const toggleMkdirModal = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -65,16 +67,21 @@ const DataFilesSidebar = () => {
         <div className="data-files-nav">
           <Nav vertical>
             <NavItem>
-              <NavLink
-                tag={RRNavLink}
-                to={`${match.path}/tapis/private/`}
-                activeClassName="active"
-              >
-                <span className="nav-content">
-                  <Icon name="my-data" />
-                  <span className="nav-text">My Data</span>
-                </span>
-              </NavLink>
+              {systems
+                ? systems.map(sys => (
+                    <NavLink
+                      tag={RRNavLink}
+                      to={`${match.path}/${sys.api}/${sys.scheme}/${sys.system}/`}
+                      activeClassName="active"
+                      key={sys.system}
+                    >
+                      <div className="nav-content">
+                        <Icon name={sys.icon || 'my-data'} />
+                        <span className="nav-text">{sys.name}</span>
+                      </div>
+                    </NavLink>
+                  ))
+                : null}
             </NavItem>
           </Nav>
         </div>

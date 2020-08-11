@@ -16,13 +16,11 @@ from portal.utils import encryption as EncryptionUtil
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
-from portal.apps.accounts.models import SSHKeys, Keys
+from portal.apps.accounts.models import SSHKeys
 from portal.apps.accounts.managers.ssh_keys import KeyCannotBeAdded
-from portal.apps.onboarding.execute import execute_setup_steps
+from portal.apps.accounts.managers.user_systems import UserSystemsManager
 
-# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-# pylint: enable=invalid-name
 
 
 def check_user(username):
@@ -45,72 +43,24 @@ def check_user(username):
     return users[0]
 
 
-def _import_manager(mgr_str):
-    """Import Manager
-
-    Shortcut function to import a manager class referenced by a
-    dot notation string
-    """
-    module_str, cls_str = mgr_str.rsplit('.', 1)
-    module = import_module(module_str)
-    cls = getattr(module, cls_str)
-    return cls
-
-
 def _lookup_keys_manager(user, password, token):
-    """Lookup User Home Manager
-
-    This function allows to use a custom `UserHomeManager` class
+    """Lookup Keys Manager
+    This function allows to use a custom `KeysManager` class
     to handle any special cases for setup.
-
     .. seealso::
-        :class:`~portal.apps.accounts.managers.
-        abstract.AbstractUserHomeManager` and
-        :class:`~portal.apps.accounts.managers.user_home.UserHomeManager`
+        :class:`~portal.apps.accounts.managers.ssh_keys.KeysManager`
     """
     mgr_str = getattr(
         settings,
         'PORTAL_KEYS_MANAGER',
     )
-    cls = _import_manager(mgr_str)
+    module_str, cls_str = mgr_str.rsplit('.', 1)
+    module = import_module(module_str)
+    cls = getattr(module, cls_str)
     return cls(user.username, password, token)
 
 
-def _lookup_user_home_manager(user):
-    """Lookup User Home Manager
-
-    This function allows to use a custom `UserHomeManager` class
-    to handle any special cases for setup.
-
-    .. seealso::
-        :class:`~portal.apps.accounts.managers.
-        abstract.AbstractUserHomeManager` and
-        :class:`~portal.apps.accounts.managers.user_home.UserHomeManager`
-    """
-    mgr_str = getattr(
-        settings,
-        'PORTAL_USER_HOME_MANAGER',
-    )
-    cls = _import_manager(mgr_str)
-    return cls(user)
-
-
-def get_user_home_system_id(user):
-    """Gets user home system id
-
-    Shortcut method to return the user's home system id
-
-    :param user: Django user instance
-    :return: System id
-    :rtype: str
-    """
-    if user.is_authenticated:
-        mgr = _lookup_user_home_manager(user)
-        return mgr.get_system_id()
-    return None
-
-
-def setup(username):
+def setup(username, system):
     """Fires necessary steps for setup
 
     Called asynchronously from portal.apps.auth.tasks.setup_user
@@ -130,34 +80,11 @@ def setup(username):
     """
 
     user = check_user(username)
-    mgr = _lookup_user_home_manager(user)
-    logger.debug('User Home Manager class: %s', mgr.__class__)
-    home_dir = mgr.get_or_create_dir(user)
-    home_sys = mgr.get_or_create_system(user)
-    if not user.profile.setup_complete:
-        logger.info("Executing setup steps for %s", username)
-        execute_setup_steps(user.username)
+    mgr = UserSystemsManager(user, system)
+    home_dir = mgr.get_private_directory(user)
+    home_sys = mgr.setup_private_system(user)
 
     return home_dir, home_sys
-
-
-def reset_home_system_keys(username, force=False):
-    """Reset home system Keys
-
-    Creates a new set of keys, saves the set of keys to the DB
-    and updates the Agave system
-
-    .. note::
-        If this functionality needs to be overridden it must be done
-        in a :class:`~portal.apps.accounts.managers.
-        user_home.UserHomeManager` or :class:`~portal.apps.accounts.
-        managers.abstract.AbstractUserHomeManager` subclass
-        and overwrite the `reset_system_keys` method.
-    """
-    user = check_user(username)
-    mgr = _lookup_user_home_manager(user)
-    pub_key = mgr.reset_system_keys(user, force=force)
-    return pub_key
 
 
 def reset_system_keys(username, system_id):
@@ -285,11 +212,7 @@ def add_pub_key_to_resource(
 
     success = True
     user = check_user(username)
-    mgr = _lookup_keys_manager(
-        user,
-        password,
-        token
-    )
+    mgr = _lookup_keys_manager(user, password, token)
     message = "add_pub_key_to_resource"
     try:
         transport = mgr.get_transport(hostname, port)
@@ -337,78 +260,40 @@ def add_pub_key_to_resource(
     return success, message, status
 
 
-def storage_systems(user, offset=0, limit=100, filter_prefix=True):
+def storage_systems(user, offset=0, limit=100):
     """Return all storage systems for a user.
-
-    This function will do a filter using `settings.PORTAL_NAMESPACE`.
-    It will do a regular listing if there's no value for
-    `settings.PORTAL_NAMESPACE` or :param:`filter_prefix` is `False`.
 
     :param user: Django user's instance
     :param int offset: Offset.
     :param int limit: Limit.
-    :param bool filter_prefix: Whether or not to filter by prefix.
     """
-    prefix = getattr(
-        settings,
-        'PORTAL_NAMESPACE',
-        ''
-    )
-
-    systems = StorageSystem.search(
+    systems = []
+    res = StorageSystem.list(
         user.agave_oauth.client,
-        {
-            'type.eq': StorageSystem.TYPES.STORAGE,
-            'id.like': '{}*'.format(prefix.lower())
-        },
+        type=StorageSystem.TYPES.STORAGE,
         offset=offset,
         limit=limit
     )
-    out = list(systems)
-    # if there aren't any storage systems that are namespaced
-    # by PORTAL_NAMESPACE, just send a list of all available storage systems
-    if not out:
-        systems = StorageSystem.list(
-            user.agave_oauth.client,
-            type=StorageSystem.TYPES.STORAGE,
-            offset=offset,
-            limit=limit
-        )
-        out = list(systems)
-    return out
+    systems = list(res)
+    return systems
 
 
-def execution_systems(user, offset=0, limit=100, filter_prefix=True):
+def execution_systems(user, offset=0, limit=100):
     """Return all execution systems for a user.
-
-    This function will do a filter using `settings.PORTAL_NAMESPACE`.
-    It will do a regular listing if there's no value for
-    `settings.PORTAL_NAMESPACE` or :param:`filter_prefix` is `False`.
 
     :param user: Django user's instance
     :param int offset: Offset.
     :param int limit: Limit.
-    :param bool filter_prefix: Whether or not to filter by prefix.
     """
-    prefix = getattr(settings, 'PORTAL_NAMESPACE', '')
-    if not prefix or not filter_prefix:
-        systems = ExecutionSystem.list(
-            user.agave_oauth.client,
-            type=ExecutionSystem.TYPES.EXECUTION,
-            offset=offset,
-            limit=limit
-        )
-    else:
-        systems = ExecutionSystem.search(
-            user.agave_oauth.client,
-            {
-                'type.eq': ExecutionSystem.TYPES.EXECUTION,
-                'id.like': '{}*'.format(prefix.lower())
-            },
-            offset=offset,
-            limit=limit
-        )
-    return list(systems)
+    systems = []
+    res = ExecutionSystem.list(
+        user.agave_oauth.client,
+        type=ExecutionSystem.TYPES.EXECUTION,
+        offset=offset,
+        limit=limit
+    )
+    systems = list(res)
+    return systems
 
 
 def get_system(user, system_id):

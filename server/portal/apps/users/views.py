@@ -41,12 +41,18 @@ class AuthenticatedView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class UsageView(BaseApiView):
 
-    def get(self, request):
+    def get(self, request, system_id):
         username = request.user.username
-        system = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(username)
+
+        if not system_id:
+            # get default system prefix
+            default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+            default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
+            system_id = default_system_prefix.format(username)
+
         search = IndexedFile.search()
         # search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
-        search = search.filter(Q('term', **{"system._exact": system}))
+        search = search.filter(Q('term', **{"system._exact": system_id}))
         search = search.extra(size=0)
         search.aggs.metric('total_storage_bytes', 'sum', field="length")
         resp = search.execute()
