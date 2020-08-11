@@ -75,7 +75,17 @@ const DataFilesBreadcrumbs = ({
       return matchingSytem.name;
     }
     return null;
-  }
+  };
+
+  path
+    .split('/')
+    .filter(x => x)
+    .reduce((prev, curr) => {
+      const comp = `${prev}/${curr}`;
+      paths.push(comp);
+      pathComps.push(curr);
+      return comp;
+    }, '');
 
   const root = (() => {
     switch (scheme) {
