@@ -11,7 +11,7 @@ const mockStore = configureStore();
 function renderJobsStatus(store, props) {
   return render(
     <Provider store={store}>
-      <JobsStatus {...props} />
+      <JobsStatus {...props} jobId="1234-5678-90AZ" />
     </Provider>
   );
 }
