@@ -49,7 +49,7 @@ export const Sidebar = () => (
         to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/expired`}
         activeClassName="active"
       >
-        <Icon name="pending" className="link-icon" />
+        <Icon name="denied" className="link-icon" />
         <span className="link-text">Expired</span>
       </NavLink>
     </NavItem>
