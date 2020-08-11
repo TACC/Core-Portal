@@ -145,7 +145,11 @@ class UserSystemsManager():
             priv_key_str
         )
 
-        # Save a new system, or update an existing one if it was disabled
+        # Enable a disabled system
+        if not system.available:
+            system.enable()
+
+        # Save a new system, or update an existing one if it already exists
         try:
             system.save()
         except ValueError:
@@ -153,10 +157,6 @@ class UserSystemsManager():
 
         # Ensure user is OWNER
         system.update_role(self.user.username, 'OWNER')
-
-        # Enable a disabled system
-        if not system.available:
-            system.enable()
 
         SSHKeys.objects.update_hostname_keys(
             self.user,
