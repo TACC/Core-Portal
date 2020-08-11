@@ -67,7 +67,6 @@ const DataFilesSidebar = () => {
         <div className="data-files-nav">
           <Nav vertical>
             <NavItem>
-<<<<<<< HEAD
               {systems
                 ? systems.map(sys => (
                     <NavLink
@@ -77,27 +76,12 @@ const DataFilesSidebar = () => {
                       key={sys.system}
                     >
                       <div className="nav-content">
-                        <Icon
-                          className={sys.icon ? sys.icon : 'icon-monitor'}
-                          name={sys.name}
-                        />
+                        <Icon name={sys.icon || 'my-data'} />
                         <span className="nav-text">{sys.name}</span>
                       </div>
                     </NavLink>
                   ))
                 : null}
-=======
-              <NavLink
-                tag={RRNavLink}
-                to={`${match.path}/tapis/private/`}
-                activeClassName="active"
-              >
-                <span className="nav-content">
-                  <Icon name="my-data" />
-                  <span className="nav-text">My Data</span>
-                </span>
-              </NavLink>
->>>>>>> master
             </NavItem>
           </Nav>
         </div>
