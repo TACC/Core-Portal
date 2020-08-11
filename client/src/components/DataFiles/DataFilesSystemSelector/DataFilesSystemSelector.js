@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DropdownSelector } from '_common';
 import './DataFilesSystemSelector.module.scss';
 
-const DataFilesSystemSelector = ({ systemId, section }) => {
+const DataFilesSystemSelector = ({ systemId, section, disabled }) => {
   const dispatch = useDispatch();
   const systemList = useSelector(state => state.systems.systemList);
   const findSystem = id => systemList.find(system => system.system === id);
@@ -36,6 +36,7 @@ const DataFilesSystemSelector = ({ systemId, section }) => {
         onChange={openSystem}
         value={selectedSystem}
         styleName="system-select"
+        disabled={disabled}
       >
         {systemList.map(system => (
           <option key={uuidv4()} value={system.system}>
@@ -49,11 +50,13 @@ const DataFilesSystemSelector = ({ systemId, section }) => {
 
 DataFilesSystemSelector.propTypes = {
   systemId: PropTypes.string,
-  section: PropTypes.string.isRequired
+  section: PropTypes.string.isRequired,
+  disabled: PropTypes.bool
 };
 
 DataFilesSystemSelector.defaultProps = {
-  systemId: null
+  systemId: null,
+  disabled: false
 };
 
 export default DataFilesSystemSelector;

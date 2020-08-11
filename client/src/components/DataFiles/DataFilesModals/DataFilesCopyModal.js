@@ -12,6 +12,7 @@ import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemS
 const DataFilesCopyModal = React.memo(() => {
   const history = useHistory();
   const location = useLocation();
+  const [copying, setCopying] = useState(false);
 
   const dispatch = useDispatch();
   const params = useSelector(
@@ -24,6 +25,7 @@ const DataFilesCopyModal = React.memo(() => {
   );
   const reloadPage = () => {
     history.push(location.pathname);
+    setCopying(false);
     dispatch({
       type: 'FETCH_FILES_MODAL',
       payload: { ...modalParams, section: 'modal' }
@@ -35,6 +37,7 @@ const DataFilesCopyModal = React.memo(() => {
     state => state.files.operationStatus.copy,
     shallowEqual
   );
+  const loading = useSelector(state => state.files.loading.modal);
   const [disabled, setDisabled] = useState(false);
 
   const selectedFiles = useSelector(
@@ -73,6 +76,7 @@ const DataFilesCopyModal = React.memo(() => {
     (system, path) => {
       setDisabled(true);
       const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
+      setCopying(true);
       dispatch({
         type: 'DATA_FILES_COPY',
         payload: {
@@ -82,7 +86,7 @@ const DataFilesCopyModal = React.memo(() => {
         }
       });
     },
-    [selected, reloadPage, status]
+    [selected, reloadPage, status, setCopying]
   );
 
   const actionString = `Copying ${selected.length} File${
@@ -121,6 +125,7 @@ const DataFilesCopyModal = React.memo(() => {
               <DataFilesSystemSelector
                 systemId={modalParams.system}
                 section="modal"
+                disabled={loading || copying}
               />
             </div>
             <DataFilesBreadcrumbs
