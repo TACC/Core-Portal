@@ -19,10 +19,11 @@ import DataFilesModals from './DataFilesModals/DataFilesModals';
 import DataFilesSearchbar from './DataFilesSearchbar/DataFilesSearchbar';
 
 const PrivateDataRedirect = () => {
-  const systems = useSelector(state => state.systems, shallowEqual);
+  const systems = useSelector(state => state.systems.systemList, shallowEqual);
   const history = useHistory();
   useEffect(() => {
-    history.push(`/workbench/data/tapis/private/${systems.private}/`);
+    if (systems.length === 0) return;
+    history.push(`/workbench/data/tapis/private/${systems[0].system}/`);
   }, [systems]);
   return <></>;
 };
