@@ -9,7 +9,6 @@ import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemS
 const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
   const systems = useSelector(state => state.systems.systemList, shallowEqual);
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
-  const loading = useSelector(state => state.files.loading.modal);
   const dispatch = useDispatch();
   const modalParams = useSelector(
     state => state.files.params.modal,
@@ -52,7 +51,6 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               <DataFilesSystemSelector
                 systemId={modalParams.system}
                 section="modal"
-                disabled={loading}
               />
             </div>
             <DataFilesBreadcrumbs
