@@ -6,11 +6,13 @@ import  DataFilesCopyModal  from "../DataFilesCopyModal";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import DataFilesCopyModalFixture from './DataFilesCopyModal.fixture';
+import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
 
 const initialMockState = {
-  files: DataFilesCopyModalFixture
+  files: DataFilesCopyModalFixture,
+  systems: systemsFixture
 };
 
 function renderComponent(component, store, history) {
