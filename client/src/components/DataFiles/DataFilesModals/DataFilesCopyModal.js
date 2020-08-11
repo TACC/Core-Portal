@@ -130,7 +130,6 @@ const DataFilesCopyModal = React.memo(() => {
               system={modalParams.system}
               path={modalParams.path || '/'}
               section="modal"
-              systemSelector
             />
             <div className="filesListing">
               <DataFilesModalListingTable
