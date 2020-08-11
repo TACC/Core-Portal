@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -68,24 +68,19 @@ const DataFilesBreadcrumbs = ({
 }) => {
   const paths = [];
   const pathComps = [];
-
-  const sysName = system
-    .split('.')[0]
-    .replace(system.charAt(0), system.charAt(0).toUpperCase());
-  path
-    .split('/')
-    .filter(x => x)
-    .reduce((prev, curr) => {
-      const comp = `${prev}/${curr}`;
-      paths.push(comp);
-      pathComps.push(curr);
-      return comp;
-    }, '');
+  const systemList = useSelector(state => state.systems.systemList);
+  const privateSystemName = () => {
+    const matchingSytem = systemList.find(s => s.system === system);
+    if (matchingSytem) {
+      return matchingSytem.name;
+    }
+    return null;
+  }
 
   const root = (() => {
     switch (scheme) {
       case 'private':
-        return `My Data (${sysName})`;
+        return privateSystemName();
       case 'community':
         return 'Community Data';
       default:
