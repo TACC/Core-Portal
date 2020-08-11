@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useTable } from 'react-table';
 import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { shape, array, string } from 'prop-types';
+import { shape, string, arrayOf } from 'prop-types';
 import { Link } from 'react-router-dom';
 
 export const TableTemplate = ({ attributes }) => {
@@ -36,8 +36,10 @@ export const TableTemplate = ({ attributes }) => {
   );
 };
 TableTemplate.propTypes = {
-  attributes: shape({ columns: array.isRequired, data: array.isRequired })
-    .isRequired
+  attributes: shape({
+    columns: arrayOf(shape({})).isRequired,
+    data: arrayOf(shape({})).isRequired
+  }).isRequired
 };
 
 export const RequiredInformation = () => {

@@ -155,7 +155,7 @@ DataFilesTableRow.propTypes = {
   rowCount: PropTypes.number.isRequired,
   row: PropTypes.shape({
     index: PropTypes.number,
-    cells: PropTypes.array
+    cells: PropTypes.arrayOf(PropTypes.shape({}))
   }),
   section: PropTypes.string.isRequired,
   rowSelectCallback: PropTypes.func.isRequired,

@@ -25,7 +25,10 @@ const appShape = PropTypes.shape({
   }),
   defaultNodeCount: PropTypes.number,
   parallelism: PropTypes.string,
-  defaultProcessorsPerNode: PropTypes.number
+  defaultProcessorsPerNode: PropTypes.number,
+  defaultMaxRunTime: PropTypes.string,
+  scheduler: PropTypes.string,
+  tags: PropTypes.arrayOf(PropTypes.string)
 });
 
 export const AppPlaceholder = ({ apps }) => {
