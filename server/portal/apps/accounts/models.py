@@ -3,11 +3,11 @@
    :synopsis: Account's models
 """
 import logging
-from django.core.mail import send_mail
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ObjectDoesNotExist
 from portal.utils import encryption as EncryptionUtil
 
 

@@ -65,8 +65,6 @@ _AGAVE_CLIENT_KEY = 'TH1$_!$-MY=K3Y!~'
 _AGAVE_CLIENT_SECRET = 'TH1$_!$-My=S3cr3t!~'
 _AGAVE_SUPER_TOKEN = 'S0m3T0k3n_tHaT-N3v3r=3xp1R35'
 _AGAVE_STORAGE_SYSTEM = 'my.storage.default'
-_AGAVE_COMMUNITY_DATA_SYSTEM = 'storage_system'
-_AGAVE_PUBLIC_DATA_SYSTEM = 'storage_system'
 _AGAVE_DEFAULT_TRASH_NAME = 'Trash'
 
 _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
@@ -140,6 +138,38 @@ _PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
 _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cep.home.{username}": "/tacc-work",
 }
+
+_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
+_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
+    'frontera': {
+        'name': 'My Data (Frontera)',
+        'prefix': 'frontera.home.{}',
+        'host': 'frontera.tacc.utexas.edu',
+        'home_dir': '/home1',
+        'storage_port': 22,
+        'icon': None,
+    },
+    'longhorn': {
+        'name': 'My Data (Longhorn)',
+        'prefix': 'longhorn.home.{}',
+        'host': 'longhorn.tacc.utexas.edu',
+        'home_dir': '/home',
+        'storage_port': 22,
+        'requires_allocation': 'longhorn3',
+        'icon': None,
+    },
+}
+
+# Configurable list of non-private systems that appear on the frontend
+_PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+    {
+        'name': 'Community Data',
+        'system': 'portal.storage.community',
+        'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    }
+]
 
 #######################
 # PROJECTS SETTING

@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
+import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemSelector';
 
 const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
-  const systems = useSelector(state => state.systems, shallowEqual);
+  const systems = useSelector(state => state.systems.systemList, shallowEqual);
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
   const dispatch = useDispatch();
   const modalParams = useSelector(
@@ -17,7 +18,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     const systemParams = {
       api: 'tapis',
       scheme: 'private',
-      system: systems.private
+      system: systems[0].system
     };
     dispatch({
       type: 'FETCH_FILES_MODAL',
@@ -30,6 +31,9 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     toggle();
   };
 
+  useEffect(() => {
+    dispatch({ type: 'FETCH_SYSTEMS' });
+  }, [dispatch]);
   return (
     <Modal
       isOpen={isOpen}
@@ -42,7 +46,13 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
       <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-12 d-flex flex-column">
-            <div className="dataFilesModalColHeader">Select Input</div>
+            <div className="dataFilesModalColHeader">
+              Select Input
+              <DataFilesSystemSelector
+                systemId={modalParams.system}
+                section="modal"
+              />
+            </div>
             <DataFilesBreadcrumbs
               api={modalParams.api}
               scheme={modalParams.scheme}
