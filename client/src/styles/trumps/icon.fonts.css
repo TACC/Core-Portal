@@ -30,6 +30,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* TACC: Remove support for extra icon that should not be used */
+/*
+.icon-jobs-history:before {
+  content: "\e95a";
+}
+*/
 .icon-jobs:before {
   content: "\e95b";
 }
@@ -189,6 +195,7 @@
 .icon-multiple-coversation:before {
   content: "\e930";
 }
+/* TACC: This is meant for non-published storage. regardless of which system it lives on */
 .icon-my-data:before {
   content: "\e931";
 }

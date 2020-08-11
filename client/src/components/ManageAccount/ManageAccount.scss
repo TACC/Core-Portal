@@ -4,21 +4,17 @@
 .manage-account-wrapper {
   display: flex;
   padding: 0;
-  a {
-    color: #9d85ef;
-  }
   .container-fluid {
-    padding: 20px 40px 0 25px !important;
+    padding: 20px 40px 0 25px !important; /* overwrite Bootstrap *//* NOTE: The `!important` may not be necessary */
     display: flex;
     flex-direction: column;
     margin: 0;
   }
 }
 .manage-account-content {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  max-height: 100%;
+  a {
+    color: #9d85ef;
+  }
 }
 .user-profile {
   flex-grow: 1;

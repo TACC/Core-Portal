@@ -7,6 +7,7 @@ import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
 from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
+from portal.exceptions.api import ApiException
 
 logger = logging.getLogger(__name__)
 
@@ -187,6 +188,8 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     dict
 
     """
+    if src_system != dest_system:
+        raise ApiException("Cross-system file moves are not supported")
 
     if file_name is None:
         file_name = src_path.strip('/').split('/')[-1]
@@ -220,19 +223,6 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
                                           filePath=urllib.parse.quote(
                                               src_path),
                                           body=body)
-    else:
-        src_url = 'agave://{}/{}'.format(
-            src_system,
-            urllib.parse.quote(src_path)
-        )
-        move_result = client.files.importData(
-            systemId=dest_system,
-            filePath=urllib.parse.quote(dest_path),
-            fileName=str(file_name),
-            urlToIngest=src_url
-        )
-        client.files.delete(systemId=src_system,
-                            filePath=urllib.parse.quote(src_path))
 
     if os.path.dirname(src_path) != dest_path or src_path != dest_path:
         agave_indexer.apply_async(kwargs={'systemId': src_system,
