@@ -239,7 +239,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         if not app.exec_sys:
             exec_sys = ExecutionSystem(self.client, app.execution_system, ignore_error=None)
             sys_ok, res = exec_sys.test()
-            if not sys_ok and (exec_sys.roles.for_user(self.user.username).value == 'OWNER'):
+            if not sys_ok and (exec_sys.owner == self.user.username):
                 logger.debug(res)
                 logger.info('System {} needs new keys.'.format(exec_sys.id))
                 app.exec_sys = exec_sys
