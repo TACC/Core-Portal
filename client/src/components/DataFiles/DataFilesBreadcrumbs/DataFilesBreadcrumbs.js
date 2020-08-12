@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
+import { getSystemName } from 'utils/jobsUtil';
 
 const BreadcrumbLink = ({ api, scheme, system, path, children, section }) => {
   const dispatch = useDispatch();
@@ -74,7 +75,7 @@ const DataFilesBreadcrumbs = ({
     if (matchingSytem) {
       return matchingSytem.name;
     }
-    return null;
+    return getSystemName(system);
   };
 
   path

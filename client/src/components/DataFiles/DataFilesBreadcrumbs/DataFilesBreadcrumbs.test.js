@@ -6,6 +6,7 @@ import DataFilesBreadcrumbs from "./DataFilesBreadcrumbs";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import systemsFixture from '../fixtures/DataFiles.systems.fixture'
+import { initialSystemState } from '../../../redux/reducers/datafiles.reducers';
 
 function renderComponent(component, store, history) {
   return render(
@@ -50,5 +51,28 @@ describe("DataFilesBreadcrumbs", () => {
       getByText(/files/)
         .closest("a")
     ).toBeNull();
+  });
+
+  it("render breadcrumbs with initial empty systems", () => {
+    const store = mockStore({systems: initialSystemState});
+    const history = createMemoryHistory();
+    const {getByText, debug} = renderComponent(
+      <DataFilesBreadcrumbs
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        path="/path/to/the/files"
+        section="FilesListing"
+      />,
+      store,
+      createMemoryHistory()
+    );
+
+    expect(getByText(/Frontera/)).toBeDefined();
+    expect(
+      getByText(/Frontera/)
+        .closest("a")
+        .getAttribute("href")
+    ).toEqual("/workbench/data/tapis/private/frontera.home.username/");
   });
 });

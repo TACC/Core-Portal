@@ -1,4 +1,4 @@
-const initialSystemState = {
+export const initialSystemState = {
   systemList: []
 };
 
