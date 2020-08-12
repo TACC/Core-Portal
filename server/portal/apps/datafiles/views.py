@@ -20,8 +20,9 @@ class SystemListingView(BaseApiView):
 
         try:
             user_systems = get_user_storage_systems(request.user.username, local_systems)
-        except:
+        except Exception as e:
             # In case of error, return the default storage system
+            logger.exception(e)
             default_system = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
             user_systems = {
                 default_system: local_systems[default_system]
