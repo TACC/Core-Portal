@@ -39,7 +39,6 @@ def get_user_storage_systems(username, systems):
     systems_to_configure = {}
     user_resources = []
 
-
     try:
         # get list of user's allocation resources
         for alloc in user_allocations['active'] + user_allocations['inactive']:
@@ -58,6 +57,5 @@ def get_user_storage_systems(username, systems):
         systems_to_configure = {
             default_system: systems[default_system]
         }
-
 
     return systems_to_configure
