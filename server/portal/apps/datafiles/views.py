@@ -18,7 +18,14 @@ class SystemListingView(BaseApiView):
         portal_systems = settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
 
-        user_systems = get_user_storage_systems(request.user.username, local_systems)
+        try:
+            user_systems = get_user_storage_systems(request.user.username, local_systems)
+        except:
+            # In case of error, return the default storage system
+            default_system = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+            user_systems = {
+                default_system: local_systems[default_system]
+            }
 
         # compare available storage systems to the systems a user can access
         response = {'system_list': []}
