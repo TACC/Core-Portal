@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import JobsView from '../../Jobs';
+
 import './HistoryViews.scss';
 
 const JobHistory = () => {

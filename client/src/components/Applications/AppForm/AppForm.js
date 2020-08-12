@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-import { Button, FormGroup, Spinner, Alert } from 'reactstrap';
+import { Button, FormGroup, Alert } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faExclamationTriangle,
-  faExclamationCircle
-} from '@fortawesome/free-solid-svg-icons';
-import { faFile } from '@fortawesome/free-regular-svg-icons';
-import { FormField, LoadingSpinner } from '_common';
+import { AppIcon, FormField, Icon, LoadingSpinner, Message } from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
 import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import FormSchema from './AppFormSchema';
 import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
+import * as ROUTES from '../../../constants/routes';
 
 const appShape = PropTypes.shape({
   id: PropTypes.string,
@@ -57,18 +53,12 @@ const AppDetail = () => {
   );
 
   if (error.isError) {
+    const errorText = error.message ? error.message : 'Something went wrong!';
+
     return (
-      <div className="appDetail-error">
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          style={{ marginRight: '10px' }}
-        />
-        {error.message ? (
-          <div>{error.message}</div>
-        ) : (
-          <div>Something went wrong!</div>
-        )}
-      </div>
+      <Message type="warn" className="appDetail-error">
+        {errorText}
+      </Message>
     );
   }
 
@@ -105,8 +95,7 @@ const AppInfo = ({ app }) => {
           target="_blank"
           rel="noreferrer noopener"
         >
-          <FontAwesomeIcon icon={faFile} className="doc-icon" />
-          <span>{`${app.label} Documentation`}</span>
+          <AppIcon appId={app.id} /> <span>{app.label} Documentation</span>
         </a>
       ) : null}
       <SystemsPushKeysModal />
@@ -183,7 +172,14 @@ const AppSchemaForm = ({ app }) => {
             </Alert>
           ) : (
             <Alert color="info" isOpen={visible} toggle={onDismiss}>
-              Your job has submitted successfully!
+              Your job has submitted successfully. See details in{' '}
+              <Link
+                to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
+                className="wb-link"
+              >
+                History &gt; Jobs
+              </Link>
+              .
             </Alert>
           )}
         </div>
@@ -412,12 +408,12 @@ const AppSchemaForm = ({ app }) => {
                 </div>
                 <Button type="submit" color="primary">
                   {jobSubmission.submitting && (
-                    <Spinner size="sm" color="white" />
+                    <LoadingSpinner placement="inline" />
                   )}{' '}
                   {(Object.keys(errors).length || jobSubmission.error) && (
-                    <FontAwesomeIcon icon={faExclamationCircle} />
+                    <Icon name="alert">Warning</Icon>
                   )}{' '}
-                  Submit
+                  <span>Submit</span>
                 </Button>
                 <Button
                   onClick={handleReset}

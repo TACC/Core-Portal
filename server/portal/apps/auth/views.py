@@ -12,8 +12,9 @@ from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
+from celery import group
 from portal.apps.auth.models import AgaveOAuthToken
-from portal.apps.auth.tasks import setup_user
+from portal.apps.auth.tasks import setup_user, get_user_storage_systems
 from portal.apps.onboarding.execute import new_user_setup_check
 from portal.apps.search.tasks import index_allocations
 
@@ -112,8 +113,12 @@ def agave_oauth_callback(request):
 
             # Apply asynchronous long onboarding calls
             logger.info("Starting celery task for onboarding {username}".format(username=user.username))
-            setup_user.apply_async(args=[user.username])
             index_allocations.apply_async(args=[user.username])
+
+            system_names = get_user_storage_systems(user.username, settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS)
+            group(
+                setup_user.s(user.username, system) for system in system_names
+            ).apply_async()
         else:
             messages.error(
                 request,
