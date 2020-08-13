@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
 import { useSelector, useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { string } from 'prop-types';
+import { Message } from '_common';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
@@ -81,15 +80,10 @@ export const useAllocations = page => {
 
 const ErrorMessage = () => {
   const dispatch = useDispatch();
+
   return (
-    <>
-      <span style={{ color: '#9d85ef' }}>
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          style={{ marginRight: '10px' }}
-        />
-        Unable to retrieve your allocations.&nbsp;
-      </span>
+    <Message type="warn">
+      Unable to retrieve your allocations.{' '}
       <a
         href="#"
         style={{ color: '#9d85ef' }}
@@ -101,7 +95,7 @@ const ErrorMessage = () => {
       >
         Try reloading the page.
       </a>
-    </>
+    </Message>
   );
 };
 

@@ -66,13 +66,13 @@ class TestUserApiViews(TestCase):
             }
         }
         self.client.login(username='test', password='test')
-        resp = self.client.get("/api/users/usage/", follow=True)
+        resp = self.client.get("/api/users/usage/systemId", follow=True)
         data = resp.json()
         self.assertTrue(data["total_storage_bytes"] == 10)
 
     def test_usage_view_noauth(self):
         # TODO: API routes should return a 401 not a 302 that redirects to login
-        resp = self.client.get("/api/users/usage/")
+        resp = self.client.get("/api/users/usage/systemId")
         self.assertTrue(resp.status_code == 302)
 
 

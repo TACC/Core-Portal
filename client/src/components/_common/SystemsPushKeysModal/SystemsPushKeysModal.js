@@ -10,11 +10,10 @@ import {
   Form,
   FormGroup,
   Label,
-  Input,
-  Spinner
+  Input
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import Icon from '../Icon';
+import LoadingSpinner from '../LoadingSpinner';
 
 const SystemsPushKeysModal = () => {
   const dispatch = useDispatch();
@@ -63,6 +62,15 @@ const SystemsPushKeysModal = () => {
       });
     });
   };
+
+  let buttonIcon;
+  if (submitting) {
+    buttonIcon = <LoadingSpinner placement="inline" />;
+  }
+  if (error) {
+    buttonIcon = <Icon name="alert">Warning</Icon>;
+  }
+
   return (
     <>
       {isOpen && (
@@ -137,9 +145,7 @@ const SystemsPushKeysModal = () => {
                 onClick={pushKeys}
                 disabled={submitting}
               >
-                {submitting && <Spinner size="sm" color="white" />}{' '}
-                {error && <FontAwesomeIcon icon={faExclamationCircle} />}{' '}
-                Authenticate
+                {buttonIcon} <span>Authenticate</span>
               </Button>
               <Button color="secondary" onClick={toggle}>
                 Close

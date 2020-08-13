@@ -1,9 +1,9 @@
+from portal.apps.auth.tasks import get_user_storage_systems
 from portal.views.base import BaseApiView
-from django.http import JsonResponse, HttpResponseForbidden
 from django.conf import settings
+from django.http import JsonResponse, HttpResponseForbidden
 import json
 import logging
-from portal.apps.accounts.managers.accounts import get_user_home_system_id
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
@@ -15,15 +15,24 @@ class SystemListingView(BaseApiView):
     """System Listing View"""
 
     def get(self, request):
-        community_data_system = settings.AGAVE_COMMUNITY_DATA_SYSTEM
-        public_data_system = settings.AGAVE_PUBLIC_DATA_SYSTEM
-        mydata_system = get_user_home_system_id(request.user)
+        portal_systems = settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
+        local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
 
-        response = {
-            'private': mydata_system,
-            'community': community_data_system,
-            'public': public_data_system
-        }
+        user_systems = get_user_storage_systems(request.user.username, local_systems)
+
+        # compare available storage systems to the systems a user can access
+        response = {'system_list': []}
+        for _, details in user_systems.items():
+            response['system_list'].append(
+                {
+                    'name': details['name'],
+                    'system': details['prefix'].format(request.user.username),
+                    'scheme': 'private',
+                    'api': 'tapis',
+                    'icon': details['icon']
+                }
+            )
+        response['system_list'] += portal_systems
 
         return JsonResponse(response)
 

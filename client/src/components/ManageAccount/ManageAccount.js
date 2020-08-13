@@ -32,7 +32,7 @@ const ManageAccountView = () => {
   return (
     <Container fluid className="manage-account-wrapper">
       <Sidebar />
-      <Container fluid>
+      <Container fluid className="manage-account-content">
         <Row className="manage-account-header">
           <h5>Manage Account</h5>
           <Link to="/workbench/dashboard" style={{ fontWeight: '500' }}>
