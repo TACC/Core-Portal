@@ -5,7 +5,7 @@ import { object as obj, string as str, ref } from 'yup';
 import { Formik, Form } from 'formik';
 import { isEmpty } from 'lodash';
 import { bool, oneOfType, func, instanceOf, shape } from 'prop-types';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
 const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
@@ -16,8 +16,8 @@ const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
       <ul style={{ paddingLeft: '1rem' }}>
         <li>Must not contain your username or parts of your full name;</li>
         <li>Must be a minimum of 8 characters in length</li>
-        <li>Must contain characters from at least three of the following:</li>
-        <li style={{ marginLeft: '1rem' }}>
+        <li>
+          Must contain characters from at least three of the following:
           Uppercase letters, lowercase letters, numbers, symbols
         </li>
       </ul>
@@ -141,17 +141,27 @@ export default function() {
   };
   const hasErrors = errors => isEmpty(Object.keys(errors));
   return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      validationSchema={formSchema}
-    >
-      {({ errors }) => (
-        <ChangePasswordFormBody
-          formRef={formRef}
-          canSubmit={hasErrors(errors)}
-        />
-      )}
-    </Formik>
+    <>
+      <Message type="warn" className="password-warning">
+        <h6>Changing your TACC Password</h6>{' '}
+        <p>
+          <strong>Please Note:</strong> This form requests a reset to your TACC
+          Account password. Changes to this password will affect your TACC
+          Account <em>as a whole</em>, not just the Frontera Portal.
+        </p>
+      </Message>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={formSchema}
+      >
+        {({ errors }) => (
+          <ChangePasswordFormBody
+            formRef={formRef}
+            canSubmit={hasErrors(errors)}
+          />
+        )}
+      </Formik>
+    </>
   );
 }
