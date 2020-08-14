@@ -4,7 +4,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { FormField, Message, LoadingSpinner, Icon } from '_common';
+import FormField from '../Form/FormField';
+import Message from '../Message';
+import LoadingSpinner from '../LoadingSpinner';
+import Icon from '../Icon';
 
 const SystemsPushKeysModal = () => {
   const dispatch = useDispatch();

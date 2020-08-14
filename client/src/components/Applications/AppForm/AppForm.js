@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import FormSchema from './AppFormSchema';
 import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
+import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
 
 const appShape = PropTypes.shape({
@@ -286,6 +287,7 @@ const AppSchemaForm = ({ app }) => {
                         {...field}
                         name={`inputs.${id}`}
                         agaveFile
+                        SelectModal={DataFilesSelectModal}
                         placeholder="Browse Data Files"
                         key={`inputs.${id}`}
                       />
