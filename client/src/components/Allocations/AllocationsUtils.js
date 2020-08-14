@@ -25,10 +25,17 @@ export default function systemAccessor(arr, header) {
         };
       });
     case 'Expires':
-      return arr.map(({ allocation: { end, id } }) => ({
-        id,
-        date: new Date(end).toDateString()
-      }));
+      return arr.map(({ allocation: { end, id } }) => {
+        const date = new Date(end)
+          .toDateString()
+          .split(' ')
+          .splice(1)
+          .join(' ');
+        return {
+          id,
+          date
+        };
+      });
     default:
       return arr.map(({ name, allocation: { id } }) => ({
         name,
