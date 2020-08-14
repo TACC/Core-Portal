@@ -71,9 +71,9 @@ const DataFilesBreadcrumbs = ({
   const pathComps = [];
   const systemList = useSelector(state => state.systems.systemList);
   const privateSystemName = () => {
-    const matchingSytem = systemList.find(s => s.system === system);
-    if (matchingSytem) {
-      return matchingSytem.name;
+    const matchingSystem = systemList.find(s => s.system === system);
+    if (matchingSystem) {
+      return matchingSystem.name;
     }
     return getSystemName(system);
   };
