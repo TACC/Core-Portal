@@ -128,9 +128,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: d => new Date(d.created),
       Cell: el => (
-        <span id={`jobDate${el.index}`}>
-          {`${formatDateTime(el.value)}`}
-        </span>
+        <span id={`jobDate${el.index}`}>{`${formatDateTime(el.value)}`}</span>
       ),
       id: 'jobDateCol'
     }

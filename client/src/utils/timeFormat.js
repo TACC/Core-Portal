@@ -1,5 +1,7 @@
 export function applyTimezoneOffset(timeDateValue) {
-  return new Date(timeDateValue.getTime() - timeDateValue.getTimezoneOffset() * 60000);
+  return new Date(
+    timeDateValue.getTime() - timeDateValue.getTimezoneOffset() * 60000
+  );
 }
 
 export function formatDate(timeDateValue) {
