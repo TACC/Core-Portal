@@ -1,3 +1,10 @@
+/**
+ * Generate object containing data relevant for each cell in the sub tables of
+ * the allocation table
+ * @param {Array} arr - array of allocations for each resource
+ * @param {String} header - column of the table
+ * @returns {Object} Relevant data
+ */
 export default function systemAccessor(arr, header) {
   switch (header) {
     case 'Awarded':
