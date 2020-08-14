@@ -1,3 +1,5 @@
+import { formatDate } from 'utils/timeFormat';
+
 /**
  * Generate object containing data relevant for each cell in the sub tables of
  * the allocation table
@@ -32,17 +34,10 @@ export default function systemAccessor(arr, header) {
         };
       });
     case 'Expires':
-      return arr.map(({ allocation: { end, id } }) => {
-        const date = new Date(end)
-          .toDateString()
-          .split(' ')
-          .splice(1)
-          .join(' ');
-        return {
-          id,
-          date
-        };
-      });
+      return arr.map(({ allocation: { end, id } }) => ({
+        id,
+        date: formatDate(new Date(end))
+      }));
     default:
       return arr.map(({ name, allocation: { id } }) => ({
         name,
