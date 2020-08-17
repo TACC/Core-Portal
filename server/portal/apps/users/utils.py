@@ -61,7 +61,7 @@ def get_tas_allocations(username):
     with open('portal/apps/users/tas_to_tacc_resources.json') as f:
         tas_to_tacc_resources = json.load(f)
 
-    active_active_hosts = {}
+    hosts = {}
     active_allocations = {}
     inactive_allocations = {}
 
@@ -75,10 +75,10 @@ def get_tas_allocations(username):
 
             # Separate active and inactive allocations and make single entry for each project
             if resource['allocation']['status'] == 'Active':
-                if resource['host'] in active_hosts and charge_code not in active_hosts[resource['host']]:
-                    active_hosts[resource['host']].append(charge_code)
-                elif resource['host'] not in active_hosts:
-                    active_hosts[resource['host']] = [charge_code]
+                if resource['host'] in hosts and charge_code not in hosts[resource['host']]:
+                    hosts[resource['host']].append(charge_code)
+                elif resource['host'] not in hosts:
+                    hosts[resource['host']] = [charge_code]
                 # Add allocations to the project listing if it exists
                 if charge_code in active_allocations:
                     active_allocations[charge_code]['systems'].append(resource)
@@ -103,7 +103,7 @@ def get_tas_allocations(username):
                         'systems': [resource]
                     }
     return {
-        'active_hosts': active_hosts,
+        'hosts': hosts,
         'portal_alloc': settings.PORTAL_ALLOCATION,
         'active': list(active_allocations.values()),
         'inactive': list(inactive_allocations.values()),
