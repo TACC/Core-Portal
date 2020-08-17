@@ -82,6 +82,7 @@ const SystemsPushKeysModal = () => {
           onOpened={onOpen}
           onClosed={onClosed}
           toggle={toggle}
+          className="dataFilesModal"
         >
           <Formik
             initialValues={initialValues}
@@ -101,7 +102,7 @@ const SystemsPushKeysModal = () => {
                   six-digit one time passcode from the TACC Token mobile app at
                   least once. A public key will be pushed to your{' '}
                   <code>authorized_keys</code> file on the system below. This
-                  will allow you to submit jobs to this system from this portal.
+                  will allow you to access this system from this portal.{' '}
                 </p>
                 <FormField
                   name="pushKeysSysId"
@@ -138,11 +139,12 @@ const SystemsPushKeysModal = () => {
                 <FormField name="token" label="TACC Token" required />
               </ModalBody>
               <ModalFooter>
-                <Button type="submit" color="primary" disabled={submitting}>
+                <Button
+                  type="submit"
+                  className="data-files-btn"
+                  disabled={submitting}
+                >
                   {buttonIcon} <span>Authenticate</span>
-                </Button>
-                <Button color="secondary" onClick={toggle}>
-                  Close
                 </Button>
               </ModalFooter>
             </Form>
