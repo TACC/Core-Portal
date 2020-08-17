@@ -143,7 +143,6 @@ export default function() {
   return (
     <>
       <Message type="warn" className="password-warning">
-        {' '}
         <p>
           <strong>Please Note:</strong> This form requests a reset to your TACC
           Account password. Changes to this password will affect your TACC

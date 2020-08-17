@@ -217,7 +217,7 @@ const WebsiteCell = ({ cell: { value } }) => {
   const url = !/^(?:f|ht)tps?:\/\//.test(value) ? `https://${value}` : value;
   return (
     <a href={url} target="_blank" rel="noreferrer">
-      {value}
+      {url}
     </a>
   );
 };
