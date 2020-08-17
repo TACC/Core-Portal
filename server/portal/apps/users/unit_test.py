@@ -186,7 +186,6 @@ class TestGetAllocations(TestCase):
         ]
 
         hosts_expected = {
-            'stampede2.tacc.utexas.edu': ['Proj-Old'],
             'rodeo.tacc.utexas.edu': ['Proj-Code'],
             'frontera.tacc.utexas.edu': ['Big-Proj']
         }
