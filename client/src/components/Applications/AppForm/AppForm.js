@@ -42,12 +42,12 @@ AppPlaceholder.propTypes = {
 };
 
 const AppDetail = () => {
-  const { loading, app, error, hosts } = useSelector(
+  const { loading, app, error, allocationsLoading } = useSelector(
     state => ({
       loading: state.app.loading,
       app: state.app.definition,
       error: state.app.error,
-      hosts: state.allocations.hosts
+      allocationsLoading: state.allocations.loading
     }),
     shallowEqual
   );
@@ -62,7 +62,7 @@ const AppDetail = () => {
     );
   }
 
-  if (loading || !app.name || !Object.keys(hosts).length) {
+  if (loading || !app.name || allocationsLoading) {
     return <LoadingSpinner />;
   }
 
@@ -168,7 +168,7 @@ const AppSchemaForm = ({ app }) => {
         <div id="appForm-alerts">
           {jobSubmission.error ? (
             <Alert color="warning" isOpen={visible} toggle={onDismiss}>
-              {`Job submission error:  ${jobSubmission.response.message}`}
+              {`Error:  ${jobSubmission.response.message}`}
             </Alert>
           ) : (
             <Alert color="info" isOpen={visible} toggle={onDismiss}>

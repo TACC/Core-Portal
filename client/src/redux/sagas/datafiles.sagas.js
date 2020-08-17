@@ -21,8 +21,12 @@ export async function fetchSystemsUtil() {
 }
 
 export function* fetchSystems() {
-  const systemsJson = yield call(fetchSystemsUtil);
-  yield put({ type: 'FETCH_SYSTEMS_SUCCESS', payload: systemsJson });
+  try {
+    const systemsJson = yield call(fetchSystemsUtil);
+    yield put({ type: 'FETCH_SYSTEMS_SUCCESS', payload: systemsJson });
+  } catch (e) {
+    yield put({ type: 'FETCH_SYSTEMS_ERROR', payload: e.message });
+  }
 }
 
 export function* watchFetchSystems() {

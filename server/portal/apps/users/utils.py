@@ -123,7 +123,14 @@ def get_allocations(username):
         dict
     """
     try:
-        return IndexedAllocation.from_username(username).value.to_dict()
+        result = {
+            'hosts': {},
+            'portal_alloc': None,
+            'active': [],
+            'inactive': []
+        }
+        result.update(IndexedAllocation.from_username(username).value.to_dict())
+        return result
     except NotFoundError:
         # Fall back to getting allocations from TAS
         allocations = get_tas_allocations(username)
