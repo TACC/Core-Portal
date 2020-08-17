@@ -1,11 +1,15 @@
 const initialSystemState = {
-  systemList: []
+  systemList: [],
+  error: false,
+  errorMessage: null
 };
 
 export function systems(state = initialSystemState, action) {
   switch (action.type) {
     case 'FETCH_SYSTEMS_SUCCESS':
-      return { systemList: action.payload.system_list };
+      return { ...state, systemList: action.payload.system_list };
+    case 'FETCH_SYSTEMS_ERROR':
+      return { ...state, error: true, errorMessage: action.payload };
     default:
       return state;
   }
