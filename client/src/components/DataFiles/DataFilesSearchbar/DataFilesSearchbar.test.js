@@ -1,18 +1,9 @@
 import React from 'react';
-import { Router } from 'react-router-dom';
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import DataFilesSearchbar from './DataFilesSearchbar';
 import configureStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
-
-function renderComponent(component, store, history) {
-  return render(
-    <Provider store={store}>
-      <Router history={history}>{component}</Router>
-    </Provider>
-  );
-}
+import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 
