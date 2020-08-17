@@ -1,22 +1,13 @@
 import React from 'react';
-import { Provider } from 'react-redux';
-import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import DataFiles from '../DataFiles';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture'
 import filesFixture from '../fixtures/DataFiles.files.fixture';
+import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 
-function renderComponent(component, store, history) {
-  return render(
-    <Provider store={store}>
-      <Router history={history}>{component}</Router>
-    </Provider>
-  );
-}
 
 describe('DataFiles', () => {
   it('should render Data Files with multiple private systems', () => {
