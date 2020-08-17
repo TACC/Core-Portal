@@ -4,12 +4,13 @@
 version: "3"
 services:
   cms:
-    image: taccwma/frontera-cms:a45665c
+    image: local--frontera-cms--2020-08-17:latest
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
       - ../../cms/static:/code/static
       - ../../cms/media:/code/media
+      - ../../cms/templates:/code/taccsite_cms/templates
     command: python manage.py runserver 0.0.0.0:8000
     container_name: frontera_prtl_cms
 

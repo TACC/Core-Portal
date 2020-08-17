@@ -28,7 +28,8 @@ _DATABASES = {
         'NAME': 'taccsite',
         'USER': 'postgresadmin',
         'PASSWORD': 'taccforever',   # Change for deployment configuration.
-        'HOST': 'frontera_cms_postgres',               # 'localhost' in demo/local-dev/SAD CMS deployments, 'taccsite_postgres' in containerized portal deployments (expect Portal, which expects 'frontera_cms_postgres')
+        'HOST': 'frontera_cms_postgres',            # 'localhost' in demo/local-dev/SAD CMS deployments, 'taccsite_postgres' in containerized portal deployments
+                                                    # (expect Portal, which expects 'frontera_cms_postgres')
         'PORT': '5432',
     }
 }
