@@ -27,8 +27,8 @@ _DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'taccsite',
         'USER': 'postgresadmin',
-        'PASSWORD': 'taccforever' ,   # Change for deployment configuration.
-        'HOST': 'taccsite_postgres',                # 'localhost' in demo/local-dev/SAD CMS deployments, 'taccsite_postgres' in containerized portal deployments.
+        'PASSWORD': 'taccforever',   # Change for deployment configuration.
+        'HOST': 'taccsite_postgres',               # 'localhost' in demo/local-dev/SAD CMS deployments, 'taccsite_postgres' in containerized portal deployments.
         'PORT': '5432',
     }
 }
@@ -134,7 +134,7 @@ _TACC_BRANDING = [
     "True"
 ]
 
-_UTEXAS_BRANDING =  [
+_UTEXAS_BRANDING = [
     "utexas",
     "site_cms/images/org_logos/utaustin-white.png",
     "branding-utaustin",
@@ -162,7 +162,7 @@ _BRANDING = [ _TACC_BRANDING, _UTEXAS_BRANDING ]        # Default TACC Portal.
 ########################
 # LOGOS.
 
-_PORTAL_LOGO =  [
+_PORTAL_LOGO = [
     "frontera",
     "site_cms/images/org_logos/frontera-white-solo.png",
     "",
