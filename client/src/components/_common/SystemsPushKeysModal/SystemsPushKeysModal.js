@@ -135,8 +135,14 @@ const SystemsPushKeysModal = () => {
                   label="Password"
                   type="password"
                   required
+                  disabled={submitting}
                 />
-                <FormField name="token" label="TACC Token" required />
+                <FormField
+                  name="token"
+                  label="TACC Token"
+                  required
+                  disabled={submitting}
+                />
               </ModalBody>
               <ModalFooter>
                 <Button
