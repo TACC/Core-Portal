@@ -1,27 +1,23 @@
 import React from "react";
-import { Router, Route } from "react-router-dom";
-import { render, fireEvent } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import  DataFilesCopyModal  from "../DataFilesCopyModal";
-import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import DataFilesCopyModalFixture from './DataFilesCopyModal.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
+import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 
 const initialMockState = {
   files: DataFilesCopyModalFixture,
-  systems: systemsFixture
+  systems: systemsFixture,
+  pushKeys: {
+    modalProps: {
+      pushKeys: false
+    }
+  }
 };
 
-function renderComponent(component, store, history) {
-  return render(
-    <Provider store={store}>
-      <Router history={history}>{component}</Router>
-    </Provider>
-  );
-}
 
 describe("DataFilesCopyModal", () => {
 

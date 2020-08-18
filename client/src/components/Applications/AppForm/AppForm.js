@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import FormSchema from './AppFormSchema';
 import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
+import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
 
 const appShape = PropTypes.shape({
@@ -25,7 +26,10 @@ const appShape = PropTypes.shape({
   }),
   defaultNodeCount: PropTypes.number,
   parallelism: PropTypes.string,
-  defaultProcessorsPerNode: PropTypes.number
+  defaultProcessorsPerNode: PropTypes.number,
+  defaultMaxRunTime: PropTypes.string,
+  scheduler: PropTypes.string,
+  tags: PropTypes.arrayOf(PropTypes.string)
 });
 
 export const AppPlaceholder = ({ apps }) => {
@@ -286,6 +290,7 @@ export const AppSchemaForm = ({ app }) => {
                         {...field}
                         name={`inputs.${id}`}
                         agaveFile
+                        SelectModal={DataFilesSelectModal}
                         placeholder="Browse Data Files"
                         key={`inputs.${id}`}
                       />
