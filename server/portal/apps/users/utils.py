@@ -73,13 +73,12 @@ def get_tas_allocations(username):
             resource = dict(tas_to_tacc_resources[alloc['resource']])
             resource['allocation'] = dict(alloc)
 
-            if resource['host'] in hosts and charge_code not in hosts[resource['host']]:
-                hosts[resource['host']].append(charge_code)
-            elif resource['host'] not in hosts:
-                hosts[resource['host']] = [charge_code]
-
             # Separate active and inactive allocations and make single entry for each project
             if resource['allocation']['status'] == 'Active':
+                if resource['host'] in hosts and charge_code not in hosts[resource['host']]:
+                    hosts[resource['host']].append(charge_code)
+                elif resource['host'] not in hosts:
+                    hosts[resource['host']] = [charge_code]
                 # Add allocations to the project listing if it exists
                 if charge_code in active_allocations:
                     active_allocations[charge_code]['systems'].append(resource)
@@ -124,7 +123,14 @@ def get_allocations(username):
         dict
     """
     try:
-        return IndexedAllocation.from_username(username).value.to_dict()
+        result = {
+            'hosts': {},
+            'portal_alloc': None,
+            'active': [],
+            'inactive': []
+        }
+        result.update(IndexedAllocation.from_username(username).value.to_dict())
+        return result
     except NotFoundError:
         # Fall back to getting allocations from TAS
         allocations = get_tas_allocations(username)

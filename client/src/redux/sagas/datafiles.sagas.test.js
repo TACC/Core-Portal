@@ -38,6 +38,19 @@ describe("fetchSystems", () => {
       .run();
   });
 
+  it("catches errors in system retrieval", async () => {
+    return expectSaga(fetchSystems)
+      .provide([
+        [matchers.call.fn(fetchSystemsUtil), throwError(new Error("error"))]
+      ])
+      .call(fetchSystemsUtil)
+      .put({
+        type: "FETCH_SYSTEMS_ERROR",
+        payload: "error"
+      })
+      .run();
+  });
+
   it("runs fetch", () => {
     const apiResult = fetchSystemsUtil();
     expect(apiResult).resolves.toEqual({ private: "test.private" });
@@ -125,7 +138,7 @@ describe("fetchFiles", () => {
         limit: 100,
       }
     })
-      .provide([[matchers.call.fn(fetchFilesUtil), throwError({message: "404"})]])
+      .provide([[matchers.call.fn(fetchFilesUtil), throwError({message: "404", status: 404})]])
       .put({
         type: "FETCH_FILES_START",
         payload: {

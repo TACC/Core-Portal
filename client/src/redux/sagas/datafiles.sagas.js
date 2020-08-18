@@ -21,8 +21,12 @@ export async function fetchSystemsUtil() {
 }
 
 export function* fetchSystems() {
-  const systemsJson = yield call(fetchSystemsUtil);
-  yield put({ type: 'FETCH_SYSTEMS_SUCCESS', payload: systemsJson });
+  try {
+    const systemsJson = yield call(fetchSystemsUtil);
+    yield put({ type: 'FETCH_SYSTEMS_SUCCESS', payload: systemsJson });
+  } catch (e) {
+    yield put({ type: 'FETCH_SYSTEMS_ERROR', payload: e.message });
+  }
 }
 
 export function* watchFetchSystems() {
@@ -88,11 +92,14 @@ export async function fetchFilesUtil(
   const url = `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`;
   const response = await fetch(url);
 
+  const responseJson = await response.json();
   if (!response.ok) {
-    throw new Error(response.status);
+    const err = new Error('Error listing files');
+    err.status = response.status;
+    err.data = responseJson;
+    throw err;
   }
 
-  const responseJson = await response.json();
   return responseJson.data;
 }
 
@@ -134,9 +141,17 @@ export function* fetchFiles(action) {
       type: 'FETCH_FILES_ERROR',
       payload: {
         section: action.payload.section,
-        code: e.message
+        code: e.status.toString()
       }
     });
+    // If listing returns 502, body should contain a system def for key pushing.
+    yield e.status === 502 &&
+      put({
+        type: 'SET_SYSTEM',
+        payload: {
+          system: e.data.system
+        }
+      });
   }
 }
 

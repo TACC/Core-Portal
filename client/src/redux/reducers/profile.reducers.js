@@ -53,6 +53,7 @@ export default function profile(state = initialState, action) {
     case 'CLOSE_PROFILE_MODAL':
       return {
         ...state,
+        errors: {},
         success: { optional: false, required: false, password: false },
         modals: {
           editRequired: false,
@@ -105,6 +106,12 @@ export default function profile(state = initialState, action) {
           ...state.errors,
           password: action.payload
         }
+      };
+    case 'CLEAR_FORM_MESSAGES':
+      return {
+        ...state,
+        success: { optional: false, required: false, password: false },
+        errors: {}
       };
     default:
       return state;

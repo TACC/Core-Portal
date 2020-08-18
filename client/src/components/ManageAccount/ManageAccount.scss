@@ -5,7 +5,7 @@
   display: flex;
   padding: 0;
   .container-fluid {
-    padding: 20px 40px 0 25px !important; /* overwrite Bootstrap *//* NOTE: The `!important` may not be necessary */
+    padding: 20px 40px 0 25px !important; /* overwrite Bootstrap */ /* NOTE: The `!important` may not be necessary */
     display: flex;
     flex-direction: column;
     margin: 0;
@@ -55,9 +55,9 @@
   color: #484848;
   padding: 1rem;
   span {
-      color: #484848;
-      font-size: 1.1rem;
-      margin: 0;
+    color: #484848;
+    font-size: 1.1rem;
+    margin: 0;
   }
 }
 // Tables
@@ -104,8 +104,13 @@
   margin-top: 1.25rem;
 
   /* Override striped bootstrap table */
-  .table-striped > tbody > tr:nth-child(odd) {
-    background-color: rgba(198, 198, 198, 0.1);
+  .table-striped > tbody {
+    tr:nth-child(even) {
+      background-color: rgba(198, 198, 198, 0.1);
+    }
+    tr:nth-child(odd) {
+      background-color: white;
+    }
   }
 }
 .profile-component-header {
@@ -114,7 +119,7 @@
   align-items: center;
   font-size: 16px;
   border-bottom: solid 1px #707070;
-  padding: 0 0.5rem 0.5rem 0;
+  padding: 0 0 0.5rem 0;
 }
 .profile-component-body {
   padding: 0 0.5rem;
@@ -129,14 +134,13 @@
   border-radius: 0;
   border: 0;
   font: bold 12px Roboto, sans-serif;
-  background-color: #9D85EF;
+  background-color: #9d85ef;
   padding: 0.5rem 1rem;
 }
 .form-button {
   font-size: 16px;
   font-weight: bold;
-  padding-top: 0;
-  padding-bottom: 0;
+  padding: 0;
 }
 .license-button {
   background-color: transparent !important;
@@ -146,4 +150,7 @@
   font-size: 14px;
   display: flex;
   flex-direction: column;
+}
+.password-warning {
+  font-size: 14px;
 }
