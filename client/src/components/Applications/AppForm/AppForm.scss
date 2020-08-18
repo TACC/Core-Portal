@@ -22,16 +22,17 @@
 }
 
 /* Add 30 pixels of space at the bottom of app form and app info */
-/* HACK: Provide bottom buffer without overwriting `.form-group` globally (because not enough time to test global effects) */
-#appForm-wrapper .form-group {
-    margin-bottom: 0;
-}
 /* HACK: Use padding on last child of these flex item wrappers because flex items do not respect padding on main axis */
 .appInfo-wrapper > *:last-child,
-#appForm-wrapper > *:last-child {
+#appForm-wrapper > *:last-child,
+#appDetail-wrapper .jumbotron > *:last-child {
     /* Match bottom space found in UI design at `Core Portal > Applications` */
     padding-bottom: 30px;
 }
+/* HACK: Provide bottom buffer without consistent global overwrites (because not enough time to test global effects) */
+#appForm-wrapper .form-group,
+#appDetail-wrapper .jumbotron > *:last-child { margin-bottom: 0; }
+#appDetail-wrapper .jumbotron { padding-bottom: 0; } /* Remove padding that is ineffectual only because this is a flex child */
 
 #appForm-wrapper {
     overflow-y: auto;
