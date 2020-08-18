@@ -109,9 +109,8 @@ AppInfo.propTypes = {
 export const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
   const { allocations, portalAlloc, jobSubmission } = useSelector(state => {
-    const matchingHost = Object.keys(state.allocations.hosts).find(host =>
-      app.resource === host ||
-      app.resource.endsWith(`.${host}`)
+    const matchingHost = Object.keys(state.allocations.hosts).find(
+      host => app.resource === host || app.resource.endsWith(`.${host}`)
     );
     return {
       allocations: matchingHost ? state.allocations.hosts[matchingHost] : [],
