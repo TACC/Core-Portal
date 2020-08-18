@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, func, shape, arrayOf, object } from 'prop-types';
+import { string, func, shape, arrayOf } from 'prop-types';
 import { Table } from 'reactstrap';
 import { useTable } from 'react-table';
 import { capitalize } from 'lodash';
@@ -57,7 +57,7 @@ const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
   );
 };
 AllocationsTeamTable.propTypes = {
-  rawData: arrayOf(object),
+  rawData: arrayOf(shape({})),
   clickHandler: func.isRequired,
   visible: shape({
     firstName: string.isRequired,
