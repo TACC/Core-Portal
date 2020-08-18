@@ -46,12 +46,12 @@ AppPlaceholder.propTypes = {
 };
 
 const AppDetail = () => {
-  const { loading, app, error, allocationsLoading } = useSelector(
+  const { loading, app, error, allocationsLoading, hasDefaultAllocation } = useSelector(
     state => ({
       loading: state.app.loading,
       app: state.app.definition,
       error: state.app.error,
-      allocationsLoading: state.allocations.loading
+      allocationsLoading: state.allocations.loading,
     }),
     shallowEqual
   );
@@ -112,11 +112,17 @@ AppInfo.propTypes = {
 
 const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
-  const { allocations, portalAlloc, jobSubmission } = useSelector(
+  const { allocations, portalAlloc, jobSubmission,
+    hasDefaultAllocation, defaultHost } = useSelector(
     state => ({
       allocations: state.allocations.hosts[app.resource] || [],
       portalAlloc: state.allocations.portal_alloc,
-      jobSubmission: state.jobs.submit
+      jobSubmission: state.jobs.submit,
+      hasDefaultAllocation: 
+        !state.allocations.loading 
+          ? state.allocations.hosts[state.systems.defaultHost]
+          : false,
+      defaultHost: state.systems.defaultHost
     }),
     shallowEqual
   );
@@ -152,7 +158,12 @@ const AppSchemaForm = ({ app }) => {
       initialValues.allocation = allocations.length === 1 ? allocations[0] : '';
     }
 
-    if (!allocations.length) {
+    if (!hasDefaultAllocation) {
+      jobSubmission.error = true;
+      jobSubmission.response = {
+        message: `You need an allocation on ${defaultHost} to run this application. Please submit a ticket for access.`
+      }
+    } else if (!allocations.length) {
       jobSubmission.error = true;
       jobSubmission.response = {
         message: `You need an allocation to use the system ${app.resource}. Please submit a ticket for access.`
