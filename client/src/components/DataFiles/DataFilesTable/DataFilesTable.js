@@ -65,6 +65,16 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
         </div>
       );
     }
+    if (err === '403') {
+      return (
+        <div className="h-100 listing-placeholder">
+          <Message type="warn">
+            You are missing the required allocation for this system.
+            Please submit a ticket for access.
+          </Message>
+        </div>
+      )
+    }
     return (
       <div className="h-100 listing-placeholder">
         <Message type="warn">

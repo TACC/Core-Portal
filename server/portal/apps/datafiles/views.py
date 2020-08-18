@@ -4,9 +4,11 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 import json
 import logging
+from requests.exceptions import HTTPError
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
+from portal.apps.users.utils import get_allocations
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +45,16 @@ class TapisFilesView(BaseApiView):
             client = request.user.agave_oauth.client
         except AttributeError:
             client = None
-
-        response = tapis_get_handler(
-            client, scheme, system, path, operation, **request.GET.dict())
+        try:
+            response = tapis_get_handler(
+                client, scheme, system, path, operation, **request.GET.dict())
+        except HTTPError as e:
+            if e.response.status_code == 502:
+                system = client.systems.get(systemId=system)
+                allocations = get_allocations(request.user.username)
+                if system['storage']['host'] not in allocations['hosts']:
+                    e.response.status_code = 403
+            raise e
 
         return JsonResponse({'data': response})
 
