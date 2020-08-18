@@ -8,6 +8,8 @@ from portal.apps.auth.models import AgaveOAuthToken
 import json
 import os
 import pytest
+from datetime import timedelta
+from django.utils import timezone
 
 
 @pytest.mark.django_db(transaction=True)
@@ -96,9 +98,64 @@ class TestJobsView(TestCase):
 
         jobs = self.request_jobs()
 
-        # Verify that all jobs get returned and have the correct isPortal value
-        self.assertEqual(len(jobs), 2)
+        # Verify that only the job we know about gets returned
+        self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0]["id"], "1234")
-        self.assertEqual(jobs[0]["isPortal"], True)
-        self.assertEqual(jobs[1]["id"], "5678")
-        self.assertEqual(jobs[1]["isPortal"], False)
+
+    def test_date_filter(self):
+        test_time = timezone.now()
+
+        # today_job
+        JobSubmission.objects.create(
+            user=self.user,
+            jobId="9876"
+        )
+        JobSubmission.objects.filter(jobId="9876").update(time=test_time)
+
+        # recent_job
+        JobSubmission.objects.create(
+            user=self.user,
+            jobId="1234",
+        )
+        JobSubmission.objects.filter(jobId="1234").update(time=test_time - timedelta(days=3))
+
+        # older_job
+        JobSubmission.objects.create(
+            user=self.user,
+            jobId="2345",
+        )
+        JobSubmission.objects.filter(jobId="2345").update(time=test_time - timedelta(days=15))
+
+        # oldest_job
+        JobSubmission.objects.create(
+            user=self.user,
+            jobId="3456",
+        )
+        JobSubmission.objects.filter(jobId="3456").update(time=test_time - timedelta(days=120))
+
+        self.mock_agave_client.jobs.list.return_value = [
+            {"id": "9876"},
+            {"id": "1234"},
+            {"id": "2345"},
+            {"id": "3456"}
+        ]
+
+        # Test request for jobs with no period query param
+        jobs = self.request_jobs()
+        self.assertEqual(len(jobs), 4)
+
+        # Test request for jobs with query for all jobs
+        jobs = self.request_jobs(query_params={"period": "all"})
+        self.assertEqual(len(jobs), 4)
+
+        # Test request for jobs within one month
+        jobs = self.request_jobs(query_params={"period": "month"})
+        self.assertEqual(len(jobs), 3)
+
+        # Test request for jobs within one week
+        jobs = self.request_jobs(query_params={"period": "week"})
+        self.assertEqual(len(jobs), 2)
+
+        # Test request for jobs from today
+        jobs = self.request_jobs(query_params={"period": "day"})
+        self.assertEqual(len(jobs), 1)

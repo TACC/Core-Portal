@@ -5,6 +5,7 @@
 import logging
 import json
 from urllib.parse import urlparse
+from datetime import timedelta
 from django.utils import timezone
 from django.http import JsonResponse
 from django.conf import settings
@@ -181,16 +182,31 @@ class JobsView(BaseApiView):
         else:
             limit = request.GET.get('limit', 10)
             offset = request.GET.get('offset', 0)
+            period = request.GET.get('period', 'all')
 
             data = agave.jobs.list(limit=limit, offset=offset)
-            portal_submitted_jobs = JobSubmission.objects.all().filter(user=request.user)
+            jobs = JobSubmission.objects.all().filter(user=request.user)
+
+            if period != "all":
+                enddate = timezone.now()
+                if period == "day":
+                    days = 1
+                elif period == "week":
+                    days = 7
+                elif period == "month":
+                    days = 30
+                startdate = enddate - timedelta(days=days)
+                jobs = jobs.filter(time__range=[startdate, enddate])
 
             user_job_ids = [
-                job.jobId for job in portal_submitted_jobs
+                job.jobId for job in jobs
             ]
-
-            for job in data:
-                job['isPortal'] = job["id"] in user_job_ids
+            data = list(
+                filter(
+                    lambda job: job["id"] in user_job_ids,
+                    data
+                )
+            )
 
         return JsonResponse({"response": data})
 
