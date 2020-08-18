@@ -225,7 +225,7 @@ TicketCreateForm.propTypes = {
     last_name: PropTypes.string,
     email: PropTypes.string,
     isStaff: PropTypes.bool,
-    oauth: PropTypes.object
+    oauth: PropTypes.shape({})
   })
 };
 

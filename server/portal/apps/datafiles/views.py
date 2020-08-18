@@ -2,6 +2,7 @@ from portal.apps.auth.tasks import get_user_storage_systems
 from portal.views.base import BaseApiView
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
+from requests.exceptions import HTTPError
 import json
 import logging
 from requests.exceptions import HTTPError
@@ -49,12 +50,21 @@ class TapisFilesView(BaseApiView):
             response = tapis_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
         except HTTPError as e:
-            if e.response.status_code == 502:
-                system = client.systems.get(systemId=system)
+            error_status = e.response.status_code
+            error_json = e.response.json()
+            if error_status == 502:
+                # In case of 502 determine cause
+                system = dict(client.systems.get(systemId=system))
                 allocations = get_allocations(request.user.username)
+
+                # If user is missing an allocation mangle error to a 403
                 if system['storage']['host'] not in allocations['hosts']:
                     e.response.status_code = 403
-            raise e
+                    raise e
+
+                # If a user needs to push keys, return a response specifying the system
+                error_json['system'] = system
+                return JsonResponse(error_json, status=error_status)
 
         return JsonResponse({'data': response})
 
