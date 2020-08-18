@@ -180,12 +180,11 @@ class JobsView(BaseApiView):
 
         # list jobs
         else:
-            limit = request.GET.get('limit', 10)
-            offset = request.GET.get('offset', 0)
+            limit = int(request.GET.get('limit', 10))
+            offset = int(request.GET.get('offset', 0))
             period = request.GET.get('period', 'all')
 
-            data = agave.jobs.list(limit=limit, offset=offset)
-            jobs = JobSubmission.objects.all().filter(user=request.user)
+            jobs = JobSubmission.objects.all().filter(user=request.user).order_by('-time')
 
             if period != "all":
                 enddate = timezone.now()
@@ -198,15 +197,12 @@ class JobsView(BaseApiView):
                 startdate = enddate - timedelta(days=days)
                 jobs = jobs.filter(time__range=[startdate, enddate])
 
-            user_job_ids = [
-                job.jobId for job in jobs
-            ]
-            data = list(
-                filter(
-                    lambda job: job["id"] in user_job_ids,
-                    data
-                )
-            )
+            all_user_job_ids = [job.jobId for job in jobs]
+            user_job_ids = all_user_job_ids[offset:offset + limit]
+            data = agave.jobs.list(query={'id.in': ','.join(user_job_ids)})
+
+            # re-order agave job info to match our time-ordered jobs
+            data = [next(job for job in data if job["id"] == id) for id in user_job_ids]
 
         return JsonResponse({"response": data})
 
