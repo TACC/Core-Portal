@@ -54,7 +54,6 @@ export default function* rootSaga() {
     watchApps(),
     watchSystems(),
     watchSystemMonitor(),
-    watchPostTicketReply(),
     ...watchProfile,
     watchTicketListFetch(),
     watchTicketDetailedView(),
