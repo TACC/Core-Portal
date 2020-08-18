@@ -11,8 +11,8 @@ export function applyTimezoneOffset(timeDateValue) {
 
 export function formatDate(timeDateValue) {
   return timeDateValue.toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'numeric',
+    day: '2-digit',
+    month: '2-digit',
     year: 'numeric',
     timeZone: 'America/Chicago'
   });

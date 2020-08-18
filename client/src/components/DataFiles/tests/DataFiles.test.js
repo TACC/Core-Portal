@@ -14,7 +14,15 @@ describe('DataFiles', () => {
     const history = createMemoryHistory();
     const store = mockStore({
       systems: systemsFixture,
-      files: filesFixture
+      files: filesFixture,
+      pushKeys: {
+        modals: {
+          pushKeys: false
+        },
+        modalProps: {
+          pushKeys: {}
+        }
+      }
     });
     const { getByText, getAllByText } = renderComponent(
       <DataFiles />,

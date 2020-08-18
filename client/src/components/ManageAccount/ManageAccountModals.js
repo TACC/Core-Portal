@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Modal, ModalHeader, ModalBody, Alert } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -8,18 +8,28 @@ import {
 } from './ManageAccountForms';
 
 export const EditRequiredInformationModal = () => {
-  const { required: open, success, error } = useSelector(({ profile }) => {
-    return {
-      ...profile.modals,
-      success: profile.success.required,
-      error: profile.errors.required
-    };
-  });
+  const { required: open, success, error, isEditing } = useSelector(
+    ({ profile }) => {
+      return {
+        ...profile.modals,
+        isEditing: profile.editing,
+        success: profile.success.required,
+        error: profile.errors.required
+      };
+    }
+  );
   const dispatch = useDispatch();
+  const messageRef = useRef(null);
+  useEffect(() => {
+    if (messageRef.current && !isEditing)
+      messageRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [success, error, messageRef, isEditing]);
+
   const closeModal = () => {
     dispatch({ type: 'CLOSE_PROFILE_MODAL' });
     if (success) dispatch({ type: 'LOAD_PROFILE_DATA' });
   };
+
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">
       <ModalHeader
@@ -35,12 +45,14 @@ export const EditRequiredInformationModal = () => {
           overflowY: 'auto'
         }}
       >
-        {success && (
-          <Alert color="success">
-            Successfully Edited Required Information
-          </Alert>
-        )}
-        {error && <Alert color="danger">{error.message}</Alert>}
+        <div ref={messageRef}>
+          {success && (
+            <Alert color="success">
+              Successfully Edited Required Information
+            </Alert>
+          )}
+          {error && <Alert color="danger">{error.message}</Alert>}
+        </div>
         <EditRequiredInformationForm />
       </ModalBody>
     </Modal>

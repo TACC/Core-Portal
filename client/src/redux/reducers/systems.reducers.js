@@ -1,5 +1,6 @@
 export function pushKeys(
   state = {
+    target: {},
     modals: {
       pushKeys: false
     },
@@ -10,6 +11,11 @@ export function pushKeys(
   action
 ) {
   switch (action.type) {
+    case 'SET_SYSTEM':
+      return {
+        ...state,
+        target: action.payload.system
+      };
     case 'SYSTEMS_TOGGLE_MODAL':
       return {
         ...state,

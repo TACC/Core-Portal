@@ -437,6 +437,8 @@ describe("Edit Required Information", () => {
         success: { required: true },
       },
     });
+    // Mock scrollIntoView (not a part of jsdom)
+    window.HTMLElement.prototype.scrollIntoView = jest.fn()
     rerender(
       <Provider store={store}>
         <EditRequiredInformationModal />

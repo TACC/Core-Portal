@@ -1,3 +1,12 @@
+import { formatDate } from 'utils/timeFormat';
+
+/**
+ * Generate object containing data relevant for each cell in the sub tables of
+ * the allocation table
+ * @param {Array} arr - array of allocations for each resource
+ * @param {String} header - column of the table
+ * @returns {Object} Relevant data
+ */
 export default function systemAccessor(arr, header) {
   switch (header) {
     case 'Awarded':
@@ -27,7 +36,7 @@ export default function systemAccessor(arr, header) {
     case 'Expires':
       return arr.map(({ allocation: { end, id } }) => ({
         id,
-        date: new Date(end).toDateString()
+        date: formatDate(new Date(end))
       }));
     default:
       return arr.map(({ name, allocation: { id } }) => ({
