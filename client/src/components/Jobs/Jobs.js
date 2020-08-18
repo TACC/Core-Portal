@@ -14,7 +14,6 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const isLoading = useSelector(state => state.jobs.loading);
   const jobs = useSelector(state => state.jobs.list);
   const error = useSelector(state => state.jobs.error);
-  const limit = 20;
   const noDataText = (
     <>
       No recent jobs. You can submit jobs from the{' '}
@@ -28,16 +27,12 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     </>
   );
 
-  const infiniteScrollCallback = useCallback(offset => {
-    // The only way we have some semblance of
-    // knowing whether or not there are more jobs
-    // is if the number of jobs is not a multiple
-    // of the scroll size limit.
-    // i.e., you asked for 100 jobs but got 96.
-    if (offset % limit === 0) {
-      dispatch({ type: 'GET_JOBS', params: { offset, limit } });
-    }
-  }, []);
+  const infiniteScrollCallback = useCallback(() => {
+    dispatch({
+      type: 'GET_JOBS',
+      params: { offset: jobs.length }
+    });
+  }, [jobs]);
 
   const jobDetailLink = useCallback(
     ({

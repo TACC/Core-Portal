@@ -1,29 +1,37 @@
-import { put, takeLatest, takeLeading, call } from 'redux-saga/effects';
-import 'cross-fetch';
+import { put, takeLatest, takeLeading, call, select } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 
+const LIMIT = 20;
+
+export async function fetchJobs(offset, limit) {
+  const result = await fetchUtil({
+    url: '/api/workspace/jobs/',
+    params: { offset, limit }
+  });
+  return result.response;
+}
+
 export function* getJobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
     yield put({ type: 'JOBS_LIST_INIT' });
+  } else {
+    const noMore = yield select(state => state.jobs.noMore);
+    if (noMore) {
+      return;
+    }
   }
 
   yield put({ type: 'JOBS_LIST_START' });
-  const url = new URL('/api/workspace/jobs', window.location.origin);
-  Object.keys(action.params).forEach(key =>
-    url.searchParams.append(key, action.params[key])
-  );
+
   try {
-    const res = yield call(fetch, url, {
-      credentials: 'same-origin',
-      ...action.options
+    const jobs = yield call(fetchJobs, action.params.offset, LIMIT);
+    const hasNoMoreJobs = jobs.length < LIMIT;
+    yield put({
+      type: 'JOBS_LIST',
+      payload: { list: jobs, noMore: hasNoMoreJobs }
     });
-    if (res.status !== 200) {
-      throw new Error('Could not retrieve jobs');
-    }
-    const json = yield res.json();
-    yield put({ type: 'JOBS_LIST', payload: json.response });
     yield put({ type: 'JOBS_LIST_FINISH' });
   } catch {
     yield put({ type: 'JOBS_LIST_ERROR', payload: 'error' });
