@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import 'react-table-6/react-table.css';
 import { AppIcon, InfiniteScrollTable, Message } from '_common';
 import { getOutputPathFromHref } from 'utils/jobsUtil';
-import { formatDateTime } from 'utils/timeFormat';
+import { applyTimezoneOffset, formatDateTime } from 'utils/timeFormat';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
@@ -128,7 +128,9 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: d => new Date(d.created),
       Cell: el => (
-        <span id={`jobDate${el.index}`}>{`${formatDateTime(el.value)}`}</span>
+        <span id={`jobDate${el.index}`}>{`${formatDateTime(
+          applyTimezoneOffset(el.value)
+        )}`}</span>
       ),
       id: 'jobDateCol'
     }
