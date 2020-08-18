@@ -46,7 +46,7 @@ describe('Allocations Table', () => {
     expect(getByText(/Systems/)).toBeDefined();
     expect(getByText(/Awarded/)).toBeDefined();
     expect(getByText(/Remaining/)).toBeDefined();
-    expect(getByText(/Expires/)).toBeDefined();
+    expect(getByText(/Expired/)).toBeDefined();
   });
 
   it('should display an error', async () => {

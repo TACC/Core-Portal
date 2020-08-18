@@ -1,19 +1,10 @@
 import React from 'react';
-import { Router, Route } from 'react-router-dom';
-import { render } from '@testing-library/react';
 import { createMemoryHistory } from "history";
 import DataFilesSystemSelector from './DataFilesSystemSelector';
 import configureStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
+import renderComponent from 'utils/testing';
 
-function renderComponent(component, store, history) {
-  return render(
-    <Provider store={store}>
-      <Router history={history}>{component}</Router>
-    </Provider>
-  );
-}
 
 const mockStore = configureStore();
 
