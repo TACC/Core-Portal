@@ -5,7 +5,6 @@ from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
 import json
 import logging
-from requests.exceptions import HTTPError
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
@@ -65,6 +64,7 @@ class TapisFilesView(BaseApiView):
                 # If a user needs to push keys, return a response specifying the system
                 error_json['system'] = system
                 return JsonResponse(error_json, status=error_status)
+            raise e
 
         return JsonResponse({'data': response})
 
