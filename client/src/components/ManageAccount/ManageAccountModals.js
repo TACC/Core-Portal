@@ -120,7 +120,7 @@ export const ChangePasswordModal = () => {
         {error && <Alert color="danger">{error.message}</Alert>}
         {success && (
           <Alert color="success">
-            Your password has been successfully changed!
+            Your password has been successfully changed.
           </Alert>
         )}
         <ChangePasswordForm />
