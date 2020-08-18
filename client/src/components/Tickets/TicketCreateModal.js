@@ -16,10 +16,11 @@ function TicketCreateModal() {
 
   return (
     <Modal
-      className="ticket-create-model-content"
+      modalClassName="ticket-create-modal"
       isOpen={modalAlwaysOpen}
       toggle={close}
       size="lg"
+      contentClassName="ticket-create-modal-content"
     >
       <ModalHeader toggle={close}>Add Ticket</ModalHeader>
       <ModalBody className="ticket-create-modal-body">
