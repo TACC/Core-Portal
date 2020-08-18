@@ -66,4 +66,18 @@ describe('AppSchemaForm', () => {
     expect(getByText(/TACC-ACI/)).toBeDefined();
   });
 
+  it('does not match invalid hostnames', () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      {
+        ...namdFixture,
+        resource: 'invalid_system_frontera.tacc.utexas.edu'
+      }
+    )
+    expect(getByText(/Error/)).toBeDefined();
+  });
+
 });
