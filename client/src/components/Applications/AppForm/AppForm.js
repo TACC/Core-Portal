@@ -130,7 +130,7 @@ export const AppSchemaForm = ({ app }) => {
         ? state.allocations.hosts[state.systems.defaultHost]
         : false,
       defaultHost: state.systems.defaultHost
-    }
+    };
   }, shallowEqual);
 
   const appFields = FormSchema(app);
