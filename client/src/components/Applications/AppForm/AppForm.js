@@ -110,7 +110,7 @@ AppInfo.propTypes = {
   app: appShape.isRequired
 };
 
-const AppSchemaForm = ({ app }) => {
+export const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
   const {
     allocations,
@@ -118,18 +118,20 @@ const AppSchemaForm = ({ app }) => {
     jobSubmission,
     hasDefaultAllocation,
     defaultHost
-  } = useSelector(
-    state => ({
-      allocations: state.allocations.hosts[app.resource] || [],
+  } = useSelector(state => {
+    const matchingHost = Object.keys(state.allocations.hosts).find(
+      host => app.resource === host || app.resource.endsWith(`.${host}`)
+    );
+    return {
+      allocations: matchingHost ? state.allocations.hosts[matchingHost] : [],
       portalAlloc: state.allocations.portal_alloc,
       jobSubmission: state.jobs.submit,
       hasDefaultAllocation: !state.allocations.loading
         ? state.allocations.hosts[state.systems.defaultHost]
         : false,
       defaultHost: state.systems.defaultHost
-    }),
-    shallowEqual
-  );
+    }
+  }, shallowEqual);
 
   const appFields = FormSchema(app);
 
