@@ -90,6 +90,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
+      className: 'job__status',
       Cell: el => (
         <JobsStatus
           status={el.value}
