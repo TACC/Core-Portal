@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { fetchUtil } from 'utils/fetchUtil';
 import { fetchAppDefinitionUtil } from './apps.sagas';
 
-const LIMIT = 50;
+const LIMIT = 5;
 
 export async function fetchJobs(offset, limit) {
   const result = await fetchUtil({
@@ -17,8 +17,8 @@ export function* getJobs(action) {
   if ('offset' in action.params && action.params.offset === 0) {
     yield put({ type: 'JOBS_LIST_INIT' });
   } else {
-    const noMore = yield select(state => state.jobs.noMore);
-    if (noMore) {
+    const reachedEnd = yield select(state => state.jobs.reachedEnd);
+    if (reachedEnd) {
       return;
     }
   }
@@ -27,10 +27,9 @@ export function* getJobs(action) {
 
   try {
     const jobs = yield call(fetchJobs, action.params.offset, LIMIT);
-    const hasNoMoreJobs = jobs.length < LIMIT;
     yield put({
       type: 'JOBS_LIST',
-      payload: { list: jobs, noMore: hasNoMoreJobs }
+      payload: { list: jobs, reachedEnd: jobs.length < LIMIT }
     });
     yield put({ type: 'JOBS_LIST_FINISH' });
   } catch {
