@@ -49,7 +49,7 @@ function TicketsView() {
   if (loadingError) {
     return (
       <Message type="warn" className="ticket__error">
-        We were unable to retrieve your tickets!
+        We were unable to retrieve your tickets.
       </Message>
     );
   }
