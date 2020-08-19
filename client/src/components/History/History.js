@@ -8,34 +8,36 @@ import {
 } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
-import { string, number } from 'prop-types';
+import { string } from 'prop-types';
 
 import JobHistory from './HistoryViews';
-import JobHistoryModal from './HistoryViews/JobHistoryModal';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
 import './History.module.scss';
 
 const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
 
-const Header = ({ title, unreadJobs }) => {
+const Header = ({ title }) => {
+  // Only display "Mark All as Viewed" button if there are purple (unread) notifs
+  const unread = useSelector(
+    state => state.notifications.list.notifs.filter(n => !n.read).length
+  );
   const dispatch = useDispatch();
 
   return (
     <div styleName="header">
       <span styleName="header-text"> History / {title} </span>
-      {unreadJobs ? (
+      {unread ? (
         <Button
           color="link"
-          onClick={() =>
+          onClick={() => {
             dispatch({
               type: 'NOTIFICATIONS_READ',
               payload: {
-                id: 'all',
-                read: true
+                onSuccess: { type: 'FETCH_NOTIFICATIONS' }
               }
-            })
-          }
+            });
+          }}
         >
           Mark All as Viewed
         </Button>
@@ -43,9 +45,10 @@ const Header = ({ title, unreadJobs }) => {
     </div>
   );
 };
-Header.propTypes = { title: string.isRequired, unreadJobs: number.isRequired };
+Header.propTypes = { title: string.isRequired };
 
-const Sidebar = ({ unreadJobs }) => {
+const Sidebar = () => {
+  const { unreadJobs } = useSelector(state => state.notifications.list);
   return (
     <Nav styleName="sidebar" vertical>
       <NavItem>
@@ -63,7 +66,6 @@ const Sidebar = ({ unreadJobs }) => {
     </Nav>
   );
 };
-Sidebar.propTypes = { unreadJobs: number.isRequired };
 
 export const Routes = () => {
   const { path } = useRouteMatch();
@@ -72,21 +74,31 @@ export const Routes = () => {
   return (
     <div styleName="content" data-testid="history-router">
       <Switch>
-        <Route path={`${root}/jobs`}>
-          <JobHistory />
-          <Switch>
-            <Route
-              path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
-              render={({ match: { params } }) => {
-                dispatch({
-                  type: 'GET_JOB_DETAILS',
-                  payload: { jobId: params.jobId }
-                });
-                return <JobHistoryModal jobId={params.jobId} />;
-              }}
-            />
-          </Switch>
-        </Route>
+        <Route
+          exact
+          path={`${root}/jobs`}
+          render={() => {
+            // Chain events to properly update UI based on read action
+            dispatch({
+              type: 'FETCH_NOTIFICATIONS',
+              payload: {
+                params: { eventType: 'job' },
+                onSuccess: {
+                  type: 'NOTIFICATIONS_READ',
+                  payload: {
+                    body: { eventType: 'job' },
+                    onSuccess: {
+                      type: 'UPDATE_BADGE_COUNT',
+                      payload: { type: 'unreadJobs' }
+                    }
+                  }
+                }
+              }
+            });
+            return <JobHistory />;
+          }}
+        />
+
         {/* Redirect from /workbench/history to /workbench/history/jobs */}
         <Redirect from={root} to={`${root}/jobs`} />
         {/* Redirect from an unmatched path in /workbench/history/* to /workbench/history/jobs */}
@@ -97,7 +109,6 @@ export const Routes = () => {
 };
 
 const Layout = () => {
-  const unreadJobs = useSelector(state => state.notifications.list.unreadJobs);
   const match = useRouteMatch(`${root}/:historyType`);
   const historyType = match
     ? match.params.historyType.substring(0, 1).toUpperCase() +
@@ -106,9 +117,9 @@ const Layout = () => {
 
   return (
     <div styleName="root">
-      <Header title={historyType} unreadJobs={unreadJobs} />
+      <Header title={historyType} />
       <div styleName="container">
-        <Sidebar unreadJobs={unreadJobs} />
+        <Sidebar />
         <Routes />
       </div>
     </div>

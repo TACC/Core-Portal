@@ -52,16 +52,21 @@ export function* handleSocket(action) {
   }
 }
 
-export function* fetchNotifications() {
+export function* fetchNotifications(action) {
+  const { onSuccess, params } = action.payload || {};
   yield put({ type: 'NOTIFICATIONS_LIST_FETCH_START' });
   try {
     const res = yield call(fetchUtil, {
-      url: '/api/notifications/'
+      url: '/api/notifications/',
+      params
     });
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_SUCCESS',
       payload: res
     });
+    if (onSuccess) {
+      yield put(onSuccess);
+    }
   } catch (error) {
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_ERROR',
@@ -71,21 +76,26 @@ export function* fetchNotifications() {
 }
 
 export function* readNotifications(action) {
+  const { body, onSuccess } = action.payload || {};
   try {
     yield call(fetchUtil, {
       url: '/api/notifications/',
       method: 'PATCH',
-      body: JSON.stringify(action.payload)
+      body: JSON.stringify({
+        id: 'all',
+        read: true,
+        ...body
+      })
     });
+    if (onSuccess) {
+      yield put(onSuccess);
+    }
   } catch (error) {
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_ERROR',
       payload: error
     });
   }
-  yield put({
-    type: 'FETCH_NOTIFICATIONS'
-  });
 }
 
 export function* deleteNotifications(action) {

@@ -1,10 +1,14 @@
 import React from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { Route, Switch } from 'react-router-dom';
+import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import JobsView from '../../Jobs';
+import JobHistoryModal from './JobHistoryModal';
+import * as ROUTES from '../../../constants/routes';
 
 import './HistoryViews.scss';
 
 const JobHistory = () => {
+  const dispatch = useDispatch();
   const { notifs } = useSelector(
     state => state.notifications.list,
     shallowEqual
@@ -19,9 +23,23 @@ const JobHistory = () => {
   };
 
   return (
-    <div className="job-history">
-      <JobsView showDetails showFancyStatus rowProps={rowProps} />
-    </div>
+    <>
+      <div className="job-history">
+        <JobsView showDetails showFancyStatus rowProps={rowProps} />
+      </div>
+      <Switch>
+        <Route
+          path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
+          render={({ match: { params } }) => {
+            dispatch({
+              type: 'GET_JOB_DETAILS',
+              payload: { jobId: params.jobId }
+            });
+            return <JobHistoryModal jobId={params.jobId} />;
+          }}
+        />
+      </Switch>
+    </>
   );
 };
 
