@@ -24,6 +24,10 @@
   td:nth-child(5) {
     min-width: 10em;
   }
+  .job__status:has(button) {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
 }
 
 .jobs-detailed-view {
