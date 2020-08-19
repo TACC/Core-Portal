@@ -75,26 +75,32 @@ export const Routes = () => {
     <div styleName="content" data-testid="history-router">
       <Switch>
         <Route
-          exact
-          path={`${root}/jobs`}
-          render={() => {
-            // Chain events to properly update UI based on read action
-            dispatch({
-              type: 'FETCH_NOTIFICATIONS',
-              payload: {
-                params: { eventType: 'job' },
-                onSuccess: {
-                  type: 'NOTIFICATIONS_READ',
-                  payload: {
-                    body: { eventType: 'job' },
-                    onSuccess: {
-                      type: 'UPDATE_BADGE_COUNT',
-                      payload: { type: 'unreadJobs' }
+          path={`${root}${ROUTES.JOBS}/:jobId?`}
+          render={({
+            match: {
+              params: { jobId }
+            }
+          }) => {
+            // Only mark as read if in pure job history view
+            if (!jobId) {
+              // Chain events to properly update UI based on read action
+              dispatch({
+                type: 'FETCH_NOTIFICATIONS',
+                payload: {
+                  params: { eventType: 'job' },
+                  onSuccess: {
+                    type: 'NOTIFICATIONS_READ',
+                    payload: {
+                      body: { eventType: 'job' },
+                      onSuccess: {
+                        type: 'UPDATE_BADGE_COUNT',
+                        payload: { type: 'unreadJobs' }
+                      }
                     }
                   }
                 }
-              }
-            });
+              });
+            }
             return <JobHistory />;
           }}
         />
