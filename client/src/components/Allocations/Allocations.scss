@@ -2,7 +2,7 @@
     Variables and Mixins
 */
 @mixin alloc-button {
-    button {
+    .btn {
         border-radius: 0;
         border: 0;
         font: bold 12px Roboto, sans-serif;
