@@ -215,13 +215,22 @@ export const ChangePassword = () => {
     </div>
   );
 };
-const WebsiteCell = ({ cell: { value } }) => <a href={value}>{value}</a>;
+const WebsiteCell = ({ cell: { value } }) => {
+  const url = !/^(?:f|ht)tps?:\/\//.test(value) ? `https://${value}` : value;
+  return (
+    <a href={url} target="_blank" rel="noreferrer">
+      {url}
+    </a>
+  );
+};
 WebsiteCell.propTypes = {
   cell: shape({ value: string })
 };
 WebsiteCell.defaultProps = { cell: { value: '' } };
 const OrcidCell = ({ cell: { value } }) => (
-  <a href={`https://orchid.org/${value}`}>{value}</a>
+  <a href={`https://orchid.org/${value}`} target="_blank" rel="noreferrer">
+    {value}
+  </a>
 );
 OrcidCell.propTypes = WebsiteCell.propTypes;
 OrcidCell.defaultProps = WebsiteCell.defaultProps;
