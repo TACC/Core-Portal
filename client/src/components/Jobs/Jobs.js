@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import 'react-table-6/react-table.css';
 import { AppIcon, InfiniteScrollTable, Message } from '_common';
 import { getOutputPathFromHref } from 'utils/jobsUtil';
+import { applyTimezoneOffset, formatDateTime } from 'utils/timeFormat';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
@@ -14,6 +15,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const isLoading = useSelector(state => state.jobs.loading);
   const jobs = useSelector(state => state.jobs.list);
   const error = useSelector(state => state.jobs.error);
+
   const noDataText = (
     <>
       No recent jobs. You can submit jobs from the{' '}
@@ -53,7 +55,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   if (error) {
     return (
       <Message type="warn" className="appDetail-error">
-        We were unable to retrieve your jobs!
+        We were unable to retrieve your jobs.
       </Message>
     );
   }
@@ -85,6 +87,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
+      className: 'job__status',
       Cell: el => (
         <JobsStatus
           status={el.value}
@@ -121,21 +124,9 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: d => new Date(d.created),
       Cell: el => (
-        <span id={`jobDate${el.index}`}>
-          {`${el.value.toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            year: 'numeric',
-            timeZone: 'America/Chicago'
-          })}
-          ${el.value.toLocaleTimeString('en-US', {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZone: 'America/Chicago'
-          })}`}
-        </span>
+        <span id={`jobDate${el.index}`}>{`${formatDateTime(
+          applyTimezoneOffset(el.value)
+        )}`}</span>
       ),
       id: 'jobDateCol'
     }
