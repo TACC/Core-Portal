@@ -105,7 +105,7 @@ class MetadataView(BaseApiView):
 
             data = agave.meta.listMetadata(q=query)
 
-            assert len(data) == 1, "Expected single app response, got {}!".format(len(data))
+            assert len(data) == 1, "Expected single app response, got {}.".format(len(data))
             data = data[0]
 
             lic_type = _app_license_type(app_id)
@@ -162,7 +162,7 @@ class JobsView(BaseApiView):
             job_meta = agave.meta.listMetadata(q=json.dumps(q))
             data['_embedded'] = {"metadata": job_meta}
 
-            # TODO: Decouple this from front end somehow!
+            # TODO: Decouple this from front end somehow
             archiveSystem = data.get('archiveSystem', None)
             if archiveSystem:
                 archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])

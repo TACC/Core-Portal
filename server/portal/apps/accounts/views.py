@@ -87,7 +87,7 @@ def change_password(request):
 def request_access(request):
     """ Request Access """
     if request.user.is_authenticated:
-        messages.info(request, 'You are already logged in!')
+        messages.info(request, 'You are already logged in.')
         return HttpResponseRedirect('index')
 
     if request.method == 'POST':
@@ -174,7 +174,7 @@ def register(request):
 
 def register_new(request):
     if request.user.is_authenticated:
-        messages.info(request, 'You are already logged in!')
+        messages.info(request, 'You are already logged in.')
         return HttpResponseRedirect('portal_version_accounts:index')
 
     if request.method == 'POST':
@@ -221,7 +221,7 @@ def register_new(request):
                     safe_data['confirmPassword'] = '********'
                     safe_data['password'] = safe_data['confirmPassword']
                     logger.exception(
-                        'User Registration Error!',
+                        'User Registration Error.',
                         extra=safe_data
                     )
                     err_msg = (
@@ -306,7 +306,7 @@ def manage_authentication(request):
             form.save()
             messages.success(
                 request,
-                'Your TACC Password has been successfully changed!'
+                'Your TACC Password has been successfully changed.'
             )
     else:
         form = forms.ChangePasswordForm(username=request.user.username)
@@ -354,7 +354,7 @@ def manage_notifications(request):
         form.save()
         messages.success(
             request,
-            _('Your Notification Preferences have been updated!')
+            _('Your Notification Preferences have been updated.')
         )
     else:
         form = forms.NotificationPreferencesForm(instance=prefs)
@@ -443,7 +443,7 @@ def profile_edit(request):
             data['source'] = tas_user['source']
 
             tas.save_user(tas_user['id'], data)
-            messages.success(request, 'Your profile has been updated!')
+            messages.success(request, 'Your profile has been updated.')
 
             try:
                 portal_profile = user.profile
@@ -498,7 +498,7 @@ def password_reset(request, code=None):
             if _process_password_reset_confirm(request, form):
                 messages.success(
                     request,
-                    'Your password has been reset! You can now log '
+                    'Your password has been reset. You can now log '
                     'in using your new password'
                 )
                 return HttpResponseRedirect(
@@ -625,7 +625,7 @@ def email_confirmation(request, code=None):
                     # check_or_create_agave_home_dir.apply_async(args=(user["username"],))
                     messages.success(
                         request,
-                        'Congratulations, your account has been activated! '
+                        'Congratulations, your account has been activated. '
                         'You can now log in to {}.'.format(settings.PORTAL_DOMAIN)
                     )
                     return HttpResponseRedirect(

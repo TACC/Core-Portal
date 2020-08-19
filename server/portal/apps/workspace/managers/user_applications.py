@@ -190,7 +190,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         try:
             cloned_app = self.get_application(cloned_app_id)
 
-            logger.debug('Cloned app {} found! Checking for updates...'.format(cloned_app_id))
+            logger.debug('Cloned app {} found. Checking for updates...'.format(cloned_app_id))
 
             if not host_app.is_public:
                 update_required = self.check_app_for_updates(cloned_app, host_app=host_app)
@@ -200,7 +200,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
                     cloned_app.delete()
                     cloned_app = self.clone_application(allocation, cloned_app_name, host_app=host_app)
                 else:
-                    logger.debug('Cloned app is current with host!')
+                    logger.debug('Cloned app is current with host.')
 
             return cloned_app
 
@@ -365,7 +365,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
             exec_sys = self.get_exec_system(clonedSystemId)
             if not exec_sys.available:
                 exec_sys = self.validate_exec_system(exec_sys.id, alloc)
-            logger.debug('Execution system found!')
+            logger.debug('Execution system found')
             return exec_sys
         except HTTPError as exc:
             if exc.response.status_code == 404:
