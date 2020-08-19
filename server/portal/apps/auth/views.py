@@ -104,7 +104,7 @@ def agave_oauth_callback(request):
 
             login(request, user)
             METRICS.debug("Successful oauth login for user " + user.username)
-            # msg_tmpl = 'Login successful. Welcome back, %s %s!'
+            # msg_tmpl = 'Login successful. Welcome back, %s %s.'
             # msg_tmpl = getattr(settings, 'LOGIN_SUCCESS_MSG', msg_tmpl)
             # messages.success(request, msg_tmpl % (user.first_name, user.last_name))
 
@@ -132,7 +132,7 @@ def agave_oauth_callback(request):
             logger.warning('Authorization failed: %s', error)
 
         messages.error(request,
-                       'Authentication failed! Did you forget your password? '
+                       'Authentication failed. Did you forget your password? '
                        '<a href="%s">Click here</a> to reset your password.' %
                        reverse('portal_accounts:password_reset'))
         return HttpResponseRedirect(reverse('portal_accounts:logout'))

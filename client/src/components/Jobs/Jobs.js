@@ -60,7 +60,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   if (error) {
     return (
       <Message type="warn" className="appDetail-error">
-        We were unable to retrieve your jobs!
+        We were unable to retrieve your jobs.
       </Message>
     );
   }
