@@ -100,9 +100,17 @@ export default function() {
         /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
         'Phone number is not valid'
       )
-      .required('Please enter your phone number')
+      .required('Please enter your phone number'),
+    // Schema for 'select' fields
+    gender: str().required('Please select an option'),
+    ethnicity: str().required('Please select a country'),
+    countryId: str().required('Please select a country'),
+    citizenshipId: str().required('Please select a country'),
+    institutionId: str().required('Please select an institution'),
+    title: str().required('Please select your title')
   });
   const handleSubmit = (values, { setSubmitting }) => {
+    dispatch({ type: 'CLEAR_FORM_MESSAGES' });
     dispatch({
       type: 'EDIT_REQUIRED_INFORMATION',
       values

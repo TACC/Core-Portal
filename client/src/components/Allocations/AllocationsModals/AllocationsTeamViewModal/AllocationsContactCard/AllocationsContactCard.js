@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, shape, arrayOf, object } from 'prop-types';
+import { string, shape, arrayOf } from 'prop-types';
 import { capitalize } from 'lodash';
 import { DescriptionList } from '_common';
 import AllocationsUsageTable from '../AllocationsUsageTable';
@@ -35,7 +35,7 @@ AllocationsContactCard.propTypes = {
     lastName: string.isRequired,
     email: string.isRequired,
     username: string.isRequired,
-    usageData: arrayOf(object).isRequired
+    usageData: arrayOf(shape({})).isRequired
   })
 };
 AllocationsContactCard.defaultProps = { listing: {} };
