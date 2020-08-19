@@ -3,6 +3,7 @@ $font-weight: 500;
 .root {
   :first-child {
     font-size: 100%;
+    position: relative;
   }
 }
 
@@ -17,5 +18,6 @@ $font-weight: 500;
   border: 1px solid #afafaf;
   font-weight: $font-weight;
   color: #707070;
-  position: relative;
+  position: absolute;
+  margin-top: -2px;
 }
