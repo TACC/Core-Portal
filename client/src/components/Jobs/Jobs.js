@@ -48,7 +48,10 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       }
     }) => (
       <Link
-        to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}?name=${name}`}
+        to={{
+          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}`,
+          state: { jobName: name }
+        }}
         className="wb-link"
       >
         View Details

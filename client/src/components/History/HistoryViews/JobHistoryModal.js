@@ -137,14 +137,13 @@ function JobHistoryModal({ jobId }) {
   const loading = useSelector(state => state.jobDetail.loading);
   const loadingError = useSelector(state => state.jobDetail.loadingError);
   const { job, display } = useSelector(state => state.jobDetail);
-  const { search } = useLocation();
+  const { state } = useLocation();
 
   let jobName = job ? job.name : placeHolder;
 
   if (jobName === placeHolder) {
-    const jobNameFromQuery = new URLSearchParams(search).get('name');
-    if (jobNameFromQuery) {
-      jobName = jobNameFromQuery;
+    if (state && state.jobName) {
+      jobName = state.jobName;
     }
   }
 
