@@ -1,4 +1,4 @@
-import { getAllocatonFromDirective, getSystemName, getJobDisplayInformation } from './jobsUtil';
+import { getAllocatonFromDirective, getSystemName, getJobDisplayInformation, getOutputPathFromHref, isTerminalState } from './jobsUtil';
 import jobDetailFixture from '../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailSlurmFixture from '../redux/sagas/fixtures/jobdetailSlurm.fixture';
 import appDetailFixture from '../redux/sagas/fixtures/appdetail.fixture';
@@ -22,4 +22,15 @@ describe('jobsUtil', () => {
   it('get system name from host', () => {
     expect(getSystemName('stampede2.tacc.utexas.edu')).toEqual('Stampede2');
   });
-});
+
+  it('get output path from href name', () => {
+    expect(getOutputPathFromHref('https://portals-api.tacc.utexas.edu/files/v2/listings/system/frontera.home.mmustermann/archive/jobs/2020-08-20/some_ouptut_folder')).toEqual('frontera.home.mmustermann/archive/jobs/2020-08-20/some_ouptut_folder');
+    expect(getOutputPathFromHref('https://portals-api.tacc.utexas.edu/files/v2/listings')).toEqual('');
+  });
+
+  it('determine if terminal state', () => {
+    expect(isTerminalState('FAILED')).toEqual(true);
+    expect(isTerminalState('FINISHED')).toEqual(true);
+    expect(isTerminalState('STOPPED')).toEqual(true);
+    expect(isTerminalState('RUNNING')).toEqual(false);
+  });});

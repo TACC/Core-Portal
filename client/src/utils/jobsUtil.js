@@ -1,3 +1,9 @@
+const TERMINAL_STATES = [`FINISHED`, `STOPPED`, `FAILED`];
+
+export function isTerminalState(status) {
+  return TERMINAL_STATES.includes(status);
+}
+
 export function getOutputPathFromHref(href) {
   const path = href
     .split('/')
