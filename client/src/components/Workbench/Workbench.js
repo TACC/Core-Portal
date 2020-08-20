@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
 import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,43 +31,54 @@ function Workbench() {
     dispatch({ type: 'GET_APP_START' });
     dispatch({ type: 'GET_JOBS', params: { offset: 0, limit: 20 } });
     dispatch({ type: 'FETCH_NOTIFICATIONS' });
+    dispatch({ type: 'FETCH_WELCOME' })
   }, []);
+
+  const savedWelcomeMessages = useSelector(state => state.welcomeMessages);
+  const [ welcomeMessages, setWelcomeMessages ] = useState(savedWelcomeMessages);
+
+  const onDismissWelcome = (section) => {
+    const newMessagesState = {
+      ...welcomeMessages,
+      [section]: false
+    }
+    setWelcomeMessages(newMessagesState);
+    dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState});
+  }
 
   return (
     <div className="workbench-wrapper">
       <NotificationToast />
       <Sidebar />
       <div className="workbench-content">
-        <div className="workbench__alert">
-          <Switch>
-            <Route path={`${path}${ROUTES.DASHBOARD}`}>
-              <Alert color="info">
-                Monitor jobs, get help via tickets, view the status of the High Performance 
-                Computing (HPC) systems, and add quick links to frequently used applications.
-              </Alert>
-            </Route>
-            <Route path={`${path}${ROUTES.DATA}`}>
-              <Alert color="info">
-                Upload and manage files in a private directory.
-              </Alert>
-            </Route>
-            <Route path={`${path}${ROUTES.APPLICATIONS}`}>
-              <Alert color="info">
-                Submit jobs to the HPC systems using a wide variety of applications.
-              </Alert>
-            </Route>
-            <Route path={`${path}${ROUTES.ALLOCATIONS}`}>
-              <Alert color="info">
-                Monitor the status of allocations on the HPC systems and view a breakdown of team usage.
-              </Alert>
-            </Route>
-            <Route path={`${path}${ROUTES.HISTORY}`}>
-              <Alert color="info">
-                Access a lot of all previous job.submissions.
-              </Alert>
-            </Route>
-          </Switch>
-        </div>
+        <Switch>
+          <Route path={`${path}${ROUTES.DASHBOARD}`}>
+            <Alert isOpen={welcomeMessages.dashboard} color="info" className="welcomeMessage">
+              Monitor jobs, get help via tickets, view the status of the High Performance 
+              Computing (HPC) systems, and add quick links to frequently used applications.
+            </Alert>
+          </Route>
+          <Route path={`${path}${ROUTES.DATA}`}>
+            <Alert isOpen={welcomeMessages.datafiles} color="info" className="welcomeMessage">
+              Upload and manage files in a private directory.
+            </Alert>
+          </Route>
+          <Route path={`${path}${ROUTES.APPLICATIONS}`}>
+            <Alert isOpen={welcomeMessages.applications} color="info" className="welcomeMessage">
+              Submit jobs to the HPC systems using a wide variety of applications.
+            </Alert>
+          </Route>
+          <Route path={`${path}${ROUTES.ALLOCATIONS}`}>
+            <Alert isOpen={welcomeMessages.allocations} color="info" className="welcomeMessage">
+              Monitor the status of allocations on the HPC systems and view a breakdown of team usage.
+            </Alert>
+          </Route>
+          <Route path={`${path}${ROUTES.HISTORY}`}>
+            <Alert isOpen={welcomeMessages.history} color="info" className="welcomeMessage">
+              Access a lot of all previous job.submissions.
+            </Alert>
+          </Route>
+        </Switch>
         <Switch>
           <Route path={`${path}${ROUTES.DASHBOARD}`}>
             <Dashboard />
