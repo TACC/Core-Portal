@@ -158,6 +158,7 @@ export const AppSchemaForm = ({ app }) => {
     appId: app.id
   };
 
+  let missingAllocation = false;
   if (app.scheduler === 'SLURM') {
     if (allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
@@ -172,11 +173,15 @@ export const AppSchemaForm = ({ app }) => {
           defaultHost
         )} to run this application. Please submit a ticket for access.`
       };
+      missingAllocation = true;
     } else if (!allocations.length) {
       jobSubmission.error = true;
       jobSubmission.response = {
-        message: `You need an allocation to use the system ${app.resource}. Please submit a ticket for access.`
+        message: `You need an allocation on ${getSystemName(
+          app.resource
+        )}to run this application. Please submit a ticket for access.`
       };
+      missingAllocation = true;
     }
   } else {
     initialValues.allocation = app.scheduler;
@@ -293,7 +298,7 @@ export const AppSchemaForm = ({ app }) => {
           }
           const readOnly =
             jobSubmission.submitting ||
-            (app.scheduler === 'SLURM' && !allocations.length);
+            (app.scheduler === 'SLURM' && missingAllocation);
           return (
             <Form>
               <FormGroup tag="fieldset" disabled={readOnly}>
