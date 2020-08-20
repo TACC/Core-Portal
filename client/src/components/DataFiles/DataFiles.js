@@ -7,7 +7,6 @@ import {
   useLocation
 } from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { Alert } from 'reactstrap';
 import { parse } from 'query-string';
 
 import './DataFiles.module.css';
@@ -71,9 +70,6 @@ const DataFiles = () => {
 
   return (
     <div styleName="container">
-      <Alert color="info">
-        Upload and manage files in a private directory.
-      </Alert>
       {/* row containing breadcrumbs and toolbar */}
       <div styleName="header">
         <DataFilesBreadcrumbs
