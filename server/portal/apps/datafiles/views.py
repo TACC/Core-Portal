@@ -8,6 +8,7 @@ import logging
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
+from portal.apps.users.utils import get_allocations
 
 logger = logging.getLogger(__name__)
 
@@ -47,16 +48,25 @@ class TapisFilesView(BaseApiView):
         try:
             response = tapis_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
-
-            return JsonResponse({'data': response})
         except HTTPError as e:
             error_status = e.response.status_code
             error_json = e.response.json()
             if error_status == 502:
-                # In case of 502, fetch system definition for pushing keys.
-                error_json['system'] = dict(client.systems.get(systemId=system))
+                # In case of 502 determine cause
+                system = dict(client.systems.get(systemId=system))
+                allocations = get_allocations(request.user.username)
 
-            return JsonResponse(error_json, status=error_status)
+                # If user is missing an allocation mangle error to a 403
+                if system['storage']['host'] not in allocations['hosts']:
+                    e.response.status_code = 403
+                    raise e
+
+                # If a user needs to push keys, return a response specifying the system
+                error_json['system'] = system
+                return JsonResponse(error_json, status=error_status)
+            raise e
+
+        return JsonResponse({'data': response})
 
     def put(self, request, operation=None, scheme=None,
             handler=None, system=None, path='/'):
