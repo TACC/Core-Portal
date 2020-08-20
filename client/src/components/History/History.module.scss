@@ -23,7 +23,7 @@
 }
 
 .content {
-    overflow-y: auto;
+    overflow-y: hidden;
 
     padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
     padding-left: 1.25em;
