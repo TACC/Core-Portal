@@ -58,7 +58,7 @@ const AppDetail = () => {
   );
 
   if (error.isError) {
-    const errorText = error.message ? error.message : 'Something went wrong!';
+    const errorText = error.message ? error.message : 'Something went wrong.';
 
     return (
       <Message type="warn" className="appDetail-error">
