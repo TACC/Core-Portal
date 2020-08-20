@@ -1,6 +1,7 @@
 import React from 'react';
 import { func, bool } from 'prop-types';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import './AllocationsRequestModal.module.scss';
 
 export const AllocationsRequestModal = ({ isOpen, toggle }) => (
   <Modal isOpen={isOpen} toggle={toggle}>
@@ -11,7 +12,7 @@ export const AllocationsRequestModal = ({ isOpen, toggle }) => (
     >
       <span>Manage Allocations</span>
     </ModalHeader>
-    <ModalBody className="allocations-request-body">
+    <ModalBody styleName="modal-body">
       <p>
         <strong>For Frontera or Longhorn:</strong> You can manage your
         allocation or request more time on a machine by using your TACC user
@@ -20,6 +21,7 @@ export const AllocationsRequestModal = ({ isOpen, toggle }) => (
           href="https://tacc-submit.xras.xsede.org/"
           target="_blank"
           rel="noopener noreferrer"
+          styleName="link"
         >
           https://tacc-submit.xras.xsede.org/
         </a>
@@ -30,11 +32,12 @@ export const AllocationsRequestModal = ({ isOpen, toggle }) => (
         allocation or request more time on a machine by using your TACC user
         account credentials to access your Allocations at&nbsp;
         <a
-          href="https://portal.tacc.utexas.edu/"
+          href="https://portal.tacc.utexas.edu/projects-and-allocations"
           target="_blank"
           rel="noopener noreferrer"
+          styleName="link"
         >
-          https://portal.tacc.utexas.edu/
+          https://portal.tacc.utexas.edu/projects-and-allocations
         </a>
         .
       </p>
