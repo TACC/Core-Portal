@@ -20,6 +20,7 @@ const AllocationsRoutes = () => {
         <Route path={`${root}/expired`}>
           <Layout page="expired" />
         </Route>
+        <Redirect from={`${root}/manage`} to={`${root}/approved/manage`} />
         <Redirect from={root} to={`${root}/approved`} />
       </Switch>
     </div>
