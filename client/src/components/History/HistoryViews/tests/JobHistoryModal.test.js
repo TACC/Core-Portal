@@ -38,5 +38,7 @@ describe('Job History Modal', () => {
     expect(getByText(/Target Path to be Compressed/)).toBeDefined();
     expect(getByText(/Compression Type/)).toBeDefined();
     expect(getByText(/Failure Report/)).toBeDefined();
+    expect(getByText(/Max Hours/)).toBeDefined();
+    expect(getByText(/Temporary Working Directory/)).toBeDefined();
   });
 });

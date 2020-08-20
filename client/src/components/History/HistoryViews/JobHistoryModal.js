@@ -97,6 +97,9 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     configDataObj.Allocation = jobDisplay.allocation;
   }
 
+  if (jobDetails.status !== 'FINISHED')
+    configDataObj['Temporary Working Directory'] = jobDetails.workPath;
+
   const data = {
     Status: <DescriptionList data={statusDataObj} />,
     Inputs: <DescriptionList data={inputAndParamsDataObj} />,
