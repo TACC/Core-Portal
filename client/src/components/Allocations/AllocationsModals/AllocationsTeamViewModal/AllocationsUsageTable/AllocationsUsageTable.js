@@ -25,7 +25,7 @@ const AllocationsUsageTable = ({ rawData }) => {
         Header: '% of Allocation',
         accessor: entry => {
           if (entry.percentUsed >= 1) {
-            return `${entry.percentUsed}%`;
+            return `${entry.percentUsed.toFixed(3)}%`;
           }
           if (entry.percentUsed === 0) return '0%';
           return `< 1%`;

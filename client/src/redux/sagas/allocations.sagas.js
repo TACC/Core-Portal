@@ -194,9 +194,11 @@ const teamPayloadUtil = (
                 0
               );
               return {
-                usage: `${totalUsed} ${entry.type === 'HPC' ? 'SU' : 'GB'}`,
+                usage: `${totalUsed.toFixed(3)} ${
+                  entry.type === 'HPC' ? 'SU' : 'GB'
+                }`,
                 resource: entry.resource,
-                percentUsed: totalUsed / totalAllocated
+                percentUsed: (totalUsed / totalAllocated) * 100
               };
             }
             return entry;
