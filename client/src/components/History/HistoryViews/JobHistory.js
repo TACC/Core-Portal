@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+import { LoadingSpinner } from '_common';
 import JobsView from '../../Jobs';
 import JobHistoryModal from './JobHistoryModal';
 import * as ROUTES from '../../../constants/routes';
@@ -9,8 +10,11 @@ import './HistoryViews.scss';
 
 const JobHistory = () => {
   const dispatch = useDispatch();
-  const { notifs } = useSelector(
-    state => state.notifications.list,
+  const { notifs, loading } = useSelector(
+    state => ({
+      notifs: state.notifications.list.notifs,
+      loading: state.notifications.loading
+    }),
     shallowEqual
   );
   const unreadIds = notifs
@@ -24,9 +28,13 @@ const JobHistory = () => {
 
   return (
     <>
-      <div className="job-history">
-        <JobsView showDetails showFancyStatus rowProps={rowProps} />
-      </div>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="job-history">
+          <JobsView showDetails showFancyStatus rowProps={rowProps} />
+        </div>
+      )}
       <Route
         path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
         render={({
