@@ -1,4 +1,8 @@
-import { getJobDisplayInformation } from 'utils/jobsUtil';
+import {
+  getJobDisplayInformation,
+  isTerminalState,
+  createArchiveDataHref
+} from 'utils/jobsUtil';
 
 export const initialState = {
   list: [],
@@ -6,6 +10,21 @@ export const initialState = {
   loading: false,
   error: null
 };
+
+function updateJobFromNotification(job, notification) {
+  // update status
+  const updatedJob = { ...job, status: notification.status };
+  if (isTerminalState(notification.status)) {
+    // update archive data path
+    const path = createArchiveDataHref(
+      job._links.archiveData.href,
+      notification.archiveSystem,
+      notification.archivePath
+    );
+    updatedJob._links.archiveData.href = path;
+  }
+  return updatedJob;
+}
 
 export function jobs(state = initialState, action) {
   switch (action.type) {
@@ -56,10 +75,10 @@ export function jobs(state = initialState, action) {
         ...state,
         submit: { ...state.submit, response: action.payload, error: true }
       };
-    case 'UPDATE_JOB_STATUS': {
+    case 'UPDATE_JOB_FROM_NOTIFICATION': {
       const event = action.payload.extra;
       const list = state.list.map(job =>
-        job.id === event.id ? { ...job, status: event.status } : job
+        job.id === event.id ? updateJobFromNotification(job, event) : job
       );
       return {
         ...state,
