@@ -1,11 +1,9 @@
 const initialWelcomeMessages = {
-  sections: {
-    'dashboard': false,
-    'applications': false,
-    'datafiles': false,
-    'allocations': false,
-    'history': false
-  }
+  dashboard: true,
+  applications: true,
+  datafiles: true,
+  allocations: true,
+  history: true
 };
 
 export function welcomeMessages(state = initialWelcomeMessages, action) {
@@ -23,6 +21,20 @@ export function welcomeMessages(state = initialWelcomeMessages, action) {
       return {
         ...state
       };
+    case 'WELCOME_SAVE_STARTED':
+      return {
+        ...state,
+      };
+    case 'WELCOME_SAVE_SUCCESS':
+      return {
+        ...state,
+        ...action.payload
+      }
+    case 'WECOME_SAVE_ERROR':
+      return {
+        ...state,
+        ...action.paylod
+      }
     default:
       return state;
   }

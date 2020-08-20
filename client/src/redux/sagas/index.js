@@ -32,6 +32,10 @@ import {
 } from './tickets.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
 import { watchWorkbench } from './workbench.sagas';
+import { 
+  watchFetchWelcomeMessages,
+  watchSaveWelcomeMessages
+} from './welcome.sagas';
 
 export default function* rootSaga() {
   yield all([
@@ -64,6 +68,8 @@ export default function* rootSaga() {
     watchAuthenticatedUser(),
     watchSocket(),
     watchFetchNotifications(),
-    watchWorkbench()
+    watchWorkbench(),
+    watchFetchWelcomeMessages(),
+    watchSaveWelcomeMessages()
   ]);
 }

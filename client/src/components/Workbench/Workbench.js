@@ -53,28 +53,48 @@ function Workbench() {
       <div className="workbench-content">
         <Switch>
           <Route path={`${path}${ROUTES.DASHBOARD}`}>
-            <Alert isOpen={welcomeMessages.dashboard} color="info" className="welcomeMessage">
+            <Alert
+              isOpen={welcomeMessages.dashboard}
+              toggle={() => onDismissWelcome('dashboard')}
+              color="info"
+              className="welcomeMessage">
               Monitor jobs, get help via tickets, view the status of the High Performance 
               Computing (HPC) systems, and add quick links to frequently used applications.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.DATA}`}>
-            <Alert isOpen={welcomeMessages.datafiles} color="info" className="welcomeMessage">
+            <Alert
+              isOpen={welcomeMessages.datafiles}
+              toggle={() => onDismissWelcome('datafiles')}
+              color="info"
+              className="welcomeMessage">
               Upload and manage files in a private directory.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.APPLICATIONS}`}>
-            <Alert isOpen={welcomeMessages.applications} color="info" className="welcomeMessage">
+            <Alert
+              isOpen={welcomeMessages.applications}
+              toggle={() => onDismissWelcome('applications')}
+              color="info"
+              className="welcomeMessage">
               Submit jobs to the HPC systems using a wide variety of applications.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.ALLOCATIONS}`}>
-            <Alert isOpen={welcomeMessages.allocations} color="info" className="welcomeMessage">
+            <Alert
+              isOpen={welcomeMessages.allocations}
+              toggle={() => onDismissWelcome('allocations')}
+              color="info"
+              className="welcomeMessage">
               Monitor the status of allocations on the HPC systems and view a breakdown of team usage.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.HISTORY}`}>
-            <Alert isOpen={welcomeMessages.history} color="info" className="welcomeMessage">
+            <Alert
+              isOpen={welcomeMessages.history}
+              toggle={() => onDismissWelcome('history')}
+              color="info"
+              className="welcomeMessage">
               Access a lot of all previous job.submissions.
             </Alert>
           </Route>

@@ -14,7 +14,32 @@ export function* fetchWelcomeMessages(action) {
   } catch (error) {
     yield put({
       type: 'WELCOME_FETCH_ERROR',
-      payload: error
     });
   }
+}
+
+export function* watchFetchWelcomeMessages() {
+  yield takeLatest('FETCH_WELCOME', fetchWelcomeMessages);
+}
+
+export function* saveWelcomeMessages(action) {
+  yield put({ type: 'WELCOME_SAVE_STARTED' });
+  try {
+    localStorage.setItem('welcomeMessages', action.payload)
+    yield put({
+      type: 'WELCOME_SAVE_SUCCESS',
+      payload: action.payload
+    })
+  } catch (error) {
+    // Return the intended state of welcome messages
+    // regardless of save success or failure
+    yield put({
+      type: 'WELCOME_SAVE_ERROR',
+      payload: action.payload
+    });
+  }
+}
+
+export function* watchSaveWelcomeMessages() {
+  yield takeLatest('SAVE_WELCOME', saveWelcomeMessages);
 }
