@@ -6,7 +6,7 @@ const initialWelcomeMessages = {
   history: true
 };
 
-export function welcomeMessages(state = initialWelcomeMessages, action) {
+function welcomeMessages(state = initialWelcomeMessages, action) {
   switch (action.type) {
     case 'WELCOME_FETCH_STARTED':
       return {
@@ -39,3 +39,5 @@ export function welcomeMessages(state = initialWelcomeMessages, action) {
       return state;
   }
 }
+
+export default welcomeMessages;
