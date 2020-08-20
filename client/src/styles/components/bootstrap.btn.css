@@ -54,3 +54,7 @@ Styleguide Components.Bootstrap.Btn
 .btn-link {
   color: var(--global-color-accent--normal);
 }
+.btn-link:disabled {
+  /* Relies on Bootstrap opacity drop to lighten the color */
+  color: var(--global-color-primary--dark);
+}
