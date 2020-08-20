@@ -18,6 +18,11 @@
     height: 100%;
 }
 
+.workbench-content > :nth-child(2) {
+    flex-grow: 1;
+}
+
+
 .workbench-content .wb-text-primary {
     color: #484848;
 }
@@ -106,4 +111,5 @@
 
 .welcomeMessage {
   margin: 20px 20px 0px 20px;
+  flex-grow: 0;
 }
