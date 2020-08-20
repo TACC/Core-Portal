@@ -1,12 +1,10 @@
-import { put, takeLatest, call, all } from 'redux-saga/effects';
-import Cookies from 'js-cookie';
-import { fetchUtil } from 'utils/fetchUtil';
-import 'cross-fetch';
+import { put, takeLatest, takeLeading } from 'redux-saga/effects';
 
-export function* fetchWelcomeMessages(action) {
+export function* fetchWelcomeMessages() {
   yield put({ type: 'WELCOME_FETCH_STARTED' });
   try {
-    const messages = localStorage.getItem('welcomeMessages') || {}
+    const messages = JSON.parse(localStorage.getItem('welcomeMessages')) || {}
+    console.log("WELCOME MESSAGE STATE", messages);
     yield put({
       type: 'WELCOME_FETCH_SUCCESS',
       payload: messages
@@ -19,13 +17,13 @@ export function* fetchWelcomeMessages(action) {
 }
 
 export function* watchFetchWelcomeMessages() {
-  yield takeLatest('FETCH_WELCOME', fetchWelcomeMessages);
+  yield takeLeading('FETCH_WELCOME', fetchWelcomeMessages);
 }
 
 export function* saveWelcomeMessages(action) {
   yield put({ type: 'WELCOME_SAVE_STARTED' });
   try {
-    localStorage.setItem('welcomeMessages', action.payload)
+    localStorage.setItem('welcomeMessages', JSON.stringify(action.payload))
     yield put({
       type: 'WELCOME_SAVE_SUCCESS',
       payload: action.payload

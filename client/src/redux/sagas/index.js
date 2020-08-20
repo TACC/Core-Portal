@@ -70,6 +70,6 @@ export default function* rootSaga() {
     watchFetchNotifications(),
     watchWorkbench(),
     watchFetchWelcomeMessages(),
-    watchSaveWelcomeMessages()
+    watchSaveWelcomeMessages(),
   ]);
 }
