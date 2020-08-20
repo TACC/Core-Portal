@@ -150,7 +150,9 @@ function JobHistoryModal({ jobId }) {
 
   const history = useHistory();
   const close = () => {
-    history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}`);
+    history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}`, {
+      fromJobHistoryModal: true
+    });
   };
 
   const headerData = {

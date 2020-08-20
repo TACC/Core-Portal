@@ -74,14 +74,14 @@ export const Routes = () => {
     <div styleName="content" data-testid="history-router">
       <Switch>
         <Route
-          path={`${root}${ROUTES.JOBS}/:jobId?`}
-          render={({
-            match: {
-              params: { jobId }
-            }
-          }) => {
+          path={`${root}${ROUTES.JOBS}`}
+          render={({ location: { pathname, state } }) => {
+            const locationState = state || {};
             // Only mark as read if in pure job history view
-            if (!jobId) {
+            if (
+              pathname === `${root}${ROUTES.JOBS}` &&
+              !locationState.fromJobHistoryModal
+            ) {
               // Chain events to properly update UI based on read action
               dispatch({
                 type: 'FETCH_NOTIFICATIONS',

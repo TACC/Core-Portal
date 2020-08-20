@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import JobsView from '../../Jobs';
 import JobHistoryModal from './JobHistoryModal';
@@ -27,18 +27,20 @@ const JobHistory = () => {
       <div className="job-history">
         <JobsView showDetails showFancyStatus rowProps={rowProps} />
       </div>
-      <Switch>
-        <Route
-          path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
-          render={({ match: { params } }) => {
-            dispatch({
-              type: 'GET_JOB_DETAILS',
-              payload: { jobId: params.jobId }
-            });
-            return <JobHistoryModal jobId={params.jobId} />;
-          }}
-        />
-      </Switch>
+      <Route
+        path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
+        render={({
+          match: {
+            params: { jobId }
+          }
+        }) => {
+          dispatch({
+            type: 'GET_JOB_DETAILS',
+            payload: { jobId }
+          });
+          return <JobHistoryModal jobId={jobId} />;
+        }}
+      />
     </>
   );
 };
