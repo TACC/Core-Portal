@@ -31,7 +31,6 @@ class SystemsListView(BaseApiView):
         """ GET """
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
-        filter_prefix = json.loads(request.GET.get('filterPrefix', '{}'))
         response = {}
 
         storage_systems = AccountsManager.storage_systems(
@@ -47,8 +46,7 @@ class SystemsListView(BaseApiView):
         exec_systems = AccountsManager.execution_systems(
             request.user,
             offset=offset,
-            limit=limit,
-            filter_prefix=getattr(filter_prefix, 'execution', False)
+            limit=limit
         )
         response['execution'] = exec_systems
 

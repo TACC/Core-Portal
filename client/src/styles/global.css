@@ -12,11 +12,10 @@
 
 /* GENERIC */
 @import url('./generics/roots.css');
-@import url('./generics/text-semantics.css');
 
 /* ELEMENTS */
-@import url('./elements/inline-text.css');
 @import url('./elements/table.css');
+@import url('./elements/text-semantics.css');
 
 /* OBJECTS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
@@ -29,3 +28,4 @@
 /* TRUMPS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
 @import url('./trumps/icon.css');
+@import url('./trumps/bootstrap.css');

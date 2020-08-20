@@ -1,13 +1,15 @@
-const initialSystemState = {
-  private: '',
-  community: '',
-  public: ''
+export const initialSystemState = {
+  systemList: [],
+  error: false,
+  errorMessage: null
 };
 
 export function systems(state = initialSystemState, action) {
   switch (action.type) {
     case 'FETCH_SYSTEMS_SUCCESS':
-      return { ...action.payload };
+      return { ...state, systemList: action.payload.system_list };
+    case 'FETCH_SYSTEMS_ERROR':
+      return { ...state, error: true, errorMessage: action.payload };
     default:
       return state;
   }

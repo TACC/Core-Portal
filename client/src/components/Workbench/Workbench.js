@@ -9,6 +9,7 @@ import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
 import History from '../History';
 import * as ROUTES from '../../constants/routes';
+import NotificationToast from '../Toasts';
 import './Workbench.scss';
 
 function Workbench() {
@@ -27,11 +28,13 @@ function Workbench() {
     dispatch({ type: 'GET_ALLOCATIONS' });
     dispatch({ type: 'GET_APPS' });
     dispatch({ type: 'GET_APP_START' });
+    dispatch({ type: 'GET_JOBS', params: { offset: 0, limit: 20 } });
     dispatch({ type: 'FETCH_NOTIFICATIONS' });
   }, []);
 
   return (
     <div className="workbench-wrapper">
+      <NotificationToast />
       <Sidebar />
       <div className="workbench-content">
         <Switch>

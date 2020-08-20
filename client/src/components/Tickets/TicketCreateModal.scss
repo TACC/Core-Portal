@@ -1,13 +1,12 @@
 .ticket-create-modal-body {
-  height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: auto;
 }
 
-.ticket-create-model-content {
+.ticket-create-modal {
   color: #484848;
   font-size: 0.75rem;
-  height: 90vh;
   min-height: 755px;
 
   .modal-header {
@@ -20,4 +19,8 @@
       max-width: 650px;
     }
   }
+}
+
+.ticket-create-modal-content {
+  height: 90vh;
 }

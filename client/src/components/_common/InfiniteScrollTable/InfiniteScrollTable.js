@@ -138,7 +138,10 @@ const InfiniteScrollTable = ({
             >
               {row.cells.map(cell => {
                 return (
-                  <td {...cell.getCellProps()} styleName="cell">
+                  <td
+                    {...cell.getCellProps({ className: cell.column.className })}
+                    styleName="cell"
+                  >
                     {cell.render('Cell')}
                   </td>
                 );

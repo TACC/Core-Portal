@@ -1,9 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTable } from 'react-table';
-import { LoadingSpinner } from '_common';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { LoadingSpinner, Message } from '_common';
 import { Display, Operational, Load } from './SystemMonitorCells';
 import './SystemMonitor.module.scss';
 import './SystemMonitor.css';
@@ -44,13 +42,9 @@ const SystemsList = () => {
 
   if (loadingError) {
     return (
-      <div styleName="error">
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          style={{ marginRight: '10px' }}
-        />
-        <div>Unable to gather system information</div>
-      </div>
+      <Message type="warn" styleName="error">
+        Unable to gather system information
+      </Message>
     );
   }
 

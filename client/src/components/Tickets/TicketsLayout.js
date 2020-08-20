@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { InfiniteScrollTable } from '_common';
+import { InfiniteScrollTable, Message } from '_common';
 import { formatDate } from 'utils/timeFormat';
 import * as ROUTES from '../../constants/routes';
 import './TicketsLayout.scss';
@@ -50,13 +48,9 @@ function TicketsView() {
 
   if (loadingError) {
     return (
-      <div className="ticket__error">
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          style={{ marginRight: '10px' }}
-        />
-        <div>We were unable to retrieve your tickets!</div>
-      </div>
+      <Message type="warn" className="ticket__error">
+        We were unable to retrieve your tickets.
+      </Message>
     );
   }
 

@@ -338,8 +338,6 @@ AGAVE_CLIENT_KEY = 'test'
 AGAVE_CLIENT_SECRET = 'test'
 AGAVE_SUPER_TOKEN = 'test'
 AGAVE_STORAGE_SYSTEM = 'test'
-AGAVE_COMMUNITY_DATA_SYSTEM = 'test.storage'
-AGAVE_PUBLIC_DATA_SYSTEM = 'test.public'
 AGAVE_DEFAULT_TRASH_NAME = 'test'
 
 AGAVE_JWT_HEADER = 'HTTP_X_AGAVE_HEADER'
@@ -499,3 +497,51 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
+    'frontera': {
+        'name': 'My Data (Frontera)',
+        'prefix': 'frontera.home.{}',                                   # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
+        'host': 'frontera.tacc.utexas.edu',                             # PORTAL_DATA_DEPOT_STORAGE_HOST
+        'home_dir': '/home1',                                     # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+        'storage_port': 22,
+        'icon': None,
+    },
+    'longhorn': {
+        'name': 'My Data (Longhorn)',
+        'prefix': 'longhorn.home.{}',
+        'host': 'longhorn.tacc.utexas.edu',
+        'home_dir': '/home',
+        'storage_port': 22,
+        'requires_allocation': 'longhorn3',
+        'icon': None,
+    },
+}
+
+PORTAL_EXEC_SYSTEMS = {
+    'data': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'stampede2': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'lonestar5': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'longhorn': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'frontera': {
+        'scratch_dir': '/scratch1/{}'
+    }
+}
+
+PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+    {
+        'name': 'Community Data',
+        'system': 'portal.storage.community',
+        'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    }
+]
