@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
 import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,13 +36,13 @@ function Workbench() {
 
   const welcomeMessages = useSelector(state => state.welcomeMessages);
 
-  const onDismissWelcome = (section) => {
+  const onDismissWelcome = section => {
     const newMessagesState = {
       ...welcomeMessages,
       [section]: false
-    }
-    dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState});
-  }
+    };
+    dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState });
+  };
 
   return (
     <div className="workbench-wrapper">
@@ -55,9 +55,11 @@ function Workbench() {
               isOpen={welcomeMessages.dashboard}
               toggle={() => onDismissWelcome('dashboard')}
               color="info"
-              className="welcomeMessage">
-              Monitor jobs, get help via tickets, view the status of the High Performance 
-              Computing (HPC) systems, and add quick links to frequently used applications.
+              className="welcomeMessage"
+            >
+              Monitor jobs, get help via tickets, view the status of the High
+              Performance Computing (HPC) systems, and add quick links to
+              frequently used applications.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.DATA}`}>
@@ -65,7 +67,8 @@ function Workbench() {
               isOpen={welcomeMessages.datafiles}
               toggle={() => onDismissWelcome('datafiles')}
               color="info"
-              className="welcomeMessage">
+              className="welcomeMessage"
+            >
               Upload and manage files in a private directory.
             </Alert>
           </Route>
@@ -74,8 +77,10 @@ function Workbench() {
               isOpen={welcomeMessages.applications}
               toggle={() => onDismissWelcome('applications')}
               color="info"
-              className="welcomeMessage">
-              Submit jobs to the HPC systems using a wide variety of applications.
+              className="welcomeMessage"
+            >
+              Submit jobs to the HPC systems using a wide variety of
+              applications.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.ALLOCATIONS}`}>
@@ -83,8 +88,10 @@ function Workbench() {
               isOpen={welcomeMessages.allocations}
               toggle={() => onDismissWelcome('allocations')}
               color="info"
-              className="welcomeMessage">
-              Monitor the status of allocations on the HPC systems and view a breakdown of team usage.
+              className="welcomeMessage"
+            >
+              Monitor the status of allocations on the HPC systems and view a
+              breakdown of team usage.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.HISTORY}`}>
@@ -92,7 +99,8 @@ function Workbench() {
               isOpen={welcomeMessages.history}
               toggle={() => onDismissWelcome('history')}
               color="info"
-              className="welcomeMessage">
+              className="welcomeMessage"
+            >
               Access a lot of all previous job.submissions.
             </Alert>
           </Route>

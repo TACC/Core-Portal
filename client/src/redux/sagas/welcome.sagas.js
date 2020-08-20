@@ -3,15 +3,15 @@ import { put, takeLatest, takeLeading } from 'redux-saga/effects';
 export function* fetchWelcomeMessages() {
   yield put({ type: 'WELCOME_FETCH_STARTED' });
   try {
-    const messages = JSON.parse(localStorage.getItem('welcomeMessages')) || {}
-    console.log("WELCOME MESSAGE STATE", messages);
+    const messages = JSON.parse(localStorage.getItem('welcomeMessages')) || {};
+    console.log('WELCOME MESSAGE STATE', messages);
     yield put({
       type: 'WELCOME_FETCH_SUCCESS',
       payload: messages
     });
   } catch (error) {
     yield put({
-      type: 'WELCOME_FETCH_ERROR',
+      type: 'WELCOME_FETCH_ERROR'
     });
   }
 }
@@ -23,11 +23,11 @@ export function* watchFetchWelcomeMessages() {
 export function* saveWelcomeMessages(action) {
   yield put({ type: 'WELCOME_SAVE_STARTED' });
   try {
-    localStorage.setItem('welcomeMessages', JSON.stringify(action.payload))
+    localStorage.setItem('welcomeMessages', JSON.stringify(action.payload));
     yield put({
       type: 'WELCOME_SAVE_SUCCESS',
       payload: action.payload
-    })
+    });
   } catch (error) {
     // Return the intended state of welcome messages
     // regardless of save success or failure
