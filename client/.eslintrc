@@ -32,13 +32,13 @@
     "ignorePatterns": ["*.test.js"],
     "rules": {
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/*.test.js", "**/*.spec.js"]}],
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/*.test.js", "**/*.spec.js", "**/utils/testing.js"]}],
         "semi": [1, "always"],
         "no-underscore-dangle": 0,
         "react/jsx-props-no-spreading": [2, {
             "html": "enforce" ,
             "custom": "enforce",
-            "exceptions": ["input", "Input", "FormField", "Table", "table", "thead", "tbody", "th", "tr", "td", "div"],
+            "exceptions": ["input", "Input", "FormField", "Table", "table", "thead", "tbody", "th", "tr", "td", "div", "Slide"],
             "explicitSpread": "ignore"
         }],
         "prettier/prettier": ["error", { "singleQuote": true }],

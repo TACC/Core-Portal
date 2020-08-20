@@ -1,14 +1,15 @@
-import React from "react";
-import { Router, Route } from "react-router-dom";
-import { render, fireEvent } from "@testing-library/react";
+import React from "react"
 import { createMemoryHistory } from "history";
 import  DataFilesListing  from "./DataFilesListing";
 import { CheckboxCell, FileNavCell } from "./DataFilesListingCells";
-import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 const initialMockState = {
+  pushKeys: {
+    target: {}
+  },
   files: {
     loading: {
       FilesListing: false
@@ -39,14 +40,6 @@ const initialMockState = {
     }
   }
 };
-
-function renderComponent(component, store, history) {
-  return render(
-    <Provider store={store}>
-      <Router history={history}>{component}</Router>
-    </Provider>
-  );
-}
 
 describe("CheckBoxCell", () => {
   it("shows checkbox when checked", () => {
@@ -124,6 +117,7 @@ describe("DataFilesListing", () => {
     const history = createMemoryHistory();
     history.push("/workbench/data/tapis/private/test.system/");
     const store = mockStore({
+      ...initialMockState,
       files: {
         ...initialMockState.files,
         listing: { FilesListing: [testfile] }

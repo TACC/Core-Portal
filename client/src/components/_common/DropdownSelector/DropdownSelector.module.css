@@ -33,8 +33,8 @@
 }
 /* NOTE: CSS Modules does not support `.container.form-control`, but these overrides should be isolated */
 .container {
-  padding: 0 6px; /* overwrite `.form-control` (from bootstrap.form.css) */
-                  /* 5px design * 1.2 design-to-app ratio */
+  padding: 0 16px 0 6px; /* overwrite `.form-control` (from bootstrap.form.css) */
+                  /* 0 13.43px 0 5px design * 1.2 design-to-app ratio */
 
   border-color: var(--global-color-primary--dark); /* overwrite `.form-control` (from Bootstrap) */
 }
