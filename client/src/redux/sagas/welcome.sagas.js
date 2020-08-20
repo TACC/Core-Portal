@@ -4,7 +4,6 @@ export function* fetchWelcomeMessages() {
   yield put({ type: 'WELCOME_FETCH_STARTED' });
   try {
     const messages = JSON.parse(localStorage.getItem('welcomeMessages')) || {};
-    console.log('WELCOME MESSAGE STATE', messages);
     yield put({
       type: 'WELCOME_FETCH_SUCCESS',
       payload: messages
