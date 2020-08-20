@@ -26,7 +26,11 @@ export function* getJobs(action) {
   yield put({ type: 'JOBS_LIST_START' });
 
   try {
-    const jobs = yield call(fetchJobs, action.params.offset, action.params.limit || LIMIT);
+    const jobs = yield call(
+      fetchJobs,
+      action.params.offset,
+      action.params.limit || LIMIT
+    );
     yield put({
       type: 'JOBS_LIST',
       payload: { list: jobs, reachedEnd: jobs.length < LIMIT }
