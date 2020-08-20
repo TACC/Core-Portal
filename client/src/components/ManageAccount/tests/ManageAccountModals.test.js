@@ -160,7 +160,7 @@ describe("Change Password", () => {
         <ChangePasswordModal />
       </Provider>
     );
-    expect(getByText(/Your password has been successfully changed!/)).toBeDefined();
+    expect(getByText(/Your password has been successfully changed./)).toBeDefined();
 
     // Close Modal
     const closeButton = getByLabelText(/Close/);

@@ -60,7 +60,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   if (error) {
     return (
       <Message type="warn" className="appDetail-error">
-        We were unable to retrieve your jobs!
+        We were unable to retrieve your jobs.
       </Message>
     );
   }
@@ -92,6 +92,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
+      className: 'job__status',
       Cell: el => (
         <JobsStatus
           status={el.value}
