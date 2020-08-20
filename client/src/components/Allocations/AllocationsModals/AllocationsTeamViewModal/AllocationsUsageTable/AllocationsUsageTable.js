@@ -2,6 +2,7 @@ import React from 'react';
 import { useTable } from 'react-table';
 import { capitalize } from 'lodash';
 import { arrayOf, shape, string } from 'prop-types';
+import { getSystemName } from 'utils/jobsUtil';
 import './AllocationsUsageTable.module.scss';
 
 const AllocationsUsageTable = ({ rawData }) => {
@@ -11,7 +12,7 @@ const AllocationsUsageTable = ({ rawData }) => {
       {
         Header: 'System',
         accessor: entry => {
-          const system = entry.resource.split('.')[0];
+          const system = getSystemName(entry.resource);
           const sysNum = system.match(/\d+$/);
           const sysName = capitalize(system.replace(/[0-9]/g, ''));
           if (sysNum) {
