@@ -9,6 +9,7 @@ import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
 import { DescriptionList, LoadingSpinner, Expand, Message } from '_common';
 import PropTypes from 'prop-types';
 import { applyTimezoneOffset, formatDateTime } from 'utils/timeFormat';
+import { isTerminalState } from 'utils/jobsUtil';
 import { getStatusText } from '../../Jobs/JobsStatus';
 
 import * as ROUTES from '../../../constants/routes';
@@ -57,6 +58,8 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     applyTimezoneOffset(new Date(jobDetails.lastUpdated))
   );
   const hasFailedStatus = jobDetails.status === 'FAILED';
+  const notInTerminalState = !isTerminalState(jobDetails.status);
+
   const statusDataObj = {
     Submitted: created,
     [`${getStatusText(jobDetails.status)}`]: lastUpdated
@@ -108,7 +111,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
         density="compact"
         data={{
           Output: (
-            <DataFilesLink path={outputPath} disabled={outputPath === null}>
+            <DataFilesLink path={outputPath} disabled={notInTerminalState}>
               View in Data Files
             </DataFilesLink>
           )
