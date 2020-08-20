@@ -1,7 +1,12 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Link, NavLink as RRNavLink } from 'react-router-dom';
-import { Button, Nav, NavItem, NavLink } from 'reactstrap';
+import {
+  Link,
+  NavLink as RRNavLink,
+  Route,
+  useHistory
+} from 'react-router-dom';
+import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 import { Icon, LoadingSpinner } from '_common';
 import { AllocationsTable } from './AllocationsTables';
@@ -9,7 +14,7 @@ import { AllocationsRequestModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
 
 export const Header = ({ page }) => {
-  const [openModal, setOpenModal] = React.useState(false);
+  const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
     <div id="allocations-header">
       <div id="header-text">
@@ -17,15 +22,9 @@ export const Header = ({ page }) => {
         <span>&nbsp;/&nbsp;</span>
         <span>{page[0].toUpperCase() + page.substring(1)}</span>
       </div>
-      <Button color="primary" onClick={() => setOpenModal(true)}>
+      <Link to={`${root}/manage`} className="btn btn-primary">
         Manage Allocations
-      </Button>
-      {openModal && (
-        <AllocationsRequestModal
-          isOpen={openModal}
-          toggle={() => setOpenModal(!openModal)}
-        />
-      )}
+      </Link>
     </div>
   );
 };
@@ -58,22 +57,22 @@ export const Sidebar = () => (
 
 export const Layout = ({ page }) => {
   const loading = useSelector(state => state.allocations.loading);
-  if (loading)
-    return (
-      <>
-        <Header page={page} />
-        <div id="allocations-container">
-          <Sidebar />
-          <LoadingSpinner />
-        </div>
-      </>
-    );
+  const history = useHistory();
+  const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
     <>
       <Header page={page} />
       <div id="allocations-container">
         <Sidebar />
-        <AllocationsTable page={page} />
+        {loading ? <LoadingSpinner /> : <AllocationsTable page={page} />}
+        <Route exact path={`${root}/manage`}>
+          <AllocationsRequestModal
+            isOpen
+            toggle={() => {
+              history.push(root);
+            }}
+          />
+        </Route>
       </div>
     </>
   );
