@@ -9,6 +9,7 @@ import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { getSystemName } from 'utils/jobsUtil';
 import FormSchema from './AppFormSchema';
 import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
@@ -112,14 +113,24 @@ AppInfo.propTypes = {
 
 export const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
-  const { allocations, portalAlloc, jobSubmission } = useSelector(state => {
+  const {
+    allocations,
+    portalAlloc,
+    jobSubmission,
+    hasDefaultAllocation,
+    defaultHost
+  } = useSelector(state => {
     const matchingHost = Object.keys(state.allocations.hosts).find(
       host => app.resource === host || app.resource.endsWith(`.${host}`)
     );
     return {
       allocations: matchingHost ? state.allocations.hosts[matchingHost] : [],
       portalAlloc: state.allocations.portal_alloc,
-      jobSubmission: state.jobs.submit
+      jobSubmission: state.jobs.submit,
+      hasDefaultAllocation: !state.allocations.loading
+        ? state.allocations.hosts[state.systems.defaultHost]
+        : true,
+      defaultHost: state.systems.defaultHost
     };
   }, shallowEqual);
 
@@ -147,6 +158,7 @@ export const AppSchemaForm = ({ app }) => {
     appId: app.id
   };
 
+  let missingAllocation = false;
   if (app.scheduler === 'SLURM') {
     if (allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
@@ -154,11 +166,22 @@ export const AppSchemaForm = ({ app }) => {
       initialValues.allocation = allocations.length === 1 ? allocations[0] : '';
     }
 
-    if (!allocations.length) {
+    if (!hasDefaultAllocation) {
       jobSubmission.error = true;
       jobSubmission.response = {
-        message: `You need an allocation to use the system ${app.resource}. Please submit a ticket for access.`
+        message: `You need an allocation on ${getSystemName(
+          defaultHost
+        )} to run this application. Please submit a ticket for access.`
       };
+      missingAllocation = true;
+    } else if (!allocations.length) {
+      jobSubmission.error = true;
+      jobSubmission.response = {
+        message: `You need an allocation on ${getSystemName(
+          app.resource
+        )}to run this application. Please submit a ticket for access.`
+      };
+      missingAllocation = true;
     }
   } else {
     initialValues.allocation = app.scheduler;
@@ -275,7 +298,7 @@ export const AppSchemaForm = ({ app }) => {
           }
           const readOnly =
             jobSubmission.submitting ||
-            (app.scheduler === 'SLURM' && !allocations.length);
+            (app.scheduler === 'SLURM' && missingAllocation);
           return (
             <Form>
               <FormGroup tag="fieldset" disabled={readOnly}>
