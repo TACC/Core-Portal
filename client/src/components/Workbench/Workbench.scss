@@ -37,9 +37,19 @@
     align-items: center;
 }
 
+/* FP-546: Before FP-546 standardizes `_common/Button`, these color
+           styles override and duplicate those in `bootstrap.btn.scss` */
+/* FAQ: The extra `.workbench-content` specificty is too great,
+        but neither `bootstrap.btn.scss` nor `_common/Button` are ready
+        to usurp the responsibility of styling buttons globally */
 .workbench-content .btn-link,
 .workbench-content .wb-link {
-  color: #9d85ef;
+  color: var(--global-color-accent--normal);
+}
+.workbench-content .btn-link:disabled,
+.workbench-content .wb-link:disabled {
+  /* Relies on Bootstrap opacity drop to lighten the color */
+  color: var(--global-color-primary--light);
 }
 
 .workbench-content .btn-secondary {
