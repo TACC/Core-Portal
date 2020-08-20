@@ -7,7 +7,7 @@ import {
   NavLink as RRNavLink
 } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Nav, NavItem, NavLink } from 'reactstrap';
+import { Button, Nav, NavItem, NavLink, Alert } from 'reactstrap';
 import { string } from 'prop-types';
 
 import JobHistory from './HistoryViews';
@@ -104,6 +104,9 @@ const Layout = () => {
 
   return (
     <div styleName="root">
+      <Alert color="info">
+        Access a log of all previous job submissions.
+      </Alert>
       <Header title={historyType} />
       <div styleName="container">
         <Sidebar />

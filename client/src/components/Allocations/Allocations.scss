@@ -37,7 +37,16 @@
 #allocations-container > :last-child {
     flex-grow: 1;
 }
-
+#allocations-alert {
+    display: flex;
+    flex-direction: column;
+  
+    padding: 20px 40px 0 20px;
+    .alert {
+        margin-bottom: 0px;
+    }
+}
+  
 #allocations-header {
     @include alloc-button();
     display: flex;

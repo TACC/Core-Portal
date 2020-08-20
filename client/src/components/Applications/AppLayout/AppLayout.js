@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, useRouteMatch } from 'react-router-dom';
+import { Alert } from 'reactstrap';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner } from '_common';
 import './AppLayout.scss';
@@ -19,6 +20,9 @@ const AppsLayout = appDict => {
 
   return (
     <>
+      <Alert color="info">
+        Submit jobs to the HPC systems using a wide variety of applications.
+      </Alert>
       <div className="apps-header">
         <h5>
           Applications

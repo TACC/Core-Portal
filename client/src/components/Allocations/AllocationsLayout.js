@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link, NavLink as RRNavLink } from 'react-router-dom';
-import { Button, Nav, NavItem, NavLink } from 'reactstrap';
+import { Button, Nav, NavItem, NavLink, Alert } from 'reactstrap';
 import { string } from 'prop-types';
 import { Icon, LoadingSpinner } from '_common';
 import { AllocationsTable } from './AllocationsTables';
@@ -11,22 +11,29 @@ import * as ROUTES from '../../constants/routes';
 export const Header = ({ page }) => {
   const [openModal, setOpenModal] = React.useState(false);
   return (
-    <div id="allocations-header">
-      <div id="header-text">
-        <Link to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}`}>Allocations</Link>
-        <span>&nbsp;/&nbsp;</span>
-        <span>{page[0].toUpperCase() + page.substring(1)}</span>
+    <>
+      <div id="allocations-alert">
+        <Alert color="info">
+          Monitor the status of allocations on the HPC systems and view a breakdown of team usage.
+        </Alert>
       </div>
-      <Button color="primary" onClick={() => setOpenModal(true)}>
-        Manage Allocations
-      </Button>
-      {openModal && (
-        <AllocationsRequestModal
-          isOpen={openModal}
-          toggle={() => setOpenModal(!openModal)}
-        />
-      )}
-    </div>
+      <div id="allocations-header">
+        <div id="header-text">
+          <Link to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}`}>Allocations</Link>
+          <span>&nbsp;/&nbsp;</span>
+          <span>{page[0].toUpperCase() + page.substring(1)}</span>
+        </div>
+        <Button color="primary" onClick={() => setOpenModal(true)}>
+          Manage Allocations
+        </Button>
+        {openModal && (
+          <AllocationsRequestModal
+            isOpen={openModal}
+            toggle={() => setOpenModal(!openModal)}
+          />
+        )}
+      </div>
+    </>
   );
 };
 Header.propTypes = { page: string.isRequired };

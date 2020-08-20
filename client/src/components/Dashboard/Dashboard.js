@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Row, Col } from 'reactstrap';
+import { Button, Container, Row, Col, Alert } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 import JobsView from '../Jobs';
@@ -15,6 +15,10 @@ function Dashboard() {
   return (
     <div className="dashboard-wrapper">
       <BrowserChecker />
+      <Alert color="info">
+        Monitor jobs, get help via tickets, view the status of the High Performance 
+        Computing (HPC) systems, and add quick links to frequently used applications.
+      </Alert>
       <div className="dashboard-header">
         <h5>Dashboard</h5>
         <Link to="/accounts/profile" className="wb-link">
