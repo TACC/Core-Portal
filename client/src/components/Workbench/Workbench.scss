@@ -103,3 +103,10 @@
   justify-content: center;
   align-items: center;
 }
+
+.workbench__alert {
+  padding: 20px 20px 0 20px;
+  .alert {
+    margin-bottom: 0px;
+  }
+}

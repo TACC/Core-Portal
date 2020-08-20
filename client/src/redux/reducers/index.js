@@ -14,6 +14,7 @@ import authenticatedUser from './authenticated_user.reducer';
 import { pushKeys } from './systems.reducers';
 import notifications from './notifications.reducers';
 import workbench from './workbench.reducers';
+import { welcomeMessages } from './welcome.reducers';
 
 export default combineReducers({
   jobs,
@@ -31,5 +32,6 @@ export default combineReducers({
   apps,
   pushKeys,
   notifications,
-  workbench
+  workbench,
+  welcomeMessages
 });

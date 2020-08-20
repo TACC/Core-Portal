@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
+import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Dashboard from '../Dashboard';
 import Allocations from '../Allocations';
@@ -37,6 +38,36 @@ function Workbench() {
       <NotificationToast />
       <Sidebar />
       <div className="workbench-content">
+        <div className="workbench__alert">
+          <Switch>
+            <Route path={`${path}${ROUTES.DASHBOARD}`}>
+              <Alert color="info">
+                Monitor jobs, get help via tickets, view the status of the High Performance 
+                Computing (HPC) systems, and add quick links to frequently used applications.
+              </Alert>
+            </Route>
+            <Route path={`${path}${ROUTES.DATA}`}>
+              <Alert color="info">
+                Upload and manage files in a private directory.
+              </Alert>
+            </Route>
+            <Route path={`${path}${ROUTES.APPLICATIONS}`}>
+              <Alert color="info">
+                Submit jobs to the HPC systems using a wide variety of applications.
+              </Alert>
+            </Route>
+            <Route path={`${path}${ROUTES.ALLOCATIONS}`}>
+              <Alert color="info">
+                Monitor the status of allocations on the HPC systems and view a breakdown of team usage.
+              </Alert>
+            </Route>
+            <Route path={`${path}${ROUTES.HISTORY}`}>
+              <Alert color="info">
+                Access a lot of all previous job.submissions.
+              </Alert>
+            </Route>
+          </Switch>
+        </div>
         <Switch>
           <Route path={`${path}${ROUTES.DASHBOARD}`}>
             <Dashboard />
