@@ -1,0 +1,18 @@
+/* Overrides Bootstrap `.modal-body`, because we need to
+   "undo" the padding added there */
+.job-history-modal .modal-body {
+    padding: 0;
+}
+
+/* Overrides Bootstrap `.nav-link:hover`, because the `<NavLink>`
+   component is only mostly for routing (not styling) */
+.job-history-modal .nav-link:hover {
+    text-decoration: underline;
+}
+
+/* Overrides Bootstrap `.modal-title`, to get the contents of reactstrap ModalHeader
+  to have the correct width instead of overflowing.  Setting to 95% instead of
+  100% to keep space for close button */
+.job-history-modal .modal-title {
+    width: 95%;
+}

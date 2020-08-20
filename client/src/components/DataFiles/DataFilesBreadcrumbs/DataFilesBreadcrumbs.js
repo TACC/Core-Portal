@@ -1,9 +1,10 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
+import { getSystemName } from 'utils/jobsUtil';
 
 const BreadcrumbLink = ({ api, scheme, system, path, children, section }) => {
   const dispatch = useDispatch();
@@ -68,6 +69,15 @@ const DataFilesBreadcrumbs = ({
 }) => {
   const paths = [];
   const pathComps = [];
+  const systemList = useSelector(state => state.systems.systemList);
+  const privateSystemName = () => {
+    const matchingSystem = systemList.find(s => s.system === system);
+    if (matchingSystem) {
+      return matchingSystem.name;
+    }
+    return getSystemName(system);
+  };
+
   path
     .split('/')
     .filter(x => x)
@@ -81,7 +91,7 @@ const DataFilesBreadcrumbs = ({
   const root = (() => {
     switch (scheme) {
       case 'private':
-        return 'My Data';
+        return privateSystemName();
       case 'community':
         return 'Community Data';
       default:

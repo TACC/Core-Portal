@@ -7,6 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2020-08-19: Grey-Cardinal Release Beta Bugfixes
+
+### Changed
+
+- Change "Expires" to "Expired" in Allocations/Expired view (#174)
+- FP-262: use SystemPushKeysModal for all key pushing operations (#46)
+- FP-610: Simplify dates in Allocation (#165)
+- FP-633: Alter Allocations sub table colors (#165)
+- FP-628: Allow partial match of host resources when checking for allocation in applications (#170)
+- Allow Message to accept JSX, not just text (#180)
+- FP-605: change searchbar placeholder to "Search in Data Files" (#179)
+
+### Fixed
+
+- FP-568: Fix adding licenses in control panel (#145)
+- FP-595: Handle errors in /api/datafiles/systems/list (#163)
+- FP-596: Do not encode results of license_as_str for license model (#164)
+- FP-584: Derive root name of breadcrumb from system list (#162)
+- FP-561: Prevent users from being able to launch jobs with inactive allocations (#169)
+- FP-599: Prevent logged in users from changing name/email on Ticket Submission (#166)
+- FP-632: Fix ticket double reply issue (#173)
+- FP-592: Fix Ticket Create modal for scaled views (#172)
+- FP-591: Fix Jobs timezone display of job creation times (#167)
+- FP-631: Manage Account UI adjustments and validation fixes (#168)
+
+## [2.0.0] - 2020-08-12: Grey-Cardinal Release Beta
+
+### Added
+
+- FP-276: Add CSS linting
+- FP-220: Add Onboarding unit tests
+- FP-423: Add Manage Account unit tests
+- FP-317: Add Job History view
+- FP-339: Search backend enhancements
+- FP-354: Add support messages and new icons
+- FP-391: Add notifications backend using Django Channels and enables History on the frontend
+- FP-506: Add `<DropdownSelector>` component
+- FP-120: Add `<DataFilesSelectModal>` component and enable in app form inputs
+- FP-557: Add `<dl>` description list component
+- FP-565: Cache user allocations in ElasticSearch
+- FP-535: Enable access for interactive job sessions
+- FP-82: Add Notification `<Toast>` component and enable for job updates
+- FP-204: Show a user's detailed allocations usage
+- FP-341: Add and enable `<DataFilesSearchbar>` component in Data Files
+- FP-318: Add and enable `<JobHistoryModal>` for detailed job information
+- FP-372: Add private Longhorn system and support for multiple storage systems
+- FP-218: Access multiple storage systems from Data Files modals
+
+### Changed
+
+- FP-275: Change tickets table to use the `<InfiniteScrollTable>` component
+- FP-529, FP-562: Show simple English translations for job statuses from Tapis
+- FP-228, FP-110: Replace Font Awesome icons with `<Icon>` component and custom Cortal icons
+- FP-582: Generate ApiException when trying to perform cross system move
+
+### Fixed
+
+- FP-469: Display error message in Allocations view
+- FP-396: Handle empty response for System Monitor in Dashboard view
+- FP-463: Show warning message when Jobs listing fails
+- FP-549: Handle all error codes in DataFilesTable
+- FP-567: Handle and raise error when a user is missing a required license
+- FP-579, FP-597: Scope styles to not bleed to other components
+
 ## [1.1.0] - 2020-06-16
 
 ### Added
@@ -53,6 +117,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.0.1
+[2.0.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.0.0
 [1.1.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v1.1.0
 [1.0.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v1.0.0

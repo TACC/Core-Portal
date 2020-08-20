@@ -24,13 +24,18 @@ export const TYPE_ICON_MAP = {
 const TYPES = PropTypes.oneOf(Object.keys(TYPE_ICON_MAP));
 
 /** Show an event-based message to the user */
-const Message = ({ children, className, type }) => {
+const Message = ({ children, className, hidden, type }) => {
   const iconName = TYPE_ICON_MAP[type].name;
   const iconText = TYPE_ICON_MAP[type].text;
   const containerStyleName = `container is-${type}`;
 
   return (
-    <span styleName={containerStyleName} className={className} role="status">
+    <span
+      styleName={containerStyleName}
+      className={className}
+      hidden={hidden}
+      role="status"
+    >
       <Icon styleName="icon" name={iconName}>
         {iconText}
       </Icon>
@@ -42,14 +47,20 @@ const Message = ({ children, className, type }) => {
 };
 Message.propTypes = {
   /** Message text (as child node) */
-  children: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
+  /* FAQ: We can support any values, even a component */
+  // eslint-disable-next-line react/forbid-prop-types
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+    .isRequired,
   /** Additional className for the root element */
   className: PropTypes.string,
+  /** Allow external management of visibility */
+  hidden: PropTypes.bool,
   /** Message type or severity */
   type: TYPES.isRequired
 };
 Message.defaultProps = {
-  className: ''
+  className: '',
+  hidden: false
 };
 
 export default Message;

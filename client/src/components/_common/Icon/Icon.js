@@ -4,6 +4,7 @@ import './Icon.module.css';
 
 const Icon = ({ children, className, name }) => {
   const iconClassName = `icon icon-${name}`;
+  // FAQ: The conditional avoids an extra space in class attribute value
   const fullClassName = className
     ? [className, iconClassName].join(' ')
     : iconClassName;

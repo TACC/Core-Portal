@@ -1,12 +1,11 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import 'react-table-6/react-table.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { AppIcon, InfiniteScrollTable } from '_common';
-
+import { AppIcon, InfiniteScrollTable, Message } from '_common';
+import { getOutputPathFromHref } from 'utils/jobsUtil';
+import { applyTimezoneOffset, formatDateTime } from 'utils/timeFormat';
 import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
@@ -17,6 +16,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const jobs = useSelector(state => state.jobs.list);
   const error = useSelector(state => state.jobs.error);
   const limit = 20;
+
   const noDataText = (
     <>
       No recent jobs. You can submit jobs from the{' '}
@@ -29,9 +29,6 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       .
     </>
   );
-  useEffect(() => {
-    dispatch({ type: 'GET_JOBS', params: { offset: 0, limit } });
-  }, [dispatch]);
 
   const infiniteScrollCallback = useCallback(offset => {
     // The only way we have some semblance of
@@ -44,15 +41,27 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     }
   }, []);
 
+  const jobDetailLink = useCallback(
+    ({
+      row: {
+        original: { id, name }
+      }
+    }) => (
+      <Link
+        to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}?name=${name}`}
+        className="wb-link"
+      >
+        View Details
+      </Link>
+    ),
+    []
+  );
+
   if (error) {
     return (
-      <div className="appDetail-error">
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          style={{ marginRight: '10px' }}
-        />
-        <div>We were unable to retrieve your jobs!</div>
-      </div>
+      <Message type="warn" className="appDetail-error">
+        We were unable to retrieve your jobs.
+      </Message>
     );
   }
 
@@ -83,6 +92,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
+      className: 'job__status',
       Cell: el => (
         <JobsStatus
           status={el.value}
@@ -96,26 +106,15 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Header: 'Job Details',
       accessor: 'id',
       show: showDetails,
-      Cell: el => (
-        <Link
-          to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${el.value}`}
-          className="wb-link"
-        >
-          View Details
-        </Link>
-      )
+      Cell: jobDetailLink
     },
     {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
       Cell: el => {
-        const outputPath = el.value
-          .split('/')
-          .slice(7)
-          .filter(Boolean)
-          .join('/');
-        return outputPath !== 'listings' ? (
+        const outputPath = getOutputPathFromHref(el.value);
+        return outputPath ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
             className="wb-link job__path"
@@ -130,21 +129,9 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: d => new Date(d.created),
       Cell: el => (
-        <span id={`jobDate${el.index}`}>
-          {`${el.value.toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            year: 'numeric',
-            timeZone: 'America/Chicago'
-          })}
-          ${el.value.toLocaleTimeString('en-US', {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZone: 'America/Chicago'
-          })}`}
-        </span>
+        <span id={`jobDate${el.index}`}>{`${formatDateTime(
+          applyTimezoneOffset(el.value)
+        )}`}</span>
       ),
       id: 'jobDateCol'
     }

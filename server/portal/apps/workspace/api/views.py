@@ -105,7 +105,7 @@ class MetadataView(BaseApiView):
 
             data = agave.meta.listMetadata(q=query)
 
-            assert len(data) == 1, "Expected single app response, got {}!".format(len(data))
+            assert len(data) == 1, "Expected single app response, got {}.".format(len(data))
             data = data[0]
 
             lic_type = _app_license_type(app_id)
@@ -162,7 +162,7 @@ class JobsView(BaseApiView):
             job_meta = agave.meta.listMetadata(q=json.dumps(q))
             data['_embedded'] = {"metadata": job_meta}
 
-            # TODO: Decouple this from front end somehow!
+            # TODO: Decouple this from front end somehow
             archiveSystem = data.get('archiveSystem', None)
             if archiveSystem:
                 archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])
@@ -247,15 +247,16 @@ class JobsView(BaseApiView):
                 if parsed.netloc:
                     job_post['archiveSystem'] = parsed.netloc
                 else:
-                    job_post['archiveSystem'] = \
-                        settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(
-                            request.user.username)
+                    default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                    default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
+                    job_post['archiveSystem'] = default_system_prefix.format(request.user.username)
             else:
                 job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         timezone.now().strftime('%Y-%m-%d'))
-                job_post['archiveSystem'] = \
-                    settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(request.user.username)
+                default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
+                job_post['archiveSystem'] = default_system_prefix.format(request.user.username)
 
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])

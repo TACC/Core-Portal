@@ -1,4 +1,5 @@
 import React from 'react';
+import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import DataFilesPreviewModal from './DataFilesPreviewModal';
 import DataFilesMoveModal from './DataFilesMoveModal';
 import DataFilesUploadModal from './DataFilesUploadModal';
@@ -20,6 +21,7 @@ export default function DataFilesModals() {
       <DataFilesRenameModal />
       <DataFilesPushKeysModal />
       <DataFilesTrashModal />
+      <SystemsPushKeysModal />
     </>
   );
 }

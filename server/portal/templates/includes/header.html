@@ -13,7 +13,7 @@
       {% if user.is_authenticated %}
         <!--
         <span>
-          Welcome, {{ user.first_name }}!
+          Welcome, {{ user.first_name }}.
           {% if not request.user.agave_oauth %}
             &nbsp;
             <a class="text-danger" title="" href="{% url 'portal_auth:agave_session_error' %}"><i class="fas fa-exclamation-triangle"></i><span class="sr-only">API Session Not Available. Click for details.</span></a>

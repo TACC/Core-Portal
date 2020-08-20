@@ -398,8 +398,6 @@ AGAVE_CLIENT_KEY = settings_secret._AGAVE_CLIENT_KEY
 AGAVE_CLIENT_SECRET = settings_secret._AGAVE_CLIENT_SECRET
 AGAVE_SUPER_TOKEN = settings_secret._AGAVE_SUPER_TOKEN
 AGAVE_STORAGE_SYSTEM = settings_secret._AGAVE_STORAGE_SYSTEM
-AGAVE_COMMUNITY_DATA_SYSTEM = settings_secret._AGAVE_COMMUNITY_DATA_SYSTEM
-AGAVE_PUBLIC_DATA_SYSTEM = settings_secret._AGAVE_PUBLIC_DATA_SYSTEM
 
 PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 
@@ -618,16 +616,32 @@ CELERY_TASK_DEFAULT_EXCHANGE = 'default'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
 """
+SETTINGS: EXECUTION SYSTEMS
+"""
+PORTAL_EXEC_SYSTEMS = {
+    'data': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'stampede2': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'lonestar5': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'longhorn': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'frontera': {
+        'scratch_dir': '/scratch1/{}'
+    }
+}
+
+"""
 SETTINGS: DATA DEPOT
 """
-
-PORTAL_DATA_DEPOT_MANAGERS = {
-    'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
-    'shared': 'portal.apps.data_depot.managers.shared.FileManager',
-    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager',
-    'public': 'portal.apps.data_depot.managers.public.FileManager',
-    'google-drive': 'portal.apps.data_depot.managers.google_drive.FileManager'
-}
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', [])
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
