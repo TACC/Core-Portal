@@ -2,7 +2,7 @@
     Variables and Mixins
 */
 @mixin alloc-button {
-    button {
+    .btn {
         border-radius: 0;
         border: 0;
         font: bold 12px Roboto, sans-serif;
@@ -149,9 +149,6 @@
         font-size: 1.1rem;
         margin: 0;
     }
-}
-.allocations-request-body {
-    color: #484848;
 }
 /* HACK: The loading icon should not need height set, but it fixes Safari here */
 /* FP-426: Do not use `height: 100%` or isolate usage pending solution to bigger problem */
