@@ -57,9 +57,8 @@ function Workbench() {
               color="info"
               className="welcomeMessage"
             >
-              Monitor jobs, get help via tickets, view the status of the High
-              Performance Computing (HPC) systems, and add quick links to
-              frequently used applications.
+              This page allows you to monitor your job status, get help with tickets, 
+              and view the status of the High Performance Computing (HPC) systems.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.DATA}`}>
@@ -69,7 +68,7 @@ function Workbench() {
               color="info"
               className="welcomeMessage"
             >
-              Upload and manage files in a private directory.
+              This page allows you to upload and manage your files.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.APPLICATIONS}`}>
@@ -79,8 +78,8 @@ function Workbench() {
               color="info"
               className="welcomeMessage"
             >
-              Submit jobs to the HPC systems using a wide variety of
-              applications.
+              This page allows you to submit jobs to the HPC systems or access Cloud services
+              using a variety of applications.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.ALLOCATIONS}`}>
@@ -90,8 +89,8 @@ function Workbench() {
               color="info"
               className="welcomeMessage"
             >
-              Monitor the status of allocations on the HPC systems and view a
-              breakdown of team usage.
+              This page allows you to monitor the status of allocations on the HPC systems and
+              view a breakdown of team usage.
             </Alert>
           </Route>
           <Route path={`${path}${ROUTES.HISTORY}`}>
@@ -101,7 +100,7 @@ function Workbench() {
               color="info"
               className="welcomeMessage"
             >
-              Access a lot of all previous job.submissions.
+              This page allows you to monitor a log of all previous job submissions.
             </Alert>
           </Route>
         </Switch>
