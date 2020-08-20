@@ -23,7 +23,7 @@ const AppBrowser = () => {
   if (error.isError) {
     return (
       <Message type="warn" className="appDetail-error">
-        {error.message ? error.message : 'Something went wrong!'}
+        {error.message ? error.message : 'Something went wrong.'}
       </Message>
     );
   }
