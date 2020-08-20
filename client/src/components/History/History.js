@@ -27,21 +27,20 @@ const Header = ({ title }) => {
   return (
     <div styleName="header">
       <span styleName="header-text"> History / {title} </span>
-      {unread ? (
-        <Button
-          color="link"
-          onClick={() => {
-            dispatch({
-              type: 'NOTIFICATIONS_READ',
-              payload: {
-                onSuccess: { type: 'FETCH_NOTIFICATIONS' }
-              }
-            });
-          }}
-        >
-          Mark All as Viewed
-        </Button>
-      ) : null}
+      <Button
+        color="link"
+        onClick={() => {
+          dispatch({
+            type: 'NOTIFICATIONS_READ',
+            payload: {
+              onSuccess: { type: 'FETCH_NOTIFICATIONS' }
+            }
+          });
+        }}
+        disabled={!unread}
+      >
+        Mark All as Viewed
+      </Button>
     </div>
   );
 };
