@@ -16,7 +16,7 @@ const mockInitialState = {
   loadingUsernames: true,
   hosts: {},
   portal_alloc: '',
-  loadingPage: false, 
+  loadingPage: false,
   errors: {}
 };
 const mockStore = configureStore();
@@ -46,7 +46,7 @@ describe('Allocations Table', () => {
     expect(getByText(/Systems/)).toBeDefined();
     expect(getByText(/Awarded/)).toBeDefined();
     expect(getByText(/Remaining/)).toBeDefined();
-    expect(getByText(/Expired/)).toBeDefined();
+    expect(getByText(/Expires/)).toBeDefined();
   });
 
   it('should display an error', async () => {
@@ -71,5 +71,5 @@ describe('Allocations Table', () => {
       expect(reload.type).toBe('GET_ALLOCATIONS');
     })
   })
-  
+
 });

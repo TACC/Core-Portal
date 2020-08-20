@@ -58,7 +58,7 @@ export const useAllocations = page => {
         className: 'system-cell'
       },
       {
-        Header: 'Expired',
+        Header: page === 'approved' ? 'Expires' : 'Expired',
         accessor: ({ systems }) => systemAccessor(systems, 'Expires'),
         id: 'expires',
         Cell: Expires,

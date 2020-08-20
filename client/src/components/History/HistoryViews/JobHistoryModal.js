@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
 import { DescriptionList, LoadingSpinner, Expand, Message } from '_common';
 import PropTypes from 'prop-types';
-import { formatDateTime } from 'utils/timeFormat';
+import { applyTimezoneOffset, formatDateTime } from 'utils/timeFormat';
 import { getStatusText } from '../../Jobs/JobsStatus';
 
 import * as ROUTES from '../../../constants/routes';
@@ -50,8 +50,12 @@ const reduceInputParameters = data =>
 
 function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   const outputPath = `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
-  const created = formatDateTime(new Date(jobDetails.created));
-  const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
+  const created = formatDateTime(
+    applyTimezoneOffset(new Date(jobDetails.created))
+  );
+  const lastUpdated = formatDateTime(
+    applyTimezoneOffset(new Date(jobDetails.lastUpdated))
+  );
   const hasFailedStatus = jobDetails.status === 'FAILED';
   const statusDataObj = {
     Submitted: created,
