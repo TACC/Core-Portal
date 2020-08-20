@@ -85,6 +85,6 @@ describe('AppSchemaForm', () => {
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdFixture
     });
-    expect(getByText(/You need an allocation on frontera/)).toBeDefined();
+    expect(getByText(/You need an allocation on Frontera/)).toBeDefined();
   });
 });
