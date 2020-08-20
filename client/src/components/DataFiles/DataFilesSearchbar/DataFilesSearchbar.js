@@ -51,10 +51,10 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
           onChange={onChange}
           value={query}
           name="query"
-          aria-label={`Search (within ${sectionName})`}
+          aria-label={`Search (in ${sectionName})`}
           styleName="input"
           className="form-control"
-          placeholder={`Search within ${sectionName}`}
+          placeholder={`Search in ${sectionName}`}
           data-testid="input"
           autoComplete="off"
         />

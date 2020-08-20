@@ -10,7 +10,12 @@ const mockStore = configureStore();
 
 const initialMockState = {
   files: DataFilesCopyModalFixture,
-  systems: systemsFixture
+  systems: systemsFixture,
+  pushKeys: {
+    modalProps: {
+      pushKeys: false
+    }
+  }
 };
 
 

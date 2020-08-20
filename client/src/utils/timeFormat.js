@@ -1,7 +1,18 @@
+export function applyTimezoneOffset(timeDateValue) {
+  /*
+    For Aloe ISO timestamps that incorrectly add a timezone offset
+    but keep the UTC time, it is necessary to subtract
+    that timezone offset to determine the correct time
+  */
+  return new Date(
+    timeDateValue.getTime() - timeDateValue.getTimezoneOffset() * 60000
+  );
+}
+
 export function formatDate(timeDateValue) {
   return timeDateValue.toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'numeric',
+    day: '2-digit',
+    month: '2-digit',
     year: 'numeric',
     timeZone: 'America/Chicago'
   });

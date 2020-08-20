@@ -160,7 +160,7 @@ describe("Change Password", () => {
         <ChangePasswordModal />
       </Provider>
     );
-    expect(getByText(/Your password has been successfully changed!/)).toBeDefined();
+    expect(getByText(/Your password has been successfully changed./)).toBeDefined();
 
     // Close Modal
     const closeButton = getByLabelText(/Close/);
@@ -437,6 +437,8 @@ describe("Edit Required Information", () => {
         success: { required: true },
       },
     });
+    // Mock scrollIntoView (not a part of jsdom)
+    window.HTMLElement.prototype.scrollIntoView = jest.fn()
     rerender(
       <Provider store={store}>
         <EditRequiredInformationModal />

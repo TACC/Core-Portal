@@ -149,7 +149,7 @@ class JobsWebhookView(BaseApiView):
                 event_data[Notification.STATUS] = Notification.SUCCESS
                 event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
                 event_data[Notification.EXTRA]['target_path'] = target_path
-                event_data[Notification.MESSAGE] = "Job '{}' finished!".format(job_name)
+                event_data[Notification.MESSAGE] = "Job '{}' finished".format(job_name)
                 event_data[Notification.OPERATION] = 'job_finished'
                 event_data[Notification.ACTION_LINK] = target_path
 

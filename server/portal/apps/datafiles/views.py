@@ -2,6 +2,7 @@ from portal.apps.auth.tasks import get_user_storage_systems
 from portal.views.base import BaseApiView
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
+from requests.exceptions import HTTPError
 import json
 import logging
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
@@ -43,11 +44,19 @@ class TapisFilesView(BaseApiView):
             client = request.user.agave_oauth.client
         except AttributeError:
             client = None
+        try:
+            response = tapis_get_handler(
+                client, scheme, system, path, operation, **request.GET.dict())
 
-        response = tapis_get_handler(
-            client, scheme, system, path, operation, **request.GET.dict())
+            return JsonResponse({'data': response})
+        except HTTPError as e:
+            error_status = e.response.status_code
+            error_json = e.response.json()
+            if error_status == 502:
+                # In case of 502, fetch system definition for pushing keys.
+                error_json['system'] = dict(client.systems.get(systemId=system))
 
-        return JsonResponse({'data': response})
+            return JsonResponse(error_json, status=error_status)
 
     def put(self, request, operation=None, scheme=None,
             handler=None, system=None, path='/'):
