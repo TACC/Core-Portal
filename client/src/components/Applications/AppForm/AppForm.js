@@ -9,10 +9,10 @@ import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { getSystemName } from 'utils/jobsUtil';
 import FormSchema from './AppFormSchema';
 import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
-import { getSystemName } from 'utils/jobsUtil';
 import * as ROUTES from '../../../constants/routes';
 
 const appShape = PropTypes.shape({
@@ -168,7 +168,9 @@ export const AppSchemaForm = ({ app }) => {
     if (!hasDefaultAllocation) {
       jobSubmission.error = true;
       jobSubmission.response = {
-        message: `You need an allocation on ${getSystemName(defaultHost)} to run this application. Please submit a ticket for access.`
+        message: `You need an allocation on ${getSystemName(
+          defaultHost
+        )} to run this application. Please submit a ticket for access.`
       };
     } else if (!allocations.length) {
       jobSubmission.error = true;
