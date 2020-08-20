@@ -1,4 +1,6 @@
 #appDetail-wrapper {
+    --vertical-buffer: 15px;
+
     /* As a flex item */
     flex-grow: 1;
 
@@ -11,14 +13,15 @@
 
     height: 100%; /* Be consistent with `#appDetail-error`/`.app-placeholder` (which can exist at the same location),
                      so that `appBrowser-wrapper` height does not change based on sibling content */
-    padding-top: 15px;
+    padding-top: var(--vertical-buffer);
 }
 
 /* Overwrite Bootstrap's opinionated style */
 /* ???: Is `.jumbotron` used without Design review? */
 /* ???: From where does `.jumbotron` originate? */
 #appDetail-wrapper .jumbotron {
-    margin-bottom: 0;
+    /* margin-bottom: 0; *//* RFE: Use this if `var(--vertical-buffer)` (below) is moved out */
+    margin-bottom: var(--vertical-buffer); /* RFE: Add as `padding-bottom` for `appDetail-wrapper` when content is `.jumbotron` */
 }
 
 /* Add 30 pixels of space at the bottom of app form and app info */
