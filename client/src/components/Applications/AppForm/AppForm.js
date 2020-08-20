@@ -201,7 +201,9 @@ export const AppSchemaForm = ({ app }) => {
               {missingAllocation && (
                 <>
                   &nbsp;Please click&nbsp;
-                  <Link to="/workbench/allocations/manage">here</Link>
+                  <Link to="/workbench/allocations/manage" className="wb-link">
+                    here
+                  </Link>
                   &nbsp;to request access.
                 </>
               )}
