@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { Link } from 'react-router-dom';
 import { LoadingSpinner, Message } from '_common';
 import './DataFilesTable.scss';
 
@@ -77,7 +78,11 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
         <div className="h-100 listing-placeholder">
           <Message type="warn">
             You are missing the required allocation for this system. Please
-            submit a ticket for access.
+            click&nbsp;
+            <Link to="/workbench/allocations/manage" className="wb-link">
+              here
+            </Link>
+            &nbsp;to request access.
           </Message>
         </div>
       );
