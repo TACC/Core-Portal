@@ -11,6 +11,7 @@ import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 
 import JobHistory from './HistoryViews';
+import JobHistoryModal from './HistoryViews/JobHistoryModal';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
 import './History.module.scss';
@@ -100,7 +101,25 @@ export const Routes = () => {
                 }
               });
             }
-            return <JobHistory />;
+            return (
+              <>
+                <JobHistory />
+                <Route
+                  path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
+                  render={({
+                    match: {
+                      params: { jobId }
+                    }
+                  }) => {
+                    dispatch({
+                      type: 'GET_JOB_DETAILS',
+                      payload: { jobId }
+                    });
+                    return <JobHistoryModal jobId={jobId} />;
+                  }}
+                />
+              </>
+            );
           }}
         />
 
