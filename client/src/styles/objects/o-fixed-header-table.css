@@ -1,0 +1,47 @@
+/*
+Fixed Header Table
+A table with a header that does not move, and a body that scrolls.
+> __Warning__: This forces table to become a fixed layout, and requires manually-calculated column widths
+
+Markup:
+<table class="fixed-header-table">
+    <thead>
+      <tr>
+        <th>A</th>
+        <th>B</th>
+        <th>C</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>A</td>
+        <td>B</td>
+        <td>C</td>
+      </tr>
+    </thead>
+</table>
+Styleguide Objects.FixedHeaderTable
+*/
+.o-fixed-header-table {
+  /* NOTE: Should these styles move to `elements/table.css` for all `table`s? */
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+/* Make table rows act like table rows, even though `tbody` has become a block */
+.o-fixed-header-table__row {
+  display: flex;
+  flex-direction: row;
+}
+
+.o-fixed-header-table__row td {
+  align-content: center;
+}
+
+/* Allow table body to scroll (which also pins the table head in place) */
+.o-fixed-header-table__body {
+  display: block;
+  overflow-y: auto;
+  width: 100%;
+  max-height: inherit; /* inherit max-height from InfiniteScrollTable */
+}

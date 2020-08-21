@@ -1,15 +1,13 @@
-.InfiniteScrollTable {
+.InfiniteScrollTable,
+.FiniteScrollTable {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
-  /* TODO: After, FP-103, use `composes:` not `@extend` */
-  @extend .o-fixed-header-table;
 
   position: relative;
   align-items: stretch;
   width: 100%;
-  overflow: scroll;
   border-bottom: 1px solid #707070;
   max-height: inherit; /* inherit max-height from parent wrapper */
-  font-size: 0.78em;
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
 
   thead {
     user-select: none;
@@ -29,7 +27,6 @@
   }
 
   tbody {
-    overflow-y: scroll;
     tr:not([class=-status]) {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
@@ -88,55 +85,4 @@
     /* WARNING: Unexpected behavior with child text nodes `<td>…<a>…</a>…</td>` */
     width: 100%;
   }
-}
-
-
-
-
-
-/*
-Fixed Header Table
-
-A table with a header that does not move, and a body that scrolls.
-
-> __Warning__: This forces table to become a fixed layout, and requires manually calculated column widths
-
-Markup:
-<table class="fixed-header-table">
-    <thead>
-      <tr>
-        <th>A</th>
-        <th>B</th>
-        <th>C</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>A</td>
-        <td>B</td>
-        <td>C</td>
-      </tr>
-    </thead>
-</table>
-
-Styleguide Objects.FixedHeaderTable
-*/
-.o-fixed-header-table {
-  table-layout: fixed;
-  border-collapse: collapse;
-}
-
-/* Make table rows act like table rows, even though `tbody` has become a block */
-/* FP-130: Migrates this to another stylesheet *//* stylelint-disable no-descending-specificity */
-.o-fixed-header-table tr {
-  display: flex;
-  flex-direction: row;
-}
-/* stylelint-enable no-descending-specificity */
-/* Allow table body to scroll (which also pins the table head in place) */
-.o-fixed-header-table tbody {
-  display: block;
-  overflow: auto;
-  width: 100%;
-  max-height: inherit; /* inherit max-height from InfiniteScrollTable */
 }
