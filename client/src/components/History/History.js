@@ -87,11 +87,13 @@ export const Routes = () => {
               dispatch({
                 type: 'FETCH_NOTIFICATIONS',
                 payload: {
-                  params: { eventType: 'job' },
+                  params: { eventTypes: ['job', 'interactive_session_ready'] },
                   onSuccess: {
                     type: 'NOTIFICATIONS_READ',
                     payload: {
-                      body: { eventType: 'job' },
+                      params: {
+                        eventTypes: ['job', 'interactive_session_ready']
+                      },
                       onSuccess: {
                         type: 'UPDATE_BADGE_COUNT',
                         payload: { type: 'unreadJobs' }

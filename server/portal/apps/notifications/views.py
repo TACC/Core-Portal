@@ -17,21 +17,21 @@ class ManageNotificationsView(BaseApiView):
         limit = request.GET.get('limit', 0)
         page = request.GET.get('page', 0)
         read = request.GET.get('read')
-        event_type = request.GET.get('eventType')
+        event_types = request.GET.get('eventTypes')
 
         query_params = {}
         if read is not None:
             query_params['read'] = read
 
-        if event_type is not None:
-            notifs = Notification.objects.filter(event_type=event_type,
+        if event_types is not None:
+            notifs = Notification.objects.filter(event_type__in=event_types,
                                                  deleted=False,
                                                  user=request.user.username,
                                                  **query_params).order_by('-datetime')
-            total = Notification.objects.filter(event_type=event_type,
+            total = Notification.objects.filter(event_type__in=event_types,
                                                 deleted=False,
                                                 user=request.user.username).count()
-            unread = Notification.objects.filter(event_type=event_type,
+            unread = Notification.objects.filter(event_type__in=event_types,
                                                  deleted=False,
                                                  read=False,
                                                  user=request.user.username).count()
@@ -59,13 +59,13 @@ class ManageNotificationsView(BaseApiView):
         body = json.loads(request.body)
         nid = body.get('id')
         read = body.get('read', True)
-        event_type = body.get('eventType', None)
+        event_types = body.get('eventTypes')
 
         if nid == 'all' and read is True:
-            if event_type is not None:
+            if event_types is not None:
                 notifs = Notification.objects.filter(deleted=False,
                                                      read=False,
-                                                     event_type=event_type,
+                                                     event_type__in=event_types,
                                                      user=request.user.username)
             else:
                 notifs = Notification.objects.filter(deleted=False,
