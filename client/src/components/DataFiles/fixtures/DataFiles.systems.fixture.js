@@ -1,4 +1,5 @@
 const systemsFixture = {
+  defaultHost: 'frontera.tacc.utexas.edu',
   systemList: [
     {
       name: 'My Data (Frontera)',

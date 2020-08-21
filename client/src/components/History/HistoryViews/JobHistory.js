@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import JobsView from '../../Jobs';
 
+import './JobHistory.module.scss';
 import './HistoryViews.scss';
 
 const JobHistory = () => {
@@ -19,7 +20,7 @@ const JobHistory = () => {
   };
 
   return (
-    <div className="job-history">
+    <div className="job-history" styleName="root">
       <JobsView showDetails showFancyStatus rowProps={rowProps} />
     </div>
   );
