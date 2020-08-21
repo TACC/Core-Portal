@@ -1,3 +1,4 @@
 .root {
+  /* use remaining height (212px is the height from top of page to top of table) */
   max-height: calc(100vh - 212px);
 }
