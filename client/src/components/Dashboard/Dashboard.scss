@@ -14,9 +14,11 @@
     display: flex;
     flex-direction: column;
 }
-/* Make bottom-most item fill up remaining vertical space */
 .dashboard-items > :last-child {
+    /* Make bottom-most item fill up remaining vertical space */
     flex-grow: 1;
+    /* Prevetn Safari from overlapping `.jobs-…` and `.tickets-…` */
+    flex-basis: 0;
 }
 
 /* FAQ: Inner wraps of specific `.dash-grid-items` */
@@ -36,6 +38,10 @@
 
 .dashboard-header,
 .dashboard-item-header {
+    /* As a flex item */
+    flex-shrink: 0;
+
+    /* As a flex container */
     display: flex;
     justify-content: space-between;
     align-items: baseline;
