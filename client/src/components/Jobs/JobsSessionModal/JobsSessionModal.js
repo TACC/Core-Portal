@@ -9,7 +9,6 @@ const JobsSessionModal = ({ isOpen, toggle, interactiveSessionLink }) => {
     <Modal isOpen={isOpen} toggle={toggle} contentClassName="session-modal">
       <ModalHeader
         styleName="session-modal-header"
-        charCode="X"
         toggle={toggle}
       >
         Open Session
