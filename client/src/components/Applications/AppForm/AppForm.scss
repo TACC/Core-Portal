@@ -22,6 +22,11 @@
 #appDetail-wrapper .jumbotron {
     /* margin-bottom: 0; *//* RFE: Use this if `var(--vertical-buffer)` (below) is moved out */
     margin-bottom: var(--vertical-buffer); /* RFE: Add as `padding-bottom` for `appDetail-wrapper` when content is `.jumbotron` */
+
+    /* HACK: The `align-self: start` serves as a `height 100%` for element
+             that is forced to be a flex item in a row (the `#appDetail-wrapper`
+             is coded as flex only for its expected info and form children) */
+    align-self: start;
 }
 
 /* Add 30 pixels of space at the bottom of app form and app info */
