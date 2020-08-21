@@ -216,12 +216,18 @@ export const ChangePassword = () => {
   );
 };
 const WebsiteCell = ({ cell: { value } }) => {
-  const url = !/^(?:f|ht)tps?:\/\//.test(value) ? `https://${value}` : value;
-  return (
-    <a href={url} target="_blank" rel="noreferrer">
-      {url}
-    </a>
-  );
+  const website = value ? value.trim() : '';
+  if (website) {
+    const url = !/^(?:f|ht)tps?:\/\//.test(website)
+      ? `https://${website}`
+      : website;
+    return (
+      <a href={url} target="_blank" rel="noreferrer">
+        {url}
+      </a>
+    );
+  }
+  return null;
 };
 WebsiteCell.propTypes = {
   cell: shape({ value: string })

@@ -9,6 +9,7 @@ import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
 import { DescriptionList, LoadingSpinner, Expand, Message } from '_common';
 import PropTypes from 'prop-types';
 import { applyTimezoneOffset, formatDateTime } from 'utils/timeFormat';
+import { isOutputState } from 'utils/jobsUtil';
 import { getStatusText } from '../../Jobs/JobsStatus';
 
 import * as ROUTES from '../../../constants/routes';
@@ -57,6 +58,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     applyTimezoneOffset(new Date(jobDetails.lastUpdated))
   );
   const hasFailedStatus = jobDetails.status === 'FAILED';
+
   const statusDataObj = {
     Submitted: created,
     [`${getStatusText(jobDetails.status)}`]: lastUpdated
@@ -94,6 +96,9 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     configDataObj.Allocation = jobDisplay.allocation;
   }
 
+  if (jobDetails.status !== 'FINISHED')
+    configDataObj['Temporary Working Directory'] = jobDetails.workPath;
+
   const data = {
     Status: <DescriptionList data={statusDataObj} />,
     Inputs: <DescriptionList data={inputAndParamsDataObj} />,
@@ -108,7 +113,10 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
         density="compact"
         data={{
           Output: (
-            <DataFilesLink path={outputPath} disabled={outputPath === null}>
+            <DataFilesLink
+              path={outputPath}
+              disabled={!isOutputState(jobDetails.status)}
+            >
               View in Data Files
             </DataFilesLink>
           )
@@ -134,20 +142,21 @@ function JobHistoryModal({ jobId }) {
   const loading = useSelector(state => state.jobDetail.loading);
   const loadingError = useSelector(state => state.jobDetail.loadingError);
   const { job, display } = useSelector(state => state.jobDetail);
-  const { search } = useLocation();
+  const { state } = useLocation();
 
   let jobName = job ? job.name : placeHolder;
 
   if (jobName === placeHolder) {
-    const jobNameFromQuery = new URLSearchParams(search).get('name');
-    if (jobNameFromQuery) {
-      jobName = jobNameFromQuery;
+    if (state && state.jobName) {
+      jobName = state.jobName;
     }
   }
 
   const history = useHistory();
   const close = () => {
-    history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}`);
+    history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}`, {
+      fromJobHistoryModal: true
+    });
   };
 
   const headerData = {

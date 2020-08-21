@@ -85,6 +85,22 @@ const DataFilesCopyModal = React.memo(() => {
     [selected, reloadPage, status]
   );
 
+  const listingFilter = useCallback(
+    ({ system, path, format }) => {
+      return (
+        format === 'folder' &&
+        !(
+          // Remove files from the listing if they have been selected.
+          (
+            selectedFiles.map(f => f.system).includes(system) &&
+            selectedFiles.map(f => f.path).includes(path)
+          )
+        )
+      );
+    },
+    [selectedFiles]
+  );
+
   const actionString = `Copying ${selected.length} File${
     selected.length > 1 ? 's' : ''
   }`;
@@ -133,7 +149,7 @@ const DataFilesCopyModal = React.memo(() => {
             />
             <div className="filesListing">
               <DataFilesModalListingTable
-                data={files.filter(f => f.format === 'folder')}
+                data={files.filter(listingFilter)}
                 operationName="Copy"
                 operationCallback={copyCallback}
                 operationOnlyForFolders

@@ -103,7 +103,7 @@ export default function() {
       .required('Please enter your phone number'),
     // Schema for 'select' fields
     gender: str().required('Please select an option'),
-    ethnicity: str().required('Please select a country'),
+    ethnicity: str().required('Please select an option'),
     countryId: str().required('Please select a country'),
     citizenshipId: str().required('Please select a country'),
     institutionId: str().required('Please select an institution'),
