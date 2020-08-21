@@ -9,14 +9,15 @@ const mockStore = configureStore();
 
 describe("New Allocations Request Modal", () => {
   test("Allocations Request UI", () => {
-    const { getByText } = render(
+    const { getByText, getAllByText } = render(
       <BrowserRouter>
         <AllocationsRequestModal isOpen toggle={() => null} />
       </BrowserRouter>
     );
     const xrasLink = 'https://tacc-submit.xras.xsede.org/'
     expect(getByText(/Manage Allocations/)).toBeDefined();
-    expect(getByText(/You can manage your allocation/)).toBeDefined();
+    expect(getAllByText(/You can manage your allocation/)).toBeDefined();
+    expect(getAllByText(/You can manage your allocation/)).toHaveLength(2)
     expect(getByText(xrasLink)).toBeDefined();
     expect(getByText(xrasLink).href).toBe(xrasLink);
   });
