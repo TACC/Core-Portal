@@ -19,6 +19,10 @@ import './History.module.scss';
 const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
 
 const Header = ({ title }) => {
+  // Only display "Mark All as Viewed" button if there are purple (unread) notifs
+  const unread = useSelector(
+    state => state.notifications.list.notifs.filter(n => !n.read).length
+  );
   const dispatch = useDispatch();
 
   return (
@@ -26,15 +30,15 @@ const Header = ({ title }) => {
       <span styleName="header-text"> History / {title} </span>
       <Button
         color="link"
-        onClick={() =>
+        onClick={() => {
           dispatch({
             type: 'NOTIFICATIONS_READ',
             payload: {
-              id: 'all',
-              read: true
+              onSuccess: { type: 'FETCH_NOTIFICATIONS' }
             }
-          })
-        }
+          });
+        }}
+        disabled={!unread}
       >
         Mark All as Viewed
       </Button>
@@ -44,8 +48,7 @@ const Header = ({ title }) => {
 Header.propTypes = { title: string.isRequired };
 
 const Sidebar = () => {
-  const unreadJobs = useSelector(state => state.notifications.list.unreadJobs);
-
+  const { unreadJobs } = useSelector(state => state.notifications.list);
   return (
     <Nav styleName="sidebar" vertical>
       <NavItem>
@@ -71,21 +74,55 @@ export const Routes = () => {
   return (
     <div styleName="content" data-testid="history-router">
       <Switch>
-        <Route path={`${root}/jobs`}>
-          <JobHistory />
-          <Switch>
-            <Route
-              path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
-              render={({ match: { params } }) => {
-                dispatch({
-                  type: 'GET_JOB_DETAILS',
-                  payload: { jobId: params.jobId }
-                });
-                return <JobHistoryModal jobId={params.jobId} />;
-              }}
-            />
-          </Switch>
-        </Route>
+        <Route
+          path={`${root}${ROUTES.JOBS}`}
+          render={({ location: { pathname, state } }) => {
+            const locationState = state || {};
+            // Only mark as read if in pure job history view
+            if (
+              pathname === `${root}${ROUTES.JOBS}` &&
+              !locationState.fromJobHistoryModal
+            ) {
+              // Chain events to properly update UI based on read action
+              dispatch({
+                type: 'FETCH_NOTIFICATIONS',
+                payload: {
+                  params: { eventType: 'job' },
+                  onSuccess: {
+                    type: 'NOTIFICATIONS_READ',
+                    payload: {
+                      body: { eventType: 'job' },
+                      onSuccess: {
+                        type: 'UPDATE_BADGE_COUNT',
+                        payload: { type: 'unreadJobs' }
+                      }
+                    }
+                  }
+                }
+              });
+            }
+            return (
+              <>
+                <JobHistory />
+                <Route
+                  path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
+                  render={({
+                    match: {
+                      params: { jobId }
+                    }
+                  }) => {
+                    dispatch({
+                      type: 'GET_JOB_DETAILS',
+                      payload: { jobId }
+                    });
+                    return <JobHistoryModal jobId={jobId} />;
+                  }}
+                />
+              </>
+            );
+          }}
+        />
+
         {/* Redirect from /workbench/history to /workbench/history/jobs */}
         <Redirect from={root} to={`${root}/jobs`} />
         {/* Redirect from an unmatched path in /workbench/history/* to /workbench/history/jobs */}
