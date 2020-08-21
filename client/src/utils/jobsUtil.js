@@ -4,6 +4,10 @@ export function isTerminalState(status) {
   return TERMINAL_STATES.includes(status);
 }
 
+export function hasOutputState(status) {
+  return isTerminalState(status) && status !== 'STOPPED';
+}
+
 export function getOutputPathFromHref(href) {
   // get output path from href (i.e. _links.archiveData.href )
   const path = href
