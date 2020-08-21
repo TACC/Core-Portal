@@ -1,4 +1,4 @@
-import { getJobDisplayInformation, isTerminalState } from 'utils/jobsUtil';
+import { getJobDisplayInformation, hasOutputState } from 'utils/jobsUtil';
 
 export const initialState = {
   list: [],
@@ -11,7 +11,7 @@ export const initialState = {
 function updateJobFromNotification(job, notification) {
   // update status
   const updatedJob = { ...job, status: notification.status };
-  if (isTerminalState(notification.status)) {
+  if (hasOutputState(notification.status)) {
     // add archive data path to job
     updatedJob.outputLocation = `${notification.archiveSystem}/${notification.archivePath}`;
   }
