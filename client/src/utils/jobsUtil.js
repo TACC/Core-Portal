@@ -4,7 +4,8 @@ export function isTerminalState(status) {
   return TERMINAL_STATES.includes(status);
 }
 
-export function hasOutputState(status) {
+// determine if state of job has output
+export function isOutputState(status) {
   return isTerminalState(status) && status !== 'STOPPED';
 }
 

@@ -4,7 +4,7 @@ import {
   getJobDisplayInformation,
   getOutputPathFromHref,
   isTerminalState,
-  hasOutputState
+  isOutputState
 } from './jobsUtil';
 import jobDetailFixture from '../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailSlurmFixture from '../redux/sagas/fixtures/jobdetailSlurm.fixture';
@@ -59,9 +59,9 @@ describe('jobsUtil', () => {
   });
 
   it('determine if job state could have output', () => {
-    expect(hasOutputState('FAILED')).toEqual(true);
-    expect(hasOutputState('FINISHED')).toEqual(true);
-    expect(hasOutputState('STOPPED')).toEqual(false);
-    expect(hasOutputState('RUNNING')).toEqual(false);
+    expect(isOutputState('FAILED')).toEqual(true);
+    expect(isOutputState('FINISHED')).toEqual(true);
+    expect(isOutputState('STOPPED')).toEqual(false);
+    expect(isOutputState('RUNNING')).toEqual(false);
   });
 });
