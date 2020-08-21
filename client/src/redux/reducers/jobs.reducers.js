@@ -1,4 +1,4 @@
-import { getJobDisplayInformation } from 'utils/jobsUtil';
+import { getJobDisplayInformation, isOutputState } from 'utils/jobsUtil';
 
 export const initialState = {
   list: [],
@@ -7,6 +7,16 @@ export const initialState = {
   reachedEnd: false,
   error: null
 };
+
+function updateJobFromNotification(job, notification) {
+  // update status
+  const updatedJob = { ...job, status: notification.status };
+  if (isOutputState(notification.status)) {
+    // add archive data path to job
+    updatedJob.outputLocation = `${notification.archiveSystem}/${notification.archivePath}`;
+  }
+  return updatedJob;
+}
 
 export function jobs(state = initialState, action) {
   switch (action.type) {
@@ -59,10 +69,10 @@ export function jobs(state = initialState, action) {
         ...state,
         submit: { ...state.submit, response: action.payload, error: true }
       };
-    case 'UPDATE_JOB_STATUS': {
+    case 'UPDATE_JOB_FROM_NOTIFICATION': {
       const event = action.payload.extra;
       const list = state.list.map(job =>
-        job.id === event.id ? { ...job, status: event.status } : job
+        job.id === event.id ? updateJobFromNotification(job, event) : job
       );
       return {
         ...state,
