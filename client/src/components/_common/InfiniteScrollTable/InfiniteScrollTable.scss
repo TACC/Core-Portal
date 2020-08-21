@@ -1,4 +1,5 @@
 .InfiniteScrollTable,
+/* WARNING: Do NOT use `FiniteScrollTable`. Instead, implement `InfiniteScrollTable` */
 .FiniteScrollTable {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
 
