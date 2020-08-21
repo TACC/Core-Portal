@@ -96,7 +96,7 @@
     table {
         border: 0;
 
-        tr {
+        tbody tr {
             .system-cell {
                 padding: 0;
             }
@@ -131,7 +131,7 @@
          (shared styles should be on HTML tables, which we do not have yet) */
 /* HACK: The excess specifity of selectors allows us to place these rulesets
          after the rulesets they would override in this stylesheet */
-.FiniteScrollTable tbody tr {
+table.FiniteScrollTable tbody tr {
     background-color: transparent !important; /* override `FiniteScrollTable … :not(…)` */
 }
 table.FiniteScrollTable .sub-table-row {
