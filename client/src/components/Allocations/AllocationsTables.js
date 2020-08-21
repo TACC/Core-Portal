@@ -6,6 +6,8 @@ import { Message } from '_common';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
+import './AllocationsTables.module.scss';
+
 export const useAllocations = page => {
   const allocations = useSelector(state => {
     if (page === 'expired') return state.allocations.inactive;
@@ -110,11 +112,19 @@ export const AllocationsTable = ({ page }) => {
     prepareRow
   } = useTable(...tableAttributes);
   return (
-    <div className="allocations-table">
-      <table {...getTableProps()}>
+    <div styleName="wrapper">
+      {/* HACK: Add a wrapper because flex item + scroll + table force it upon us */}
+      {/* TODO: Use a `_common/Layout` component (for Allocations) */}
+      {/* HACK: Avoid massive diff form nesting change */}
+      {/* prettier-ignore */}
+      <div className="allocations-table" styleName="root">
+      <table {...getTableProps()} className="FiniteScrollTable o-fixed-header-table">
         <thead>
           {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
+            <tr
+              {...headerGroup.getHeaderGroupProps()}
+              className="o-fixed-header-table__row"
+            >
               {headerGroup.headers.map(column => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render('Header')}
@@ -123,12 +133,15 @@ export const AllocationsTable = ({ page }) => {
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()}>
+        <tbody {...getTableBodyProps()} className="o-fixed-header-table__body">
           {rows.length ? (
             rows.map(row => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
+                <tr
+                  {...row.getRowProps()}
+                  className="o-fixed-header-table__row"
+                >
                   {row.cells.map(cell => (
                     <td
                       {...cell.getCellProps({
@@ -142,7 +155,7 @@ export const AllocationsTable = ({ page }) => {
               );
             })
           ) : (
-            <tr>
+            <tr className="o-fixed-header-table__row">
               <td colSpan={headerGroups[0].headers.length}>
                 <center style={{ padding: '1rem' }}>
                   {errors.listing ? (
@@ -160,6 +173,8 @@ export const AllocationsTable = ({ page }) => {
           )}
         </tbody>
       </table>
+      </div>
+      {/* prettier-ignore */}
     </div>
   );
 };

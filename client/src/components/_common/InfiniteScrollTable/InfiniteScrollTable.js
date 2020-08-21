@@ -72,21 +72,35 @@ const InfiniteScrollTable = ({
   };
 
   return (
-    <table {...getTableProps()} className={`${className} InfiniteScrollTable`}>
+    <table
+      {...getTableProps()}
+      className={`${className} InfiniteScrollTable o-fixed-header-table`}
+    >
       <thead>
         {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
+          <tr
+            {...headerGroup.getHeaderGroupProps()}
+            className="o-fixed-header-table__row"
+          >
             {headerGroup.headers.map(column => (
               <th {...column.getHeaderProps()}>{column.render('Header')}</th>
             ))}
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()} onScroll={onScroll}>
+      <tbody
+        {...getTableBodyProps()}
+        onScroll={onScroll}
+        className="o-fixed-header-table__body"
+      >
         {rows.map(row => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()} {...getRowProps(row)}>
+            <tr
+              {...row.getRowProps()}
+              {...getRowProps(row)}
+              className="o-fixed-header-table__row"
+            >
               {row.cells.map(cell => {
                 return (
                   <td
