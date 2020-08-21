@@ -54,7 +54,7 @@ function Workbench() {
             <Alert
               isOpen={welcomeMessages.dashboard}
               toggle={() => onDismissWelcome('dashboard')}
-              color="info"
+              color="secondary"
               className="welcomeMessage"
             >
               This page allows you to monitor your job status, get help with
@@ -66,7 +66,7 @@ function Workbench() {
             <Alert
               isOpen={welcomeMessages.datafiles}
               toggle={() => onDismissWelcome('datafiles')}
-              color="info"
+              color="secondary"
               className="welcomeMessage"
             >
               This page allows you to upload and manage your files.
@@ -76,7 +76,7 @@ function Workbench() {
             <Alert
               isOpen={welcomeMessages.applications}
               toggle={() => onDismissWelcome('applications')}
-              color="info"
+              color="secondary"
               className="welcomeMessage"
             >
               This page allows you to submit jobs to the HPC systems or access
@@ -87,7 +87,7 @@ function Workbench() {
             <Alert
               isOpen={welcomeMessages.allocations}
               toggle={() => onDismissWelcome('allocations')}
-              color="info"
+              color="secondary"
               className="welcomeMessage"
             >
               This page allows you to monitor the status of allocations on the
@@ -98,7 +98,7 @@ function Workbench() {
             <Alert
               isOpen={welcomeMessages.history}
               toggle={() => onDismissWelcome('history')}
-              color="info"
+              color="secondary"
               className="welcomeMessage"
             >
               This page allows you to monitor a log of all previous job
