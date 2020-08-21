@@ -1,8 +1,4 @@
-import {
-  getJobDisplayInformation,
-  isTerminalState,
-  createArchiveDataHref
-} from 'utils/jobsUtil';
+import { getJobDisplayInformation, isTerminalState } from 'utils/jobsUtil';
 
 export const initialState = {
   list: [],
@@ -15,13 +11,8 @@ function updateJobFromNotification(job, notification) {
   // update status
   const updatedJob = { ...job, status: notification.status };
   if (isTerminalState(notification.status)) {
-    // update archive data path
-    const path = createArchiveDataHref(
-      job._links.archiveData.href,
-      notification.archiveSystem,
-      notification.archivePath
-    );
-    updatedJob._links.archiveData.href = path;
+    // add archive data path to job
+    updatedJob.outputLocation = `${notification.archiveSystem}/${notification.archivePath}`;
   }
   return updatedJob;
 }

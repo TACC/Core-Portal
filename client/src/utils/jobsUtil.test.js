@@ -1,4 +1,4 @@
-import { getAllocatonFromDirective, getSystemName, getJobDisplayInformation, getOutputPathFromHref, createArchiveDataHref, isTerminalState } from './jobsUtil';
+import { getAllocatonFromDirective, getSystemName, getJobDisplayInformation, getOutputPathFromHref, isTerminalState } from './jobsUtil';
 import jobDetailFixture from '../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailSlurmFixture from '../redux/sagas/fixtures/jobdetailSlurm.fixture';
 import appDetailFixture from '../redux/sagas/fixtures/appdetail.fixture';
@@ -26,10 +26,6 @@ describe('jobsUtil', () => {
   it('get output path from _links.archiveData.href', () => {
     expect(getOutputPathFromHref('https://portals-api.tacc.utexas.edu/files/v2/listings/system/frontera.home.mmustermann/archive/jobs/2020-08-20/some_ouptut_folder')).toEqual('frontera.home.mmustermann/archive/jobs/2020-08-20/some_ouptut_folder');
     expect(getOutputPathFromHref('https://portals-api.tacc.utexas.edu/jobs/v2/df589633-73a8-4e34-a670-5967474d91df-007/outputs/listings')).toEqual(null);
-  });
-
-  it('update _links.archiveData.href using archive information ', () => {
-    expect(createArchiveDataHref('https://something.com/jobs/v2/jobuid/outputs/listings', 'archive_system', 'archive_path')).toEqual('https://something.com/files/v2/listings/system/archive_system/archive_path');
   });
 
   it('determine if terminal state', () => {

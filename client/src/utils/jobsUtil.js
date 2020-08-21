@@ -17,19 +17,6 @@ export function getOutputPathFromHref(href) {
   return path;
 }
 
-export function createArchiveDataHref(href, system, path) {
-  /* update the archive data path (i.e.  _links.archiveData.href )
-
- from: https://something.com/jobs/v2/jobuid/outputs/listings
- to:   https://something.com/files/v2/listings/system/archive_system/archive_path */
-  const updateHref = href
-    .split('/')
-    .slice(0, 3)
-    .join('/')
-    .concat(`/files/v2/listings/system/`)
-    .concat(`${system}/${path}`);
-  return updateHref;
-}
 export function getAllocatonFromDirective(directive) {
   /* Return allocation
 

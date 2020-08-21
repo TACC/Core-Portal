@@ -113,7 +113,8 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
       Cell: el => {
-        const outputPath = getOutputPathFromHref(el.value);
+        const outputPath =
+          el.row.original.outputLocation || getOutputPathFromHref(el.value);
         return outputPath ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
