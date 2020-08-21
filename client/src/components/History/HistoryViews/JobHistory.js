@@ -6,6 +6,7 @@ import JobsView from '../../Jobs';
 import JobHistoryModal from './JobHistoryModal';
 import * as ROUTES from '../../../constants/routes';
 
+import './JobHistory.module.scss';
 import './HistoryViews.scss';
 
 const JobHistory = () => {
@@ -31,7 +32,7 @@ const JobHistory = () => {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <div className="job-history">
+        <div className="job-history" styleName="root">
           <JobsView showDetails showFancyStatus rowProps={rowProps} />
         </div>
       )}

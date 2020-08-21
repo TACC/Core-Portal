@@ -102,6 +102,16 @@ class TestJobsView(TestCase):
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0]["id"], "1234")
 
+    def test_get_no_jobs(self):
+        self.mock_agave_client.jobs.list.return_value = []
+        jobs = self.request_jobs()
+        self.assertEqual(len(jobs), 0)
+
+    def test_get_jobs_bad_offset(self):
+        self.mock_agave_client.jobs.list.return_value = []
+        jobs = self.request_jobs(query_params={"offset": 100})
+        self.assertEqual(len(jobs), 0)
+
     def test_date_filter(self):
         test_time = timezone.now()
 
