@@ -68,7 +68,11 @@ const AppDetail = () => {
   }
 
   if (loading || !app.name || allocationsLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div id="appDetail-wrapper">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (
