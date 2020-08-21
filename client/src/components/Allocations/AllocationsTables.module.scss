@@ -1,5 +1,4 @@
 /* HACK: Necessary evil to allow flex item + scroll + table */
-/* WARNING: DOES NOT SOLVE PROBLEM, WES! */
 .wrapper {
   /* Force (how?!) `#allocations-sidebar` to accept its defined width */
   /* FAQ: Moved from `.allocations-table table` during FP-621 (dec710f) */
