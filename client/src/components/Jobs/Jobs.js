@@ -15,7 +15,6 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const isLoading = useSelector(state => state.jobs.loading);
   const jobs = useSelector(state => state.jobs.list);
   const error = useSelector(state => state.jobs.error);
-  const limit = 20;
 
   const noDataText = (
     <>
@@ -30,16 +29,12 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     </>
   );
 
-  const infiniteScrollCallback = useCallback(offset => {
-    // The only way we have some semblance of
-    // knowing whether or not there are more jobs
-    // is if the number of jobs is not a multiple
-    // of the scroll size limit.
-    // i.e., you asked for 100 jobs but got 96.
-    if (offset % limit === 0) {
-      dispatch({ type: 'GET_JOBS', params: { offset, limit } });
-    }
-  }, []);
+  const infiniteScrollCallback = useCallback(() => {
+    dispatch({
+      type: 'GET_JOBS',
+      params: { offset: jobs.length }
+    });
+  }, [jobs]);
 
   const jobDetailLink = useCallback(
     ({
@@ -48,7 +43,10 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       }
     }) => (
       <Link
-        to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}?name=${name}`}
+        to={{
+          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}`,
+          state: { jobName: name }
+        }}
         className="wb-link"
       >
         View Details
@@ -113,7 +111,8 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
       Cell: el => {
-        const outputPath = getOutputPathFromHref(el.value);
+        const outputPath =
+          el.row.original.outputLocation || getOutputPathFromHref(el.value);
         return outputPath ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
