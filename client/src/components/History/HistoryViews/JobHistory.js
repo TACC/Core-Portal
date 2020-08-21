@@ -1,13 +1,17 @@
 import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
+import { LoadingSpinner } from '_common';
 import JobsView from '../../Jobs';
 
 import './JobHistory.module.scss';
 import './HistoryViews.scss';
 
 const JobHistory = () => {
-  const { notifs } = useSelector(
-    state => state.notifications.list,
+  const { notifs, loading } = useSelector(
+    state => ({
+      notifs: state.notifications.list.notifs,
+      loading: state.notifications.loading
+    }),
     shallowEqual
   );
   const unreadIds = notifs
@@ -20,9 +24,15 @@ const JobHistory = () => {
   };
 
   return (
-    <div className="job-history" styleName="root">
-      <JobsView showDetails showFancyStatus rowProps={rowProps} />
-    </div>
+    <>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="job-history" styleName="root">
+          <JobsView showDetails showFancyStatus rowProps={rowProps} />
+        </div>
+      )}
+    </>
   );
 };
 
