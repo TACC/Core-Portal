@@ -4,6 +4,7 @@ export const initialState = {
   list: [],
   submit: { submitting: false },
   loading: false,
+  reachedEnd: false,
   error: null
 };
 
@@ -23,7 +24,8 @@ export function jobs(state = initialState, action) {
       return {
         ...state,
         list: [],
-        error: null
+        error: null,
+        reachedEnd: false
       };
     case 'JOBS_LIST_START':
       return {
@@ -34,7 +36,8 @@ export function jobs(state = initialState, action) {
     case 'JOBS_LIST':
       return {
         ...state,
-        list: state.list.concat(action.payload)
+        list: state.list.concat(action.payload.list),
+        reachedEnd: action.payload.reachedEnd
       };
     case 'JOBS_LIST_ERROR':
       return {

@@ -39,7 +39,7 @@ export function* handleSocket(action) {
         yield put({ type: 'UPDATE_JOB_FROM_NOTIFICATION', payload: action });
       } else {
         // otherwise, refresh job list
-        yield put({ type: 'GET_JOBS', params: { offset: 0, limit: 20 } });
+        yield put({ type: 'GET_JOBS', params: { offset: 0 } });
       }
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
       yield put({ type: 'ADD_TOAST', payload: action });
