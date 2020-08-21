@@ -175,7 +175,7 @@ export const AppSchemaForm = ({ app }) => {
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
           defaultHost
-        )} to run this application. Please submit a ticket for access.`
+        )} to run this application.`
       };
       missingAllocation = true;
     } else if (!allocations.length) {
@@ -183,7 +183,7 @@ export const AppSchemaForm = ({ app }) => {
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
           app.resource
-        )}to run this application. Please submit a ticket for access.`
+        )} to run this application.`
       };
       missingAllocation = true;
     }
@@ -201,7 +201,16 @@ export const AppSchemaForm = ({ app }) => {
         <div id="appForm-alerts">
           {jobSubmission.error ? (
             <Alert color="warning" isOpen={visible} toggle={onDismiss}>
-              {`Error:  ${jobSubmission.response.message}`}
+              Error: {jobSubmission.response.message}
+              {missingAllocation && (
+                <>
+                  &nbsp;Please click&nbsp;
+                  <Link to="/workbench/allocations/manage" className="wb-link">
+                    here
+                  </Link>
+                  &nbsp;to request access.
+                </>
+              )}
             </Alert>
           ) : (
             <Alert color="info" isOpen={visible} toggle={onDismiss}>

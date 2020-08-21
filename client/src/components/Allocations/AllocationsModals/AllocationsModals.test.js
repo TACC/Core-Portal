@@ -23,7 +23,12 @@ describe("New Allocations Request Modal", () => {
   });
 });
 
-
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useLocation: () => ({
+    pathname: "/allocations/approved"
+  })
+}));
 describe("View Team Modal", () => {
   const testProps = {
     isOpen: true,
@@ -81,12 +86,14 @@ describe("View Team Modal", () => {
                   resource: "stampede2.tacc.utexas.edu",
                   allocationId: 1,
                   percentUsed: 0.005,
+                  status: 'Active'
                 },
                 {
                   usage: '10 SU',
                   resource: "frontera.tacc.utexas.edu",
                   allocationId: 2,
                   percentUsed: 10,
+                  status: 'Active'
                 },
               ],
             },

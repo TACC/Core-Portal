@@ -74,6 +74,17 @@ export default function notifications(state = initialState, action) {
           toasts: state.list.toasts.filter(s => s.pk !== action.payload.pk)
         }
       };
+    case 'UPDATE_BADGE_COUNT': {
+      const unreadByType = state.list[action.payload.type];
+      return {
+        ...state,
+        list: {
+          ...state.list,
+          unread: state.list.unread - unreadByType,
+          [action.payload.type]: 0
+        }
+      };
+    }
     default:
       return state;
   }

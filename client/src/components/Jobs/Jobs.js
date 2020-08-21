@@ -43,7 +43,10 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       }
     }) => (
       <Link
-        to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}?name=${name}`}
+        to={{
+          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}`,
+          state: { jobName: name }
+        }}
         className="wb-link"
       >
         View Details
@@ -108,7 +111,8 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
       Cell: el => {
-        const outputPath = getOutputPathFromHref(el.value);
+        const outputPath =
+          el.row.original.outputLocation || getOutputPathFromHref(el.value);
         return outputPath ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}

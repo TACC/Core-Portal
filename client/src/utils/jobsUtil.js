@@ -1,4 +1,16 @@
+const TERMINAL_STATES = [`FINISHED`, `STOPPED`, `FAILED`];
+
+export function isTerminalState(status) {
+  return TERMINAL_STATES.includes(status);
+}
+
+// determine if state of job has output
+export function isOutputState(status) {
+  return isTerminalState(status) && status !== 'STOPPED';
+}
+
 export function getOutputPathFromHref(href) {
+  // get output path from href (i.e. _links.archiveData.href )
   const path = href
     .split('/')
     .slice(7)

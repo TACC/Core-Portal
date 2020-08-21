@@ -29,12 +29,7 @@ export const useAllocations = page => {
         // TODO: Refactor to Util
         accessor: ({ projectName, projectId, systems }) => ({
           name: projectName.toLowerCase(),
-          projectId,
-          allocationIds: systems.map(sys => {
-            // Each system has an allocation object
-            const { id } = sys.allocation;
-            return { system: sys, id };
-          })
+          projectId
         }),
         Cell: Team
       },
