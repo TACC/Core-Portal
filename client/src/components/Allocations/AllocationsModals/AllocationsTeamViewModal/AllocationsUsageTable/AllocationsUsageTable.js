@@ -1,17 +1,25 @@
 import React from 'react';
 import { useTable } from 'react-table';
 import { capitalize } from 'lodash';
+import { useLocation } from 'react-router-dom';
 import { arrayOf, shape, string } from 'prop-types';
+import { getSystemName } from 'utils/jobsUtil';
 import './AllocationsUsageTable.module.scss';
 
 const AllocationsUsageTable = ({ rawData }) => {
-  const data = React.useMemo(() => rawData, [rawData]);
+  const location = useLocation();
+  const data = React.useMemo(() => {
+    if (location.pathname.includes('approved')) {
+      return rawData.filter(e => e.status === 'Active');
+    }
+    return rawData.filter(e => e.status === 'Inactive');
+  }, [rawData]);
   const columns = React.useMemo(
     () => [
       {
         Header: 'System',
         accessor: entry => {
-          const system = entry.resource.split('.')[0];
+          const system = getSystemName(entry.resource);
           const sysNum = system.match(/\d+$/);
           const sysName = capitalize(system.replace(/[0-9]/g, ''));
           if (sysNum) {
@@ -25,7 +33,7 @@ const AllocationsUsageTable = ({ rawData }) => {
         Header: '% of Allocation',
         accessor: entry => {
           if (entry.percentUsed >= 1) {
-            return `${entry.percentUsed}%`;
+            return `${entry.percentUsed.toFixed(3)}%`;
           }
           if (entry.percentUsed === 0) return '0%';
           return `< 1%`;

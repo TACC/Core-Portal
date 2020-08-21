@@ -216,7 +216,7 @@ export const ChangePassword = () => {
   );
 };
 const WebsiteCell = ({ cell: { value } }) => {
-  const website = value.trim();
+  const website = value ? value.trim() : '';
   if (website) {
     const url = !/^(?:f|ht)tps?:\/\//.test(website)
       ? `https://${website}`
