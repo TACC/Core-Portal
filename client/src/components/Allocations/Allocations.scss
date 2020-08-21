@@ -91,34 +91,18 @@
         background: rgba(#9d85ef, 0.25);
     }
 }
+/* WARNING: This class is not applied to a table, it's applied to a wrapper for a table */
 .allocations-table {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    padding: 0 0 0 1em;
-    overflow-y: auto;
     table {
         width: 100%;
         border: 0;
-        font-size: 14px;
+
         tr {
-            height: 2.25rem;
-            td {
+            .system-cell {
                 padding: 0;
-                vertical-align: text-top;
             }
+
             border-bottom: 1px solid rgba(#707070, 0.25);
-            margin-bottom: 24px;
-        }
-        thead {
-            tr {
-                border-bottom: 1px solid #707070;
-            }
-        }
-        tbody {
-            tr:last-child {
-                border-bottom: none;
-            }
         }
         .sub-table-row {
             /* FP-457: Will fix this *//* stylelint-disable no-descending-specificity */
@@ -127,7 +111,6 @@
             }
             /* stylelint-enable no-descending-specificity */
             color: #707070;
-            font: 14px Roboto, sans-serif;
         }
         .sub-table-cell {
             background-color: white;
@@ -138,11 +121,22 @@
         }
     }
     .alloc-badge {
-        font-size: 14px;
+        font-size: 12px;
     }
 }
+/* !!!: Where is this ID assigned? If nit's moot, delete this style */
 #pending {
     @extend .allocations-table;
+}
+/* HACK: `FiniteScrollTable` applies `InfiniteScrollTable` in non-modular way
+         (shared styles should be on HTML tables, which we do not have yet) */
+/* HACK: The excess specifity of selectors allows us to place these rulesets
+         after the rulesets they would override in this stylesheet */
+.FiniteScrollTable tbody tr {
+    background-color: transparent !important; /* override `FiniteScrollTable … :not(…)` */
+}
+table.FiniteScrollTable .sub-table-row {
+    width: 100%;
 }
 .allocations-modal-header {
     background-color: #F4F4F4;
@@ -160,7 +154,4 @@
 /* FP-426: Do not use `height: 100%` or isolate usage pending solution to bigger problem */
 #allocations-wrapper .loading-icon {
     height: auto;
-}
-.system-cell {
-    width: 120px;
 }

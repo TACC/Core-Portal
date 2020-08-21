@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { shape, arrayOf, number, string } from 'prop-types';
-import { Button, Badge } from 'reactstrap';
+import { Badge } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { AllocationsTeamViewModal } from './AllocationsModals';
@@ -17,10 +17,11 @@ export const Team = ({ cell: { value } }) => {
   const { projectId } = value;
   return (
     <>
-      <Button
-        className="btn btn-sm"
-        color="link"
-        onClick={() => {
+      <a
+        href="#"
+        className="wb-link"
+        onClick={e => {
+          e.preventDefault();
           dispatch({
             type: 'GET_TEAMS',
             payload: { ...value }
@@ -30,7 +31,7 @@ export const Team = ({ cell: { value } }) => {
         disabled={openModal}
       >
         View Team
-      </Button>
+      </a>
       <AllocationsTeamViewModal
         isOpen={openModal}
         pid={projectId}
