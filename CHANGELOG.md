@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2020-08-21: Grey-Cardinal Release Beta Bugfixes Part 2
+
+### Added
+
+- FP-589: Add workPath to job modal (#183)
+- FP-585: Show message when allocation missing for storage system (#176)
+- FP-578: Show archive path when in terminal state (#189)
+- FP-327: Onboarding welcome messages (#191)
+- FP-647: Notify user on missing allocation (#194)
+- FP-644: Show an error message if user is missing default storage system host allocation (#177)
+
+### Changed
+
+- FP-626: Remove exclamation points from various messages (#182)
+- FP-641: Update Manage Allocations Wording (#187)
+- FP-618, FP-588: Adjustments to marking notifications as "read" (#184)
+
+### Fixed
+
+- FP-637: Allow Open Session button to scroll with Jobs (#171)
+- FP-648: Handle empty or null website in user profile (#186)
+- FP-569: Fix job listings (#181)
+- FP-627: Forbid moving/copying folders into themselves (#192)
+- FP-614: Fixed percentage calculation and changed the way floats are displayed in the table (#193)
+
 ## [2.0.1] - 2020-08-19: Grey-Cardinal Release Beta Bugfixes
 
 ### Changed
@@ -117,7 +142,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.0.1...HEAD
+[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.0
 [2.0.1]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.0.1
 [2.0.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.0.0
 [1.1.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v1.1.0
