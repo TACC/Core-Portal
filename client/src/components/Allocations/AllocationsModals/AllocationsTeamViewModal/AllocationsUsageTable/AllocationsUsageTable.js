@@ -1,12 +1,19 @@
 import React from 'react';
 import { useTable } from 'react-table';
 import { capitalize } from 'lodash';
+import { useLocation } from 'react-router-dom';
 import { arrayOf, shape, string } from 'prop-types';
 import { getSystemName } from 'utils/jobsUtil';
 import './AllocationsUsageTable.module.scss';
 
 const AllocationsUsageTable = ({ rawData }) => {
-  const data = React.useMemo(() => rawData, [rawData]);
+  const location = useLocation();
+  const data = React.useMemo(() => {
+    if (location.pathname.includes('approved')) {
+      return rawData.filter(e => e.status === 'Active');
+    }
+    return rawData.filter(e => e.status === 'Inactive');
+  }, [rawData]);
   const columns = React.useMemo(
     () => [
       {
