@@ -1,6 +1,5 @@
 import {
   getAllocatonFromDirective,
-  getSystemName,
   getJobDisplayInformation,
   getOutputPathFromHref,
   isTerminalState,

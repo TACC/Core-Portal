@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { parse } from 'query-string';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import { findSystemDisplayName } from 'utils/systems';
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
 import './DataFilesModalListingTable.module.scss';
@@ -154,6 +155,7 @@ const DataFilesModalListingTable = ({
   const loading = useSelector(state => state.files.loading.modal);
   const error = useSelector(state => state.files.error.modal);
   const params = useSelector(state => state.files.params.modal, shallowEqual);
+  const systemList = useSelector(state => state.systems.systemList);
   const isNotRoot = params.path.length > 0;
 
   const alteredData = useMemo(() => {
@@ -166,7 +168,9 @@ const DataFilesModalListingTable = ({
     /* Add an entry to represent the current sub-directory */
     if (!loading && !error && (isNotRoot || operationAllowedOnRootFolder)) {
       const currentFolderEntry = {
-        name: isNotRoot ? getCurrentDirectory(params.path) : 'My Data',
+        name: isNotRoot
+          ? getCurrentDirectory(params.path)
+          : findSystemDisplayName(systemList, params.system),
         format: 'folder',
         system: params.system,
         path: params.path,
