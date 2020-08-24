@@ -53,11 +53,11 @@ export function* handleSocket(action) {
 }
 
 export function* fetchNotifications(action) {
-  const { onSuccess, params } = action.payload || {};
+  const { onSuccess, params, queryString } = action.payload || {};
   yield put({ type: 'NOTIFICATIONS_LIST_FETCH_START' });
   try {
     const res = yield call(fetchUtil, {
-      url: '/api/notifications/',
+      url: `/api/notifications/${queryString ? `?${queryString}` : ''}`,
       params
     });
     yield put({
