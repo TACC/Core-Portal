@@ -3,7 +3,7 @@ import { useTable } from 'react-table';
 import { capitalize } from 'lodash';
 import { useLocation } from 'react-router-dom';
 import { arrayOf, shape, string } from 'prop-types';
-import { getSystemName } from 'utils/jobsUtil';
+import { getSystemName } from 'utils/systems';
 import './AllocationsUsageTable.module.scss';
 
 const AllocationsUsageTable = ({ rawData }) => {
