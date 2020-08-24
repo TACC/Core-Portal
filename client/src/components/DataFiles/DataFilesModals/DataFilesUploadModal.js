@@ -11,8 +11,7 @@ import {
   ModalFooter,
   Table
 } from 'reactstrap';
-import { LoadingSpinner } from '_common';
-import FileInputDropZone from '../../_common/Form/FileInputDropZone';
+import { LoadingSpinner, FileInputDropZone } from '_common';
 import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
 
 const DataFilesUploadStatus = ({ i, removeCallback }) => {
