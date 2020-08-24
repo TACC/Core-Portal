@@ -31,10 +31,6 @@ describe('jobsUtil', () => {
     ).toEqual(jobDetailDisplayFixture);
   });
 
-  it('get system name from host', () => {
-    expect(getSystemName('stampede2.tacc.utexas.edu')).toEqual('Stampede2');
-  });
-
   it('get output path from _links.archiveData.href', () => {
     expect(
       getOutputPathFromHref(
