@@ -1,0 +1,40 @@
+/* Block */
+.container {
+    /* As flex container */
+    display: flex;
+    flex-direction: column;
+
+    padding: var(--global-space--section);
+}
+
+/* Elements */
+.header {
+    /* As flex item */
+    flex-shrink: 0;
+
+    /* As flex container */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    height: 32px;
+    box-sizing: content-box;
+    padding: 12px 0 15px 0;
+    border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--normal);
+}
+/* HACK: Only necessary until we have a `SectionHeader` */
+/* Do not let user bring in vertical margin (example: h1–h6) */
+.header * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.content {
+    /* As flex item */
+    flex-grow: 1;
+}
+
+/* Modifiers */
+.container.should-scroll .content {
+    overflow: auto;
+}
