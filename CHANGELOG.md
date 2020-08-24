@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.1] - 2020-08-24: Grey-Cardinal Release
+
+### Fixed
+
+- FP-658: Fix required text for ethnicity (#198)
+- FP-654: Allow Open Session modal to use default x icon (#196)
+- FP-657: Use system name instead of my data (#199)
+- FP-655: Fix missing "Connect" button on interactive sessions (#197)
+
 ## [2.1.0] - 2020-08-21: Grey-Cardinal Release Beta Bugfixes Part 2
 
 ### Added
@@ -142,7 +151,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.1.0...HEAD
+[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.1.1...HEAD
+[2.1.1]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.1
 [2.1.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.0
 [2.0.1]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.0.1
 [2.0.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.0.0
