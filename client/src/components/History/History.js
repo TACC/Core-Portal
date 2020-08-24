@@ -9,6 +9,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
+import queryString from 'query-string';
 
 import JobHistory from './HistoryViews';
 import JobHistoryModal from './HistoryViews/JobHistoryModal';
@@ -87,11 +88,13 @@ export const Routes = () => {
               dispatch({
                 type: 'FETCH_NOTIFICATIONS',
                 payload: {
-                  params: { eventTypes: ['job', 'interactive_session_ready'] },
+                  queryString: queryString.stringify({
+                    eventTypes: ['job', 'interactive_session_ready']
+                  }),
                   onSuccess: {
                     type: 'NOTIFICATIONS_READ',
                     payload: {
-                      params: {
+                      body: {
                         eventTypes: ['job', 'interactive_session_ready']
                       },
                       onSuccess: {

@@ -17,13 +17,13 @@ class ManageNotificationsView(BaseApiView):
         limit = request.GET.get('limit', 0)
         page = request.GET.get('page', 0)
         read = request.GET.get('read')
-        event_types = request.GET.get('eventTypes')
+        event_types = request.GET.getlist('eventTypes')
 
         query_params = {}
         if read is not None:
             query_params['read'] = read
 
-        if event_types is not None:
+        if event_types:
             notifs = Notification.objects.filter(event_type__in=event_types,
                                                  deleted=False,
                                                  user=request.user.username,
