@@ -15,7 +15,7 @@ from django.template.loader import render_to_string
 from pytas.http import TASClient
 
 from portal.apps.accounts import integrations
-from portal.libs import form_fields as forms
+from portal.apps.accounts import form_fields as forms
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
