@@ -2,6 +2,7 @@ import React from 'react';
 import { fireEvent } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import DataFilesSearchbar from './DataFilesSearchbar';
+import systemsFixture from '../fixtures/DataFiles.systems.fixture'
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 
@@ -12,8 +13,8 @@ describe('DataFilesSearchbar', () => {
     // Render the searchbar, enter a query string, and submit form
     const history = createMemoryHistory();
     history.push('/workbench/data/api/scheme/system/path');
-    const store = mockStore({});
-    const { getByRole, getByText } = renderComponent(
+    const store = mockStore({systems: systemsFixture});
+    const { getByRole } = renderComponent(
       <DataFilesSearchbar
         api="test-api"
         scheme="test-scheme"
@@ -36,12 +37,12 @@ describe('DataFilesSearchbar', () => {
   it('has expected elements', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/api/scheme/system/path?query_string=testquery');
-    const store = mockStore({});
-    const { getByRole, getByTestId } = renderComponent(
+    const store = mockStore({systems: systemsFixture});
+    const { getByRole, getByTestId, getByPlaceholderText } = renderComponent(
       <DataFilesSearchbar
-        api="test-api"
-        scheme="test-scheme"
-        system="test-system"
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
       />,
       store,
       history
@@ -50,5 +51,6 @@ describe('DataFilesSearchbar', () => {
     expect(getByRole('form')).toBeDefined();
     expect(getByRole('searchbox')).toBeDefined();
     expect(getByTestId('reset')).toBeDefined();
+    expect(getByPlaceholderText('Search in My Data (Frontera)')).toBeDefined();
   });
 });

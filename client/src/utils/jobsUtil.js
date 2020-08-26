@@ -1,4 +1,18 @@
+import { getSystemName } from './systems';
+
+const TERMINAL_STATES = [`FINISHED`, `STOPPED`, `FAILED`];
+
+export function isTerminalState(status) {
+  return TERMINAL_STATES.includes(status);
+}
+
+// determine if state of job has output
+export function isOutputState(status) {
+  return isTerminalState(status) && status !== 'STOPPED';
+}
+
 export function getOutputPathFromHref(href) {
+  // get output path from href (i.e. _links.archiveData.href )
   const path = href
     .split('/')
     .slice(7)
@@ -22,11 +36,6 @@ export function getAllocatonFromDirective(directive) {
     return parts[allocationArgIndex];
   }
   return null;
-}
-
-export function getSystemName(host) {
-  const systemName = host.split('.')[0];
-  return systemName.substring(0, 1).toUpperCase() + systemName.slice(1);
 }
 
 /**

@@ -9,20 +9,26 @@ const mockStore = configureStore();
 
 describe("New Allocations Request Modal", () => {
   test("Allocations Request UI", () => {
-    const { getByText } = render(
+    const { getByText, getAllByText } = render(
       <BrowserRouter>
         <AllocationsRequestModal isOpen toggle={() => null} />
       </BrowserRouter>
     );
     const xrasLink = 'https://tacc-submit.xras.xsede.org/'
     expect(getByText(/Manage Allocations/)).toBeDefined();
-    expect(getByText(/You can manage your allocation/)).toBeDefined();
+    expect(getAllByText(/You can manage your allocation/)).toBeDefined();
+    expect(getAllByText(/You can manage your allocation/)).toHaveLength(2)
     expect(getByText(xrasLink)).toBeDefined();
     expect(getByText(xrasLink).href).toBe(xrasLink);
   });
 });
 
-
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useLocation: () => ({
+    pathname: "/allocations/approved"
+  })
+}));
 describe("View Team Modal", () => {
   const testProps = {
     isOpen: true,
@@ -80,12 +86,14 @@ describe("View Team Modal", () => {
                   resource: "stampede2.tacc.utexas.edu",
                   allocationId: 1,
                   percentUsed: 0.005,
+                  status: 'Active'
                 },
                 {
                   usage: '10 SU',
                   resource: "frontera.tacc.utexas.edu",
                   allocationId: 2,
                   percentUsed: 10,
+                  status: 'Active'
                 },
               ],
             },
