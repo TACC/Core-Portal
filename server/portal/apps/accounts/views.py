@@ -6,7 +6,7 @@ import json
 import requests
 from django.forms.models import model_to_dict
 from django.contrib.auth import logout
-from django.views.generic.base import TemplateView, View
+from django.views.generic.base import View
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -19,17 +19,6 @@ from portal.apps.accounts import form_fields as forms
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
-
-
-class LoginView(TemplateView):
-    """Login options view
-    """
-    template_name = 'portal/apps/accounts/login.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(LoginView, self).get_context_data(**kwargs)
-        context['request_access'] = settings.REQUEST_ACCESS
-        return context
 
 
 class LogoutView(View):
