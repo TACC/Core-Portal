@@ -1,17 +1,7 @@
 from django.conf import settings
-# TODO: Re-implement captcha
-# from snowpenguin.django.recaptcha2.fields import ReCaptchaField
-# from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
-
 from pytas.http import TASClient
-import logging
-
-
-logger = logging.getLogger(__name__)
-
 
 tas = TASClient(baseURL=settings.TAS_URL, credentials={'username': settings.TAS_CLIENT_KEY, 'password': settings.TAS_CLIENT_SECRET})
-
 
 ELIGIBLE = 'Eligible'
 INELIGIBLE = 'Ineligible'
