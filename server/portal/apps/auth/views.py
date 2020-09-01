@@ -130,11 +130,7 @@ def agave_oauth_callback(request):
         if 'error' in request.GET:
             error = request.GET['error']
             logger.warning('Authorization failed: %s', error)
-        # TODO: Link to Manage Account to reset password
-        messages.error(request,
-                       'Authentication failed. Did you forget your password? '
-                       '<a href="%s">Click here</a> to reset your password.' %
-                       reverse('portal_accounts:password_reset'))
+
         return HttpResponseRedirect(reverse('portal_accounts:logout'))
 
     if 'next' in request.session:
