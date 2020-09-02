@@ -72,11 +72,11 @@ const FeedbackForm = ({ authenticatedUser }) => {
           <Form className="feedback-form">
             <FormField type="hidden" name="last_name" />
             <FormGroup>
-              <FormField name="name" label="Name" required disabled />
-              <FormField name="email" label="Email Address" required disabled />
+              <FormField name="name" label="Full Name" required disabled />
+              <FormField name="email" label="Email" required disabled />
               <FormField
                 name="problem_description"
-                label="Comments"
+                label="Feedback"
                 type="textarea"
                 className="comments-textarea"
                 required
