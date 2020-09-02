@@ -1,26 +1,27 @@
 import React, { useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTable } from 'react-table';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import { Display, Operational, Load } from './SystemMonitorCells';
-import './SystemMonitor.scss';
+import './SystemMonitor.module.scss';
+import './SystemMonitor.css';
 
 const SystemsList = () => {
   const systemList = useSelector(state => state.systemMonitor.list);
+  const loadingError = useSelector(state => state.systemMonitor.error);
   const data = useMemo(() => systemList, []);
   const columns = useMemo(
     () => [
       {
         accessor: 'display_name',
         Header: 'Name',
-        Cell: Display,
-        className: 'left-aligned'
+        Cell: Display
       },
       {
         accessor: 'is_operational',
         Header: 'Status',
         Cell: Operational,
-        className: 'operational-cell left-aligned'
+        styleName: 'status'
       },
       {
         accessor: 'load_percentage',
@@ -38,6 +39,15 @@ const SystemsList = () => {
     ],
     []
   );
+
+  if (loadingError) {
+    return (
+      <Message type="warn" styleName="error">
+        Unable to gather system information
+      </Message>
+    );
+  }
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -49,41 +59,26 @@ const SystemsList = () => {
     data
   });
   return (
-    <table
-      {...getTableProps({
-        className: 'multi-system system-monitor'
-      })}
-    >
+    <table {...getTableProps()} styleName="root" className="multi-system">
       <thead>
         {headerGroups.map(headerGroup => (
-          <tr
-            {...headerGroup.getHeaderGroupProps({
-              className: 'system-monitor-header'
-            })}
-          >
+          <tr {...headerGroup.getHeaderGroupProps()} styleName="header">
             {headerGroup.headers.map(column => (
               <th key={column.Header}>{column.render('Header')}</th>
             ))}
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()}>
+      <tbody {...getTableBodyProps()} styleName="rows">
         {rows.length ? (
           rows.map((row, idx) => {
             prepareRow(row);
-            const className = idx % 2 === 0 ? 'odd-row' : null;
             return (
-              <tr
-                {...row.getRowProps({
-                  className
-                })}
-              >
+              <tr {...row.getRowProps()}>
                 {row.cells.map(cell => (
                   <td
-                    {...cell.getCellProps({
-                      className: cell.column.className,
-                      test: cell.column.testProp
-                    })}
+                    {...cell.getCellProps({ test: cell.column.testProp })}
+                    styleName={cell.column.styleName}
                   >
                     {cell.render('Cell')}
                   </td>
@@ -93,7 +88,7 @@ const SystemsList = () => {
           })
         ) : (
           <tr>
-            <td>No rows found</td>
+            <td colSpan="5">No systems being monitored</td>
           </tr>
         )}
       </tbody>

@@ -150,15 +150,30 @@ function TicketCreateForm({ authenticatedUser }) {
               <Container>
                 <Row>
                   <Col lg="6">
-                    <FormField name="first_name" label="First Name" required />
+                    <FormField
+                      name="first_name"
+                      label="First Name"
+                      required
+                      disabled={isAuthenticated}
+                    />
                   </Col>
                   <Col lg="6">
-                    <FormField name="last_name" label="Last Name" required />
+                    <FormField
+                      name="last_name"
+                      label="Last Name"
+                      required
+                      disabled={isAuthenticated}
+                    />
                   </Col>
                 </Row>
                 <Row>
                   <Col lg="6">
-                    <FormField name="email" label="Email" required />
+                    <FormField
+                      name="email"
+                      label="Email"
+                      required
+                      disabled={isAuthenticated}
+                    />
                   </Col>
                   <Col lg="6">
                     <FormField
@@ -205,8 +220,13 @@ function TicketCreateForm({ authenticatedUser }) {
 }
 
 TicketCreateForm.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  authenticatedUser: PropTypes.object
+  authenticatedUser: PropTypes.shape({
+    first_name: PropTypes.string,
+    last_name: PropTypes.string,
+    email: PropTypes.string,
+    isStaff: PropTypes.bool,
+    oauth: PropTypes.shape({})
+  })
 };
 
 TicketCreateForm.defaultProps = {

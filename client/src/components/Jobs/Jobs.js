@@ -1,16 +1,21 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import 'react-table-6/react-table.css';
-import { AppIcon, InfiniteScrollTable } from '_common';
+import { AppIcon, InfiniteScrollTable, Message } from '_common';
+import { getOutputPathFromHref } from 'utils/jobsUtil';
+import { applyTimezoneOffset, formatDateTime } from 'utils/timeFormat';
+import JobsStatus from './JobsStatus';
 import './Jobs.scss';
 import * as ROUTES from '../../constants/routes';
 
-function JobsView() {
+function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const dispatch = useDispatch();
   const isLoading = useSelector(state => state.jobs.loading);
   const jobs = useSelector(state => state.jobs.list);
-  const limit = 20;
+  const error = useSelector(state => state.jobs.error);
+
   const noDataText = (
     <>
       No recent jobs. You can submit jobs from the{' '}
@@ -23,26 +28,45 @@ function JobsView() {
       .
     </>
   );
-  useEffect(() => {
-    dispatch({ type: 'GET_JOBS', params: { limit } });
-  }, [dispatch]);
 
-  const infiniteScrollCallback = useCallback(offset => {
-    // The only way we have some semblance of
-    // knowing whether or not there are more jobs
-    // is if the number of jobs is not a multiple
-    // of the scroll size limit.
-    // i.e., you asked for 100 jobs but got 96.
-    if (offset % 20 === 0) {
-      dispatch({ type: 'GET_JOBS', params: { offset, limit } });
-    }
-  }, []);
+  const infiniteScrollCallback = useCallback(() => {
+    dispatch({
+      type: 'GET_JOBS',
+      params: { offset: jobs.length }
+    });
+  }, [jobs]);
+
+  const jobDetailLink = useCallback(
+    ({
+      row: {
+        original: { id, name }
+      }
+    }) => (
+      <Link
+        to={{
+          pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}`,
+          state: { jobName: name }
+        }}
+        className="wb-link"
+      >
+        View Details
+      </Link>
+    ),
+    []
+  );
+
+  if (error) {
+    return (
+      <Message type="warn" className="appDetail-error">
+        We were unable to retrieve your jobs.
+      </Message>
+    );
+  }
 
   const columns = [
     {
       Header: '',
       accessor: 'appId',
-      width: 30,
       Cell: el => (
         <span>
           <AppIcon appId={el.value} />
@@ -63,16 +87,33 @@ function JobsView() {
       )
     },
     {
+      Header: 'Job Status',
+      headerStyle: { textAlign: 'left' },
+      accessor: 'status',
+      className: 'job__status',
+      Cell: el => (
+        <JobsStatus
+          status={el.value}
+          fancy={showFancyStatus}
+          jobId={el.row.original.id}
+        />
+      ),
+      id: 'jobStatusCol'
+    },
+    {
+      Header: 'Job Details',
+      accessor: 'id',
+      show: showDetails,
+      Cell: jobDetailLink
+    },
+    {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
       Cell: el => {
-        const outputPath = el.value
-          .split('/')
-          .slice(7)
-          .filter(Boolean)
-          .join('/');
-        return outputPath !== 'listings' ? (
+        const outputPath =
+          el.row.original.outputLocation || getOutputPathFromHref(el.value);
+        return outputPath ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
             className="wb-link job__path"
@@ -87,45 +128,38 @@ function JobsView() {
       headerStyle: { textAlign: 'left' },
       accessor: d => new Date(d.created),
       Cell: el => (
-        <span id={`jobDate${el.index}`}>
-          {`${el.value.toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-            year: 'numeric',
-            timeZone: 'America/Chicago'
-          })}
-          ${el.value.toLocaleTimeString('en-US', {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZone: 'America/Chicago'
-          })}`}
-        </span>
+        <span id={`jobDate${el.index}`}>{`${formatDateTime(
+          applyTimezoneOffset(el.value)
+        )}`}</span>
       ),
-      id: 'jobDateCol',
-      width: 150
-    },
-    {
-      Header: 'Job Status',
-      headerStyle: { textAlign: 'left' },
-      accessor: d =>
-        d.status.substr(0, 1).toUpperCase() + d.status.substr(1).toLowerCase(),
-      id: 'jobStatusCol',
-      width: 100
+      id: 'jobDateCol'
     }
   ];
 
+  const filterColumns = columns.filter(f => f.show !== false);
+
   return (
     <InfiniteScrollTable
-      tableColumns={columns}
+      tableColumns={filterColumns}
       tableData={jobs}
       onInfiniteScroll={infiniteScrollCallback}
       isLoading={isLoading}
-      className="jobs-view"
+      className={showDetails ? 'jobs-detailed-view' : 'jobs-view'}
       noDataText={noDataText}
+      getRowProps={rowProps}
     />
   );
 }
+
+JobsView.propTypes = {
+  showDetails: PropTypes.bool,
+  showFancyStatus: PropTypes.bool,
+  rowProps: PropTypes.func
+};
+JobsView.defaultProps = {
+  showDetails: false,
+  showFancyStatus: false,
+  rowProps: row => {}
+};
 
 export default JobsView;

@@ -105,7 +105,7 @@ class MetadataView(BaseApiView):
 
             data = agave.meta.listMetadata(q=query)
 
-            assert len(data) == 1, "Expected single app response, got {}!".format(len(data))
+            assert len(data) == 1, "Expected single app response, got {}.".format(len(data))
             data = data[0]
 
             lic_type = _app_license_type(app_id)
@@ -162,7 +162,7 @@ class JobsView(BaseApiView):
             job_meta = agave.meta.listMetadata(q=json.dumps(q))
             data['_embedded'] = {"metadata": job_meta}
 
-            # TODO: Decouple this from front end somehow!
+            # TODO: Decouple this from front end somehow
             archiveSystem = data.get('archiveSystem', None)
             if archiveSystem:
                 archive_system_path = '{}/{}'.format(archiveSystem, data['archivePath'])
@@ -180,12 +180,11 @@ class JobsView(BaseApiView):
 
         # list jobs
         else:
-            limit = request.GET.get('limit', 10)
-            offset = request.GET.get('offset', 0)
+            limit = int(request.GET.get('limit', 10))
+            offset = int(request.GET.get('offset', 0))
             period = request.GET.get('period', 'all')
 
-            data = agave.jobs.list(limit=limit, offset=offset)
-            jobs = JobSubmission.objects.all().filter(user=request.user)
+            jobs = JobSubmission.objects.all().filter(user=request.user).order_by('-time')
 
             if period != "all":
                 enddate = timezone.now()
@@ -198,15 +197,14 @@ class JobsView(BaseApiView):
                 startdate = enddate - timedelta(days=days)
                 jobs = jobs.filter(time__range=[startdate, enddate])
 
-            user_job_ids = [
-                job.jobId for job in jobs
-            ]
-            data = list(
-                filter(
-                    lambda job: job["id"] in user_job_ids,
-                    data
-                )
-            )
+            all_user_job_ids = [job.jobId for job in jobs]
+            user_job_ids = all_user_job_ids[offset:offset + limit]
+            if user_job_ids:
+                data = agave.jobs.list(query={'id.in': ','.join(user_job_ids)})
+                # re-order agave job info to match our time-ordered jobs
+                data = [next(job for job in data if job["id"] == id) for id in user_job_ids]
+            else:
+                data = []
 
         return JsonResponse({"response": data})
 
@@ -247,15 +245,16 @@ class JobsView(BaseApiView):
                 if parsed.netloc:
                     job_post['archiveSystem'] = parsed.netloc
                 else:
-                    job_post['archiveSystem'] = \
-                        settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(
-                            request.user.username)
+                    default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                    default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
+                    job_post['archiveSystem'] = default_system_prefix.format(request.user.username)
             else:
                 job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         timezone.now().strftime('%Y-%m-%d'))
-                job_post['archiveSystem'] = \
-                    settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(request.user.username)
+                default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
+                job_post['archiveSystem'] = default_system_prefix.format(request.user.username)
 
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])
@@ -263,6 +262,8 @@ class JobsView(BaseApiView):
                 _, license_models = get_license_info()
                 license_model = [x for x in license_models if x.license_type == lic_type][0]
                 lic = license_model.objects.filter(user=request.user).first()
+                if not lic:
+                    raise ApiException("You are missing the required license for this application.")
                 job_post['parameters']['_license'] = lic.license_as_str()
 
             # url encode inputs

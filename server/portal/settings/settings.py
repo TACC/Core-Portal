@@ -56,7 +56,6 @@ ROOT_URLCONF = 'portal.urls'
 # Application definition
 
 INSTALLED_APPS = [
-
     # django CMS admin style must be before django.contrib.admin
     'djangocms_admin_style',
 
@@ -72,6 +71,9 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
+    # Django Channels
+    'channels',
+
     # Django recaptcha.
     'captcha',
 
@@ -84,9 +86,6 @@ INSTALLED_APPS = [
     'bootstrap4',
     'termsandconditions',
     'impersonate',
-
-    # Websockets.
-    'ws4redis',
 
     # Custom apps.
     'portal.apps.accounts',
@@ -167,7 +166,6 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.template.context_processors.static',
                 'django_settings_export.settings_export',
-                'ws4redis.context_processors.default',
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
                 'portal.utils.contextprocessors.messages',
@@ -279,9 +277,6 @@ DATABASES = {
     }
 }
 
-WS4REDIS_CONNECTION = {
-    'host': settings_secret._RESULT_BACKEND_HOST,
-}
 WEBSOCKET_URL = '/ws/'
 
 # TAS Authentication.
@@ -381,6 +376,12 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         },
+        'daphne': {
+            'handlers': [
+                'console',
+            ],
+            'level': 'INFO'
+        }
     },
 }
 
@@ -397,8 +398,6 @@ AGAVE_CLIENT_KEY = settings_secret._AGAVE_CLIENT_KEY
 AGAVE_CLIENT_SECRET = settings_secret._AGAVE_CLIENT_SECRET
 AGAVE_SUPER_TOKEN = settings_secret._AGAVE_SUPER_TOKEN
 AGAVE_STORAGE_SYSTEM = settings_secret._AGAVE_STORAGE_SYSTEM
-AGAVE_COMMUNITY_DATA_SYSTEM = settings_secret._AGAVE_COMMUNITY_DATA_SYSTEM
-AGAVE_PUBLIC_DATA_SYSTEM = settings_secret._AGAVE_PUBLIC_DATA_SYSTEM
 
 PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 
@@ -617,16 +616,32 @@ CELERY_TASK_DEFAULT_EXCHANGE = 'default'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
 """
+SETTINGS: EXECUTION SYSTEMS
+"""
+PORTAL_EXEC_SYSTEMS = {
+    'data': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'stampede2': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'lonestar5': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'longhorn': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'frontera': {
+        'scratch_dir': '/scratch1/{}'
+    }
+}
+
+"""
 SETTINGS: DATA DEPOT
 """
-
-PORTAL_DATA_DEPOT_MANAGERS = {
-    'my-data': 'portal.apps.data_depot.managers.private_data.FileManager',
-    'shared': 'portal.apps.data_depot.managers.shared.FileManager',
-    'my-projects': 'portal.apps.data_depot.managers.projects.FileManager',
-    'public': 'portal.apps.data_depot.managers.public.FileManager',
-    'google-drive': 'portal.apps.data_depot.managers.google_drive.FileManager'
-}
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', [])
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
@@ -743,10 +758,8 @@ PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '')
 
-PORTAL_JOB_NOTIFICATION_STATES = getattr(
-    settings_secret, "_PORTAL_JOB_NOTIFICATION_STATES", [
-        "PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
-)
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
+                                  "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
 
 # "View in Jupyter Notebook" base URL
 PORTAL_JUPYTER_URL = getattr(settings_secret, '_PORTAL_JUPYTER_URL', None)
@@ -790,6 +803,8 @@ ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
 SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_secret, '_SYSTEM_MONITOR_DISPLAY_LIST', [])
+
+SYSTEM_MONITOR_URL = getattr(settings_secret, '_SYSTEM_MONITOR_URL', 'https://portal.tacc.utexas.edu/commnq/index.json')
 
 """
 SETTINGS: EXPORTS
@@ -849,3 +864,21 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                 SUPPORTED_OBJECT_PREVIEW_EXTS +
                                 SUPPORTED_MS_OFFICE +
                                 SUPPORTED_IPYNB_PREVIEW_EXTS)
+
+
+# Channels
+ASGI_APPLICATION = 'portal.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
+        },
+    },
+    'short-lived': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(_RESULT_BACKEND_HOST, _RESULT_BACKEND_PORT)],
+        },
+    },
+}

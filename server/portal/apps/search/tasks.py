@@ -1,26 +1,20 @@
 
 import logging
-import urllib.request, urllib.parse, urllib.error
-import os
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from celery import shared_task
-from agavepy.agave import Agave
-from elasticsearch_dsl import Q, Search
-from portal.libs.elasticsearch.docs.base import IndexedFile
-from portal.libs.elasticsearch.exceptions import DocumentNotFound
-from portal.libs.elasticsearch.docs.files import BaseESFile
-from portal.libs.elasticsearch.utils import index_agave, index_project
-# from portal.apps.projects.utils import project_id_to_system_id
-# from portal.apps.projects.models import ProjectMetadata
-from portal.libs.agave.models.files import BaseFile
 from portal.libs.agave.utils import service_account
+from portal.libs.elasticsearch.utils import index_listing
+from portal.apps.users.utils import get_tas_allocations
+from portal.libs.elasticsearch.docs.base import IndexedAllocation
+from portal.libs.elasticsearch.utils import get_sha256_hash
 logger = logging.getLogger(__name__)
 
+
 # Crawl and index agave files
-@shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="6/m")
-def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems = False, ignore_hidden=True, reindex=False):
+@shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="12/m")
+def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
 
     from portal.libs.elasticsearch.utils import index_level
     from portal.libs.agave.utils import walk_levels
@@ -33,7 +27,7 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems = Fals
     try:
         filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).__next__()
     except Exception as exc:
-        logger.debug(exc)
+        logger.error("Error walking files under system {} and path {}".format(systemId, filePath))
         raise self.retry(exc=exc)
 
     index_level(filePath, folders, files, systemId, reindex=reindex)
@@ -41,14 +35,21 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems = Fals
         for child in folders:
             self.delay(systemId, filePath=child.path, reindex=reindex)
 
+
+@shared_task(bind=True, max_retries=3, queue='default')
+def agave_listing_indexer(self, listing):
+    index_listing(listing)
+
+
 @shared_task(bind=True, queue='indexing')
 def index_community_data(self, reindex=False):
     # s = IndexedFile.search()
     # s = s.query("match", **{"system._exact": settings.AGAVE_COMMUNITY_DATA_SYSTEM})
     # resp = s.delete()
-    logger.info('INDEXING COMMUNITY DATA SYSTEM')
-    agave_indexer.apply_async(args=[settings.AGAVE_COMMUNITY_DATA_SYSTEM], kwargs={'reindex': reindex})
-    agave_indexer.apply_async(args=[settings.AGAVE_PUBLIC_DATA_SYSTEM], kwargs={'reindex': reindex})
+    for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
+        if sys.api == 'tapis':
+            logger.info('INDEXING {} SYSTEM'.format(sys.name))
+            agave_indexer.apply_async(args=[sys.system], kwargs={'reindex': reindex})
 
 # @shared_task(bind=True, queue='indexing')
 # def project_indexer(self, projectId):
@@ -81,13 +82,17 @@ def index_community_data(self, reindex=False):
 #             kwargs={'filePath': '/', 'reindex': reindex}
 #         )
 
+
 # Indexing task for My Data.
 @shared_task(bind=True, queue='indexing')
 def index_my_data(self, reindex=False):
     users = User.objects.all()
     for user in users:
         uname = user.username
-        systemId = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(uname)
+        default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+        default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
+        systemId = default_system_prefix.format(uname)
+
         # s = IndexedFile.search()
         # s = s.query("match", **{"system._exact": systemId})
         # resp = s.delete()
@@ -96,8 +101,25 @@ def index_my_data(self, reindex=False):
             kwargs={'filePath': '/', 'reindex': reindex}
         )
 
+
 @shared_task(bind=True, queue='indexing')
 def index_cms(self):
     logger.info("Updating search index")
     if not settings.DEBUG:
         call_command("update_index", interactive=False)
+
+
+@shared_task(bind=True, max_retries=3, queue='api')
+def index_allocations(self, username):
+    allocations = get_tas_allocations(username)
+    doc = IndexedAllocation(username=username, value=allocations)
+    doc.meta.id = get_sha256_hash(username)
+    doc.save()
+    """
+    try:
+            doc = IndexedAllocation.from_username(username)
+            doc.update(value=allocations)
+    except NotFoundError:
+            doc = IndexedAllocation(username=username, value=allocations)
+            doc.save()
+    """

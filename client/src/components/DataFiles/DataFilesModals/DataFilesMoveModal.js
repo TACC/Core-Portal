@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -85,6 +85,26 @@ const DataFilesMoveModal = React.memo(() => {
     [selected, reloadPage, status]
   );
 
+  const listingFilter = useCallback(
+    ({ system, path, format }) => {
+      return (
+        format === 'folder' &&
+        !(
+          // Remove files from the listing if they have been selected.
+          (
+            selectedFiles.map(f => f.system).includes(system) &&
+            selectedFiles.map(f => f.path).includes(path)
+          )
+        )
+      );
+    },
+    [selectedFiles]
+  );
+
+  const actionString = `Moving ${selected.length} File${
+    selected.length > 1 ? 's' : ''
+  }`;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -94,14 +114,12 @@ const DataFilesMoveModal = React.memo(() => {
       size="xl"
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>
-        Moving {selected.length} File(s)
-      </ModalHeader>
+      <ModalHeader toggle={toggle}>Move</ModalHeader>
       <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-6 d-flex flex-column">
             {/* Table of selected files */}
-            <div className="dataFilesModalColHeader">Source</div>
+            <div className="dataFilesModalColHeader">{actionString}</div>
             <DataFilesBreadcrumbs
               api={params.api}
               scheme={params.scheme}
@@ -124,31 +142,17 @@ const DataFilesMoveModal = React.memo(() => {
             />
             <div className="filesListing">
               <DataFilesModalListingTable
-                data={files.filter(f => f.format === 'folder')}
+                data={files.filter(listingFilter)}
                 operationName="Move"
                 operationCallback={moveCallback}
+                operationOnlyForFolders
+                operationAllowedOnRootFolder
                 disabled={disabled}
               />
             </div>
           </div>
         </div>
       </ModalBody>
-      <ModalFooter>
-        <Button
-          disabled={disabled}
-          onClick={() => moveCallback(modalParams.system, modalParams.path)}
-          className="data-files-btn"
-        >
-          Move to {modalParams.path || '/'}
-        </Button>
-        <Button
-          color="secondary"
-          className="data-files-btn-cancel"
-          onClick={toggle}
-        >
-          Close
-        </Button>
-      </ModalFooter>
     </Modal>
   );
 });

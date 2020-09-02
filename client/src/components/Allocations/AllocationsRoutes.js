@@ -14,12 +14,13 @@ const AllocationsRoutes = () => {
   return (
     <div id="allocations-wrapper" data-testid="allocations-router">
       <Switch>
-        <Route exact path={`${root}/approved`}>
+        <Route path={`${root}/approved`}>
           <Layout page="approved" />
         </Route>
-        <Route exact path={`${root}/expired`}>
+        <Route path={`${root}/expired`}>
           <Layout page="expired" />
         </Route>
+        <Redirect from={`${root}/manage`} to={`${root}/approved/manage`} />
         <Redirect from={root} to={`${root}/approved`} />
       </Switch>
     </div>

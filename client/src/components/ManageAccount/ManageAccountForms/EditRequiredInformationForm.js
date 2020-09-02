@@ -15,8 +15,16 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
       {/* TAS Fields - Text */}
       <ManageAccountInput label="First Name" name="firstName" />
       <ManageAccountInput label="Last Name" name="lastName" />
-      <ManageAccountInput label="Email Address" name="email" />
-      <ManageAccountInput label="Phone Number" name="phone" />
+      <ManageAccountInput
+        label="Email Address"
+        name="email"
+        aria-label="email"
+      />
+      <ManageAccountInput
+        label="Phone Number"
+        name="phone"
+        aria-label="phone"
+      />
       {/* TAS Fields - Select */}
       <ManageAccountInput
         label="Institution"
@@ -38,6 +46,7 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
         type="submit"
         className="manage-account-submit-button"
         disabled={!canSubmit}
+        aria-label="required-submit"
       >
         {isEditing && <LoadingSpinner placement="inline" />}
         <span style={isEditing ? { marginLeft: '1rem' } : {}}>Submit</span>
@@ -91,9 +100,17 @@ export default function() {
         /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
         'Phone number is not valid'
       )
-      .required('Please enter your phone number')
+      .required('Please enter your phone number'),
+    // Schema for 'select' fields
+    gender: str().required('Please select an option'),
+    ethnicity: str().required('Please select an option'),
+    countryId: str().required('Please select a country'),
+    citizenshipId: str().required('Please select a country'),
+    institutionId: str().required('Please select an institution'),
+    title: str().required('Please select your title')
   });
   const handleSubmit = (values, { setSubmitting }) => {
+    dispatch({ type: 'CLEAR_FORM_MESSAGES' });
     dispatch({
       type: 'EDIT_REQUIRED_INFORMATION',
       values

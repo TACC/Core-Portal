@@ -1,6 +1,6 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { render } from '@testing-library/react';
+import { render, fireEvent, wait } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
@@ -16,13 +16,14 @@ const mockInitialState = {
   loadingUsernames: true,
   hosts: {},
   portal_alloc: '',
-  loadingPage: false, errors: {}
+  loadingPage: false,
+  errors: {}
 };
 const mockStore = configureStore();
 describe('Allocations Table', () => {
-  it("should have relevant columns for data for the Allocations Table", () => {
-    const history = createMemoryHistory();
-    const { getByText } = render(
+  let getByText, rerender, debug;
+  beforeEach(() => {
+    const utils = render(
       <Provider
         store={mockStore({
           allocations: mockInitialState
@@ -33,6 +34,12 @@ describe('Allocations Table', () => {
         </MemoryRouter>
       </Provider>
     );
+    getByText = utils.getByText;
+    rerender = utils.rerender;
+    debug = utils.debug;
+  });
+
+  it("should have relevant columns for data for the Allocations Table", () => {
     expect(getByText(/Title/)).toBeDefined();
     expect(getByText(/Principal Investigator/));
     expect(getByText(/Team/)).toBeDefined();
@@ -41,4 +48,28 @@ describe('Allocations Table', () => {
     expect(getByText(/Remaining/)).toBeDefined();
     expect(getByText(/Expires/)).toBeDefined();
   });
+
+  it('should display an error', async () => {
+    const storeWithError = mockStore({
+      allocations: {
+        ...mockInitialState,
+        errors: { listing: new Error("PC Load Letter") },
+      },
+    });
+    rerender(
+      <Provider store={storeWithError}>
+        <MemoryRouter initialEntries={["/workbench/allocations"]}>
+          <AllocationsTable page="approved" />
+        </MemoryRouter>
+      </Provider>
+    );
+    expect(getByText(/Unable to retrieve your allocations./)).toBeDefined();
+    const reloadLink = getByText(/Try reloading the page./);
+    fireEvent.click(reloadLink);
+    await wait(() => {
+      const [reload] = storeWithError.getActions();
+      expect(reload.type).toBe('GET_ALLOCATIONS');
+    })
+  })
+
 });

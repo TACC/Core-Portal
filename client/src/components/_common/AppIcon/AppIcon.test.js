@@ -31,26 +31,26 @@ function renderAppIcon(appId) {
 
 describe('AppIcon', () => {
   it('should render icons for known app IDs', () => {
-    const { getByTestId } = renderAppIcon("jupyter");
-    expect(getByTestId(/app-icon/)).toHaveAttribute(
+    const { getByRole } = renderAppIcon("jupyter");
+    expect(getByRole('img')).toHaveAttribute(
       'class',
-      'app-icon icon-nav-jupyter'
+      'icon icon-jupyter'
     );
   });
   it('should show generic icons for apps with no appIcon', () => {
-    const { getByTestId } = renderAppIcon("vasp");
-    expect(getByTestId(/app-icon/)).toHaveAttribute(
+    const { getByRole } = renderAppIcon("vasp");
+    expect(getByRole('img')).toHaveAttribute(
       'class',
-      'app-icon icon-nav-application'
+      'icon icon-applications'
     )
   });
   it('should render icons for prtl.clone apps', () => {
-    const { getByTestId } = renderAppIcon(
+    const { getByRole } = renderAppIcon(
       "prtl.clone.username.allocation.jupyter"
     );
-    expect(getByTestId(/app-icon/)).toHaveAttribute(
+    expect(getByRole('img')).toHaveAttribute(
       'class',
-      'app-icon icon-nav-jupyter'
+      'icon icon-jupyter'
     )
   });
 });

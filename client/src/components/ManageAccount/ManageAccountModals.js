@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Modal, ModalHeader, ModalBody, Alert } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -7,19 +7,29 @@ import {
   EditOptionalInformationForm
 } from './ManageAccountForms';
 
-export const EditRequiredInformation = () => {
-  const { required: open, success, error } = useSelector(({ profile }) => {
-    return {
-      ...profile.modals,
-      success: profile.success.required,
-      error: profile.errors.required
-    };
-  });
+export const EditRequiredInformationModal = () => {
+  const { required: open, success, error, isEditing } = useSelector(
+    ({ profile }) => {
+      return {
+        ...profile.modals,
+        isEditing: profile.editing,
+        success: profile.success.required,
+        error: profile.errors.required
+      };
+    }
+  );
   const dispatch = useDispatch();
+  const messageRef = useRef(null);
+  useEffect(() => {
+    if (messageRef.current && !isEditing)
+      messageRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [success, error, messageRef, isEditing]);
+
   const closeModal = () => {
     dispatch({ type: 'CLOSE_PROFILE_MODAL' });
     if (success) dispatch({ type: 'LOAD_PROFILE_DATA' });
   };
+
   return (
     <Modal isOpen={open} toggle={closeModal} className="manage-account-modal">
       <ModalHeader
@@ -35,18 +45,20 @@ export const EditRequiredInformation = () => {
           overflowY: 'auto'
         }}
       >
-        {success && (
-          <Alert color="success">
-            Successfully Edited Required Information
-          </Alert>
-        )}
-        {error && <Alert color="danger">{error.message}</Alert>}
+        <div ref={messageRef}>
+          {success && (
+            <Alert color="success">
+              Successfully Edited Required Information
+            </Alert>
+          )}
+          {error && <Alert color="danger">{error.message}</Alert>}
+        </div>
         <EditRequiredInformationForm />
       </ModalBody>
     </Modal>
   );
 };
-export const EditOptionalInformation = () => {
+export const EditOptionalInformationModal = () => {
   const { optional: open, success, error } = useSelector(({ profile }) => {
     return {
       ...profile.modals,
@@ -82,7 +94,7 @@ export const EditOptionalInformation = () => {
     </Modal>
   );
 };
-export const ChangePassword = () => {
+export const ChangePasswordModal = () => {
   const { password: open, error, success } = useSelector(state => {
     return {
       ...state.profile.modals,
@@ -108,21 +120,11 @@ export const ChangePassword = () => {
         {error && <Alert color="danger">{error.message}</Alert>}
         {success && (
           <Alert color="success">
-            Your password has been successfully changed!
+            Your password has been successfully changed.
           </Alert>
         )}
         <ChangePasswordForm />
       </ModalBody>
     </Modal>
-  );
-};
-
-export default () => {
-  return (
-    <>
-      <EditRequiredInformation />
-      <EditOptionalInformation />
-      <ChangePassword />
-    </>
   );
 };

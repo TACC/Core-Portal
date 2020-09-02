@@ -1,22 +1,21 @@
 from django.dispatch import receiver
-from django.core.serializers.json import DjangoJSONEncoder
 from portal.apps.signals.signals import portal_event
 from django.db.models.signals import post_save
-from ws4redis.publisher import RedisPublisher
-from ws4redis.redis_store import RedisMessage
 from portal.apps.notifications.models import Notification
 from portal.apps.onboarding.models import SetupEvent
 from django.contrib.auth import get_user_model
-import json
 import logging
 import copy
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+channel_layer = get_channel_layer()
 
 logger = logging.getLogger(__name__)
-WEBSOCKETS_FACILITY = 'notifications'
 
 
 @receiver(portal_event, dispatch_uid=__name__)
 def portal_event_callback(sender, **kwargs):
+    logger.debug("Received a generic portal event")
     users = kwargs.get('event_users', [])
 
     data = copy.copy(kwargs)
@@ -24,32 +23,44 @@ def portal_event_callback(sender, **kwargs):
     data.pop('signal')
 
     if users:
-        rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, users=users)
+        for user in users:
+            async_to_sync(channel_layer.group_send)(
+                user.username,
+                {
+                    'type': 'portal_notification',
+                    'body': data
+                }
+            )
     else:
-        rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, broadcast=True)
-    msg = RedisMessage(json.dumps(data, cls=DjangoJSONEncoder))
-    rp.publish_message(msg)
+        async_to_sync(channel_layer.group_send)(
+            'portal_events',
+            {
+                'type': 'portal_notification',
+                'body': data
+            }
+        )
 
 
 @receiver(post_save, sender=Notification, dispatch_uid='notification_msg')
 def send_notification_ws(sender, instance, created, **kwargs):
     # Only send WS message if it's a new notification not if we're updating.
-    logger.debug('receiver received something.')
+    logger.debug("Received a Notification event")
     if not created:
         return
     try:
-        rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, users=[instance.user])
-        # rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, broadcast=True)
-#        logger.debug(instance.to_dict())
-        instance_dict = json.dumps(instance.to_dict())
+        instance_dict = instance.to_dict()
         logger.info(instance_dict)
-        msg = RedisMessage(instance_dict)
-        rp.publish_message(msg)
-#        logger.debug('WS socket msg sent: {}'.format(instance_dict))
+        async_to_sync(channel_layer.group_send)(
+            instance.user,
+            {
+                'type': 'portal_notification',
+                'body': instance_dict
+            }
+        )
     except Exception:
-        logger.debug('Exception sending websocket message',
-                     exc_info=True,
-                     extra=instance.to_dict())
+        logger.exception(
+            'Exception sending message to channel: portal_notification',
+            extra=instance.to_dict())
     return
 
 
@@ -69,24 +80,31 @@ def send_setup_event(sender, instance, created, **kwargs):
     # Add the setup_event's user to the notification list
     receiving_users.append(setup_event.user)
     try:
-        rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, users=receiving_users)
         data = {
             "event_type": "setup_event",
             "setup_event": setup_event.to_dict()
         }
-        msg = RedisMessage(json.dumps(data))
+        for user in receiving_users:
+            async_to_sync(channel_layer.group_send)(
+                user.username,
+                {
+                    'type': 'portal_notification',
+                    'body': data
+                }
+            )
 
         # Short expiry. Users viewing onboarding status changes should receive
         # "live" messages. Users viewing the page after an event happens
         # should be able to retrieve setup state without needing live
         # notifications. This also prevents staff from accumulating messages
         # for all users.
-        rp.publish_message(msg, expire=10)
+
+        # TODO: translate this to channels?
+        #  rp.publish_message(msg, expire=10)
 
     except Exception:
-        logger.debug(
-            'Exception sending websocket message',
-            exc_info=True,
+        logger.exception(
+            'Exception sending message to channel: portal_notification',
             extra=setup_event.to_dict()
         )
     return

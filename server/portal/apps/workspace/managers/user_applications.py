@@ -12,10 +12,7 @@ from django.conf import settings
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.models.applications import Application
 from portal.apps.workspace.managers.base import AbstractApplicationsManager
-from portal.utils import encryption as EncryptionUtil
-from portal.apps.accounts.managers.accounts import _lookup_user_home_manager
-from portal.apps.accounts.models import SSHKeys
-from portal.apps.accounts.managers.user_work_home import UserWORKHomeManager
+from portal.apps.accounts.managers.user_systems import UserSystemsManager
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -31,7 +28,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
     def __init__(self, *args, **kwargs):
         super(UserApplicationsManager, self).__init__(*args, **kwargs)
-        self.home_mgr = _lookup_user_home_manager(self.user)
+        self.user_systems_mgr = UserSystemsManager(self.user)
 
     def get_clone_system_id(self):
         """Gets system id to deploy cloned app materials to.
@@ -43,7 +40,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         :rtype: str
         """
 
-        id = self.home_mgr.get_system_id()
+        id = self.user_systems_mgr.get_system_id()
         return id
 
     def get_application(self, appId):
@@ -193,7 +190,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         try:
             cloned_app = self.get_application(cloned_app_id)
 
-            logger.debug('Cloned app {} found! Checking for updates...'.format(cloned_app_id))
+            logger.debug('Cloned app {} found. Checking for updates...'.format(cloned_app_id))
 
             if not host_app.is_public:
                 update_required = self.check_app_for_updates(cloned_app, host_app=host_app)
@@ -203,7 +200,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
                     cloned_app.delete()
                     cloned_app = self.clone_application(allocation, cloned_app_name, host_app=host_app)
                 else:
-                    logger.debug('Cloned app is current with host!')
+                    logger.debug('Cloned app is current with host.')
 
             return cloned_app
 
@@ -242,7 +239,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
         if not app.exec_sys:
             exec_sys = ExecutionSystem(self.client, app.execution_system, ignore_error=None)
             sys_ok, res = exec_sys.test()
-            if not sys_ok and (exec_sys.roles.for_user(self.user.username).value == 'OWNER'):
+            if not sys_ok and (exec_sys.owner == self.user.username):
                 logger.debug(res)
                 logger.info('System {} needs new keys.'.format(exec_sys.id))
                 app.exec_sys = exec_sys
@@ -278,47 +275,32 @@ class UserApplicationsManager(AbstractApplicationsManager):
     ):  # pylint:disable=arguments-differ
         """Initializes Agave execution system
 
-        :param class system: ExecutionSystem instance
+        :param class system_id: ExecutionSystem ID
         :param str allocation: Project allocation for customDirectives
 
         :returns: ExecutionSystem instance
         :rtype: class ExecutionSystem
         """
-        username = self.user.username
-
         system = self.get_exec_system(system_id)
 
         if not system.available:
             system.enable()
 
-        system.site = 'portal.dev'
-        system.description = 'Exec system for user: {username}'.format(
-            username=username
-        )
+        settings_key = system.login.host.split('.')[0]
+        exec_settings = settings.PORTAL_EXEC_SYSTEMS.get(settings_key, {})
 
-        user_work_home_mgr = UserWORKHomeManager(self.user)
-
-        system.storage.host = system.login.host
-        system.storage.home_dir = user_work_home_mgr.get_home_dir_abs_path()
+        system.site = settings.PORTAL_DOMAIN
+        system.name = "Execution system for user {}".format(self.user.username)
+        system.storage.home_dir = self.user_systems_mgr.get_sys_tas_user_dir()
         system.storage.port = system.login.port
         system.storage.root_dir = '/'
-        system.storage.protocol = 'SFTP'
         system.storage.auth.username = self.user.username
         system.storage.auth.type = system.AUTH_TYPES.SSHKEYS
-
-        system.login.protocol = 'SSH'
         system.login.auth.username = self.user.username
         system.login.auth.type = system.AUTH_TYPES.SSHKEYS
-
-        scratch_hosts = ['data', 'stampede2', 'lonestar5']
-        scratch1_hosts = ['frontera']
-        if system.storage.host in [s + '.tacc.utexas.edu' for s in scratch_hosts]:
-            system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch')
-        elif system.storage.host in [s + '.tacc.utexas.edu' for s in scratch1_hosts]:
-            system.scratch_dir = system.storage.home_dir.replace(settings.PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS, '/scratch1')
-        else:
-            system.scratch_dir = system.storage.home_dir
-        system.work_dir = system.storage.home_dir
+        system.work_dir = '/work/{}'.format(self.user_systems_mgr.get_private_directory())
+        system.scratch_dir = exec_settings['scratch_dir'].format(
+            self.user_systems_mgr.get_private_directory()) if 'scratch_dir' in exec_settings else ''
 
         if system.scheduler == 'SLURM':
             for queue in system.queues.all():
@@ -383,7 +365,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
             exec_sys = self.get_exec_system(clonedSystemId)
             if not exec_sys.available:
                 exec_sys = self.validate_exec_system(exec_sys.id, alloc)
-            logger.debug('Execution system found!')
+            logger.debug('Execution system found')
             return exec_sys
         except HTTPError as exc:
             if exc.response.status_code == 404:

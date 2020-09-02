@@ -1,112 +1,119 @@
-from django.test import TestCase, RequestFactory, override_settings
-from django.contrib.auth import get_user_model
 from mock import patch
 from portal.apps.onboarding.steps.allocation import AllocationStep
 import pytest
 
 
-@pytest.mark.django_db(transaction=True)
-class AllocationStepTest(TestCase):
-    def setUp(self):
-        super(AllocationStepTest, self).setUp()
-        self.user = get_user_model().objects.create_user('test', 'test@user.com', 'test')
-
-        # Mock the step's complete function so we can spy on it
-        self.mock_complete_patcher = patch(
-            'portal.apps.onboarding.steps.allocation_unit_test.AllocationStep.complete'
-        )
-        self.mock_complete = self.mock_complete_patcher.start()
-
-        # Mock the step's fail function so we can spy on it
-        self.mock_log_patcher = patch(
-            'portal.apps.onboarding.steps.allocation_unit_test.AllocationStep.log'
-        )
-        self.mock_log = self.mock_log_patcher.start()
-
-        # Mock get allocations
-        self.mock_get_allocations_patcher = patch(
-            'portal.apps.onboarding.steps.allocation.get_allocations',
-        )
-        self.mock_get_allocations = self.mock_get_allocations_patcher.start()
-
-        # Mock TAS user lookup
-        self.mock_tas_patcher = patch(
-            'portal.apps.onboarding.steps.allocation.TASClient.get_user',
-            return_value={
-                'piEligibility': 'Eligible'
-            }
-        )
-        self.mock_tas_get_user = self.mock_tas_patcher.start()
-
-        self.step = AllocationStep(self.user)
-
-    def tearDown(self):
-        super(AllocationStepTest, self).tearDown()
-        self.mock_complete_patcher.stop()
-        self.mock_log_patcher.stop()
-        self.mock_get_allocations_patcher.stop()
-        self.mock_tas_patcher.stop()
-
-    @override_settings(ALLOCATION_SYSTEMS=[])
-    def test_no_allocation_setting(self):
-        self.step.process()
-        self.mock_complete.assert_called_with("No systems are required for access to this portal")
-
-    @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
-    @patch('portal.apps.onboarding.steps.allocation_unit_test.AllocationStep.log')
-    def test_tas_project_retrieval_failure(self, mock_log):
-        # Make the projects_for_user function generate an exception
-        self.mock_get_allocations.side_effect = Exception()
-        self.step.process()
-        mock_log.assert_called_with("Unable to retrieve a list of projects")
-
-    @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
-    def test_user_has_no_resources(self):
-        self.mock_get_allocations.return_value = {}
-        self.step.process()
-        self.mock_log.assert_called_with(
-            "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
-            data={
-                "more_info": self.step.pi_eligible_message
-            }
-        )
-
-    @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
-    def test_user_has_wrong_resources(self):
-        self.mock_get_allocations.return_value = {
-            "ls5.tacc.utexas.edu": []
+@pytest.fixture
+def tas_get_user_mock(mocker):
+    mock_tas_patcher = mocker.patch(
+        'portal.apps.onboarding.steps.allocation.TASClient.get_user',
+        return_value={
+            'piEligibility': 'Eligible'
         }
-        self.step.process()
-        self.mock_log.assert_called_with(
-            "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
-            data={
-                "more_info": self.step.pi_eligible_message
-            }
-        )
+    )
+    yield mock_tas_patcher
 
-    @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
-    def test_user_has_no_resources_pi_inelligible(self):
-        self.mock_get_allocations.return_value = {}
-        self.mock_tas_get_user.return_value['piEligibility'] = 'Ineligible'
-        self.step.process()
-        self.mock_log.assert_called_with(
-            "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
-            data={
-                "more_info": self.step.pi_ineligible_message
-            }
-        )
 
-    @override_settings(ALLOCATION_SYSTEMS=['stampede2.tacc.utexas.edu'])
-    def test_user_has_system(self):
-        self.mock_get_allocations.return_value = {
-            "stampede2.tacc.utexas.edu": []
+@pytest.fixture
+def get_allocations_mock(mocker):
+    get_allocations = mocker.patch('portal.apps.onboarding.steps.allocation.get_allocations')
+    get_allocations_mock.return_value = {}
+    yield get_allocations
+
+
+@pytest.fixture
+def allocation_step_complete_mock(mocker):
+    yield mocker.patch.object(AllocationStep, 'complete')
+
+
+@pytest.fixture
+def allocation_step_log_mock(mocker):
+    yield mocker.patch.object(AllocationStep, 'log')
+
+
+@pytest.fixture
+def allocation_step_prepare_mock(mocker):
+    yield mocker.patch.object(AllocationStep, 'prepare')
+
+
+def test_no_allocation_setting(settings, authenticated_user, allocation_step_complete_mock):
+    settings.ALLOCATION_SYSTEMS = []
+    step = AllocationStep(authenticated_user)
+    step.process()
+    allocation_step_complete_mock.assert_called_with("No systems are required for access to this portal")
+
+
+def test_tas_project_retrieval_failure(settings, authenticated_user,
+                                       get_allocations_mock, allocation_step_log_mock):
+    settings.ALLOCATION_SYSTEMS = ['stampede2.tacc.utexas.edu']
+    get_allocations_mock.side_effect = Exception()
+
+    step = AllocationStep(authenticated_user)
+    step.process()
+    allocation_step_log_mock.assert_called_with("Unable to retrieve a list of projects")
+
+
+def test_user_has_no_resources(settings, authenticated_user, tas_get_user_mock,
+                               get_allocations_mock, allocation_step_log_mock):
+    settings.ALLOCATION_SYSTEMS = ['stampede2.tacc.utexas.edu']
+
+    step = AllocationStep(authenticated_user)
+    step.process()
+
+    allocation_step_log_mock.assert_called_with(
+        "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
+        data={
+            "more_info": step.pi_eligible_message
         }
-        self.step.process()
-        self.mock_complete.assert_called_with("You have the required systems for accessing this portal")
+    )
 
-    @patch('portal.apps.onboarding.steps.allocation_unit_test.AllocationStep.prepare')
-    def test_client_action(self, mock_prepare):
-        request = RequestFactory().post("/api/onboarding/user/test")
-        request.user = self.user
-        self.step.client_action("user_confirm", {}, request)
-        mock_prepare.assert_called_with()
+
+def test_user_has_wrong_resources(settings, authenticated_user, tas_get_user_mock,
+                                  get_allocations_mock, allocation_step_log_mock):
+    settings.ALLOCATION_SYSTEMS = ['stampede2.tacc.utexas.edu']
+    get_allocations_mock.return_value = {
+        "ls5.tacc.utexas.edu": []
+    }
+
+    step = AllocationStep(authenticated_user)
+    step.process()
+    allocation_step_log_mock.assert_called_with(
+        "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
+        data={
+            "more_info": step.pi_eligible_message
+        }
+    )
+
+
+def test_user_has_no_resources_pi_inelligible(settings, authenticated_user, tas_get_user_mock,
+                                              get_allocations_mock, allocation_step_log_mock):
+    settings.ALLOCATION_SYSTEMS = ['stampede2.tacc.utexas.edu']
+    tas_get_user_mock.return_value['piEligibility'] = 'Ineligible'
+
+    step = AllocationStep(authenticated_user)
+    step.process()
+    allocation_step_log_mock.assert_called_with(
+        "Verify that you have a project allocation with one of the required systems for this portal, then click the Confirm button.",
+        data={
+            "more_info": step.pi_ineligible_message
+        }
+    )
+
+
+def test_user_has_system(settings, authenticated_user,
+                         get_allocations_mock, allocation_step_complete_mock):
+    settings.ALLOCATION_SYSTEMS = ['stampede2.tacc.utexas.edu']
+    get_allocations_mock.return_value = {
+        "stampede2.tacc.utexas.edu": []
+    }
+    step = AllocationStep(authenticated_user)
+    step.process()
+    allocation_step_complete_mock.assert_called_with("You have the required systems for accessing this portal")
+
+
+def test_client_action(rf, authenticated_user, allocation_step_prepare_mock):
+    request = rf.post("/api/onboarding/user/test")
+    request.user = authenticated_user
+    step = AllocationStep(authenticated_user)
+    step.client_action("user_confirm", {}, request)
+    allocation_step_prepare_mock.assert_called_with()

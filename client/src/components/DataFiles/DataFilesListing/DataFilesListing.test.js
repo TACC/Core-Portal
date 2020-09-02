@@ -1,14 +1,15 @@
-import React from "react";
-import { Router, Route } from "react-router-dom";
-import { render, fireEvent } from "@testing-library/react";
+import React from "react"
 import { createMemoryHistory } from "history";
 import  DataFilesListing  from "./DataFilesListing";
 import { CheckboxCell, FileNavCell } from "./DataFilesListingCells";
-import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 const initialMockState = {
+  pushKeys: {
+    target: {}
+  },
   files: {
     loading: {
       FilesListing: false
@@ -39,14 +40,6 @@ const initialMockState = {
     }
   }
 };
-
-function renderComponent(component, store, history) {
-  return render(
-    <Provider store={store}>
-      <Router history={history}>{component}</Router>
-    </Provider>
-  );
-}
 
 describe("CheckBoxCell", () => {
   it("shows checkbox when checked", () => {
@@ -124,6 +117,7 @@ describe("DataFilesListing", () => {
     const history = createMemoryHistory();
     history.push("/workbench/data/tapis/private/test.system/");
     const store = mockStore({
+      ...initialMockState,
       files: {
         ...initialMockState.files,
         listing: { FilesListing: [testfile] }
@@ -161,5 +155,28 @@ describe("DataFilesListing", () => {
 
     expect(getByText(/No files or folders to show/)).toBeDefined();
   });
-  
+
+  it.each(
+    [
+      ['500', /There was a problem accessing this file system./],
+      ['502', /There was a problem accessing this file system. If this is your first time logging in/],
+      ['404', 'The file or folder that you are attempting to access does not exist.']
+    ])(
+    'Renders "%s" error message correctly',
+    (errorCode, message) => {
+      const history = createMemoryHistory();
+      history.push("/workbench/data/tapis/private/test.system/");
+      const errorMockState = {...initialMockState};
+      errorMockState.files.error.FilesListing=errorCode;
+      const store = mockStore(errorMockState);
+
+      const { getByText } = renderComponent(
+        <DataFilesListing api="tapis" scheme="private" system="test.system" path="/"  />,
+        store,
+        history
+      );
+
+      expect(getByText(message)).toBeDefined();
+    }
+  );
 });

@@ -3,7 +3,8 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from portal.apps.auth.models import AgaveOAuthToken
 from pytas.http import TASClient
-from portal.apps.users.utils import get_allocations
+from portal.apps.users.utils import get_tas_allocations, get_allocations
+from elasticsearch.exceptions import NotFoundError
 
 
 class AttrDict(dict):
@@ -65,13 +66,13 @@ class TestUserApiViews(TestCase):
             }
         }
         self.client.login(username='test', password='test')
-        resp = self.client.get("/api/users/usage/", follow=True)
+        resp = self.client.get("/api/users/usage/systemId", follow=True)
         data = resp.json()
         self.assertTrue(data["total_storage_bytes"] == 10)
 
     def test_usage_view_noauth(self):
         # TODO: API routes should return a 401 not a 302 that redirects to login
-        resp = self.client.get("/api/users/usage/")
+        resp = self.client.get("/api/users/usage/systemId")
         self.assertTrue(resp.status_code == 302)
 
 
@@ -185,7 +186,6 @@ class TestGetAllocations(TestCase):
         ]
 
         hosts_expected = {
-            'stampede2.tacc.utexas.edu': ['Proj-Old'],
             'rodeo.tacc.utexas.edu': ['Proj-Code'],
             'frontera.tacc.utexas.edu': ['Big-Proj']
         }
@@ -197,5 +197,21 @@ class TestGetAllocations(TestCase):
             'portal_alloc': 'test'
         }
 
-        data = get_allocations("username")
+        data = get_tas_allocations("username")
         self.assertEqual(data, data_expected)
+
+
+class TestGetIndexedAllocations(TestCase):
+
+    @patch('portal.apps.users.utils.IndexedAllocation')
+    def test_checks_allocations(self, mock_idx):
+        get_allocations('testuser')
+        mock_idx.from_username.assert_called_with('testuser')
+
+    @patch('portal.apps.users.utils.IndexedAllocation')
+    @patch('portal.apps.users.utils.get_tas_allocations')
+    def test_allocation_fallback(self, mock_get_alloc, mock_idx):
+        mock_idx.from_username.side_effect = NotFoundError
+        get_allocations('testuser')
+        mock_get_alloc.assert_called_with('testuser')
+        mock_idx().save.assert_called_with()

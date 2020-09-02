@@ -3,9 +3,7 @@ import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { useSelector, shallowEqual } from 'react-redux';
 // import PropTypes from 'prop-types';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { AppIcon } from '_common';
+import { AppIcon, Icon, Message } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
@@ -24,17 +22,9 @@ const AppBrowser = () => {
 
   if (error.isError) {
     return (
-      <div className="appDetail-error">
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          style={{ marginRight: '10px' }}
-        />
-        {error.message ? (
-          <div>{error.message}</div>
-        ) : (
-          <div>Something went wrong!</div>
-        )}
-      </div>
+      <Message type="warn" className="appDetail-error">
+        {error.message ? error.message : 'Something went wrong.'}
+      </Message>
     );
   }
 
@@ -62,7 +52,10 @@ const AppBrowser = () => {
               }}
             >
               <span className="nav-content">
-                <i className="icon-nav-application  category-icon" />
+                <Icon
+                  name="applications"
+                  className={`icon-${category.replace(' ', '-').toLowerCase()}`}
+                />
                 <span className="nav-text">{`${category} [${categoryDict[category].length}]`}</span>
               </span>
             </NavLink>

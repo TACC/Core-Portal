@@ -4,11 +4,11 @@ import { Button } from 'reactstrap';
 import { object as obj, string as str, ref } from 'yup';
 import { Formik, Form } from 'formik';
 import { isEmpty } from 'lodash';
-import { bool } from 'prop-types';
-import { LoadingSpinner } from '_common';
+import { bool, oneOfType, func, instanceOf, shape } from 'prop-types';
+import { LoadingSpinner, Message } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
-const ChangePasswordFormBody = ({ canSubmit }) => {
+const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
   const isChecking = useSelector(state => state.profile.checkingPassword);
   const Requirements = () => (
     <div style={{ color: '#707070', fontStyle: 'italic' }}>
@@ -16,30 +16,42 @@ const ChangePasswordFormBody = ({ canSubmit }) => {
       <ul style={{ paddingLeft: '1rem' }}>
         <li>Must not contain your username or parts of your full name;</li>
         <li>Must be a minimum of 8 characters in length</li>
-        <li>Must contain characters from at least three of the following:</li>
-        <li style={{ marginLeft: '1rem' }}>
+        <li>
+          Must contain characters from at least three of the following:
           Uppercase letters, lowercase letters, numbers, symbols
         </li>
       </ul>
     </div>
   );
   return (
-    <Form className="change-password-form">
+    <Form
+      ref={formRef}
+      className="change-password-form"
+      aria-label="change-password-form"
+    >
       <ManageAccountInput
         label="Current Password"
         name="currentPW"
         type="password"
+        aria-label="current-password"
       />
-      <ManageAccountInput label="New Password" name="newPW" type="password" />
+      <ManageAccountInput
+        label="New Password"
+        name="newPW"
+        type="password"
+        aria-label="new-password"
+      />
       <ManageAccountInput
         label="Confirm New Password"
         name="confirmNewPW"
         type="password"
+        aria-label="confirm-new-password"
       />
       <Requirements />
       <Button
         className="manage-account-submit-button"
         type="submit"
+        data-testid="submit-button"
         style={{ alignSelf: 'flex-end' }}
         disabled={!canSubmit}
       >
@@ -51,27 +63,48 @@ const ChangePasswordFormBody = ({ canSubmit }) => {
     </Form>
   );
 };
-ChangePasswordFormBody.propTypes = { canSubmit: bool.isRequired };
+ChangePasswordFormBody.propTypes = {
+  canSubmit: bool.isRequired,
+  formRef: oneOfType([
+    func,
+    shape({
+      current: instanceOf(Element)
+    })
+  ]).isRequired
+};
 
 export default function() {
-  const { restrictions } = useSelector(state => {
+  const { restrictions, checks } = useSelector(state => {
     const { data } = state.profile;
     const { username, firstName, lastName } = data.demographics;
     return {
-      restrictions: { username, firstName, lastName }
+      restrictions: { username, firstName, lastName },
+      checks: {
+        error: state.profile.errors.password,
+        success: state.profile.success.password
+      }
     };
   });
   const dispatch = useDispatch();
+  const formRef = React.useRef(null);
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
     dispatch({
       type: 'CHANGE_PASSWORD',
-      values,
-      callback: params => {
-        setSubmitting(false);
-        if (params.reset) resetForm();
-      }
+      values
     });
+    setSubmitting(false);
   };
+
+  const resetForm = () => {
+    if (checks.success) {
+      const reset = new Event('reset');
+      formRef.current.dispatchEvent(reset);
+    }
+  };
+
+  React.useEffect(() => {
+    resetForm();
+  }, [checks]);
   const formSchema = obj().shape({
     currentPW: str().required('Please enter your current password'),
     newPW: str()
@@ -108,12 +141,26 @@ export default function() {
   };
   const hasErrors = errors => isEmpty(Object.keys(errors));
   return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      validationSchema={formSchema}
-    >
-      {({ errors }) => <ChangePasswordFormBody canSubmit={hasErrors(errors)} />}
-    </Formik>
+    <>
+      <Message type="warn" className="password-warning">
+        <p>
+          <strong>Please Note:</strong> This form requests a reset to your TACC
+          Account password. Changes to this password will affect your TACC
+          Account <em>as a whole</em>, not just the Frontera Portal.
+        </p>
+      </Message>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={formSchema}
+      >
+        {({ errors }) => (
+          <ChangePasswordFormBody
+            formRef={formRef}
+            canSubmit={hasErrors(errors)}
+          />
+        )}
+      </Formik>
+    </>
   );
 }

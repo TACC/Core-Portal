@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   FormGroup,
@@ -14,11 +14,20 @@ import { useField } from 'formik';
 import PropTypes from 'prop-types';
 import './FormField.scss';
 
-const FormField = ({ label, description, required, agaveFile, ...props }) => {
+const FormField = ({
+  label,
+  description,
+  required,
+  agaveFile,
+  SelectModal,
+  ...props
+}) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and also replace ErrorMessage entirely.
-  const [field, meta] = useField(props);
+  const [field, meta, helpers] = useField(props);
+  const [openAgaveFileModal, setOpenAgaveFileModal] = useState(false);
   const { id, name } = props;
+
   return (
     <FormGroup>
       <Label
@@ -35,14 +44,31 @@ const FormField = ({ label, description, required, agaveFile, ...props }) => {
         ) : null}
       </Label>
       {agaveFile ? (
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <Button size="sm" color="secondary" type="button">
-              Select
-            </Button>
-          </InputGroupAddon>
-          <Input {...field} {...props} bsSize="sm" />
-        </InputGroup>
+        <>
+          <SelectModal
+            isOpen={openAgaveFileModal}
+            toggle={() => {
+              setOpenAgaveFileModal(prevState => !prevState);
+            }}
+            onSelect={(system, path) => {
+              helpers.setValue(`agave://${system}${path}`);
+            }}
+          />
+
+          <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <Button
+                size="sm"
+                color="secondary"
+                type="button"
+                onClick={() => setOpenAgaveFileModal(true)}
+              >
+                Select
+              </Button>
+            </InputGroupAddon>
+            <Input {...field} {...props} bsSize="sm" />
+          </InputGroup>
+        </>
       ) : (
         <Input {...field} {...props} bsSize="sm" />
       )}
@@ -62,7 +88,8 @@ FormField.propTypes = {
   label: PropTypes.string,
   description: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   required: PropTypes.bool,
-  agaveFile: PropTypes.bool
+  agaveFile: PropTypes.bool,
+  SelectModal: PropTypes.func
 };
 FormField.defaultProps = {
   id: undefined,
@@ -70,7 +97,8 @@ FormField.defaultProps = {
   label: undefined,
   description: undefined,
   required: false,
-  agaveFile: undefined
+  agaveFile: undefined,
+  SelectModal: undefined
 };
 
 export default FormField;
