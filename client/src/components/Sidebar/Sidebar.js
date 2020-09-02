@@ -1,8 +1,8 @@
 import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
-import { FeedbackButton } from '../FeedbackForm';
 import { useSelector } from 'react-redux';
+import { FeedbackButton } from '../FeedbackForm';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from '../History/HistoryBadge';
 import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
@@ -107,7 +107,6 @@ const Sidebar = () => {
       <NavItem className="feedback-button">
         <FeedbackButton />
       </NavItem>
-    </Nav>
     </Nav>
   );
 };
