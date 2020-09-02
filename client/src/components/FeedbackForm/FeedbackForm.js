@@ -1,33 +1,46 @@
 import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Formik, Form } from 'formik';
-import {
-  Alert,
-  Button,
-  Col,
-  Container,
-  FormGroup,
-  Row,
-  Spinner
-} from 'reactstrap';
+import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
 import { FormField } from '_common';
 import * as Yup from 'yup';
 import './FeedbackForm.scss';
 
 const formSchema = Yup.object().shape({
+  subject: Yup.string().required('Required'),
   name: Yup.string().required('Required'),
   email: Yup.string()
     .email('Invalid email')
     .required('Required'),
-  comments: Yup.string().required('Required')
+  problem_description: Yup.string().required('Required')
 });
 
 const FeedbackForm = ({ authenticatedUser }) => {
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const isAuthenticated = authenticatedUser != null;
+  const creating = useSelector(state => state.ticketCreate.creating);
+  const creatingError = useSelector(state => state.ticketCreate.creatingError);
+  const creatingErrorMessage = useSelector(
+    state => state.ticketCreate.creatingErrorMessage
+  );
+  const creatingSuccess = useSelector(
+    state => state.ticketCreate.creatingSuccess
+  );
+  const createdTicketId = useSelector(
+    state => state.ticketCreate.createdTicketId
+  );
+
+  const url = location.pathname;
   const defaultValues = useMemo(
     () => ({
-      comments: '',
+      subject: 'Feedback',
+      url: url || '',
+      problem_description: '',
+      first_name: authenticatedUser ? authenticatedUser.first_name : '',
+      last_name: authenticatedUser ? authenticatedUser.last_name : '',
       name: authenticatedUser
         ? `${authenticatedUser.first_name} ${authenticatedUser.last_name}`
         : '',
@@ -57,17 +70,45 @@ const FeedbackForm = ({ authenticatedUser }) => {
       {({ isSubmitting, isValid }) => {
         return (
           <Form className="feedback-form">
+            <FormField type="hidden" name="last_name" />
             <FormGroup>
-              <FormField name="name" label="Name" required />
-              <FormField name="email" label="Email Address" required />
+              <FormField name="name" label="Name" required disabled />
+              <FormField name="email" label="Email Address" required disabled />
               <FormField
-                name="comments"
+                name="problem_description"
                 label="Comments"
                 type="textarea"
                 className="comments-textarea"
                 required
               />
             </FormGroup>
+            <div className="ticket-create-button-row">
+              {creatingSuccess && (
+                <CreatedFeedbackInformation
+                  ticketId={createdTicketId}
+                  isAuthenticated={isAuthenticated}
+                />
+              )}
+              {creatingError && (
+                <Alert color="warning">
+                  Feedback creating error: {creatingErrorMessage}
+                </Alert>
+              )}
+              <Button
+                type="submit"
+                color="primary"
+                disabled={!isValid || isSubmitting || creating}
+              >
+                {creating && (
+                  <Spinner
+                    size="sm"
+                    color="white"
+                    data-testid="creating-spinner"
+                  />
+                )}
+                Submit
+              </Button>
+            </div>
           </Form>
         );
       }}
@@ -76,11 +117,28 @@ const FeedbackForm = ({ authenticatedUser }) => {
 };
 
 FeedbackForm.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
   authenticatedUser: PropTypes.object
 };
 
 FeedbackForm.defaultProps = {
   authenticatedUser: null
+};
+
+function CreatedFeedbackInformation({ isAuthenticated, ticketId }) {
+  if (!ticketId) {
+    return null;
+  }
+  return (
+    <Alert color="success">
+      Feedback (#{ticketId}) was received. Thank you!
+    </Alert>
+  );
+}
+
+CreatedFeedbackInformation.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
+  ticketId: PropTypes.number.isRequired
 };
 
 export default FeedbackForm;

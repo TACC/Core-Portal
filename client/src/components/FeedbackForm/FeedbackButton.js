@@ -1,12 +1,10 @@
 import React from 'react';
 import { Button } from 'reactstrap';
-import { useSelector } from 'react-redux';
 import FeedbackModal from './FeedbackModal';
 import './FeedbackButton.scss';
 
 const FeedbackButton = () => {
   const [openModal, setOpenModal] = React.useState(false);
-  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
 
   return (
     <>
@@ -17,7 +15,6 @@ const FeedbackButton = () => {
         <FeedbackModal
           isOpen={openModal}
           toggle={() => setOpenModal(!openModal)}
-          authenticatedUser={authenticatedUser}
         />
       )}
     </>

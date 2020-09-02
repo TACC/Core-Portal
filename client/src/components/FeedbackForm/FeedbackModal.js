@@ -1,8 +1,10 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from 'reactstrap';
+import { useSelector } from 'react-redux';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { func, bool } from 'prop-types';
 import { Link } from 'react-router-dom';
 import FeedbackForm from './FeedbackForm';
+import * as ROUTES from '../../constants/routes';
 import './FeedbackModal.scss';
 
 const MODAL_PROPTYPES = {
@@ -10,11 +12,9 @@ const MODAL_PROPTYPES = {
   toggle: func.isRequired
 };
 
-const sendEmail = () => {
-  // TODO: Sending emails
-};
+const FeedbackModal = React.memo(({ isOpen, toggle }) => {
+  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
 
-const FeedbackModal = React.memo(({ isOpen, toggle, authenticatedUser }) => {
   return (
     <Modal isOpen={isOpen} toggle={() => toggle()}>
       <ModalHeader toggle={toggle} charCode="x">
@@ -28,22 +28,19 @@ const FeedbackModal = React.memo(({ isOpen, toggle, authenticatedUser }) => {
         </p>
         <p>
           If you need assistance, refer to the{' '}
-          <Link to="userGuideURL" className="wb-link job__path">
+          <Link to={`${ROUTES.USER_GUIDE}`} target="blank">
             User Guide
           </Link>
           , or{' '}
-          <Link to="userGuideURL" className="wb-link job__path">
+          <Link
+            onClick={() => toggle()}
+            to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+          >
             submit a ticket.
           </Link>
         </p>
         <FeedbackForm authenticatedUser={authenticatedUser} />
       </ModalBody>
-
-      <ModalFooter>
-        <Button className="data-files-btn" onClick={sendEmail}>
-          Submit
-        </Button>
-      </ModalFooter>
     </Modal>
   );
 });
