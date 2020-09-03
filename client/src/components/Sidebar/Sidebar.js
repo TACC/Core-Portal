@@ -104,7 +104,7 @@ const Sidebar = () => {
           </NavLink>
         </NavItem>
       )}
-      <NavItem className="feedback-button">
+      <NavItem styleName="feedback-nav-item">
         <FeedbackButton />
       </NavItem>
     </Nav>
