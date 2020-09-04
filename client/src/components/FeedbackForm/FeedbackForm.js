@@ -6,7 +6,7 @@ import { Formik, Form } from 'formik';
 import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
 import { FormField } from '_common';
 import * as Yup from 'yup';
-import './FeedbackForm.scss';
+import './FeedbackForm.module.scss';
 
 const formSchema = Yup.object().shape({
   subject: Yup.string().required('Required'),
@@ -69,7 +69,7 @@ const FeedbackForm = ({ authenticatedUser }) => {
     >
       {({ isSubmitting, isValid }) => {
         return (
-          <Form className="feedback-form">
+          <Form styleName="feedback-form">
             <FormField type="hidden" name="last_name" />
             <FormGroup>
               <FormField name="name" label="Full Name" required disabled />
@@ -78,7 +78,7 @@ const FeedbackForm = ({ authenticatedUser }) => {
                 name="problem_description"
                 label="Feedback"
                 type="textarea"
-                className="comments-textarea"
+                styleName="comments-textarea"
                 required
               />
             </FormGroup>
