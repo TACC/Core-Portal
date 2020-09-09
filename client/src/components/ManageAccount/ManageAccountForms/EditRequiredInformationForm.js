@@ -8,7 +8,7 @@ import { LoadingSpinner } from '_common';
 import { bool } from 'prop-types';
 import { ManageAccountInput } from './ManageAccountFields';
 
-const RequiredInformationFormBody = ({ canSubmit }) => {
+const RequiredInformationFormBody = ({ canSubmit, hasCitizenship }) => {
   const isEditing = useSelector(state => state.profile.editing);
   return (
     <Form>
@@ -37,7 +37,7 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
         label="Citizenship"
         name="citizenshipId"
         type="select"
-        disabled
+        disabled={hasCitizenship}
       />
       {/* Django Fields */}
       <ManageAccountInput label="Ethnicity" name="ethnicity" type="select" />
@@ -54,7 +54,11 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
     </Form>
   );
 };
-RequiredInformationFormBody.propTypes = { canSubmit: bool.isRequired };
+RequiredInformationFormBody.propTypes = {
+  canSubmit: bool.isRequired,
+  hasCitizenship: bool
+};
+RequiredInformationFormBody.defaultProps = { hasCitizenship: false };
 
 export default function() {
   const { initialValues, fields } = useSelector(state => {
@@ -78,8 +82,7 @@ export default function() {
       initialValues: {
         ...initial,
         institution: initial.institutionId,
-        country: initial.countryId,
-        citizenship: initial.citizenshipId
+        country: initial.countryId
       },
       isEditing: state.profile.editing
     };
@@ -118,6 +121,7 @@ export default function() {
     setSubmitting(false);
   };
   const hasErrors = errors => isEmpty(Object.keys(errors));
+  const hasCitizenship = !!initialValues.citizenshipId;
   if (!fields.ethnicities) return <LoadingSpinner />;
   return (
     <Formik
@@ -126,7 +130,10 @@ export default function() {
       onSubmit={handleSubmit}
     >
       {({ errors }) => (
-        <RequiredInformationFormBody canSubmit={hasErrors(errors)} />
+        <RequiredInformationFormBody
+          canSubmit={hasErrors(errors)}
+          hasCitizenship={hasCitizenship}
+        />
       )}
     </Formik>
   );
