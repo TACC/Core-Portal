@@ -33,11 +33,6 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
       />
       <ManageAccountInput label="Position/Title" name="title" type="select" />
       <ManageAccountInput label="Residence" name="countryId" type="select" />
-      <ManageAccountInput
-        label="Citizenship"
-        name="citizenshipId"
-        type="select"
-      />
       {/* Django Fields */}
       <ManageAccountInput label="Ethnicity" name="ethnicity" type="select" />
       <ManageAccountInput label="Gender" name="gender" type="select" />
@@ -105,7 +100,6 @@ export default function() {
     gender: str().required('Please select an option'),
     ethnicity: str().required('Please select an option'),
     countryId: str().required('Please select a country'),
-    citizenshipId: str().required('Please select a country'),
     institutionId: str().required('Please select an institution'),
     title: str().required('Please select your title')
   });

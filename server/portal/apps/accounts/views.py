@@ -408,6 +408,7 @@ def edit_profile(request):
         portal_profile.gender = body['gender']
 
         tas_user = tas.get_user(username=user)
+        logger.debug(tas_user)
         body['piEligibility'] = tas_user['piEligibility']
         body['source'] = tas_user['source']
         tas.save_user(tas_user['id'], body)
