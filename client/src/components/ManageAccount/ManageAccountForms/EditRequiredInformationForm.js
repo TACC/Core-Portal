@@ -8,7 +8,7 @@ import { LoadingSpinner } from '_common';
 import { bool } from 'prop-types';
 import { ManageAccountInput } from './ManageAccountFields';
 
-const RequiredInformationFormBody = ({ canSubmit, hasCitizenship }) => {
+const RequiredInformationFormBody = ({ canSubmit }) => {
   const isEditing = useSelector(state => state.profile.editing);
   return (
     <Form>
@@ -37,7 +37,6 @@ const RequiredInformationFormBody = ({ canSubmit, hasCitizenship }) => {
         label="Citizenship"
         name="citizenshipId"
         type="select"
-        disabled={hasCitizenship}
       />
       {/* Django Fields */}
       <ManageAccountInput label="Ethnicity" name="ethnicity" type="select" />
@@ -55,10 +54,8 @@ const RequiredInformationFormBody = ({ canSubmit, hasCitizenship }) => {
   );
 };
 RequiredInformationFormBody.propTypes = {
-  canSubmit: bool.isRequired,
-  hasCitizenship: bool
+  canSubmit: bool.isRequired
 };
-RequiredInformationFormBody.defaultProps = { hasCitizenship: false };
 
 export default function() {
   const { initialValues, fields } = useSelector(state => {
@@ -121,7 +118,6 @@ export default function() {
     setSubmitting(false);
   };
   const hasErrors = errors => isEmpty(Object.keys(errors));
-  const hasCitizenship = !!initialValues.citizenshipId;
   if (!fields.ethnicities) return <LoadingSpinner />;
   return (
     <Formik
@@ -130,10 +126,7 @@ export default function() {
       onSubmit={handleSubmit}
     >
       {({ errors }) => (
-        <RequiredInformationFormBody
-          canSubmit={hasErrors(errors)}
-          hasCitizenship={hasCitizenship}
-        />
+        <RequiredInformationFormBody canSubmit={hasErrors(errors)} />
       )}
     </Formik>
   );
