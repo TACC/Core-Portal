@@ -6,6 +6,9 @@ from django.core.management import call_command
 from celery import shared_task
 from portal.libs.agave.utils import service_account
 from portal.libs.elasticsearch.utils import index_listing
+from portal.apps.users.utils import get_tas_allocations
+from portal.libs.elasticsearch.docs.base import IndexedAllocation
+from portal.libs.elasticsearch.utils import get_sha256_hash
 logger = logging.getLogger(__name__)
 
 
@@ -43,9 +46,10 @@ def index_community_data(self, reindex=False):
     # s = IndexedFile.search()
     # s = s.query("match", **{"system._exact": settings.AGAVE_COMMUNITY_DATA_SYSTEM})
     # resp = s.delete()
-    logger.info('INDEXING COMMUNITY DATA SYSTEM')
-    agave_indexer.apply_async(args=[settings.AGAVE_COMMUNITY_DATA_SYSTEM], kwargs={'reindex': reindex})
-    agave_indexer.apply_async(args=[settings.AGAVE_PUBLIC_DATA_SYSTEM], kwargs={'reindex': reindex})
+    for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
+        if sys.api == 'tapis':
+            logger.info('INDEXING {} SYSTEM'.format(sys.name))
+            agave_indexer.apply_async(args=[sys.system], kwargs={'reindex': reindex})
 
 # @shared_task(bind=True, queue='indexing')
 # def project_indexer(self, projectId):
@@ -85,7 +89,10 @@ def index_my_data(self, reindex=False):
     users = User.objects.all()
     for user in users:
         uname = user.username
-        systemId = settings.PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX.format(uname)
+        default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+        default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
+        systemId = default_system_prefix.format(uname)
+
         # s = IndexedFile.search()
         # s = s.query("match", **{"system._exact": systemId})
         # resp = s.delete()
@@ -100,3 +107,19 @@ def index_cms(self):
     logger.info("Updating search index")
     if not settings.DEBUG:
         call_command("update_index", interactive=False)
+
+
+@shared_task(bind=True, max_retries=3, queue='api')
+def index_allocations(self, username):
+    allocations = get_tas_allocations(username)
+    doc = IndexedAllocation(username=username, value=allocations)
+    doc.meta.id = get_sha256_hash(username)
+    doc.save()
+    """
+    try:
+            doc = IndexedAllocation.from_username(username)
+            doc.update(value=allocations)
+    except NotFoundError:
+            doc = IndexedAllocation(username=username, value=allocations)
+            doc.save()
+    """

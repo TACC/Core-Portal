@@ -1,8 +1,14 @@
 from django.db.models import Q
 from django.conf import settings
 from pytas.http import TASClient
+from portal.libs.elasticsearch.docs.base import IndexedAllocation
+from elasticsearch.exceptions import NotFoundError
+from portal.libs.elasticsearch.utils import get_sha256_hash
+import json
 import logging
 import requests
+
+from portal.exceptions.api import ApiException
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +42,7 @@ def q_to_model_queries(q):
     return query
 
 
-def get_allocations(username):
+def get_tas_allocations(username):
     """Returns user allocations on TACC resources
 
     : returns: allocations
@@ -52,69 +58,8 @@ def get_allocations(username):
     )
     tas_projects = tas_client.projects_for_user(username)
 
-    # A dict for translating TAS allocation resources to hostnames
-    tas_to_tacc_resources = {
-        'Stampede4': {
-            'name': 'Stampede 2',
-            'host': 'stampede2.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Corral2': {
-            'name': 'Corral',
-            'host': 'data.tacc.utexas.edu',
-            'type': 'STORAGE'
-        },
-        'Lonestar5': {
-            'name': 'LoneStar 5',
-            'host': 'ls5.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Maverick2': {
-            'name': 'Maverick',
-            'host': 'maverick.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Maverick3': {
-            'name': 'Maverick 2',
-            'host': 'maverick2.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Rodeo2': {
-            'name': 'Rodeo',
-            'host': 'rodeo.tacc.utexas.edu',
-            'type': 'STORAGE'
-        },
-        'Wrangler': {
-            'name': 'Wrangler',
-            'host': 'wrangler.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Wrangler2': {
-            'name': 'Wrangler',
-            'host': 'wrangler.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Wrangler3': {
-            'name': 'Wrangler',
-            'host': 'wrangler.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Frontera': {
-            'name': 'Frontera',
-            'host': 'frontera.tacc.utexas.edu',
-            'type': 'HPC'
-        },
-        'Ranch': {
-            'name': 'Ranch',
-            'host': 'ranch.tacc.utexas.edu',
-            'type': 'STORAGE'
-        },
-        'Hikari': {
-            'name': 'Hikari',
-            'host': 'hikari.tacc.utexas.edu',
-            'type': 'HPC'
-        }
-    }
+    with open('portal/apps/users/tas_to_tacc_resources.json') as f:
+        tas_to_tacc_resources = json.load(f)
 
     hosts = {}
     active_allocations = {}
@@ -128,13 +73,12 @@ def get_allocations(username):
             resource = dict(tas_to_tacc_resources[alloc['resource']])
             resource['allocation'] = dict(alloc)
 
-            if resource['host'] in hosts and charge_code not in hosts[resource['host']]:
-                hosts[resource['host']].append(charge_code)
-            elif resource['host'] not in hosts:
-                hosts[resource['host']] = [charge_code]
-
             # Separate active and inactive allocations and make single entry for each project
             if resource['allocation']['status'] == 'Active':
+                if resource['host'] in hosts and charge_code not in hosts[resource['host']]:
+                    hosts[resource['host']].append(charge_code)
+                elif resource['host'] not in hosts:
+                    hosts[resource['host']] = [charge_code]
                 # Add allocations to the project listing if it exists
                 if charge_code in active_allocations:
                     active_allocations[charge_code]['systems'].append(resource)
@@ -166,6 +110,36 @@ def get_allocations(username):
     }
 
 
+def get_allocations(username):
+    """
+    Returns indexed allocation data cached in Elasticsearch, or fetches
+    allocations from TAS and indexes them if not cached yet.
+    Parameters
+        ----------
+        username: str
+            TACC username to fetch allocations for.
+        Returns
+        -------
+        dict
+    """
+    try:
+        result = {
+            'hosts': {},
+            'portal_alloc': None,
+            'active': [],
+            'inactive': []
+        }
+        result.update(IndexedAllocation.from_username(username).value.to_dict())
+        return result
+    except NotFoundError:
+        # Fall back to getting allocations from TAS
+        allocations = get_tas_allocations(username)
+        doc = IndexedAllocation(username=username, value=allocations)
+        doc.meta.id = get_sha256_hash(username)
+        doc.save()
+        return allocations
+
+
 def get_usernames(project_name):
     """Returns list of project users
 
@@ -175,10 +149,11 @@ def get_usernames(project_name):
     auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
     r = requests.get('{0}/v1/projects/name/{1}/users'.format(settings.TAS_URL, project_name), auth=auth)
     resp = r.json()
+    logger.debug(resp)
     if resp['status'] == 'success':
         return resp['result']
     else:
-        raise Exception('Failed to get project users', resp['message'])
+        raise ApiException('Failed to get project users', resp['message'])
 
 
 def get_user_data(username):
@@ -192,7 +167,18 @@ def get_user_data(username):
         credentials={
             'username': settings.TAS_CLIENT_KEY,
             'password': settings.TAS_CLIENT_SECRET
-            }
+        }
     )
     user_data = tas_client.get_user(username=username)
     return user_data
+
+
+def get_per_user_allocation_usage(allocation_id):
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    r = requests.get('{0}/v1/allocations/{1}/usage'.format(settings.TAS_URL, allocation_id), auth=auth)
+    resp = r.json()
+    logger.debug(resp)
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise ApiException('Failed to get project users', resp['message'])

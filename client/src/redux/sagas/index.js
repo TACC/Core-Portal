@@ -1,7 +1,9 @@
 import { all } from 'redux-saga/effects';
-import { watchJobs } from './jobs.sagas';
+import { watchJobs, watchJobDetails } from './jobs.sagas';
 import watchApps from './apps.sagas';
 import watchSystems from './systems.sagas';
+import { watchSocket, watchFetchNotifications } from './notifications.sagas';
+
 import {
   watchFetchSystems,
   watchFetchFiles,
@@ -30,10 +32,15 @@ import {
 } from './tickets.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
 import { watchWorkbench } from './workbench.sagas';
+import {
+  watchFetchWelcomeMessages,
+  watchSaveWelcomeMessages
+} from './welcome.sagas';
 
 export default function* rootSaga() {
   yield all([
     watchJobs(),
+    watchJobDetails(),
     watchFetchSystems(),
     watchPushKeys(),
     watchFetchFiles(),
@@ -51,7 +58,6 @@ export default function* rootSaga() {
     watchApps(),
     watchSystems(),
     watchSystemMonitor(),
-    watchPostTicketReply(),
     ...watchProfile,
     watchTicketListFetch(),
     watchTicketDetailedView(),
@@ -60,6 +66,10 @@ export default function* rootSaga() {
     watchPostTicketReply(),
     watchPostTicketCreate(),
     watchAuthenticatedUser(),
-    watchWorkbench()
+    watchSocket(),
+    watchFetchNotifications(),
+    watchWorkbench(),
+    watchFetchWelcomeMessages(),
+    watchSaveWelcomeMessages()
   ]);
 }

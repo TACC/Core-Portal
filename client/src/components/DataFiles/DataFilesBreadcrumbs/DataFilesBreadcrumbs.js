@@ -1,8 +1,10 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
+import { findSystemDisplayName } from 'utils/systems';
 
 const BreadcrumbLink = ({ api, scheme, system, path, children, section }) => {
   const dispatch = useDispatch();
@@ -57,9 +59,18 @@ BreadcrumbLink.propTypes = {
   children: PropTypes.element.isRequired
 };
 
-const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
+const DataFilesBreadcrumbs = ({
+  api,
+  scheme,
+  system,
+  path,
+  section,
+  className
+}) => {
   const paths = [];
   const pathComps = [];
+  const systemList = useSelector(state => state.systems.systemList);
+
   path
     .split('/')
     .filter(x => x)
@@ -73,7 +84,7 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
   const root = (() => {
     switch (scheme) {
       case 'private':
-        return 'My Data';
+        return findSystemDisplayName(systemList, system);
       case 'community':
         return 'Community Data';
       default:
@@ -82,7 +93,7 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
   })();
 
   return (
-    <div className="breadcrumbs">
+    <div className={`breadcrumbs ${className}`}>
       <BreadcrumbLink
         api={api}
         scheme={scheme}
@@ -92,11 +103,15 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
       >
         <>{root}</>
       </BreadcrumbLink>
-      {pathComps.map((pathComp, i) =>
-        i < paths.length - 2 ? (
-          ' /... '
-        ) : (
-          <React.Fragment key={pathComp}>
+      {pathComps.map((pathComp, i) => {
+        if (i < paths.length - 2) {
+          return ' /... ';
+        }
+        if (i === paths.length - 1) {
+          return <span key={uuidv4()}> / {pathComp}</span>;
+        }
+        return (
+          <React.Fragment key={uuidv4()}>
             {' '}
             /{' '}
             <BreadcrumbLink
@@ -109,8 +124,8 @@ const DataFilesBreadcrumbs = ({ api, scheme, system, path, section }) => {
               <>{pathComp}</>
             </BreadcrumbLink>
           </React.Fragment>
-        )
-      )}
+        );
+      })}
     </div>
   );
 };
@@ -119,7 +134,12 @@ DataFilesBreadcrumbs.propTypes = {
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
-  section: PropTypes.string.isRequired
+  section: PropTypes.string.isRequired,
+  /** Additional className for the root element */
+  className: PropTypes.string
+};
+DataFilesBreadcrumbs.defaultProps = {
+  className: ''
 };
 
 export default DataFilesBreadcrumbs;

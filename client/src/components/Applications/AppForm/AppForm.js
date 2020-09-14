@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-import { Button, FormGroup, Spinner, Alert } from 'reactstrap';
+import { Button, FormGroup, Alert } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faExclamationTriangle,
-  faExclamationCircle
-} from '@fortawesome/free-solid-svg-icons';
-import { faFile } from '@fortawesome/free-regular-svg-icons';
-import { FormField, LoadingSpinner } from '_common';
+import { AppIcon, FormField, Icon, LoadingSpinner, Message } from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
 import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
+import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
+import * as ROUTES from '../../../constants/routes';
 
 const appShape = PropTypes.shape({
   id: PropTypes.string,
@@ -29,7 +27,10 @@ const appShape = PropTypes.shape({
   }),
   defaultNodeCount: PropTypes.number,
   parallelism: PropTypes.string,
-  defaultProcessorsPerNode: PropTypes.number
+  defaultProcessorsPerNode: PropTypes.number,
+  defaultMaxRunTime: PropTypes.string,
+  scheduler: PropTypes.string,
+  tags: PropTypes.arrayOf(PropTypes.string)
 });
 
 export const AppPlaceholder = ({ apps }) => {
@@ -46,33 +47,27 @@ AppPlaceholder.propTypes = {
 };
 
 const AppDetail = () => {
-  const { loading, app, error, hosts } = useSelector(
+  const { loading, app, error, allocationsLoading } = useSelector(
     state => ({
       loading: state.app.loading,
       app: state.app.definition,
       error: state.app.error,
-      hosts: state.allocations.hosts
+      allocationsLoading: state.allocations.loading
     }),
     shallowEqual
   );
 
   if (error.isError) {
+    const errorText = error.message ? error.message : 'Something went wrong.';
+
     return (
-      <div className="appDetail-error">
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          style={{ marginRight: '10px' }}
-        />
-        {error.message ? (
-          <div>{error.message}</div>
-        ) : (
-          <div>Something went wrong!</div>
-        )}
-      </div>
+      <Message type="warn" className="appDetail-error">
+        {errorText}
+      </Message>
     );
   }
 
-  if (loading || !app.name || !Object.keys(hosts).length) {
+  if (loading || !app.name || allocationsLoading) {
     return <LoadingSpinner />;
   }
 
@@ -105,8 +100,7 @@ const AppInfo = ({ app }) => {
           target="_blank"
           rel="noreferrer noopener"
         >
-          <FontAwesomeIcon icon={faFile} className="doc-icon" />
-          <span>{`${app.label} Documentation`}</span>
+          <AppIcon appId={app.id} /> <span>{app.label} Documentation</span>
         </a>
       ) : null}
       <SystemsPushKeysModal />
@@ -117,16 +111,28 @@ AppInfo.propTypes = {
   app: appShape.isRequired
 };
 
-const AppSchemaForm = ({ app }) => {
+export const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
-  const { allocations, portalAlloc, jobSubmission } = useSelector(
-    state => ({
-      allocations: state.allocations.hosts[app.resource] || [],
+  const {
+    allocations,
+    portalAlloc,
+    jobSubmission,
+    hasDefaultAllocation,
+    defaultHost
+  } = useSelector(state => {
+    const matchingHost = Object.keys(state.allocations.hosts).find(
+      host => app.resource === host || app.resource.endsWith(`.${host}`)
+    );
+    return {
+      allocations: matchingHost ? state.allocations.hosts[matchingHost] : [],
       portalAlloc: state.allocations.portal_alloc,
-      jobSubmission: state.jobs.submit
-    }),
-    shallowEqual
-  );
+      jobSubmission: state.jobs.submit,
+      hasDefaultAllocation: !state.allocations.loading
+        ? state.allocations.hosts[state.systems.defaultHost]
+        : true,
+      defaultHost: state.systems.defaultHost
+    };
+  }, shallowEqual);
 
   const appFields = FormSchema(app);
 
@@ -152,6 +158,7 @@ const AppSchemaForm = ({ app }) => {
     appId: app.id
   };
 
+  let missingAllocation = false;
   if (app.scheduler === 'SLURM') {
     if (allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
@@ -159,11 +166,22 @@ const AppSchemaForm = ({ app }) => {
       initialValues.allocation = allocations.length === 1 ? allocations[0] : '';
     }
 
-    if (!allocations.length) {
+    if (!hasDefaultAllocation) {
       jobSubmission.error = true;
       jobSubmission.response = {
-        message: `You need an allocation to use the system ${app.resource}. Please submit a ticket for access.`
+        message: `You need an allocation on ${getSystemName(
+          defaultHost
+        )} to run this application.`
       };
+      missingAllocation = true;
+    } else if (!allocations.length) {
+      jobSubmission.error = true;
+      jobSubmission.response = {
+        message: `You need an allocation on ${getSystemName(
+          app.resource
+        )} to run this application.`
+      };
+      missingAllocation = true;
     }
   } else {
     initialValues.allocation = app.scheduler;
@@ -179,11 +197,27 @@ const AppSchemaForm = ({ app }) => {
         <div id="appForm-alerts">
           {jobSubmission.error ? (
             <Alert color="warning" isOpen={visible} toggle={onDismiss}>
-              {`Job submission error:  ${jobSubmission.response.message}`}
+              Error: {jobSubmission.response.message}
+              {missingAllocation && (
+                <>
+                  &nbsp;Please click&nbsp;
+                  <Link to="/workbench/allocations/manage" className="wb-link">
+                    here
+                  </Link>
+                  &nbsp;to request access.
+                </>
+              )}
             </Alert>
           ) : (
             <Alert color="info" isOpen={visible} toggle={onDismiss}>
-              Your job has submitted successfully!
+              Your job has submitted successfully. See details in{' '}
+              <Link
+                to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
+                className="wb-link"
+              >
+                History &gt; Jobs
+              </Link>
+              .
             </Alert>
           )}
         </div>
@@ -273,7 +307,7 @@ const AppSchemaForm = ({ app }) => {
           }
           const readOnly =
             jobSubmission.submitting ||
-            (app.scheduler === 'SLURM' && !allocations.length);
+            (app.scheduler === 'SLURM' && missingAllocation);
           return (
             <Form>
               <FormGroup tag="fieldset" disabled={readOnly}>
@@ -287,6 +321,7 @@ const AppSchemaForm = ({ app }) => {
                         {...field}
                         name={`inputs.${id}`}
                         agaveFile
+                        SelectModal={DataFilesSelectModal}
                         placeholder="Browse Data Files"
                         key={`inputs.${id}`}
                       />
@@ -412,12 +447,12 @@ const AppSchemaForm = ({ app }) => {
                 </div>
                 <Button type="submit" color="primary">
                   {jobSubmission.submitting && (
-                    <Spinner size="sm" color="white" />
+                    <LoadingSpinner placement="inline" />
                   )}{' '}
                   {(Object.keys(errors).length || jobSubmission.error) && (
-                    <FontAwesomeIcon icon={faExclamationCircle} />
+                    <Icon name="alert">Warning</Icon>
                   )}{' '}
-                  Submit
+                  <span>Submit</span>
                 </Button>
                 <Button
                   onClick={handleReset}

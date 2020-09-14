@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import jobs from './jobs.reducers';
+import { jobs, jobDetail } from './jobs.reducers';
 import { app, apps } from './apps.reducers';
 import { systems, files } from './datafiles.reducers';
 import {
@@ -12,10 +12,13 @@ import allocations from './allocations.reducers';
 import profile from './profile.reducers';
 import authenticatedUser from './authenticated_user.reducer';
 import { pushKeys } from './systems.reducers';
+import notifications from './notifications.reducers';
 import workbench from './workbench.reducers';
+import welcomeMessages from './welcome.reducers';
 
 export default combineReducers({
   jobs,
+  jobDetail,
   systems,
   systemMonitor,
   files,
@@ -28,5 +31,7 @@ export default combineReducers({
   app,
   apps,
   pushKeys,
-  workbench
+  notifications,
+  workbench,
+  welcomeMessages
 });

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useTable } from 'react-table';
 import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { shape, array, string } from 'prop-types';
+import { shape, string, arrayOf } from 'prop-types';
 import { Link } from 'react-router-dom';
 
 export const TableTemplate = ({ attributes }) => {
@@ -36,8 +36,10 @@ export const TableTemplate = ({ attributes }) => {
   );
 };
 TableTemplate.propTypes = {
-  attributes: shape({ columns: array.isRequired, data: array.isRequired })
-    .isRequired
+  attributes: shape({
+    columns: arrayOf(shape({})).isRequired,
+    data: arrayOf(shape({})).isRequired
+  }).isRequired
 };
 
 export const RequiredInformation = () => {
@@ -213,13 +215,28 @@ export const ChangePassword = () => {
     </div>
   );
 };
-const WebsiteCell = ({ cell: { value } }) => <a href={value}>{value}</a>;
+const WebsiteCell = ({ cell: { value } }) => {
+  const website = value ? value.trim() : '';
+  if (website) {
+    const url = !/^(?:f|ht)tps?:\/\//.test(website)
+      ? `https://${website}`
+      : website;
+    return (
+      <a href={url} target="_blank" rel="noreferrer">
+        {url}
+      </a>
+    );
+  }
+  return null;
+};
 WebsiteCell.propTypes = {
   cell: shape({ value: string })
 };
 WebsiteCell.defaultProps = { cell: { value: '' } };
 const OrcidCell = ({ cell: { value } }) => (
-  <a href={`https://orchid.org/${value}`}>{value}</a>
+  <a href={`https://orchid.org/${value}`} target="_blank" rel="noreferrer">
+    {value}
+  </a>
 );
 OrcidCell.propTypes = WebsiteCell.propTypes;
 OrcidCell.defaultProps = WebsiteCell.defaultProps;

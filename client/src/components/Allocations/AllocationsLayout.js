@@ -1,17 +1,20 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Link, NavLink as RRNavLink } from 'react-router-dom';
-import { Button, Nav, NavItem, NavLink } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboard, faDesktop } from '@fortawesome/free-solid-svg-icons';
+import {
+  Link,
+  NavLink as RRNavLink,
+  Route,
+  useHistory
+} from 'react-router-dom';
+import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
-import { LoadingSpinner } from '_common';
+import { Icon, LoadingSpinner } from '_common';
 import { AllocationsTable } from './AllocationsTables';
-import { NewAllocReq } from './AllocationsModals';
+import { AllocationsRequestModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
 
 export const Header = ({ page }) => {
-  const [openModal, setOpenModal] = React.useState(false);
+  const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
     <div id="allocations-header">
       <div id="header-text">
@@ -19,15 +22,9 @@ export const Header = ({ page }) => {
         <span>&nbsp;/&nbsp;</span>
         <span>{page[0].toUpperCase() + page.substring(1)}</span>
       </div>
-      <Button color="primary" onClick={() => setOpenModal(true)}>
+      <Link to={`${root}/manage`} className="btn btn-primary">
         Manage Allocations
-      </Button>
-      {openModal && (
-        <NewAllocReq
-          isOpen={openModal}
-          toggle={() => setOpenModal(!openModal)}
-        />
-      )}
+      </Link>
     </div>
   );
 };
@@ -41,7 +38,7 @@ export const Sidebar = () => (
         to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/approved`}
         activeClassName="active"
       >
-        <FontAwesomeIcon icon={faClipboard} size="1x" className="link-icon" />
+        <Icon name="approved-reverse" className="link-icon" />
         <span className="link-text">Approved</span>
       </NavLink>
     </NavItem>
@@ -51,7 +48,7 @@ export const Sidebar = () => (
         to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/expired`}
         activeClassName="active"
       >
-        <FontAwesomeIcon icon={faDesktop} size="1x" className="link-icon" />
+        <Icon name="denied-reverse" className="link-icon" />
         <span className="link-text">Expired</span>
       </NavLink>
     </NavItem>
@@ -60,22 +57,22 @@ export const Sidebar = () => (
 
 export const Layout = ({ page }) => {
   const loading = useSelector(state => state.allocations.loading);
-  if (loading)
-    return (
-      <>
-        <Header page={page} />
-        <div id="allocations-container">
-          <Sidebar />
-          <LoadingSpinner />
-        </div>
-      </>
-    );
+  const history = useHistory();
+  const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
     <>
       <Header page={page} />
       <div id="allocations-container">
         <Sidebar />
-        <AllocationsTable page={page} />
+        {loading ? <LoadingSpinner /> : <AllocationsTable page={page} />}
+        <Route exact path={`${root}/manage`}>
+          <AllocationsRequestModal
+            isOpen
+            toggle={() => {
+              history.push(root);
+            }}
+          />
+        </Route>
       </div>
     </>
   );

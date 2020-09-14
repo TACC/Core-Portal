@@ -3,93 +3,156 @@ import {
   Route,
   Switch,
   Redirect,
+  useRouteMatch,
   NavLink as RRNavLink
 } from 'react-router-dom';
-
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop } from '@fortawesome/free-solid-svg-icons';
-import PropTypes from 'prop-types';
+import { string } from 'prop-types';
+import queryString from 'query-string';
+
+import JobHistory from './HistoryViews';
+import JobHistoryModal from './HistoryViews/JobHistoryModal';
 import * as ROUTES from '../../constants/routes';
-import JobHistory from './JobHistory';
-import './History.scss';
+import HistoryBadge from './HistoryBadge';
+import './History.module.scss';
 
 const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
 
-export const HistoryHeader = ({ title }) => {
+const Header = ({ title }) => {
+  // Only display "Mark All as Viewed" button if there are purple (unread) notifs
+  const unread = useSelector(
+    state => state.notifications.list.notifs.filter(n => !n.read).length
+  );
+  const dispatch = useDispatch();
+
   return (
-    <div className="history-header">
-      <span className="history-header__text"> History / {title} </span>
-      <Button className="history-header__button" color="link">
+    <div styleName="header">
+      <span styleName="header-text"> History / {title} </span>
+      <Button
+        color="link"
+        onClick={() => {
+          dispatch({
+            type: 'NOTIFICATIONS_READ',
+            payload: {
+              onSuccess: { type: 'FETCH_NOTIFICATIONS' }
+            }
+          });
+        }}
+        disabled={!unread}
+      >
         Mark All as Viewed
       </Button>
     </div>
   );
 };
+Header.propTypes = { title: string.isRequired };
 
-HistoryHeader.propTypes = { title: PropTypes.string.isRequired };
-
-const HistorySidebar = () => (
-  <Nav className="history-sidebar" vertical>
-    <NavItem>
-      <NavLink tag={RRNavLink} to={`${root}/jobs`} activeClassName="active">
-        <div className="nav-content">
-          <FontAwesomeIcon icon={faDesktop} size="1x" />
-          <span className="nav-text">Jobs</span>
-        </div>
-      </NavLink>
-    </NavItem>
-    <NavItem>
-      <NavLink tag={RRNavLink} to={`${root}/uploads`} activeClassName="active">
-        <div className="nav-content">
-          <i className="icon icon-action-upload" />
-          <span className="nav-text">Uploads</span>
-        </div>
-      </NavLink>
-    </NavItem>
-    <NavItem>
-      <NavLink tag={RRNavLink} to={`${root}/files`} activeClassName="active">
-        <div className="nav-content">
-          <i className="icon icon-nav-folder" />
-          <span className="nav-text">Files</span>
-        </div>
-      </NavLink>
-    </NavItem>
-  </Nav>
-);
-
-const History = () => {
+const Sidebar = () => {
+  const { unreadJobs } = useSelector(state => state.notifications.list);
   return (
-    <span className="history-wrapper">
-      <Route
-        exact
-        path={`${root}/:historyType`}
-        render={({ match }) => {
-          const historyType =
-            match.params.historyType.substr(0, 1).toUpperCase() +
-            match.params.historyType.substr(1).toLowerCase();
-          return <HistoryHeader title={historyType} />;
-        }}
-      />
-      <div className="history-container">
-        <HistorySidebar />
-        <div className="history-content">
-          <Switch>
-            <Route exact path={`${root}/jobs`}>
-              <JobHistory />
-            </Route>
-            <Route exact path={`${root}/uploads`}>
-              <h2>Uploads</h2>
-            </Route>
-            <Route exact path={`${root}/files`}>
-              <h2>Files</h2>
-            </Route>
-            <Redirect from={root} to={`${root}/jobs`} />
-          </Switch>
-        </div>
-      </div>
-    </span>
+    <Nav styleName="sidebar" vertical>
+      <NavItem>
+        <NavLink
+          tag={RRNavLink}
+          to={`${root}/jobs`}
+          activeStyleName="active"
+          className="nav-content"
+        >
+          <i className="icon icon-jobs" />
+          <span styleName="link-text">Jobs</span>
+          <HistoryBadge unread={unreadJobs} />
+        </NavLink>
+      </NavItem>
+    </Nav>
   );
 };
 
-export default History;
+export const Routes = () => {
+  const { path } = useRouteMatch();
+  const dispatch = useDispatch();
+
+  return (
+    <div styleName="content" data-testid="history-router">
+      <Switch>
+        <Route
+          path={`${root}${ROUTES.JOBS}`}
+          render={({ location: { pathname, state } }) => {
+            const locationState = state || {};
+            // Only mark as read if in pure job history view
+            if (
+              pathname === `${root}${ROUTES.JOBS}` &&
+              !locationState.fromJobHistoryModal
+            ) {
+              // Chain events to properly update UI based on read action
+              dispatch({
+                type: 'FETCH_NOTIFICATIONS',
+                payload: {
+                  queryString: queryString.stringify({
+                    eventTypes: ['job', 'interactive_session_ready']
+                  }),
+                  onSuccess: {
+                    type: 'NOTIFICATIONS_READ',
+                    payload: {
+                      body: {
+                        eventTypes: ['job', 'interactive_session_ready']
+                      },
+                      onSuccess: {
+                        type: 'UPDATE_BADGE_COUNT',
+                        payload: { type: 'unreadJobs' }
+                      }
+                    }
+                  }
+                }
+              });
+            }
+            return (
+              <>
+                <JobHistory />
+                <Route
+                  path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
+                  render={({
+                    match: {
+                      params: { jobId }
+                    }
+                  }) => {
+                    dispatch({
+                      type: 'GET_JOB_DETAILS',
+                      payload: { jobId }
+                    });
+                    return <JobHistoryModal jobId={jobId} />;
+                  }}
+                />
+              </>
+            );
+          }}
+        />
+
+        {/* Redirect from /workbench/history to /workbench/history/jobs */}
+        <Redirect from={root} to={`${root}/jobs`} />
+        {/* Redirect from an unmatched path in /workbench/history/* to /workbench/history/jobs */}
+        <Redirect from={path} to={`${root}/jobs`} />
+      </Switch>
+    </div>
+  );
+};
+
+const Layout = () => {
+  const match = useRouteMatch(`${root}/:historyType`);
+  const historyType = match
+    ? match.params.historyType.substring(0, 1).toUpperCase() +
+      match.params.historyType.substring(1).toLowerCase()
+    : '';
+
+  return (
+    <div styleName="root">
+      <Header title={historyType} />
+      <div styleName="container">
+        <Sidebar />
+        <Routes />
+      </div>
+    </div>
+  );
+};
+
+export default Layout;

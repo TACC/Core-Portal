@@ -68,6 +68,9 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
+    # Django Channels
+    'channels',
+
     # Django recaptcha.
     'captcha',
 
@@ -81,9 +84,6 @@ INSTALLED_APPS = [
     'termsandconditions',
     'impersonate',
 
-    # Websockets.
-    'ws4redis',
-
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
@@ -92,7 +92,6 @@ INSTALLED_APPS = [
     'portal.apps.notifications',
     'portal.apps.onboarding',
     'portal.apps.search',
-    'portal.apps.signals',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
@@ -299,7 +298,8 @@ PORTAL_SEARCH_MANAGERS = {
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
-PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
+                                  "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
 
 EXTERNAL_RESOURCE_SECRETS = {
     "google-drive": {
@@ -338,8 +338,6 @@ AGAVE_CLIENT_KEY = 'test'
 AGAVE_CLIENT_SECRET = 'test'
 AGAVE_SUPER_TOKEN = 'test'
 AGAVE_STORAGE_SYSTEM = 'test'
-AGAVE_COMMUNITY_DATA_SYSTEM = 'test.storage'
-AGAVE_PUBLIC_DATA_SYSTEM = 'test.public'
 AGAVE_DEFAULT_TRASH_NAME = 'test'
 
 AGAVE_JWT_HEADER = 'HTTP_X_AGAVE_HEADER'
@@ -491,3 +489,59 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
 
 DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
+
+# Channels
+ASGI_APPLICATION = 'portal.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
+    'frontera': {
+        'name': 'My Data (Frontera)',
+        'prefix': 'frontera.home.{}',                                   # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
+        'host': 'frontera.tacc.utexas.edu',                             # PORTAL_DATA_DEPOT_STORAGE_HOST
+        'home_dir': '/home1',                                     # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+        'storage_port': 22,
+        'icon': None,
+    },
+    'longhorn': {
+        'name': 'My Data (Longhorn)',
+        'prefix': 'longhorn.home.{}',
+        'host': 'longhorn.tacc.utexas.edu',
+        'home_dir': '/home',
+        'storage_port': 22,
+        'requires_allocation': 'longhorn3',
+        'icon': None,
+    },
+}
+
+PORTAL_EXEC_SYSTEMS = {
+    'data': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'stampede2': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'lonestar5': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'longhorn': {
+        'scratch_dir': '/scratch/{}'
+    },
+    'frontera': {
+        'scratch_dir': '/scratch1/{}'
+    }
+}
+
+PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+    {
+        'name': 'Community Data',
+        'system': 'portal.storage.community',
+        'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    }
+]

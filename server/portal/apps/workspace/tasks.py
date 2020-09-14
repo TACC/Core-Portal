@@ -5,7 +5,6 @@ from agavepy.agave import AgaveException
 from celery import shared_task
 from requests import ConnectionError, HTTPError
 import logging
-from portal.apps.signals.signals import portal_event
 from portal.apps.notifications.models import Notification
 from portal.apps.search.tasks import agave_indexer
 
@@ -23,16 +22,6 @@ class JobSubmitError(Exception):
             'status': getattr(self, 'status', 'error'),
             'message': getattr(self, 'message', None)
         }
-
-
-def _send_portal_event(event_data, username):
-    portal_event.send(
-        None,
-        event_type='job',
-        event_data=event_data,
-        event_users=[username]
-    )
-
 
 
 def submit_job(request, username, job_post):

@@ -1,13 +1,20 @@
-const initialSystemState = {
-  private: '',
-  community: '',
-  public: ''
+export const initialSystemState = {
+  defaultHost: '',
+  systemList: [],
+  error: false,
+  errorMessage: null
 };
 
 export function systems(state = initialSystemState, action) {
   switch (action.type) {
     case 'FETCH_SYSTEMS_SUCCESS':
-      return { ...action.payload };
+      return {
+        ...state,
+        systemList: action.payload.system_list,
+        defaultHost: action.payload.default_host
+      };
+    case 'FETCH_SYSTEMS_ERROR':
+      return { ...state, error: true, errorMessage: action.payload };
     default:
       return state;
   }
@@ -22,6 +29,7 @@ const initialFilesState = {
     rename: null,
     move: {},
     copy: {},
+    select: {},
     upload: {},
     trash: {}
   },
@@ -31,7 +39,7 @@ const initialFilesState = {
   },
   error: {
     FilesListing: false,
-    modal: []
+    modal: false
   },
   listing: {
     FilesListing: [],
@@ -55,6 +63,7 @@ const initialFilesState = {
     preview: false,
     move: false,
     copy: false,
+    select: false,
     upload: false,
     mkdir: false,
     rename: false,
@@ -65,6 +74,7 @@ const initialFilesState = {
     preview: {},
     move: {},
     copy: {},
+    select: {},
     upload: {},
     mkdir: {},
     rename: {},

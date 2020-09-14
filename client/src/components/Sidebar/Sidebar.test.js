@@ -1,15 +1,37 @@
 import React from 'react';
-import {BrowserRouter, MemoryRouter, Route} from 'react-router-dom';
+import { MemoryRouter, Route } from 'react-router-dom';
 import { Provider } from "react-redux";
 import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers'
+import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import Sidebar from './index';
 import '@testing-library/jest-dom/extend-expect';
-import SystemsList from "../SystemMonitor/SystemMonitor";
 
-const mockStore = configureStore();
 
+const PUBLIC_PAGES = [
+  'Dashboard',
+  'Data Files',
+  'Applications',
+  'Allocations',
+  'History'
+];
+const DEBUG_PAGES = [
+  'UI Patterns',
+];
+
+function getPath(page) {
+  let path;
+  switch (page) {
+    case 'Data Files':
+      path = 'data'
+      break;
+    default:
+      path = page.toLowerCase().replace(' ', '-');
+      break;
+  }
+  return path;
+}
 function renderSideBar(store) {
   return render(
     <Provider store={store}>
@@ -23,31 +45,48 @@ function renderSideBar(store) {
 }
 
 describe('workbench sidebar', () => {
-  it.each([
-    'Dashboard',
-    'Data Files',
-    'Applications',
-    'Allocations',
-  ])('should have a link to the %s page', page => {
-    const { getByText } = renderSideBar(mockStore({workbench}));
+  const mockStore = configureStore();
+  it.each(PUBLIC_PAGES)('should have a link to the %s page', page => {
+    const { getByText, queryByRole } = renderSideBar(
+      mockStore({ workbench, notifications })
+    );
+    const path = getPath(page);
     expect(getByText(page)).toBeDefined();
     expect(getByText(page).closest('a')).toHaveAttribute(
       'href',
-      `/workbench/${page === 'Data Files' ? 'data' : page.toLowerCase()}`
+      `/workbench/${path}`
     );
+    expect(queryByRole('status')).toBeNull();
   });
 
-  it('history is not available', () => {
-    const { queryByText } = renderSideBar(mockStore({workbench}));
-    expect(queryByText("History")).toBeNull();
+  it('should have a notification badge', () => {
+    const { getByRole } = renderSideBar(
+      mockStore({
+        workbench,
+        notifications: { list: { unread: 1 } },
+      })
+    );
+
+    expect(getByRole('status')).toBeDefined();
+    expect(getByRole('status')).toHaveTextContent(/1/);
   });
 
-  it('history is available in debug mode', () => {
-    const { getByText } = renderSideBar(mockStore({workbench: {status: {debug:true}}}));
-    expect(getByText("History")).toBeDefined();
-    expect(getByText("History").closest('a')).toHaveAttribute(
+  it.each(DEBUG_PAGES)('is not available', page => {
+    const { queryByText } = renderSideBar(
+      mockStore({ workbench, notifications })
+    );
+    expect(queryByText(page)).toBeNull();
+  });
+
+  it.each(DEBUG_PAGES)('is available in debug mode', page => {
+    const { getByText } = renderSideBar(
+      mockStore({ workbench: { status: { debug: true } }, notifications })
+    );
+    const path = getPath(page);
+    expect(getByText(page)).toBeDefined();
+    expect(getByText(page).closest('a')).toHaveAttribute(
       'href',
-      `/workbench/history`
+      `/workbench/${path}`
     );
   });
 });

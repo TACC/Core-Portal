@@ -1,19 +1,10 @@
 import React from "react";
-import { render } from '@testing-library/react';
 import { toHaveClass } from '@testing-library/jest-dom/dist/matchers';
-import { Router } from "react-router-dom";
 import DataFilesToolbar, { ToolbarButton } from "./DataFilesToolbar";
 import configureStore from "redux-mock-store";
-import { Provider } from "react-redux";
 import { createMemoryHistory } from "history";
+import renderComponent from 'utils/testing';
 
-function renderComponent(component, store, history) {
-  return render(
-    <Provider store={store}>
-      <Router history={history}>{component}</Router>
-    </Provider>
-  );
-}
 
 const mockStore = configureStore();
 expect.extend({ toHaveClass });
@@ -23,7 +14,7 @@ describe("ToolbarButton", () => {
     const { getByText, getByRole, getByTestId } = renderComponent(
       <ToolbarButton
         text="Rename"
-        icon={{ prefix: 'icon-action', iconName: 'rename' }}
+        iconName="rename"
         onClick={() => {}}
       />,
       store,
@@ -32,7 +23,7 @@ describe("ToolbarButton", () => {
 
     expect(getByText(/Rename/)).toBeDefined();
     expect(getByRole("button")).toBeDefined();
-    expect(getByTestId('toolbar-icon')).toHaveClass('icon-action icon-action-rename');
+    expect(getByTestId('toolbar-icon')).toHaveClass('icon-action icon-rename');
   });
 });
 

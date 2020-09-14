@@ -28,8 +28,8 @@ def validate_agave_job(job_uuid, job_owner, disallowed_states=[]):
 
     Throws PortalLibException if the job owner does not match the specified job ID
     Returns:
-        False if the job state is disallowed for notifications
-        True if the job is validated
+        None if the job state is disallowed for notifications
+        job_data if the job is validated
 
     """
     user = get_user_model().objects.get(username=job_owner)
@@ -46,11 +46,12 @@ def validate_agave_job(job_uuid, job_owner, disallowed_states=[]):
 
     # Check to see if the job state should generate a notification
     if job_data["status"] in disallowed_states:
-        return False
+        return None
 
-    return True
+    return job_data
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class JobsWebhookView(BaseApiView):
     """
     Dispatches notifications when receiving a POST request from the Agave
@@ -58,15 +59,11 @@ class JobsWebhookView(BaseApiView):
 
     """
 
-    @method_decorator(csrf_exempt)
-    def dispatch(self, *args, **kwargs):
-        return super(JobsWebhookView, self).dispatch(*args, **kwargs)
-
     def post(self, request, *args, **kwargs):
         """Notifies the user of the job status by instantiating and saving
         a Notification instance.
 
-        If the job is finished, we also index the job and  alert the user to the
+        If the job is finished, we also index the job and alert the user to the
         URL of the job's location in the data depot.
 
         Args:
@@ -101,13 +98,13 @@ class JobsWebhookView(BaseApiView):
             }
 
             archive_id = 'agave/{}/{}'.format(archiveSystem, (archivePath.strip('/')))
-            target_path = os.path.join('/workbench/data-depot/', archive_id.strip('/'))
+            target_path = os.path.join('/workbench/data/', archive_id.strip('/'))
 
             # Verify the job UUID against the username
             valid_state = validate_agave_job(job_id, username)
 
             # Verify that the job status should generate a notification
-            valid_state = valid_state and job_status in settings.PORTAL_JOB_NOTIFICATION_STATES
+            valid_state = valid_state is not None and job_status in settings.PORTAL_JOB_NOTIFICATION_STATES
 
             # If the job state is not valid for generating a notification,
             # return an OK response
@@ -152,7 +149,7 @@ class JobsWebhookView(BaseApiView):
                 event_data[Notification.STATUS] = Notification.SUCCESS
                 event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
                 event_data[Notification.EXTRA]['target_path'] = target_path
-                event_data[Notification.MESSAGE] = "Job '{}' finished!".format(job_name)
+                event_data[Notification.MESSAGE] = "Job '{}' finished".format(job_name)
                 event_data[Notification.OPERATION] = 'job_finished'
                 event_data[Notification.ACTION_LINK] = target_path
 
@@ -217,13 +214,11 @@ class JobsWebhookView(BaseApiView):
             return HttpResponse("ERROR", status=400)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class InteractiveWebhookView(BaseApiView):
     """
     Dispatches notifications when receiving a POST request from interactive jobs (e.g. VNC or WEB)
     """
-    @method_decorator(csrf_exempt)
-    def dispatch(self, *args, **kwargs):
-        return super(InteractiveWebhookView, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         """
@@ -238,16 +233,12 @@ class InteractiveWebhookView(BaseApiView):
             address = request.POST.get('address', '')
             job_uuid = request.POST.get('job_uuid', '')
             event_data = {
-                Notification.EVENT_TYPE: event_type,
+                Notification.EVENT_TYPE: 'interactive_session_ready',
                 Notification.STATUS: Notification.INFO,
                 Notification.OPERATION: 'web_link',
                 Notification.USER: job_owner,
                 Notification.MESSAGE: 'Ready to view.',
-                Notification.ACTION_LINK: address,
-                Notification.EXTRA: {
-                    'address': address,
-                    'target_uri': address
-                }
+                Notification.ACTION_LINK: address
             }
         elif event_type == 'VNC':
 
@@ -263,19 +254,12 @@ class InteractiveWebhookView(BaseApiView):
                 'hostname={host}&port={port}&autoconnect=true&password={pw}' \
                 .format(host=host, port=port, pw=password)
             event_data = {
-                Notification.EVENT_TYPE: event_type,
+                Notification.EVENT_TYPE: 'interactive_session_ready',
                 Notification.STATUS: Notification.INFO,
                 Notification.OPERATION: 'vnc_session_start',
                 Notification.USER: job_owner,
                 Notification.MESSAGE: 'Your VNC session is ready.',
-                Notification.ACTION_LINK: target_uri,
-                Notification.EXTRA: {
-                    'host': host,
-                    'port': port,
-                    'address': address,
-                    'password': password,
-                    'associationIds': job_uuid
-                }
+                Notification.ACTION_LINK: target_uri
             }
 
         else:
@@ -293,6 +277,7 @@ class InteractiveWebhookView(BaseApiView):
                         job_uuid, job_owner
                     )
                 )
+            event_data[Notification.EXTRA] = valid_state
         except (HTTPError, AgaveException, PortalLibException) as e:
             logger.exception(e)
             return HttpResponse("ERROR", status=400)
@@ -300,19 +285,22 @@ class InteractiveWebhookView(BaseApiView):
         n = Notification.objects.create(**event_data)
         n.save()
 
+        # NOTE: The below metadata creation is disabled for now, as it is unused by our current frontend
         # create metadata for interactive connection and save to agave metadata
-        try:
-            agave_job_meta = {
-                'name': 'interactiveJobDetails',
-                'value': event_data,
-                'associationIds': [job_uuid],
-            }
-            user = get_user_model().objects.get(username=job_owner)
-            agave = user.agave_oauth.client
-            agave.meta.addMetadata(body=json.dumps(agave_job_meta))
+        # try:
+        #     agave_job_meta = {
+        #         'name': 'interactiveJobDetails',
+        #         'value': {
+        #             Notification.ACTION_LINK: event_data[Notification.ACTION_LINK]
+        #         },
+        #         'associationIds': [job_uuid],
+        #     }
+        #     user = get_user_model().objects.get(username=job_owner)
+        #     agave = user.agave_oauth.client
+        #     agave.meta.addMetadata(body=json.dumps(agave_job_meta))
 
-        except (HTTPError, AgaveException) as e:
-            logger.exception(e)
-            return HttpResponse("ERROR", status=400)
+        # except (HTTPError, AgaveException) as e:
+        #     logger.exception(e)
+        #     return HttpResponse("ERROR", status=400)
 
         return HttpResponse('OK')
