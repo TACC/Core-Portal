@@ -939,6 +939,21 @@ version = "2.4.7"
 
 [[package]]
 category = "main"
+description = "Python package for TAS integration"
+name = "pytas"
+optional = false
+python-versions = "*"
+version = "1.5.0"
+
+[package.dependencies]
+requests = "2.24"
+
+[package.source]
+reference = "24cfe78c3280f3615fe89728232a7d48f759c15d"
+type = "git"
+url = "https://bitbucket.org/taccaci/pytas.git"
+[[package]]
+category = "main"
 description = "pytest: simple powerful testing with Python"
 name = "pytest"
 optional = false
@@ -1267,7 +1282,7 @@ test = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
-content-hash = "90bac7c8a7b54c64833abc98af74a5392cd79746da4a924d44d8dbc135a5e8f6"
+content-hash = "30bc1f73f85f841b9a76e3977c007f8191a3ed39f02ce655197c54803e4635e4"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1786,6 +1801,7 @@ pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
 ]
+pytas = []
 pytest = [
     {file = "pytest-5.4.3-py3-none-any.whl", hash = "sha256:5c0db86b698e8f170ba4582a492248919255fcd4c79b1ee64ace34301fb589a1"},
     {file = "pytest-5.4.3.tar.gz", hash = "sha256:7979331bfcba207414f5e1263b5a0f8f521d0f457318836a7355531ed1a4c7d8"},
