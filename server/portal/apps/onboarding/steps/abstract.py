@@ -19,7 +19,7 @@ class AbstractStep:
         self.last_event = None
         self.events = []
         self.settings = next(
-            (step['settings'] for step in settings.PORTAL_USER_ACCOUNT_SETUP_STEPS if 
+            (step['settings'] for step in settings.PORTAL_USER_ACCOUNT_SETUP_STEPS if
                 step['step'] == self.step_name()),
             None
         )
