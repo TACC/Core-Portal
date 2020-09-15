@@ -136,19 +136,3 @@ class TestUserSetup(TestCase):
         setup("username", "system")
         self.mock_systems_manager.return_value.get_private_directory.assert_called_with(self.mock_user)
         self.mock_systems_manager.return_value.setup_private_system.assert_called_with(self.mock_user)
-
-    @skip("No onboarding steps are called right now")
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=['fake.setup.setup_class'])
-    def test_setup_user(self):
-        # A user with setup_complete == False should cause setup steps to run
-        self.mock_user.profile.setup_complete = False
-        setup("username", "system")
-        self.mock_execute.assert_called_with(ANY)
-
-    @skip("No onboarding steps are called right now")
-    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=['fake.setup.setup_class'])
-    def test_skip_setup(self):
-        # A user that has setup_complete should not execute setup steps
-        self.mock_user.profile.setup_complete = True
-        setup("username", "system")
-        self.mock_execute.assert_not_called()
