@@ -70,3 +70,19 @@ def test_str(mock_step):
 
 def test_settings(mock_step):
     assert mock_step.settings == {'key': 'value'}
+
+
+def test_step_missing(regular_user, settings):
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = []
+    mock_step = MockStep(regular_user)
+    assert mock_step.settings is None
+
+
+def test_step_setting_missing(regular_user, settings):
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+        {
+            'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
+        }
+    ]
+    mock_step = MockStep(regular_user)
+    assert mock_step.settings is None

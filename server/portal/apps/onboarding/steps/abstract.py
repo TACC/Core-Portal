@@ -18,11 +18,15 @@ class AbstractStep:
         self.user = user
         self.last_event = None
         self.events = []
-        self.settings = next(
-            (step['settings'] for step in settings.PORTAL_USER_ACCOUNT_SETUP_STEPS if
-                step['step'] == self.step_name()),
-            None
-        )
+
+        try:
+            steps = settings.PORTAL_USER_ACCOUNT_SETUP_STEPS
+            step_dict = next(
+                step for step in steps if step['step'] == self.step_name()
+            )
+            self.settings = step_dict['settings']
+        except Exception:
+            self.settings = None
 
         try:
             # Restore event history
