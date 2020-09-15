@@ -2,7 +2,7 @@ Django==2.2.7
 PyJWT==1.7.1
 agavepy==0.9.3
 cached-property==1.5.1
-celery==4.3.0
+celery==4.4.7
 certifi==2019.9.11
 channels==2.4.0
 channels-redis==2.4.1

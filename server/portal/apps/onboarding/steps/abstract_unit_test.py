@@ -1,4 +1,4 @@
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, override_settings
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 from django.db.models import signals
@@ -88,3 +88,13 @@ class TestAbstractStep(TestCase):
             str(mock_step),
             "<portal.apps.onboarding.steps.test_steps.MockStep for test is pending>"
         )
+
+    def test_settings(self):
+        mock_step = MockStep(self.user)
+        self.assertEqual(
+            mock_step.settings,
+            {
+                'key': 'value'
+            }
+        )
+
