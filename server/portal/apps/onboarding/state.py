@@ -28,12 +28,6 @@ class SetupState:
     # "staff_approve" or "staff_deny" to the step's client_action method
     STAFFWAIT = "staffwait"
 
-    # Steps in WEBHOOK will allow the webhook_callback method to
-    # be invoked by portal.apps.accounts.api.webhook.SetupStepWebhookView.post
-    # This state should be set and logged after an external call
-    # has been successfully sent
-    WEBHOOK = "webhook"
-
     # Steps in ERROR have been processed in execute_setup_steps but
     # generated an exception. This state will also cause the front end
     # to display a "submit a ticket" link to the user
