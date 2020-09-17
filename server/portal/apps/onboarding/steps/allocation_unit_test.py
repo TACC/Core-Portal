@@ -1,4 +1,3 @@
-from mock import patch
 from portal.apps.onboarding.steps.allocation import AllocationStep
 import pytest
 

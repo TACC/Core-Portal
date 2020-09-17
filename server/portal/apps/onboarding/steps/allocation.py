@@ -93,7 +93,7 @@ class AllocationStep(AbstractStep):
         resources = []
         try:
             resources = get_allocations(self.user.username).keys()
-        except:
+        except Exception:
             self.state = SetupState.ERROR
             self.log("Unable to retrieve a list of projects")
             return
