@@ -314,7 +314,7 @@ class InteractiveWebhookView(BaseApiView):
 @method_decorator(csrf_exempt, name='dispatch')
 class CallbackWebhookView(BaseApiView):
     """
-    Validates 
+    Validates incoming webhook calls executes registered callbacks
     """
 
     def post(self, request, webhook_id):
