@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'portal.apps.notifications',
     'portal.apps.onboarding',
     'portal.apps.search',
+    'portal.apps.webhooks',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
@@ -545,3 +546,5 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None
     }
 ]
+
+WH_BASE_URL = "https://testserver"

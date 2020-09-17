@@ -1,11 +1,12 @@
 from portal.apps.webhooks.callback import WebhookCallback
 from portal.apps.webhooks.models import ExternalCall
 from django.conf import settings
-from django.core.exceptions import DoesNotExist
-import logging
-from pytas.http import TASClient
+from django.core.exceptions import ObjectDoesNotExist
 import random
 import string
+from inspect import isclass
+from importlib import import_module
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ def validate_webhook(webhook_id):
     """
     try:
         return ExternalCall.objects.get(webhook_id=webhook_id, accepting=True)
-    except DoesNotExist:
+    except ObjectDoesNotExist:
         return None
 
 
@@ -57,9 +58,9 @@ def load_callback(callback_name):
             )
         )
     callback_instance = call()
-    if not isinstance(callback_instance, KeyServiceCallback):
+    if not isinstance(callback_instance, WebhookCallback):
         raise ValueError(
-            "{callback_name} is not a subclass of KeyServiceCallback".format(
+            "{callback_name} is not a subclass of WebhookCallback".format(
                 callback_name=callback_name
             )
         )
@@ -71,7 +72,7 @@ def execute_callback(external_call, request):
 
     Execute the associated callback of a webhook
     """
-    if external_call.callback is None or operation.callback == "":
+    if external_call.callback is None or external_call.callback == "":
         return
-    callback = load_callback(operation.callback)
+    callback = load_callback(external_call.callback)
     callback.callback(external_call, request)
