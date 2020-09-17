@@ -2,7 +2,6 @@
 """
 from django.urls import path
 from portal.apps.webhooks import views
-from portal.apps.onboarding.api.webhook import SetupStepWebhookView
 
 
 app_name = 'webhooks'

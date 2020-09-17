@@ -1,6 +1,5 @@
 from portal.apps.webhooks.utils import register_webhook
 from portal.apps.webhooks.callback import WebhookCallback
-from portal.apps.webhooks.models import ExternalCall
 from django.conf import settings
 import json
 import pytest

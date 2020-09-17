@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.conf import settings
-from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime
 from portal.apps.webhooks.fields import JSONField
 
@@ -29,7 +28,7 @@ class ExternalCall(models.Model):
     # Timestamp for outbound external call
     time = models.DateTimeField(default=datetime.now)
 
-    # Callback class to be executed when a webhook is received 
+    # Callback class to be executed when a webhook is received
     callback = models.CharField(max_length=300, null=True)
 
     # JSON Data

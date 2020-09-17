@@ -2,17 +2,13 @@ import json
 
 from django.conf import settings
 from django.contrib.postgres.fields import (
-    JSONField as DjangoJSONField,
-    ArrayField as DjangoArrayField,
+    JSONField as DjangoJSONField
 )
 from django.db.models import Field
 
 
 # Hack for loading Field class appropriate to either Postgres or SQLite (testing db)
 # from https://medium.com/@philamersune/using-postgresql-jsonfield-in-sqlite-95ad4ad2e5f1
-
-class JSONField(DjangoJSONField):
-    pass
 
 
 if 'sqlite' in settings.DATABASES['default']['ENGINE']:
@@ -40,3 +36,6 @@ if 'sqlite' in settings.DATABASES['default']['ENGINE']:
 
         def value_to_string(self, obj):
             return self.value_from_object(obj)
+else:
+    class JSONField(DjangoJSONField):
+        pass

@@ -7,19 +7,10 @@ from portal.apps.webhooks.utils import (
     validate_webhook,
     execute_callback
 )
-from mock import patch, MagicMock
-from django.contrib.auth import get_user_model
 import pytest
 
 
 pytestmark = pytest.mark.django_db
-
-
-@pytest.fixture
-def mock_webhook_id(mocker):
-    mock_get_webhook_id = mocker.patch('portal.apps.webhooks.utils.get_webhook_id')
-    mock_get_webhook_id.return_value = "MOCK_WEBHOOK_ID"
-    yield mock_get_webhook_id
 
 
 class MockCallback(WebhookCallback):
@@ -64,12 +55,12 @@ def test_validate_webhook(mock_webhook_id):
     # Test if external call is no longer accepting webhooks
     expected.accepting = False
     expected.save()
-    assert ExternalCall.objects.all()[0].accepting == False
+    assert not ExternalCall.objects.all()[0].accepting
     assert validate_webhook("MOCK_WEBHOOK_ID") is None
 
 
 def test_execute_callback():
-    webhook_id = register_webhook(
+    register_webhook(
         callback='portal.apps.webhooks.utils_unit_test.MockCallback',
         callback_data={"key": "value"}
     )
