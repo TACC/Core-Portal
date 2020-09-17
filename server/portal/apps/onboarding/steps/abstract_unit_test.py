@@ -1,4 +1,4 @@
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 from django.db.models import signals

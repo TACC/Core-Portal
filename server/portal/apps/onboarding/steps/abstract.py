@@ -2,7 +2,6 @@ from abc import ABCMeta, abstractmethod
 from six import add_metaclass
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
-from django.urls import reverse
 
 
 @add_metaclass(ABCMeta)

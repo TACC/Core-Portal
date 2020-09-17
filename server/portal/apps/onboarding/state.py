@@ -12,7 +12,7 @@ class SetupState:
     FAILED = "failed"
 
     # Steps in COMPLETED state will cause the next step to be
-    # checked for automated processing 
+    # checked for automated processing
     # by portal.apps.onboarding.execute.execute_setup_steps
     COMPLETED = "completed"
 
@@ -24,7 +24,7 @@ class SetupState:
 
     # Steps in STAFFWAIT state will show an "Approve" and "Deny"
     # action to staff users, allowing them to approve or deny
-    # a portal onboarding step. The client will send 
+    # a portal onboarding step. The client will send
     # "staff_approve" or "staff_deny" to the step's client_action method
     STAFFWAIT = "staffwait"
 

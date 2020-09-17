@@ -7,7 +7,6 @@ from portal.apps.onboarding.views import (
     SetupStatusView,
     SetupAdminView
 )
-from portal.apps.onboarding import views
 
 
 app_name = 'portal_onboarding'

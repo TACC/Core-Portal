@@ -1,6 +1,7 @@
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.steps.abstract import AbstractStep
 
+
 class RequestAccessStep(AbstractStep):
     def __init__(self, user):
         """
@@ -30,7 +31,7 @@ class RequestAccessStep(AbstractStep):
             self.fail(
                 "Portal access request has not been approved."
             )
-        else: 
+        else:
             self.fail(
                 "Invalid client action {action}".format(
                     action=action
