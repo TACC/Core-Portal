@@ -1,4 +1,4 @@
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 from inspect import isclass
 from importlib import import_module
 

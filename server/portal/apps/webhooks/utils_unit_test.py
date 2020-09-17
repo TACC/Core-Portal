@@ -49,7 +49,7 @@ def test_register_webhook(mock_webhook_id, regular_user):
     callback = "mock.callback.class"
     callback_data = {"key": "value"}
     result = register_webhook(callback=callback, callback_data=callback_data, user=regular_user)
-    assert result == "https://testserver/webhooks/callbacks/MOCK_WEBHOOK_ID"
+    assert result == "https://testserver/webhooks/callbacks/MOCK_WEBHOOK_ID/"
     external_call = ExternalCall.objects.get(webhook_id="MOCK_WEBHOOK_ID", accepting=True)
     assert external_call is not None
 
