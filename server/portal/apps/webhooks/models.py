@@ -2,9 +2,9 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime
+from portal.apps.webhooks.fields import JSONField
 
 # Create your models here.
 
@@ -22,14 +22,15 @@ class ExternalCall(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="+",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True
     )
 
     # Timestamp for outbound external call
     time = models.DateTimeField(default=datetime.now)
 
     # Callback class to be executed when a webhook is received 
-    callback = models.CharField(max_length=300)
+    callback = models.CharField(max_length=300, null=True)
 
     # JSON Data
     callback_data = JSONField(null=True)
@@ -38,20 +39,14 @@ class ExternalCall(models.Model):
     # Otherwise, a 500 will be returned to the caller.
     accepting = models.BooleanField(default=True)
 
-    def cleanup(self):
-        """cleanup
-
-        Flags this webhook as not accepting any more requests
-        """
-        accepting = False
-        self.save()
-
     def __unicode__(self):
-        return '<WebhookCall {webhookId} on behalf of {username}>'.format(
-            username=self.user.username,
-            time=self.time,
-            executionId=self.executionId
+        return '{webhook_id} ({accepting})'.format(
+            webhook_id=self.webhook_id,
+            accepting="Accepting Webhooks" if self.accepting else "Not accepting webhooks"
         )
+
+    def __str__(self):
+        return self.__unicode__()
 
     def to_dict(self):
         return {
