@@ -2,10 +2,10 @@ from abc import abstractmethod
 
 
 class WebhookCallback(object):
-    """class KeyServiceCallback
+    """class WebhookCallback
 
     An abstract base class for executing callback functions upon
-    completion of a Keys Service Abaco Reactor call.
+    receiving a validated webhook.
     """
     def __init__(self):
         pass
