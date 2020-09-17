@@ -35,14 +35,6 @@ class TestAbstractStep(TestCase):
             "portal.apps.onboarding.steps.test_steps.MockStep"
         )
 
-    def test_webhook_url(self):
-        request = RequestFactory().get("/api/test")
-        mock_step = MockStep(self.user)
-        self.assertEqual(
-            mock_step.webhook_url(request),
-            "http://testserver/webhooks/onboarding/"
-        )
-
     def test_log(self):
         mock_step = MockStep(self.user)
         mock_step.state = SetupState.PENDING
