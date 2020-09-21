@@ -27,17 +27,28 @@ const exampleAuthenticatedUser = {
   isStaff: false
 }
 
-function renderTicketsCreateForm(store) {
+function renderTicketsCreateForm(store, authenticatedUser) {
   return render(
     <Provider store={store}>
       <BrowserRouter>
-        <TicketCreateForm />
+        <TicketCreateForm authenticatedUser={authenticatedUser}/>
       </BrowserRouter>
     </Provider>
   );
 }
 
 describe('TicketCreateForm', () => {
+  it('renders form for un-authenticated users', () => {
+    const store = mockStore({
+      ticketCreate: {
+        ...initialMockState
+      }
+    });
+
+    const { getAllByText, getByDisplayValue } = renderTicketsCreateForm(store, null);
+    expect(getAllByText(/Explain your steps/)).toBeDefined();
+  });
+
   it('renders form with authenticated user information', () => {
     const store = mockStore({
       ticketCreate: {
@@ -45,8 +56,10 @@ describe('TicketCreateForm', () => {
       }
     });
 
-    const { getByText, getAllByText } = renderTicketsCreateForm(store);
-    expect(getByText(/Max/)).toBeInTheDocument();
+    const { getAllByText, getByDisplayValue } = renderTicketsCreateForm(store, exampleAuthenticatedUser);
+    expect(getByDisplayValue(/Max/)).toBeInTheDocument();
+    expect(getByDisplayValue(/Munstermann/)).toBeInTheDocument();
+    expect(getByDisplayValue(/max@munster.mann/)).toBeInTheDocument();
     expect(getAllByText(/Explain your steps/)).toBeDefined();
   });
 
