@@ -1,0 +1,40 @@
+.root {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    --text-color: #707070;
+    --background-color: #dfdaf5;
+}
+
+.header {
+    font-size: 2em;
+    padding: 1em;
+}
+
+.list {
+    color: var(--text-color);
+
+    .listItem {
+        &:nth-child(odd) {
+            background: var(--background-color);
+        }
+
+        &:hover {
+            cursor: pointer;
+            color: #333;
+        }
+    }
+}
+
+.button {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-weight: bold;
+    border: 1px solid var(--text-color);
+    border-radius: 1px;
+
+    &:hover {
+        filter: brightness(90%);
+    }
+}

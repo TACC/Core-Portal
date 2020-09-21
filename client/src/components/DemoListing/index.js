@@ -1,3 +1,1 @@
-import { DemoListing } from './DemoListing';
-
-export default DemoListing
+export { default } from './DemoListing';
