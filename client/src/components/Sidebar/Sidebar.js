@@ -88,6 +88,19 @@ const Sidebar = () => {
           </div>
         </NavLink>
       </NavItem>
+      <NavItem>
+        <NavLink
+          tag={RRNavLink}
+          to={`${path}${ROUTES.DEMO}`}
+          styleName="link"
+          activeStyleName="link--active"
+        >
+          <div styleName="content" className="nav-content">
+            <i className="icon icon-monitor" />
+            <span styleName="text">React Demo</span>
+          </div>
+        </NavLink>
+      </NavItem>
       {showUIPatterns && (
         <NavItem>
           <NavLink
