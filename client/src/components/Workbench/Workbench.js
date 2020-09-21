@@ -117,10 +117,9 @@ function Workbench() {
             path={`${path}${ROUTES.APPLICATIONS}`}
             component={Applications}
           />
-          <Route
-            path={`${path}${ROUTES.DEMO}`}
-            component={Applications}
-          />
+          <Route path={`${path}${ROUTES.DEMO}`}>
+            <div>Hello world</div>
+          </Route>
           <Route
             path={`${path}${ROUTES.ALLOCATIONS}`}
             component={Allocations}
