@@ -8,5 +8,4 @@ export const HISTORY = '/history';
 export const JOBS = '/jobs';
 export const UI = '/ui-patterns';
 export const WORKBENCH = '/workbench';
-export const COMMON = '/_common';
 export const USER_GUIDE = '/user-guide';
