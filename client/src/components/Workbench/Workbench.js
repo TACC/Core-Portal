@@ -9,6 +9,7 @@ import UIPatterns from '../UIPatterns';
 import Sidebar from '../Sidebar';
 import DataFiles from '../DataFiles';
 import History from '../History';
+import DemoListing from '../DemoListing';
 import * as ROUTES from '../../constants/routes';
 import NotificationToast from '../Toasts';
 import './Workbench.scss';
@@ -118,7 +119,7 @@ function Workbench() {
             component={Applications}
           />
           <Route path={`${path}${ROUTES.DEMO}`}>
-            <div>Hello world</div>
+            <DemoListing name="Alice" />
           </Route>
           <Route
             path={`${path}${ROUTES.ALLOCATIONS}`}
