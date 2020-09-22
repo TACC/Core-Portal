@@ -10,11 +10,10 @@ export default function renderComponent(component, store, history) {
         <Router history={history}>{component}</Router>
       </Provider>
     );
-  } else {
-    return render(
-      <Provider store={store}>
-        <BrowserRouter>{component}</BrowserRouter>
-      </Provider>
-    );
   }
+  return render(
+    <Provider store={store}>
+      <BrowserRouter>{component}</BrowserRouter>
+    </Provider>
+  );
 }
