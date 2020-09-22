@@ -2,16 +2,10 @@ import React from 'react';
 import renderComponent from 'utils/testing';
 import configureStore from 'redux-mock-store';
 import TicketCreateForm from './TicketCreateForm';
+import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
 import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
-const initialMockState = {
-  creating: false,
-  creatingSuccess: false,
-  createdTicketId: null,
-  creatingError: false,
-  creatingErrorMessage: null
-};
 
 const exampleAuthenticatedUser = {
   first_name: 'Max',
@@ -25,14 +19,10 @@ const exampleAuthenticatedUser = {
   isStaff: false
 };
 
-function renderTicketsCreateForm(store, authenticatedUser) {}
-
 describe('TicketCreateForm', () => {
   it('renders form for un-authenticated users', () => {
     const store = mockStore({
-      ticketCreate: {
-        ...initialMockState
-      }
+      ticketCreate
     });
 
     const { getAllByText } = renderComponent(<TicketCreateForm />, store);
@@ -42,7 +32,7 @@ describe('TicketCreateForm', () => {
   it('renders form with authenticated user information', () => {
     const store = mockStore({
       ticketCreate: {
-        ...initialMockState
+        ...ticketCreate
       }
     });
 
@@ -59,7 +49,7 @@ describe('TicketCreateForm', () => {
   it('renders spinner when creating a ticket', () => {
     const store = mockStore({
       ticketCreate: {
-        ...initialMockState,
+        ...ticketCreate,
         creating: true
       }
     });
@@ -74,7 +64,7 @@ describe('TicketCreateForm', () => {
   it('renders a ticket create ID upon success', () => {
     const store = mockStore({
       ticketCreate: {
-        ...initialMockState,
+        ...ticketCreate,
         creatingSuccess: true,
         createdTicketId: 1234
       }
@@ -90,7 +80,7 @@ describe('TicketCreateForm', () => {
   it('renders a ticket creation error', () => {
     const store = mockStore({
       ticketCreate: {
-        ...initialMockState,
+        ...ticketCreate,
         creatingError: true,
         creatingErrorMessage: 'Mock error'
       }
