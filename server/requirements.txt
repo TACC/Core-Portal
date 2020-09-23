@@ -1,4 +1,4 @@
-Django==2.2.7
+Django==2.2.13
 PyJWT==1.7.1
 agavepy==0.9.3
 cached-property==1.5.1
