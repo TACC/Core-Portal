@@ -35,7 +35,7 @@ const FeedbackForm = ({ authenticatedUser }) => {
   const url = location.pathname;
   const defaultValues = useMemo(
     () => ({
-      subject: 'Feedback',
+      subject: 'Feedback for the Frontera Portal',
       url: url || '',
       problem_description: '',
       first_name: authenticatedUser ? authenticatedUser.first_name : '',
