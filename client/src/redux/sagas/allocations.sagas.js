@@ -10,7 +10,7 @@ import { chain, flatten, isEmpty } from 'lodash';
 import { fetchUtil } from 'utils/fetchUtil';
 import 'cross-fetch';
 
-export function* getAllocations(action) {
+export function* getAllocations() {
   yield put({ type: 'START_ADD_ALLOCATIONS' });
   try {
     const json = yield call(getAllocationsUtil);
@@ -28,7 +28,7 @@ export function* getAllocations(action) {
  * @async
  * @returns {{portal_alloc: String, active: Array, inactive: Array, hosts: Object}}
  */
-const getAllocationsUtil = async () => {
+export const getAllocationsUtil = async () => {
   const res = await fetchUtil({
     url: '/api/users/allocations/'
   });
@@ -40,7 +40,7 @@ const getAllocationsUtil = async () => {
  * Fetch user data for a project
  * @param {String} projectId - project id
  */
-const getTeamsUtil = async projectId => {
+export const getTeamsUtil = async projectId => {
   const res = await fetchUtil({ url: `/api/users/team/${projectId}` });
   const json = res.response;
   return json;
@@ -53,35 +53,35 @@ const getTeamsUtil = async projectId => {
  * Allocations data
  * @returns {{teams: Object, loadingTeams: {}}}
  */
-const populateTeamsUtil = data => {
-  const allocations = { active: data.active, inactive: data.inactive };
-  const teams = flatten(Object.values(allocations)).reduce(
-    (obj, item) => ({ ...obj, [item.projectId]: {} }),
-    {}
-  );
-
+export const populateTeamsUtil = data => {
+  const teams = data.active
+    .concat(data.inactive)
+    .reduce((obj, item) => ({ ...obj, [item.projectId]: {} }), {});
   const loadingTeams = Object.keys(teams).reduce(
     (obj, teamID) => ({ ...obj, [teamID]: { loading: true } }),
     {}
   );
-
   return { teams, loadingTeams };
 };
 
-function* getUsernames(action) {
+export const allocationsSelector = state => [
+  ...state.allocations.active,
+  ...state.allocations.inactive
+];
+
+export function* getUsernames(action) {
   try {
     const json = yield call(getTeamsUtil, action.payload.name);
-    const allocations = yield select(state => [
-      ...state.allocations.active,
-      ...state.allocations.inactive
-    ]);
+    const allocations = yield select(allocationsSelector);
     const allocationIds = chain(allocations)
       .filter({ projectId: action.payload.projectId })
       .map('systems')
       .flatten()
       .map(s => ({ host: s.host, id: s.allocation.id }))
       .value();
-    const usage = yield all(allocationIds.map(params => getUsageUtil(params)));
+    const usage = yield all(
+      allocationIds.map(params => call(getUsageUtil, params))
+    );
     const payload = teamPayloadUtil(
       action.payload.projectId,
       json,
@@ -105,10 +105,10 @@ function* getUsernames(action) {
  * Fetch Usage For an Allocation and Return an Array of Users with their data,
  * resource used, and allocation id.
  * @async
- * @param {{id: Number, system: Object}} params
+ * @param {{id: Number, host: String}} params
  * @returns {{user: Object, resource: String, allocationId: Number}[]} data
  */
-const getUsageUtil = async params => {
+export const getUsageUtil = async params => {
   const res = await fetchUtil({
     url: `/api/users/team/usage/${params.id}`
   });
@@ -134,7 +134,7 @@ const getUsageUtil = async params => {
  * @param {Array} allocations - All allocations
  * @returns {{data: Object, loading: Boolean}}
  */
-const teamPayloadUtil = (
+export const teamPayloadUtil = (
   id,
   obj,
   error = false,
