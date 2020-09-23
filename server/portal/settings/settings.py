@@ -737,8 +737,25 @@ PORTAL_USER_HOME_MANAGER = settings_secret.\
 PORTAL_KEYS_MANAGER = settings_secret.\
     _PORTAL_KEYS_MANAGER
 
-PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
-    _PORTAL_USER_ACCOUNT_SETUP_STEPS
+"""
+Onboarding steps
+
+Each step is an object, with the full package name of the step class and
+an associated settings object. If the 'settings' key is omitted, steps will
+have a default value of None for their settings attribute.
+
+Example: 
+
+PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
+        'settings': {
+            'key': 'value'
+        }
+    }
+]
+"""
+PORTAL_USER_ACCOUNT_SETUP_STEPS = []
 
 PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = settings_secret.\
     _PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD
