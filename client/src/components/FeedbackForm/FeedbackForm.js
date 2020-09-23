@@ -20,7 +20,6 @@ const formSchema = Yup.object().shape({
 const FeedbackForm = ({ authenticatedUser }) => {
   const location = useLocation();
   const dispatch = useDispatch();
-  const isAuthenticated = authenticatedUser != null;
   const creating = useSelector(state => state.ticketCreate.creating);
   const creatingError = useSelector(state => state.ticketCreate.creatingError);
   const creatingErrorMessage = useSelector(
@@ -62,7 +61,7 @@ const FeedbackForm = ({ authenticatedUser }) => {
           payload: {
             formData,
             resetSubmittedForm: resetForm,
-            refreshTickets: isAuthenticated
+            refreshTickets: true
           }
         });
       }}
@@ -86,7 +85,6 @@ const FeedbackForm = ({ authenticatedUser }) => {
               {creatingSuccess && (
                 <CreatedFeedbackInformation
                   ticketId={createdTicketId}
-                  isAuthenticated={isAuthenticated}
                 />
               )}
               {creatingError && (
@@ -125,7 +123,7 @@ FeedbackForm.defaultProps = {
   authenticatedUser: null
 };
 
-function CreatedFeedbackInformation({ isAuthenticated, ticketId }) {
+function CreatedFeedbackInformation({ ticketId }) {
   if (!ticketId) {
     return null;
   }
@@ -137,7 +135,6 @@ function CreatedFeedbackInformation({ isAuthenticated, ticketId }) {
 }
 
 CreatedFeedbackInformation.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
   ticketId: PropTypes.number.isRequired
 };
 
