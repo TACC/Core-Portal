@@ -4,12 +4,15 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import AppRouter from './components/Workbench';
+import { initialState as workbench } from './redux/reducers/workbench.reducers'
+import { initialState as profile } from './redux/reducers/profile.reducers'
+import { initialState as notifications } from './redux/reducers/notifications.reducers';
 
 const mockStore = configureStore();
 
 it('Renders index', () => {
   render(
-    <Provider store={mockStore({})}>
+    <Provider store={mockStore({ profile, workbench, notifications })}>
       <Router>
         <AppRouter />
       </Router>
