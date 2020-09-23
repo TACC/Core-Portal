@@ -17,15 +17,15 @@ export const jobStatusUpdatePending = {
     endTime: null,
     lastUpdated: '2020-09-20T12:25:28.522Z',
     uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
-    owner: 'maxmustermann',
+    owner: 'username',
     executionSystem: null,
-    appId: 'prtl.clone.maxmustermann.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+    appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
     workPath: null,
     archive: true,
     archiveOnAppError: true,
     // eslint-disable-next-line no-template-curly-in-string
     archivePath: 'archive/jobs/2020-09-20/${JOB_NAME}-${JOB_ID}',
-    archiveSystem: 'frontera.home.maxmustermann',
+    archiveSystem: 'frontera.home.username',
     nodeCount: 1,
     processorsPerNode: 20,
     memoryPerNode: 0,
@@ -45,7 +45,7 @@ export const jobStatusUpdatePending = {
   },
   pk: 30,
   action_link: '',
-  user: 'maxmustermann',
+  user: 'username',
   read: false,
   deleted: false
 };
@@ -69,16 +69,16 @@ export const jobStatusUpdateRunning = {
     endTime: null,
     lastUpdated: '2020-09-20T12:25:50.950Z',
     uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
-    owner: 'maxmustermann',
-    executionSystem: 'maxmustermann.TACC-ACI.exec.stampede2.HPC',
-    appId: 'prtl.clone.maxmustermann.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+    owner: 'username',
+    executionSystem: 'username.TACC-ACI.exec.stampede2.HPC',
+    appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
     workPath:
-      '/scratch/05724/maxmustermann/maxmustermann/job-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007-rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver',
+      '/scratch/05724/username/username/job-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007-rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver',
     archive: true,
     archiveOnAppError: true,
     archivePath:
       'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
-    archiveSystem: 'frontera.home.maxmustermann',
+    archiveSystem: 'frontera.home.username',
     nodeCount: 1,
     processorsPerNode: 20,
     memoryPerNode: 1,
@@ -98,7 +98,7 @@ export const jobStatusUpdateRunning = {
   },
   pk: 34,
   action_link: '',
-  user: 'maxmustermann',
+  user: 'username',
   read: false,
   deleted: false
 };
@@ -121,23 +121,23 @@ export const jobInteractiveSessionReady = {
     created: '2020-09-20T12:25:28.000Z',
     ended: null,
     lastUpdated: '2020-09-20T12:25:50.000Z',
-    owner: 'maxmustermann',
+    owner: 'username',
     roles:
-      'Internal/PORTALS_maxmustermann_cep-dev_PRODUCTION,Internal/PORTALS_maxmustermann_test_PRODUCTION,Internal/PORTALS_maxmustermann_cep dev_PRODUCTION,Internal/PORTALS_maxmustermann_test-nathaf_PRODUCTION,Internal/PORTALS_maxmustermann_DefaultApplication_PRODUCTION,Internal/PORTALS_maxmustermann_cep-dev_SANDBOX,Internal/everyone,Internal/PORTALS_maxmustermann_cep dev_SANDBOX',
-    systemId: 'maxmustermann.TACC-ACI.exec.stampede2.HPC',
-    appId: 'prtl.clone.maxmustermann.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+      'Internal/PORTALS_username_cep-dev_PRODUCTION,Internal/PORTALS_username_test_PRODUCTION,Internal/PORTALS_username_cep dev_PRODUCTION,Internal/PORTALS_username_test-nathaf_PRODUCTION,Internal/PORTALS_username_DefaultApplication_PRODUCTION,Internal/PORTALS_username_cep-dev_SANDBOX,Internal/everyone,Internal/PORTALS_username_cep dev_SANDBOX',
+    systemId: 'username.TACC-ACI.exec.stampede2.HPC',
+    appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
     appUuid: '6262962608719195670-242ac116-0001-005',
     workPath:
-      '/scratch/05724/maxmustermann/maxmustermann/job-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007-rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver',
+      '/scratch/05724/username/username/job-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007-rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver',
     archive: true,
     archivePath:
       'archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
-    archiveSystem: 'frontera.home.maxmustermann',
+    archiveSystem: 'frontera.home.username',
     nodeCount: 1,
     processorsPerNode: 20,
     memoryPerNode: 1,
     maxHours: 0.1,
-    inputs: { workingDirectory: 'agave://frontera.home.maxmustermann/5MB.txt' },
+    inputs: { workingDirectory: 'agave://frontera.home.username/5MB.txt' },
     parameters: {
       desktop_resolution: '1280x800',
       _webhook_base_url: 'http://320a61b9b96e.ngrok.io/webhooks/'
@@ -162,22 +162,22 @@ export const jobInteractiveSessionReady = {
       },
       app: {
         href:
-          'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.maxmustermann.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0'
+          'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0'
       },
       executionSystem: {
         href:
-          'https://portals-api.tacc.utexas.edu/systems/v2/maxmustermann.TACC-ACI.exec.stampede2.HPC'
+          'https://portals-api.tacc.utexas.edu/systems/v2/username.TACC-ACI.exec.stampede2.HPC'
       },
       archiveSystem: {
         href:
-          'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.maxmustermann'
+          'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
       },
       archiveData: {
         href:
           'https://portals-api.tacc.utexas.edu/jobs/v2/ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007/outputs/listings'
       },
       owner: {
-        href: 'https://portals-api.tacc.utexas.edu/profiles/v2/maxmustermann'
+        href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
       },
       permissions: {
         href:
@@ -199,7 +199,7 @@ export const jobInteractiveSessionReady = {
   },
   pk: 35,
   action_link: 'https://stampede2.tacc.utexas.edu:10401',
-  user: 'maxmustermann',
+  user: 'username',
   read: false,
   deleted: false
 };

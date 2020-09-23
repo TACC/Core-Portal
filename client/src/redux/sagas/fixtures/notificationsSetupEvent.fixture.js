@@ -2,7 +2,7 @@
 export const setupEventProcesssingFixture = {
   event_type: 'setup_event',
   setup_event: {
-    username: 'maxmustermann',
+    username: 'username',
     state: 'processing',
     step: 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
     time: '2020-09-21 12:39:14.163035+00:00',
@@ -15,7 +15,7 @@ export const setupEventProcesssingFixture = {
 export const setupEventCompleteFixture = {
   event_type: 'setup_event',
   setup_event: {
-    username: 'maxmustermann',
+    username: 'username',
     state: 'completed',
     step: 'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
     time: '2020-09-21 12:39:24.200777+00:00',
@@ -28,7 +28,7 @@ export const setupEventCompleteFixture = {
 export const setupEventProcessingFixture2 = {
   event_type: 'setup_event',
   setup_event: {
-    username: 'maxmustermann',
+    username: 'username',
     state: 'processing',
     step: 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
     time: '2020-09-21 12:39:24.226157+00:00',
@@ -41,7 +41,7 @@ export const setupEventProcessingFixture2 = {
 export const setupEventFailedFixture = {
   event_type: 'setup_event',
   setup_event: {
-    username: 'maxmustermann',
+    username: 'username',
     state: 'failed',
     step: 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
     time: '2020-09-21 12:39:34.258842+00:00',
@@ -54,11 +54,11 @@ export const setupEventFailedFixture = {
 export const setupEventSetupCompleteFixture = {
   event_type: 'setup_event',
   setup_event: {
-    username: 'maxmustermann',
+    username: 'username',
     state: 'completed',
     step: 'portal.apps.onboarding.execute.execute_setup_steps',
     time: '2020-09-19 11:37:00.117788+00:00',
-    message: 'maxmustermann setup is now complete',
+    message: 'username setup is now complete',
     data: { setup_complete: true }
   }
 };
