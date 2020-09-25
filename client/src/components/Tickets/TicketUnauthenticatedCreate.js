@@ -1,8 +1,8 @@
 import React from 'react';
 import { Navbar } from 'reactstrap';
+import { BrowserChecker } from '_common';
 import TicketCreateForm from './TicketCreateForm';
 import './TicketUnauthenticatedCreate.scss';
-import BrowserChecker from '../_common/BrowserChecker';
 
 function TicketUnauthenticatedCreate() {
   return (
