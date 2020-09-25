@@ -25,8 +25,11 @@ from django.template.loader import render_to_string
 from pytas.http import TASClient
 
 from portal.apps.accounts import forms, integrations
-from portal.apps.accounts.models import (PortalProfile,
-                                         NotificationPreferences)
+from portal.apps.accounts.models import (
+    PortalProfile,
+    NotificationPreferences
+)
+
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)

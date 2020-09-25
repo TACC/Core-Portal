@@ -143,7 +143,7 @@ MIDDLEWARE = [
     'cms.middleware.utils.ApphookReloadMiddleware',
 
     # Onboarding
-    # 'portal.apps.onboarding.middleware.SetupCompleteMiddleware'
+    'portal.apps.onboarding.middleware.SetupCompleteMiddleware'
 ]
 
 TEMPLATES = [

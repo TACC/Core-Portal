@@ -32,7 +32,7 @@ class SetupCompleteMiddleware(object):
             return HttpResponseRedirect(reverse('portal_accounts:logout'))
 
         # check to see if user setup has finished
-        if not portal_profile.setup_complete:
+        if not portal_profile.setup_complete and reverse('workbench:index') in request.path:
             return HttpResponseRedirect(reverse('portal_onboarding:holding'))
 
         response = self.get_response(request)

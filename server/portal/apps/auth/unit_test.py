@@ -10,9 +10,22 @@ from mock import Mock, patch, MagicMock, ANY
 from portal.apps.auth.backends import AgaveOAuthBackend
 from requests import Response
 from portal.apps.accounts.models import PortalProfile
+from portal.apps.auth.views import launch_setup_checks
 import pytest
 
 pytestmark = pytest.mark.django_db
+
+
+def test_launch_setup_checks(mocker, regular_user, settings):
+    mock_check = mocker.patch('portal.apps.auth.views.new_user_setup_check')
+    mock_execute = mocker.patch('portal.apps.auth.views.execute_setup_steps')
+    mock_index = mocker.patch('portal.apps.auth.views.index_allocations')
+    mock_get_systems = mocker.patch('portal.apps.auth.views.get_user_storage_systems')
+    mock_get_systems.return_value = []
+    regular_user.profile.setup_complete = False
+    launch_setup_checks(regular_user)
+    mock_execute.apply_async.assert_called_with(args=['username'])
+    mock_index.apply_async.assert_called_with(args=['username'])
 
 
 class TestAgaveOAuthBackend(TransactionTestCase):
