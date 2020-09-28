@@ -10,6 +10,7 @@ import {
   race,
   take
 } from 'redux-saga/effects';
+import { fetchUtil } from '../../utils/fetchUtil';
 
 export async function fetchSystemsUtil() {
   const response = await fetch('/api/datafiles/systems/list/');
@@ -595,4 +596,19 @@ export function* trashFile(system, path, id) {
       payload: { status: 'ERROR', key: id, operation: 'trash' }
     });
   }
+}
+
+export function* watchFetchFileDetail() {
+  yield takeLeading('FETCH_FILE_DETAIL', fetchFileDetail);
+}
+
+export function* fetchFileDetail(action) {
+  yield put({ type: 'DATA_FILES_FETCH_DETAIL_START' });
+  const { system, filePath } = action.payload;
+  const detailUrl = `/api/datafiles/tapis/detail/private/${system}/${filePath}/`;
+  const fetchResult = yield fetchUtil({ url: detailUrl });
+  yield put({
+    type: 'DATA_FILES_FETCH_DETAIL_SUCCESS',
+    payload: { value: fetchResult.data }
+  });
 }

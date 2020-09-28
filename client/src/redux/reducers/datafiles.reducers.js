@@ -80,7 +80,15 @@ const initialFilesState = {
     rename: {},
     pushKeys: {}
   },
-  previewHref: ''
+  previewHref: '',
+  fileDetail: {
+    loading: false,
+    value: {
+      name: 'My File',
+      uuid: '1234',
+      lastModified: 'today'
+    }
+  }
 };
 
 let selectedSet, enabled, setValue;
@@ -255,6 +263,24 @@ export function files(state = initialFilesState, action) {
         modalProps: {
           ...state.modalProps,
           [action.payload.operation]: action.payload.props
+        }
+      };
+    case 'DATA_FILES_FETCH_DETAIL_START':
+      return {
+        ...state,
+        fileDetail: {
+          ...state.fileDetail,
+          value: {},
+          loading: true
+        }
+      };
+    case 'DATA_FILES_FETCH_DETAIL_SUCCESS':
+      return {
+        ...state,
+        fileDetail: {
+          ...state.fileDetail,
+          value: action.payload.value,
+          loading: false
         }
       };
     default:

@@ -1,4 +1,5 @@
 import urllib
+import json
 import os
 import datetime
 from django.conf import settings
@@ -92,6 +93,19 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
     hits = [hit.to_dict() for hit in res]
 
     return {'listing': hits, 'reachedEnd': len(hits) < int(limit)}
+
+
+def detail(client, system, path, *args, **kwargs):
+    """
+    Retrieve the uuid for a file by parsing the query string in _links.metadata.href 
+    """
+    listing = client.files.list(systemId=system, filePath=urllib.parse.quote(path), offset=0, limit=1)
+
+    href = listing[0]['_links']['metadata']['href']
+    qs = urllib.parse.urlparse(href).query
+    parsed_qs = urllib.parse.parse_qs(qs)['q'][0]
+    qs_json = json.loads(parsed_qs)
+    return {**dict(listing[0]), 'uuid': qs_json['associationIds']}
 
 
 def download(client, system, path, href, force=True, max_uses=3, lifetime=600):

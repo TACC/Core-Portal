@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 allowed_actions = {
     'private': ['listing', 'search', 'copy', 'download', 'mkdir',
-                'move', 'rename', 'trash', 'preview', 'upload'],
+                'move', 'rename', 'trash', 'preview', 'upload', 'detail'],
     'public': ['listing', 'search', 'copy', 'download', 'preview'],
     'community': ['listing', 'search', 'copy', 'download', 'preview'],
 }
