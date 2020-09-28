@@ -553,3 +553,4 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
 ]
 
 WH_BASE_URL = "https://testserver"
+PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"

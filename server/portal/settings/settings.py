@@ -101,6 +101,7 @@ INSTALLED_APPS = [
     'portal.apps.workspace',
     'portal.apps.datafiles',
     'portal.apps.system_monitor',
+    'portal.apps.system_creation',
 
     # django CMS
     'cms',
@@ -775,6 +776,8 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
 PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '')
+
+PORTAL_KEY_SERVICE_ACTOR_ID = "jzQP0EeX7mE1K"
 
 PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
                                   "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
