@@ -24,16 +24,14 @@ def dryrun_success(user):
     abaco reactor repository) and echo a callback success once the dry run completes
     """
     systemId = "data-tacc-work-{}".format(user.username)
-    variables = {
-        "rootDir": "TEST_WORK_DIR"
-    }
+    variables = {"rootDir": "TEST_WORK_DIR"}
     callback = "portal.apps.system_creation.dryrun.DryrunCallback"
-    callback_data = { "var1": "value1" }
+    callback_data = {"var1": "value1"}
     call_reactor(
-        user, systemId, "work", variables, 
+        user, systemId, "work", variables,
         dryrun=True,
         force=True,
-        callback=callback, 
+        callback=callback,
         callback_data=callback_data
     )
 
@@ -46,16 +44,13 @@ def dryrun_failure(user):
     the "rootDir" variable in the template is missing
     """
     systemId = "data-tacc-work-{}".format(user.username)
-    variables = { }
+    variables = {}
     callback = "portal.apps.system_creation.dryrun.DryrunCallback"
-    callback_data = {
-        "var1": "value1"
-    }
+    callback_data = {"var1": "value1"}
     call_reactor(
-        user, systemId, "work", variables, 
+        user, systemId, "work", variables,
         dryrun=True,
         force=True,
-        callback=callback, 
+        callback=callback,
         callback_data=callback_data
-    ) 
-
+    )
