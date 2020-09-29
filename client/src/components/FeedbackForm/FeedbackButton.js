@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import FeedbackModal from './FeedbackModal';
 import './FeedbackButton.module.scss';
 
 const FeedbackButton = () => {
   const [openModal, setOpenModal] = React.useState(false);
+  const creatingSuccess = useSelector(
+    state => state.ticketCreate.creatingSuccess
+  );
+  useEffect(() => {
+    if (creatingSuccess) {
+      setOpenModal(false);
+    }
+  }, [creatingSuccess]);
 
   return (
     <>

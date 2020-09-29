@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Formik, Form } from 'formik';
 import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
@@ -18,7 +17,6 @@ const formSchema = Yup.object().shape({
 });
 
 const FeedbackForm = ({ authenticatedUser }) => {
-  const location = useLocation();
   const dispatch = useDispatch();
   const creating = useSelector(state => state.ticketCreate.creating);
   const creatingError = useSelector(state => state.ticketCreate.creatingError);
@@ -32,11 +30,9 @@ const FeedbackForm = ({ authenticatedUser }) => {
     state => state.ticketCreate.createdTicketId
   );
 
-  const url = location.pathname;
   const defaultValues = useMemo(
     () => ({
       subject: 'Feedback for the Frontera Portal',
-      url: url || '',
       problem_description: '',
       first_name: authenticatedUser ? authenticatedUser.first_name : '',
       last_name: authenticatedUser ? authenticatedUser.last_name : '',
@@ -69,7 +65,6 @@ const FeedbackForm = ({ authenticatedUser }) => {
       {({ isSubmitting, isValid }) => {
         return (
           <Form styleName="feedback-form">
-            <FormField type="hidden" name="last_name" />
             <FormGroup>
               <FormField name="name" label="Full Name" required disabled />
               <FormField name="email" label="Email" required disabled />
@@ -83,9 +78,7 @@ const FeedbackForm = ({ authenticatedUser }) => {
             </FormGroup>
             <div className="ticket-create-button-row">
               {creatingSuccess && (
-                <CreatedFeedbackInformation
-                  ticketId={createdTicketId}
-                />
+                <CreatedFeedbackInformation ticketId={createdTicketId} />
               )}
               {creatingError && (
                 <Alert color="warning">
