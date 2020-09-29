@@ -29,7 +29,7 @@ class SetupState:
     STAFFWAIT = "staffwait"
 
     # Steps in WEBHOOK will allow the webhook_callback method to
-    # be invoked by portal.apps.accounts.api.webhook.SetupStepWebhookView.post
+    # be invoked by core_apps_accounts.api.webhook.SetupStepWebhookView.post
     # This state should be set and logged after an external call
     # has been successfully sent
     WEBHOOK = "webhook"

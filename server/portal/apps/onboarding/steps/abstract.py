@@ -90,7 +90,7 @@ class AbstractStep:
     @abstractmethod
     def prepare(self):
         """
-        Called during profile setup in portal.apps.accounts.managers.accounts.setup
+        Called during profile setup in core_apps_accounts.managers.accounts.setup
         if no log data exists for this step. Child implementations should perform
         any pre-processing, then set state to PENDING, USERWAIT or STAFFWAIT and
         call self.log with a message to save this state.

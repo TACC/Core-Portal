@@ -12,7 +12,7 @@ from django.conf import settings
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.libs.agave.models.applications import Application
 from portal.apps.workspace.managers.base import AbstractApplicationsManager
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
+from core_apps_accounts.managers.user_systems import UserSystemsManager
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)

@@ -14,7 +14,7 @@ def setup_user(self, username, system):
         :param str username: string username to setup systems for
         :param dict systems: dict of systems from settings
     """
-    from portal.apps.accounts.managers.accounts import setup
+    from core_apps_accounts.managers.accounts import setup
     logger.info("Async setup task for {username} launched on {system}".format(username=username, system=system))
     setup(username, system)
 

@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from mock import Mock, patch, MagicMock, ANY
 from portal.apps.auth.backends import AgaveOAuthBackend
 from requests import Response
-from portal.apps.accounts.models import PortalProfile
+from core_apps_accounts.models import PortalProfile
 import pytest
 
 pytestmark = pytest.mark.django_db

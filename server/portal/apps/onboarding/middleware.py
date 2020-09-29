@@ -1,7 +1,7 @@
 from django.contrib.auth import logout
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from portal.apps.accounts.models import PortalProfile
+from core_apps_accounts.models import PortalProfile
 
 import logging
 

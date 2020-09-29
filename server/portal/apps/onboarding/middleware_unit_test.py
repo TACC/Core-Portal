@@ -4,7 +4,7 @@ from django.db.models import signals
 from mock import patch, ANY
 
 from portal.apps.onboarding.models import SetupEvent
-from portal.apps.accounts.models import PortalProfile
+from core_apps_accounts.models import PortalProfile
 from portal.apps.onboarding.middleware import SetupCompleteMiddleware
 from django.http.response import HttpResponseRedirect
 import pytest

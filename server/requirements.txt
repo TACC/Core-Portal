@@ -52,3 +52,4 @@ rt==1.0.11
 sqlparse==0.3.0
 Twisted[tls,http2]==20.3.0
 uwsgi==2.0.18
+file:///tmp/core_apps_accounts-0.1.tar.gz#egg=core_apps_accounts

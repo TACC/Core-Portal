@@ -29,6 +29,7 @@ RUN apt-get install -y nodejs
 RUN pip3 install --upgrade pip setuptools wheel
 
 # install python packages
+COPY server/core_apps_accounts-0.1.tar.gz /tmp/core_apps_accounts-0.1.tar.gz
 COPY server/requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt
 

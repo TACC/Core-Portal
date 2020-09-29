@@ -1,6 +1,6 @@
 from mock import MagicMock
 from portal.apps.onboarding.steps.test_steps import MockProcessingCompleteStep
-from portal.apps.accounts.models import PortalProfile
+from core_apps_accounts.models import PortalProfile
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.execute import (
@@ -82,7 +82,7 @@ def test_invalid_step_function(authenticated_user):
     """
     Test an invalid configuration that passes a function instead of a class
 
-    This may occur due to a legacy setting "portal.apps.accounts.steps.step_one"
+    This may occur due to a legacy setting "core_apps_accounts.steps.step_one"
     """
     with pytest.raises(ValueError):
         load_setup_step(
@@ -96,7 +96,7 @@ def test_invalid_step_class(authenticated_user):
     Test an invalid configuration that passes a class that is not
     a child of AbstractStep
 
-    This may occur due to a legacy setting "portal.apps.accounts.steps.StepThree"
+    This may occur due to a legacy setting "core_apps_accounts.steps.StepThree"
     """
     with pytest.raises(ValueError):
         load_setup_step(

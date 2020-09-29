@@ -88,7 +88,7 @@ INSTALLED_APPS = [
     'impersonate',
 
     # Custom apps.
-    'portal.apps.accounts',
+    'core_apps_accounts',
     'portal.apps.auth',
     'portal.apps.tickets',
     'portal.apps.licenses',

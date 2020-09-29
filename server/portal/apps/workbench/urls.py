@@ -1,5 +1,5 @@
 """
-.. module:: portal.apps.accounts.urls
+.. module:: core_apps_accounts.urls
    :synopsis: Accounts URLs
 """
 from django.urls import re_path

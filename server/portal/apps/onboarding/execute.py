@@ -5,7 +5,7 @@ from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from celery import shared_task
-from portal.apps.accounts.models import PortalProfile
+from core_apps_accounts.models import PortalProfile
 import logging
 
 logger = logging.getLogger(__name__)
