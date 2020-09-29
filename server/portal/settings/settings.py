@@ -96,10 +96,12 @@ INSTALLED_APPS = [
     'portal.apps.onboarding',
     'portal.apps.search',
     'portal.apps.signals',
+    'portal.apps.webhooks',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.datafiles',
     'portal.apps.system_monitor',
+    'portal.apps.system_creation',
 
     # django CMS
     'cms',
@@ -737,8 +739,25 @@ PORTAL_USER_HOME_MANAGER = settings_secret.\
 PORTAL_KEYS_MANAGER = settings_secret.\
     _PORTAL_KEYS_MANAGER
 
-PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
-    _PORTAL_USER_ACCOUNT_SETUP_STEPS
+"""
+Onboarding steps
+
+Each step is an object, with the full package name of the step class and
+an associated settings object. If the 'settings' key is omitted, steps will
+have a default value of None for their settings attribute.
+
+Example: 
+
+PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
+        'settings': {
+            'key': 'value'
+        }
+    }
+]
+"""
+PORTAL_USER_ACCOUNT_SETUP_STEPS = []
 
 PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = settings_secret.\
     _PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD
@@ -757,6 +776,8 @@ PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
 PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '')
+
+PORTAL_KEY_SERVICE_ACTOR_ID = "jzQP0EeX7mE1K"
 
 PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
                                   "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]

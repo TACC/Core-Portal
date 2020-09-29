@@ -172,7 +172,7 @@ class SetupStepView(BaseApiView):
 
         {
             "action" : "staff_approve" | "staff_deny" | "user_confirm" |
-                            "set_state" | "reset" | "webhook_send",
+                            "set_state" | "reset"
             "step" : SetupStep module and classname,
             "data" : an optional dictionary of data to send to the action
         }

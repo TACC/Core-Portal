@@ -58,7 +58,7 @@ class MockProcessingFailStep(AbstractStep):
     def display_name(self):
         return "Mock Processing Fail Step"
 
-    def process(self, webhook_data=None):
+    def process(self):
         self.fail("Failure")
         self.process_spy()
 
@@ -123,43 +123,6 @@ class MockStaffStep(AbstractStep):
             self.staff_deny_spy(action, data, request)
 
 
-class MockWebhookStep(AbstractStep):
-    """
-    Fixture for testing webhook steps
-    """
-
-    def __init__(self, user):
-        super(MockWebhookStep, self).__init__(user)
-        self.webhook_send_spy = MagicMock()
-        self.webhook_callback_spy = MagicMock()
-
-    def prepare(self):
-        self.state = SetupState.STAFFWAIT
-        self.log("Waiting on staff to activate")
-
-    def client_action(self, action, data, request):
-        if not request.user.is_staff:
-            return
-
-        if action == "staff_approve":
-            self.state = SetupState.WEBHOOK
-            callback_url = self.webhook_url(request)
-            self.log(
-                "Staff user {staff} sending webhook call with callback url {url}".format(
-                    staff=request.user.username,
-                    url=callback_url
-                )
-            )
-        self.webhook_send_spy(action, data, request, callback_url)
-
-    def webhook_callback(self, webhook_data=None):
-        self.complete("Webhook complete")
-        self.webhook_callback_spy(webhook_data)
-
-    def display_name(self):
-        return "Webhook Step"
-
-
 class MockErrorStep(AbstractStep):
     """
     Fixture for testing steps that generate exceptions
@@ -175,7 +138,7 @@ class MockErrorStep(AbstractStep):
     def display_name(self):
         return "Mock Error Step"
 
-    def process(self, webhook_data=None):
+    def process(self):
         raise Exception("MockErrorStep")
 
 
