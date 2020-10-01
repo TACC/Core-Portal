@@ -464,7 +464,7 @@ def preview(client, system, path, href, max_uses=3, lifetime=600):
     content = None
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
-        content = text_preview(url)
+        txt = text_preview(url)
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
         file_type = 'image'
     elif file_ext in settings.SUPPORTED_OBJECT_PREVIEW_EXTS:
@@ -479,7 +479,9 @@ def preview(client, system, path, href, max_uses=3, lifetime=600):
         url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
     else:
         file_type = 'other'
-        content = text_preview(url)
+        txt = text_preview(url)
         logger.debug(content)
 
-    return {'href': url, 'fileType': file_type, 'content': content}
+    if txt:
+        return {'href': url, 'fileType': file_type, **txt}
+    return {'href': url, 'fileType': file_type}
