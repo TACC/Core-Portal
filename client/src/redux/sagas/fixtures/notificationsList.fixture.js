@@ -28,8 +28,7 @@ export const notificationsListFixture = {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         owner: 'username',
         executionSystem: 'username.TACC-ACI.exec.stampede2.HPC',
-        appId:
-          'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+        appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
         workPath:
           '/scratch/05724/username/username/job-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007-rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver',
         archive: true,
@@ -84,8 +83,7 @@ export const notificationsListFixture = {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         owner: 'username',
         executionSystem: 'username.TACC-ACI.exec.stampede2.HPC',
-        appId:
-          'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+        appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
         workPath:
           '/scratch/05724/username/username/job-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007-rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver',
         archive: true,
@@ -138,8 +136,7 @@ export const notificationsListFixture = {
         roles:
           'Internal/PORTALS_username_cep-dev_PRODUCTION,Internal/PORTALS_username_test_PRODUCTION,Internal/PORTALS_username_cep dev_PRODUCTION,Internal/PORTALS_username_test-nathaf_PRODUCTION,Internal/PORTALS_username_DefaultApplication_PRODUCTION,Internal/PORTALS_username_cep-dev_SANDBOX,Internal/everyone,Internal/PORTALS_username_cep dev_SANDBOX',
         systemId: 'username.TACC-ACI.exec.stampede2.HPC',
-        appId:
-          'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+        appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
         appUuid: '6262962608719195670-242ac116-0001-005',
         workPath:
           '/scratch/05724/username/username/job-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007-rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver',
@@ -193,8 +190,7 @@ export const notificationsListFixture = {
               'https://portals-api.tacc.utexas.edu/jobs/v2/ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007/outputs/listings'
           },
           owner: {
-            href:
-              'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+            href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
           },
           permissions: {
             href:
@@ -241,8 +237,7 @@ export const notificationsListFixture = {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         owner: 'username',
         executionSystem: 'username.TACC-ACI.exec.stampede2.HPC',
-        appId:
-          'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+        appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
         workPath:
           '/scratch/05724/username/username/job-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007-rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver',
         archive: true,
@@ -294,8 +289,7 @@ export const notificationsListFixture = {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         owner: 'username',
         executionSystem: 'username.TACC-ACI.exec.stampede2.HPC',
-        appId:
-          'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+        appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
         workPath:
           '/scratch/05724/username/username/job-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007-rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver',
         archive: true,
@@ -347,8 +341,7 @@ export const notificationsListFixture = {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         owner: 'username',
         executionSystem: 'username.TACC-ACI.exec.stampede2.HPC',
-        appId:
-          'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+        appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
         workPath:
           '/scratch/05724/username/username/job-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007-rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver',
         archive: true,
@@ -400,8 +393,7 @@ export const notificationsListFixture = {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         owner: 'username',
         executionSystem: 'username.TACC-ACI.exec.stampede2.HPC',
-        appId:
-          'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+        appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
         workPath: null,
         archive: true,
         archiveOnAppError: true,
@@ -452,8 +444,7 @@ export const notificationsListFixture = {
         uuid: 'ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
         owner: 'username',
         executionSystem: null,
-        appId:
-          'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
+        appId: 'prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
         workPath: null,
         archive: true,
         archiveOnAppError: true,

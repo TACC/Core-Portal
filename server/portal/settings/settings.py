@@ -746,7 +746,7 @@ Each step is an object, with the full package name of the step class and
 an associated settings object. If the 'settings' key is omitted, steps will
 have a default value of None for their settings attribute.
 
-Example: 
+Example:
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
