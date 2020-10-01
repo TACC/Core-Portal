@@ -110,7 +110,10 @@ const filesFixture = {
     rename: {},
     pushKeys: {}
   },
-  previewHref: ''
+  preview: {
+    href: '',
+    content: ''
+  }
 };
 
 export default filesFixture;
