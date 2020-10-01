@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import BrowserChecker from '../_common/BrowserChecker';
 import TicketCreateForm from './TicketCreateForm';
-import './TicketUnauthenticatedCreate.scss';
+import './TicketStandaloneCreate.scss';
 
-function TicketUnauthenticatedCreate() {
+function TicketStandaloneCreate() {
   const dispatch = useDispatch();
   const authenticatedUser = useSelector(state => state.authenticatedUser.user);
   useEffect(() => {
@@ -24,4 +24,4 @@ function TicketUnauthenticatedCreate() {
   );
 }
 
-export default TicketUnauthenticatedCreate;
+export default TicketStandaloneCreate;
