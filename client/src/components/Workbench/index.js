@@ -9,10 +9,9 @@ import TicketStandaloneCreate from '../Tickets/TicketStandaloneCreate';
 function AppRouter() {
   return (
     <Router>
-      <Route path="/accounts/profile" component={ManageAccount} />
       <Route path={ROUTES.WORKBENCH} component={Workbench} />
       <Route path="/tickets/new" component={TicketStandaloneCreate} />
-      <Redirect from="/accounts" to="/accounts/profile" />
+      <Route path="/accounts/profile" component={ManageAccount} />
     </Router>
   );
 }
