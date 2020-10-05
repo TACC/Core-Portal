@@ -35,7 +35,7 @@ function Section({
         {sidebarMarkup}
       </div> */}
       <header styleName="header" className={headerClassName}>
-        {header}
+        <h2>{header}</h2>
         {actionsMarkup}
       </header>
       <main styleName="content" className={contentClassName}>

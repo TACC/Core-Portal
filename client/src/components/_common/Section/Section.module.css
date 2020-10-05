@@ -22,6 +22,9 @@
     padding: 12px 0 15px 0;
     border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--normal);
 }
+.header h2 {
+    font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
+}
 /* HACK: Only necessary until we have a `SectionHeader` */
 /* Do not let user bring in vertical margin (example: h1–h6) */
 .header * {

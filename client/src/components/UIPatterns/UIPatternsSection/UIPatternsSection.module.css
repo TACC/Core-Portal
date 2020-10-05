@@ -1,3 +1,8 @@
+.is-resizable {
+  resize: vertical;
+  overflow: hidden;
+}
+
 .is-scrollable {
   --line-height: 1.5em; /* Bootstrap `_reboot` `body { line-height: 1.5 }` */
   --max-lines: 2;
