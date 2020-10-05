@@ -35,6 +35,6 @@
 }
 
 /* Modifiers */
-.container.should-scroll .content {
+.root.should-scroll .content {
     overflow: auto;
 }
