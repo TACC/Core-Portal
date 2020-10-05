@@ -1,3 +1,5 @@
+import { getSystemName } from './systems';
+
 const TERMINAL_STATES = [`FINISHED`, `STOPPED`, `FAILED`];
 
 export function isTerminalState(status) {
@@ -34,11 +36,6 @@ export function getAllocatonFromDirective(directive) {
     return parts[allocationArgIndex];
   }
   return null;
-}
-
-export function getSystemName(host) {
-  const systemName = host.split('.')[0];
-  return systemName.substring(0, 1).toUpperCase() + systemName.slice(1);
 }
 
 /**

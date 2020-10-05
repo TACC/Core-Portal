@@ -9,7 +9,7 @@ import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { getSystemName } from 'utils/jobsUtil';
+import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';

@@ -3,13 +3,6 @@ import PropTypes from 'prop-types';
 import Icon from '_common/Icon';
 import './Message.module.scss';
 
-const JSXpropType = PropTypes.any;
-// const JSXpropType = PropTypes.oneOfType([
-//   PropTypes.string,
-//   PropTypes.element,
-//   PropTypes.elementType
-// ]);
-
 export const TYPE_ICON_MAP = {
   info: {
     name: 'conversation',
@@ -55,8 +48,7 @@ const Message = ({ children, className, hidden, type }) => {
 Message.propTypes = {
   /** Message text (as child node) */
   /* FAQ: We can support any values, even a component */
-  // eslint-disable-next-line react/forbid-prop-types
-  children: JSXpropType.isRequired,
+  children: PropTypes.node.isRequired, // This checks for any render-able value
   /** Additional className for the root element */
   className: PropTypes.string,
   /** Allow external management of visibility */
