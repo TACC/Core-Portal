@@ -7,6 +7,9 @@
 .workbench-content {
     /* As a flex item */
     flex-grow: 1;
+    /* Allow wide content to shrink */
+    /* SEE: https://github.com/philipwalton/flexbugs#flexbug-1 */
+    min-width: 0;
 
     /* As a flex container */
     display: flex;

@@ -10,7 +10,7 @@ function UIPatterns() {
   return (
     <Section
       styleName="container"
-      header={<h5>UI Patterns</h5>}
+      header="UI Patterns"
       content={
         <>
           <div styleName="list-item">

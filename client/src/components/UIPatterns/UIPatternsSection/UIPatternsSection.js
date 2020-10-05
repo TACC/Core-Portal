@@ -8,11 +8,7 @@ import { TicketCreateModal } from '../../Tickets';
 
 import './UIPatternsSection.module.css';
 
-const modalPath = (
-  <code>
-    ${ROUTES.WORKBENCH}${ROUTES.UI}/modal
-  </code>
-);
+const modalPath = `${ROUTES.WORKBENCH}${ROUTES.UI}/modal`;
 
 function UIPatternsDropdownSelector() {
   const dispatch = useDispatch();
