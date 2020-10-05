@@ -22,7 +22,7 @@ function Section({
   const externalsMarkup = externals || '';
   const actionsMarkup = actions || '';
   // const sidebarMarkup = sidebar || '';
-  const styleNameList = ['container'];
+  const styleNameList = ['root'];
 
   if (shouldScrollContent) {
     styleNameList.push('should-scroll');

@@ -1,5 +1,5 @@
 /* Block */
-.container {
+.root {
     /* As flex container */
     display: flex;
     flex-direction: column;
