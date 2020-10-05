@@ -31,6 +31,7 @@ import {
   watchPostTicketCreate
 } from './tickets.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
+import { watchOnboardingAdminList, watchOnboardingAdminIndividualUser } from './onboarding.sagas';
 import { watchWorkbench } from './workbench.sagas';
 import {
   watchFetchWelcomeMessages,
@@ -70,6 +71,8 @@ export default function* rootSaga() {
     watchFetchNotifications(),
     watchWorkbench(),
     watchFetchWelcomeMessages(),
-    watchSaveWelcomeMessages()
+    watchSaveWelcomeMessages(),
+    watchOnboardingAdminList(),
+    watchOnboardingAdminIndividualUser()
   ]);
 }
