@@ -641,9 +641,36 @@ PORTAL_EXEC_SYSTEMS = {
 """
 SETTINGS: DATA DEPOT
 """
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
-PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', [])
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
+    'frontera': {
+        'name': 'My Data (Frontera)',
+        'prefix': 'frontera.home.{username}',
+        'host': 'frontera.tacc.utexas.edu',
+        'home_dir': '/home1/{tasdir}',
+        'storage_port': 22,
+        'icon': None,
+    },
+    'longhorn': {
+        'name': 'My Data (Longhorn)',
+        'prefix': 'longhorn.home.{username}',
+        'host': 'longhorn.tacc.utexas.edu',
+        'home_dir': '/home/{tasdir}',
+        'storage_port': 22,
+        'requires_allocation': 'longhorn3',
+        'icon': None,
+    },
+}
+
+PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+    {
+        'name': 'Community Data',
+        'system': 'frontera.storage.community',
+        'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    }
+]
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',

@@ -138,38 +138,6 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cep.home.{username}": "/tacc-work",
 }
 
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
-    'frontera': {
-        'name': 'My Data (Frontera)',
-        'prefix': 'frontera.home.{}',
-        'host': 'frontera.tacc.utexas.edu',
-        'home_dir': '/home1',
-        'storage_port': 22,
-        'icon': None,
-    },
-    'longhorn': {
-        'name': 'My Data (Longhorn)',
-        'prefix': 'longhorn.home.{}',
-        'host': 'longhorn.tacc.utexas.edu',
-        'home_dir': '/home',
-        'storage_port': 22,
-        'requires_allocation': 'longhorn3',
-        'icon': None,
-    },
-}
-
-# Configurable list of non-private systems that appear on the frontend
-_PORTAL_DATAFILES_STORAGE_SYSTEMS = [
-    {
-        'name': 'Community Data',
-        'system': 'portal.storage.community',
-        'scheme': 'community',
-        'api': 'tapis',
-        'icon': None
-    }
-]
-
 #######################
 # PROJECTS SETTING
 #######################
