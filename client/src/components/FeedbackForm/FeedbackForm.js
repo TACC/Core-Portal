@@ -23,12 +23,6 @@ const FeedbackForm = ({ authenticatedUser }) => {
   const creatingErrorMessage = useSelector(
     state => state.ticketCreate.creatingErrorMessage
   );
-  const creatingSuccess = useSelector(
-    state => state.ticketCreate.creatingSuccess
-  );
-  const createdTicketId = useSelector(
-    state => state.ticketCreate.createdTicketId
-  );
 
   const defaultValues = useMemo(
     () => ({
@@ -77,9 +71,6 @@ const FeedbackForm = ({ authenticatedUser }) => {
               />
             </FormGroup>
             <div className="ticket-create-button-row">
-              {creatingSuccess && (
-                <CreatedFeedbackInformation ticketId={createdTicketId} />
-              )}
               {creatingError && (
                 <Alert color="warning">
                   Feedback creating error: {creatingErrorMessage}
@@ -114,21 +105,6 @@ FeedbackForm.propTypes = {
 
 FeedbackForm.defaultProps = {
   authenticatedUser: null
-};
-
-function CreatedFeedbackInformation({ ticketId }) {
-  if (!ticketId) {
-    return null;
-  }
-  return (
-    <Alert color="success">
-      Feedback (#{ticketId}) was received. Thank you!
-    </Alert>
-  );
-}
-
-CreatedFeedbackInformation.propTypes = {
-  ticketId: PropTypes.number.isRequired
 };
 
 export default FeedbackForm;
