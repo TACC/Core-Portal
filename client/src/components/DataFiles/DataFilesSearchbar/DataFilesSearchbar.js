@@ -4,14 +4,17 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import queryString from 'query-string';
 import { Icon } from '_common';
+import { findSystemDisplayName } from 'utils/systems';
+import { useSelector } from 'react-redux';
 
 import './DataFilesSearchbar.module.css';
 
 const DataFilesSearchbar = ({ api, scheme, system, className }) => {
+  const systemList = useSelector(state => state.systems.systemList);
   const [query, setQuery] = useState('');
   const history = useHistory();
   const hasQuery = queryString.parse(useLocation().search).query_string;
-  const sectionName = 'My Data';
+  const sectionName = findSystemDisplayName(systemList, system);
 
   const routeSearch = () => {
     const qs = query
