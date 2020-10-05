@@ -432,7 +432,7 @@ module.exports = {
 
     // SELECTOR LIST
     // Require a newline or disallow whitespace after the commas of selector lists (Autofixable).
-    // 'selector-list-comma-newline-after': 'always',
+    'selector-list-comma-newline-after': 'always-multi-line',
     // Require a newline or disallow whitespace before the commas of selector lists (Autofixable).
     // 'selector-list-comma-newline-before': null,
     // Require a single space or disallow whitespace after the commas of selector lists (Autofixable).
