@@ -19,7 +19,7 @@
 
     height: 32px;
     box-sizing: content-box;
-    padding: 12px 0 15px 0;
+    padding: 1.5rem 0 0.75rem 0; /* 24px, 12px (20px, 10px design * 1.2 design-to-app ratio) (rounded) */
     border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--normal);
 }
 .header h2 {
