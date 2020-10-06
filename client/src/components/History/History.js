@@ -8,9 +8,9 @@ import {
 } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
-import { string } from 'prop-types';
 import queryString from 'query-string';
 
+import { Section } from '_common';
 import JobHistory from './HistoryViews';
 import JobHistoryModal from './HistoryViews/JobHistoryModal';
 import * as ROUTES from '../../constants/routes';
@@ -19,7 +19,7 @@ import './History.module.scss';
 
 const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
 
-const Header = ({ title }) => {
+const Actions = () => {
   // Only display "Mark All as Viewed" button if there are purple (unread) notifs
   const unread = useSelector(
     state => state.notifications.list.notifs.filter(n => !n.read).length
@@ -27,26 +27,22 @@ const Header = ({ title }) => {
   const dispatch = useDispatch();
 
   return (
-    <div styleName="header">
-      <span styleName="header-text"> History / {title} </span>
-      <Button
-        color="link"
-        onClick={() => {
-          dispatch({
-            type: 'NOTIFICATIONS_READ',
-            payload: {
-              onSuccess: { type: 'FETCH_NOTIFICATIONS' }
-            }
-          });
-        }}
-        disabled={!unread}
-      >
-        Mark All as Viewed
-      </Button>
-    </div>
+    <Button
+      color="link"
+      onClick={() => {
+        dispatch({
+          type: 'NOTIFICATIONS_READ',
+          payload: {
+            onSuccess: { type: 'FETCH_NOTIFICATIONS' }
+          }
+        });
+      }}
+      disabled={!unread}
+    >
+      Mark All as Viewed
+    </Button>
   );
 };
-Header.propTypes = { title: string.isRequired };
 
 const Sidebar = () => {
   const { unreadJobs } = useSelector(state => state.notifications.list);
@@ -145,13 +141,18 @@ const Layout = () => {
     : '';
 
   return (
-    <div styleName="root">
-      <Header title={historyType} />
-      <div styleName="container">
-        <Sidebar />
-        <Routes />
-      </div>
-    </div>
+    <Section
+      header={`History / ${historyType}`}
+      headerStyleName="header"
+      actions={<Actions />}
+      content={
+        <>
+          <Sidebar />
+          <Routes />
+        </>
+      }
+      contentStyleName="container"
+    />
   );
 };
 
