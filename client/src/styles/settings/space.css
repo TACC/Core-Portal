@@ -10,7 +10,7 @@
     --global-space--section-right: 30px;
     --global-space--section:
         var(--global-space--section-top)
-        var(--global-space--section-left)
+        var(--global-space--section-right)
         var(--global-space--section-bottom)
-        var(--global-space--section-right);
+        var(--global-space--section-left);
 }
