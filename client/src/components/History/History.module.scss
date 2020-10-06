@@ -31,13 +31,14 @@
     }
 }
 .sidebar {
+    --horizontal-buffer: var(--global-space--section-left);
     /* FAQ: Design is inconsistent across sections, but averages about `10.5px` */
     --vertical-buffer: 0.75rem; /* ~12px (avg. 10.5px design * 1.2 design-to-app ratio */
 
     /* FP-404: All Portal section sidebars should use this value. */
     --min-width: 200px;
 
-    margin-left: calc(var(--global-space--section-left) * -1);
+    margin-left: calc(var(--horizontal-buffer) * -1);
     border-right: 1px solid rgba(112, 112, 112, 0.25);
 
     padding-top: var(--vertical-buffer);
@@ -46,7 +47,7 @@
         min-width: var(--min-width);
 
         color: #707070;
-        padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
+        padding-left: var(--horizontal-buffer);
 
         .link-icon {
             font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */

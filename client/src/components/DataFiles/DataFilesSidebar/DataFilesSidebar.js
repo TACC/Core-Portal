@@ -9,12 +9,13 @@ import {
   DropdownToggle,
   DropdownItem
 } from 'reactstrap';
+import PropTypes from 'prop-types';
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { Icon } from '_common';
 import './DataFilesSidebar.scss';
 
-const DataFilesSidebar = () => {
+const DataFilesSidebar = ({ className }) => {
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -36,7 +37,7 @@ const DataFilesSidebar = () => {
   const match = useRouteMatch();
   return (
     <>
-      <div className="data-files-sidebar">
+      <div className={`data-files-sidebar ${className}`}>
         <div id="add-button-wrapper">
           <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
             <DropdownToggle
@@ -88,6 +89,13 @@ const DataFilesSidebar = () => {
       </div>
     </>
   );
+};
+DataFilesSidebar.propTypes = {
+  /** Additional className for the root element */
+  className: PropTypes.string
+};
+DataFilesSidebar.defaultProps = {
+  className: ''
 };
 
 export default DataFilesSidebar;

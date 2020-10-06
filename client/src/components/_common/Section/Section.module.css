@@ -17,19 +17,27 @@
     justify-content: space-between;
     align-items: flex-end;
 
+    flex-wrap: wrap; /* prevent text and actions from colliding */
+    align-content: flex-end; /* preserve alignment of items when wrapped */
+
     height: 32px;
     box-sizing: content-box;
     padding: 1.5rem 0 0.75rem 0; /* 24px, 12px (20px, 10px design * 1.2 design-to-app ratio) (rounded) */
     border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--normal);
 }
-.header h2 {
-    font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
-}
 /* HACK: Only necessary until we have a `SectionHeader` */
 /* Do not let user bring in vertical margin (example: h1–h6) */
-.header * {
+.header > * {
     margin-top: 0;
     margin-bottom: 0;
+}
+/* Header text is always first */
+.header > *:first-child {
+    font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
+}
+/* Header actions are always last */
+.header > *:last-child {
+    height: 100%; /* (gently) force oversized elements to fit */
 }
 
 .content {
