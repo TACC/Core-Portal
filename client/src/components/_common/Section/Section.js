@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 
 import './Section.module.css';
 
-const JSXpropType = PropTypes.node;
-
 function Section({
   actions,
   shouldScrollContent,
@@ -47,27 +45,27 @@ function Section({
 }
 Section.propTypes = {
   /** Any page-specific actions (to be placed in the header) */
-  actions: JSXpropType,
+  actions: PropTypes.node,
   /** Whether to allow content to scroll */
   shouldScrollContent: PropTypes.bool,
   /** Additional className for the root element */
   className: PropTypes.string,
   /** The preimary page content */
-  content: JSXpropType.isRequired,
+  content: PropTypes.node.isRequired,
   /** Additional className for the content element */
   contentClassName: PropTypes.string,
   /** The page-specific heading */
-  header: JSXpropType.isRequired,
+  header: PropTypes.node.isRequired,
   /** Additional className for the header element */
   headerClassName: PropTypes.string,
   // /** The page-specific sidebar */
-  // sidebar: JSXpropType.isRequired,
+  // sidebar: PropTypes.node.isRequired,
   // /** Additional className for the sidebar element */
   // sidebarClassName: PropTypes.string,
   /** Any that do not render or render outside component layout (ex: modals) */
-  externals: JSXpropType,
+  externals: PropTypes.node,
   /** Any page-specific message (alert, notice, warning, etc) */
-  messages: JSXpropType
+  messages: PropTypes.node
 };
 Section.defaultProps = {
   className: '',
