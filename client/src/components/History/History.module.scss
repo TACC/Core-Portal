@@ -49,10 +49,6 @@
         color: #707070;
         padding-left: var(--horizontal-buffer);
 
-        .link-icon {
-            font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
-            width: 1em;       /* TODO: delete this after Cortal icon replaces font awesome */
-        }
         .link-text {
             font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
             font-weight: 500;

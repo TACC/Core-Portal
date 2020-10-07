@@ -34,6 +34,9 @@
 /* Header text is always first */
 .header > *:first-child {
     font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
+
+    /* FAQ: It is simpler to do this in CSS than in JavaScript */
+    text-transform: capitalize;
 }
 /* Header actions are always last */
 .header > *:last-child {
