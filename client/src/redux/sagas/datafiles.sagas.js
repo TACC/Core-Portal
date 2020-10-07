@@ -431,7 +431,7 @@ export function* uploadFile(api, scheme, system, path, file, index) {
 }
 
 export function* watchPreview() {
-  yield takeLatest('DATA_FILES_PREVIEW', preview);
+  yield takeLeading('DATA_FILES_PREVIEW', preview);
 }
 
 export function* preview(action) {
