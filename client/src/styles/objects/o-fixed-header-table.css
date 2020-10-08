@@ -22,6 +22,8 @@ Markup:
 </table>
 Styleguide Objects.FixedHeaderTable
 */
+/* RFE: Do not change `display` values for table markup */
+/* SEE: https://css-tricks.com/position-sticky-and-table-headers/ */
 .o-fixed-header-table {
   /* NOTE: Should these styles move to `elements/table.css` for all `table`s? */
   table-layout: fixed;
