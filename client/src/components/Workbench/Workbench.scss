@@ -7,9 +7,12 @@
 .workbench-content {
     /* As a flex item */
     flex-grow: 1;
+
     /* Allow wide content to shrink */
     /* SEE: https://github.com/philipwalton/flexbugs#flexbug-1 */
     min-width: 0;
+    /* Allow narrow content to stretch */
+    /* FAQ: No need for `width: 100%`; it is implicit behavior */
 
     /* As a flex container */
     display: flex;
@@ -18,6 +21,10 @@
 /* FAQ: If the workbench content has only a single child,
         then it should be the same height as the app root */
 .workbench-content > :only-child {
+    /* Allow tall content to shrink */
+    /* SEE: https://github.com/philipwalton/flexbugs#flexbug-1 */
+    min-height: 0;
+    /* Allow short content to stretch */
     height: 100%;
 }
 
