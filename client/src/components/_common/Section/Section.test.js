@@ -21,13 +21,11 @@ describe('Section', () => {
           header="Header"
           content={<p>Content</p>}
           actions={<button type="button">Action</button>}
-          externals={<dialog>Modal</dialog>}
           messages={<span>Message</span>} />
       );
       expect(getByText('Header')).toBeDefined();
       expect(getByText('Content')).toBeDefined();
       expect(getByText('Action')).toBeDefined();
-      expect(getByText('Modal')).toBeDefined();
       expect(getByText('Message')).toBeDefined();
     });
   });

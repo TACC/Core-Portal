@@ -13,11 +13,9 @@ function Section({
   headerClassName,
   // sidebar,
   // sidebarClassName,
-  externals,
   messages
 }) {
   const messagesMarkup = messages || '';
-  const externalsMarkup = externals || '';
   const actionsMarkup = actions || '';
   // const sidebarMarkup = sidebar || '';
   const styleNameList = ['root'];
@@ -39,7 +37,6 @@ function Section({
       <main styleName="content" className={contentClassName}>
         {content}
       </main>
-      {externalsMarkup}
     </section>
   );
 }
@@ -62,15 +59,12 @@ Section.propTypes = {
   // sidebar: PropTypes.node.isRequired,
   // /** Additional className for the sidebar element */
   // sidebarClassName: PropTypes.string,
-  /** Any that do not render or render outside component layout (ex: modals) */
-  externals: PropTypes.node,
   /** Any page-specific message (alert, notice, warning, etc) */
   messages: PropTypes.node
 };
 Section.defaultProps = {
   className: '',
   actions: '',
-  externals: '',
   messages: '',
   contentClassName: '',
   contentShouldScroll: false,

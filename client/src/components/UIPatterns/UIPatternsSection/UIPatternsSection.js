@@ -50,8 +50,7 @@ function UIPatternsDropdownSelector() {
         <small>
           Header (<code>header</code>), Content (<code>content</code>, resize to
           scroll), Should Scroll Content (<code>contentShouldScroll</code>),
-          Actions (<code>actions</code>, a link), Externals (
-          <code>externals</code>, modal), Messages (<code>messages</code>)
+          Actions (<code>actions</code>, a link to a modal), Messages (<code>messages</code>)
         </small>
       </dt>
       <dd>
@@ -69,20 +68,22 @@ function UIPatternsDropdownSelector() {
               sunt in culpa qui officia deserunt mollit anim id est laborum.
             </p>
           }
-          actions={<Link to={modalPath}>Open Modal</Link>}
-          externals={
-            <Switch>
-              <Route
-                exact
-                path={modalPath}
-                render={() => {
-                  dispatch({
-                    type: 'TICKETS_CREATE_INIT'
-                  });
-                  return <TicketCreateModal />;
-                }}
-              />
-            </Switch>
+          actions={
+            <>
+              <Link to={modalPath}>Open Modal</Link>
+              <Switch>
+                <Route
+                  exact
+                  path={modalPath}
+                  render={() => {
+                    dispatch({
+                      type: 'TICKETS_CREATE_INIT'
+                    });
+                    return <TicketCreateModal />;
+                  }}
+                />
+              </Switch>
+            </>
           }
           messages={
             <UncontrolledAlert color="secondary">Message</UncontrolledAlert>

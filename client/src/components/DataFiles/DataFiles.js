@@ -102,10 +102,10 @@ const DataFiles = () => {
               <DataFilesSwitch />
             </div>
           </div>
+          <DataFilesModals />
         </>
       }
       contentStyleName="items"
-      externals={<DataFilesModals />}
     />
   );
 };

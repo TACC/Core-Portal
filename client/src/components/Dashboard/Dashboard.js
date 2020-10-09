@@ -65,34 +65,32 @@ function Dashboard() {
               </div>
             </Col>
           </Row>
+          <Switch>
+            <Route
+              exact
+              path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+              render={() => {
+                dispatch({
+                  type: 'TICKETS_CREATE_INIT'
+                });
+                return <TicketCreateModal />;
+              }}
+            />
+            <Route
+              path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/:ticketId`}
+              render={({ match: { params } }) => {
+                dispatch({
+                  type: 'TICKET_DETAILED_VIEW_OPEN',
+                  payload: { ticketId: Number(params.ticketId) }
+                });
+                return <TicketModal />;
+              }}
+            />
+          </Switch>
         </>
       }
       contentClassName="dashboard-items container"
       contentShouldScroll
-      externals={
-        <Switch>
-          <Route
-            exact
-            path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-            render={() => {
-              dispatch({
-                type: 'TICKETS_CREATE_INIT'
-              });
-              return <TicketCreateModal />;
-            }}
-          />
-          <Route
-            path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/:ticketId`}
-            render={({ match: { params } }) => {
-              dispatch({
-                type: 'TICKET_DETAILED_VIEW_OPEN',
-                payload: { ticketId: Number(params.ticketId) }
-              });
-              return <TicketModal />;
-            }}
-          />
-        </Switch>
-      }
     />
   );
 }
