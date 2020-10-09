@@ -8,14 +8,14 @@ import * as ROUTES from '../../../constants/routes';
 import AllocationsRoutes from '../AllocationsRoutes';
 
 const mockStore = configureStore();
-const root = ROUTES.WORKBENCH + ROUTES.ALLOCATIONS;
+const PATH = ROUTES.WORKBENCH + ROUTES.ALLOCATIONS;
 
 describe('Allocations Routes', () => {
   // RFE: Test existing routes (but do not rely on markup specifics)
   // FAQ: Specifics of resulting markup is not controlled `AllocationsRoutes`
   it('should render content for any allocations routes', () => {
     const { container } = render(
-      <MemoryRouter initialEntries={[`${root}/fake`]}>
+      <MemoryRouter initialEntries={[`${PATH}/fake`]}>
         <Provider
           store={mockStore({
             allocations: { loading: true }
