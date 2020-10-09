@@ -40,15 +40,13 @@
 }
 /* Header actions are always second */
 .header > *:nth-child(2) {
-    height: 100%; /* (gently) force oversized elements to fit */
+    max-height: 100%; /* (gently) force oversized elements to fit */
 }
 
 .content {
     /* As flex item */
     flex-grow: 1;
 }
-
-/* Modifiers */
 .root.should-scroll .content {
     overflow: auto;
 }
