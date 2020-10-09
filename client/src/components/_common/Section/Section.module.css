@@ -1,4 +1,5 @@
 /* Block */
+
 .root {
     /* As flex container */
     display: flex;
@@ -7,7 +8,13 @@
     margin: var(--global-space--section);
 }
 
+
 /* Elements */
+
+.message-list > * {
+    margin: 20px 20px 0 20px;
+}
+
 .header {
     /* As flex item */
     flex-shrink: 0;
@@ -47,6 +54,10 @@
     /* As flex item */
     flex-grow: 1;
 }
+
+
+/* Modifiers */
+
 .root.should-scroll .content {
     overflow: auto;
 }

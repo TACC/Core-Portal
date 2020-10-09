@@ -1,12 +1,12 @@
-const initialWelcomeMessages = {
-  dashboard: true,
-  applications: true,
-  datafiles: true,
-  allocations: true,
-  history: true
+export const initialState = {
+  DASHBOARD: true,
+  APPLICATIONS: true,
+  DATA: true,
+  ALLOCATIONS: true,
+  HISTORY: true
 };
 
-function welcomeMessages(state = initialWelcomeMessages, action) {
+function welcomeMessages(state = initialState, action) {
   switch (action.type) {
     case 'WELCOME_FETCH_STARTED':
       return {

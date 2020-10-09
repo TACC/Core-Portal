@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import './WelcomeMessage.module.css';
-
 function WelcomeMessage({ children, className, messageName }) {
   const dispatch = useDispatch();
   const welcomeMessages = useSelector(state => state.welcomeMessages);
@@ -22,7 +20,6 @@ function WelcomeMessage({ children, className, messageName }) {
       isOpen={welcomeMessages[messageName]}
       toggle={() => onDismiss(messageName)}
       color="secondary"
-      styleName="root"
       className={className}
     >
       {children}

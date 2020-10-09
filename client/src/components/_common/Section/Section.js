@@ -48,7 +48,9 @@ function Section({
 
   return (
     <section styleName={styleNameList.join(' ')} className={className}>
-      <SectionMessage routeName={routeName}>{message}</SectionMessage>
+      <aside styleName="message-list">
+        <SectionMessage routeName={routeName}>{message}</SectionMessage>
+      </aside>
       {/* <div styleName="sidebar" className={sidebarClassName}>
         {sidebar}
       </div> */}
