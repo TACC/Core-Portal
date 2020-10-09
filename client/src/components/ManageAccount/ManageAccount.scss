@@ -1,50 +1,21 @@
 /*
   Wrappers
 */
-.manage-account-wrapper {
-  display: flex;
-  padding: 0;
-  .container-fluid {
-    padding: 20px 40px 0 25px !important; /* overwrite Bootstrap */ /* NOTE: The `!important` may not be necessary */
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-  }
-}
 .manage-account-content {
-  a {
-    color: #9d85ef;
-  }
+  width: 100%;
 }
 .user-profile {
-  flex-grow: 1;
-
   @media (min-width: 992px) {
     /* Hide Border when tables stack on one another */
     .user-profile-main {
       border-right: 1px solid rgba(112, 112, 112, 0.25);
     }
   }
-  .btn-link {
-    color: #9d85ef;
-  }
 }
 
 /*
   Components
 */
-.manage-account-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0;
-  min-height: 2rem;
-  border-bottom: 1px solid #707070;
-  h5 {
-    font-weight: 400;
-    color: #484848;
-  }
-}
 .manage-account-modal {
   .modal-content {
     border-radius: 0 !important;
