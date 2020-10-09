@@ -6,25 +6,25 @@ import * as MESSAGES from '../../../constants/welcomeMessages';
 import './Section.module.css';
 
 function SectionMessage({ children, routeName }) {
-  const output = [];
   const messageText = MESSAGES[routeName];
 
-  if (messageText) {
-    output.push(
-      <WelcomeMessage messageName={routeName}>{messageText}</WelcomeMessage>
-    );
-  }
-  if (children) {
-    output.push(children);
-  }
-
-  return output;
+  return (
+    <>
+      {messageText && (
+        <WelcomeMessage messageName={routeName}>{messageText}</WelcomeMessage>
+      )}
+      {children}
+    </>
+  );
 }
 SectionMessage.propTypes = {
   /** Prepared message markup (do not just pass a string) */
   children: PropTypes.node.isRequired,
   /** The name of the route section (to search for required welcome message) */
-  routeName: PropTypes.string.isRequired
+  routeName: PropTypes.string
+};
+SectionMessage.defaultProps = {
+  routeName: ''
 };
 
 function Section({
@@ -85,8 +85,8 @@ Section.propTypes = {
   // sidebarClassName: PropTypes.string,
   /** Any page-specific message(s) (alert, notice, warning, etc) */
   message: PropTypes.node,
-  /** The name of the route section (to search for required welcome message) */
-  routeName: PropTypes.string.isRequired
+  /** The name of the route section (to search for a welcome message) */
+  routeName: PropTypes.string
 };
 Section.defaultProps = {
   actions: '',
@@ -95,7 +95,8 @@ Section.defaultProps = {
   contentShouldScroll: false,
   headerClassName: '',
   // sidebarClassName: ''
-  message: ''
+  message: '',
+  routeName: ''
 };
 
 export default Section;

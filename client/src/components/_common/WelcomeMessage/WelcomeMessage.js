@@ -17,7 +17,8 @@ function WelcomeMessage({ children, className, messageName }) {
 
   return (
     <Alert
-      isOpen={welcomeMessages[messageName]}
+      // The `welcomeMessages` state is not available during testing
+      isOpen={welcomeMessages && welcomeMessages[messageName]}
       toggle={() => onDismiss(messageName)}
       color="secondary"
       className={className}
