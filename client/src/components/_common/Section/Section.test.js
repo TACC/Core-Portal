@@ -4,27 +4,21 @@ import Section from './Section';
 
 describe('Section', () => {
   describe('elements', () => {
-    it('includes main', type => {
-      const { getByRole } = render(<Section header={<h2>Header</h2>} content={<p>Content</p>} />);
+    it('includes content, header, and heading appropriately', () => {
+      const { getByRole } = render(<Section header="Header" content={<p>Content</p>} />);
       // WARNING: Only one `main` is allowed per page
-      expect(getByRole('main')).toBeDefined();
-    });
-    it('includes a group, not include banner', type => {
-      const { getByRole } = render(<Section header={<h2>Header</h2>} content={<p>Content</p>} />);
-      // FAQ: The header should always contain page-specific content (heading, navigation, widgets);
-      //      it should never contain site-oriented content
-      // SEE: https://www.w3.org/TR/html-aria/#el-header
-      expect(getByRole('banner')).toBeUndefined();
-      // SEE: https://www.w3.org/TR/html-aria/#index-aria-group
-      expect(getByRole('group')).toBeDefined();
+      expect(getByRole('main').textContent).toEqual('Content');
+      // NOTE: Technically (https://www.w3.org/TR/html-aria/#el-header), the `header` should not have a role, but `aria-query` recognizes it as a banner (https://github.com/A11yance/aria-query/pull/59)
+      expect(getByRole('banner').textContent).toEqual('Header');
+      expect(getByRole('heading').textContent).toEqual('Header');
     });
   });
 
   describe('content', () => {
-    it('renders all passed content', type => {
+    it('renders all passed content', () => {
       const { getByText } = render(
         <Section
-          header={<h2>Header</h2>}
+          header="Header"
           content={<p>Content</p>}
           actions={<button type="button">Action</button>}
           externals={<dialog>Modal</dialog>}
