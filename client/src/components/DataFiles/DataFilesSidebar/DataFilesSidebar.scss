@@ -1,15 +1,18 @@
-$data-files-wrapper-horizontal-padding: 20px;
 $frontera-portal-color-primary: #9d85ef;
 
+/* TODO: Convert to CSS module */
+/* NOTE: `data-files-sidebar` is redundant because `DataFiles` has `sidebar` */
+/* CAVEAT: The class `data-files-btn-cancel` is added by other modules */
 .data-files-sidebar {
-  width: 165px;
-  background: #ffffff;
-  padding-top: 10px;
-  border-right: 1px solid rgba(112, 112, 112, 0.25);
+  --horizontal-buffer: var(--global-space--section-left);
 }
 
 .data-files-sidebar .nav-link {
-  padding-left: $data-files-wrapper-horizontal-padding;
+  /* FP-404: All Portal section sidebars should use this value. */
+  --min-width: 200px;
+
+  min-width: var(--min-width);
+  padding-left: var(--horizontal-buffer);
   color: #707070;
 }
 
@@ -39,9 +42,8 @@ $frontera-portal-color-primary: #9d85ef;
 
 .data-files-nav {
   padding-top: 20px;
-  /* Pull back sidebar to the left, so it can use (as UI design dictactes)
-      the negative space created from `data-files-wrapper`'s `padding` */
-  margin-left: -$data-files-wrapper-horizontal-padding;
+
+  margin-left: calc(var(--horizontal-buffer) * -1);
 }
 
 /* HACK: Quick solution to prevent styles from cascading into header dropdown */

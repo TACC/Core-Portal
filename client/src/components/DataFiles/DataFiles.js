@@ -9,6 +9,8 @@ import {
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
 
+import { Section } from '_common';
+
 import './DataFiles.module.css';
 
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
@@ -69,11 +71,9 @@ const DataFiles = () => {
   );
 
   return (
-    <div styleName="container">
-      {/* row containing breadcrumbs and toolbar */}
-      <div styleName="header">
+    <Section
+      header={
         <DataFilesBreadcrumbs
-          styleName="header-title"
           api={listingParams.api}
           scheme={listingParams.scheme}
           system={listingParams.system}
@@ -81,28 +81,32 @@ const DataFiles = () => {
           section="FilesListing"
           route
         />
+      }
+      actions={
         <DataFilesToolbar
           api={listingParams.api}
           scheme={listingParams.scheme}
         />
-      </div>
-      {/* row containing sidebar and listing pane */}
-      <div styleName="items">
-        <DataFilesSidebar styleName="sidebar" />
-        <div styleName="content">
-          <DataFilesSearchbar
-            styleName="content-toolbar"
-            api={listingParams.api}
-            scheme={listingParams.scheme}
-            system={listingParams.system}
-          />
-          <div styleName="content-table">
-            <DataFilesSwitch />
+      }
+      content={
+        <>
+          <DataFilesSidebar styleName="sidebar" />
+          <div styleName="content">
+            <DataFilesSearchbar
+              styleName="content-toolbar"
+              api={listingParams.api}
+              scheme={listingParams.scheme}
+              system={listingParams.system}
+            />
+            <div styleName="content-table">
+              <DataFilesSwitch />
+            </div>
           </div>
-        </div>
-      </div>
-      <DataFilesModals />
-    </div>
+        </>
+      }
+      contentStyleName="items"
+      externals={<DataFilesModals />}
+    />
   );
 };
 

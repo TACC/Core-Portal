@@ -5,6 +5,7 @@
 @import url('./settings/color.css');
 @import url('./settings/font.css');
 @import url('./settings/border.css');
+@import url('./settings/space.css');
 
 /* TOOLS */
 /* … */
@@ -13,6 +14,7 @@
 @import url('./generics/roots.css');
 
 /* ELEMENTS */
+@import url('./elements/sectioning.css');
 @import url('./elements/text-semantics.css');
 
 /* OBJECTS */

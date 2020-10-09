@@ -1,0 +1,16 @@
+/* SETTINGS: Border */
+
+/* Usage: `var(--global-border-width--normal)` */
+/* SEE: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties */
+
+:root {
+    --global-space--section-top: 10px;
+    --global-space--section-bottom: 0;
+    --global-space--section-left: 20px;
+    --global-space--section-right: 30px;
+    --global-space--section:
+        var(--global-space--section-top)
+        var(--global-space--section-right)
+        var(--global-space--section-bottom)
+        var(--global-space--section-left);
+}

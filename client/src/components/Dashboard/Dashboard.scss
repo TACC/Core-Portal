@@ -1,11 +1,3 @@
-.dashboard-wrapper {
-    display: flex;
-    flex-direction: column;
-
-    padding: 20px 40px 0 25px;
-
-    overflow: auto;
-}
 .dashboard-items {
     /* As a flex item */
     flex-grow: 1;
@@ -36,7 +28,6 @@
     margin-bottom: 38px;
 }
 
-.dashboard-header,
 .dashboard-item-header {
     /* As a flex item */
     flex-shrink: 0;
@@ -45,14 +36,6 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-}
-
-.dashboard-header {
-    border-bottom: 1px solid #707070;
-}
-
-.dashboard-header h5 {
-    font-weight: 400;
 }
 
 .dashboard-item-header .btn {

@@ -7,6 +7,10 @@
     /* Primary (Text, Layout) */
     --global-color-primary--xx-light: #FFFFFF;
     --global-color-primary--x-light: #F4F4F4;
+    /* TODO: Resolve new common color injection (sidebar border) */
+    /* IDEA: Push volors above out to `--global-color-primary--xx-light` */
+    /* IDEA: Ask Design to use a color from existing variables */
+    /* --global-color-primary--x-light--new: #70707026 | rgba(112, 112, 112, 0.25); */
     --global-color-primary--light: #C6C6C6;
     --global-color-primary--normal: #AFAFAF;
     --global-color-primary--dark: #707070;
