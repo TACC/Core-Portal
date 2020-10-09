@@ -68,6 +68,7 @@ function Dashboard() {
         </>
       }
       contentClassName="dashboard-items container"
+      contentShouldScroll
       externals={
         <Switch>
           <Route
