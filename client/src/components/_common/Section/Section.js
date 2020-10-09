@@ -1,7 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { WelcomeMessage } from '_common';
+import * as MESSAGES from '../../../constants/welcomeMessages';
 import './Section.module.css';
+
+function SectionMessage({ children, isGeneric, routeName }) {
+  const messageText = MESSAGES[routeName];
+
+  if (isGeneric) {
+    return (
+      <WelcomeMessage messageName={routeName}>{messageText}</WelcomeMessage>
+    );
+  }
+  return children || '';
+}
+SectionMessage.propTypes = {
+  /** Prepared message markup (do not just pass a string) */
+  children: PropTypes.node.isRequired,
+  /** Whether to render the content (a.k.a. `children`) as a generic message */
+  isGeneric: PropTypes.string,
+  /** The name of the route section (to search for required welcome message) */
+  routeName: PropTypes.string.isRequired
+};
+SectionMessage.defaultProps = {
+  isGeneric: false
+};
 
 function Section({
   actions,
@@ -13,11 +37,9 @@ function Section({
   headerClassName,
   // sidebar,
   // sidebarClassName,
-  messages
+  message,
+  routeName
 }) {
-  const messagesMarkup = messages || '';
-  const actionsMarkup = actions || '';
-  // const sidebarMarkup = sidebar || '';
   const styleNameList = ['root'];
 
   if (contentShouldScroll) {
@@ -26,13 +48,13 @@ function Section({
 
   return (
     <section styleName={styleNameList.join(' ')} className={className}>
-      {messagesMarkup}
+      <SectionMessage routeName={routeName}>{message}</SectionMessage>
       {/* <div styleName="sidebar" className={sidebarClassName}>
-        {sidebarMarkup}
+        {sidebar}
       </div> */}
       <header styleName="header" className={headerClassName}>
         <h2>{header}</h2>
-        {actionsMarkup}
+        {actions}
       </header>
       <main styleName="content" className={contentClassName}>
         {content}
@@ -59,17 +81,19 @@ Section.propTypes = {
   // sidebar: PropTypes.node.isRequired,
   // /** Additional className for the sidebar element */
   // sidebarClassName: PropTypes.string,
-  /** Any page-specific message (alert, notice, warning, etc) */
-  messages: PropTypes.node
+  /** Any page-specific message(s) (alert, notice, warning, etc) */
+  message: PropTypes.node,
+  /** The name of the route section (to search for required welcome message) */
+  routeName: PropTypes.string.isRequired
 };
 Section.defaultProps = {
-  className: '',
   actions: '',
-  messages: '',
+  className: '',
   contentClassName: '',
   contentShouldScroll: false,
-  headerClassName: ''
+  headerClassName: '',
   // sidebarClassName: ''
+  message: ''
 };
 
 export default Section;

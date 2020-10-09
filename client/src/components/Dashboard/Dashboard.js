@@ -15,7 +15,7 @@ function Dashboard() {
 
   return (
     <Section
-      messages={<BrowserChecker />}
+      message={<BrowserChecker />}
       header="Dashboard"
       headerClassName="dashboard-header"
       actions={

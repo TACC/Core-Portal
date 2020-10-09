@@ -21,7 +21,7 @@ describe('Section', () => {
           header="Header"
           content={<p>Content</p>}
           actions={<button type="button">Action</button>}
-          messages={<span>Message</span>} />
+          message={<span>Message</span>} />
       );
       expect(getByText('Header')).toBeDefined();
       expect(getByText('Content')).toBeDefined();
