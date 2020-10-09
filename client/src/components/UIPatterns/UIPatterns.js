@@ -31,7 +31,7 @@ function UIPatterns() {
           </div>
         </>
       }
-      shouldScrollContent
+      contentShouldScroll
     />
   );
 }

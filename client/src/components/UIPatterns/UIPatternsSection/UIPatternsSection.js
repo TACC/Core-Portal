@@ -28,7 +28,7 @@ function UIPatternsDropdownSelector() {
         Scrollable
         <small>
           Header (<code>header</code>), Content (<code>content</code>, forced
-          scroll), Should Scroll Content (<code>shouldScrollContent</code>),
+          scroll), Should Scroll Content (<code>contentShouldScroll</code>),
         </small>
       </dt>
       <dd>
@@ -42,14 +42,14 @@ function UIPatternsDropdownSelector() {
               <li>Nut</li>
             </ul>
           }
-          shouldScrollContent
+          contentShouldScroll
         />
       </dd>
       <dt>
         All Properties
         <small>
           Header (<code>header</code>), Content (<code>content</code>, resize to
-          scroll), Should Scroll Content (<code>shouldScrollContent</code>),
+          scroll), Should Scroll Content (<code>contentShouldScroll</code>),
           Actions (<code>actions</code>, a link), Externals (
           <code>externals</code>, modal), Messages (<code>messages</code>)
         </small>
@@ -87,7 +87,7 @@ function UIPatternsDropdownSelector() {
           messages={
             <UncontrolledAlert color="secondary">Message</UncontrolledAlert>
           }
-          shouldScrollContent
+          contentShouldScroll
         />
       </dd>
     </dl>

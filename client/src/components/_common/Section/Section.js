@@ -5,10 +5,10 @@ import './Section.module.css';
 
 function Section({
   actions,
-  shouldScrollContent,
   className,
   content,
   contentClassName,
+  contentShouldScroll,
   header,
   headerClassName,
   // sidebar,
@@ -22,7 +22,7 @@ function Section({
   // const sidebarMarkup = sidebar || '';
   const styleNameList = ['root'];
 
-  if (shouldScrollContent) {
+  if (contentShouldScroll) {
     styleNameList.push('should-scroll');
   }
 
@@ -46,14 +46,14 @@ function Section({
 Section.propTypes = {
   /** Any page-specific actions (to be placed in the header) */
   actions: PropTypes.node,
-  /** Whether to allow content to scroll */
-  shouldScrollContent: PropTypes.bool,
   /** Additional className for the root element */
   className: PropTypes.string,
   /** The preimary page content */
   content: PropTypes.node.isRequired,
   /** Additional className for the content element */
   contentClassName: PropTypes.string,
+  /** Whether to allow content to scroll */
+  contentShouldScroll: PropTypes.bool,
   /** The page-specific heading */
   header: PropTypes.node.isRequired,
   /** Additional className for the header element */
@@ -69,11 +69,11 @@ Section.propTypes = {
 };
 Section.defaultProps = {
   className: '',
-  shouldScrollContent: false,
   actions: '',
   externals: '',
   messages: '',
   contentClassName: '',
+  contentShouldScroll: false,
   headerClassName: ''
   // sidebarClassName: ''
 };
