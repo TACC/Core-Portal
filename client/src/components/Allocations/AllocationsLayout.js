@@ -64,7 +64,6 @@ export const Sidebar = () => (
 export const Layout = ({ page }) => {
   const loading = useSelector(state => state.allocations.loading);
   const history = useHistory();
-  const root = `${PATH}/${page}`;
   return (
     <Section
       header={<Header page={page} />}
@@ -74,11 +73,11 @@ export const Layout = ({ page }) => {
         <>
           <Sidebar />
           {loading ? <LoadingSpinner /> : <AllocationsTable page={page} />}
-          <Route exact path={`${root}/manage`}>
+          <Route exact path={`${PATH}/${page}/manage`}>
             <AllocationsRequestModal
               isOpen
               toggle={() => {
-                history.push(root);
+                history.push(`${PATH}/${page}`);
               }}
             />
           </Route>
