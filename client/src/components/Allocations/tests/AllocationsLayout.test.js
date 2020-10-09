@@ -8,6 +8,9 @@ import {
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { Layout as AllocationsLayout } from '../AllocationsLayout';
+import * as ROUTES from '../../../constants/routes';
+
+const PATH = ROUTES.WORKBENCH + ROUTES.ALLOCATIONS;
 
 const mockInitialState = {
   active: [],
@@ -24,29 +27,32 @@ const mockInitialState = {
 expect.extend({ toHaveAttribute, toHaveTextContent });
 describe('Allocations Page Layout', () => {
   const mockStore = configureStore();
-  it('renders the Allocations Page Layout with identifying components', () => {
-    const { getByText, getAllByText } = render(
+  it('renders the Allocations Page Layout (at `/approved`) with identifying components', () => {
+    const { getByText, getAllByText, getByTestId } = render(
       <Provider
         store={mockStore({
           allocations: mockInitialState
         })}
       >
-        <MemoryRouter initialEntries={['/workbench/allocations/approved']}>
+        <MemoryRouter initialEntries={[`${PATH}/approved`]}>
           <AllocationsLayout page="approved" />
         </MemoryRouter>
       </Provider>
     );
     // Header
-    expect(getAllByText(/Allocations/)).toBeDefined();
-    expect(getByText(/Manage/)).toBeDefined();
-    // Sidebar
-    expect(getAllByText(/Approved/)[1].closest('a')).toHaveAttribute(
+    expect(getByTestId('page-name').textContent).toEqual('approved');
+    expect(getByTestId('link-manage')).toHaveAttribute(
       'href',
-      '/workbench/allocations/approved'
+      `${PATH}/approved/manage`
     );
-    expect(getByText(/Expired/).closest('a')).toHaveAttribute(
+    // Sidebar
+    expect(getByTestId('link-text-approved').closest('a')).toHaveAttribute(
       'href',
-      '/workbench/allocations/expired'
+      `${PATH}/approved`
+    );
+    expect(getByTestId('link-text-expired').closest('a')).toHaveAttribute(
+      'href',
+      `${PATH}/expired`
     );
   });
 });

@@ -21,7 +21,7 @@ export const Header = ({ page }) => {
     <>
       <Link to={PATH}>Allocations</Link>
       <span>&nbsp;/&nbsp;</span>
-      <span>{page}</span>
+      <span data-testid="page-name">{page}</span>
     </>
   );
 };
@@ -29,7 +29,11 @@ Header.propTypes = { page: string.isRequired };
 
 export const Actions = ({ page }) => {
   return (
-    <Link to={`${PATH}/${page}/manage`} className="btn btn-primary">
+    <Link
+      to={`${PATH}/${page}/manage`}
+      className="btn btn-primary"
+      data-testid="link-manage"
+    >
       Manage Allocations
     </Link>
   );
@@ -41,13 +45,17 @@ export const Sidebar = () => (
     <NavItem>
       <NavLink tag={RRNavLink} to={`${PATH}/approved`} activeClassName="active">
         <Icon name="approved-reverse" className="link-icon" />
-        <span className="link-text">Approved</span>
+        <span className="link-text" data-testid="link-text-approved">
+          Approved
+        </span>
       </NavLink>
     </NavItem>
     <NavItem>
       <NavLink tag={RRNavLink} to={`${PATH}/expired`} activeClassName="active">
         <Icon name="denied-reverse" className="link-icon" />
-        <span className="link-text">Expired</span>
+        <span className="link-text" data-testid="link-text-expired">
+          Expired
+        </span>
       </NavLink>
     </NavItem>
   </Nav>
