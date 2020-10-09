@@ -47,6 +47,7 @@ const AppsRoutes = () => {
 
   return (
     <Section
+      routeName="APPLICATIONS"
       header={
         <Route path={`${path}/:appId?`}>
           <AppsHeader appDict={appDict} />

@@ -72,6 +72,7 @@ const DataFiles = () => {
 
   return (
     <Section
+      routeName="DATA"
       header={
         <DataFilesBreadcrumbs
           api={listingParams.api}

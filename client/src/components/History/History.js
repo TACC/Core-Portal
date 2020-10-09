@@ -142,6 +142,7 @@ const Layout = () => {
 
   return (
     <Section
+      routeName="HISTORY"
       header={`History / ${historyType}`}
       headerStyleName="header"
       actions={<Actions />}

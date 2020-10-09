@@ -5,26 +5,26 @@ import { WelcomeMessage } from '_common';
 import * as MESSAGES from '../../../constants/welcomeMessages';
 import './Section.module.css';
 
-function SectionMessage({ children, isGeneric, routeName }) {
+function SectionMessage({ children, routeName }) {
+  const output = [];
   const messageText = MESSAGES[routeName];
 
-  if (isGeneric) {
-    return (
+  if (messageText) {
+    output.push(
       <WelcomeMessage messageName={routeName}>{messageText}</WelcomeMessage>
     );
   }
-  return children || '';
+  if (children) {
+    output.push(children);
+  }
+
+  return output;
 }
 SectionMessage.propTypes = {
   /** Prepared message markup (do not just pass a string) */
   children: PropTypes.node.isRequired,
-  /** Whether to render the content (a.k.a. `children`) as a generic message */
-  isGeneric: PropTypes.string,
   /** The name of the route section (to search for required welcome message) */
   routeName: PropTypes.string.isRequired
-};
-SectionMessage.defaultProps = {
-  isGeneric: false
 };
 
 function Section({

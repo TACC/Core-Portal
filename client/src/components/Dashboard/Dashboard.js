@@ -15,6 +15,7 @@ function Dashboard() {
 
   return (
     <Section
+      routeName="DASHBOARD"
       message={<BrowserChecker />}
       header="Dashboard"
       headerClassName="dashboard-header"

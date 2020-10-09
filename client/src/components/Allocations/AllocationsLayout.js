@@ -66,6 +66,7 @@ export const Layout = ({ page }) => {
   const history = useHistory();
   return (
     <Section
+      routeName="ALLOCATIONS"
       header={<Header page={page} />}
       headerClassName="allocations-header"
       actions={<Actions page={page} />}
