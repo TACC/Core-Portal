@@ -50,7 +50,8 @@ function UIPatternsDropdownSelector() {
         <small>
           Header (<code>header</code>), Content (<code>content</code>, resize to
           scroll), Should Scroll Content (<code>contentShouldScroll</code>),
-          Actions (<code>actions</code>, a link to a modal), Messages (<code>messages</code>)
+          Actions (<code>actions</code>, a link to a modal), Messages (
+          <code>messages</code>)
         </small>
       </dt>
       <dd>
