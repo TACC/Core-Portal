@@ -1,0 +1,13 @@
+/* Layouts (Block & Elements) */
+
+.is-column.root {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Modifiers */
+
+.should-scroll.root {
+    overflow: auto;
+}

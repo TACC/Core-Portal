@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { WelcomeMessage } from '_common';
+import { SectionContent, WelcomeMessage } from '_common';
+import { LAYOUTS } from '../SectionContent';
 import * as MESSAGES from '../../../constants/welcomeMessages';
 import './Section.module.css';
 
@@ -32,6 +33,7 @@ function Section({
   className,
   content,
   contentClassName,
+  contentLayoutName,
   contentShouldScroll,
   header,
   headerClassName,
@@ -58,9 +60,14 @@ function Section({
         <h2>{header}</h2>
         {actions}
       </header>
-      <main styleName="content" className={contentClassName}>
+      <SectionContent
+        tagName="main"
+        styleName="content"
+        className={contentClassName}
+        layoutName={contentLayoutName}
+      >
         {content}
-      </main>
+      </SectionContent>
     </section>
   );
 }
@@ -73,6 +80,8 @@ Section.propTypes = {
   content: PropTypes.node.isRequired,
   /** Additional className for the content element */
   contentClassName: PropTypes.string,
+  /** The name of the layout by which to arrange the content */
+  contentLayoutName: PropTypes.oneOf(LAYOUTS),
   /** Whether to allow content to scroll */
   contentShouldScroll: PropTypes.bool,
   /** The page-specific heading */
@@ -92,6 +101,7 @@ Section.defaultProps = {
   actions: '',
   className: '',
   contentClassName: '',
+  contentLayoutName: '',
   contentShouldScroll: false,
   headerClassName: '',
   // sidebarClassName: ''
