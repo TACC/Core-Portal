@@ -1,32 +1,61 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import Section from './Section';
+import SectionContent, { LAYOUT_CLASS_MAP } from './SectionContent';
 
-describe('Section', () => {
+// Create our own `LAYOUTS`, because component one may include an empty string
+const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
+
+export const PARAMETER_CLASS_MAP = {
+  shouldScroll: 'should-scroll'
+};
+export const PARAMETERS = [...Object.keys(PARAMETER_CLASS_MAP)];
+
+describe('SectionContent', () => {
   describe('elements', () => {
-    it('includes content, header, and heading appropriately', () => {
-      const { getByRole } = render(<Section header="Header" content={<p>Content</p>} />);
-      // WARNING: Only one `main` is allowed per page
-      expect(getByRole('main').textContent).toEqual('Content');
-      // NOTE: Technically (https://www.w3.org/TR/html-aria/#el-header), the `header` should not have a role, but `aria-query` recognizes it as a banner (https://github.com/A11yance/aria-query/pull/59)
-      expect(getByRole('banner').textContent).toEqual('Header');
-      expect(getByRole('heading').textContent).toEqual('Header');
+    it('renders all passed children', () => {
+      const { container } = render(
+        <SectionContent>
+          <div>Thing 1</div>
+          <div>Thing 2</div>
+          <div>Thing 3</div>
+        </SectionContent>
+      );
+      const root = container.children[0];
+
+      expect(root.children.length).toEqual(3);
+    });
+    it('renders custom tag', () => {
+      const { container } = render(
+        <SectionContent tagName="main">Thing</SectionContent>
+      );
+      const root = container.children[0];
+
+      expect(root.tagName.toLowerCase()).toEqual('main');
     });
   });
 
-  describe('content', () => {
-    it('renders all passed content', () => {
-      const { getByText } = render(
-        <Section
-          header="Header"
-          content={<p>Content</p>}
-          actions={<button type="button">Action</button>}
-          message={<span>Message</span>} />
+  describe('parameter class names', () => {
+    it.each(LAYOUTS)('renders accurate class for layout name "%s"', layoutName => {
+      const { container } = render(
+        <SectionContent layoutName={layoutName}>Thing</SectionContent>
       );
-      expect(getByText('Header')).toBeDefined();
-      expect(getByText('Content')).toBeDefined();
-      expect(getByText('Action')).toBeDefined();
-      expect(getByText('Message')).toBeDefined();
+      const className = LAYOUT_CLASS_MAP[layoutName];
+
+      expect(container.querySelector(`[class*="${className}"]`)).toBeDefined();
+    });
+
+    it.each(PARAMETERS)('renders accurate class for boolean parameter "%s"', parameter => {
+      const parameterObj = {[parameter]: true};
+      const { container } = render(
+        <SectionContent
+          tagName="main"
+          {...parameterObj}>
+          Thing
+        </SectionContent>
+      );
+      const className = PARAMETER_CLASS_MAP[parameter];
+
+      expect(container.querySelector(`[class*="${className}"]`)).toBeDefined();
     });
   });
 });
