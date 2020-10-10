@@ -32,14 +32,14 @@ describe('Section', () => {
           actions={<button type="button">Action</button>}
           message={<span>Message</span>} />
       );
-      expect(getByText('Header')).toBeTruthy();
-      expect(container.querySelectorAll('.header-test')).toBeTruthy();
-      expect(getByText('Content')).toBeTruthy();
-      expect(container.querySelectorAll('.content-test')).toBeTruthy();
-      // expect(getByText('Sidebar')).toBeTruthy();
-      // expect(container.querySelectorAll('.sidebar-test')).toBeTruthy();
-      expect(getByText('Action')).toBeTruthy();
-      expect(getByText('Message')).toBeTruthy();
+      expect(getByText('Header')).not.toEqual(null);
+      expect(container.querySelectorAll('.header-test')).not.toEqual(null);
+      expect(getByText('Content')).not.toEqual(null);
+      expect(container.querySelectorAll('.content-test')).not.toEqual(null);
+      // expect(getByText('Sidebar')).not.toEqual(null);
+      // expect(container.querySelectorAll('.sidebar-test')).not.toEqual(null);
+      expect(getByText('Action')).not.toEqual(null);
+      expect(getByText('Message')).not.toEqual(null);
     });
   });
 
@@ -56,7 +56,7 @@ describe('Section', () => {
       );
       const className = PARAMETER_CLASS_MAP[parameter];
 
-      expect(container.querySelector(`[class*="${className}"]`)).toBeTruthy();
+      expect(container.querySelector(`[class*="${className}"]`)).not.toEqual(null);
     });
   });
 });

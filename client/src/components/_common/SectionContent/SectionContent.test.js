@@ -41,7 +41,7 @@ describe('SectionContent', () => {
       );
       const className = LAYOUT_CLASS_MAP[layoutName];
 
-      expect(container.querySelector(`[class*="${className}"]`)).toBeTruthy();
+      expect(container.querySelector(`[class*="${className}"]`)).not.toEqual(null);
     });
 
     it.each(PARAMETERS)('renders accurate class for boolean parameter "%s"', parameter => {
@@ -55,7 +55,7 @@ describe('SectionContent', () => {
       );
       const className = PARAMETER_CLASS_MAP[parameter];
 
-      expect(container.querySelector(`[class*="${className}"]`)).toBeTruthy();
+      expect(container.querySelector(`[class*="${className}"]`)).not.toEqual(null);
     });
   });
 });
