@@ -645,17 +645,17 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
 PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
-        'prefix': 'frontera.home.{username}',
+        'systemId': 'frontera.home.{username}',
         'host': 'frontera.tacc.utexas.edu',
-        'home_dir': '/home1/{tasdir}',
+        'rootDir': '/home1/{tasdir}',
         'storage_port': 22,
         'icon': None,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'prefix': 'longhorn.home.{username}',
+        'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
-        'home_dir': '/home/{tasdir}',
+        'rootDir': '/home/{tasdir}',
         'storage_port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
