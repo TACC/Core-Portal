@@ -89,6 +89,7 @@ const initialFilesState = {
     link: {},
     showpath: {}
   },
+  refs: {},
   previewHref: ''
 };
 
@@ -266,7 +267,16 @@ export function files(state = initialFilesState, action) {
           [action.payload.operation]: action.payload.props
         }
       };
-
+    case 'STORE_SELECTOR_REF':
+      return {
+        ...state,
+        refs: {
+          ...state.refs,
+          FileSelector: action.payload
+        }
+      };
+    case 'CLEAR_REFS':
+      return { ...state, refs: {} };
     default:
       return state;
   }
