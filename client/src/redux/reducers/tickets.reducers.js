@@ -137,7 +137,7 @@ export function ticketDetailedView(state = initialDetailedTicketView, action) {
   }
 }
 
-const initialTicketCreateState = {
+export const initialTicketCreateState = {
   creating: false,
   creatingError: false,
   creatingErrorMessage: '',

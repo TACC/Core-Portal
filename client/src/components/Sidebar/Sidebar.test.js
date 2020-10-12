@@ -1,13 +1,13 @@
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
-import { Provider } from "react-redux";
+import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
-import { initialState as workbench } from '../../redux/reducers/workbench.reducers'
+import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
+import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
 import Sidebar from './index';
 import '@testing-library/jest-dom/extend-expect';
-
 
 const PUBLIC_PAGES = [
   'Dashboard',
@@ -16,15 +16,13 @@ const PUBLIC_PAGES = [
   'Allocations',
   'History'
 ];
-const DEBUG_PAGES = [
-  'UI Patterns',
-];
+const DEBUG_PAGES = ['UI Patterns'];
 
 function getPath(page) {
   let path;
   switch (page) {
     case 'Data Files':
-      path = 'data'
+      path = 'data';
       break;
     default:
       path = page.toLowerCase().replace(' ', '-');
@@ -36,7 +34,7 @@ function renderSideBar(store) {
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['/workbench']}>
-        <Route path='/workbench'>
+        <Route path="/workbench">
           <Sidebar />
         </Route>
       </MemoryRouter>
@@ -48,7 +46,11 @@ describe('workbench sidebar', () => {
   const mockStore = configureStore();
   it.each(PUBLIC_PAGES)('should have a link to the %s page', page => {
     const { getByText, queryByRole } = renderSideBar(
-      mockStore({ workbench, notifications })
+      mockStore({
+        workbench,
+        notifications,
+        ticketCreate
+      })
     );
     const path = getPath(page);
     expect(getByText(page)).toBeDefined();
@@ -64,6 +66,7 @@ describe('workbench sidebar', () => {
       mockStore({
         workbench,
         notifications: { list: { unread: 1 } },
+        ticketCreate
       })
     );
 
@@ -73,14 +76,22 @@ describe('workbench sidebar', () => {
 
   it.each(DEBUG_PAGES)('is not available', page => {
     const { queryByText } = renderSideBar(
-      mockStore({ workbench, notifications })
+      mockStore({
+        workbench,
+        notifications,
+        ticketCreate
+      })
     );
     expect(queryByText(page)).toBeNull();
   });
 
   it.each(DEBUG_PAGES)('is available in debug mode', page => {
     const { getByText } = renderSideBar(
-      mockStore({ workbench: { status: { debug: true } }, notifications })
+      mockStore({
+        workbench: { status: { debug: true } },
+        notifications,
+        ticketCreate
+      })
     );
     const path = getPath(page);
     expect(getByText(page)).toBeDefined();
