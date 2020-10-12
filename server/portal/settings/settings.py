@@ -784,7 +784,12 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     }
 ]
 """
-PORTAL_USER_ACCOUNT_SETUP_STEPS = []
+PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
+        'settings': {}
+    }
+]
 
 PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = settings_secret.\
     _PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD
