@@ -3,6 +3,7 @@ from six import add_metaclass
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 from django.urls import reverse
+from django.conf import settings
 
 
 @add_metaclass(ABCMeta)
@@ -17,6 +18,15 @@ class AbstractStep:
         self.user = user
         self.last_event = None
         self.events = []
+
+        try:
+            steps = settings.PORTAL_USER_ACCOUNT_SETUP_STEPS
+            step_dict = next(
+                step for step in steps if step['step'] == self.step_name()
+            )
+            self.settings = step_dict['settings']
+        except Exception:
+            self.settings = None
 
         try:
             # Restore event history
