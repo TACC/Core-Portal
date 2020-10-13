@@ -26,26 +26,28 @@ export function* watchOnboardingAdminList() {
 }
 
 //Admin list of a single user
-/* export async function fetchOnboardingAdminIndividualUser() {
+export async function fetchOnboardingAdminIndividualUser(username) {
   const result = await fetchUtil({
-    url: 'api/onboarding/user/username'
+    url: '/api/onboarding/user/' + username
   });
   return result;
 }
 
-export function* getOnboardingAdminIndividualUser() {
+export function* getOnboardingAdminIndividualUser(username) {
   yield put({ type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_PROCESSING' });
   try {
-    const onboardingUser = yield call(fetchOnboardingAdminIndividualUser);
-    if (result.steps.state ='failed'){
+    const onboardingUser = yield call(fetchOnboardingAdminIndividualUser, username);
+    if (onboardingUser.steps.state){
       yield put({ type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_FAILED', payload: onboardingUser });
-    } else {
+    } else { 
       yield put({ type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_SUCCESS', payload: onboardingUser });
     }} catch (error) {
+    console.log("error: ");
+    console.log(error);
     yield put({ type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_ERROR', payload: error });
   }
 }
 
-export function* watchOnboardingAdminIndividualUser() {
-  yield takeLatest('FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER', getOnboardingAdminIndividualUser);
-} */
+export function* watchOnboardingAdminIndividualUser(username) {
+  yield takeLatest('FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER', getOnboardingAdminIndividualUser, username);
+}
