@@ -645,18 +645,22 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
 PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
+        'description': 'My Data on Frontera for {username}',
+        'site': 'frontera',
         'systemId': 'frontera.home.{username}',
         'host': 'frontera.tacc.utexas.edu',
         'rootDir': '/home1/{tasdir}',
-        'storage_port': 22,
+        'port': 22,
         'icon': None,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
+        'description': 'My Data on Longhorn for {username}',
+        'site': 'frontera',
         'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
         'rootDir': '/home/{tasdir}',
-        'storage_port': 22,
+        'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
     },
@@ -788,6 +792,10 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {}
+    },
+    {
+        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
+        'settings': {}
     }
 ]
 
@@ -809,7 +817,9 @@ PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '')
 
-PORTAL_KEY_SERVICE_ACTOR_ID = "jzQP0EeX7mE1K"
+#PORTAL_KEY_SERVICE_ACTOR_ID = "jzQP0EeX7mE1K"
+# Staging actor
+PORTAL_KEY_SERVICE_ACTOR_ID = "mg06LLyrkG4Rv"
 
 PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
                                   "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]

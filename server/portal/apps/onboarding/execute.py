@@ -95,6 +95,7 @@ def execute_setup_steps(username):
             try:
                 setup_step.process()
             except Exception as err:
+                logger.exception(err)
                 setup_step.state = SetupState.ERROR
                 setup_step.log("Exception: {err}".format(err=str(err)))
 

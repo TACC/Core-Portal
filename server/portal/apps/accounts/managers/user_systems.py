@@ -34,7 +34,7 @@ class UserSystemsManager():
             'systemId': 'localsystem1.home.{username}', <------- Used to get the system ID for a user
             'host': 'localsystem1.tacc.utexas.edu', <--------- System host
             'rootDir': '/home/{tasdir}', <---------------------- User's home directory
-            'storage_port': 22, <----------------------------- System storage port
+            'port': 22, <----------------------------- System storage port
             'icon': None <------------------------------------ The CSS class name for the icon used in "My Data".
         }
 
@@ -184,7 +184,7 @@ class UserSystemsManager():
             username=username
         )
         system.name = self.get_system_id()
-        system.storage.port = self.system['storage_port']
+        system.storage.port = self.system['port']
         system.storage.home_dir = '/'
         system.storage.root_dir = self.get_sys_tas_user_dir()
         system.storage.protocol = 'SFTP'

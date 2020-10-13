@@ -39,7 +39,7 @@ def call_reactor(user, systemId, reactor_template, variables,
     """
 
     agc = service_account()
-    webhook = register_webhook(callback, callback_data)
+    webhook = register_webhook(callback, callback_data, user=user)
     message = {
         "username": user.username,
         "force": force,
@@ -88,5 +88,6 @@ def _create_substitutions(user):
 def _substitute_variables(variables, substitutions):
     result = variables.copy()
     for k, v in result.items():
-        result[k] = v.format(**substitutions)
+        if hasattr(v, 'format'):
+            result[k] = v.format(**substitutions)
     return result
