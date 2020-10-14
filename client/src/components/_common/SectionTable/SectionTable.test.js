@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import SectionTable from './SectionTable';
-import { SectionHeader } from '_common';
 
 const TABLE_MARKUP = <table><tbody><tr><td>Table Cell</td></tr></tbody></table>;
 
@@ -51,7 +50,7 @@ describe('SectionTable', () => {
     it.each(PARAMETERS)('renders accurate class for boolean parameter "%s"', parameter => {
       const parameterObj = {[parameter]: true};
       const { container } = render(
-        <SectionTable>
+        <SectionTable {...parameterObj}>
           {TABLE_MARKUP}
         </SectionTable>
       );
