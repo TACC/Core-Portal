@@ -80,8 +80,9 @@ function SectionTable({
           </SectionHeader>
         </>
       )}
-      {/* This wrapper is the keystone of the component */}
-      {/* FAQ: … */}
+      {/* This wrapper is the keystone of this component */}
+      {/* FAQ: A table can NOT be a flex item; <div> wrap is safest solution */}
+      {/* SEE: https://stackoverflow.com/q/41421512/11817077 */}
       <div styleName="table-wrap">{children}</div>
     </TagName>
   );
