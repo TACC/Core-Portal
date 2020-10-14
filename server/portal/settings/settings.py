@@ -792,10 +792,6 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {}
-    },
-    {
-        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
-        'settings': {}
     }
 ]
 

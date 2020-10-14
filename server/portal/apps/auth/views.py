@@ -68,6 +68,17 @@ def launch_setup_checks(user):
         logger.info("Executing onboarding setup steps for %s", user.username)
         execute_setup_steps.apply_async(args=[user.username])
 
+
+    # Apply asynchronous long calls
+    logger.info("Starting system setup celery tasks for {username}".format(username=user.username))
+    index_allocations.apply_async(args=[user.username])
+
+    system_names = get_user_storage_systems(user.username, settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS)
+    group(
+        setup_user.s(user.username, system) for system in system_names
+    ).apply_async()
+
+
     
 def agave_oauth_callback(request):
     """Agave OAuth callback handler.
