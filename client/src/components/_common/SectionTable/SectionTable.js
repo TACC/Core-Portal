@@ -60,12 +60,20 @@ function SectionTable({
   headerActions,
   headerClassName,
   manualHeader,
+  shouldScroll,
   tagName
 }) {
+  let styleName = '';
+  const styleNameList = ['root'];
   const TagName = tagName;
 
+  if (shouldScroll) styleNameList.push('should-scroll');
+
+  // Do not join inside JSX (otherwise arcane styleName error occurs)
+  styleName = styleNameList.join(' ');
+
   return (
-    <TagName styleName="root" className={className}>
+    <TagName styleName={styleName} className={className}>
       {manualHeader ? (
         <>{manualHeader}</>
       ) : (
@@ -104,6 +112,8 @@ SectionTable.propTypes = {
   /* RFE: Ideally, limit this to one `SectionHeader` */
   /* SEE: https://github.com/facebook/react/issues/2979 */
   manualHeader: PropTypes.element,
+  /** Whether to allow wrapper element to scroll */
+  shouldScroll: PropTypes.bool,
   /** Override tag of the root element */
   tagName: PropTypes.string
 };
@@ -113,6 +123,7 @@ SectionTable.defaultProps = {
   headerActions: '',
   headerClassName: '',
   manualHeader: undefined,
+  shouldScroll: false,
   tagName: 'article'
 };
 

@@ -26,3 +26,9 @@
 .header {
   flex-shrink: 0;
 }
+
+/* Modifiers */
+
+.root:not(.should-scroll) .table-wrap {
+  overflow: hidden;
+}

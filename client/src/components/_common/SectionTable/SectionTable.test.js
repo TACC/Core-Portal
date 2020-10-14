@@ -6,6 +6,11 @@ import { SectionHeader } from '_common';
 
 const TABLE_MARKUP = <table><tbody><tr><td>Table Cell</td></tr></tbody></table>;
 
+export const PARAMETER_CLASS_MAP = {
+  shouldScroll: 'should-scroll'
+};
+export const PARAMETERS = [...Object.keys(PARAMETER_CLASS_MAP)];
+
 describe('SectionTable', () => {
   describe('elements', () => {
     it('renders passed children and header', () => {
@@ -39,6 +44,20 @@ describe('SectionTable', () => {
       expect(getByText('Header')).not.toEqual(null);
       expect(getByText('Header Actions')).not.toEqual(null);
       expect(container.getElementsByClassName('header-test')).not.toEqual(null);
+    });
+  });
+
+  describe('parameter class names', () => {
+    it.each(PARAMETERS)('renders accurate class for boolean parameter "%s"', parameter => {
+      const parameterObj = {[parameter]: true};
+      const { container } = render(
+        <SectionTable>
+          {TABLE_MARKUP}
+        </SectionTable>
+      );
+      const className = PARAMETER_CLASS_MAP[parameter];
+
+      expect(container.querySelector(`[class*="${className}"]`)).not.toEqual(null);
     });
   });
 });
