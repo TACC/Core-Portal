@@ -11,12 +11,12 @@ import './SectionHeader.module.css';
  * - automatic styles or markup for given context (ex: within a form or a table)
  *
  * @example
- * // A section header with heading text
+ * // a section header with heading text
  * <SectionHeader>
  *   <a href="…">Hyperlinked Name of Section</a>
  * </SectionHeader>
  * @example
- * // A form header with actions and heading text
+ * // a form header with actions and heading text
  * <SectionHeader
  *   actions={<button type="reset">Reset</button>}
  *   isForForm
@@ -24,7 +24,7 @@ import './SectionHeader.module.css';
  *   Name of Form
  * </SectionHeader>
  * @example
- * // A table header with actions and heading text
+ * // a table header with actions and heading text
  * <SectionHeader
  *   actions={<input type="search" />}
  *   isForTable

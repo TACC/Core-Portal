@@ -13,7 +13,7 @@ import './Section.module.css';
  * - messages (automatically loads welcome message)
  * - header (with actions, e.g. links, buttons, form)
  * - content (that will be arranged in the layout you choose)
- * - manual or automatic sub-components
+ * - manual or automatic sub-components (i.e. header, content)
  *
  * @example
  * // manually build messages, automatically build welcome message
@@ -33,8 +33,8 @@ import './Section.module.css';
  * />
  * @example
  * // manually build sub-components
+ * // WARNING: This component's styles are NOT applied to manual sub-components
  * <Section
- *   routeName="DASHBOARD"
  *   manualHeader={
  *     <SectionHeader
  *       styleName="header"
@@ -45,7 +45,7 @@ import './Section.module.css';
  *   }
  *   manualContent={
  *     <SectionContent
- *       styleName="items"
+ *       styleName="content"
  *       layoutName="twoColumn">
  *       {…}
  *     </SectionContent>
@@ -191,7 +191,7 @@ Section.defaultProps = {
   headerClassName: '',
   manualContent: undefined,
   manualHeader: undefined,
-  messages: <></>,
+  messages: '',
   messagesClassName: '',
   routeName: ''
   // sidebarClassName: ''

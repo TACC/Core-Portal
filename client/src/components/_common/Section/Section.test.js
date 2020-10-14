@@ -5,10 +5,12 @@ import Section from './Section';
 describe('Section', () => {
   describe('elements and classes', () => {
     it('renders elements with appropriate roles', () => {
-      const { getByRole } = render(<Section
-        header="Header"
-        content={<p>Content</p>}
-      />);
+      const { getByRole } = render(
+        <Section
+          header="Header"
+          content={<p>Content</p>}
+        />
+      );
       // WARNING: Only one `main` is allowed per page
       expect(getByRole('main').textContent).toEqual('Content');
       // NOTE: Technically (https://www.w3.org/TR/html-aria/#el-header), the `header` should not have a role, but `aria-query` recognizes it as a banner (https://github.com/A11yance/aria-query/pull/59)
@@ -30,7 +32,8 @@ describe('Section', () => {
           // sidebar={<nav>Sidebar</nav>}
           // sidebarClassName="sidebar-test"
           messages={<><strong>Message</strong><strong>List</strong></>}
-          messagesClassName="messages-test" />
+          messagesClassName="messages-test"
+        />
       );
       expect(container.getElementsByClassName('root-test')).not.toEqual(null);
       expect(getByText('Header')).not.toEqual(null);

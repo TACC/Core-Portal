@@ -12,10 +12,10 @@ import './SectionMessages.module.css';
  * - messages (can automatically load welcome message)
  *
  * @example
- * // An automatic welcome message (if found), but no additional messages
+ * // an automatic welcome message (if found), but no additional messages
  * <SectionMessages routeName="DASHBOARD" />
  * @example
- * // An automatic welcome message (if found), and some additional messages
+ * // an automatic welcome message (if found), and some additional messages
  * <SectionMessages routeName="DASHBOARD">
  *   <Alert color="success">You win!</Alert>
  *   <Alert color="secondary">
@@ -23,7 +23,7 @@ import './SectionMessages.module.css';
  *   </Alert>
  * </SectionMessages>
  * @example
- * // No automatic welcome message; only some additional messages
+ * // no automatic welcome message; only some additional messages
  * <SectionMessages>
  *   <Alert color="success">You win!</Alert>
  *   <Alert color="secondary">
@@ -53,7 +53,7 @@ SectionMessages.propTypes = {
   routeName: PropTypes.string
 };
 SectionMessages.defaultProps = {
-  children: <></>,
+  children: '',
   className: '',
   routeName: ''
 };

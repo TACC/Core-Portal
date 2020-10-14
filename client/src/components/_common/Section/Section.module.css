@@ -1,7 +1,6 @@
 /* Block */
 
 .root {
-    /* As flex container */
     display: flex;
     flex-direction: column;
 
@@ -14,11 +13,12 @@
 .messages {
     /* … */
 }
+
+/* Elements: Sub-Components */
+/* CAVEAT: These are only applied to automatically-built sub-components */
 .header {
-    /* As flex item */
     flex-shrink: 0;
 }
 .content {
-    /* As flex item */
     flex-grow: 1;
 }

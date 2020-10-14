@@ -32,7 +32,7 @@ export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
  * - debug layout (via color-coded panels)
  *
  * @example
- * // Features: lay out panels, change tag, allow content scroll, color-coded
+ * // features: lay out panels, change tag, allow content scroll, color-coded
  * <SectionContent
  *   layoutName="oneColumn"
  *   tagName="main",
