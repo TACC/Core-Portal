@@ -69,7 +69,7 @@ export const Layout = ({ page }) => {
       routeName="ALLOCATIONS"
       header={<Header page={page} />}
       headerClassName="allocations-header"
-      actions={<Actions page={page} />}
+      headerActions={<Actions page={page} />}
       content={
         <>
           <Sidebar />

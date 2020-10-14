@@ -1,31 +1,18 @@
-.dashboard-items {
-    /* As a flex item */
-    flex-grow: 1;
 
-    /* As a flex container */
+.dashboard-items > * {
     display: flex;
     flex-direction: column;
 }
-.dashboard-items > :last-child {
-    /* Make bottom-most item fill up remaining vertical space */
-    flex-grow: 1;
-    /* Prevetn Safari from overlapping `.jobs-…` and `.tickets-…` */
-    flex-basis: 0;
-}
 
-/* FAQ: Inner wraps of specific `.dash-grid-items` */
 /* RFC: Implement `max-height: …` in a modular manner */
 /* SEE: https://tacc-team.slack.com/archives/GQW4Q8HLG/p1578514280032300?thread_ts=1578511498.030900&cid=GQW4Q8HLG */
 /* TODO: re-work this container and table to properly lay-out and contain elements within this
          wrapper's height and width */
 .jobs-wrapper {
     max-height: 40vh;
-    /* RFC: Implement `margin-bottom: 38px` independent of `.jobs-wrapper` */
-    margin-bottom: 60px;
 }
 .tickets-wrapper {
     max-height: 27vh;
-    margin-bottom: 38px;
 }
 
 .dashboard-item-header {
@@ -40,12 +27,6 @@
 
 .dashboard-item-header .btn {
     padding: 0;
-}
-
-/* FAQ: Indirect child element of `.dashboard-items` */
-/* RFC: Class name `.dashboard-item` (to coincide with `.dashboard-items`) */
-.dash-grid-item {
-    margin-top: 20px;
 }
 
 .sysmon-wrapper {

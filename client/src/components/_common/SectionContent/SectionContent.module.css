@@ -1,13 +1,19 @@
-/* Layouts (Block & Elements) */
+/* Block */
 
-.is-column.root {
-    display: flex;
-    flex-direction: column;
+.root {
+  /* … */
 }
 
 
 /* Modifiers */
 
-.should-scroll.root {
-    overflow: auto;
+.should-scroll {
+  overflow: auto;
 }
+
+.should-debug::before          { background-color: tomato; }
+.should-debug > *:nth-child(1) { background-color: orchid; }
+.should-debug > *:nth-child(2) { background-color: dodgerblue; }
+.should-debug > *:nth-child(3) { background-color: yellow; }
+.should-debug > *:nth-child(4) { background-color: mediumseagreen; }
+.should-debug::after           { background-color: gray; }

@@ -1,9 +1,15 @@
 import React from 'react';
-import { Button, Row, Col } from 'reactstrap';
+import { Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 
-import { BrowserChecker, Section } from '_common';
+import {
+  BrowserChecker,
+  Section,
+  SectionHeader,
+  SectionContent,
+  SectionTable
+} from '_common';
 import JobsView from '../Jobs';
 import Tickets, { TicketModal, TicketCreateModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
@@ -12,60 +18,112 @@ import './Dashboard.scss';
 
 function Dashboard() {
   const dispatch = useDispatch();
+  // const temporaryCSS = `
+  // .table-wrapper th {
+  //   position: sticky;
+  //   top: 0;
+  // }
+  // `;
 
   return (
     <Section
       routeName="DASHBOARD"
-      message={<BrowserChecker />}
-      header="Dashboard"
-      headerClassName="dashboard-header"
-      actions={
-        <Link to="/accounts/profile" className="wb-link">
-          Manage Account
-        </Link>
+      messages={<BrowserChecker />}
+      // header="Dashboard"
+      // headerClassName="dashboard-header"
+      // headerActions={
+      //   <Link to="/accounts/profile" className="wb-link">
+      //     Manage Account
+      //   </Link>
+      // }
+      manualHeader={
+        <SectionHeader
+          className="dashboard-header"
+          actions={
+            <Link to="/accounts/profile" className="wb-link">
+              Manage Account
+            </Link>
+          }
+        >
+          Dashboard
+        </SectionHeader>
       }
-      content={
-        <>
-          <Row>
-            <Col lg="7" className="border-right">
-              <div className="jobs-wrapper dash-grid-item">
-                <div className="dashboard-item-header">
-                  <h6>My Recent Jobs</h6>
-                  <Link to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}>
-                    <Button color="link">
-                      <h6>View History</h6>
-                    </Button>
-                  </Link>
-                </div>
-                <JobsView />
-              </div>
-            </Col>
-            <Col lg="5">
-              <div className="sysmon-wrapper dash-grid-item">
-                <div className="dashboard-item-header">
-                  <h6>System Status</h6>
-                </div>
-                <Sysmon />
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col lg="7" className="border-right">
-              <div className="tickets-wrapper dash-grid-item">
-                <div className="dashboard-item-header">
-                  <h6>My Tickets</h6>
-                  <Link
-                    to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-                  >
-                    <Button color="link">
-                      <h6>Add Ticket</h6>
-                    </Button>
-                  </Link>
-                </div>
-                <Tickets />
-              </div>
-            </Col>
-          </Row>
+      // contentClassName="dashboard-items"
+      // contentLayoutName="twoColumn"
+      // contentShouldScroll
+      manualContent={
+        <SectionContent
+          className="dashboard-items"
+          layoutName="twoColumn"
+          shouldScroll
+        >
+          <div className="sysmon-wrapper">
+            <SectionTable
+              header={
+                <SectionHeader className="dashboard-item-header">
+                  System Status
+                </SectionHeader>
+              }
+            >
+              <Sysmon />
+            </SectionTable>
+          </div>
+          {/*
+          <div className="sysmon-wrapper">
+            <SectionTable
+              header={
+                <SectionHeader className="dashboard-item-header">
+                  Bystem Btatus
+                </SectionHeader>
+              }
+            >
+              <Sysmon />
+            </SectionTable>
+          </div>
+          */}
+          <div className="jobs-wrapper">
+            <SectionTable
+              header={
+                <SectionHeader
+                  className="dashboard-item-header"
+                  actions={
+                    <Link to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}>
+                      <Button color="link">
+                        <h6>View History</h6>
+                      </Button>
+                    </Link>
+                  }
+                >
+                  My Recent Jobs
+                </SectionHeader>
+              }
+            >
+              <JobsView />
+            </SectionTable>
+          </div>
+          <div className="tickets-wrapper">
+            {/* <style>{temporaryCSS}</style> */}
+            <SectionTable
+              header={
+                <SectionHeader
+                  className="dashboard-item-header"
+                  actions={
+                    <Link
+                      to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+                    >
+                      <Button color="link">
+                        <h6>Add Ticket</h6>
+                      </Button>
+                    </Link>
+                  }
+                >
+                  My Tickets
+                </SectionHeader>
+              }
+            >
+              <Tickets />
+            </SectionTable>
+          </div>
           <Switch>
             <Route
               exact
@@ -88,10 +146,8 @@ function Dashboard() {
               }}
             />
           </Switch>
-        </>
+        </SectionContent>
       }
-      contentClassName="dashboard-items container"
-      contentShouldScroll
     />
   );
 }

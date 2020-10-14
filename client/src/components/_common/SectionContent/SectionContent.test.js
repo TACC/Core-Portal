@@ -1,12 +1,14 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+
 import SectionContent, { LAYOUT_CLASS_MAP } from './SectionContent';
 
 // Create our own `LAYOUTS`, because component one may include an empty string
 const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
 
 export const PARAMETER_CLASS_MAP = {
-  shouldScroll: 'should-scroll'
+  shouldScroll: 'should-scroll',
+  shouldDebug: 'should-debug'
 };
 export const PARAMETERS = [...Object.keys(PARAMETER_CLASS_MAP)];
 
@@ -14,7 +16,7 @@ describe('SectionContent', () => {
   describe('elements', () => {
     it('renders all passed children', () => {
       const { container } = render(
-        <SectionContent>
+        <SectionContent layoutName="oneColumn">
           <div>Thing 1</div>
           <div>Thing 2</div>
           <div>Thing 3</div>
@@ -26,7 +28,12 @@ describe('SectionContent', () => {
     });
     it('renders custom tag', () => {
       const { container } = render(
-        <SectionContent tagName="main">Thing</SectionContent>
+        <SectionContent
+          layoutName="oneColumn"
+          tagName="main"
+        >
+          <div>Thing</div>
+        </SectionContent>
       );
       const root = container.children[0];
 
@@ -48,9 +55,10 @@ describe('SectionContent', () => {
       const parameterObj = {[parameter]: true};
       const { container } = render(
         <SectionContent
-          tagName="main"
-          {...parameterObj}>
-          Thing
+          layoutName="oneColumn"
+          {...parameterObj}
+        >
+          <div>Thing</div>
         </SectionContent>
       );
       const className = PARAMETER_CLASS_MAP[parameter];

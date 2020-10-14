@@ -36,7 +36,7 @@ const ManageAccountView = () => {
       <div className="workbench-content">
         <Section
           header="Manage Account"
-          actions={
+          headerActions={
             <Link to="/workbench/dashboard" className="wb-link">
               Back to Dashboard
             </Link>
@@ -80,7 +80,7 @@ const ManageAccountView = () => {
             </>
           }
           contentClassName="container manage-account-content"
-          contentShouldScroll
+          shouldScroll
         />
       </div>
     </div>

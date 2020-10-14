@@ -83,7 +83,7 @@ const DataFiles = () => {
           route
         />
       }
-      actions={
+      headerActions={
         <DataFilesToolbar
           api={listingParams.api}
           scheme={listingParams.scheme}

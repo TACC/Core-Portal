@@ -145,7 +145,7 @@ const Layout = () => {
       routeName="HISTORY"
       header={`History / ${historyType}`}
       headerStyleName="header"
-      actions={<Actions />}
+      headerActions={<Actions />}
       content={
         <>
           <Sidebar />

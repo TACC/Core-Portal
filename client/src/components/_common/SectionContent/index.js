@@ -1,1 +1,1 @@
-export { default, LAYOUTS } from './SectionContent';
+export { default, LAYOUTS, DEFAULT_LAYOUT } from './SectionContent';

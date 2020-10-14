@@ -1,0 +1,15 @@
+/* Block & Elements */
+
+.root {
+  position: relative;
+  flex-grow: 1; /* TODO: Decide whether this move to parent(?) scope */
+  overflow: auto;
+  min-height: 5rem; /* TODO: Decide whether this move to parent(?) scope */
+}
+.root table {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}

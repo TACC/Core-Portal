@@ -1,7 +1,9 @@
 export { default as BrowserChecker } from './BrowserChecker';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as Section } from './Section';
+export { default as SectionHeader } from './SectionHeader';
 export { default as SectionContent } from './SectionContent';
+export { default as SectionTable } from './SectionTable';
 export { default as SystemPushKeysModal } from './SystemsPushKeysModal';
 export { FormField } from './Form';
 export { FileInputDropZoneFormField } from './Form';

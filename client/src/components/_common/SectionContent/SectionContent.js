@@ -1,51 +1,93 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import './SectionContent.module.css';
+/* eslint-disable no-unused-vars */
+import styles from './SectionContent.module.css';
+import layoutStyles from './SectionContent.layouts.module.css';
+/* eslint-enable no-unused-vars */
 
+/**
+ * Map of layout names to CSS classes
+ * @enum {number}
+ */
 export const LAYOUT_CLASS_MAP = {
-  column: 'is-column'
+  /** One full-width column of flexible blocks */
+  oneColumn: 'one-column',
+  /**
+   * Two left/right columns (75%/25%) of flexible blocks
+   *
+   * (On narrow screens, this behaves like `oneColumn`)
+   */
+  twoColumn: 'two-column'
 };
-export const DEFAULT_LAYOUT = '';
-export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
+export const DEFAULT_LAYOUT = 'oneColumn';
+export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
 
+/**
+ * A content panel wrapper that supports:
+ *
+ * - lay out panels (based on layout name and panel position)
+ * - change element tag (like `section` instead of `div`)
+ * - scroll root element (overflow of panel content is not managed)
+ * - debug layout (via color-coded panels)
+ *
+ * @example
+ * // Features: lay out panels, change tag, allow content scroll, color-coded
+ * <SectionContent
+ *   layoutName="oneColumn"
+ *   tagName="main",
+ *   shouldScroll,
+ *   shouldDebug
+ * >
+ *   <div>Thing 1</div>
+ *   <div>Thing 2</div>
+ *   <div>Thing 3</div>
+ * </SectionContent>
+ */
 function SectionContent({
   className,
   children,
   layoutName,
   shouldScroll,
+  shouldDebug,
   tagName
 }) {
+  let styleName = '';
+  const styleNameList = ['styles.root'];
   const layoutClass = LAYOUT_CLASS_MAP[layoutName];
-  const styleNameList = ['root', layoutClass];
   const TagName = tagName;
 
-  if (shouldScroll) {
-    styleNameList.push('should-scroll');
-  }
+  if (shouldScroll) styleNameList.push('styles.should-scroll');
+  if (shouldDebug) styleNameList.push('styles.should-debug');
+  if (layoutClass) styleNameList.push(`layoutStyles.${layoutClass}`);
+
+  // Do not join inside JSX (otherwise arcane styleName error occurs)
+  styleName = styleNameList.join(' ');
 
   return (
-    <TagName styleName={styleNameList.join(' ')} className={className}>
+    <TagName styleName={styleName} className={className}>
       {children}
     </TagName>
   );
 }
 SectionContent.propTypes = {
-  /** Additional className for the root element */
+  /** Any additional className(s) for the root element */
   className: PropTypes.string,
   /** Content nodes where each node is a block to be laid out */
   children: PropTypes.node.isRequired,
-  /** The name of the layout ibyn which to arrange the children nodes */
-  layoutName: PropTypes.oneOf(LAYOUTS),
-  /** Whether to allow content pane to scroll */
+  /** The name of the layout by which to arrange the nodes */
+  layoutName: PropTypes.oneOf(LAYOUTS).isRequired,
+  /** Whether to allow root element to scroll */
   shouldScroll: PropTypes.bool,
+  /** Whether to allow component debugging */
+  shouldDebug: PropTypes.bool,
   /** Override tag of the root element */
   tagName: PropTypes.string
 };
 SectionContent.defaultProps = {
   className: '',
-  layoutName: DEFAULT_LAYOUT,
   shouldScroll: false,
+  shouldDebug: false,
   tagName: 'div'
 };
 
