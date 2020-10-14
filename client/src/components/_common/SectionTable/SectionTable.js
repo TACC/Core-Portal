@@ -112,7 +112,7 @@ SectionTable.defaultProps = {
   headerActions: '',
   headerClassName: '',
   manualHeader: undefined,
-  tagName: 'section'
+  tagName: 'article'
 };
 
 export default SectionTable;
