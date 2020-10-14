@@ -32,6 +32,14 @@ import './Section.module.css';
  *   contentLayoutName="twoColumn"
  * />
  * @example
+ * // alternate syntax to automatically build component sub-component
+ * <Section
+ *   contentStyleName="items"
+ *   contentLayoutName="twoColumn"
+ * >
+ *   {…} <!-- i.e. content -->
+ * </Section>
+ * @example
  * // manually build sub-components
  * // WARNING: This component's styles are NOT applied to manual sub-components
  * <Section
