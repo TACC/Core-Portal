@@ -1,9 +1,8 @@
 import React from 'react';
-import { Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 
-import { BrowserChecker, Section, SectionHeader, SectionTable } from '_common';
+import { BrowserChecker, Section, SectionTable } from '_common';
 import JobsView from '../Jobs';
 import Tickets, { TicketModal, TicketCreateModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
@@ -24,7 +23,6 @@ function Dashboard() {
       routeName="DASHBOARD"
       messages={<BrowserChecker />}
       header="Dashboard"
-      headerClassName="dashboard-header"
       headerActions={
         <Link to="/accounts/profile" className="wb-link">
           Manage Account
@@ -34,71 +32,44 @@ function Dashboard() {
       contentLayoutName="twoColumn"
       content={
         <>
-          <SectionTable
-            className="sysmon-wrapper"
-            manualHeader={
-              <SectionHeader className="dashboard-item-header" isForTable>
-                System Status
-              </SectionHeader>
-            }
-          >
+          {/* <style>{temporaryCSS}</style> */}
+          <SectionTable header="System Status" className="sysmon-wrapper">
             <Sysmon />
           </SectionTable>
           {/*
-          <SectionTable
-            className="sysmon-wrapper"
-            manualHeader={
-              <SectionHeader className="dashboard-item-header">
-                Bystem Btatus
-              </SectionHeader>
-            }
-          >
+          <SectionTable header="Bystem Badass" className="sysmon-wrapper">
             <Sysmon />
           </SectionTable>
           */}
           <SectionTable
             className="jobs-wrapper"
-            manualHeader={
-              <SectionHeader
-                className="dashboard-item-header"
-                actions={
-                  <Link to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}>
-                    <Button color="link">
-                      <h6>View History</h6>
-                    </Button>
-                  </Link>
-                }
-                isForTable
+            header="My Recent Jobs"
+            headerActions={
+              <Link
+                to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
+                className="wb-link"
               >
-                My Recent Jobs
-              </SectionHeader>
+                View History
+              </Link>
             }
           >
             <JobsView />
           </SectionTable>
-          {/* <style>{temporaryCSS}</style> */}
           <SectionTable
             className="tickets-wrapper"
-            manualHeader={
-              <SectionHeader
-                className="dashboard-item-header"
-                actions={
-                  <Link
-                    to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-                  >
-                    <Button color="link">
-                      <h6>Add Ticket</h6>
-                    </Button>
-                  </Link>
-                }
-                isForTable
+            header="My Tickets"
+            headerActions={
+              <Link
+                to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+                className="wb-link"
               >
-                My Tickets
-              </SectionHeader>
+                Add Ticket
+              </Link>
             }
           >
             <Tickets />
           </SectionTable>
+
           <Switch>
             <Route
               exact

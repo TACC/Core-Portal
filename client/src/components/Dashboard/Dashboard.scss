@@ -14,24 +14,6 @@
     max-height: 27vh;
 }
 
-.dashboard-item-header {
-    /* As a flex item */
-    flex-shrink: 0;
-
-    /* As a flex container */
-    // display: flex;
-    // justify-content: space-between;
-    align-items: baseline;
-}
-
-.dashboard-item-header .btn {
-    padding: 0;
-}
-
 .sysmon-wrapper {
     font-size: 14px;
-}
-
-.dashboard-content .btn {
-    padding: 0;
 }
