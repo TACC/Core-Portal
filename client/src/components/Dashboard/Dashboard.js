@@ -3,13 +3,7 @@ import { Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 
-import {
-  BrowserChecker,
-  Section,
-  SectionHeader,
-  SectionContent,
-  SectionTable
-} from '_common';
+import { BrowserChecker, Section, SectionHeader, SectionTable } from '_common';
 import JobsView from '../Jobs';
 import Tickets, { TicketModal, TicketCreateModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
@@ -29,34 +23,17 @@ function Dashboard() {
     <Section
       routeName="DASHBOARD"
       messages={<BrowserChecker />}
-      // header="Dashboard"
-      // headerClassName="dashboard-header"
-      // headerActions={
-      //   <Link to="/accounts/profile" className="wb-link">
-      //     Manage Account
-      //   </Link>
-      // }
-      manualHeader={
-        <SectionHeader
-          className="dashboard-header"
-          actions={
-            <Link to="/accounts/profile" className="wb-link">
-              Manage Account
-            </Link>
-          }
-        >
-          Dashboard
-        </SectionHeader>
+      header="Dashboard"
+      headerClassName="dashboard-header"
+      headerActions={
+        <Link to="/accounts/profile" className="wb-link">
+          Manage Account
+        </Link>
       }
-      // contentClassName="dashboard-items"
-      // contentLayoutName="twoColumn"
-      // contentShouldScroll
-      manualContent={
-        <SectionContent
-          className="dashboard-items"
-          layoutName="twoColumn"
-          shouldScroll
-        >
+      contentClassName="dashboard-items"
+      contentLayoutName="twoColumn"
+      content={
+        <>
           <SectionTable
             className="sysmon-wrapper"
             manualHeader={
@@ -144,7 +121,7 @@ function Dashboard() {
               }}
             />
           </Switch>
-        </SectionContent>
+        </>
       }
     />
   );

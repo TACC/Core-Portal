@@ -1,14 +1,5 @@
-
-.dashboard-header {
-    /* As a flex item */
-    flex-shrink: 0;
-}
-
 .dashboard-items {
-    /* As a flex item */
-    flex-grow: 1;
-
-    /* HELP: How to assign this spacing wehn Quick Links is added? */
+    /* HELP: How to assign this spacing when Quick Links is added? */
     padding-top: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
 }
 
@@ -16,11 +7,11 @@
 /* SEE: https://tacc-team.slack.com/archives/GQW4Q8HLG/p1578514280032300?thread_ts=1578511498.030900&cid=GQW4Q8HLG */
 /* TODO: re-work this container and table to properly lay-out and contain elements within this
          wrapper's height and width */
-.jobs-wrapper {
-    // max-height: 40vh;
+.jobs-wrapper > div {
+    max-height: 40vh;
 }
-.tickets-wrapper {
-    // max-height: 27vh;
+.tickets-wrapper > div {
+    max-height: 27vh;
 }
 
 .dashboard-item-header {
