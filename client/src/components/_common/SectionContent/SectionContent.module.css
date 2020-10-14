@@ -7,8 +7,8 @@
 
 /* Modifiers */
 
-.should-scroll {
-  overflow: auto;
+.root:not(.should-scroll) {
+  overflow: hidden;
 }
 
 .should-debug::before          { background-color: tomato; }
