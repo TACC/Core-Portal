@@ -56,7 +56,7 @@ def test_process(regular_user, mock_call_reactor):
         },
         callback='portal.apps.onboarding.steps.system_creation.SystemCreationCallback',
         callback_data={'expected': 'frontera.home.username'},
-        dryrun=True,
+        dryrun=False,
         force=True
     )
     longhorn_call = call(
@@ -76,7 +76,7 @@ def test_process(regular_user, mock_call_reactor):
         },
         callback='portal.apps.onboarding.steps.system_creation.SystemCreationCallback',
         callback_data={'expected': 'longhorn.home.username'},
-        dryrun=True,
+        dryrun=False,
         force=True 
     )
     mock_call_reactor.assert_has_calls([frontera_call, longhorn_call], any_order=True)

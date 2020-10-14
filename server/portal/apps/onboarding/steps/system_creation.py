@@ -63,7 +63,7 @@ class SystemCreationStep(AbstractStep):
                 'wma-storage',
                 variables,
                 force=True,
-                dryrun=True,
+                dryrun=False,
                 callback="portal.apps.onboarding.steps.system_creation.SystemCreationCallback",
                 callback_data={"expected": systemId}
             )
