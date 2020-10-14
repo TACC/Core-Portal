@@ -48,9 +48,7 @@ const Message = ({ children, className, hidden, type }) => {
 Message.propTypes = {
   /** Message text (as child node) */
   /* FAQ: We can support any values, even a component */
-  // eslint-disable-next-line react/forbid-prop-types
-  children: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
-    .isRequired,
+  children: PropTypes.node.isRequired, // This checks for any render-able value
   /** Additional className for the root element */
   className: PropTypes.string,
   /** Allow external management of visibility */
