@@ -31,7 +31,7 @@
   --horizontal-buffer: var(--global-space--section-left);
 }
 #appBrowser-sidebar {
-    margin-left: -20px;
+  margin-left: calc(var(--horizontal-buffer) * -1);
 }
 /* Overwrite browser styles */
 /* FAQ: Combining ID and classname is overspecific, but it is accurate,
