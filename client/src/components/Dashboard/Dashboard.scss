@@ -1,7 +1,15 @@
 
-.dashboard-items > * {
-    display: flex;
-    flex-direction: column;
+.dashboard-header {
+    /* As a flex item */
+    flex-shrink: 0;
+}
+
+.dashboard-items {
+    /* As a flex item */
+    flex-grow: 1;
+
+    /* HELP: How to assign this spacing wehn Quick Links is added? */
+    padding-top: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
 }
 
 /* RFC: Implement `max-height: …` in a modular manner */
@@ -9,10 +17,10 @@
 /* TODO: re-work this container and table to properly lay-out and contain elements within this
          wrapper's height and width */
 .jobs-wrapper {
-    max-height: 40vh;
+    // max-height: 40vh;
 }
 .tickets-wrapper {
-    max-height: 27vh;
+    // max-height: 27vh;
 }
 
 .dashboard-item-header {
@@ -20,8 +28,8 @@
     flex-shrink: 0;
 
     /* As a flex container */
-    display: flex;
-    justify-content: space-between;
+    // display: flex;
+    // justify-content: space-between;
     align-items: baseline;
 }
 

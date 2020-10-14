@@ -1,10 +1,6 @@
 /* Block */
 
 .root {
-  /* As flex item */
-  flex-shrink: 0;
-
-  /* As flex container */
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -12,9 +8,10 @@
   flex-wrap: wrap; /* prevent text and actions from colliding */
   align-content: flex-end; /* preserve alignment of items when wrapped */
 
-  height: 32px;
+  height: 2rem; /* ~32px (26px design * 1.2 design-to-app ratio) */
   box-sizing: content-box;
-  padding: 1.5rem 0 0.75rem 0; /* 24px, 12px (20px, 10px design * 1.2 design-to-app ratio) (rounded) */
+
+  padding-bottom: 0.75rem; /* 12px (~10px design * 1.2 design-to-app ratio) */
   border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--normal);
 }
 
@@ -25,8 +22,6 @@
 /* FAQ: Examples: global `h1`–`h6`, user styles) */
 .heading {
   margin: 0;
-
-  font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
 
   /* FAQ: It is simpler to do this in CSS than in JavaScript */
   text-transform: capitalize;
@@ -44,5 +39,5 @@
 }
 
 .for-table {
-  /* … */
+  border-bottom: none;
 }

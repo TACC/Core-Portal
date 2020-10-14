@@ -57,73 +57,71 @@ function Dashboard() {
           layoutName="twoColumn"
           shouldScroll
         >
-          <div className="sysmon-wrapper">
-            <SectionTable
-              header={
-                <SectionHeader className="dashboard-item-header">
-                  System Status
-                </SectionHeader>
-              }
-            >
-              <Sysmon />
-            </SectionTable>
-          </div>
+          <SectionTable
+            className="sysmon-wrapper"
+            manualHeader={
+              <SectionHeader className="dashboard-item-header" isForTable>
+                System Status
+              </SectionHeader>
+            }
+          >
+            <Sysmon />
+          </SectionTable>
           {/*
-          <div className="sysmon-wrapper">
-            <SectionTable
-              header={
-                <SectionHeader className="dashboard-item-header">
-                  Bystem Btatus
-                </SectionHeader>
-              }
-            >
-              <Sysmon />
-            </SectionTable>
-          </div>
+          <SectionTable
+            className="sysmon-wrapper"
+            manualHeader={
+              <SectionHeader className="dashboard-item-header">
+                Bystem Btatus
+              </SectionHeader>
+            }
+          >
+            <Sysmon />
+          </SectionTable>
           */}
-          <div className="jobs-wrapper">
-            <SectionTable
-              header={
-                <SectionHeader
-                  className="dashboard-item-header"
-                  actions={
-                    <Link to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}>
-                      <Button color="link">
-                        <h6>View History</h6>
-                      </Button>
-                    </Link>
-                  }
-                >
-                  My Recent Jobs
-                </SectionHeader>
-              }
-            >
-              <JobsView />
-            </SectionTable>
-          </div>
-          <div className="tickets-wrapper">
-            {/* <style>{temporaryCSS}</style> */}
-            <SectionTable
-              header={
-                <SectionHeader
-                  className="dashboard-item-header"
-                  actions={
-                    <Link
-                      to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-                    >
-                      <Button color="link">
-                        <h6>Add Ticket</h6>
-                      </Button>
-                    </Link>
-                  }
-                >
-                  My Tickets
-                </SectionHeader>
-              }
-            >
-              <Tickets />
-            </SectionTable>
-          </div>
+          <SectionTable
+            className="jobs-wrapper"
+            manualHeader={
+              <SectionHeader
+                className="dashboard-item-header"
+                actions={
+                  <Link to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}>
+                    <Button color="link">
+                      <h6>View History</h6>
+                    </Button>
+                  </Link>
+                }
+                isForTable
+              >
+                My Recent Jobs
+              </SectionHeader>
+            }
+          >
+            <JobsView />
+          </SectionTable>
+          {/* <style>{temporaryCSS}</style> */}
+          <SectionTable
+            className="tickets-wrapper"
+            manualHeader={
+              <SectionHeader
+                className="dashboard-item-header"
+                actions={
+                  <Link
+                    to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+                  >
+                    <Button color="link">
+                      <h6>Add Ticket</h6>
+                    </Button>
+                  </Link>
+                }
+                isForTable
+              >
+                My Tickets
+              </SectionHeader>
+            }
+          >
+            <Tickets />
+          </SectionTable>
           <Switch>
             <Route
               exact

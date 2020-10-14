@@ -1,15 +1,28 @@
-/* Block & Elements */
+/* Block */
 
 .root {
-  position: relative;
-  flex-grow: 1; /* TODO: Decide whether this move to parent(?) scope */
-  overflow: auto;
-  min-height: 5rem; /* TODO: Decide whether this move to parent(?) scope */
+  display: flex;
+  flex-direction: column;
 }
-.root table {
+
+/* Elements */
+
+.table-wrap {
+  flex-grow: 1;
+
+  position: relative;
+  overflow: auto;
+}
+.table-wrap > table {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+}
+
+/* Elements: Sub-Components */
+/* CAVEAT: These are only applied to automatically-built sub-components */
+.header {
+  flex-shrink: 0;
 }

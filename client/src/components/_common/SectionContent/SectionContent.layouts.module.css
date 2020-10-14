@@ -31,12 +31,9 @@
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    align-items: stretch;
   }
   .two-column > * {
     flex-grow: 1;
-    flex-basis: content;
-    height: auto;
   }
 
 
@@ -49,12 +46,11 @@
 
   .two-column {
     --side-panel-order: 9999; /* HACK: Simulate "last" position */
-    --gutter-width: 1.375rem; /* 22px (18px design * 1.2 design-to-app ratio) (rounded) */
+    --gutter-width: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
     --default-panel-width: 50%;
 
-    /* Hide panels that are pushed off-screen (no scrolling) */
+    /* Hide panels that are pushed off the side of the screen */
     overflow-x: hidden;
-    overflow-y: scroll;
   }
 
   /* Create a fake column border */
