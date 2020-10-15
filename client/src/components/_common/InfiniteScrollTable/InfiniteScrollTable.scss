@@ -31,17 +31,6 @@
   }
 
   tbody {
-    tr:not([class=-status]) td {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    tr:nth-child(even):not([class=-status]) {
-      background-color: rgba(0, 0, 0, 0.03);
-    }
-    tr:hover:not([class=-status]) {
-      background-color: rgba(0, 0, 0, 0.05);
-    }
-
     td {
       vertical-align: middle;
       padding: 0.7em var(--cell-horizontal-padding);
@@ -68,6 +57,16 @@
     }
     .-status__message {
       text-align: center;
+    }
+
+    tr:not([class=-status]) td {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    tr:nth-child(even):not([class=-status]) {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+    tr:hover:not([class=-status]) {
+      background-color: rgba(0, 0, 0, 0.05);
     }
   }
   /* Allow cell width to propogate to common inline elements */
