@@ -80,7 +80,8 @@ const ManageAccountView = () => {
             </>
           }
           contentClassName="container manage-account-content"
-          shouldScroll
+          contentLayoutName="oneColumn"
+          contentShouldScroll
         />
       </div>
     </div>

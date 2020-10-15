@@ -11,6 +11,8 @@ import layoutStyles from './SectionContent.layouts.module.css';
  * @enum {number}
  */
 export const LAYOUT_CLASS_MAP = {
+  /** One full-height row of flexible blocks */
+  oneRow: 'one-row',
   /** One full-width column of flexible blocks */
   oneColumn: 'one-column',
   /**
@@ -20,7 +22,7 @@ export const LAYOUT_CLASS_MAP = {
    */
   twoColumn: 'two-column'
 };
-export const DEFAULT_LAYOUT = 'oneColumn';
+export const DEFAULT_LAYOUT = 'oneRow';
 export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
 
 /**

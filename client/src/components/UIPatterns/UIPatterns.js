@@ -31,7 +31,8 @@ function UIPatterns() {
           </div>
         </>
       }
-      shouldScroll
+      contentLayoutName="oneColumn"
+      contentShouldScroll
     />
   );
 }

@@ -22,7 +22,11 @@ function UIPatternsDropdownSelector() {
         </small>
       </dt>
       <dd>
-        <Section header="Header" content={<p>Content</p>} />
+        <Section
+          header="Header"
+          content={<p>Content</p>}
+          contentLayoutName="oneColumn"
+        />
       </dd>
       <dt>
         Scrollable
@@ -35,6 +39,7 @@ function UIPatternsDropdownSelector() {
         <Section
           header="Milk"
           contentStyleName="is-scrollable"
+          contentLayoutName="oneColumn"
           content={
             <ul>
               <li>Cow</li>
@@ -69,6 +74,7 @@ function UIPatternsDropdownSelector() {
               sunt in culpa qui officia deserunt mollit anim id est laborum.
             </p>
           }
+          contentLayoutName="oneColumn"
           headerActions={
             <>
               <Link to={modalPath}>Open Modal</Link>
