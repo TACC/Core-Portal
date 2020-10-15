@@ -11,7 +11,7 @@ def test_get_self(rf, client, authenticated_user, mock_steps):
     # Test when view is called with a username parameter that matches
     # the requesting user, but the requester is not a staff member
     client.force_login(authenticated_user)
-    response = client.get("/onboarding/setup/{}/".format(authenticated_user.username))
+    response = client.get("/onboarding/".format(authenticated_user.username))
     assert response.status_code == 200
 
 
