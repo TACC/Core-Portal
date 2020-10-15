@@ -79,7 +79,7 @@ const ManageAccountView = () => {
               </Row>
             </>
           }
-          contentClassName="container manage-account-content"
+          contentClassName="manage-account-content"
           contentLayoutName="oneColumn"
           contentShouldScroll
         />

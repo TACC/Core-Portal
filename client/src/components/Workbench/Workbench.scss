@@ -83,13 +83,6 @@
   color: white;
 }
 
-/* Overrides Bootstrap `.row`, because we need to
-   "undo" two horizontal instances of Bootstrap `.row`'s. */
-.workbench-content .row {
-  margin-right: -30px;
-  margin-left: -30px;
-}
-
 /* Align content tables to the left by undoing some Bootstrap */
 .workbench-content .container {
     margin-left: 0; /* override `margin-left: auto;` (Bootstrap Grid) */
