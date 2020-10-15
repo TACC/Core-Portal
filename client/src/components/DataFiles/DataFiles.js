@@ -9,7 +9,7 @@ import {
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
 
-import { Section } from '_common';
+import { Section, SectionTable } from '_common';
 
 import './DataFiles.module.css';
 
@@ -92,17 +92,18 @@ const DataFiles = () => {
       content={
         <>
           <DataFilesSidebar styleName="sidebar" />
-          <div styleName="content">
-            <DataFilesSearchbar
-              styleName="content-toolbar"
-              api={listingParams.api}
-              scheme={listingParams.scheme}
-              system={listingParams.system}
-            />
-            <div styleName="content-table">
-              <DataFilesSwitch />
-            </div>
-          </div>
+          <SectionTable
+            styleName="content"
+            headerActions={
+              <DataFilesSearchbar
+                api={listingParams.api}
+                scheme={listingParams.scheme}
+                system={listingParams.system}
+              />
+            }
+          >
+            <DataFilesSwitch />
+          </SectionTable>
           <DataFilesModals />
         </>
       }

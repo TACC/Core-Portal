@@ -1,23 +1,13 @@
-/* Children (of `items`) */
 .sidebar {
   padding-top: 10px;
 
   border-right: 1px solid rgba(112, 112, 112, 0.25);
 }
 .content {
-  /* As a flex container */
-  display: flex;
-  flex-direction: column;
-
   /* As a flex child */
   flex-grow: 1;
 
-  padding-top: 20px;
-  padding-left: 20px;
-}
-.content-toolbar {
-  padding-bottom: 15px; /* ~15px (12px design * 1.2 design-to-app ratio) */
-}
-.content-table {
-  flex-grow: 1;
+  /* NOTE: Mimicked on: History, Allocations, DataFiles */
+  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
 }
