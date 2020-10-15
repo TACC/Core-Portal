@@ -36,7 +36,10 @@ import {
   watchFetchWelcomeMessages,
   watchSaveWelcomeMessages
 } from './welcome.sagas';
-import { watchOnboardingAdminList, watchOnboardingAdminIndividualUser } from './onboarding.sagas';
+import {
+  watchOnboardingAdminList,
+  watchOnboardingAdminIndividualUser
+} from './onboarding.sagas';
 
 export default function* rootSaga() {
   yield all([

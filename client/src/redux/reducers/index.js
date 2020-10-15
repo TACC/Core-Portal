@@ -15,7 +15,10 @@ import { pushKeys } from './systems.reducers';
 import notifications from './notifications.reducers';
 import workbench from './workbench.reducers';
 import welcomeMessages from './welcome.reducers';
-import { onboardingAdminList, onboardingAdminIndividualUser } from './onboarding.reducers';
+import {
+  onboardingAdminList,
+  onboardingAdminIndividualUser
+} from './onboarding.reducers';
 
 export default combineReducers({
   jobs,
