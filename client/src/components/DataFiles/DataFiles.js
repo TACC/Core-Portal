@@ -106,7 +106,7 @@ const DataFiles = () => {
           <DataFilesModals />
         </>
       }
-      contentStyleName="items"
+      contentLayoutName="oneRow"
     />
   );
 };
