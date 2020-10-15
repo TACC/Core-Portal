@@ -65,6 +65,7 @@ function SectionTable({
 }) {
   let styleName = '';
   const styleNameList = ['root'];
+  const shouldBuildHeader = header || headerActions;
   const TagName = tagName;
 
   if (shouldScroll) styleNameList.push('should-scroll');
@@ -85,7 +86,7 @@ function SectionTable({
         <>{manualHeader}</>
       ) : (
         <>
-          {header && (
+          {shouldBuildHeader && (
             <SectionHeader
               styleName="header"
               className={headerClassName}
