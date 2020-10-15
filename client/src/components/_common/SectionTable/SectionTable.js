@@ -15,7 +15,7 @@ import './SectionTable.module.css';
  * (Without this wrapper, a table will fail to behave inside flexbox-based layouts of `Section[…]` components.)
  *
  * @example
- * // wrap a table
+ * // wrap a table (no header)
  * <SectionTable>
  *   <AnyTableComponent />
  * </SectionTable>
@@ -72,20 +72,29 @@ function SectionTable({
   // Do not join inside JSX (otherwise arcane styleName error occurs)
   styleName = styleNameList.join(' ');
 
+  // Allowing ineffectual prop combinations would lead to confusion
+  if (manualHeader && (header || headerClassName || headerActions)) {
+    throw new Error(
+      'When passing `manualHeader`, the following props are ineffectual: `header`, `headerClassName`, `headerActions`'
+    );
+  }
+
   return (
     <TagName styleName={styleName} className={className}>
       {manualHeader ? (
         <>{manualHeader}</>
       ) : (
         <>
-          <SectionHeader
-            styleName="header"
-            className={headerClassName}
-            actions={headerActions}
-            isForTable
-          >
-            {header}
-          </SectionHeader>
+          {header && (
+            <SectionHeader
+              styleName="header"
+              className={headerClassName}
+              actions={headerActions}
+              isForTable
+            >
+              {header}
+            </SectionHeader>
+          )}
         </>
       )}
       {/* This wrapper is the keystone of this component */}
