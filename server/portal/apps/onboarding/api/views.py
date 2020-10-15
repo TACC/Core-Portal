@@ -80,8 +80,8 @@ class SetupStepView(BaseApiView):
         # Result dictionary for user
         result = {
             "username": username,
-            "last_name": user.last_name,
-            "first_name": user.first_name,
+            "lastName": user.last_name,
+            "firstName": user.first_name,
             "email": user.email,
             "isStaff": user.is_staff,
             "steps": [],
