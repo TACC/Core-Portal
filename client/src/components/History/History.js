@@ -69,7 +69,8 @@ export const Routes = () => {
   const dispatch = useDispatch();
 
   return (
-    <div styleName="content" data-testid="history-router">
+    // HACK: The React fragment avoids a massive diff from changing nesting
+    <>
       <Switch>
         <Route
           path={`${root}${ROUTES.JOBS}`}
@@ -104,7 +105,7 @@ export const Routes = () => {
             }
             return (
               <>
-                <JobHistory />
+                <JobHistory styleName="content" />
                 <Route
                   path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
                   render={({
@@ -129,7 +130,7 @@ export const Routes = () => {
         {/* Redirect from an unmatched path in /workbench/history/* to /workbench/history/jobs */}
         <Redirect from={path} to={`${root}/jobs`} />
       </Switch>
-    </div>
+    </>
   );
 };
 
@@ -152,7 +153,6 @@ const Layout = () => {
           <Routes />
         </>
       }
-      contentStyleName="container"
     />
   );
 };

@@ -1,12 +1,13 @@
 import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
-import { LoadingSpinner } from '_common';
+import PropTypes from 'prop-types';
+
+import { LoadingSpinner, SectionTable } from '_common';
 import JobsView from '../../Jobs';
 
-import './JobHistory.module.scss';
 import './HistoryViews.scss';
 
-const JobHistory = () => {
+const JobHistory = ({ className }) => {
   const { notifs, loading } = useSelector(
     state => ({
       notifs: state.notifications.list.notifs,
@@ -24,16 +25,21 @@ const JobHistory = () => {
   };
 
   return (
-    <>
+    <SectionTable className={`job-history ${className}`} shouldScroll>
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <div className="job-history" styleName="root">
-          <JobsView showDetails showFancyStatus rowProps={rowProps} />
-        </div>
+        <JobsView showDetails showFancyStatus rowProps={rowProps} />
       )}
-    </>
+    </SectionTable>
   );
+};
+JobHistory.propTypes = {
+  /** Any additional className(s) for the root element */
+  className: PropTypes.string
+};
+JobHistory.defaultProps = {
+  className: ''
 };
 
 export default JobHistory;

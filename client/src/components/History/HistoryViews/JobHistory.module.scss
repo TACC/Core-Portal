@@ -1,8 +1,0 @@
-.root {
-  /* TODO: Use a `_common/Layout` component (for History > Jobs) */
-  /* Distance from top of page to top of scrollable body of table */
-  --table-body-offset: 298px;
-  /* HACK: This couples table height to external layout, thus making this module not modular */
-  /* IDEA: A JavaScript solution may be `AutoSizer` */
-  max-height: calc(100vh - var(--table-body-offset));
-}

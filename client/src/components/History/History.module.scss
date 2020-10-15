@@ -1,25 +1,3 @@
-.container {
-    display: flex;
-    flex-direction: row;
-}
-/* Make right-most item fill up remaining horizontal space */
-.container > :last-child {
-    flex-grow: 1;
-}
-
-.content {
-    overflow-y: hidden;
-
-    padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
-    padding-left: 1.25em;
-
-    /* As a flex item */
-    flex-grow: 1;
-
-    /* As a flex container */
-    display: flex;
-}
-
 /*
     Components
 */
@@ -58,4 +36,12 @@
     .active {
         background: rgba(#9d85ef, 0.25);
     }
+}
+.content {
+    /* As a flex child */
+    flex-grow: 1;
+
+    /* Mimicked on: History, Allocations */
+    padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+    padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
 }
