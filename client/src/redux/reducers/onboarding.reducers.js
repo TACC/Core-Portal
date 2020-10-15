@@ -12,19 +12,17 @@ export function onboardingAdminList(state = initialState, action) {
         loading: true
       };
     case 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS':
-
       return {
         ...state,
         users: action.payload.users,
         loading: false
       };
     case 'FETCH_ONBOARDING_ADMIN_LIST_ERROR':
-
       return {
         ...state,
         error: action.payload,
         loading: false
-      }
+      };
     default:
       return state;
   }
@@ -36,7 +34,10 @@ export const initialUserState = {
   error: null
 };
 
-export function onboardingAdminIndividualUser(state = initialUserState, action) {
+export function onboardingAdminIndividualUser(
+  state = initialUserState,
+  action
+) {
   switch (action.type) {
     case 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_PROCESSING':
       return {
@@ -50,12 +51,11 @@ export function onboardingAdminIndividualUser(state = initialUserState, action) 
         loading: false
       };
     case 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_ERROR':
-
       return {
         ...state,
         error: action.payload,
         loading: false
-      }
+      };
     default:
       return state;
   }
