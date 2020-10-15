@@ -11,12 +11,6 @@ import './Dashboard.scss';
 
 function Dashboard() {
   const dispatch = useDispatch();
-  // const temporaryCSS = `
-  // .table-wrapper th {
-  //   position: sticky;
-  //   top: 0;
-  // }
-  // `;
 
   return (
     <Section
@@ -30,10 +24,14 @@ function Dashboard() {
       }
       contentClassName="dashboard-items"
       contentLayoutName="twoColumn"
+      contentShouldScroll
       content={
         <>
-          {/* <style>{temporaryCSS}</style> */}
-          <SectionTable header="System Status" className="sysmon-wrapper">
+          <SectionTable
+            header="System Status"
+            className="sysmon-wrapper"
+            shouldScroll
+          >
             <Sysmon />
           </SectionTable>
           {/*
@@ -52,6 +50,7 @@ function Dashboard() {
                 View History
               </Link>
             }
+            shouldScroll
           >
             <JobsView />
           </SectionTable>
@@ -66,6 +65,7 @@ function Dashboard() {
                 Add Ticket
               </Link>
             }
+            shouldScroll
           >
             <Tickets />
           </SectionTable>

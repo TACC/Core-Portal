@@ -65,6 +65,7 @@
   .two-column > * {
     width: 100%;
     max-width: var(--default-panel-width);
+    min-height: 12rem; /* CAVEAT: This is a dev value that just "looked good" */
 
     padding-left: var(--gutter-width);
     padding-right: var(--gutter-width);

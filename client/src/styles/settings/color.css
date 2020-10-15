@@ -4,11 +4,11 @@
 /* SEE: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties */
 
 :root {
-    /* Primary (Text, Layout) */
+    /* Primary i.e. Grayscale */
     --global-color-primary--xx-light: #FFFFFF;
     --global-color-primary--x-light: #F4F4F4;
     /* TODO: Resolve new common color injection (sidebar border) */
-    /* IDEA: Push volors above out to `--global-color-primary--xx-light` */
+    /* IDEA: Push colors above out to `--global-color-primary--xx-light` */
     /* IDEA: Ask Design to use a color from existing variables */
     /* --global-color-primary--x-light--new: #70707026 | rgba(112, 112, 112, 0.25); */
     --global-color-primary--light: #C6C6C6;
@@ -27,4 +27,8 @@
         --global-color-success--alt: #C7CE1D;
     --global-color-warning--normal: #9D85EF;
     --global-color-danger--normal: #EB6E6E;
+
+    /* Common */
+    --global-color-background--app: var(--global-color-primary--xx-light);
+    /* --global-color-background--alt-table-row: var(--global-color-primary--???); */
 }

@@ -1,9 +1,10 @@
 .root {
     --table-border: 1px solid black;
 
-    border-bottom: var(--table-border);
     margin: 0;
     width: 100%;
+
+    font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
 }
 
 .rows {
