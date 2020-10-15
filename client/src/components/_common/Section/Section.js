@@ -79,14 +79,6 @@ function Section({
   messagesClassName,
   routeName
 }) {
-  const styleNameList = ['root'];
-  let styleName = '';
-
-  if (contentShouldScroll) styleNameList.push('should-scroll');
-
-  // Do not join inside JSX (otherwise arcane styleName error occurs)
-  styleName = styleNameList.join(' ');
-
   // Allowing ineffectual prop combinations would lead to confusion
   if (manualContent && (content || contentClassName || contentLayoutName)) {
     throw new Error(
@@ -105,7 +97,7 @@ function Section({
   // }
 
   return (
-    <section styleName={styleName} className={className}>
+    <section styleName="root" className={className}>
       <SectionMessages
         styleName="messages"
         routeName={routeName}
