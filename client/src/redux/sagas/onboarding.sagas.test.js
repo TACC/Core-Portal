@@ -44,49 +44,23 @@ describe('getOnboardingAdminList Saga', () => {
 
 describe('getOnboardingAdminIndividualUser Saga', () => {
   it("should fetch sucessfully onboarded user and transform state", () =>
-    expectSaga(getOnboardingAdminIndividualUser, { payload: {user: onboardingAdminIndividualUserFixture.username}})
+    expectSaga(getOnboardingAdminIndividualUser, { payload: {user: 'username'}})
       .withReducer(onboardingAdminIndividualUser)
       .provide([
-        [matchers.call.fn(fetchOnboardingAdminIndividualUser), onboardingAdminIndividualUser],
+        [matchers.call.fn(fetchOnboardingAdminIndividualUser), onboardingAdminIndividualUserFixture],
       ])
       .put({
-        type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_PROCESSING', payload: {
-          user: onboardingAdminListFixture.username,
-        }})
+        type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_PROCESSING'
+      })
       .call(fetchOnboardingAdminIndividualUser, "username")
       .put({
         type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_SUCCESS',
-        payload: {
-          user: onboardingAdminListFixture.username,
-        }
+        payload: onboardingAdminIndividualUserFixture
       })
       .hasFinalState({
-        user: onboardingAdminIndividualUserFixture.username,
+        user: onboardingAdminIndividualUserFixture,
         loading: false,
         error: null
       })
       .run());
 });
-
-/* describe('getOnboardingAdminIndividualUser Saga', () => {
-  it("should fetch failed onboarded user and transform state", () =>
-    expectSaga(getOnboardingAdminIndividualUser)
-      .withReducer(onboardingAdminIndividualUser)
-      .provide([
-        [matchers.call.fn(fetchOnboardingAdminIndividualUser), onboardingAdminIndividualUser],
-      ])
-      .put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING' })
-      .call(fetchOnboardingAdminIndividualUser)
-      .put({
-        type: 'FETCH_ONBOARDING_ADMIN_LIST_FAILED',
-        payload: {
-          user: onboardingAdminIndividualUserFixture,
-        }
-      })
-      .hasFinalState({
-        user: onboardingAdminListFixture,
-        loading: false,
-        error: null
-      })
-      .run());
-}); */

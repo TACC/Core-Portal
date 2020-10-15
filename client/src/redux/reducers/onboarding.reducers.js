@@ -49,12 +49,6 @@ export function onboardingAdminIndividualUser(state = initialUserState, action) 
         user: action.payload,
         loading: false
       };
-    case 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_FAILED':
-      return {
-        ...state,
-        user: action.payload,
-        loading: false
-      };
     case 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_ERROR':
 
       return {

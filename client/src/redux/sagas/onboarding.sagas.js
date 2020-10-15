@@ -33,21 +33,17 @@ export async function fetchOnboardingAdminIndividualUser(username) {
   return result;
 }
 
-export function* getOnboardingAdminIndividualUser(username) {
+export function* getOnboardingAdminIndividualUser(action) {
+  const username = action.payload.user;
   yield put({ type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_PROCESSING' });
   try {
     const onboardingUser = yield call(fetchOnboardingAdminIndividualUser, username);
-    if (onboardingUser.steps.state){
-      yield put({ type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_FAILED', payload: onboardingUser });
-    } else { 
-      yield put({ type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_SUCCESS', payload: onboardingUser });
-    }} catch (error) {
-    console.log("error: ");
-    console.log(error);
+    yield put({ type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_SUCCESS', payload: onboardingUser });
+  } catch (error) {
     yield put({ type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_ERROR', payload: error });
   }
 }
 
-export function* watchOnboardingAdminIndividualUser(username) {
-  yield takeLatest('FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER', getOnboardingAdminIndividualUser, username);
+export function* watchOnboardingAdminIndividualUser(action) {
+  yield takeLatest('FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER', getOnboardingAdminIndividualUser);
 }
