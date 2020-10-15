@@ -107,13 +107,13 @@ export const AllocationsTable = ({ page }) => {
     prepareRow
   } = useTable(...tableAttributes);
   return (
-    <div styleName="wrapper">
-      {/* HACK: Add a wrapper because flex item + scroll + table force it upon us */}
-      {/* TODO: Use a `_common/Layout` component (for Allocations) */}
-      {/* HACK: Avoid massive diff form nesting change */}
-      {/* prettier-ignore */}
-      <div className="allocations-table" styleName="root">
-      <table {...getTableProps()} className="FiniteScrollTable o-fixed-header-table">
+    // HACK: The React fragment avoids a massive diff from changing nesting
+    <>
+      <table
+        {...getTableProps()}
+        className="allocations-table FiniteScrollTable o-fixed-header-table"
+        styleName="root"
+      >
         <thead>
           {headerGroups.map(headerGroup => (
             <tr
@@ -168,9 +168,7 @@ export const AllocationsTable = ({ page }) => {
           )}
         </tbody>
       </table>
-      </div>
-      {/* prettier-ignore */}
-    </div>
+    </>
   );
 };
 AllocationsTable.propTypes = {

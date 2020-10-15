@@ -64,11 +64,12 @@
         background: rgba(#9d85ef, 0.25);
     }
 }
-/* WARNING: This class is not applied to a table, it's applied to a wrapper for a table */
+.allocations-content {
+    /* This mimics History > Jobs table */
+    padding-top: 1.75rem;
+    padding-left: 1.25em;
+}
 .allocations-table {
-    table {
-        border: 0;
-
         tbody tr {
             .system-cell {
                 padding: 0;
@@ -91,10 +92,9 @@
             flex-direction: column;
             justify-content: center;
         }
-    }
-    .alloc-badge {
-        font-size: 12px;
-    }
+}
+.alloc-badge {
+    font-size: 12px;
 }
 /* HACK: `FiniteScrollTable` applies `InfiniteScrollTable` in non-modular way
          (shared styles should be on HTML tables, which we do not have yet) */

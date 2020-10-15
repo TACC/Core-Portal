@@ -9,7 +9,7 @@ import {
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
 
-import { Icon, LoadingSpinner, Section } from '_common';
+import { Icon, LoadingSpinner, Section, SectionTable } from '_common';
 import { AllocationsTable } from './AllocationsTables';
 import { AllocationsRequestModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
@@ -73,7 +73,17 @@ export const Layout = ({ page }) => {
       content={
         <>
           <Sidebar />
-          {loading ? <LoadingSpinner /> : <AllocationsTable page={page} />}
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
+            <SectionTable
+              header="System Status"
+              className="allocations-content"
+              shouldScroll
+            >
+              <AllocationsTable page={page} />
+            </SectionTable>
+          )}
           <Route exact path={`${PATH}/${page}/manage`}>
             <AllocationsRequestModal
               isOpen

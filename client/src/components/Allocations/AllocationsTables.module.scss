@@ -1,23 +1,4 @@
-/* HACK: Necessary evil to allow flex item + scroll + table */
-.wrapper {
-  /* Force (how?!) `#allocations-sidebar` to accept its defined width */
-  /* FAQ: Moved from `.allocations-table table` during FP-621 (dec710f) */
-  width: 100%;
-
-  overflow-y: hidden;
-
-  /* This mimics History > Jobs table */
-  padding-top: 1.75rem;
-  padding-left: 1.25em;
-}
 .root {
-  /* TODO: Use a `_common/Layout` component (for Allocations) */
-  /* Distance from top of page to top of scrollable body of table */
-  --table-body-offset: 228px;
-  /* HACK: This couples table height to external layout, thus making this module not modular */
-  /* IDEA: A JavaScript solution may be `AutoSizer` */
-  max-height: calc(100vh - var(--table-body-offset));
-
   /* title */
   th:nth-child(1),
   td:nth-child(1) {
