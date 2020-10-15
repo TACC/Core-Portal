@@ -13,15 +13,6 @@
 /*
     Components
 */
-.allocations-container {
-    display: flex;
-    flex-direction: row;
-}
-/* Make right-most item fill up remaining horizontal space */
-.allocations-container > :last-child {
-    flex-grow: 1;
-}
-
 .allocations-header {
     @include alloc-button;
 
@@ -65,9 +56,12 @@
     }
 }
 .allocations-content {
-    /* This mimics History > Jobs table */
-    padding-top: 1.75rem;
-    padding-left: 1.25em;
+    /* As a flex child */
+    flex-grow: 1;
+
+    /* Mimicked on: History, Allocations */
+    padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+    padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
 }
 .allocations-table {
         tbody tr {

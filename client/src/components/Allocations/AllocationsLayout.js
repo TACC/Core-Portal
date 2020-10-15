@@ -76,11 +76,7 @@ export const Layout = ({ page }) => {
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <SectionTable
-              header="System Status"
-              className="allocations-content"
-              shouldScroll
-            >
+            <SectionTable className="allocations-content" shouldScroll>
               <AllocationsTable page={page} />
             </SectionTable>
           )}
@@ -94,7 +90,6 @@ export const Layout = ({ page }) => {
           </Route>
         </>
       }
-      contentClassName="allocations-container"
     />
   );
 };
