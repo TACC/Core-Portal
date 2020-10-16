@@ -35,10 +35,12 @@ const appShape = PropTypes.shape({
 
 export const AppPlaceholder = ({ apps }) => {
   return (
-    <div className="apps-placeholder">
-      {apps
-        ? `Select an app from the tray above to submit a job.`
-        : `No apps to show.`}
+    <div id="appDetail-wrapper" className="has-message">
+      <span className="appDetail-message">
+        {apps
+          ? `Select an app from the tray above to submit a job.`
+          : `No apps to show.`}
+      </span>
     </div>
   );
 };
@@ -61,32 +63,38 @@ const AppDetail = () => {
     const errorText = error.message ? error.message : 'Something went wrong.';
 
     return (
-      <Message type="warn" className="appDetail-error">
-        {errorText}
-      </Message>
+      <div id="appDetail-wrapper" className="has-message">
+        <Message type="warn">{errorText}</Message>
+      </div>
     );
   }
 
   if (loading || !app.name || allocationsLoading) {
     return (
-      <div id="appDetail-wrapper">
+      <div id="appDetail-wrapper" className="is-loading">
         <LoadingSpinner />
       </div>
     );
   }
 
   return (
-    <div id="appDetail-wrapper">
-      {!app.name && <AppPlaceholder />}
+    <>
+      {!app.name && (
+        <div id="appDetail-wrapper" className="has-message">
+          <AppPlaceholder />
+        </div>
+      )}
       {app.value && app.value.type === 'html' ? (
-        parse(app.value.definition.html)
+        <div id="appDetail-wrapper" className="has-external-app">
+          {parse(app.value.definition.html)}
+        </div>
       ) : (
-        <>
+        <div id="appDetail-wrapper" className="has-internal-app">
           <AppInfo app={app} />
           <AppSchemaForm app={app} />
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

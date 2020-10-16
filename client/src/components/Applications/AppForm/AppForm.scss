@@ -1,5 +1,6 @@
 #appDetail-wrapper {
-    --vertical-buffer: 15px;
+    --space-top: 1.25rem; /* 20px (~17px design * 1.2 design-to-app ratio) */
+    --space-bottom: 2.25rem; /* 36px (~30px design * 1.2 design-to-app ratio) */
 
     /* As a flex item */
     flex-grow: 1;
@@ -8,39 +9,32 @@
     display: flex;
     flex-direction: row;
 
-    /* Allow children to `overflow: scroll` but match height of this parent */
     overflow: auto;
-
-    height: 100%; /* Be consistent with `#appDetail-error`/`.app-placeholder` (which can exist at the same location),
-                     so that `appBrowser-wrapper` height does not change based on sibling content */
-    padding-top: var(--vertical-buffer);
+    height: 100%;
+}
+#appDetail-wrapper.has-message,
+#appDetail-wrapper.is-loading,
+#appDetail-wrapper.has-external-app {
+    justify-content: center;
+    align-items: center;
 }
 
-/* Overwrite Bootstrap's opinionated style */
-/* ???: Is `.jumbotron` used without Design review? */
-/* ???: From where does `.jumbotron` originate? */
-#appDetail-wrapper .jumbotron {
-    /* margin-bottom: 0; *//* RFE: Use this if `var(--vertical-buffer)` (below) is moved out */
-    margin-bottom: var(--vertical-buffer); /* RFE: Add as `padding-bottom` for `appDetail-wrapper` when content is `.jumbotron` */
-
-    /* HACK: The `align-self: start` serves as a `height 100%` for element
-             that is forced to be a flex item in a row (the `#appDetail-wrapper`
-             is coded as flex only for its expected info and form children) */
-    align-self: start;
-}
-
-/* Add 30 pixels of space at the bottom of app form and app info */
 /* HACK: Use padding on last child of these flex item wrappers because flex items do not respect padding on main axis */
 .appInfo-wrapper > *:last-child,
-#appForm-wrapper > *:last-child,
-#appDetail-wrapper .jumbotron > *:last-child {
-    /* Match bottom space found in UI design at `Core Portal > Applications` */
-    padding-bottom: 30px;
+#appForm-wrapper > *:last-child {
+    padding-bottom: var(--space-bottom);
 }
-/* HACK: Provide bottom buffer without consistent global overwrites (because not enough time to test global effects) */
-#appForm-wrapper .form-group,
+.appInfo-wrapper > *:first-child,
+#appForm-wrapper > *:first-child {
+    padding-top: var(--space-top);
+}
+
+/* HACK: Overwrite untamed spacing of Jumbotron */
+/* FAQ: The `.jumbotron` originates from external injected HTML */
+#appDetail-wrapper .jumbotron { margin-bottom: 0; }
+#appDetail-wrapper .jumbotron > *:last-child { padding-bottom: 0; }
 #appDetail-wrapper .jumbotron > *:last-child { margin-bottom: 0; }
-#appDetail-wrapper .jumbotron { padding-bottom: 0; } /* Remove padding that is ineffectual only because this is a flex child */
+
 
 #appForm-wrapper {
     overflow-y: auto;
@@ -100,10 +94,6 @@
     padding: 5px 0 0 20px;
 }
 
-.appDetail-error {
-    display: flex; /* overwrite `Message` */
-    justify-content: center;
-    height: 100%; /* Be consistent with `#appDetail-wrapper`/`.app-placeholder` (which can exist at the same location),
-                     so that `appBrowser-wrapper` height does not change based on sibling content */
-    padding: 30px;
+.appDetail-message {
+    font-size: 1.4rem;
 }

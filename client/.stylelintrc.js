@@ -101,7 +101,9 @@ module.exports = {
 
     // GENERAL / SHEET
     // Disallow selectors of lower specificity from coming after overriding selectors of higher specificity.
-    // 'no-descending-specificity': null,
+    'no-descending-specificity':  [ true, {
+      ignore: ['selectors-within-list']
+    } ],
     // Disallow duplicate @import rules within a stylesheet.
     // 'no-duplicate-at-import-rules': null,
     // Disallow duplicate selectors within a stylesheet.

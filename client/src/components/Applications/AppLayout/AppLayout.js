@@ -77,6 +77,7 @@ const AppsRoutes = () => {
         </>
       }
       contentClassName="apps-content"
+      contentLayoutName="oneRow"
     />
   );
 };
