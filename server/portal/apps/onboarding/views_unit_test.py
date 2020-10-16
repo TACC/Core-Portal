@@ -1,10 +1,15 @@
 import pytest
+from django.http import HttpResponse
 
 pytestmark = pytest.mark.django_db
 
 #  These tests use frontend code that doesn't exist. They only
 # run now as we mock the render function.  They are basically just
 # a placeholder.
+
+@pytest.fixture(autouse=True)
+def mock_render(mocker):
+    yield mocker.patch('portal.apps.onboarding.views.render', return_value=HttpResponse("OK"))
 
 
 def test_get_self(rf, client, authenticated_user, mock_steps):

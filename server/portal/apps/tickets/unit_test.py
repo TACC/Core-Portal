@@ -2,6 +2,10 @@ import pytest
 from django.http import HttpResponse
 
 
+@pytest.fixture(autouse=True)
+def mock_render(mocker):
+    yield mocker.patch('portal.apps.tickets.views.render', return_value=HttpResponse("OK"))
+
 def test_tickets_get(client, authenticated_user):
     response = client.get('/tickets/')
     assert response.status_code == 302
@@ -19,13 +23,11 @@ def test_ticket_create_authenticated(client, regular_user):
     assert response.url == '/workbench/dashboard/tickets/create/'
 
 
-def test_ticket_create_authenticated_setup_incomplete(client, regular_user, mocker):
+def test_ticket_create_authenticated_setup_incomplete(client, regular_user):
     """Users who are not setup_complete should not be redirected
     to the /workbench/dashboard route, because the setup_complete
     middleware would redirect them to the onboarding view
     """
-    mock_render = mocker.patch('portal.apps.tickets.views.render')
-    mock_render.return_value = HttpResponse("OK")
     regular_user.profile.setup_complete = False
     regular_user.profile.save()
     client.force_login(regular_user)
