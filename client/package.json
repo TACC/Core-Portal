@@ -41,7 +41,7 @@
     "lint:js": "eslint .",
     "lint:css": "stylelint '**/*.{css,scss,sass}'",
     "build": "NODE_ENV=production BABEL_ENV=production webpack -p --display-error-details --config webpack.prod.js",
-    "test": "jest",
+    "test": "TZ=UTC-6 jest",
     "test:watch": "npm run test -- --watch",
     "staging": "NODE_ENV=development webpack --config webpack.dev.js",
     "dev": "NODE_ENV=development BABEL_ENV=development webpack-dev-server --config webpack.dev.js"
