@@ -23,8 +23,8 @@ export const onboardingAdminList = {
 // Admin list of a single user (i.e. result of `api/onboarding/user/username`)
 export const onboardingAdminIndividualUser = {
   username: 'username',
-  first_name: 'First',
-  last_name: 'Last',
+  firstName: 'First',
+  lastName: 'Last',
   setupComplete: false,
   steps: [
     {
