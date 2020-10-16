@@ -1,8 +1,7 @@
 import logging
 
-from django.conf import settings
 from pytas.http import TASClient
-
+from django.conf import settings
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 
@@ -30,7 +29,7 @@ class ProjectMembershipStep(AbstractStep):
         self.log("Pending check of project membership.")
 
     def process(self):
-        required_projects = getattr(settings, 'REQUIRED_PROJECTS', [])
+        required_projects = self.settings['required_projects']
 
         if not required_projects:
             self.complete("No project is required for access to this portal")
