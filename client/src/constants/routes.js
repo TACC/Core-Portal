@@ -8,3 +8,4 @@ export const HISTORY = '/history';
 export const JOBS = '/jobs';
 export const UI = '/ui-patterns';
 export const WORKBENCH = '/workbench';
+export const ONBOARDING = '/onboarding';
