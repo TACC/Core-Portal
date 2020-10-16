@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'portal.apps.notifications',
     'portal.apps.onboarding',
     'portal.apps.search',
+    'portal.apps.webhooks',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
@@ -506,18 +507,22 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
 PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
-        'prefix': 'frontera.home.{}',                                   # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
-        'host': 'frontera.tacc.utexas.edu',                             # PORTAL_DATA_DEPOT_STORAGE_HOST
-        'home_dir': '/home1',                                     # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
-        'storage_port': 22,
+        'description': 'My Data on Frontera for {username}',
+        'site': 'frontera',
+        'systemId': 'frontera.home.{username}',                       # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
+        'host': 'frontera.tacc.utexas.edu',                         # PORTAL_DATA_DEPOT_STORAGE_HOST
+        'rootDir': '/home1/{tasdir}',                              # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+        'port': 22,
         'icon': None,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'prefix': 'longhorn.home.{}',
+        'description': 'My Data on Longhorn for {username}',
+        'site': 'frontera',
+        'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
-        'home_dir': '/home',
-        'storage_port': 22,
+        'rootDir': '/home/{tasdir}',
+        'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
     },
@@ -550,3 +555,6 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None
     }
 ]
+
+WH_BASE_URL = "https://testserver"
+PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"

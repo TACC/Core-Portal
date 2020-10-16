@@ -2,7 +2,6 @@ from abc import ABCMeta, abstractmethod
 from six import add_metaclass
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
-from django.urls import reverse
 from django.conf import settings
 
 
@@ -70,12 +69,6 @@ class AbstractStep:
         self.state = SetupState.COMPLETED
         self.log(message, data)
 
-    def webhook_url(self, request):
-        """
-        Utility function for getting a webhook callback url
-        """
-        return request.build_absolute_uri(reverse('webhooks:onboarding_wh_handler'))
-
     def __str__(self):
         return "<{step} for {username} is {state}>".format(
             step=self.step_name(),
@@ -119,14 +112,6 @@ class AbstractStep:
         allowing execution of an action
 
         ..param: action can be "user_confirm" | "staff_approve" | "staff_deny"
-        """
-        pass
-
-    def webhook_action(self, webhook_data=None):
-        """
-        Called by portal.apps.onboarding.api.webhook.SetupStepWebhookView.post
-
-        Child implementations should override this to handle webhook callbacks
         """
         pass
 
