@@ -20,14 +20,23 @@ jobs:
       with:
         python-version: 3.6
 
+    - name: Setup Poetry
+      uses: abatilo/actions-poetry@v2.0.0
+      with:
+        poetry-version: ${{ matrix.poetry-version }}
+
     - uses: actions/cache@v1
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        path: ~/.cache/pypoetry/virtualenvs
+        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
         restore-keys: |
-          ${{ runner.os }}-pip-
+          ${{ runner.os }}-poetry-
 
-    - run: pip install -r server/requirements.txt
+    - name: Install Python Packages
+      run:  |
+        cd server
+        poetry install
+
     - name: Run Server-side unit tests and generate coverage report
       run: |
         cd server
