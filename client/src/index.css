@@ -16,6 +16,10 @@ body {
   /* HACK: Should be in Dashboard styles, but Wes failed */
   /* FAQ: "If [Dashboard] is not tall enough to stack all panels, [bad UI]" */
   min-height: 500px; /* approx. Dashboard with tables at min. height */
+
+  /* Avoid Data Files header buttons colliding with header text */
+  /* HACK: Should instead (ask design) reduce button width on narrow screen */
+  min-width: 1000px; /* approx. Dashboard with tables at min. height */
 }
 
 /*
