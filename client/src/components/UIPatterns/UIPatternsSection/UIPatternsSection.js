@@ -32,14 +32,14 @@ function UIPatternsDropdownSelector() {
         Scrollable
         <small>
           Header (<code>header</code>), Content (<code>content</code>, forced
-          scroll), Should Scroll Content (<code>contentShouldScroll</code>),
+          scroll), Should Scroll Content (<code>contentShouldScroll</code>, and
+          scroll has been forced),
         </small>
       </dt>
       <dd>
         <Section
           header="Milk"
           contentStyleName="is-scrollable"
-          contentLayoutName="oneColumn"
           content={
             <ul>
               <li>Cow</li>
@@ -53,9 +53,10 @@ function UIPatternsDropdownSelector() {
       <dt>
         All Properties
         <small>
-          Header (<code>header</code>), Content (<code>content</code>, resize to
-          scroll), Should Scroll Content (<code>contentShouldScroll</code>),
-          Actions (<code>actions</code>, a link to a modal), Messages (
+          Header (<code>header</code>), Content (<code>content</code>), Content
+          Layout (<code>contentLayoutName</code>, default), Should Scroll
+          Content (<code>contentShouldScroll</code>, and must resize to scroll),
+          Actions (<code>headerActions</code>, a link to a modal), Messages (
           <code>messages</code>)
         </small>
       </dt>
