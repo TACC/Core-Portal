@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-{% load sekizai_tags staticfiles %}
+{% load staticfiles %}
 {% block title %} Workbench {% endblock %}
 {% block head_extra %}
   <base href="{% url 'workbench:index' %}">
 {% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[0] %>">
+  <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[1] %>">
+{% endblock %}
 {% block content %}
   <div id="react-root"></div>
-  {% addtoblock "css" %}
-    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[0] %>">
-    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[1] %>">
-  {% endaddtoblock %}
-  {% addtoblock "js" %}
-    <script src="<%= htmlWebpackPlugin.files.js[0] %>"></script>
-    <script src="<%= htmlWebpackPlugin.files.js[1] %>"></script>
-  {% endaddtoblock %}
+{% endblock %}
+{% block scripts %}
+  <script src="<%= htmlWebpackPlugin.files.js[0] %>"></script>
+  <script src="<%= htmlWebpackPlugin.files.js[1] %>"></script>
 {% endblock %}
