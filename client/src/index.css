@@ -11,6 +11,11 @@ body {
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Avoid `SectionContent` layout caveat by forcing scroll before it happens */
+  /* HACK: Should be in Dashboard styles, but Wes failed */
+  /* FAQ: "If [Dashboard] is not tall enough to stack all panels, [bad UI]" */
+  min-height: 500px; /* approx. Dashboard with tables at min. height */
 }
 
 /*
@@ -48,9 +53,6 @@ body {
   right: 0;
   top: 0;
   bottom: 0;
-}
-body {
-  overflow: hidden;
 }
 
 /* Allow expansion (with respect to ancestors and siblings)

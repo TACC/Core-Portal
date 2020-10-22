@@ -16,7 +16,7 @@ export const LAYOUT_CLASS_MAP = {
   /** One full-width column of flexible blocks */
   oneColumn: 'one-column',
   /**
-   * Two left/right columns (75%/25%) of flexible blocks
+   * Two left/right columns (wide/narrow) of flexible blocks
    *
    * (On narrow screens, this behaves like `oneColumn`)
    */

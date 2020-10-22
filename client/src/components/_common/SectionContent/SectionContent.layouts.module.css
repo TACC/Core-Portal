@@ -24,7 +24,7 @@
 
 
 /* 2 Columns */
-/* TODO: Try again to use CSS Grid */
+/* TODO: Try (again) to use CSS Grid */
 
 
 /* Always */
@@ -52,7 +52,7 @@
 
   /* Layout */
 
-  /* CAVEAT: If dashboard is not tall enough to stack required panels, then:
+  /* CAVEAT: If section is not tall enough to stack all panels, then:
              - at most two panels are shown beside each other
              - only some of the righthand panel is shown
              - extra panels are hidden offscreen */
@@ -73,19 +73,13 @@
     width: 0;
     order: var(--side-panel-order);
     border-right: 1px solid rgba(112, 112, 112, 0.25);
+    margin-left: var(--gutter-width);
+    margin-right: var(--gutter-width);
   }
   /* Stretch panels only wide enough to create two columns */
   .two-column > * {
     width: 100%;
     max-width: var(--default-panel-width);
-    min-height: 12rem; /* CAVEAT: This is a dev value that just "looked good" */
-
-    padding-left: var(--gutter-width);
-    padding-right: var(--gutter-width);
-  }
-  .two-column {
-    margin-left: calc(var(--gutter-width) * -1);
-    margin-right: calc(var(--gutter-width) * -1);
   }
 
   /* Panel Order */     /* (required to see border) */
@@ -95,13 +89,13 @@
   /* FAQ: Within `*:nth-child(-n+x)`, `x` equals number of extra panels */
   .two-column > *:nth-child(-n+1) {
     order: var(--side-panel-order);
-    max-width: 25%;
+    max-width: calc(40% - var(--gutter-width));
   }
 
   /* Expand left column */
   /* FAQ: Within `*:nth-child(n+y)`, `y` equals number of extra panels + 1 */
   .two-column > *:nth-child(n+2) {
-    max-width: 75%;
+    max-width: calc(60% - var(--gutter-width));
   }
 }
 
