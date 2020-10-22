@@ -1,4 +1,4 @@
-FROM python:3.6-buster
+FROM python:3.6-buster as python-base
 
 LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
 
@@ -6,6 +6,19 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 EXPOSE 8000
 
+# https://python-poetry.org/docs/configuration/#using-environment-variables
+ENV POETRY_VERSION=1.0.10 \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1 \
+    PYSETUP_PATH="/opt/pysetup" \
+    VENV_PATH="/opt/pysetup/.venv"
+
+# prepend poetry and venv to path
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
+
+FROM python-base as builder-base
 # install locales for en_us.utf-8
 RUN apt-get update && apt-get install -y \
     dialog \
@@ -28,12 +41,27 @@ RUN apt-get install -y nodejs
 
 RUN pip3 install --upgrade pip setuptools wheel
 
-# install poetry
+# Install Poetry - respects $POETRY_VERSION & $POETRY_HOME
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
 
-# install python packages
-COPY server/pyproject.toml server/poetry.lock /tmp/
-RUN cd /tmp && poetry install
+# copy project requirement files here to ensure they will be cached.
+WORKDIR $PYSETUP_PATH
+COPY server/pyproject.toml server/poetry.lock ./
+
+# install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
+RUN poetry install --no-dev
+
+
+# build image using cached runtime deps
+FROM python-base as build
+WORKDIR $PYSETUP_PATH
+
+# copy in our built poetry + venv
+COPY --from=builder-base $POETRY_HOME $POETRY_HOME
+COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
+
+# quicker install as runtime deps are already installed
+RUN poetry install
 
 COPY . /srv/www/portal
 
