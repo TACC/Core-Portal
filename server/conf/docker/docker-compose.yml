@@ -6,6 +6,7 @@ services:
       build:
         context: ../../../.
         dockerfile: server/conf/docker/Dockerfile
+        target: development
       image: taccwma/frontera-portal:local
       command: /bin/bash
       container_name: frontera_prtl_django

@@ -51,9 +51,10 @@ COPY server/pyproject.toml server/poetry.lock ./
 # install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
 RUN poetry install --no-dev
 
+RUN mkdir -p /var/log/portal
 
-# build image using cached runtime deps
-FROM python-base as build
+# `development` image is used for local development
+FROM python-base as development
 WORKDIR $PYSETUP_PATH
 
 # copy in our built poetry + venv
@@ -65,9 +66,15 @@ RUN poetry install
 
 COPY . /srv/www/portal
 
-RUN mkdir -p /var/log/portal
+WORKDIR /srv/www/portal/server
 
-ARG build_client=build_client
-RUN chmod u+x /srv/www/portal/client/build_client.sh && /srv/www/portal/client/build_client.sh $build_client
+# `production` image is used for depolyed runtime environments
+FROM python-base as production
+
+COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
+
+COPY . /srv/www/portal
+
+RUN chmod u+x /srv/www/portal/client/build_client.sh && /srv/www/portal/client/build_client.sh
 
 WORKDIR /srv/www/portal/server
