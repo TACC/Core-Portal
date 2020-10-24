@@ -6,7 +6,8 @@ const applicationsFixture = {
         {
           type: 'html',
           displayName: 'TACC.cloud JupyterHub',
-          html: '<h3>Jupyter HTML definition</h3>',
+          html:
+            '<div class="jumbotron text-center"> <h2>Jupyter Notebook</h2> <p> The Jupyter Notebook is a web application that allows you to create and share documents that contain live code, equations, visualizations and explanatory text. Uses include: data cleaning and transformation, numerical simulation, statistical modeling, machine learning and <a target="_blank" href="http://jupyter.org/">much more</a>. </p><p><a class="btn btn-lg btn-primary" href="https://jupyter.tacc.cloud" target="_blank">Launch</a></p><p><b>NOTE:</b> This Jupyter instance will terminate after being idle for 3 days.</p></div>',
           available: true
         },
         {
