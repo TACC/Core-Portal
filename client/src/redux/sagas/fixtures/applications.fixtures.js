@@ -27,7 +27,6 @@ const applicationsFixture = {
   },
   Simulation: {
     matlab: {
-      // Admin can specify apps
       specifications: [
         {
           type: 'agave',
@@ -65,7 +64,22 @@ const applicationsFixture = {
       icon: 'matlab'
     }
   },
-  'My Private Applications': {
+  Visualization: {
+    'TACC Visualization Portal': {
+      specifications: [
+        {
+          type: 'html',
+          html:
+            '<div class="jumbotron text-center"> <h2>TACC Visualization Portal</h2> <p> The TACC Visualization Portal allows simple access to TACC\'s vis resources, including remote, interactive web-based access to Stampede2, Frontera, and Wrangler. Launch iPython, Jupyter, and R Studio sessions and more.</p><p><a class="btn btn-lg btn-primary" href="https://vis.tacc.utexas.edu/" target="_blank">Launch</a></p></div>',
+          displayName: 'TACC Visualization Portal',
+          available: true
+        }
+      ],
+      description: 'TACC Visualization Portal',
+      icon: 'vis-portal',
+    }
+  },
+  'My Apps': {
     'my-private-app': {
       type: 'agave',
       versions: ['my-private-app-0.1']
