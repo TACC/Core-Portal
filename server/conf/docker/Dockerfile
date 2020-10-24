@@ -68,7 +68,7 @@ COPY . /srv/www/portal
 
 WORKDIR /srv/www/portal/server
 
-# `production` image is used for depolyed runtime environments
+# `production` image is used for deployed runtime environments
 FROM python-base as production
 
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
