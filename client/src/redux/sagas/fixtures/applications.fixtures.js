@@ -76,7 +76,7 @@ const applicationsFixture = {
         }
       ],
       description: 'TACC Visualization Portal',
-      icon: 'vis-portal',
+      icon: 'vis-portal'
     }
   },
   'My Apps': {
