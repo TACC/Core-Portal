@@ -15,6 +15,16 @@ export const initialState = {
   }
 };
 
+export function updateUserFromEvent(user, event) {
+  if (user.username === event.username) {
+    let step = user.steps.find(step => step.step === event.step);
+    if (step) {
+      step.events.push(event);
+    }
+  }
+  return { ...user };
+}
+
 export function onboarding(state = initialState, action) {
   switch (action.type) {
     case 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING':
@@ -70,6 +80,11 @@ export function onboarding(state = initialState, action) {
           loading: false
         }
       };
+    case 'ONBOARDING_EVENT':
+      return {
+        ...state,
+        user: updateUserFromEvent(state.user, action.payload.setup_event)
+      }
     default:
       return state;
   }

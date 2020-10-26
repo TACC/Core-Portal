@@ -46,6 +46,7 @@ export function* handleSocket(action) {
       break;
     }
     case 'setup_event':
+      yield put({ type: 'ONBOARDING_EVENT', payload: action});
       break;
     default:
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
