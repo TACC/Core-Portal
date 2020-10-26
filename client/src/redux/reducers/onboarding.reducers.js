@@ -1,60 +1,74 @@
 export const initialState = {
-  users: null,
-  loading: false,
-  error: null
+  admin: {
+    users: [],
+    loading: false,
+    error: null
+  },
+  user: {
+    username: null,
+    firstName: null,
+    lastName: null,
+    setupComplete: false,
+    steps: [],
+    loading: false,
+    error: null
+  }
 };
 
-export function onboardingAdminList(state = initialState, action) {
+export function onboarding(state = initialState, action) {
   switch (action.type) {
     case 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING':
       return {
         ...state,
-        loading: true
+        admin: {
+          ...state.admin,
+          loading: true
+        }
       };
     case 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS':
       return {
         ...state,
-        users: action.payload.users,
-        loading: false
+        admin: {
+          ...state.admin,
+          users: action.payload.users,
+          loading: false
+        }
       };
     case 'FETCH_ONBOARDING_ADMIN_LIST_ERROR':
       return {
         ...state,
-        error: action.payload,
-        loading: false
+        admin: {
+          ...state.admin,
+          error: action.payload,
+          loading: false
+        }
       };
-    default:
-      return state;
-  }
-}
-
-export const initialUserState = {
-  user: null,
-  loading: false,
-  error: null
-};
-
-export function onboardingAdminIndividualUser(
-  state = initialUserState,
-  action
-) {
-  switch (action.type) {
     case 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_PROCESSING':
       return {
         ...state,
-        loading: true
+        user: {
+          ...state.user,
+          error: null,
+          loading: true
+        }
       };
     case 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_SUCCESS':
       return {
         ...state,
-        user: action.payload,
-        loading: false
+        user: {
+          ...action.payload,
+          error: null,
+          loading: false
+        }
       };
     case 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_ERROR':
       return {
         ...state,
-        error: action.payload,
-        loading: false
+        user: {
+          ...state.user,
+          error: action.payload,
+          loading: false
+        }
       };
     default:
       return state;

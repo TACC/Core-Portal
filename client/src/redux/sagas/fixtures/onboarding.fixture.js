@@ -1,5 +1,5 @@
 // Admin listing of all users (i.e. result of `api/onboarding/admin/`)
-export const onboardingAdminList = {
+export const onboardingAdminFixture = {
   users: [
     {
       username: 'username',
@@ -21,7 +21,7 @@ export const onboardingAdminList = {
 };
 
 // Admin list of a single user (i.e. result of `api/onboarding/user/username`)
-export const onboardingAdminIndividualUser = {
+export const onboardingUserFixture = {
   username: 'username',
   firstName: 'First',
   lastName: 'Last',
@@ -102,3 +102,33 @@ export const onboardingAdminIndividualUser = {
   isStaff: true,
   email: 'username@tacc.utexas.edu'
 };
+
+export const onboardingAdminState = {
+  admin: {
+    users: onboardingAdminFixture.users,
+    loading: false,
+    error: null
+  },
+  user: {
+    username: null,
+    firstName: null,
+    lastName: null,
+    setupComplete: false,
+    steps: [],
+    loading: false,
+    error: null
+  }
+}
+
+export const onboardingUserState = {
+  admin: {
+    users: [],
+    loading: false,
+    error: null
+  },
+  user: {
+    ...onboardingUserFixture,
+    loading: false,
+    error: null
+  }
+}

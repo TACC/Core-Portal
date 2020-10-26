@@ -8,36 +8,31 @@ import {
   getOnboardingAdminIndividualUser
 } from './onboarding.sagas';
 import {
-  onboardingAdminList as onboardingAdminListFixture,
-  onboardingAdminIndividualUser as onboardingAdminIndividualUserFixture
+  onboardingAdminFixture,
+  onboardingUserFixture,
+  onboardingAdminState,
+  onboardingUserState
 } from './fixtures/onboarding.fixture';
-import {
-  onboardingAdminList,
-  onboardingAdminIndividualUser
-} from '../reducers/onboarding.reducers';
+import { onboarding } from '../reducers/onboarding.reducers';
 
 jest.mock('cross-fetch');
 
 describe('getOnboardingAdminList Saga', () => {
   it('should fetch list of onboarding users and transform state', () =>
     expectSaga(getOnboardingAdminList)
-      .withReducer(onboardingAdminList)
+      .withReducer(onboarding)
       .provide([
-        [matchers.call.fn(fetchOnboardingAdminList), onboardingAdminListFixture]
+        [matchers.call.fn(fetchOnboardingAdminList), onboardingAdminFixture]
       ])
       .put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING' })
       .call(fetchOnboardingAdminList)
       .put({
         type: 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS',
         payload: {
-          users: onboardingAdminListFixture.users
+          users: onboardingAdminFixture.users
         }
       })
-      .hasFinalState({
-        users: onboardingAdminListFixture.users,
-        loading: false,
-        error: null
-      })
+      .hasFinalState(onboardingAdminState)
       .run());
 });
 
@@ -46,11 +41,11 @@ describe('getOnboardingAdminIndividualUser Saga', () => {
     expectSaga(getOnboardingAdminIndividualUser, {
       payload: { user: 'username' }
     })
-      .withReducer(onboardingAdminIndividualUser)
+      .withReducer(onboarding)
       .provide([
         [
           matchers.call.fn(fetchOnboardingAdminIndividualUser),
-          onboardingAdminIndividualUserFixture
+          onboardingUserFixture
         ]
       ])
       .put({
@@ -59,12 +54,8 @@ describe('getOnboardingAdminIndividualUser Saga', () => {
       .call(fetchOnboardingAdminIndividualUser, 'username')
       .put({
         type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_SUCCESS',
-        payload: onboardingAdminIndividualUserFixture
+        payload: onboardingUserFixture
       })
-      .hasFinalState({
-        user: onboardingAdminIndividualUserFixture,
-        loading: false,
-        error: null
-      })
+      .hasFinalState(onboardingUserState)
       .run());
 });

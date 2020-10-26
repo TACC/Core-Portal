@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 function OnboardingSetup() {
-  return <div>Onboarding Setup</div>;
+  const dispatch = useDispatch();
+  const onboardingUser = useSelector(state => state.onboarding.onboardingAdminIndividualUser);
+
+
+  return <div>{`${onboardingUser}`}</div>;
 }
 
 export default OnboardingSetup;
