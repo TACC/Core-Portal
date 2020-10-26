@@ -7,6 +7,7 @@ pytestmark = pytest.mark.django_db
 # run now as we mock the render function.  They are basically just
 # a placeholder.
 
+
 @pytest.fixture(autouse=True)
 def mock_render(mocker):
     yield mocker.patch('portal.apps.onboarding.views.render', return_value=HttpResponse("OK"))

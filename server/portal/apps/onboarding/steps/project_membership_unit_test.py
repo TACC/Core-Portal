@@ -48,7 +48,7 @@ def test_unable_to_get_users_projects(settings, authenticated_user,
         {
             'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
             'settings': {
-                'required_projects': [ 'SOME_OTHER_PROJECT' ]
+                'required_projects': ['SOME_OTHER_PROJECT']
             }
         }
     ]
@@ -64,7 +64,7 @@ def test_not_member_of_project(settings, authenticated_user,
         {
             'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
             'settings': {
-                'required_projects': [ 'SOME_OTHER_PROJECT', 'ONE_OTHER_PROJECT' ]
+                'required_projects': ['SOME_OTHER_PROJECT', 'ONE_OTHER_PROJECT']
             }
         }
     ]
@@ -81,7 +81,7 @@ def test_member_of_single_project_list(settings, authenticated_user,
         {
             'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
             'settings': {
-                'required_projects': [ 'MyProject' ]
+                'required_projects': ['MyProject']
             }
         }
     ]
@@ -96,7 +96,7 @@ def test_member_of_project_list(settings, authenticated_user,
         {
             'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
             'settings': {
-                'required_projects': [ 'SOME_OTHER_PROJECT', 'MyProject' ]
+                'required_projects': ['SOME_OTHER_PROJECT', 'MyProject']
             }
         }
     ]

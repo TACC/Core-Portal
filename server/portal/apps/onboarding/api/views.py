@@ -76,7 +76,7 @@ class SetupStepView(BaseApiView):
         """
         if username is None:
             username = request.user.username
-            
+
         user = self.get_user_parameter(request, username)
         account_setup_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
 

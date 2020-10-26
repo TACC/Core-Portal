@@ -8,7 +8,6 @@ from portal.apps.system_creation.utils import (
 )
 from portal.apps.onboarding.execute import (
     execute_setup_steps,
-    load_setup_step
 )
 from django.conf import settings
 import json
@@ -75,7 +74,7 @@ class SystemCreationStep(AbstractStep):
             )
 
         self.log("Creating systems {}".format(str(data['requested'])), data=data)
-    
+
     def mark_system(self, systemId, status):
         """
         Process callbacks from system creation reactor
@@ -94,7 +93,7 @@ class SystemCreationStep(AbstractStep):
             if systemId in data['failed'] and status == "successful":
                 data['failed'].remove(systemId)
                 data['successful'].append(systemId)
-                self.log("Retry successful for system creation of {}".format(systemId), data=data) 
+                self.log("Retry successful for system creation of {}".format(systemId), data=data)
                 self.logger.info("Retry successful for system creation of {}".format(systemId))
 
         if len(data['requested']) == 0:
@@ -124,4 +123,3 @@ class SystemCreationCallback(WebhookCallback):
             self.logger.error('System creation reactor callback reported failure')
             self.logger.error("{}".format(response))
             step.mark_system(expected, 'failed')
-

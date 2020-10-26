@@ -9,4 +9,3 @@ app_name = 'portal_onboarding'
 urlpatterns = [
     re_path('',  view=views.onboarding, name='holding'),
 ]
-

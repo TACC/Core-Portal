@@ -1,5 +1,4 @@
 from portal.apps.onboarding.steps.system_creation import SystemCreationStep
-import mock
 from mock import call, ANY, MagicMock
 import pytest
 
@@ -36,6 +35,7 @@ def mock_complete(mocker):
 @pytest.fixture
 def mock_fail(mocker):
     yield mocker.patch.object(SystemCreationStep, 'fail')
+
 
 def test_process(regular_user, mock_call_reactor):
     step = SystemCreationStep(regular_user)
@@ -77,7 +77,7 @@ def test_process(regular_user, mock_call_reactor):
         callback='portal.apps.onboarding.steps.system_creation.SystemCreationCallback',
         callback_data={'expected': 'longhorn.home.username'},
         dryrun=False,
-        force=True 
+        force=True
     )
     mock_call_reactor.assert_has_calls([frontera_call, longhorn_call], any_order=True)
 

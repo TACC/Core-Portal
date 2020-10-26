@@ -68,7 +68,6 @@ def launch_setup_checks(user):
         logger.info("Executing onboarding setup steps for %s", user.username)
         execute_setup_steps.apply_async(args=[user.username])
 
-
     # Apply asynchronous long calls
     logger.info("Starting system setup celery tasks for {username}".format(username=user.username))
     index_allocations.apply_async(args=[user.username])
@@ -79,7 +78,6 @@ def launch_setup_checks(user):
     ).apply_async()
 
 
-    
 def agave_oauth_callback(request):
     """Agave OAuth callback handler.
     """
