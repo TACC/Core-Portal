@@ -18,5 +18,8 @@ class AllocationStep(AbstractStep):
         self.log("Awaiting allocation retrieval")
 
     def process(self):
+        self.state = SetupState.PROCESSING
+        self.log("Retrieving your allocations")
+        # Force allocation retrieval from TAS and refresh elasticsearch
         allocations = get_allocations(self.user.username, force=True)
         self.complete("Allocations retrieved", data=allocations)

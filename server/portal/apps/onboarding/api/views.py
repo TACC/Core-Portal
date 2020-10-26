@@ -96,7 +96,7 @@ class SetupStepView(BaseApiView):
         for step in account_setup_steps:
             # Get step events in descending order of time
             step_events = SetupEvent.objects.all().filter(
-                user=user, step=step
+                user=user, step=step['step']
             ).order_by('-time')
 
             step_instance = load_setup_step(user, step['step'])
