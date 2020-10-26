@@ -49,7 +49,7 @@ class SetupStepView(BaseApiView):
 
         return user
 
-    def get(self, request, username):
+    def get(self, request, username=None):
         """
         View for returning a user's setup step events.
 
@@ -74,6 +74,9 @@ class SetupStepView(BaseApiView):
 
         Where step dictionaries are in matching order of PORTAL_USER_ACCOUNT_SETUP_STEPS
         """
+        if username is None:
+            username = request.user.username
+            
         user = self.get_user_parameter(request, username)
         account_setup_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
 
@@ -96,10 +99,10 @@ class SetupStepView(BaseApiView):
                 user=user, step=step
             ).order_by('-time')
 
-            step_instance = load_setup_step(user, step)
+            step_instance = load_setup_step(user, step['step'])
 
             step_data = {
-                "step": step,
+                "step": step['step'],
                 "displayName": step_instance.display_name(),
                 "state": step_instance.state,
                 "events": [event for event in step_events],
