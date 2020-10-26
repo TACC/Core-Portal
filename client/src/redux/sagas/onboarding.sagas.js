@@ -35,7 +35,7 @@ export async function fetchOnboardingAdminIndividualUser(username) {
 }
 
 export function* getOnboardingAdminIndividualUser(action) {
-  const username = action.payload.user;
+  const username = action.payload.user || '';
   yield put({ type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER_PROCESSING' });
   try {
     const onboardingUser = yield call(

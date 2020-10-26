@@ -3,7 +3,7 @@ import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { BrowserChecker } from '_common';
 import OnboardingAdmin from './OnboardingAdmin';
-import OnboardingSetup from './OnboardingSetup';
+import OnboardingUser from './OnboardingUser';
 
 function Onboarding() {
   const dispatch = useDispatch();
@@ -18,7 +18,7 @@ function Onboarding() {
     <div>
       <BrowserChecker />
       <Switch>
-        <Route path={`${path}/setup`} component={OnboardingSetup} />
+        <Route path={`${path}/setup/:username?`} component={OnboardingUser} />
         <Route path={`${path}/admin`} component={OnboardingAdmin} />
         <Redirect from={`${path}`} to={`${path}/setup`} />
       </Switch>

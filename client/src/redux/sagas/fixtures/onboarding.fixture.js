@@ -118,7 +118,7 @@ export const onboardingAdminState = {
     loading: false,
     error: null
   }
-}
+};
 
 export const onboardingUserState = {
   admin: {
@@ -131,4 +131,4 @@ export const onboardingUserState = {
     loading: false,
     error: null
   }
-}
+};
