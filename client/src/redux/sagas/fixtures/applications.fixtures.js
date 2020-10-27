@@ -83,8 +83,12 @@ const applicationsFixture = {
   },
   'My Apps': {
     'my-private-app': {
-      type: 'agave',
-      versions: ['my-private-app-0.1']
+      specifications: [
+        {
+          type: 'agave',
+          id: 'my-private-app-0.1'
+        }
+      ]
     }
   }
 };
