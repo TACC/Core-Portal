@@ -35,6 +35,7 @@ const ManageAccountView = () => {
       <Sidebar />
       <div className="workbench-content">
         <Section
+          routeName="PROFILE"
           header="Manage Account"
           headerActions={
             <Link to="/workbench/dashboard" className="wb-link">

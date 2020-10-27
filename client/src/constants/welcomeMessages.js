@@ -7,3 +7,8 @@ export const APPLICATIONS =
   'This page allows you to submit jobs to the HPC systems or access Cloud services using a variety of applications.';
 export const HISTORY =
   'This page allows you to monitor a log of all previous job submissions.';
+export const PROFILE =
+  'This page allows you to manage your account profile, change your password and view software licenses.';
+// TODO: Support `SectionMessage` in `TicketStandaloneCreate` (because FP-652)
+// export const TICKETS =
+//  'This page allows you to submit a help request via an RT Ticket.';
