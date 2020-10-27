@@ -33,7 +33,7 @@ function OnboardingStatus({ step }) {
         <span>
           <a>{step.staffApprove}</a>
           <a>{step.staffDeny}</a>
-        </span>;
+        </span>
       );
     case 'userwait':
       return <a>{step.clientAction}</a>;
@@ -42,10 +42,11 @@ function OnboardingStatus({ step }) {
     case 'completed':
       return <span className={className}>Completed</span>;
     case 'processing':
-      return; 
-      <span className={className}>
-        Processing <LoadingSpinner />
-      </span>;
+      return (
+        <span className={className}>
+          Processing <LoadingSpinner />
+        </span>
+      );
     default:
       return <span>{step.state}</span>
   }
