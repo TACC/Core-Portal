@@ -8,7 +8,8 @@ const applicationsFixture = {
           displayName: 'TACC.cloud JupyterHub',
           html:
             '<div class="jumbotron text-center"> <h2>Jupyter Notebook</h2> <p> The Jupyter Notebook is a web application that allows you to create and share documents that contain live code, equations, visualizations and explanatory text. Uses include: data cleaning and transformation, numerical simulation, statistical modeling, machine learning and <a target="_blank" href="http://jupyter.org/">much more</a>. </p><p><a class="btn btn-lg btn-primary" href="https://jupyter.tacc.cloud" target="_blank">Launch</a></p><p><b>NOTE:</b> This Jupyter instance will terminate after being idle for 3 days.</p></div>',
-          available: true
+          available: true,
+          id: 'uid-abcd1234'
         },
         {
           type: 'agave',
@@ -72,7 +73,8 @@ const applicationsFixture = {
           html:
             '<div class="jumbotron text-center"> <h2>TACC Visualization Portal</h2> <p> The TACC Visualization Portal allows simple access to TACC\'s vis resources, including remote, interactive web-based access to Stampede2, Frontera, and Wrangler. Launch iPython, Jupyter, and R Studio sessions and more.</p><p><a class="btn btn-lg btn-primary" href="https://vis.tacc.utexas.edu/" target="_blank">Launch</a></p></div>',
           displayName: 'TACC Visualization Portal',
-          available: true
+          available: true,
+          id: 'uid-1234abcd'
         }
       ],
       description: 'TACC Visualization Portal',
