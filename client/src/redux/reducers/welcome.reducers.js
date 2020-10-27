@@ -3,7 +3,9 @@ const initialWelcomeMessages = {
   applications: true,
   datafiles: true,
   allocations: true,
-  history: true
+  history: true,
+  profile: true,
+  tickets: true
 };
 
 function welcomeMessages(state = initialWelcomeMessages, action) {

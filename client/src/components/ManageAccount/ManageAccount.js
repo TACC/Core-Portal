@@ -26,6 +26,14 @@ const ManageAccountView = () => {
     data: { licenses, integrations }
   } = useSelector(state => state.profile);
   const dispatch = useDispatch();
+  const welcomeMessages = useSelector(state => state.welcomeMessages);
+  const onDismissWelcome = section => {
+    const newMessagesState = {
+      ...welcomeMessages,
+      [section]: false
+    };
+    dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState });
+  };
   useEffect(() => {
     dispatch({ type: 'GET_PROFILE_DATA' });
   }, [dispatch, isLoading]);
@@ -33,6 +41,15 @@ const ManageAccountView = () => {
     <Container fluid className="manage-account-wrapper">
       <Sidebar />
       <Container fluid className="manage-account-content">
+        <Alert
+          isOpen={welcomeMessages.profile}
+          toggle={() => onDismissWelcome('profile')}
+          color="secondary"
+          className="welcomeMessageGeneral"
+        >
+          This page allows you to manage your account profile, change your
+          password and view software licenses.
+        </Alert>
         <Row className="manage-account-header">
           <h5>Manage Account</h5>
           <Link to="/workbench/dashboard" style={{ fontWeight: '500' }}>
