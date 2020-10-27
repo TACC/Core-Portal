@@ -92,4 +92,5 @@ const applicationsFixture = {
     }
   }
 };
+
 export default applicationsFixture;
