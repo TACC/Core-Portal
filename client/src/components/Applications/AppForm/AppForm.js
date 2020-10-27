@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, FormGroup, Alert } from 'reactstrap';
+import React from 'react';
+import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
 import { AppIcon, FormField, Icon, LoadingSpinner, Message } from '_common';
@@ -192,16 +192,12 @@ export const AppSchemaForm = ({ app }) => {
     initialValues.allocation = app.scheduler;
   }
 
-  // local state for alerts
-  const [visible, setVisible] = useState(true);
-  const onDismiss = () => setVisible(false);
-
   return (
     <div id="appForm-wrapper">
       {jobSubmission.response && (
         <div id="appForm-alerts">
           {jobSubmission.error ? (
-            <Alert color="warning" isOpen={visible} toggle={onDismiss}>
+            <Message type="warn" className="appDetail-error">
               Error: {jobSubmission.response.message}
               {missingAllocation && (
                 <>
@@ -212,9 +208,9 @@ export const AppSchemaForm = ({ app }) => {
                   &nbsp;to request access.
                 </>
               )}
-            </Alert>
+            </Message>
           ) : (
-            <Alert color="info" isOpen={visible} toggle={onDismiss}>
+            <Message type="info" className="appDetail-error">
               Your job has submitted successfully. See details in{' '}
               <Link
                 to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
@@ -223,7 +219,7 @@ export const AppSchemaForm = ({ app }) => {
                 History &gt; Jobs
               </Link>
               .
-            </Alert>
+            </Message>
           )}
         </div>
       )}
