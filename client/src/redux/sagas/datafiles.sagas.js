@@ -440,19 +440,24 @@ export function* preview(action) {
     payload: { href: null, content: null }
   });
 
-  const { content, href } = yield call(
-    previewUtil,
-    action.payload.api,
-    action.payload.scheme,
-    action.payload.system,
-    action.payload.path,
-    action.payload.href
-  );
-
-  yield put({
-    type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-    payload: { content, href }
+  const { response, cancel } = yield race({
+    response: call(
+      previewUtil,
+      action.payload.api,
+      action.payload.scheme,
+      action.payload.system,
+      action.payload.path,
+      action.payload.href
+    ),
+    cancel: take('DATA_FILES_MODAL_CLOSE')
   });
+  if (!cancel) {
+    const { content, href } = response;
+    yield put({
+      type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+      payload: { content, href }
+    });
+  }
 }
 
 export async function previewUtil(api, scheme, system, path, href) {
