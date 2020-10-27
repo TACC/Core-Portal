@@ -29,11 +29,53 @@ export const onboardingUserFixture = {
   steps: [
     {
       data: null,
+      step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
+      displayName: 'Mock User Wait Step',
+      description:
+        'Long description of a mock step that waits for a user to take action',
+      clientAction: 'Request Portal Access',
+      staffApprove: 'Approve',
+      staffDeny: 'Deny',
+      state: 'failed',
+      events: [
+        {
+          username: 'username',
+          state: 'failed',
+          step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
+          time: '2020-09-23 16:43:01.103968+00:00',
+          message: 'Failure',
+          data: null
+        },
+        {
+          username: 'username',
+          state: 'processing',
+          step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
+          time: '2020-09-23 16:42:51.110869+00:00',
+          message: 'Beginning automated processing',
+          data: null
+        },
+        {
+          username: 'username',
+          state: 'pending',
+          step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
+          time: '2020-09-23 16:42:37.884030+00:00',
+          message: 'Pending',
+          data: null
+        }
+      ]
+    },
+    {
+      data: null,
       step:
         'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
       displayName: 'Mock Processing Complete Step',
-      description: 'Long description of a mock step that automatically processes then completes',
+      description:
+        'Long description of a mock step that automatically processes then completes',
+      clientAction: 'Confirm',
+      staffApprove: 'Approve',
+      staffDeny: 'Deny',
       state: 'completed',
+      customStatus: 'Confirmed',
       events: [
         {
           username: 'username',
@@ -68,7 +110,11 @@ export const onboardingUserFixture = {
       data: null,
       step: 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
       displayName: 'Mock Processing Fail Step',
-      description: 'Long description of a mock step that automatically processes then fails',
+      description:
+        'Long description of a mock step that automatically processes then fails',
+      clientAction: 'Confirm',
+      staffApprove: 'Approve',
+      staffDeny: 'Deny',
       state: 'failed',
       events: [
         {

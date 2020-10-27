@@ -24,6 +24,7 @@ class MFAStep(AbstractStep):
     """
 
     def __init__(self, user):
+        self.client_action = "Confirm MFA Pairing"
         super(MFAStep, self).__init__(user)
 
     def display_name(self):
@@ -34,11 +35,15 @@ class MFAStep(AbstractStep):
                <a href="https://portal.tacc.utexas.edu">TACC User Portal</a>,
                then confirm the pairing was successful."""
 
+    def custom_status(self):
+        if self.state == SetupState.COMPLETED:
+            return "Confirmed"
+        return None
+
     def prepare(self):
         self.state = SetupState.PENDING
         self.log(
             "Checking for a multi-factor authentication pairing",
-
         )
 
     def mfa_check(self):

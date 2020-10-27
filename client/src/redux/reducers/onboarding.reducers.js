@@ -17,9 +17,9 @@ export const initialState = {
 
 export function updateUserFromEvent(user, event) {
   if (user.username === event.username) {
-    let step = user.steps.find(step => step.step === event.step);
-    if (step) {
-      step.events.push(event);
+    const foundStep = user.steps.find(step => step.step === event.step);
+    if (foundStep) {
+      foundStep.events.unshift(event);
     }
   }
   return { ...user };
@@ -84,7 +84,7 @@ export function onboarding(state = initialState, action) {
       return {
         ...state,
         user: updateUserFromEvent(state.user, action.payload.setup_event)
-      }
+      };
     default:
       return state;
   }

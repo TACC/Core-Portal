@@ -1,0 +1,25 @@
+.onboarding-status {
+  padding-left: 1em;
+  padding-right: 1em;
+  border-radius: 0.25em;
+  color: white;
+}
+
+.onboarding-status.pending {
+  background-color: yellow;
+}
+.onboarding-status.completed {
+  background-color: green;
+}
+.onboarding-status.failed {
+  background-color: red;
+}
+.onboarding-status.userwait {
+  background-color: orange;
+}
+.onboarding-status.staffwait {
+  background-color: orange;
+}
+.onboarding-status.processing {
+  background-color: blue;
+}

@@ -105,10 +105,16 @@ class SetupStepView(BaseApiView):
                 "step": step['step'],
                 "displayName": step_instance.display_name(),
                 "description": step_instance.description(),
+                "clientAction": step_instance.client_action,
+                "staffApprove": step_instance.staff_approve,
+                "staffDeny": step_instance.staff_deny,
                 "state": step_instance.state,
                 "events": [event for event in step_events],
                 "data": None
             }
+            custom_status = step_instance.custom_status()
+            if custom_status:
+                step_data["customStatus"] = custom_status
 
             if step_instance.last_event:
                 step_data["data"] = step_instance.last_event.data

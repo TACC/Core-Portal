@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { LoadingSpinner } from '_common';
 import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
+import './OnboardingUser.scss';
 
 function OnboardingEvent({ event }) {
   return <div>{`${event.time} - ${event.message}`}</div>;
@@ -19,13 +20,55 @@ OnboardingEvent.propTypes = {
 
 OnboardingEvent.defaultProps = {};
 
+function OnboardingStatus({ step }) {
+  const className = 'onboarding-status ' + step.state;
+  if ('customStatus' in step) {
+    return <span className={className}>{step.customStatus}</span>;
+  }
+  switch (step.state) {
+    case 'pending':
+      return <span className={className}>Preparing</span>;
+    case 'staffwait':
+      return (
+        <span>
+          <a>{step.staffApprove}</a>
+          <a>{step.staffDeny}</a>
+        </span>;
+      );
+    case 'userwait':
+      return <a>{step.clientAction}</a>;
+    case 'failed':
+      return <span className={className}>Unsuccessful</span>;
+    case 'completed':
+      return <span className={className}>Completed</span>;
+    case 'processing':
+      return; 
+      <span className={className}>
+        Processing <LoadingSpinner />
+      </span>;
+    default:
+      return <span>{step.state}</span>
+  }
+}
+
+OnboardingStatus.propTypes = {
+  step: PropTypes.shape({
+    state: PropTypes.string,
+    customStatus: PropTypes.string
+  }).isRequired
+};
+
+OnboardingStatus.defaultProps = {};
+
 function OnboardingStep({ step }) {
   return (
     <div>
-      <h4>{` ${step.displayName} (${step.state}) `}</h4>
-      {step.events.map(event => (
-        <OnboardingEvent event={event} key={uuidv4()} />
-      ))}
+      <div>{step.displayName}</div>
+      <div>{step.description}</div>
+      <div>
+        <OnboardingStatus step={step} />
+      </div>
+      <hr />
     </div>
   );
 }
@@ -34,6 +77,11 @@ OnboardingStep.propTypes = {
   step: PropTypes.shape({
     state: PropTypes.string,
     displayName: PropTypes.string,
+    description: PropTypes.string,
+    userConfirm: PropTypes.string,
+    staffApprove: PropTypes.string,
+    staffDeny: PropTypes.string,
+    customStatus: PropTypes.string,
     events: PropTypes.arrayOf(
       PropTypes.shape({
         time: PropTypes.string,
@@ -49,6 +97,7 @@ function OnboardingUser() {
   const { params } = useRouteMatch();
   const dispatch = useDispatch();
   const user = useSelector(state => state.onboarding.user);
+  const isStaff = useSelector(state => state.authenticatedUser.isUser);
   const loading = useSelector(state => state.onboarding.user.loading);
   const error = useSelector(state => state.onboarding.user.error);
 
@@ -58,6 +107,9 @@ function OnboardingUser() {
       payload: {
         user: params.username || ''
       }
+    });
+    dispatch({
+      type: 'FETCH_AUTHENTICATED_USER'
     });
   }, [dispatch, params]);
 
@@ -75,17 +127,24 @@ function OnboardingUser() {
 
   return (
     <div>
-      <h2>{`${user.username} - ${user.lastName}, ${user.firstName}`}</h2>
-      <div>
-        {user.setupComplete ? (
-          <Button href="/workbench/">Continue to Dashboard</Button>
-        ) : (
-          <h4>Setting up your account</h4>
-        )}
-      </div>
+      {isStaff ? (
+        <div>
+          Onboarding Administration for {user.username} - {user.lastName},{' '}
+          {user.firstName}
+        </div>
+      ) : (
+        <div>
+          The following steps must be completed before accessing the portal
+        </div>
+      )}
       {user.steps.map(step => (
         <OnboardingStep step={step} key={uuidv4()} />
       ))}
+      <div>
+        {user.setupComplete ? (
+          <Button href="/workbench/">Access Dashboard</Button>
+        ) : null}
+      </div>
     </div>
   );
 }

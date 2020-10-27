@@ -18,6 +18,9 @@ class ProjectMembershipStep(AbstractStep):
 
     """
     def __init__(self, user):
+        self.client_action = "Request Project Access"
+        self.staff_approve = "Grant TAS Project Access"
+        self.staff_deny = "Deny TAS Project Access"
         super(ProjectMembershipStep, self).__init__(user)
 
     def display_name(self):
