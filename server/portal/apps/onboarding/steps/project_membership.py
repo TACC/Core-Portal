@@ -14,14 +14,20 @@ class ProjectMembershipStep(AbstractStep):
     """The onboarding step checks TAS for project membership.
 
     This task queries TAS for user's projects.  If the user has one of the projects listed in the
-    `settings.REQUIRED_PROJECTS` list of required project, then the task is complete.
+    `required_projects` setting, then the task is complete.
 
     """
     def __init__(self, user):
         super(ProjectMembershipStep, self).__init__(user)
 
     def display_name(self):
-        return "Checking project membership"
+        return "Project Membership"
+
+    def description(self):
+        return """We need to make sure you have one of the required projects for this
+               portal ({}). If necessary, please click Request Project Access.""".format(
+                   ', '.join(self.settings['required_projects'])
+               )
 
     def prepare(self):
         super(ProjectMembershipStep, self).prepare()

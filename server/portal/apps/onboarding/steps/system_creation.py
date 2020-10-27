@@ -16,7 +16,10 @@ class SystemCreationStep(AbstractStep):
         super(SystemCreationStep, self).__init__(user)
 
     def display_name(self):
-        return "Creating storage systems"
+        return "Creating Storage Systems"
+
+    def description(self):
+        return """We are setting up access for your data files."""
 
     def prepare(self):
         self.state = SetupState.PENDING

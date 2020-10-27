@@ -86,7 +86,15 @@ class AbstractStep:
     def display_name(self):
         """
         Called when displaying this step in the client. Should return a string
-        that is a friendly name that describes a step.
+        that is a friendly name for a step.
+        """
+        return NotImplemented
+
+    @abstractmethod
+    def description(self):
+        """
+        Called when displayin gthis step in the client. Should return a string
+        that is a detailed description for a step.
         """
         return NotImplemented
 

@@ -104,6 +104,7 @@ class SetupStepView(BaseApiView):
             step_data = {
                 "step": step['step'],
                 "displayName": step_instance.display_name(),
+                "description": step_instance.description(),
                 "state": step_instance.state,
                 "events": [event for event in step_events],
                 "data": None

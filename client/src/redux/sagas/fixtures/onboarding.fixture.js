@@ -32,6 +32,7 @@ export const onboardingUserFixture = {
       step:
         'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
       displayName: 'Mock Processing Complete Step',
+      description: 'Long description of a mock step that automatically processes then completes',
       state: 'completed',
       events: [
         {
@@ -67,6 +68,7 @@ export const onboardingUserFixture = {
       data: null,
       step: 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
       displayName: 'Mock Processing Fail Step',
+      description: 'Long description of a mock step that automatically processes then fails',
       state: 'failed',
       events: [
         {

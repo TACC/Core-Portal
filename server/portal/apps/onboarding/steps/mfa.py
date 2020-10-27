@@ -27,7 +27,12 @@ class MFAStep(AbstractStep):
         super(MFAStep, self).__init__(user)
 
     def display_name(self):
-        return "Confirming MFA Pairing"
+        return "Multi-Factor Authentication"
+
+    def description(self):
+        return """First setup multi-faction authentication on the
+               <a href="https://portal.tacc.utexas.edu">TACC User Portal</a>,
+               then confirm the pairing was successful."""
 
     def prepare(self):
         self.state = SetupState.PENDING

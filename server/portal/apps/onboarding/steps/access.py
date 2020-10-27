@@ -12,6 +12,10 @@ class RequestAccessStep(AbstractStep):
     def display_name(self):
         return "Requesting Access"
 
+    def description(self):
+        return """This notifies a system administrator of your request 
+               to access the portal. After sending the request, wait for their approval."""
+
     def prepare(self):
         super(RequestAccessStep, self).prepare()
         self.state = SetupState.STAFFWAIT
