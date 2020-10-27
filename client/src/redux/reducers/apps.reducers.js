@@ -1,4 +1,7 @@
-const initialState = {
+import applicationsFixture from '../sagas/fixtures/applications.fixtures';
+
+export const initialState = {
+  categoryApps: applicationsFixture, // replacement of categoryDicts
   categoryDict: {},
   appDict: {},
   appIcons: {},

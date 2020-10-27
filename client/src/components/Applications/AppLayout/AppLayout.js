@@ -11,7 +11,7 @@ const AppsLayout = appDict => {
   const { loading, categoryDict } = useSelector(
     state => ({
       loading: state.apps.loading,
-      categoryDict: state.apps.categoryDict
+      categoryDict: state.apps.categoryApps
     }),
     shallowEqual
   );

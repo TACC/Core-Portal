@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { useSelector, shallowEqual } from 'react-redux';
-// import PropTypes from 'prop-types';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { AppIcon, Icon, Message } from '_common';
 import './AppBrowser.scss';
@@ -15,7 +14,7 @@ const AppBrowser = () => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const { categoryDict, appDict, defaultTab, error } = useSelector(
+  const { categoryApps, appDict, defaultTab, error } = useSelector(
     state => ({ ...state.apps }),
     shallowEqual
   );
@@ -35,15 +34,15 @@ const AppBrowser = () => {
     !activeTab &&
     params.appId in appDict
   ) {
-    toggle(appDict[params.appId].value.definition.appCategory);
-  } else if (!activeTab && Object.keys(categoryDict).includes(defaultTab)) {
+    toggle(appDict[params.appId].value.definition.appCategory); // TODO
+  } else if (!activeTab && Object.keys(categoryApps).includes(defaultTab)) {
     toggle(defaultTab);
   }
 
   return (
     <div id="appBrowser-wrapper">
       <Nav id="appBrowser-sidebar">
-        {Object.keys(categoryDict).map(category => (
+        {Object.keys(categoryApps).map(category => (
           <NavItem key={category}>
             <NavLink
               className={activeTab === category ? 'active' : null}
@@ -56,32 +55,37 @@ const AppBrowser = () => {
                   name="applications"
                   className={`icon-${category.replace(' ', '-').toLowerCase()}`}
                 />
-                <span className="nav-text">{`${category} [${categoryDict[category].length}]`}</span>
+                <span className="nav-text">{`${category} [${
+                  Object.keys(categoryApps[category]).length
+                }]`}</span>
               </span>
             </NavLink>
           </NavItem>
         ))}
       </Nav>
       <TabContent id="appBrowser-tray" activeTab={activeTab}>
-        {Object.keys(categoryDict).map(category => (
+        {Object.keys(categoryApps).map(category => (
           <TabPane tabId={category} key={`${category}tabPane`}>
             <div className="apps-grid-list">
-              {categoryDict[category].map(app => (
-                <div key={app.value.definition.id} className="apps-grid-item">
-                  <NavLink
-                    tag={RRNavLink}
-                    to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.value.definition.id}`}
-                    activeClassName="active"
+              {Object.entries(categoryApps[category]).map(
+                ([appName, appValue]) => (
+                  <div
+                    key={appValue.specifications[0].id}
+                    className="apps-grid-item"
                   >
-                    <span className="nav-content">
-                      <AppIcon appId={app.value.definition.id} />
-                      <span className="nav-text">
-                        {app.value.definition.label}
+                    <NavLink
+                      tag={RRNavLink}
+                      to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${appValue.specifications[0].id}`}
+                      activeClassName="active"
+                    >
+                      <span className="nav-content">
+                        <AppIcon appId={appValue.specifications[0].id} />
+                        <span className="nav-text">{appName}</span>
                       </span>
-                    </span>
-                  </NavLink>
-                </div>
-              ))}
+                    </NavLink>
+                  </div>
+                )
+              )}
             </div>
           </TabPane>
         ))}
