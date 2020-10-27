@@ -1,6 +1,6 @@
 // Applications browser data
 const applicationsFixture = {
-  'Data Analysis': {
+  'Data Processing': {
     jupyter: {
       specifications: [
         {
