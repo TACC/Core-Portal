@@ -33,11 +33,12 @@ describe('Onboarding User View', () => {
           error: null,
           loading: false
         }
-      }
+      },
+      authenticatedUser: {}
     });
 
     const { getByText } = renderOnboardingUserComponent(store);
-    expect(getByText(/username/)).toBeDefined();
+    expect(getByText(/must be completed before accessing the portal/)).toBeDefined();
   });
 
   it('renders a loading screen', () => {
@@ -49,7 +50,8 @@ describe('Onboarding User View', () => {
           error: null,
           loading: true
         }
-      }
+      },
+      authenticatedUser: {}
     });
     const { getByTestId } = renderOnboardingUserComponent(store);
     expect(getByTestId('loading')).toBeDefined();
@@ -64,10 +66,33 @@ describe('Onboarding User View', () => {
           error: 'error',
           loading: false
         }
-      }
+      },
+      authenticatedUser: {}
     });
 
     const { getByText } = renderOnboardingUserComponent(store);
     expect(getByText(/Unable to retrieve your onboarding steps/)).toBeDefined();
+  });
+
+  it('renders staff user interface', () => {
+    const store = mockStore({
+      onboarding: {
+        ...initialMockState,
+        user: {
+          ...onboardingUserFixture,
+          error: null,
+          loading: false
+        }
+      },
+      authenticatedUser: {
+        user: {
+          isStaff: true
+        }
+      }
+    });
+    const { getByText } = renderOnboardingUserComponent(store);
+    expect(getByText(/Last, First/)).toBeDefined();
+    expect(getByText(/Approve/)).toBeDefined();
+    expect(getByText(/Deny/)).toBeDefined();
   });
 });

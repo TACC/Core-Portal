@@ -36,7 +36,7 @@ export const onboardingUserFixture = {
       clientAction: 'Request Portal Access',
       staffApprove: 'Approve',
       staffDeny: 'Deny',
-      state: 'failed',
+      state: 'userwait',
       events: [
         {
           username: 'username',
@@ -58,6 +58,43 @@ export const onboardingUserFixture = {
           username: 'username',
           state: 'pending',
           step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
+          time: '2020-09-23 16:42:37.884030+00:00',
+          message: 'Pending',
+          data: null
+        }
+      ]
+    },
+    {
+      data: null,
+      step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
+      displayName: 'Mock Staff Wait Step',
+      description:
+        'Long description of a mock step that waits for a staff user to take action',
+      clientAction: 'Request Portal Access',
+      staffApprove: 'Approve',
+      staffDeny: 'Deny',
+      state: 'staffwait',
+      events: [
+        {
+          username: 'username',
+          state: 'failed',
+          step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
+          time: '2020-09-23 16:43:01.103968+00:00',
+          message: 'Failure',
+          data: null
+        },
+        {
+          username: 'username',
+          state: 'processing',
+          step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
+          time: '2020-09-23 16:42:51.110869+00:00',
+          message: 'Beginning automated processing',
+          data: null
+        },
+        {
+          username: 'username',
+          state: 'pending',
+          step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
           time: '2020-09-23 16:42:37.884030+00:00',
           message: 'Pending',
           data: null

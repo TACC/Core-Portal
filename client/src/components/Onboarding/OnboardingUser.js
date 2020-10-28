@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { LoadingSpinner } from '_common';
@@ -22,7 +22,9 @@ OnboardingEvent.propTypes = {
 OnboardingEvent.defaultProps = {};
 
 function OnboardingStatus({ step }) {
-  const isStaff = useSelector(state => state.authenticatedUser.isStaff);
+  const isStaff = useSelector(
+    state => state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
+  );
   let type = '';
   switch (step.state) {
     case 'processing':
@@ -52,13 +54,19 @@ function OnboardingStatus({ step }) {
       return (
         isStaff
           ? <span>
-            <a>{step.staffApprove}</a>
-            <a>{step.staffDeny}</a>
+              <Button color="link">
+                <h6>{step.staffApprove}</h6>
+              </Button>
+              <Button color="link">
+                <h6>{step.staffDeny}</h6>
+              </Button>
           </span>
           : <Pill type='normal'>Waiting for Staff Approval</Pill>
       );
     case 'userwait':
-      return <a>{step.clientAction}</a>;
+      return <Button color="link">
+          <h6>{step.clientAction}</h6>
+        </Button>
     case 'failed':
       return <Pill type={type}>Unsuccessful</Pill>;
     case 'completed':
@@ -120,7 +128,9 @@ function OnboardingUser() {
   const { params } = useRouteMatch();
   const dispatch = useDispatch();
   const user = useSelector(state => state.onboarding.user);
-  const isStaff = useSelector(state => state.authenticatedUser.isStaff);
+  const isStaff = useSelector(
+    state => state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
+  );
   const loading = useSelector(state => state.onboarding.user.loading);
   const error = useSelector(state => state.onboarding.user.error);
 
@@ -160,13 +170,15 @@ function OnboardingUser() {
           The following steps must be completed before accessing the portal
         </div>
       )}
-      {user.steps.map(step => (
-        <OnboardingStep step={step} key={uuidv4()} />
-      ))}
-      <div>
-        {user.setupComplete ? (
-          <Button href="/workbench/">Access Dashboard</Button>
-        ) : null}
+      <div className='onboarding__container'>
+        {user.steps.map(step => (
+          <OnboardingStep step={step} key={uuidv4()} />
+        ))}
+        <div className='onboarding__access'>
+          {user.setupComplete ? (
+            <Button href="/workbench/">Access Dashboard</Button>
+          ) : null}
+        </div>
       </div>
     </div>
   );

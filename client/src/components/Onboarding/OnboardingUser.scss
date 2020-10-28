@@ -2,6 +2,10 @@
   padding: 1em 1em 1em 1em;
 }
 
+.onboarding__access {
+  text-align: right;
+}
+
 .onboarding__title {
   font-size: 1.5em;
   line-height: 2em;
@@ -10,10 +14,14 @@
   margin-bottom: 1em;
 }
 
+.onboarding__container {
+  width: 75%;
+}
+
 .onboarding-step {
   padding-top: 1em;
   padding-bottom: 1em;
-  width: 75%;
+  margin-bottom: 1em;
   border-bottom: 1px solid var(--global-color-primary--normal);
 }
 
