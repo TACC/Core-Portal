@@ -790,6 +790,10 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 """
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
+        'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
+        'settings': {}
+    },
+    {
         'step': 'portal.apps.onboarding.steps.access.RequestAccessStep',
         'settings': {}
     },
