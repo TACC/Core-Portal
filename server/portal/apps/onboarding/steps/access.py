@@ -7,10 +7,10 @@ class RequestAccessStep(AbstractStep):
         """
         Call super class constructor
         """
+        super(RequestAccessStep, self).__init__(user)
         self.user_confirm = "Request Portal Access"
         self.staff_approve = "Grant Portal Access"
         self.staff_deny = "Deny Access Request"
-        super(RequestAccessStep, self).__init__(user)
 
     def display_name(self):
         return "Requesting Access"
