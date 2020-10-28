@@ -14,11 +14,12 @@
   margin-bottom: 1em;
 }
 
-.onboarding-actions, .onboarding-processing {
+.onboarding-actions,
+.onboarding-processing {
   .loading-icon {
     display: inline-block;
     width: inherit;
-  }  
+  }
 }
 
 .onboarding__container {
