@@ -1,10 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import './Pill.module.scss';
 
-function Pill({ children, type }) {
+function Pill({ children, type, className }) {
+  const pillStyleName = `pill is-${type}`;
+  
   return (
-    <div>{children}</div>
+    <span styleName={pillStyleName} className={className}>{children}</span>
   )
+}
+
+Pill.propTypes = {
+  children: PropTypes.string.isRequired,
+  type: PropTypes.string,
+  className: PropTypes.string
+};
+
+Pill.defaultProps = {
+  type: 'normal',
+  className: ''
 }
 
 export default Pill;
