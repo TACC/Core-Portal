@@ -14,6 +14,7 @@ const eventPropType = PropTypes.shape({
 });
 
 const stepPropType = PropTypes.shape({
+  step: PropTypes.string,
   state: PropTypes.string,
   displayName: PropTypes.string,
   description: PropTypes.string,
@@ -172,7 +173,10 @@ function OnboardingStep({ step }) {
   return (
     <div className="onboarding-step">
       <div className="onboarding-step__name">{step.displayName}</div>
-      <div className="onboarding-step__description">{step.description}</div>
+      <div
+        className="onboarding-step__description"
+        dangerouslySetInnerHTML={{ __html: step.description }}
+      />
       <div>
         <OnboardingStatus step={step} />
         <OnboardingActions step={step} />
