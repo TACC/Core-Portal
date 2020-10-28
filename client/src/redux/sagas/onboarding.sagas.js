@@ -93,7 +93,7 @@ export function* postOnboardingAction(action) {
   } catch (error) {
     yield put({
       type: 'POST_ONBOARDING_ACTION_ERROR',
-      payload: error
+      payload: { error }
     });
   }
 }

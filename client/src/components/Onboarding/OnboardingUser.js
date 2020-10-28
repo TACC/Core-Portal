@@ -1,11 +1,11 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import React, { useEffect, useCallback } from 'react';
+import { useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message, Pill } from '_common';
 import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
-import { Pill } from '_common';
+
 import './OnboardingUser.scss';
 
 function OnboardingEvent({ event }) {
@@ -21,22 +21,99 @@ OnboardingEvent.propTypes = {
 
 OnboardingEvent.defaultProps = {};
 
+function OnboardingActions({ step }) {
+  const dispatch = useDispatch();
+  const actionCallback = useCallback((action, username) => {
+    dispatch({
+      type: 'POST_ONBOARDING_ACTION',
+      payload: {
+        step: step.step,
+        action,
+        username
+      }
+    });
+  });
+  const isStaff = useSelector(state =>
+    state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
+  );
+  const isSending = useSelector(
+    state =>
+      state.onboarding.action.loading &&
+      state.onboarding.action.step === step.step
+  );
+  const error = useSelector(state => state.onboarding.action.error);
+  const actionStep = useSelector(state => state.onboarding.action.step);
+  const { params } = useRouteMatch();
+  const authUsername = useSelector(state =>
+    state.authenticatedUser.user ? state.authenticatedUser.user.username : ''
+  );
+
+  const hasSendingError = actionStep === step.step && error;
+
+  // If the route loaded shows we are viewing a different user
+  // (such as an admin viewing a user) then pull the username for
+  // actions from the route. Ohterwise, use the username of whomever is logged in
+  const username = params.username || authUsername;
+
+  if (hasSendingError) {
+    return (
+      <Message type="warn" className="appDetail-error">
+        We were unable to perform this action.
+      </Message>
+    );
+  }
+
+  return (
+    <span className="onboarding-actions">
+      {isStaff && step.state === 'staffwait' ? (
+        <span>
+          <Button
+            color="link"
+            disabled={isSending}
+            onClick={() => actionCallback('staff_approve', username)}
+          >
+            <h6>{step.staffApprove}</h6>
+          </Button>
+          <Button
+            color="link"
+            disabled={isSending}
+            onClick={() => actionCallback('staff_deny', username)}
+          >
+            <h6>{step.staffDeny}</h6>
+          </Button>
+        </span>
+      ) : null}
+      {step.state === 'userwait' ? (
+        <Button
+          color="link"
+          disabled={isSending}
+          onClick={() => actionCallback('user_confirm', username)}
+        >
+          <h6>{step.clientAction}</h6>
+        </Button>
+      ) : null}
+      {isSending ? <LoadingSpinner placement="inline" /> : null}
+    </span>
+  );
+}
+
+OnboardingActions.propTypes = {
+  step: PropTypes.shape({
+    step: PropTypes.string,
+    state: PropTypes.string,
+    staffApprove: PropTypes.string,
+    staffDeny: PropTypes.string,
+    clientAction: PropTypes.string
+  }).isRequired
+};
+
+OnboardingActions.defaultProps = {};
+
 function OnboardingStatus({ step }) {
-  const [ isSending, setIsSending ] = useState(false);
-  const actionCallback = useCallback(
-    (action) => {
-      console.log(action);
-      setIsSending(true);
-    },
-    [isSending, setIsSending]
-  );
-  const isStaff = useSelector(
-    state => state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
-  );
   let type = '';
   switch (step.state) {
     case 'processing':
-    case 'pending': 
+    case 'pending':
       type = 'normal';
       break;
     case 'failed':
@@ -50,7 +127,7 @@ function OnboardingStatus({ step }) {
       type = 'success';
       break;
     default:
-      type ='normal';
+      type = 'normal';
   }
   if ('customStatus' in step) {
     return <Pill type={type}>{step.customStatus}</Pill>;
@@ -59,52 +136,22 @@ function OnboardingStatus({ step }) {
     case 'pending':
       return <Pill type={type}>Preparing</Pill>;
     case 'staffwait':
-      return (
-        isStaff
-          ? <span className='onboarding-status__actions'>
-              <Button 
-                color="link" 
-                disabled={isSending}
-                onClick={() => actionCallback("staff_approve")}>
-                <h6>{step.staffApprove}</h6>
-              </Button>
-              <Button
-                color="link"
-                disabled={isSending}
-                onClick={() => actionCallback("staff_deny")}>
-                <h6>{step.staffDeny}</h6>
-              </Button>
-              {isSending
-                ? <LoadingSpinner placement='inline' />
-                : null}
-          </span>
-          : <Pill type='normal'>Waiting for Staff Approval</Pill>
-      );
+      return <Pill type="normal">Waiting for Staff Approval</Pill>;
     case 'userwait':
-      return <span className='onboarding-status__actions'>
-          <Button
-            color="link"
-            disabled={isSending}
-            onClick={() => actionCallback("user_confirm")}>
-            <h6>{step.clientAction}</h6>
-          </Button>
-          {isSending
-            ? <LoadingSpinner placement='inline' />
-            : null}
-        </span>
+      return null;
     case 'failed':
       return <Pill type={type}>Unsuccessful</Pill>;
     case 'completed':
       return <Pill type={type}>Completed</Pill>;
     case 'processing':
       return (
-        <span className='onboarding_status__actions'>
+        <span className="onboarding_status__actions">
           <Pill type={type}>Processing</Pill>
-          <LoadingSpinner placement='inline' />
+          <LoadingSpinner placement="inline" />
         </span>
       );
     default:
-      return <span>{step.state}</span>
+      return <span>{step.state}</span>;
   }
 }
 
@@ -124,6 +171,7 @@ function OnboardingStep({ step }) {
       <div className="onboarding-step__description">{step.description}</div>
       <div>
         <OnboardingStatus step={step} />
+        <OnboardingActions step={step} />
       </div>
     </div>
   );
@@ -153,8 +201,8 @@ function OnboardingUser() {
   const { params } = useRouteMatch();
   const dispatch = useDispatch();
   const user = useSelector(state => state.onboarding.user);
-  const isStaff = useSelector(
-    state => state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
+  const isStaff = useSelector(state =>
+    state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
   );
   const loading = useSelector(state => state.onboarding.user.loading);
   const error = useSelector(state => state.onboarding.user.error);
@@ -184,22 +232,22 @@ function OnboardingUser() {
   }
 
   return (
-    <div className='onboarding'>
+    <div className="onboarding">
       {isStaff ? (
-        <div className='onboarding__title'>
+        <div className="onboarding__title">
           Onboarding Administration for {user.username} - {user.lastName},{' '}
           {user.firstName}
         </div>
       ) : (
-        <div className='onboarding__title'>
+        <div className="onboarding__title">
           The following steps must be completed before accessing the portal
         </div>
       )}
-      <div className='onboarding__container'>
+      <div className="onboarding__container">
         {user.steps.map(step => (
           <OnboardingStep step={step} key={uuidv4()} />
         ))}
-        <div className='onboarding__access'>
+        <div className="onboarding__access">
           {user.setupComplete ? (
             <Button href="/workbench/">Access Dashboard</Button>
           ) : null}
