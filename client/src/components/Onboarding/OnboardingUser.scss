@@ -1,25 +1,26 @@
-.onboarding-status {
-  padding-left: 1em;
-  padding-right: 1em;
-  border-radius: 0.25em;
-  color: white;
+.onboarding {
+  padding: 1em 1em 1em 1em;
 }
 
-.onboarding-status.pending {
-  background-color: yellow;
+.onboarding__title {
+  font-size: 1.5em;
+  line-height: 2em;
+  width: 100%;
+  border-bottom: 1px solid black;
+  margin-bottom: 1em;
 }
-.onboarding-status.completed {
-  background-color: green;
+
+.onboarding-step {
+  padding-top: 1em;
+  padding-bottom: 1em;
+  width: 75%;
+  border-bottom: 1px solid var(--global-color-primary--normal);
 }
-.onboarding-status.failed {
-  background-color: red;
+
+.onboarding-step__name {
+  font-weight: bold;
 }
-.onboarding-status.userwait {
-  background-color: orange;
-}
-.onboarding-status.staffwait {
-  background-color: orange;
-}
-.onboarding-status.processing {
-  background-color: blue;
+
+.onboarding-step__description {
+  padding-bottom: 1em;
 }

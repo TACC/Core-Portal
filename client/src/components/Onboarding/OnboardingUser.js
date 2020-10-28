@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { LoadingSpinner } from '_common';
 import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
+import { Pill } from '_common';
 import './OnboardingUser.scss';
 
 function OnboardingEvent({ event }) {
@@ -21,30 +22,52 @@ OnboardingEvent.propTypes = {
 OnboardingEvent.defaultProps = {};
 
 function OnboardingStatus({ step }) {
-  const className = 'onboarding-status ' + step.state;
+  const isStaff = useSelector(state => state.authenticatedUser.isStaff);
+  let type = '';
+  switch (step.state) {
+    case 'processing':
+    case 'pending': 
+      type = 'normal';
+      break;
+    case 'failed':
+      type = 'danger';
+      break;
+    case 'staffwait':
+    case 'userwait':
+      type = 'alert';
+      break;
+    case 'completed':
+      type = 'success';
+      break;
+    default:
+      type ='normal';
+  }
   if ('customStatus' in step) {
-    return <span className={className}>{step.customStatus}</span>;
+    return <Pill type={type}>{step.customStatus}</Pill>;
   }
   switch (step.state) {
     case 'pending':
-      return <span className={className}>Preparing</span>;
+      return <Pill type={type}>Preparing</Pill>;
     case 'staffwait':
       return (
-        <span>
-          <a>{step.staffApprove}</a>
-          <a>{step.staffDeny}</a>
-        </span>
+        isStaff
+          ? <span>
+            <a>{step.staffApprove}</a>
+            <a>{step.staffDeny}</a>
+          </span>
+          : <Pill type='normal'>Waiting for Staff Approval</Pill>
       );
     case 'userwait':
       return <a>{step.clientAction}</a>;
     case 'failed':
-      return <span className={className}>Unsuccessful</span>;
+      return <Pill type={type}>Unsuccessful</Pill>;
     case 'completed':
-      return <span className={className}>Completed</span>;
+      return <Pill type={type}>Completed</Pill>;
     case 'processing':
       return (
-        <span className={className}>
-          Processing <LoadingSpinner />
+        <span>
+          <Pill type={type}>Processing</Pill>
+          <LoadingSpinner />
         </span>
       );
     default:
@@ -63,13 +86,12 @@ OnboardingStatus.defaultProps = {};
 
 function OnboardingStep({ step }) {
   return (
-    <div>
-      <div>{step.displayName}</div>
-      <div>{step.description}</div>
+    <div className="onboarding-step">
+      <div className="onboarding-step__name">{step.displayName}</div>
+      <div className="onboarding-step__description">{step.description}</div>
       <div>
         <OnboardingStatus step={step} />
       </div>
-      <hr />
     </div>
   );
 }
@@ -98,7 +120,7 @@ function OnboardingUser() {
   const { params } = useRouteMatch();
   const dispatch = useDispatch();
   const user = useSelector(state => state.onboarding.user);
-  const isStaff = useSelector(state => state.authenticatedUser.isUser);
+  const isStaff = useSelector(state => state.authenticatedUser.isStaff);
   const loading = useSelector(state => state.onboarding.user.loading);
   const error = useSelector(state => state.onboarding.user.error);
 
@@ -127,14 +149,14 @@ function OnboardingUser() {
   }
 
   return (
-    <div>
+    <div className='onboarding'>
       {isStaff ? (
-        <div>
+        <div className='onboarding__title'>
           Onboarding Administration for {user.username} - {user.lastName},{' '}
           {user.firstName}
         </div>
       ) : (
-        <div>
+        <div className='onboarding__title'>
           The following steps must be completed before accessing the portal
         </div>
       )}
