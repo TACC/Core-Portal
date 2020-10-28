@@ -33,7 +33,7 @@ export const onboardingUserFixture = {
       displayName: 'Mock User Wait Step',
       description:
         'Long description of a mock step that waits for a user to take action',
-      clientAction: 'Request Portal Access',
+      userConfirm: 'Request Portal Access',
       staffApprove: 'Approve',
       staffDeny: 'Deny',
       state: 'userwait',
@@ -70,7 +70,7 @@ export const onboardingUserFixture = {
       displayName: 'Mock Staff Wait Step',
       description:
         'Long description of a mock step that waits for a staff user to take action',
-      clientAction: 'Request Portal Access',
+      userConfirm: 'Request Portal Access',
       staffApprove: 'Approve',
       staffDeny: 'Deny',
       state: 'staffwait',
@@ -108,7 +108,7 @@ export const onboardingUserFixture = {
       displayName: 'Mock Processing Complete Step',
       description:
         'Long description of a mock step that automatically processes then completes',
-      clientAction: 'Confirm',
+      userConfirm: 'Confirm',
       staffApprove: 'Approve',
       staffDeny: 'Deny',
       state: 'completed',
@@ -149,7 +149,7 @@ export const onboardingUserFixture = {
       displayName: 'Mock Processing Fail Step',
       description:
         'Long description of a mock step that automatically processes then fails',
-      clientAction: 'Confirm',
+      userConfirm: 'Confirm',
       staffApprove: 'Approve',
       staffDeny: 'Deny',
       state: 'failed',

@@ -24,8 +24,8 @@ class MFAStep(AbstractStep):
     """
 
     def __init__(self, user):
-        self.client_action = "Confirm MFA Pairing"
         super(MFAStep, self).__init__(user)
+        self.user_confirm = "Confirm MFA Pairing"
 
     def display_name(self):
         return "Multi-Factor Authentication"

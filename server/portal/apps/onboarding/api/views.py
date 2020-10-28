@@ -105,7 +105,7 @@ class SetupStepView(BaseApiView):
                 "step": step['step'],
                 "displayName": step_instance.display_name(),
                 "description": step_instance.description(),
-                "clientAction": step_instance.client_action,
+                "userConfirm": step_instance.user_confirm,
                 "staffApprove": step_instance.staff_approve,
                 "staffDeny": step_instance.staff_deny,
                 "state": step_instance.state,
@@ -190,6 +190,9 @@ class SetupStepView(BaseApiView):
         ..return: A JsonResponse with the last_event for the user's SetupStep,
                     reflecting state change
         """
+        if username is None:
+            username = request.user.username
+
         # Get the user object requested in the route parameter
         user = self.get_user_parameter(request, username)
 

@@ -15,7 +15,7 @@ class AbstractStep:
     def __init__(self, user):
         self.state = None
         self.user = user
-        self.client_action = "Confirm"
+        self.user_confirm = "Confirm"
         self.staff_approve = "Approve"
         self.staff_deny = "Deny"
         self.last_event = None

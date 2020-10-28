@@ -14,11 +14,10 @@ const eventPropType = PropTypes.shape({
 });
 
 const stepPropType = PropTypes.shape({
-  step: PropTypes.string,
   state: PropTypes.string,
   displayName: PropTypes.string,
   description: PropTypes.string,
-  clientAction: PropTypes.string,
+  userConfirm: PropTypes.string,
   staffApprove: PropTypes.string,
   staffDeny: PropTypes.string,
   customStatus: PropTypes.string,
@@ -103,7 +102,7 @@ function OnboardingActions({ step }) {
           disabled={isSending}
           onClick={() => actionCallback('user_confirm', username)}
         >
-          <h6>{step.clientAction}</h6>
+          <h6>{step.userConfirm}</h6>
         </Button>
       ) : null}
       {isSending ? <LoadingSpinner placement="inline" /> : null}
@@ -153,7 +152,7 @@ function OnboardingStatus({ step }) {
       return <Pill type={type}>Completed</Pill>;
     case 'processing':
       return (
-        <span className="onboarding_status__actions">
+        <span className="onboarding-processing">
           <Pill type={type}>Processing</Pill>
           <LoadingSpinner placement="inline" />
         </span>
