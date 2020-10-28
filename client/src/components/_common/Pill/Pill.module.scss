@@ -1,11 +1,13 @@
+/* TODO: Consider sharing code between (History)Badge and Pill */
 .pill {
-  padding: 0 1em; /* buffer retained on 2+ digit badge, without increase on 1 digit badge */
-  min-width: 1.3em;  /* ~18px design * 1.2 design-to-app ratio (rounded) */
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+  font-weight: 500;
+  padding: 0.2em 0.5em; /* aim for ~23px height (19px design * 1.2 design-to-app ratio) */
+  display: inline-block; /* FAQ: Supports `min-width` */
+  /* min-width: ____; *//* FAQ: Set only as needed (not always needed) */
   text-align: center;
-  border-radius: 3.6px;
+  border-radius: 3px;
   color: var(--global-color-primary--xx-light);
-  margin-left: auto;
-  margin-right: 2em;
 }
 
 .is-danger {
