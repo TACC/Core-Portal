@@ -1,90 +1,95 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import TicketCreateForm from './TicketCreateForm';
-import { Provider } from 'react-redux';
+import renderComponent from 'utils/testing';
 import configureStore from 'redux-mock-store';
+import TicketCreateForm from './TicketCreateForm';
+import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
 import '@testing-library/jest-dom/extend-expect';
-import { BrowserRouter } from 'react-router-dom';
 
 const mockStore = configureStore();
-const initialMockState = {
-  creating: false,
-  creatingSuccess: false,
-  createdTicketId: null,
-  creatingError: false,
-  creatingErrorMessage: null
-};
 
 const exampleAuthenticatedUser = {
-  first_name: "Max",
-  username: "mmunstermann",
-  last_name: "Munstermann",
-  email: "max@munster.mann",
+  first_name: 'Max',
+  username: 'mmunstermann',
+  last_name: 'Munstermann',
+  email: 'max@munster.mann',
   oauth: {
     expires_in: 14400,
-    scope: "default"
+    scope: 'default'
   },
   isStaff: false
-}
-
-function renderTicketsCreateForm(store) {
-  return render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <TicketCreateForm />
-      </BrowserRouter>
-    </Provider>
-  );
-}
+};
 
 describe('TicketCreateForm', () => {
+  it('renders form for un-authenticated users', () => {
+    const store = mockStore({
+      ticketCreate
+    });
+
+    const { getAllByText } = renderComponent(<TicketCreateForm />, store);
+    expect(getAllByText(/Explain your steps/)).toBeDefined();
+  });
+
   it('renders form with authenticated user information', () => {
     const store = mockStore({
       ticketCreate: {
-        ...initialMockState
+        ...ticketCreate
       }
     });
 
-    const { getByText, getAllByText } = renderTicketsCreateForm(store);
-    expect(getByText(/Max/)).toBeInTheDocument();
+    const { getAllByText, getByDisplayValue } = renderComponent(
+      <TicketCreateForm authenticatedUser={exampleAuthenticatedUser} />,
+      store
+    );
+    expect(getByDisplayValue(/Max/)).toBeInTheDocument();
+    expect(getByDisplayValue(/Munstermann/)).toBeInTheDocument();
+    expect(getByDisplayValue(/max@munster.mann/)).toBeInTheDocument();
     expect(getAllByText(/Explain your steps/)).toBeDefined();
   });
 
   it('renders spinner when creating a ticket', () => {
     const store = mockStore({
       ticketCreate: {
-        ...initialMockState,
+        ...ticketCreate,
         creating: true
       }
     });
 
-    const { getByText, getByTestId } = renderTicketsCreateForm(store);
+    const { getByTestId } = renderComponent(
+      <TicketCreateForm authenticatedUser={exampleAuthenticatedUser} />,
+      store
+    );
     expect(getByTestId('creating-spinner'));
   });
 
   it('renders a ticket create ID upon success', () => {
     const store = mockStore({
       ticketCreate: {
-        ...initialMockState,
+        ...ticketCreate,
         creatingSuccess: true,
-        createdTicketId: 1234,
+        createdTicketId: 1234
       }
     });
 
-    const { getByText } = renderTicketsCreateForm(store);
+    const { getByText } = renderComponent(
+      <TicketCreateForm authenticatedUser={exampleAuthenticatedUser} />,
+      store
+    );
     expect(getByText(/1234/)).toBeDefined();
   });
 
   it('renders a ticket creation error', () => {
     const store = mockStore({
       ticketCreate: {
-        ...initialMockState,
+        ...ticketCreate,
         creatingError: true,
-        creatingErrorMessage: "Mock error"
+        creatingErrorMessage: 'Mock error'
       }
     });
 
-    const { getByText } = renderTicketsCreateForm(store);
+    const { getByText } = renderComponent(
+      <TicketCreateForm authenticatedUser={exampleAuthenticatedUser} />,
+      store
+    );
     expect(getByText(/Mock error/)).toBeDefined();
   });
 });
