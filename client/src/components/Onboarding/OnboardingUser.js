@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -22,6 +22,14 @@ OnboardingEvent.propTypes = {
 OnboardingEvent.defaultProps = {};
 
 function OnboardingStatus({ step }) {
+  const [ isSending, setIsSending ] = useState(false);
+  const actionCallback = useCallback(
+    (action) => {
+      console.log(action);
+      setIsSending(true);
+    },
+    [isSending, setIsSending]
+  );
   const isStaff = useSelector(
     state => state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
   );
@@ -53,29 +61,46 @@ function OnboardingStatus({ step }) {
     case 'staffwait':
       return (
         isStaff
-          ? <span>
-              <Button color="link">
+          ? <span className='onboarding-status__actions'>
+              <Button 
+                color="link" 
+                disabled={isSending}
+                onClick={() => actionCallback("staff_approve")}>
                 <h6>{step.staffApprove}</h6>
               </Button>
-              <Button color="link">
+              <Button
+                color="link"
+                disabled={isSending}
+                onClick={() => actionCallback("staff_deny")}>
                 <h6>{step.staffDeny}</h6>
               </Button>
+              {isSending
+                ? <LoadingSpinner placement='inline' />
+                : null}
           </span>
           : <Pill type='normal'>Waiting for Staff Approval</Pill>
       );
     case 'userwait':
-      return <Button color="link">
-          <h6>{step.clientAction}</h6>
-        </Button>
+      return <span className='onboarding-status__actions'>
+          <Button
+            color="link"
+            disabled={isSending}
+            onClick={() => actionCallback("user_confirm")}>
+            <h6>{step.clientAction}</h6>
+          </Button>
+          {isSending
+            ? <LoadingSpinner placement='inline' />
+            : null}
+        </span>
     case 'failed':
       return <Pill type={type}>Unsuccessful</Pill>;
     case 'completed':
       return <Pill type={type}>Completed</Pill>;
     case 'processing':
       return (
-        <span>
+        <span className='onboarding_status__actions'>
           <Pill type={type}>Processing</Pill>
-          <LoadingSpinner />
+          <LoadingSpinner placement='inline' />
         </span>
       );
     default:
