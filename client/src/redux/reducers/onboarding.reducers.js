@@ -26,7 +26,7 @@ export function updateUserFromEvent(user, event) {
   const result = { ...user };
   if (result.username === event.username) {
     if (event.step === 'portal.apps.onboarding.execute.execute_setup_steps') {
-      result.setupComplete = event.step.data.setupComplete;
+      result.setupComplete = event.data.setupComplete;
     }
     const foundStep = result.steps.find(step => step.step === event.step);
     if (foundStep) {
