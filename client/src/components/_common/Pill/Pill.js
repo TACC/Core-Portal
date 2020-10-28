@@ -4,10 +4,12 @@ import './Pill.module.scss';
 
 function Pill({ children, type, className }) {
   const pillStyleName = `pill is-${type}`;
-  
+
   return (
-    <span styleName={pillStyleName} className={className}>{children}</span>
-  )
+    <span styleName={pillStyleName} className={className}>
+      {children}
+    </span>
+  );
 }
 
 Pill.propTypes = {
@@ -19,6 +21,6 @@ Pill.propTypes = {
 Pill.defaultProps = {
   type: 'normal',
   className: ''
-}
+};
 
 export default Pill;

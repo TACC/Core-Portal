@@ -4,35 +4,25 @@ import { Pill } from '_common';
 function UIPatternsPill() {
   return (
     <dl>
-      <dt>
-        Default Pill (normal)
-      </dt>
+      <dt>Default Pill (normal)</dt>
       <dd>
         <Pill>Example Pill</Pill>
       </dd>
-      <dt>
-        Normal Pill
-      </dt>
+      <dt>Normal Pill</dt>
       <dd>
-        <Pill type='normal'>Normal Pill</Pill>
+        <Pill type="normal">Normal Pill</Pill>
       </dd>
-      <dt>
-        Success Pill
-      </dt>
+      <dt>Success Pill</dt>
       <dd>
-        <Pill type='success'>Success Pill</Pill>
+        <Pill type="success">Success Pill</Pill>
       </dd>
-      <dt>
-        Warning Pill
-      </dt>
+      <dt>Warning Pill</dt>
       <dd>
-        <Pill type='warning'>Warning Pill</Pill>
+        <Pill type="warning">Warning Pill</Pill>
       </dd>
-      <dt>
-        Danger Pill
-      </dt>
+      <dt>Danger Pill</dt>
       <dd>
-        <Pill type='danger'>Danger Pill</Pill>
+        <Pill type="danger">Danger Pill</Pill>
       </dd>
     </dl>
   );
