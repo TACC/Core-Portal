@@ -8,15 +8,29 @@ import { v4 as uuidv4 } from 'uuid';
 
 import './OnboardingUser.scss';
 
+const eventPropType = PropTypes.shape({
+  time: PropTypes.string,
+  message: PropTypes.string
+});
+
+const stepPropType = PropTypes.shape({
+  step: PropTypes.string,
+  state: PropTypes.string,
+  displayName: PropTypes.string,
+  description: PropTypes.string,
+  clientAction: PropTypes.string,
+  staffApprove: PropTypes.string,
+  staffDeny: PropTypes.string,
+  customStatus: PropTypes.string,
+  events: PropTypes.arrayOf(eventPropType)
+});
+
 function OnboardingEvent({ event }) {
   return <div>{`${event.time} - ${event.message}`}</div>;
 }
 
 OnboardingEvent.propTypes = {
-  event: PropTypes.shape({
-    time: PropTypes.string,
-    message: PropTypes.string
-  }).isRequired
+  event: eventPropType.isRequired
 };
 
 OnboardingEvent.defaultProps = {};
@@ -98,13 +112,7 @@ function OnboardingActions({ step }) {
 }
 
 OnboardingActions.propTypes = {
-  step: PropTypes.shape({
-    step: PropTypes.string,
-    state: PropTypes.string,
-    staffApprove: PropTypes.string,
-    staffDeny: PropTypes.string,
-    clientAction: PropTypes.string
-  }).isRequired
+  step: stepPropType.isRequired
 };
 
 OnboardingActions.defaultProps = {};
@@ -156,10 +164,7 @@ function OnboardingStatus({ step }) {
 }
 
 OnboardingStatus.propTypes = {
-  step: PropTypes.shape({
-    state: PropTypes.string,
-    customStatus: PropTypes.string
-  }).isRequired
+  step: stepPropType.isRequired
 };
 
 OnboardingStatus.defaultProps = {};
@@ -178,21 +183,7 @@ function OnboardingStep({ step }) {
 }
 
 OnboardingStep.propTypes = {
-  step: PropTypes.shape({
-    state: PropTypes.string,
-    displayName: PropTypes.string,
-    description: PropTypes.string,
-    userConfirm: PropTypes.string,
-    staffApprove: PropTypes.string,
-    staffDeny: PropTypes.string,
-    customStatus: PropTypes.string,
-    events: PropTypes.arrayOf(
-      PropTypes.shape({
-        time: PropTypes.string,
-        message: PropTypes.string
-      })
-    )
-  }).isRequired
+  step: stepPropType.isRequired
 };
 
 OnboardingStep.defaultProps = {};
