@@ -38,7 +38,8 @@ import {
 } from './welcome.sagas';
 import {
   watchOnboardingAdminList,
-  watchOnboardingAdminIndividualUser
+  watchOnboardingAdminIndividualUser,
+  watchOnboardingAction
 } from './onboarding.sagas';
 
 export default function* rootSaga() {
@@ -76,6 +77,7 @@ export default function* rootSaga() {
     watchFetchWelcomeMessages(),
     watchSaveWelcomeMessages(),
     watchOnboardingAdminList(),
-    watchOnboardingAdminIndividualUser()
+    watchOnboardingAdminIndividualUser(),
+    watchOnboardingAction()
   ]);
 }

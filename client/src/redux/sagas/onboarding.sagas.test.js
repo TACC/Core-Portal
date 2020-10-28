@@ -5,13 +5,16 @@ import {
   fetchOnboardingAdminList,
   getOnboardingAdminList,
   fetchOnboardingAdminIndividualUser,
-  getOnboardingAdminIndividualUser
+  getOnboardingAdminIndividualUser,
+  postOnboardingAction,
+  sendOnboardingAction
 } from './onboarding.sagas';
 import {
   onboardingAdminFixture,
   onboardingUserFixture,
   onboardingAdminState,
-  onboardingUserState
+  onboardingUserState,
+  onboardingActionState
 } from './fixtures/onboarding.fixture';
 import { onboarding } from '../reducers/onboarding.reducers';
 
@@ -57,5 +60,42 @@ describe('getOnboardingAdminIndividualUser Saga', () => {
         payload: onboardingUserFixture
       })
       .hasFinalState(onboardingUserState)
+      .run());
+});
+
+
+
+describe('postOnboarding Saga', () => {
+  it('should send onboarding actions to back end', () =>
+    expectSaga(postOnboardingAction, {
+      payload: {
+        step: 'onboarding.step',
+        action: 'user_confirm',
+        username: 'username'
+      }
+    })
+      .withReducer(onboarding)
+      .provide([
+        [
+          matchers.call.fn(sendOnboardingAction),
+          {
+            response: "OK"
+          }
+        ]
+      ])
+      .put({
+        type: 'POST_ONBOARDING_ACTION_PROCESSING',
+        payload: {
+          step: 'onboarding.step',
+          action: 'user_confirm',
+          username: 'username'
+        }
+      })
+      .call(sendOnboardingAction, 'username', 'onboarding.step', 'user_confirm')
+      .put({
+        type: 'POST_ONBOARDING_ACTION_SUCCESS',
+        payload: { response: "OK" } 
+      })
+      .hasFinalState(onboardingActionState)
       .run());
 });

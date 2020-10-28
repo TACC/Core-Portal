@@ -1,5 +1,6 @@
 import { call, takeLatest, put } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
+import Cookies from 'js-cookie';
 
 // Admin listing of all users
 export async function fetchOnboardingAdminList() {
@@ -59,4 +60,44 @@ export function* watchOnboardingAdminIndividualUser(action) {
     'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER',
     getOnboardingAdminIndividualUser
   );
+}
+
+// Admin listing of all users
+export async function sendOnboardingAction(username, step, action) {
+  const result = await fetchUtil({
+    url: `api/onboarding/user/${username}`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': Cookies.get('csrftoken')
+    },
+    body: JSON.stringify({ step, action })
+  });
+  return result;
+}
+
+export function* postOnboardingAction(action) {
+  const { username } = action.payload;
+  const { step } = action.payload;
+  const sentAction = action.payload.action;
+  yield put({
+    type: 'POST_ONBOARDING_ACTION_PROCESSING',
+    payload: { step, action: sentAction, username }
+  });
+  try {
+    const result = yield call(sendOnboardingAction, username, step, sentAction);
+    yield put({
+      type: 'POST_ONBOARDING_ACTION_SUCCESS',
+      payload: result
+    });
+  } catch (error) {
+    yield put({
+      type: 'POST_ONBOARDING_ACTION_ERROR',
+      payload: error
+    });
+  }
+}
+
+export function* watchOnboardingAction(action) {
+  yield takeLatest('POST_ONBOARDING_ACTION', postOnboardingAction);
 }

@@ -188,6 +188,14 @@ export const onboardingUserFixture = {
   email: 'username@tacc.utexas.edu'
 };
 
+export const onboardingActionFixture = {
+  step: null,
+  action: null,
+  username: null,
+  loading: false,
+  error: null
+};
+
 export const onboardingAdminState = {
   admin: {
     users: onboardingAdminFixture.users,
@@ -202,7 +210,8 @@ export const onboardingAdminState = {
     steps: [],
     loading: false,
     error: null
-  }
+  },
+  action: onboardingActionFixture
 };
 
 export const onboardingUserState = {
@@ -213,6 +222,31 @@ export const onboardingUserState = {
   },
   user: {
     ...onboardingUserFixture,
+    loading: false,
+    error: null
+  },
+  action: onboardingActionFixture
+};
+
+export const onboardingActionState = {
+  admin: {
+    users: [],
+    loading: false,
+    error: null
+  },
+  user: {
+    username: null,
+    firstName: null,
+    lastName: null,
+    setupComplete: false,
+    steps: [],
+    loading: false,
+    error: null
+  },
+  action: {
+    step: 'onboarding.step',
+    action: 'user_confirm',
+    username: 'username',
     loading: false,
     error: null
   }
