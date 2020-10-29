@@ -5,15 +5,14 @@ import Workbench from './Workbench';
 import ManageAccount from '../ManageAccount';
 import Onboarding from '../Onboarding';
 import * as ROUTES from '../../constants/routes';
-import TicketUnauthenticatedCreate from '../Tickets/TicketUnauthenticatedCreate';
+import TicketStandaloneCreate from '../Tickets/TicketStandaloneCreate';
 
 function AppRouter() {
   return (
     <Router>
-      <Route path="/accounts/profile" component={ManageAccount} />
       <Route path={ROUTES.WORKBENCH} component={Workbench} />
-      <Route path="/tickets/new" component={TicketUnauthenticatedCreate} />
-      <Route path={ROUTES.ONBOARDING} component={Onboarding} />
+      <Route path="/tickets/new" component={TicketStandaloneCreate} />
+      <Route path="/accounts/profile" component={ManageAccount} />
     </Router>
   );
 }
