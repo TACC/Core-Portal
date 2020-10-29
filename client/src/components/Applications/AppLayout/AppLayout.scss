@@ -1,3 +1,18 @@
+/* Global */
+
+/* Allow space for all elements to be visible and usable */
+/* FAQ: Edit global style based on section-specific caveat */
+/* SEE: index.css */
+body.has-loaded-applications {
+    /* Allow space to see `AppForm`, given how tall `AppBrowser` can be */
+    --min-height: 600px; /* just enough space to work in (still cramped) */
+}
+
+
+
+/* Local */
+/* TODO: Migrate to CSS Modules */
+
 .apps-content {
     display: flex;
     flex-direction: column;

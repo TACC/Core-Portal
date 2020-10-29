@@ -47,6 +47,7 @@ const AppsRoutes = () => {
 
   return (
     <Section
+      bodyClassName="has-loaded-applications"
       routeName="APPLICATIONS"
       header={
         <Route path={`${path}/:appId?`}>
