@@ -32,7 +32,7 @@ class MFAStep(AbstractStep):
 
     def description(self):
         return """First setup multi-faction authentication on the
-               <a href="https://portal.tacc.utexas.edu">TACC User Portal</a>,
+               <a style="color:#9d85ef;" href="https://portal.tacc.utexas.edu">TACC User Portal</a>,
                then confirm the pairing was successful."""
 
     def custom_status(self):
