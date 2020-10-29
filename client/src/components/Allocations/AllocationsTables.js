@@ -116,10 +116,7 @@ export const AllocationsTable = ({ page }) => {
       >
         <thead>
           {headerGroups.map(headerGroup => (
-            <tr
-              {...headerGroup.getHeaderGroupProps()}
-              className="o-fixed-header-table__row"
-            >
+            <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render('Header')}
@@ -128,15 +125,12 @@ export const AllocationsTable = ({ page }) => {
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()} className="o-fixed-header-table__body">
+        <tbody {...getTableBodyProps()}>
           {rows.length ? (
             rows.map(row => {
               prepareRow(row);
               return (
-                <tr
-                  {...row.getRowProps()}
-                  className="o-fixed-header-table__row"
-                >
+                <tr {...row.getRowProps()}>
                   {row.cells.map(cell => (
                     <td
                       {...cell.getCellProps({
@@ -150,7 +144,7 @@ export const AllocationsTable = ({ page }) => {
               );
             })
           ) : (
-            <tr className="o-fixed-header-table__row">
+            <tr>
               <td colSpan={headerGroups[0].headers.length}>
                 <center style={{ padding: '1rem' }}>
                   {errors.listing ? (
