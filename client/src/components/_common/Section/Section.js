@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { SectionHeader, SectionContent } from '_common';
@@ -61,6 +61,7 @@ import './Section.module.css';
  * />
  */
 function Section({
+  bodyClassName,
   children,
   className,
   content,
@@ -95,6 +96,14 @@ function Section({
   //     'When passing `manualSidebar`, the following props are ineffectual: `sidebar`, `sidebarClassName`'
   //   );
   // }
+
+  useEffect(() => {
+    document.body.classList.add(bodyClassName);
+
+    return function cleanup() {
+      document.body.classList.remove(bodyClassName);
+    };
+  }, [bodyClassName]);
 
   return (
     <section styleName="root" className={className}>
@@ -144,6 +153,8 @@ function Section({
   );
 }
 Section.propTypes = {
+  /** Name of class to append to body when section is active */
+  bodyClassName: PropTypes.string,
   /** Alias for `manualContent` */
   children: PropTypes.node,
   /** Any additional className(s) for the root element */
@@ -180,6 +191,7 @@ Section.propTypes = {
   routeName: PropTypes.string
 };
 Section.defaultProps = {
+  bodyClassName: '',
   children: '',
   className: '',
   content: '',

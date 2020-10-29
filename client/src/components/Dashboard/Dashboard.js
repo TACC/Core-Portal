@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 
@@ -11,18 +11,10 @@ import './Dashboard.scss';
 
 function Dashboard() {
   const dispatch = useDispatch();
-  const sectionClass = 'has-loaded-dashboard';
-
-  useEffect(() => {
-    document.body.classList.add(sectionClass);
-
-    return function cleanup() {
-      document.body.classList.remove(sectionClass);
-    };
-  }, [sectionClass]);
 
   return (
     <Section
+      bodyClassName="has-loaded-dashboard"
       routeName="DASHBOARD"
       messages={<BrowserChecker />}
       header="Dashboard"

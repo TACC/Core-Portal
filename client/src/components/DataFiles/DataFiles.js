@@ -70,18 +70,10 @@ const DataFiles = () => {
     state => state.files.params.FilesListing,
     shallowEqual
   );
-  const sectionClass = 'has-loaded-datafiles';
-
-  useEffect(() => {
-    document.body.classList.add(sectionClass);
-
-    return function cleanup() {
-      document.body.classList.remove(sectionClass);
-    };
-  }, [sectionClass]);
 
   return (
     <Section
+      bodyClassName="has-loaded-datafiles"
       routeName="DATA"
       header={
         <DataFilesBreadcrumbs
