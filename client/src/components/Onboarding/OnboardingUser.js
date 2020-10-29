@@ -174,6 +174,7 @@ function OnboardingStep({ step }) {
     <div className="onboarding-step">
       <div className="onboarding-step__name">{step.displayName}</div>
       <div
+        /* eslint-disable react/no-danger */
         className="onboarding-step__description"
         dangerouslySetInnerHTML={{ __html: step.description }}
       />
