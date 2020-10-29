@@ -29,10 +29,90 @@ export const onboardingUserFixture = {
   steps: [
     {
       data: null,
+      step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
+      displayName: 'Mock User Wait Step',
+      description:
+        'Long description of a mock step that waits for a user to take action',
+      userConfirm: 'Request Portal Access',
+      staffApprove: 'Approve',
+      staffDeny: 'Deny',
+      state: 'userwait',
+      events: [
+        {
+          username: 'username',
+          state: 'failed',
+          step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
+          time: '2020-09-23 16:43:01.103968+00:00',
+          message: 'Failure',
+          data: null
+        },
+        {
+          username: 'username',
+          state: 'processing',
+          step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
+          time: '2020-09-23 16:42:51.110869+00:00',
+          message: 'Beginning automated processing',
+          data: null
+        },
+        {
+          username: 'username',
+          state: 'pending',
+          step: 'portal.apps.onboarding.steps.test_steps.MockUserWaitStep',
+          time: '2020-09-23 16:42:37.884030+00:00',
+          message: 'Pending',
+          data: null
+        }
+      ]
+    },
+    {
+      data: null,
+      step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
+      displayName: 'Mock Staff Wait Step',
+      description:
+        'Long description of a mock step that waits for a staff user to take action',
+      userConfirm: 'Request Portal Access',
+      staffApprove: 'Approve',
+      staffDeny: 'Deny',
+      state: 'staffwait',
+      events: [
+        {
+          username: 'username',
+          state: 'failed',
+          step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
+          time: '2020-09-23 16:43:01.103968+00:00',
+          message: 'Failure',
+          data: null
+        },
+        {
+          username: 'username',
+          state: 'processing',
+          step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
+          time: '2020-09-23 16:42:51.110869+00:00',
+          message: 'Beginning automated processing',
+          data: null
+        },
+        {
+          username: 'username',
+          state: 'pending',
+          step: 'portal.apps.onboarding.steps.test_steps.MockStaffWaitStep',
+          time: '2020-09-23 16:42:37.884030+00:00',
+          message: 'Pending',
+          data: null
+        }
+      ]
+    },
+    {
+      data: null,
       step:
         'portal.apps.onboarding.steps.test_steps.MockProcessingCompleteStep',
       displayName: 'Mock Processing Complete Step',
+      description:
+        'Long description of a mock step that automatically processes then completes',
+      userConfirm: 'Confirm',
+      staffApprove: 'Approve',
+      staffDeny: 'Deny',
       state: 'completed',
+      customStatus: 'Confirmed',
       events: [
         {
           username: 'username',
@@ -67,6 +147,11 @@ export const onboardingUserFixture = {
       data: null,
       step: 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
       displayName: 'Mock Processing Fail Step',
+      description:
+        'Long description of a mock step that automatically processes then fails',
+      userConfirm: 'Confirm',
+      staffApprove: 'Approve',
+      staffDeny: 'Deny',
       state: 'failed',
       events: [
         {
@@ -103,6 +188,14 @@ export const onboardingUserFixture = {
   email: 'username@tacc.utexas.edu'
 };
 
+export const onboardingActionFixture = {
+  step: null,
+  action: null,
+  username: null,
+  loading: false,
+  error: null
+};
+
 export const onboardingAdminState = {
   admin: {
     users: onboardingAdminFixture.users,
@@ -117,7 +210,8 @@ export const onboardingAdminState = {
     steps: [],
     loading: false,
     error: null
-  }
+  },
+  action: onboardingActionFixture
 };
 
 export const onboardingUserState = {
@@ -128,6 +222,31 @@ export const onboardingUserState = {
   },
   user: {
     ...onboardingUserFixture,
+    loading: false,
+    error: null
+  },
+  action: onboardingActionFixture
+};
+
+export const onboardingActionState = {
+  admin: {
+    users: [],
+    loading: false,
+    error: null
+  },
+  user: {
+    username: null,
+    firstName: null,
+    lastName: null,
+    setupComplete: false,
+    steps: [],
+    loading: false,
+    error: null
+  },
+  action: {
+    step: 'onboarding.step',
+    action: 'user_confirm',
+    username: 'username',
     loading: false,
     error: null
   }

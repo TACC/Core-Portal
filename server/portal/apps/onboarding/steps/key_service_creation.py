@@ -24,7 +24,10 @@ class KeyServiceCreationStep(AbstractStep):
         super(KeyServiceCreationStep, self).__init__(user)
 
     def display_name(self):
-        return "Creating storage systems"
+        return "Creating Storage Systems"
+
+    def description(self):
+        return "This sets up access to your data files through this portal."
 
     def prepare(self):
         self.state = SetupState.PENDING

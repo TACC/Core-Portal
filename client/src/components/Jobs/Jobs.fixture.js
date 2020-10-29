@@ -5,10 +5,10 @@ const jobsList = [
     owner: 'username',
     systemId: 'test.exec.system',
     appId: 'test-app',
-    created: '2020-05-01T14:44:46.000-05:00',
+    created: '2020-05-01T14:44:46.000Z',
     status: 'FINISHED',
-    remoteStarted: '2020-05-01T14:45:15.485-05:00',
-    ended: '2020-05-01T14:49:42.067-05:00',
+    remoteStarted: '2020-05-01T14:45:15.485Z',
+    ended: '2020-05-01T14:49:42.067Z',
     _links: {
       self: {
         href:
@@ -26,10 +26,10 @@ const jobsList = [
     owner: 'username',
     systemId: 'test.exec.system',
     appId: 'test-app',
-    created: '2020-04-30T21:11:18.000-05:00',
+    created: '2020-04-30T21:11:18.000Z',
     status: 'FINISHED',
-    remoteStarted: '2020-04-30T21:11:46.521-05:00',
-    ended: '2020-04-30T21:19:20.798-05:00',
+    remoteStarted: '2020-04-30T21:11:46.521Z',
+    ended: '2020-04-30T21:19:20.798Z',
     _links: {
       self: {
         href:
@@ -47,10 +47,10 @@ const jobsList = [
     owner: 'username',
     systemId: 'test.exec.system',
     appId: 'test-app',
-    created: '2020-04-30T21:02:44.000-05:00',
+    created: '2020-04-30T21:02:44.000Z',
     status: 'FINISHED',
-    remoteStarted: '2020-04-30T21:04:18.137-05:00',
-    ended: '2020-04-30T21:08:48.824-05:00',
+    remoteStarted: '2020-04-30T21:04:18.137Z',
+    ended: '2020-04-30T21:08:48.824Z',
     _links: {
       self: {
         href:

@@ -1,0 +1,42 @@
+.onboarding {
+  padding: 1em 1em 1em 1em;
+}
+
+.onboarding__access {
+  text-align: right;
+}
+
+.onboarding__title {
+  font-size: 1.5em;
+  line-height: 2em;
+  width: 100%;
+  border-bottom: 1px solid black;
+  margin-bottom: 1em;
+}
+
+.onboarding-actions,
+.onboarding-processing {
+  .loading-icon {
+    display: inline-block;
+    width: inherit;
+  }
+}
+
+.onboarding__container {
+  width: 75%;
+}
+
+.onboarding-step {
+  padding-top: 1em;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+  border-bottom: 1px solid var(--global-color-primary--normal);
+}
+
+.onboarding-step__name {
+  font-weight: bold;
+}
+
+.onboarding-step__description {
+  padding-bottom: 1em;
+}

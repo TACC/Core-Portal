@@ -12,17 +12,29 @@ export const initialState = {
     steps: [],
     loading: false,
     error: null
+  },
+  action: {
+    step: null,
+    action: null,
+    loading: false,
+    username: null,
+    error: null
   }
 };
 
 export function updateUserFromEvent(user, event) {
-  if (user.username === event.username) {
-    let step = user.steps.find(step => step.step === event.step);
-    if (step) {
-      step.events.push(event);
+  const result = { ...user };
+  if (result.username === event.username) {
+    if (event.step === 'portal.apps.onboarding.execute.execute_setup_steps') {
+      result.setupComplete = event.data.setupComplete;
+    }
+    const foundStep = result.steps.find(step => step.step === event.step);
+    if (foundStep) {
+      foundStep.events.unshift(event);
+      foundStep.state = event.state;
     }
   }
-  return { ...user };
+  return result;
 }
 
 export function onboarding(state = initialState, action) {
@@ -84,7 +96,36 @@ export function onboarding(state = initialState, action) {
       return {
         ...state,
         user: updateUserFromEvent(state.user, action.payload.setup_event)
-      }
+      };
+    case 'POST_ONBOARDING_ACTION_PROCESSING':
+      return {
+        ...state,
+        action: {
+          step: action.payload.step,
+          action: action.payload.action,
+          username: action.payload.username,
+          loading: true,
+          error: null
+        }
+      };
+    case 'POST_ONBOARDING_ACTION_SUCCESS':
+      return {
+        ...state,
+        action: {
+          ...state.action,
+          loading: false,
+          error: null
+        }
+      };
+    case 'POST_ONBOARDING_ACTION_ERROR':
+      return {
+        ...state,
+        action: {
+          ...state.action,
+          loading: false,
+          error: action.payload.error
+        }
+      };
     default:
       return state;
   }

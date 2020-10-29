@@ -15,6 +15,9 @@ class AbstractStep:
     def __init__(self, user):
         self.state = None
         self.user = user
+        self.user_confirm = "Confirm"
+        self.staff_approve = "Approve"
+        self.staff_deny = "Deny"
         self.last_event = None
         self.events = []
 
@@ -86,9 +89,24 @@ class AbstractStep:
     def display_name(self):
         """
         Called when displaying this step in the client. Should return a string
-        that is a friendly name that describes a step.
+        that is a friendly name for a step.
         """
         return NotImplemented
+
+    @abstractmethod
+    def description(self):
+        """
+        Called when displaying this step in the client. Should return a string
+        that is a detailed description for a step.
+        """
+        return NotImplemented
+
+    def custom_status(self):
+        """
+        Called when displaying this step in the client. Should return a string
+        that displays a custom status
+        """
+        return None
 
     @abstractmethod
     def prepare(self):

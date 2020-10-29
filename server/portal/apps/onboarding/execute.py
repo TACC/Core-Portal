@@ -41,7 +41,7 @@ def log_setup_state(user, message):
         step="portal.apps.onboarding.execute.execute_setup_steps",
         state=SetupState.COMPLETED if user.profile.setup_complete else SetupState.FAILED,
         message=message,
-        data={"setup_complete": user.profile.setup_complete}
+        data={"setupComplete": user.profile.setup_complete}
     )
     event.save()
 

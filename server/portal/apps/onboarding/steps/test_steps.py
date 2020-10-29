@@ -17,6 +17,9 @@ class MockStep(AbstractStep):
     def display_name(self):
         return "Mock Step"
 
+    def description(self):
+        return "Long description for a mock step"
+
     def prepare(self):
         self.prepare_spy()
 
@@ -36,6 +39,9 @@ class MockProcessingCompleteStep(AbstractStep):
 
     def display_name(self):
         return "Mock Processing Complete Step"
+
+    def description(self):
+        return "Long description of a mock step that automatically processes then completes"
 
     def process(self):
         self.complete("Completed")
@@ -57,6 +63,9 @@ class MockProcessingFailStep(AbstractStep):
 
     def display_name(self):
         return "Mock Processing Fail Step"
+
+    def description(self):
+        return "Long description of a mock step that automatically processes then fails"
 
     def process(self):
         self.fail("Failure")
@@ -80,6 +89,9 @@ class MockUserStep(AbstractStep):
     def display_name(self):
         return "Mock User Wait Step"
 
+    def description(self):
+        return "Long description of a mock step that waits for user interaction"
+
     def client_action(self, action, data, request):
         if action == "user_confirm" and request.user is self.user:
             self.complete("Complete")
@@ -102,6 +114,9 @@ class MockStaffStep(AbstractStep):
 
     def display_name(self):
         return "Mock Staff Wait Step"
+
+    def description(self):
+        return "Long description of a mock step that waits for staff approval or denial"
 
     def client_action(self, action, data, request):
         if not request.user.is_staff:
@@ -137,6 +152,9 @@ class MockErrorStep(AbstractStep):
 
     def display_name(self):
         return "Mock Error Step"
+
+    def description(self):
+        return "Long description of a mock step that results in error upon processing"
 
     def process(self):
         raise Exception("MockErrorStep")

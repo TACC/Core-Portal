@@ -33,7 +33,7 @@ def test_log_setup_state_complete(authenticated_user, mock_event_create):
         step="portal.apps.onboarding.execute.execute_setup_steps",
         state=SetupState.COMPLETED,
         message="test message",
-        data={"setup_complete": True}
+        data={"setupComplete": True}
     )
 
 
@@ -48,7 +48,7 @@ def test_log_setup_state_incomplete(authenticated_user, mock_event_create):
         step="portal.apps.onboarding.execute.execute_setup_steps",
         state=SetupState.FAILED,
         message="test message",
-        data={"setup_complete": False}
+        data={"setupComplete": False}
     )
 
 
