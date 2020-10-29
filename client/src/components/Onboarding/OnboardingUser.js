@@ -66,7 +66,7 @@ function OnboardingActions({ step }) {
 
   // If the route loaded shows we are viewing a different user
   // (such as an admin viewing a user) then pull the username for
-  // actions from the route. Ohterwise, use the username of whomever is logged in
+  // actions from the route. Otherwise, use the username of whomever is logged in
   const username = params.username || authUsername;
 
   if (hasSendingError) {
@@ -174,6 +174,7 @@ function OnboardingStep({ step }) {
     <div className="onboarding-step">
       <div className="onboarding-step__name">{step.displayName}</div>
       <div
+        /* eslint-disable react/no-danger */
         className="onboarding-step__description"
         dangerouslySetInnerHTML={{ __html: step.description }}
       />

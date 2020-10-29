@@ -62,7 +62,7 @@ export function* watchOnboardingAdminIndividualUser(action) {
   );
 }
 
-// Admin listing of all users
+// Send onboarding action for user
 export async function sendOnboardingAction(username, step, action) {
   const result = await fetchUtil({
     url: `api/onboarding/user/${username}`,
