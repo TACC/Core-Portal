@@ -12,6 +12,7 @@ import { parse } from 'query-string';
 import { Section, SectionTable } from '_common';
 
 import './DataFiles.module.css';
+import './DataFiles.css';
 
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
@@ -69,6 +70,15 @@ const DataFiles = () => {
     state => state.files.params.FilesListing,
     shallowEqual
   );
+  const sectionClass = 'has-loaded-datafiles';
+
+  useEffect(() => {
+    document.body.classList.add(sectionClass);
+
+    return function cleanup() {
+      document.body.classList.remove(sectionClass);
+    };
+  }, [sectionClass]);
 
   return (
     <Section

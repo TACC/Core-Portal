@@ -12,14 +12,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Avoid `SectionContent` layout caveat by forcing scroll before it happens */
-  /* HACK: Should be in Dashboard styles, but Wes failed */
-  /* FAQ: "If [Dashboard] is not tall enough to stack all panels, [bad UI]" */
-  min-height: 500px; /* approx. Dashboard with tables at min. height */
-
-  /* Avoid Data Files header buttons colliding with header text */
-  /* HACK: Should instead (ask design) reduce button width on narrow screen */
-  min-width: 1000px; /* approx. Dashboard with tables at min. height */
+  /* FAQ: Use variable to allow min-height change w/out overwriting styles */
+  /* WARNING: Must NOT use keyword; must use unit; or use in `calc` will fail */
+  /* stylelint-disable length-zero-no-unit */
+  --min-height: 0px;
+  --min-width: 0px;
+  /* stylelint-enable length-zero-no-unit */
+  min-height: var(--min-height);
+  min-width: var(--min-width);
 }
 
 /*

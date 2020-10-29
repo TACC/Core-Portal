@@ -3,9 +3,20 @@ import PropTypes from 'prop-types';
 import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
+/**
+ * Whether to show a welcome message
+ * @param {String} messageName - The name of the message to check
+ */
+export function shouldShowMessage(messageName) {
+  const welcomeMessages = useSelector(state => state.welcomeMessages);
+
+  return welcomeMessages && welcomeMessages[messageName];
+}
+
 function WelcomeMessage({ children, className, messageName }) {
   const dispatch = useDispatch();
   const welcomeMessages = useSelector(state => state.welcomeMessages);
+  const shouldShow = shouldShowMessage(messageName);
 
   function onDismiss(name) {
     const newMessagesState = {
@@ -18,7 +29,7 @@ function WelcomeMessage({ children, className, messageName }) {
   return (
     <Alert
       // The `welcomeMessages` state is not available during testing
-      isOpen={welcomeMessages && welcomeMessages[messageName]}
+      isOpen={shouldShow}
       toggle={() => onDismiss(messageName)}
       color="secondary"
       className={className}

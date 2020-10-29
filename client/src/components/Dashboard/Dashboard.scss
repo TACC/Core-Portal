@@ -1,3 +1,18 @@
+/* Global */
+
+/* Avoid `SectionContent` layout caveat by forcing scroll before it happens */
+/* FAQ: Edit global style based on section-specific caveat */
+/* SEE: index.css */
+body.has-loaded-dashboard {
+  /* "If [Dashboard] is not tall enough to stack all panels, [bad UI]" */
+  --min-height: 500px; /* approx. Dashboard w/ tables @ min. height */
+}
+
+
+
+/* Local */
+/* TODO: Migrate to CSS Modules */
+
 .dashboard-items {
   /* HELP: How to assign this spacing when Quick Links is added? */
   padding-top: var(--global-space--section-left); /* deviated from design to use a similar global spacing */

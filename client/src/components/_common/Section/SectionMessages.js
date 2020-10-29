@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { WelcomeMessage } from '_common';
+import {
+  WelcomeMessage,
+  shouldShowMessage as shouldShowWelcomeMessage
+} from '_common';
 import * as MESSAGES from '../../../constants/welcomeMessages';
 
 import './SectionMessages.module.css';
+import './SectionMessages.css';
 
 /**
  * A list for section messages that supports:
@@ -36,6 +40,16 @@ function SectionMessages({ children, className, routeName }) {
   const welcomeMessage = messageText && (
     <WelcomeMessage messageName={routeName}>{messageText}</WelcomeMessage>
   );
+  const hasMessage = shouldShowWelcomeMessage(routeName) || children.length > 0;
+  const hasMessageClass = 'has-message';
+
+  useEffect(() => {
+    if (hasMessage) {
+      document.body.classList.add(hasMessageClass);
+    } else {
+      document.body.classList.remove(hasMessageClass);
+    }
+  }, [hasMessage]);
 
   return (
     <aside styleName="root" className={className}>
