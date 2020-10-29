@@ -29,12 +29,16 @@
     padding-top: var(--space-top);
 }
 
-/* HACK: Overwrite untamed spacing of Jumbotron */
+/* HACK: Overwrite untamed Jumbotron */
 /* FAQ: The `.jumbotron` originates from external injected HTML */
-#appDetail-wrapper .jumbotron { margin-bottom: 0; }
-#appDetail-wrapper .jumbotron > *:last-child { padding-bottom: 0; }
-#appDetail-wrapper .jumbotron > *:last-child { margin-bottom: 0; }
+#appDetail-wrapper .jumbotron {
+    /* Prevent extra space beneath `#appDetail-wrapper` */
+    margin-bottom: 0;
 
+    /* Ensure `.jumbotron` scrolls within `#appDetail-wrapper` */
+    height: 100%;
+    overflow: auto;
+}
 
 #appForm-wrapper {
     overflow-y: auto;
