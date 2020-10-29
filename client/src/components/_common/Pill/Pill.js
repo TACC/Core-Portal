@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './Pill.module.scss';
 
 function Pill({ children, type, className }) {
-  const pillStyleName = `pill is-${type}`;
+  const pillStyleName = `root is-${type}`;
 
   return (
     <span styleName={pillStyleName} className={className}>
