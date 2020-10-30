@@ -1,0 +1,96 @@
+.dashboard-wrapper {
+    /* As a flex container */
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px 40px 0 25px;
+}
+.dashboard-header {
+    /* As a flex item */
+    flex-shrink: 0;
+}
+.dashboard-items {
+    --grid-template-columns: 1fr;
+
+    margin-top: 3rem; /* 30px (25.5px * 1.2 design-to-app ratio) (rounded) */
+    margin-bottom: 10rem; /* 100px (102.6px * 1.2 design-to-app ratio) (rounded) */
+
+    /* As a flex item */
+    flex-grow: 1;
+
+    /* As a grid container */
+    display: grid;
+    grid-template-columns: var(--grid-template-columns);
+    grid-template-rows: auto;
+    column-gap: 35px;
+    row-gap: 30px; /* 31.5px (rounded) */
+}
+.jobs-wrapper {
+    /* As a grid item */
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 2;
+}
+.sysmon-wrapper {
+    /* As a grid item */
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+}
+.tickets-wrapper {
+    /* As a grid item */
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 3;
+    grid-row-end: 4;
+}
+
+@media (min-width: 1200px) {
+    .dashboard-items {
+        --grid-template-columns: 7fr 5fr;
+    }
+    .sysmon-wrapper {
+        /* As a grid item */
+        grid-column-start: 2;
+        grid-column-end: 3;
+        grid-row-start: 1;
+        grid-row-end: 3;
+    }
+    .tickets-wrapper {
+        /* As a grid item */
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 2;
+        grid-row-end: 3;
+    }
+}
+.jobs-wrapper,
+.tickets-wrapper,
+.sysmon-wrapper {
+    /* As a flex container */
+    display: flex;
+    flex-direction: column;
+
+    /* For flex items */
+    & > :nth-child(1) { flex-shrink: 0; }
+    & > :nth-child(2) { flex-grow: 1; }
+}
+
+.jobs-wrapper .InfiniteScrollTable tbody {
+    --row-height: 37px; /* manually calculated */
+    --max-visible-rows: 3;
+    --max-panel-height: calc(var(--max-visible-rows) * var(--row-height));
+
+    max-height: var(--max-panel-height);
+}
+.tickets-wrapper .InfiniteScrollTable tbody {
+    /* TODO: Use a `_common/Layout` component (for Dashboard) */
+    /* Distance from top of page to top of scrollable body of table
+      (when vertical sibling is maximum height) */
+    --table-body-offset: 444px;
+    /* HACK: This couples table height to external layout, thus making this module not modular */
+    /* IDEA: A JavaScript solution may be `AutoSizer` */
+    max-height: calc(100vh - var(--table-body-offset));
+}
