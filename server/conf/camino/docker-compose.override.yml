@@ -1,0 +1,22 @@
+docs:
+  image: taccwma/frontera-docs:latest-master
+  volumes:
+    - /var/www/frontera/docs:/docs/site
+  command: ["mkdocs", "build"]
+  container_name: portal_docs
+  logging:
+    driver: syslog
+    options:
+      tag: portal_user_guide
+
+nginx:
+  image: nginx
+  volumes:
+    - /etc/ssl/certs/dev.fronteraweb.tacc.utexas.edu.cer:/etc/ssl/certs/portal.cer
+    - /etc/ssl/certs/dev.fronteraweb.tacc.utexas.edu.key:/etc/ssl/private/portal.key
+    - /var/www/frontera/docs:/var/www/frontera/docs
+
+websockets:
+  volumes:
+    - /etc/ssl/certs/dev.fronteraweb.tacc.utexas.edu.cer:/etc/ssl/certs/portal.cer
+    - /etc/ssl/certs/dev.fronteraweb.tacc.utexas.edu.key:/etc/ssl/private/portal.key
