@@ -98,10 +98,10 @@ function Section({
   // }
 
   useEffect(() => {
-    document.body.classList.add(bodyClassName);
+    if (bodyClassName) document.body.classList.add(bodyClassName);
 
     return function cleanup() {
-      document.body.classList.remove(bodyClassName);
+      if (bodyClassName) document.body.classList.remove(bodyClassName);
     };
   }, [bodyClassName]);
 
