@@ -6,7 +6,7 @@ from requests.exceptions import HTTPError
 import logging
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
-from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
+from search.tasks import agave_indexer, agave_listing_indexer
 from portal.exceptions.api import ApiException
 
 logger = logging.getLogger(__name__)

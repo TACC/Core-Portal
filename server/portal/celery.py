@@ -21,22 +21,22 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     # TODO: REENABLE INDEXERS
     # 'index_community_data': {
-    #    'task': 'portal.apps.search.tasks.index_community_data',
+    #    'task': 'search.tasks.index_community_data',
     #    'schedule': crontab(hour="2", minute=0),
     # },
     # 'index_my_data': {
-    #    'task': 'portal.apps.search.tasks.index_my_data',
+    #    'task': 'search.tasks.index_my_data',
     #    'schedule': crontab(hour="3", minute=0),
     # },
     # 'index_cms': {
-    #     'task': 'portal.apps.search.tasks.index_cms',
+    #     'task': 'search.tasks.index_cms',
     #     'schedule': crontab(hour="4", minute=0)
     # }
 }
 
 if settings.COMMUNITY_INDEX_SCHEDULE:
     app.conf.beat_schedule['index_community'] = {
-        'task': 'portal.apps.search.tasks.index_community_data',
+        'task': 'search.tasks.index_community_data',
         'schedule': crontab(**settings.COMMUNITY_INDEX_SCHEDULE)
     }
 

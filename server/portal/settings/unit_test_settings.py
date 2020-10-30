@@ -87,14 +87,14 @@ INSTALLED_APPS = [
     # Custom apps.
     'portal.apps.accounts',
     'portal.apps.auth',
-    'portal.apps.tickets',
+    'tickets',
     'portal.apps.licenses',
-    'portal.apps.notifications',
-    'portal.apps.onboarding',
-    'portal.apps.search',
-    'portal.apps.workbench',
-    'portal.apps.workspace',
-    'portal.apps.system_monitor',
+    'notifications',
+    'onboarding',
+    'search',
+    'workbench',
+    'workspace',
+    'system_monitor',
 
     # django CMS
     'cms',
@@ -280,7 +280,7 @@ PORTAL_PROJECTS_PRIVATE_KEY = ('-----BEGIN RSA PRIVATE KEY-----'
 PORTAL_PROJECTS_PUBLIC_KEY = 'ssh-rsa change this'
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    'portal.apps.onboarding.steps.test_steps.MockStep'
+    'onboarding.steps.test_steps.MockStep'
 ]
 PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = 'dev'
 
@@ -292,9 +292,9 @@ PORTAL_DATA_DEPOT_MANAGERS = {
 }
 
 PORTAL_SEARCH_MANAGERS = {
-    'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
-    'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
-    'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
+    'my-data': 'search.api.managers.private_data_search.PrivateDataSearchManager',
+    'shared': 'search.api.managers.shared_search.SharedSearchManager',
+    'cms': 'search.api.managers.cms_search.CMSSearchManager',
     # 'my-projects': 'portal.apps.data_depot.managers.projects.FileManager'
 }
 
@@ -313,8 +313,8 @@ EXTERNAL_RESOURCE_SECRETS = {
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
 
 PORTAL_WORKSPACE_MANAGERS = {
-    'private': 'portal.apps.workspace.managers.private.FileManager',
-    'shared': 'portal.apps.workspace.managers.shared.FileManager',
+    'private': 'workspace.managers.private.FileManager',
+    'shared': 'workspace.managers.shared.FileManager',
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
 # TAS Authentication.

@@ -23,7 +23,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.conf.urls.static import static
-from portal.apps.auth.views import agave_oauth as login
+from core_apps_auth.views import agave_oauth as login
 from portal.views.views import project_version as portal_version
 from django.views.generic import RedirectView
 from django.urls import path, re_path, include
@@ -40,33 +40,33 @@ urlpatterns = [
     # terms-and-conditions
     path('terms/', include('termsandconditions.urls')),
 
-    # accounts.
-    path('accounts/', include('core_apps_accounts.urls', namespace='portal_accounts')),
+    ## To Customize an accounts endpoint, let's point to where we make our changes
+    path('accounts/', include('custom_accounts.urls', namespace='portal_accounts')),
     path('api/accounts/', include('core_apps_accounts.api.urls', namespace='portal_accounts_api')),
 
-    path('onboarding/', include('portal.apps.onboarding.urls', namespace='portal_onboarding')),
-    path('api/onboarding/', include('portal.apps.onboarding.api.urls', namespace='portal_onboarding_api')),
+    path('onboarding/', include('onboarding.urls', namespace='portal_onboarding')),
+    path('api/onboarding/', include('onboarding.api.urls', namespace='portal_onboarding_api')),
     path('register/', RedirectView.as_view(pattern_name='portal_accounts:register', permanent=True), name='register'),
 
     # auth.
-    path('auth/', include('portal.apps.auth.urls', namespace='portal_auth')),
+    path('auth/', include('core_apps_auth.urls', namespace='portal_auth')),
     re_path('login/$', login),
 
     # api
-    path('api/users/', include('portal.apps.users.urls', namespace='users')),
-    path('api/workbench/', include('portal.apps.workbench.api.urls', namespace='workbench_api')),
-    path('api/workspace/', include('portal.apps.workspace.api.urls', namespace='workspace_api')),
-    path('api/tickets/', include('portal.apps.tickets.api.urls', namespace='portal_tickets_api')),
-    path('api/datafiles/', include('portal.apps.datafiles.urls', namespace='datafiles')),
-    path('api/system-monitor/', include('portal.apps.system_monitor.urls', namespace='system_monitor')),
-    path('api/notifications/', include('portal.apps.notifications.urls', namespace='notifications')),
+    path('api/users/', include('users.urls', namespace='users')),
+    path('api/workbench/', include('workbench.api.urls', namespace='workbench_api')),
+    path('api/workspace/', include('workspace.api.urls', namespace='workspace_api')),
+    path('api/tickets/', include('tickets.api.urls', namespace='portal_tickets_api')),
+    path('api/datafiles/', include('datafiles.urls', namespace='datafiles')),
+    path('api/system-monitor/', include('system_monitor.urls', namespace='system_monitor')),
+    path('api/notifications/', include('notifications.urls', namespace='notifications')),
 
     # webhooks
-    path('webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
+    path('webhooks/', include('webhooks.urls', namespace='webhooks')),
 
     # views
-    path('tickets/', include('portal.apps.tickets.urls', namespace='tickets')),
-    path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
+    path('tickets/', include('tickets.urls', namespace='tickets')),
+    path('workbench/', include('workbench.urls', namespace='workbench')),
 
     # version check.
     path('version/', portal_version),

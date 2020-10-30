@@ -89,17 +89,18 @@ INSTALLED_APPS = [
 
     # Custom apps.
     'core_apps_accounts',
-    'portal.apps.auth',
-    'portal.apps.tickets',
-    'portal.apps.licenses',
-    'portal.apps.notifications',
-    'portal.apps.onboarding',
-    'portal.apps.search',
-    'portal.apps.signals',
-    'portal.apps.workbench',
-    'portal.apps.workspace',
-    'portal.apps.datafiles',
-    'portal.apps.system_monitor',
+    'core_apps_auth',
+    'webhooks',
+    'tickets',
+    'licenses',
+    'notifications',
+    'onboarding',
+    'search',
+    'signals',
+    'workbench',
+    'workspace',
+    'datafiles',
+    'system_monitor',
 
     # django CMS
     'cms',
@@ -128,7 +129,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',   # Custom Portal Auth Check.
+    'core_apps_auth.middleware.AgaveTokenRefreshMiddleware',   # Custom Portal Auth Check.
     'django.middleware.locale.LocaleMiddleware',    # needed for django CMS
     'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
 
@@ -143,7 +144,7 @@ MIDDLEWARE = [
     'cms.middleware.utils.ApphookReloadMiddleware',
 
     # Onboarding
-    # 'portal.apps.onboarding.middleware.SetupCompleteMiddleware'
+    # 'onboarding.middleware.SetupCompleteMiddleware'
 ]
 
 TEMPLATES = [
@@ -184,7 +185,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = settings_secret._WSGI_APPLICATION
 
-AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
+AUTHENTICATION_BACKENDS = ['core_apps_auth.backends.AgaveOAuthBackend',
                            'django.contrib.auth.backends.ModelBackend']
 
 # Password validation
@@ -644,11 +645,11 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret._PORTAL_DATA_DEPOT_LOC
 PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', [])
 
 PORTAL_SEARCH_MANAGERS = {
-    'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
-    'shared': 'portal.apps.search.api.managers.shared_search.SharedSearchManager',
-    'cms': 'portal.apps.search.api.managers.cms_search.CMSSearchManager',
-    'my-projects': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
-    'public': 'portal.apps.search.api.managers.public_search.PublicSearchManager'
+    'my-data': 'search.api.managers.private_data_search.PrivateDataSearchManager',
+    'shared': 'search.api.managers.shared_search.SharedSearchManager',
+    'cms': 'search.api.managers.cms_search.CMSSearchManager',
+    'my-projects': 'search.api.managers.private_data_search.PrivateDataSearchManager',
+    'public': 'search.api.managers.public_search.PublicSearchManager'
 }
 
 PORTAL_DATA_DEPOT_PAGE_SIZE = 100
@@ -661,8 +662,8 @@ EXTERNAL_RESOURCE_SECRETS = getattr(settings_secret, '_EXTERNAL_RESOURCE_SECRETS
 
 
 PORTAL_WORKSPACE_MANAGERS = {
-    'private': 'portal.apps.workspace.managers.private.FileManager',
-    'shared': 'portal.apps.workspace.managers.shared.FileManager',
+    'private': 'workspace.managers.private.FileManager',
+    'shared': 'workspace.managers.shared.FileManager',
 }
 PORTAL_WORKSPACE_PAGE_SIZE = 100
 
