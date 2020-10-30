@@ -4,6 +4,7 @@ import UIPatternsMessage from './UIPatternsMessage';
 import UIPatternsSection from './UIPatternsSection';
 import UIPatternsDescriptionList from './UIPatternsDescriptionList';
 import UIPatternsDropdownSelector from './UIPatternsDropdownSelector';
+import UIPatternsPill from './UIPatternsPill';
 import './UIPatterns.module.scss';
 
 function UIPatterns() {
@@ -28,6 +29,10 @@ function UIPatterns() {
           <div styleName="list-item">
             <h6>DescriptionList</h6>
             <UIPatternsDescriptionList />
+          </div>
+          <div styleName="list-item">
+            <h6>Pills</h6>
+            <UIPatternsPill />
           </div>
         </>
       }
