@@ -1,11 +1,15 @@
 /* Global */
 
-/* Avoid `SectionContent` layout caveat by forcing scroll before it happens */
-/* FAQ: Edit global style based on section-specific caveat */
-/* SEE: index.css */
-body.has-loaded-dashboard {
-  /* "If [Dashboard] is not tall enough to stack all panels, [bad UI]" */
-  --min-height: 500px; /* approx. Dashboard w/ tables @ min. height */
+/* Wide */
+/* FAQ: The caveat, which the code below avoids, only affects wide screens; applying this fix to all screens can cause three levels of scrolling */
+@media only screen and (min-width: 992px) {
+  /* Avoid `SectionContent` layout caveat by forcing scroll prior to caveat */
+  /* FAQ: Edit global style based on section-specific caveat */
+  /* SEE: index.css */
+  body.has-loaded-dashboard {
+    /* "If [Dashboard] is not tall enough to stack all panels, [bad UI]" */
+    --min-height: 500px; /* approx. Dashboard w/ tables @ min. height */
+  }
 }
 
 

@@ -1,4 +1,4 @@
-/* Avoid `SectionContent` layout caveat by forcing scroll before it happens */
+/* Increase minimum height for at least one message */
 /* FAQ: Edit global style based on local state side effect */
 /* SEE: index.css, Dashboard.(s)css, DataFiles.css */
 body.has-message {
