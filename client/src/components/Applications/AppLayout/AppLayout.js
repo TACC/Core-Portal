@@ -57,7 +57,7 @@ const AppsRoutes = () => {
       content={
         <>
           <Route path={`${path}/:appId?`}>
-            <AppsLayout appDict={appDict} />
+            <AppsLayout />
           </Route>
           {hasAppDict ? (
             <Route

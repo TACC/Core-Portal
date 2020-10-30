@@ -27,20 +27,23 @@ const Actions = () => {
   const dispatch = useDispatch();
 
   return (
-    <Button
-      color="link"
-      onClick={() => {
-        dispatch({
-          type: 'NOTIFICATIONS_READ',
-          payload: {
-            onSuccess: { type: 'FETCH_NOTIFICATIONS' }
-          }
-        });
-      }}
-      disabled={!unread}
-    >
-      Mark All as Viewed
-    </Button>
+    // HACK: The React fragment avoids a massive diff from changing nesting
+    <>
+      <Button
+        color="link"
+        onClick={() => {
+          dispatch({
+            type: 'NOTIFICATIONS_READ',
+            payload: {
+              onSuccess: { type: 'FETCH_NOTIFICATIONS' }
+            }
+          });
+        }}
+        disabled={!unread}
+      >
+        Mark All as Viewed
+      </Button>
+    </>
   );
 };
 

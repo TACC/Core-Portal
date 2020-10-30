@@ -19,7 +19,7 @@
     align-items: center;
 }
 
-/* HACK: Use padding on last child of these flex item wrappers because flex items do not respect padding on main axis */
+/* HACK: Use padding on children of these flex item wrappers because flex items do not respect padding (on direct children) on the main axis */
 .appInfo-wrapper > *:last-child,
 #appForm-wrapper > *:last-child {
     padding-bottom: var(--space-bottom);

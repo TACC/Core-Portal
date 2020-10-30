@@ -11,9 +11,7 @@ const mockStore = configureStore();
 const PATH = ROUTES.WORKBENCH + ROUTES.ALLOCATIONS;
 
 describe('Allocations Routes', () => {
-  // RFE: Test existing routes (but do not rely on markup specifics)
-  // FAQ: Specifics of resulting markup is not controlled `AllocationsRoutes`
-  it('should render content for any allocations routes', () => {
+  it('should render content for the allocations routes', () => {
     const { container } = render(
       <MemoryRouter initialEntries={[`${PATH}/fake`]}>
         <Provider

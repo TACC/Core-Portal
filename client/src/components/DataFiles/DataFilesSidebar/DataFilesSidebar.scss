@@ -1,7 +1,7 @@
 $frontera-portal-color-primary: #9d85ef;
 
 /* TODO: Convert to CSS module */
-/* NOTE: `data-files-sidebar` is redundant because `DataFiles` has `sidebar` */
+/* NOTE: `data-files-sidebar` is redundant (`DataFiles` gives `sidebar`), but it houses variabels conveniently, just like a CSS Moduels `.root` will do */
 /* CAVEAT: The class `data-files-btn-cancel` is added by other modules */
 .data-files-sidebar {
   --horizontal-buffer: var(--global-space--section-left);
