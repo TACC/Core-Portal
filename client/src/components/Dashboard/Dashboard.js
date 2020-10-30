@@ -35,11 +35,6 @@ function Dashboard() {
           >
             <Sysmon />
           </SectionTable>
-          {/*
-          <SectionTable header="Bystem Badass" className="sysmon-wrapper">
-            <Sysmon />
-          </SectionTable>
-          */}
           <SectionTable
             className="jobs-wrapper"
             header="My Recent Jobs"
