@@ -7,7 +7,7 @@
     /* Primary i.e. Grayscale */
     --global-color-primary--xx-light: #FFFFFF;
     --global-color-primary--x-light: #F4F4F4;
-    /* TODO: Resolve new common color injection (sidebar border) */
+    /* TODO: Determine how to add new common color (sidebar border) */
     /* IDEA: Push colors above out to `--global-color-primary--xx-light` */
     /* IDEA: Ask Design to use a color from existing variables */
     /* --global-color-primary--x-light--new: #70707026 | rgba(112, 112, 112, 0.25); */

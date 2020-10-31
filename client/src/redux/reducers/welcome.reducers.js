@@ -1,4 +1,4 @@
-export const initialState = {
+const initialWelcomeMessages = {
   DASHBOARD: true,
   APPLICATIONS: true,
   DATA: true,
@@ -6,7 +6,7 @@ export const initialState = {
   HISTORY: true
 };
 
-function welcomeMessages(state = initialState, action) {
+function welcomeMessages(state = initialWelcomeMessages, action) {
   switch (action.type) {
     case 'WELCOME_FETCH_STARTED':
       return {

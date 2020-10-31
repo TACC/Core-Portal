@@ -13,6 +13,21 @@ export function shouldShowMessage(messageName) {
   return welcomeMessages && welcomeMessages[messageName];
 }
 
+/* TODO: Determine whether to couple this less or more to welcome messages */
+/**
+ * A message which, when dismissed, will not appear again unless browser storage is cleared
+ *
+ * _This message is designed for user introduction to sections, but can be abstracted further into a `<DismissableMessage>` or abstracted less such that a message need not be passed in._
+ *
+ * @example
+ * // message with custom text, class, and identifier
+ * <WelcomeMessage
+ *   className="external-message-class"
+ *   messageName={identifierForMessageLikeRouteName}
+ * >
+ *   Introductory text (defined externally).
+ * </WelcomeMessage>
+ */
 function WelcomeMessage({ children, className, messageName }) {
   const dispatch = useDispatch();
   const welcomeMessages = useSelector(state => state.welcomeMessages);
@@ -28,7 +43,6 @@ function WelcomeMessage({ children, className, messageName }) {
 
   return (
     <Alert
-      // The `welcomeMessages` state is not available during testing
       isOpen={shouldShow}
       toggle={() => onDismiss(messageName)}
       color="secondary"

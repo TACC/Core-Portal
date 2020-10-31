@@ -144,7 +144,6 @@ function Section({
           className={contentClassName}
           layoutName={contentLayoutName || DEFAULT_LAYOUT}
           shouldScroll={contentShouldScroll}
-          // shouldDebug
         >
           {content}
         </SectionContent>

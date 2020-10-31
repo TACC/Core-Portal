@@ -5,6 +5,7 @@
   justify-content: space-between;
   align-items: flex-end;
 
+  /* NOTE: Only Data Files experiences this, and it avoids it by setting body min width... so, what does Design actually want to happen in this case?  */
   flex-wrap: wrap; /* prevent text and actions from colliding */
   align-content: flex-end; /* preserve alignment of items when wrapped */
 
@@ -26,7 +27,7 @@
   /* FAQ: It is simpler to do this in CSS than in JavaScript */
   text-transform: capitalize;
 }
-/* Header actions are always after */
+/* Header actions are always after heading text */
 .heading ~ * {
   max-height: 100%; /* (gently) force oversized elements to fit */
 }
