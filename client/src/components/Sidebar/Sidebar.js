@@ -91,7 +91,7 @@ const Sidebar = ({ disabled }) => {
         iconName="history"
         disabled={disabled}
       >
-        <HistoryBadge unread={unread} />
+        <HistoryBadge unread={unread} disabled={disabled} />
       </SidebarItem>
       {showUIPatterns && (
         <SidebarItem
