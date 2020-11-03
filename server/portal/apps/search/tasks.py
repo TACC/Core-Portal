@@ -2,7 +2,7 @@
 import logging
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.management import call_command
+# from django.core.management import call_command
 from celery import shared_task
 from portal.libs.agave.utils import service_account
 from portal.libs.elasticsearch.utils import index_listing
@@ -102,11 +102,11 @@ def index_my_data(self, reindex=False):
         )
 
 
-@shared_task(bind=True, queue='indexing')
-def index_cms(self):
-    logger.info("Updating search index")
-    if not settings.DEBUG:
-        call_command("update_index", interactive=False)
+# @shared_task(bind=True, queue='indexing')
+# def index_cms(self):
+#     logger.info("Updating search index")
+#     if not settings.DEBUG:
+#         call_command("update_index", interactive=False)
 
 
 @shared_task(bind=True, max_retries=3, queue='api')
