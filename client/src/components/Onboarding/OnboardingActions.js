@@ -51,7 +51,7 @@ const OnboardingActions = ({ step }) => {
   return (
     <span styleName="root">
       {isStaff && step.state === 'staffwait' ? (
-        <span>
+        <>
           <Button
             color="link"
             styleName="action"
@@ -68,7 +68,7 @@ const OnboardingActions = ({ step }) => {
           >
             <h6>{step.staffDeny}</h6>
           </Button>
-        </span>
+        </>
       ) : null}
       {step.state === 'userwait' ? (
         <Button
