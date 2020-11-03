@@ -35,10 +35,6 @@ RUN apt-get update &&  apt-get install -y --no-install-recommends \
     postgresql \
     postgresql-client
 
-# install node 12.x
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get install -y nodejs
-
 RUN pip3 install --upgrade pip setuptools wheel
 
 # Install Poetry - respects $POETRY_VERSION & $POETRY_HOME
@@ -50,8 +46,6 @@ COPY server/pyproject.toml server/poetry.lock ./
 
 # install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
 RUN poetry install --no-dev
-
-RUN mkdir -p /var/log/portal
 
 # `development` image is used for local development
 FROM python-base as development
@@ -66,14 +60,22 @@ RUN poetry install
 
 COPY . /srv/www/portal
 
+RUN mkdir -p /var/log/portal
+
 WORKDIR /srv/www/portal/server
 
 # `production` image is used for deployed runtime environments
 FROM python-base as production
 
+# install node 12.x
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN apt-get install -y nodejs
+
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 
 COPY . /srv/www/portal
+
+RUN mkdir -p /var/log/portal
 
 RUN chmod u+x /srv/www/portal/client/build_client.sh && /srv/www/portal/client/build_client.sh
 
