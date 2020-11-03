@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[1] %>">
   {% endaddtoblock %}
   {% addtoblock "js" %}
+    <script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
     <script src="<%= htmlWebpackPlugin.files.js[0] %>"></script>
     <script src="<%= htmlWebpackPlugin.files.js[1] %>"></script>
   {% endaddtoblock %}

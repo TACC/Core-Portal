@@ -3,10 +3,6 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from portal.apps.accounts.models import PortalProfile
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 class SetupCompleteMiddleware(object):
     def __init__(self, get_response):
@@ -30,10 +26,6 @@ class SetupCompleteMiddleware(object):
             # It should be created by portal.apps.auth.backends.AgaveOAuthBackend.authenticate
             logout(request)
             return HttpResponseRedirect(reverse('portal_accounts:logout'))
-
-        # check to see if user setup has finished
-        if not portal_profile.setup_complete and reverse('workbench:index') in request.path:
-            return HttpResponseRedirect(reverse('portal_onboarding:holding'))
 
         response = self.get_response(request)
         return response
