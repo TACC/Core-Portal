@@ -144,15 +144,12 @@ function Workbench() {
             <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
           </Switch>
         )}
-        {!setupComplete && (
-          <Switch>
-            <Route
-              path={`${path}${ROUTES.ONBOARDING}`}
-              component={Onboarding}
-            />
+        <Switch>
+          <Route path={`${path}${ROUTES.ONBOARDING}`} component={Onboarding} />
+          {!setupComplete && (
             <Redirect from={`${path}`} to={`${path}${ROUTES.ONBOARDING}`} />
-          </Switch>
-        )}
+          )}
+        </Switch>
       </div>
     </div>
   );
