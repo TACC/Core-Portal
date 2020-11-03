@@ -80,6 +80,26 @@ const OnboardingActions = ({ step }) => {
           <h6>{step.userConfirm}</h6>
         </Button>
       ) : null}
+      {isStaff ? (
+        <>
+          <Button
+            color="link"
+            styleName="action"
+            disabled={isSending}
+            onClick={() => actionCallback('reset', username)}
+          >
+            <h6>Admin Reset</h6>
+          </Button>
+          <Button
+            color="link"
+            styleName="action"
+            disabled={isSending}
+            onClick={() => actionCallback('complete', username)}
+          >
+            <h6>Admin Bypass</h6>
+          </Button>
+        </>
+      ) : null}
       {isSending ? <LoadingSpinner placement="inline" /> : null}
     </span>
   );
