@@ -1,15 +1,14 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoadingSpinner, Message, Pill } from '_common';
+import { LoadingSpinner } from '_common';
 import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
-import { OnboardingStep } from './OnboardingStep';
+import OnboardingStep from './OnboardingStep';
 
 import './OnboardingUser.scss';
 
-
-function OnboardingUser() {
+const OnboardingUser = () => {
   const { params } = useRouteMatch();
   const dispatch = useDispatch();
   const user = useSelector(state => state.onboarding.user);
@@ -67,7 +66,7 @@ function OnboardingUser() {
       </div>
     </div>
   );
-}
+};
 
 OnboardingUser.propTypes = {};
 

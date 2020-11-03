@@ -1,8 +1,9 @@
 import React from 'react';
+import { Pill, LoadingSpinner } from '_common';
 import { stepPropType } from './OnboardingPropTypes';
 import './OnboardingStatus.module.scss';
 
-function OnboardingStatus({ step }) {
+const OnboardingStatus = ({ step }) => {
   let type = '';
   switch (step.state) {
     case 'processing':
@@ -46,7 +47,7 @@ function OnboardingStatus({ step }) {
     default:
       return <span>{step.state}</span>;
   }
-}
+};
 
 OnboardingStatus.propTypes = {
   step: stepPropType.isRequired

@@ -1,9 +1,12 @@
-
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useRouteMatch } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { LoadingSpinner, Message } from '_common';
+import { Button } from 'reactstrap';
 import { stepPropType } from './OnboardingPropTypes';
 import './OnboardingActions.module.scss';
 
-function OnboardingActions({ step }) {
+const OnboardingActions = ({ step }) => {
   const dispatch = useDispatch();
   const actionCallback = useCallback((action, username) => {
     dispatch({
@@ -77,7 +80,7 @@ function OnboardingActions({ step }) {
       {isSending ? <LoadingSpinner placement="inline" /> : null}
     </span>
   );
-}
+};
 
 OnboardingActions.propTypes = {
   step: stepPropType.isRequired

@@ -1,10 +1,10 @@
 import React from 'react';
 import { stepPropType } from './OnboardingPropTypes';
-import { OnboardingStatus }from './OnboardingStatus';
-import { OnboardingActions } from './OnboardingActions';
+import OnboardingStatus from './OnboardingStatus';
+import OnboardingActions from './OnboardingActions';
 import './OnboardingStep.module.scss';
 
-function OnboardingStep({ step }) {
+const OnboardingStep = ({ step }) => {
   return (
     <div className="onboarding-step">
       <div className="onboarding-step__name">{step.displayName}</div>
@@ -19,7 +19,7 @@ function OnboardingStep({ step }) {
       </div>
     </div>
   );
-}
+};
 
 OnboardingStep.propTypes = {
   step: stepPropType.isRequired
