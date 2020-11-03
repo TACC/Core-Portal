@@ -21,6 +21,10 @@ class RequestAccessStep(AbstractStep):
 
     def prepare(self):
         super(RequestAccessStep, self).prepare()
+        self.state = SetupState.PENDING
+        self.log("Waiting for access check")
+
+    def process(self):
         self.state = SetupState.USERWAIT
         self.log("Please click Request Portal Access and then wait for staff approval.")
 
