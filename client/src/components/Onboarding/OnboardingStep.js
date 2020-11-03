@@ -2,17 +2,16 @@ import React from 'react';
 import { stepPropType } from './OnboardingPropTypes';
 import OnboardingStatus from './OnboardingStatus';
 import OnboardingActions from './OnboardingActions';
+import renderHtml from 'utils/renderHtml';
 import './OnboardingStep.module.scss';
 
 const OnboardingStep = ({ step }) => {
   return (
     <div styleName="root">
       <div styleName="name">{step.displayName}</div>
-      <div
-        /* eslint-disable react/no-danger */
-        styleName="description"
-        dangerouslySetInnerHTML={{ __html: step.description }}
-      />
+      <div styleName="description">
+        {renderHtml(step.description)}
+      </div>
       <div styleName="status">
         <OnboardingStatus step={step} />
         <OnboardingActions step={step} />
