@@ -11,7 +11,9 @@ from django.utils.encoding import force_text
 from cms.models import Title, CMSPlugin
 from django.conf import settings
 
+
 logger = logging.getLogger(__name__)
+
 
 def _strip_tags(value):
     """
@@ -27,7 +29,6 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True)
     body = indexes.CharField()
     url = indexes.CharField()
-    # cmsplugin_ptr_id = indexes.IntegerField(model_attr='cmsplugin_ptr_id')
     slug = indexes.CharField()
     page_id = indexes.IntegerField()
     title = indexes.CharField(faceted=True)
@@ -43,12 +44,9 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
             Q(redirect__exact='') | Q(redirect__isnull=True)
         ).select_related('page').distinct()
 
-        # queryset = Title.objects.public().all()
-        # queryset = Page.objects.published().filter(publisher_is_draft=False).distinct()
         return queryset
 
     def prepare(self, obj):
-        #logger.info(self.prepared_data)
         page = obj.page
         rf = RequestFactory()
         request = rf.get("/")
@@ -68,7 +66,6 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
                 text += _strip_tags(instance.render_plugin(context=RequestContext(request))) + ' '
         text += page.get_meta_description() or ''
         text += ' '
-        # text += obj.get_meta_keywords() or u''
         self.prepared_data['text'] = text
         self.prepared_data["body"] = text
         self.prepared_data["slug"] = obj.slug
@@ -76,5 +73,4 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         self.prepared_data["title"] = obj.title
         self.prepared_data["date"] = obj.creation_date
 
-        # self.prepared_data['language'] = self._language
         return self.prepared_data
