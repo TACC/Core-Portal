@@ -45,11 +45,11 @@ const OnboardingUser = () => {
   return (
     <div styleName="root">
       <div styleName="title">
-        {
-          isStaff 
+        <h2>
+          {isStaff
             ? `Onboarding Administration for ${user.username} - ${user.lastName}, ${user.firstName}`
-            : 'The following steps must be completed before accessing the portal'
-        }
+            : 'The following steps must be completed before accessing the portal'}
+        </h2>
       </div>
       <div styleName="container">
         {user.steps.map(step => (
