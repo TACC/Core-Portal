@@ -1,6 +1,5 @@
-import parse, { domToReact } from 'html-react-parser';
+import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
-import React from 'react';
 
 // From https://github.com/remarkablemark/html-react-parser/issues/94#issuecomment-509679484
 

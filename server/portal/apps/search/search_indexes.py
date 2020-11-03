@@ -5,15 +5,10 @@ from haystack import indexes
 from django.db.models import Q
 from django.template import RequestContext
 from django.utils import timezone
-#rom djangocms_text_ckeditor.models import Text
-#from django.utils.text import smart_split
 from django.test import RequestFactory
-
 from django.utils.html import strip_tags
 from django.utils.encoding import force_text
-
-from cms.models import Title, CMSPlugin, Page
-# from cms.toolbar.toolbar import CMSToolbar
+from cms.models import Title, CMSPlugin
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
