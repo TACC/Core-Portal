@@ -23,21 +23,29 @@ function Workbench() {
     state.workbench.status ? state.workbench.status.debug : false
   );
   const showUIPatterns = isDebug;
+
+  const setupComplete = demographics.setup_complete
+    ? demographics.setup_complete
+    : window.__INITIAL_SETUP_COMPLETE__;
+
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({
       type: 'GET_PROFILE_DATA'
     }); /* TODO: getting setup_complete from here but should be potentially refactored */
-    dispatch({ type: 'FETCH_WELCOME' });
-    dispatch({ type: 'FETCH_SYSTEMS' });
-    dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
-    dispatch({ type: 'FETCH_WORKBENCH' });
-    dispatch({ type: 'GET_ALLOCATIONS' });
-    dispatch({ type: 'GET_APPS' });
-    dispatch({ type: 'GET_APP_START' });
-    dispatch({ type: 'GET_JOBS', params: { offset: 0 } });
     dispatch({ type: 'FETCH_NOTIFICATIONS' });
-  }, []);
+    dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
+    dispatch({ type: 'FETCH_WELCOME' });
+
+    if (setupComplete) {
+      dispatch({ type: 'FETCH_SYSTEMS' });
+      dispatch({ type: 'FETCH_WORKBENCH' });
+      dispatch({ type: 'GET_ALLOCATIONS' });
+      dispatch({ type: 'GET_APPS' });
+      dispatch({ type: 'GET_APP_START' });
+      dispatch({ type: 'GET_JOBS', params: { offset: 0 } });
+    }
+  }, [setupComplete]);
 
   const welcomeMessages = useSelector(state => state.welcomeMessages);
 
@@ -48,10 +56,6 @@ function Workbench() {
     };
     dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState });
   };
-
-  const setupComplete = demographics.setup_complete
-    ? demographics.setup_complete
-    : window.__INITIAL_SETUP_COMPLETE__;
 
   return (
     <div className="workbench-wrapper">
