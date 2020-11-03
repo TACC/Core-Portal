@@ -6,14 +6,14 @@ import './OnboardingStep.module.scss';
 
 const OnboardingStep = ({ step }) => {
   return (
-    <div className="onboarding-step">
-      <div className="onboarding-step__name">{step.displayName}</div>
+    <div styleName="root">
+      <div styleName="name">{step.displayName}</div>
       <div
         /* eslint-disable react/no-danger */
-        className="onboarding-step__description"
+        styleName="description"
         dangerouslySetInnerHTML={{ __html: step.description }}
       />
-      <div>
+      <div styleName="status">
         <OnboardingStatus step={step} />
         <OnboardingActions step={step} />
       </div>

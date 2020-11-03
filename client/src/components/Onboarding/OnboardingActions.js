@@ -49,11 +49,12 @@ const OnboardingActions = ({ step }) => {
   }
 
   return (
-    <span className="onboarding-actions">
+    <span styleName="root">
       {isStaff && step.state === 'staffwait' ? (
         <span>
           <Button
             color="link"
+            styleName="action"
             disabled={isSending}
             onClick={() => actionCallback('staff_approve', username)}
           >
@@ -61,6 +62,7 @@ const OnboardingActions = ({ step }) => {
           </Button>
           <Button
             color="link"
+            styleName="action"
             disabled={isSending}
             onClick={() => actionCallback('staff_deny', username)}
           >
@@ -71,6 +73,7 @@ const OnboardingActions = ({ step }) => {
       {step.state === 'userwait' ? (
         <Button
           color="link"
+          styleName="action"
           disabled={isSending}
           onClick={() => actionCallback('user_confirm', username)}
         >

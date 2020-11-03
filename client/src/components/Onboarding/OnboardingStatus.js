@@ -3,7 +3,7 @@ import { Pill, LoadingSpinner } from '_common';
 import { stepPropType } from './OnboardingPropTypes';
 import './OnboardingStatus.module.scss';
 
-const OnboardingStatus = ({ step }) => {
+const getContents = (step) => {
   let type = '';
   switch (step.state) {
     case 'processing':
@@ -39,7 +39,7 @@ const OnboardingStatus = ({ step }) => {
       return <Pill type={type}>Completed</Pill>;
     case 'processing':
       return (
-        <span className="onboarding-processing">
+        <span styleName="processing">
           <Pill type={type}>Processing</Pill>
           <LoadingSpinner placement="inline" />
         </span>
@@ -48,6 +48,14 @@ const OnboardingStatus = ({ step }) => {
       return <span>{step.state}</span>;
   }
 };
+
+const OnboardingStatus = ({ step }) => {
+  return (
+    <span styleName="root">
+      { getContents(step) }
+    </span>
+  )
+}
 
 OnboardingStatus.propTypes = {
   step: stepPropType.isRequired

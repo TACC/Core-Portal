@@ -1,8 +1,14 @@
 
-.onboarding-actions,
-.onboarding-processing {
-  .loading-icon {
-    display: inline-block;
-    width: inherit;
+.root {
+  display: flex;
+  align-items: center;
+}
+
+.action {
+  padding-bottom: 0px;
+  padding-top: 0px;
+  h6 {
+    margin-top: 0px;
+    margin-bottom: 0px;
   }
 }

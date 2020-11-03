@@ -6,7 +6,7 @@ import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import OnboardingStep from './OnboardingStep';
 
-import './OnboardingUser.scss';
+import './OnboardingUser.module.scss';
 
 const OnboardingUser = () => {
   const { params } = useRouteMatch();
@@ -43,22 +43,19 @@ const OnboardingUser = () => {
   }
 
   return (
-    <div className="onboarding">
-      {isStaff ? (
-        <div className="onboarding__title">
-          Onboarding Administration for {user.username} - {user.lastName},{' '}
-          {user.firstName}
-        </div>
-      ) : (
-        <div className="onboarding__title">
-          The following steps must be completed before accessing the portal
-        </div>
-      )}
-      <div className="onboarding__container">
+    <div styleName="root">
+      <div styleName="title">
+        {
+          isStaff 
+            ? `Onboarding Administration for ${user.username} - ${user.lastName}, ${user.firstName}`
+            : 'The following steps must be completed before accessing the portal'
+        }
+      </div>
+      <div styleName="container">
         {user.steps.map(step => (
           <OnboardingStep step={step} key={uuidv4()} />
         ))}
-        <div className="onboarding__access">
+        <div styleName="access">
           {user.setupComplete ? (
             <Button href="/workbench/">Access Dashboard</Button>
           ) : null}

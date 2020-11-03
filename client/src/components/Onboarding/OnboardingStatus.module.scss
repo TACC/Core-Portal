@@ -1,8 +1,18 @@
+.root {
+  display: inline-block;
+  margin-right: 0.5em;
+}
 
-.onboarding-actions,
-.onboarding-processing {
-  .loading-icon {
-    display: inline-block;
-    width: inherit;
-  }
+.loading-icon {
+  display: inherit;
+  width: inherit;
+}
+
+.processing {
+  display: flex;
+  align-items: center;
+}
+
+.processing > * {
+  margin-right: 0.5em;
 }
