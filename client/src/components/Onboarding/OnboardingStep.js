@@ -6,8 +6,9 @@ import renderHtml from 'utils/renderHtml';
 import './OnboardingStep.module.scss';
 
 const OnboardingStep = ({ step }) => {
+  const styleName = `root ${step.state === 'pending' ? 'disabled' : ''}`
   return (
-    <div styleName="root">
+    <div styleName={styleName}>
       <div styleName="name">{step.displayName}</div>
       <div styleName="description">
         {renderHtml(step.description)}
