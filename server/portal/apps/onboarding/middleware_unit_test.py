@@ -4,7 +4,6 @@ from django.db.models import signals
 from mock import patch, ANY
 
 from portal.apps.onboarding.models import SetupEvent
-from portal.apps.accounts.models import PortalProfile
 from portal.apps.onboarding.middleware import SetupCompleteMiddleware
 from django.http.response import HttpResponseRedirect
 import pytest
@@ -57,24 +56,3 @@ class TestSetupCompleteMiddleware(TestCase):
         # Also make sure they were logged out
         mock_logout.assert_called_with(ANY)
 
-    def test_setup_not_complete(self):
-        # Create a portal profile for this test user, with setup_complete False
-        self.user.profile = PortalProfile.objects.create(user=self.user, setup_complete=False)
-
-        # Attach it to the test request
-        self.request.user = self.user
-
-        # Test the middleware
-        response = self.middleware.__call__(self.request)
-
-        # We should get a redirect
-        self.assertIs(type(response), HttpResponseRedirect)
-
-    def test_setup_complete(self):
-        self.user.profile = PortalProfile.objects.create(user=self.user, setup_complete=True)
-        self.request.user = self.user
-        response = self.middleware.__call__(self.request)
-
-        # If we reached the end of the middleware successfully,
-        # the input request should have been returned
-        self.assertEqual(response, self.request)
