@@ -27,6 +27,7 @@ def test_get_as_staff(client, authenticated_staff, regular_user, mock_steps):
     assert response.status_code == 200
 
 
+@skip("No setup route defined.")
 def test_get_forbidden(client, mocker, rf, authenticated_user, staff_user, mock_steps):
     response = client.get("/accounts/setup/{}".format(staff_user.username))
     assert response.status_code == 301
