@@ -20,18 +20,27 @@ jobs:
       with:
         python-version: 3.6
 
+    - name: Setup Poetry
+      uses: abatilo/actions-poetry@v2.0.0
+      with:
+        poetry-version: 1.1.0
+
     - uses: actions/cache@v1
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        path: ~/.cache/pypoetry/virtualenvs
+        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
         restore-keys: |
-          ${{ runner.os }}-pip-
+          ${{ runner.os }}-poetry-
 
-    - run: pip install -r server/requirements.txt
+    - name: Install Python Packages
+      run:  |
+        cd server
+        poetry install
+
     - name: Run Server-side unit tests and generate coverage report
       run: |
         cd server
-        pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
+        poetry run pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
@@ -46,26 +55,35 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
-        # Version range or exact version of a Python version to use, using SemVer's version range syntax.
-        python-version: 3.6 # optional, default is 3.x
-        # The target architecture (x86, x64) of the Python interpreter.
-        architecture: x64 # optional, default is x64
+        python-version: 3.6
+
+    - name: Setup Poetry
+      uses: abatilo/actions-poetry@v2.0.0
+      with:
+        poetry-version: 1.1.0
 
     - uses: actions/cache@v1
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        path: ~/.cache/pypoetry/virtualenvs
+        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
         restore-keys: |
-          ${{ runner.os }}-pip-
-    - run: pip install -r server/requirements.txt
+          ${{ runner.os }}-poetry-
+
+    - name: Install Python Packages
+      run:  |
+        cd server
+        poetry install
+
     - name: Server-Side Linting
       run: |
+        cd server
         git fetch origin "+refs/heads/master:refs/remotes/origin/master"
-        git diff -U0 origin/master..HEAD | flake8 --diff
-#         pylint --rcfile=server/.pylintrc $(git diff origin/master..HEAD --name-only "*.py")
+        git diff -U0 origin/master..HEAD | poetry run flake8 --diff
+#         poetry run pylint --rcfile=server/.pylintrc $(git diff origin/master..HEAD --name-only "*.py")
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-18.04

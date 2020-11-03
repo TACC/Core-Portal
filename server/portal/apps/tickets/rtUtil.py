@@ -1,6 +1,7 @@
 import rt
 from django.conf import settings
 from datetime import datetime
+from requests.auth import HTTPBasicAuth
 
 
 class DjangoRt:
@@ -10,7 +11,7 @@ class DjangoRt:
         self.rtPw = getattr(settings, 'RT_PW')
         self.rtQueue = getattr(settings, 'RT_QUEUE', '')
 
-        self.tracker = rt.Rt(self.rtHost, self.rtUn, self.rtPw, basic_auth=(self.rtUn, self.rtPw))
+        self.tracker = rt.Rt(self.rtHost, self.rtUn, self.rtPw, http_auth=HTTPBasicAuth(self.rtUn, self.rtPw))
         self.tracker.login()
 
     def getUserTickets(self, userEmail, status="ALL"):
