@@ -10,7 +10,7 @@ build:
 
 .PHONY: build-full
 build-full:
-	docker build -t $(DOCKER_IMAGE) --build-arg build_client=true -f ./server/conf/docker/Dockerfile .
+	docker build -t $(DOCKER_IMAGE) --target production -f ./server/conf/docker/Dockerfile .
 	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_LATEST)
 	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_LOCAL)
 
