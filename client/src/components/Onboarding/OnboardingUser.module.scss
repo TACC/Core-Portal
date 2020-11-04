@@ -1,5 +1,7 @@
+@import url('../../styles/settings/space.css');
+
 .root {
-  padding: 1em 1em 1em 1em;
+  padding: var(--global-space--section);
 }
 
 .access {
