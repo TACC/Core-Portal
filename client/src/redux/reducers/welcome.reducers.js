@@ -1,4 +1,4 @@
-const initialWelcomeMessages = {
+export const initialWelcomeMessages = {
   dashboard: true,
   applications: true,
   datafiles: true,

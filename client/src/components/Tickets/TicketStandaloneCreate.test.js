@@ -4,20 +4,32 @@ import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import TicketStandaloneCreate from './TicketStandaloneCreate';
 import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
-import welcomeMessages from '../../redux/reducers/welcome.reducers';
+import initialWelcomeMessages from '../../redux/reducers/welcome.reducers';
 import { initialState as user } from '../../redux/reducers/authenticated_user.reducer';
 
 const mockStore = configureStore();
 
 describe('TicketStandaloneCreate', () => {
-  it('renders ticket creation and checks if user is authenticated', () => {
+  it('renders ticket creation and shows welcome message', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      welcomeMessages
+      welcomeMessages: initialWelcomeMessages
     });
 
-    renderComponent(<TicketStandaloneCreate />, store);
-    expect(store.getActions()).toEqual([{ type: 'FETCH_AUTHENTICATED_USER' }]);
+    const { getByRole } = renderComponent(<TicketStandaloneCreate />, store);
+    expect(getByRole('alert', {class: /welcomeMessageGeneral/i})).toBeInTheDocument();
+  });
+
+  it('renders ticket creation and hides welcome message if already dismissed', () => {
+    const store = mockStore({
+      ticketCreate,
+      authenticatedUser: user,
+      welcomeMessages: {...initialWelcomeMessages, tickets: false}
+    });
+
+    const { queryByRole } = renderComponent(<TicketStandaloneCreate />, store);
+
+    expect(queryByRole('alert')).toBeNull();
   });
 });
