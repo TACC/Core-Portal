@@ -18,10 +18,8 @@ Including another URLconf
 """
 
 
-from cms.sitemaps import CMSSitemap
 from django.conf import settings
 from django.contrib import admin
-from django.contrib.sitemaps.views import sitemap
 from django.conf.urls.static import static
 from portal.apps.auth.views import agave_oauth as login
 from portal.views.views import project_version as portal_version
@@ -30,8 +28,6 @@ from django.urls import path, re_path, include
 admin.autodiscover()
 
 urlpatterns = [
-
-    path('sitemap.xml', sitemap, {'sitemaps': {'cmspages': CMSSitemap}}),
 
     # admin.
     path('core/admin/', admin.site.urls),
@@ -69,8 +65,5 @@ urlpatterns = [
 
     # version check.
     path('version/', portal_version),
-
-    # everything else handled by django CMS
-    path('', include('cms.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
