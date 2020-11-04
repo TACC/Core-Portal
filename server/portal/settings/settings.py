@@ -90,7 +90,6 @@ INSTALLED_APPS = [
     'portal.apps.datafiles',
     'portal.apps.system_monitor',
     'portal.apps.system_creation',
-
 ]
 
 MIDDLEWARE = [

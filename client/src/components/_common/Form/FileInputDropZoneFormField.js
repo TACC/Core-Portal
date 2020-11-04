@@ -30,7 +30,7 @@ function FileInputDropZoneFormField({
         className="form-field__label"
         style={{ display: 'flex', alignItems: 'center' }}
       >
-        Upload Files
+        Attach Files
       </Label>
       <FileInputDropZone
         id={id}
