@@ -91,7 +91,6 @@ def get_profile_data(request):
         'history': history,
         'licenses': manage_licenses(request),
         'integrations': manage_applications(request),
-        'setup_complete': django_user.profile.setup_complete
     }
 
     return JsonResponse(context)
