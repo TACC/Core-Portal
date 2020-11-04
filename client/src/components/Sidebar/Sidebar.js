@@ -48,12 +48,7 @@ SidebarItem.defaultProps = {
 };
 
 /** A navigation list for the application */
-const Sidebar = ({ disabled }) => {
-  // Show some entries only in local development
-  const isDebug = useSelector(state =>
-    state.workbench.status ? state.workbench.status.debug : false
-  );
-  const showUIPatterns = isDebug;
+const Sidebar = ({ disabled, showUIPatterns }) => {
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
 
@@ -106,11 +101,13 @@ const Sidebar = ({ disabled }) => {
 };
 
 Sidebar.propTypes = {
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
+  showUIPatterns: PropTypes.bool
 };
 
 Sidebar.defaultProps = {
-  disabled: false
+  disabled: false,
+  showUIPatterns: false
 };
 
 export default Sidebar;
