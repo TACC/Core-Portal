@@ -113,7 +113,7 @@ function Workbench() {
             </Route>
           </Switch>
         )}
-        {setupComplete && (
+        {setupComplete ? (
           <Switch>
             <Route path={`${path}${ROUTES.DASHBOARD}`}>
               <Dashboard />
@@ -130,18 +130,27 @@ function Workbench() {
               component={Allocations}
             />
             <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
+            <Route
+              path={`${path}${ROUTES.ONBOARDING}`}
+              component={Onboarding}
+            />
             {showUIPatterns && (
               <Route path={`${path}${ROUTES.UI}`} component={UIPatterns} />
             )}
             <Redirect from={`${path}`} to={`${path}${ROUTES.DASHBOARD}`} />
           </Switch>
+        ) : (
+          <Switch>
+            <Route
+              path={`${path}${ROUTES.ONBOARDING}`}
+              component={Onboarding}
+            />
+            <Redirect
+              from={`${path}`}
+              to={`${path}${ROUTES.ONBOARDING}/setup/`}
+            />
+          </Switch>
         )}
-        <Switch>
-          <Route path={`${path}${ROUTES.ONBOARDING}`} component={Onboarding} />
-          {!setupComplete && (
-            <Redirect from={`${path}`} to={`${path}${ROUTES.ONBOARDING}`} />
-          )}
-        </Switch>
       </div>
     </div>
   );
