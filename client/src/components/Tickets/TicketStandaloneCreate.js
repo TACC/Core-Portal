@@ -17,9 +17,6 @@ function TicketStandaloneCreate() {
     };
     dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState });
   };
-  useEffect(() => {
-    dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
-  }, []);
   return (
     <>
       <Navbar className="ticket-unauthenticated-title">Add Ticket</Navbar>
