@@ -14,7 +14,7 @@ const mockStore = configureStore();
 
 describe("Manage Account Page", () => {
   test("Layout of Manage Account", () => {
-    const { getByText, getAllByText } = render(
+    const { getByText, getAllByText, getByRole } = render(
       <Provider store={mockStore({
         profile,
         workbench,
@@ -30,5 +30,6 @@ describe("Manage Account Page", () => {
     expect(getByText(/Manage Account/)).toBeInTheDocument();
     expect(getByText(/Back to Dashboard/)).toBeInTheDocument();
     expect(getAllByText(/Loading.../)).toBeDefined();
+    expect(getByRole('alert', {class: /welcomeMessageGeneral/i})).toBeInTheDocument();
   });
 });
