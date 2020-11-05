@@ -96,7 +96,7 @@ const OnboardingActions = ({ step }) => {
             disabled={isSending}
             onClick={() => actionCallback('complete', username)}
           >
-            Admin Bypass
+            Admin Skip
           </Button>
         </>
       ) : null}
