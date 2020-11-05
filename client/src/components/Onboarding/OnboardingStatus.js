@@ -11,6 +11,7 @@ const getContents = step => {
       type = 'normal';
       break;
     case 'failed':
+    case 'error':
       type = 'danger';
       break;
     case 'staffwait':
@@ -34,6 +35,7 @@ const getContents = step => {
     case 'userwait':
       return null;
     case 'failed':
+    case 'error':
       return <Pill type={type}>Unsuccessful</Pill>;
     case 'completed':
       return <Pill type={type}>Completed</Pill>;
@@ -46,7 +48,7 @@ const getContents = step => {
       );
     default:
       if (step.state) {
-        return <span>{step.state}</span>;
+        return <Pill type="normal">{step.state}</Pill>;
       }
       return null;
   }

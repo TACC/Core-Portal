@@ -30,7 +30,7 @@ export function* watchOnboardingAdminList() {
 // Admin list of a single user
 export async function fetchOnboardingAdminIndividualUser(username) {
   const result = await fetchUtil({
-    url: `/api/onboarding/user/${username}`
+    url: `/api/onboarding/user/` + (username ? `${username}/` : ``)
   });
   return result;
 }
@@ -65,7 +65,7 @@ export function* watchOnboardingAdminIndividualUser(action) {
 // Send onboarding action for user
 export async function sendOnboardingAction(username, step, action) {
   const result = await fetchUtil({
-    url: `api/onboarding/user/${username}`,
+    url: `api/onboarding/user/` + (username ? `${username}/` : ``),
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
