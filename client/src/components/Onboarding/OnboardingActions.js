@@ -100,7 +100,7 @@ const OnboardingActions = ({ step }) => {
           </Button>
         </>
       ) : null}
-      {isSending ? <LoadingSpinner placement="inline" /> : null}
+      {isSending ? <LoadingSpinner placement="inline"/> : null}
     </span>
   );
 };

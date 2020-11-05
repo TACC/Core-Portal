@@ -45,11 +45,18 @@ const getContents = step => {
         </span>
       );
     default:
-      return <span>{step.state}</span>;
+      if (step.state) {
+        return <span>{step.state}</span>
+      }
+      return null;
   }
 };
 
 const OnboardingStatus = ({ step }) => {
+  const contents = getContents(step);
+  if (!contents) {
+    return null;
+  }
   return <span styleName="root">{getContents(step)}</span>;
 };
 
