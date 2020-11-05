@@ -58,7 +58,7 @@ const OnboardingActions = ({ step }) => {
             disabled={isSending}
             onClick={() => actionCallback('staff_approve', username)}
           >
-            <h6>{step.staffApprove}</h6>
+            {step.staffApprove}
           </Button>
           <Button
             color="link"
@@ -66,7 +66,7 @@ const OnboardingActions = ({ step }) => {
             disabled={isSending}
             onClick={() => actionCallback('staff_deny', username)}
           >
-            <h6>{step.staffDeny}</h6>
+            {step.staffDeny}
           </Button>
         </>
       ) : null}
@@ -77,7 +77,7 @@ const OnboardingActions = ({ step }) => {
           disabled={isSending}
           onClick={() => actionCallback('user_confirm', username)}
         >
-          <h6>{step.userConfirm}</h6>
+          {step.userConfirm}
         </Button>
       ) : null}
       {isStaff ? (
@@ -88,7 +88,7 @@ const OnboardingActions = ({ step }) => {
             disabled={isSending}
             onClick={() => actionCallback('reset', username)}
           >
-            <h6>Admin Reset</h6>
+            Admin Reset
           </Button>
           <Button
             color="link"
@@ -96,7 +96,7 @@ const OnboardingActions = ({ step }) => {
             disabled={isSending}
             onClick={() => actionCallback('complete', username)}
           >
-            <h6>Admin Bypass</h6>
+            Admin Bypass
           </Button>
         </>
       ) : null}
