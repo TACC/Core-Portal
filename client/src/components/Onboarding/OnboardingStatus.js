@@ -46,7 +46,7 @@ const getContents = step => {
       );
     default:
       if (step.state) {
-        return <span>{step.state}</span>
+        return <span>{step.state}</span>;
       }
       return null;
   }
