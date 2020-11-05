@@ -13,7 +13,7 @@ class WebhookCallback(object):
     @abstractmethod
     def callback(self, external_call, webhook_request):
         """
-        A callback to execute if when a webhook was received
+        A callback to execute if a webhook was received
 
         :param external_call: An ExternalCall instance that represents the outbound call
         :param webhook_request: A the request object of the webhook callback
