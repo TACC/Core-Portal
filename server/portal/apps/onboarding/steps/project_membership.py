@@ -1,9 +1,14 @@
 import logging
-
-from pytas.http import TASClient
-from django.conf import settings
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
+from django.conf import settings
+from portal.apps.users.utils import get_allocations
+from requests.auth import HTTPBasicAuth
+from pytas.http import TASClient
+from rt import Rt
+from django.urls import reverse
+import string
+
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -11,67 +16,196 @@ logger = logging.getLogger(__name__)
 
 
 class ProjectMembershipStep(AbstractStep):
-    """The onboarding step checks TAS for project membership.
-
-    This task queries TAS for user's projects.  If the user has one of the projects listed in the
-    `required_projects` setting, then the task is complete.
-
-    """
     def __init__(self, user):
+        """
+        Call super class constructor
+        """
         super(ProjectMembershipStep, self).__init__(user)
+        self.project = self.get_tas_project()
         self.user_confirm = "Request Project Access"
-        self.staff_approve = "Grant TAS Project Access"
-        self.staff_deny = "Deny TAS Project Access"
+        self.staff_approve = "Add to {project}".format(project=self.project['title'])
+        self.staff_deny = "Deny Project Access Request"
 
-    def display_name(self):
-        return "Project Membership"
+    def get_tas_client(self):
+        tas_client = TASClient(
+            baseURL=settings.TAS_URL,
+            credentials={
+                'username': settings.TAS_CLIENT_KEY,
+                'password': settings.TAS_CLIENT_SECRET
+            }
+        )
+        return tas_client
+
+    def get_tas_project(self):
+        return self.get_tas_client().project(self.settings['project_sql_id'])
 
     def description(self):
-        return """We need to make sure you have one of the required projects for this
-               portal ({}). If necessary, please click Request Project Access.""".format(
-                   ', '.join(self.settings['required_projects'])
-               )
+        return """Thank you for using TACC. In order to access this portal, it will 
+            require access to the {project} project. If you do not have access, 
+            please click the <b>Request Project Access</b> button. A request will 
+            be sent on your behalf for TACC staff to add you.
+        """.format(project=self.project['title'])
+
+    def display_name(self):
+        return "Checking Project Membership"
 
     def prepare(self):
-        super(ProjectMembershipStep, self).prepare()
         self.state = SetupState.PENDING
-        self.log("Pending check of project membership.")
+        self.log("Awaiting project membership check")
 
-    def process(self):
-        required_projects = self.settings['required_projects']
-
-        if not required_projects:
-            self.complete("No project is required for access to this portal")
-            return
-
-        try:
-            tas_client = TASClient(
-                baseURL=settings.TAS_URL,
-                credentials={
-                    'username': settings.TAS_CLIENT_KEY,
-                    'password': settings.TAS_CLIENT_SECRET,
-                }
+    def get_tracker(self):
+        return Rt(
+            settings.RT_HOST,
+            settings.RT_UN,
+            settings.RT_PW,
+            http_auth=HTTPBasicAuth(
+                settings.RT_UN,
+                settings.RT_PW
             )
-        except Exception:
-            self.fail(
-                "Unable to get tas in order to get project info")
-            return
+        )
 
-        try:
-            projects = tas_client.projects_for_user(username=self.user.username)
+    def is_project_member(self):
+        username = self.user.username
+        tas_client = self.get_tas_client()
+        projects = tas_client.projects_for_user(username)
+        return False
+        return any(
+            [
+                project['id'] == self.settings['project_sql_id'] for project in projects
+            ]
+        )
 
-        except Exception as e:
-            logger.error('Unable to get projects for using pytas for {}: {}'.format(self.user.username, e))
-            self.fail("Unable to get projects for user")
-            return
+    def send_project_request(self, request):
+        tracker = self.get_tracker()
+        ticket_text = 'User {username} is requesting membership on the {project} project. Please visit '
+        ticket_text += '{onboarding_url} to complete this request.'
+        ticket_text = ticket_text.format(
+            username=self.user.username,
+            project=self.project['title'],
+            onboarding_url=request.build_absolute_uri(
+                '/workbench/onboarding/setup/{username}'.format(
+                    username=self.user.username
+                )
+            ),
+        )
+        
+        if tracker.login():
+            result = tracker.create_ticket(
+                Queue='Accounting',
+                Subject='{project} Project Membership Request for {username}'.format(
+                    project=self.project['title'],
+                    username=self.user.username
+                ),
+                Text=ticket_text,
+                Requestors=self.user.email, 
+                CF_resource=settings.RT_TAG
+            )
+            tracker.logout()
 
-        has_required_project = any(p['chargeCode'] in required_projects for p in projects)
-
-        if has_required_project:
-            logger.info("User is on a required project")
-            self.complete("You are on a required project needed to access this portal")
+            self.state = SetupState.STAFFWAIT
+            self.log(
+                "Thank you for your request. It will be reviewed by TACC staff.",
+            )
         else:
-            logger.warning("User '{}' is not a member of required project ({})".format(self.user.username,
-                                                                                       required_projects))
-            self.fail("You must be added to one of the required project(s) "
-                      "(e.g. {}) in order to access this portal".format(", ".join(required_projects)))
+            self.fail(
+                "We were unable to submit a portal access request ticket on your behalf."
+            )
+
+    def add_to_project(self):
+        tas_client = self.get_tas_client()
+        # Project number is not the GID number, but the primary key
+        # in the database for the project record.
+        # When viewing a project in tas.tacc.utexas.edu, you should see "?id=xxxxx" 
+        # in the address bar. This is the SQL ID
+        try:
+            tas_client.add_project_user(self.settings['project_sql_id'], self.user.username)
+        except Exception as e:
+            error, reason = e.args
+            if "is already a member" in reason:
+                self.complete(
+                    "{username} is already a member of the {project}".format(
+                        username=self.user.username,
+                        project=self.project['title']
+                    )
+                )
+            else:
+                self.fail(
+                    "{username} could not be added to {project} due to error {reason}".format(
+                        project=self.project['title'],
+                        username=self.user.username,
+                        reason=reason
+                    )
+                )
+                raise e
+
+    def close_project_request(self):
+        ticket_id = None
+        for event in self.events:
+            if event.data and "ticket" in event.data:
+                ticket_id = event.data["ticket"]
+        tracker = self.get_tracker()
+        if tracker.login():
+            tracker.reply(ticket_id, 
+                text="Your request for membership on the {project} project has been "
+                     "granted. Please login at {base_url}/onboarding/setup to "
+                     "continue setting up your account.".format(
+                         project=self.project['title'],
+                         base_url=settings.WH_BASE_URL
+                     )
+            )
+            tracker.comment(
+                ticket_id, 
+                text="User has been added to the {project} TAS Project (GID {gid}) via {base_url}".format(
+                    project=self.project['title'],
+                    gid=self.project['gid'],
+                    base_url=settings.WH_BASE_URL
+                )
+            )
+            # This call fails with no explanation (BadRequest, but no reason)
+            tracker.edit_ticket(ticket_id, Status='resolved')
+        else:
+            self.fail(
+                "The portal was unable to close RT Ticket {ticket_id}".format(
+                    ticket_id=ticket_id
+                )
+            )
+        
+    def process(self):
+        if self.is_project_member():
+            self.complete("You have the required project membership to access this portal.")
+        else:
+            self.state = SetupState.USERWAIT
+            self.log(
+                "Please confirm your request to use this portal.",
+            )
+
+    def client_action(self, action, data, request):
+        if action == "user_confirm":
+            self.send_project_request(request)
+            return
+
+        if request.user.is_staff and action == "staff_approve":
+            try:
+                self.add_to_project()
+                self.close_project_request()
+                self.complete(
+                    "Portal access request approved by {user}".format(
+                        user=request.user.username
+                    )
+                )
+            except Exception as err:
+                logger.exception(msg="Error during staff_approve on ProjectMembershipStep")
+                logger.error(err.args)
+                self.fail(
+                    "An error occurred while trying to add this user to the project"
+                )
+        elif action == "staff_deny":
+            self.fail(
+                "Portal access request has not been approved."
+            )
+        else: 
+            self.fail(
+                "Invalid client action {action}".format(
+                    action=action
+                )
+            )

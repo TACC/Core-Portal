@@ -9,6 +9,6 @@ from portal.apps.onboarding.api import views
 app_name = 'portal_onboarding_api'
 urlpatterns = [
     path('user/', views.SetupStepView.as_view(), name='user_self_view'),
-    path('user/<slug:username>/', views.SetupStepView.as_view(), name='user_view'),
+    path('user/<str:username>/', views.SetupStepView.as_view(), name='user_view'),
     path('admin/', views.SetupAdminView.as_view(), name='user_admin')
 ]

@@ -643,8 +643,10 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'settings': {}
     },
     {
-        'step': 'portal.apps.onboarding.steps.access.RequestAccessStep',
-        'settings': {}
+        'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
+        'settings': {
+            'project_sql_id': 39726
+        }
     },
     {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
