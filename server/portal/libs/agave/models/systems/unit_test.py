@@ -22,8 +22,6 @@ logger = logging.getLogger(__name__)
 class TestAgaveSystems(TestCase):
     """Test Agave File"""
 
-    fixtures = ['users', 'auth', 'accounts']
-
     @classmethod
     def setUpClass(cls):
         super(TestAgaveSystems, cls).setUpClass()
