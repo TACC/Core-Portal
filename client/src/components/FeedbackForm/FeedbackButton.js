@@ -34,6 +34,7 @@ const FeedbackButton = () => {
       <Button
         styleName="button"
         color="link"
+        data-testid="feedback-button"
         onClick={() => setOpenModal(true)}
       >
         Leave Feedback
