@@ -36,7 +36,7 @@ describe('workbench', () => {
       )
     ).toBeDefined();
   });
-  it('renders workbench for user who has already)', () => {
+  it('renders workbench for user who has already completed onboarding)', () => {
     const history = createMemoryHistory();
     const store = mockStore({
       ...state,
