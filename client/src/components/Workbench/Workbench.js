@@ -3,6 +3,7 @@ import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
 import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Dashboard from '../Dashboard';
+import ManageAccount from '../ManageAccount';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
 import UIPatterns from '../UIPatterns';
@@ -110,6 +111,7 @@ function Workbench() {
           <Route path={`${path}${ROUTES.DASHBOARD}`}>
             <Dashboard />
           </Route>
+          <Route path={`${path}${ROUTES.ACCOUNT}`} component={ManageAccount} />
           <Route path={`${path}${ROUTES.DATA}`}>
             <DataFiles />
           </Route>

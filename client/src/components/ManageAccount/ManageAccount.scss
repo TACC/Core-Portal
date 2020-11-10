@@ -3,7 +3,6 @@
 */
 .manage-account-wrapper {
   display: flex;
-  padding: 0;
   .container-fluid {
     padding: 20px 40px 0 25px !important; /* overwrite Bootstrap */ /* NOTE: The `!important` may not be necessary */
     display: flex;
@@ -37,9 +36,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0;
-  min-height: 2rem;
   border-bottom: 1px solid #707070;
+  margin-left: -15px !important;
+  margin-right: -15px !important;
   h5 {
     font-weight: 400;
     color: #484848;
@@ -132,11 +131,13 @@
   justify-content: space-between;
   align-items: center;
   border-radius: 0;
-  border: 0;
   font: bold 12px Roboto, sans-serif;
-  background-color: #9d85ef;
   padding: 0.5rem 1rem;
+  border: 0 !important; /* override `.workbench-content .btn-secondary` */
+  background-color: #9d85ef !important; /* override `.workbench-content .btn-secondary` */
+  color: white !important; /* override `.workbench-content .btn-secondary` */
 }
+
 .form-button {
   font-size: 16px;
   font-weight: bold;

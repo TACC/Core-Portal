@@ -17,7 +17,7 @@ function Dashboard() {
       <BrowserChecker />
       <div className="dashboard-header">
         <h5>Dashboard</h5>
-        <Link to="/accounts/profile" className="wb-link">
+        <Link to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`} className="wb-link">
           <h6>Manage Account</h6>
         </Link>
       </div>

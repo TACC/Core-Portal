@@ -15,10 +15,10 @@ from paramiko.ssh_exception import (
     SSHException
 )
 from unittest import skip
+import pytest
 
-# Create your tests here.
 
-
+@pytest.mark.django_db(transaction=True)
 class AddPubKeyTests(TestCase):
 
     # Setup fresh mocks before each test
@@ -111,6 +111,7 @@ class AddPubKeyTests(TestCase):
             self.assertEqual(str(exc), exception_message)
 
 
+@pytest.mark.django_db(transaction=True)
 class TestUserSetup(TestCase):
     fixtures = ['users', 'auth']
 
