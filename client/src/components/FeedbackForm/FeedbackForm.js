@@ -28,8 +28,6 @@ const FeedbackForm = ({ authenticatedUser }) => {
     () => ({
       subject: 'Feedback for the Frontera Portal',
       problem_description: '',
-      first_name: authenticatedUser ? authenticatedUser.first_name : '',
-      last_name: authenticatedUser ? authenticatedUser.last_name : '',
       name: authenticatedUser
         ? `${authenticatedUser.first_name} ${authenticatedUser.last_name}`
         : '',
