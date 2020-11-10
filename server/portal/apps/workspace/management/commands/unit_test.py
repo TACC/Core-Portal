@@ -1,10 +1,12 @@
 from mock import patch
+import pytest
 from django.test import TransactionTestCase
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from portal.apps.workspace.models import JobSubmission
 
 
+@pytest.mark.django_db(transaction=True)
 class TestImportJobs(TransactionTestCase):
     fixtures = ['users']
 

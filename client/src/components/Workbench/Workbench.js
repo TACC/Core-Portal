@@ -3,6 +3,7 @@ import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
 import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Dashboard from '../Dashboard';
+import ManageAccount from '../ManageAccount';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
 import UIPatterns from '../UIPatterns';
@@ -23,9 +24,7 @@ function Workbench() {
   const showUIPatterns = isDebug;
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
-    dispatch({ type: 'FETCH_WELCOME' });
     dispatch({ type: 'FETCH_SYSTEMS' });
-    dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
     dispatch({ type: 'FETCH_WORKBENCH' });
     dispatch({ type: 'GET_ALLOCATIONS' });
     dispatch({ type: 'GET_APPS' });
@@ -110,6 +109,7 @@ function Workbench() {
           <Route path={`${path}${ROUTES.DASHBOARD}`}>
             <Dashboard />
           </Route>
+          <Route path={`${path}${ROUTES.ACCOUNT}`} component={ManageAccount} />
           <Route path={`${path}${ROUTES.DATA}`}>
             <DataFiles />
           </Route>

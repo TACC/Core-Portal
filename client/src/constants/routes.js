@@ -9,3 +9,4 @@ export const JOBS = '/jobs';
 export const UI = '/ui-patterns';
 export const WORKBENCH = '/workbench';
 export const USER_GUIDE = '/user-guide';
+export const ACCOUNT = '/account';
