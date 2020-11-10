@@ -6,12 +6,9 @@ import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
 import OnboardingUser from './OnboardingUser';
 import { onboardingUserFixture } from '../../redux/sagas/fixtures/onboarding.fixture';
-import { initialState } from '../../redux/reducers/onboarding.reducers';
+import { initialState as initialMockState } from '../../redux/reducers/onboarding.reducers';
 
 const mockStore = configureStore();
-const initialMockState = {
-  ...initialState
-};
 
 function renderOnboardingUserComponent(store) {
   return render(
