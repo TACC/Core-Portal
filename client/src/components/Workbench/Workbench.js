@@ -24,9 +24,7 @@ function Workbench() {
   const showUIPatterns = isDebug;
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
-    dispatch({ type: 'FETCH_WELCOME' });
     dispatch({ type: 'FETCH_SYSTEMS' });
-    dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
     dispatch({ type: 'FETCH_WORKBENCH' });
     dispatch({ type: 'GET_ALLOCATIONS' });
     dispatch({ type: 'GET_APPS' });
