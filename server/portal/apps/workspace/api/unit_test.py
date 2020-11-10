@@ -1,9 +1,11 @@
 import json
-from mock import patch, MagicMock
+import pytest
+from mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from portal.libs.exceptions import PortalLibException
 
+
+@pytest.mark.django_db(transaction=True)
 class TestJobHistoryView(TestCase):
     fixtures = ['users', 'auth']
 

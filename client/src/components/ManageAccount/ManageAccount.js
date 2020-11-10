@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Alert, Col, Row, Container } from 'reactstrap';
 import { isEmpty } from 'lodash';
 import { LoadingSpinner } from '_common';
-import Sidebar from '../Sidebar';
 import {
   RequiredInformation,
   ChangePassword,
@@ -39,7 +38,6 @@ const ManageAccountView = () => {
   }, [dispatch, isLoading]);
   return (
     <Container fluid className="manage-account-wrapper">
-      <Sidebar />
       <Container fluid className="manage-account-content">
         <Alert
           isOpen={welcomeMessages.profile}
