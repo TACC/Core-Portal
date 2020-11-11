@@ -28,10 +28,7 @@ const FeedbackModal = React.memo(({ isOpen, toggle }) => {
         </p>
         <p>
           If you need assistance, refer to the{' '}
-          <Link to={`${ROUTES.USER_GUIDE}`} target="blank">
-            User Guide
-          </Link>
-          , or{' '}
+          <Link to={`${ROUTES.USER_GUIDE}`}>user guide</Link>, or{' '}
           <Link
             onClick={() => toggle()}
             to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
