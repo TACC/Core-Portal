@@ -107,9 +107,6 @@ MIDDLEWARE = [
 
     # Throws an Error.
     # 'portal.middleware.PortalTermsMiddleware',
-
-    # Onboarding
-    'portal.apps.onboarding.middleware.SetupCompleteMiddleware'
 ]
 
 TEMPLATES = [
