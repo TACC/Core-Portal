@@ -57,7 +57,9 @@ const OnboardingUser = () => {
         ))}
         <div styleName="access">
           {user.setupComplete ? (
-            <Button href="/workbench/">Access Dashboard</Button>
+            <Button color="primary" styleName="button" href="/workbench/">
+              Access Dashboard
+            </Button>
           ) : null}
         </div>
       </div>
