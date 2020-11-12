@@ -59,14 +59,14 @@ class TicketsView(BaseApiView):
         for meta in ['HTTP_REFERER', 'HTTP_USER_AGENT', 'SERVER_NAME']:
             metadata += "{}:\n{}\n\n".format(meta, request.META.get(meta, "None"))
 
-        metadata += "user_first_name:\n{}\n\n".format(first_name)
-        metadata += "user_last_name:\n{}\n\n".format(last_name)
-
         if request.user.is_authenticated:
             metadata += "authenticated_user:\n{}\n\n".format(request.user.username)
             metadata += "authenticated_user_email:\n{}\n\n".format(request.user.email)
             metadata += "authenticated_user_first_name:\n{}\n\n".format(request.user.first_name)
             metadata += "authenticated_user_last_name:\n{}\n\n".format(request.user.last_name)
+        else:
+            metadata += "user_first_name:\n{}\n\n".format(first_name)
+            metadata += "user_last_name:\n{}\n\n".format(last_name)
 
         problem_description += "\n\n" + metadata
 
