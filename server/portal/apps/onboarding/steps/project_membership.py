@@ -65,7 +65,6 @@ class ProjectMembershipStep(AbstractStep):
         username = self.user.username
         tas_client = self.get_tas_client()
         projects = tas_client.projects_for_user(username)
-        return False
         return any(
             [
                 project['id'] == self.settings['project_sql_id'] for project in projects
