@@ -85,27 +85,32 @@ class ProjectMembershipStep(AbstractStep):
             ),
         )
 
-        if tracker.login():
-            result = tracker.create_ticket(
-                Queue='Accounting',
-                Subject='{project} Project Membership Request for {username}'.format(
-                    project=self.project['title'],
-                    username=self.user.username
-                ),
-                Text=ticket_text,
-                Requestors=self.user.email,
-                CF_resource=settings.RT_TAG
-            )
-            tracker.logout()
+        try:
+            if tracker.login():
+                result = tracker.create_ticket(
+                    Queue='Accounting',
+                    Subject='{project} Project Membership Request for {username}'.format(
+                        project=self.project['title'],
+                        username=self.user.username
+                    ),
+                    Text=ticket_text,
+                    Requestors=self.user.email,
+                    CF_resource=settings.RT_TAG
+                )
+                tracker.logout()
 
-            self.state = SetupState.STAFFWAIT
-            self.log(
-                "Thank you for your request. It will be reviewed by TACC staff.",
-                data={
-                    "ticket": result
-                }
-            )
-        else:
+                self.state = SetupState.STAFFWAIT
+                self.log(
+                    "Thank you for your request. It will be reviewed by TACC staff.",
+                    data={
+                        "ticket": result
+                    }
+                )
+            else:
+                raise Exception("Could not log in to RT")
+        except Exception as err:
+            logger.exception(msg="Could not create ticket on behalf of user during ProjectMembershipStep")
+            logger.error(err.args)
             self.fail(
                 "We were unable to submit a portal access request ticket on your behalf."
             )
