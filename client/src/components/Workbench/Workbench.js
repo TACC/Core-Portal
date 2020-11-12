@@ -3,6 +3,7 @@ import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
 import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Dashboard from '../Dashboard';
+import ManageAccount from '../ManageAccount';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
 import UIPatterns from '../UIPatterns';
@@ -27,8 +28,6 @@ function Workbench() {
   useEffect(() => {
     dispatch({ type: 'FETCH_WORKBENCH' });
     dispatch({ type: 'FETCH_NOTIFICATIONS' });
-    dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
-    dispatch({ type: 'FETCH_WELCOME' });
 
     if (setupComplete) {
       dispatch({ type: 'FETCH_SYSTEMS' });
@@ -118,6 +117,10 @@ function Workbench() {
             <Route path={`${path}${ROUTES.DASHBOARD}`}>
               <Dashboard />
             </Route>
+            <Route
+              path={`${path}${ROUTES.ACCOUNT}`}
+              component={ManageAccount}
+            />
             <Route path={`${path}${ROUTES.DATA}`}>
               <DataFiles />
             </Route>

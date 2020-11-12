@@ -26,8 +26,6 @@ logger = logging.getLogger(__name__)
 class TestAgaveSerializers(TestCase):
     """Test Agave Serializers"""
 
-    fixtures = ['users', 'auth', 'accounts']
-
     @classmethod
     def setUpClass(cls):
         super(TestAgaveSerializers, cls).setUpClass()
@@ -184,8 +182,6 @@ class TestAgaveSerializers(TestCase):
 
 class TestAgaveUtils(TestCase):
     """Test Agave Serializers"""
-
-    fixtures = ['users', 'auth', 'accounts']
 
     @classmethod
     def setUpClass(cls):
