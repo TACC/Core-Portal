@@ -105,6 +105,9 @@ class ProjectMembershipStep(AbstractStep):
             self.state = SetupState.STAFFWAIT
             self.log(
                 "Thank you for your request. It will be reviewed by TACC staff.",
+                data={
+                    "ticket": result
+                }
             )
         else:
             self.fail(
