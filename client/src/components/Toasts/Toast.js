@@ -5,6 +5,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 import './Toast.scss';
 import { STATUS_TEXT_MAP } from '../Jobs/JobsStatus';
+import OPERATION_MAP from '../DataFiles/DataFilesStatus';
 import truncateMiddle from '../../utils/truncateMiddle';
 
 const NotificationToast = () => {
@@ -61,19 +62,25 @@ const NotificationToast = () => {
    * getToastMessage(n)
    */
   const getToastMessage = ({
-    extra: { name, status },
+    extra,
     event_type: eventType,
-    message
+    message,
+    status,
+    operation
   }) => {
     switch (eventType) {
       case 'job':
-        return `${truncateMiddle(name, 20)} ${STATUS_TEXT_MAP.toastMap(
-          status
+        return `${truncateMiddle(extra.name, 20)} ${STATUS_TEXT_MAP.toastMap(
+          extra.status
         )}`;
       case 'interactive_session_ready':
-        return `${truncateMiddle(name, 20)} ${
+        return `${truncateMiddle(extra.name, 20)} ${
           message ? message.toLowerCase() : 'session ready to view.'
         }`;
+      case 'data_files': {
+        const type = extra.response.nativeFormat === 'dir' ? 'Folder' : 'File';
+        return `${type} ${OPERATION_MAP.toastMap(operation, status, extra)}`;
+      }
       default:
         return message;
     }
