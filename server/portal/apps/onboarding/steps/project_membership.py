@@ -65,6 +65,7 @@ class ProjectMembershipStep(AbstractStep):
         username = self.user.username
         tas_client = self.get_tas_client()
         projects = tas_client.projects_for_user(username)
+        return False
         return any(
             [
                 project['id'] == self.settings['project_sql_id'] for project in projects
@@ -137,7 +138,36 @@ class ProjectMembershipStep(AbstractStep):
                 )
                 raise e
 
-    def close_project_request(self):
+    def deny_project_request(self):
+        ticket_id = None
+        for event in self.events:
+            if event.data and "ticket" in event.data:
+                ticket_id = event.data["ticket"]
+        tracker = self.get_tracker()
+        request_text = """Your request for membership on the {project} project has been
+        denied. If you believe this is an error, please submit a help ticket.
+        """.format(
+            project=self.project['title']
+        )
+        if tracker.login():
+            tracker.reply(ticket_id, text=request_text)
+            tracker.comment(
+                ticket_id,
+                text="User was not added to the {project} TAS Project (GID {gid}) at {base_url}".format(
+                    project=self.project['title'],
+                    gid=self.project['gid'],
+                    base_url=settings.WH_BASE_URL
+                )
+            )
+            tracker.edit_ticket(ticket_id, Status='resolved')
+        else:
+            self.fail(
+                "The portal was unable to close RT Ticket {ticket_id}".format(
+                    ticket_id=ticket_id
+                )
+            )
+
+    def close_project_request(self, deny=False):
         ticket_id = None
         for event in self.events:
             if event.data and "ticket" in event.data:
@@ -159,7 +189,6 @@ class ProjectMembershipStep(AbstractStep):
                     base_url=settings.WH_BASE_URL
                 )
             )
-            # This call fails with no explanation (BadRequest, but no reason)
             tracker.edit_ticket(ticket_id, Status='resolved')
         else:
             self.fail(
@@ -198,6 +227,7 @@ class ProjectMembershipStep(AbstractStep):
                     "An error occurred while trying to add this user to the project"
                 )
         elif action == "staff_deny":
+            self.deny_project_request()
             self.fail(
                 "Portal access request has not been approved."
             )
