@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
+    'portal.apps.googledrive_integration'
 
 ]
 

@@ -90,7 +90,7 @@ def get_profile_data(request):
         'demographics': demographics,
         'history': history,
         'licenses': manage_licenses(request),
-        'integrations': manage_applications(request),
+        'integrations': manage_integrations(request),
     }
 
     return JsonResponse(context)
@@ -111,8 +111,8 @@ def manage_licenses(request):
 
 
 @login_required
-def manage_applications(request):
-    return integrations.get_integrations()
+def manage_integrations(request):
+    return integrations.get_integrations(request.user)
 
 
 @login_required

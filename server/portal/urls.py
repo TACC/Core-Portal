@@ -64,6 +64,9 @@ urlpatterns = [
     path('tickets/', include('portal.apps.tickets.urls', namespace='tickets')),
     path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
 
+    # integrations
+    path('accounts/applications/googledrive/', include('portal.apps.googledrive_integration.urls', namespace='googledrive_integration')),
+
     # version check.
     path('version/', portal_version),
 
