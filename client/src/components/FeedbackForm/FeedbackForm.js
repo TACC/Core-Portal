@@ -41,6 +41,7 @@ const FeedbackForm = ({ authenticatedUser }) => {
       enableReinitialize
       initialValues={defaultValues}
       validationSchema={formSchema}
+      isInitialValid={false}
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach(key => formData.append(key, values[key]));
