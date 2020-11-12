@@ -2,12 +2,9 @@ import logging
 from portal.apps.onboarding.steps.abstract import AbstractStep
 from portal.apps.onboarding.state import SetupState
 from django.conf import settings
-from portal.apps.users.utils import get_allocations
 from requests.auth import HTTPBasicAuth
 from pytas.http import TASClient
 from rt import Rt
-from django.urls import reverse
-import string
 
 
 # pylint: disable=invalid-name
@@ -40,9 +37,9 @@ class ProjectMembershipStep(AbstractStep):
         return self.get_tas_client().project(self.settings['project_sql_id'])
 
     def description(self):
-        return """Thank you for using TACC. In order to access this portal, it will 
-            require access to the {project} project. If you do not have access, 
-            please click the <b>Request Project Access</b> button. A request will 
+        return """Thank you for using TACC. In order to access this portal, it will
+            require access to the {project} project. If you do not have access,
+            please click the <b>Request Project Access</b> button. A request will
             be sent on your behalf for TACC staff to add you.
         """.format(project=self.project['title'])
 
@@ -68,7 +65,6 @@ class ProjectMembershipStep(AbstractStep):
         username = self.user.username
         tas_client = self.get_tas_client()
         projects = tas_client.projects_for_user(username)
-        return False
         return any(
             [
                 project['id'] == self.settings['project_sql_id'] for project in projects
@@ -88,7 +84,7 @@ class ProjectMembershipStep(AbstractStep):
                 )
             ),
         )
-        
+
         if tracker.login():
             result = tracker.create_ticket(
                 Queue='Accounting',
@@ -97,7 +93,7 @@ class ProjectMembershipStep(AbstractStep):
                     username=self.user.username
                 ),
                 Text=ticket_text,
-                Requestors=self.user.email, 
+                Requestors=self.user.email,
                 CF_resource=settings.RT_TAG
             )
             tracker.logout()
@@ -118,7 +114,7 @@ class ProjectMembershipStep(AbstractStep):
         tas_client = self.get_tas_client()
         # Project number is not the GID number, but the primary key
         # in the database for the project record.
-        # When viewing a project in tas.tacc.utexas.edu, you should see "?id=xxxxx" 
+        # When viewing a project in tas.tacc.utexas.edu, you should see "?id=xxxxx"
         # in the address bar. This is the SQL ID
         try:
             tas_client.add_project_user(self.settings['project_sql_id'], self.user.username)
@@ -147,17 +143,16 @@ class ProjectMembershipStep(AbstractStep):
             if event.data and "ticket" in event.data:
                 ticket_id = event.data["ticket"]
         tracker = self.get_tracker()
+        request_text = """Your request for membership on the {project} project has been
+        granted. Please login at {base_url}/onboarding/setup to continue setting up your account.
+        """.format(
+            project=self.project['title'],
+            base_url=settings.WH_BASE_URL
+        )
         if tracker.login():
-            tracker.reply(ticket_id, 
-                text="Your request for membership on the {project} project has been "
-                     "granted. Please login at {base_url}/onboarding/setup to "
-                     "continue setting up your account.".format(
-                         project=self.project['title'],
-                         base_url=settings.WH_BASE_URL
-                     )
-            )
+            tracker.reply(ticket_id, text=request_text)
             tracker.comment(
-                ticket_id, 
+                ticket_id,
                 text="User has been added to the {project} TAS Project (GID {gid}) via {base_url}".format(
                     project=self.project['title'],
                     gid=self.project['gid'],
@@ -172,7 +167,7 @@ class ProjectMembershipStep(AbstractStep):
                     ticket_id=ticket_id
                 )
             )
-        
+
     def process(self):
         if self.is_project_member():
             self.complete("You have the required project membership to access this portal.")
@@ -206,7 +201,7 @@ class ProjectMembershipStep(AbstractStep):
             self.fail(
                 "Portal access request has not been approved."
             )
-        else: 
+        else:
             self.fail(
                 "Invalid client action {action}".format(
                     action=action
