@@ -45,7 +45,7 @@ class TicketsView(BaseApiView):
         subject = data.get('subject')
         problem_description = data.get('problem_description')
         email = data.get('email')
-        cc = data.get('cc')
+        cc = data.get('cc', '')
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         attachments = [(f.name, ContentFile(f.read()), f.content_type) for f in request.FILES.getlist('attachments')]
