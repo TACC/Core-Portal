@@ -5,6 +5,7 @@ import { LoadingSpinner, Message } from '_common';
 import { Button } from 'reactstrap';
 import { stepPropType } from './OnboardingPropTypes';
 import './OnboardingActions.module.scss';
+import './OnboardingActions.scss';
 
 const OnboardingActions = ({ step }) => {
   const dispatch = useDispatch();
@@ -100,7 +101,12 @@ const OnboardingActions = ({ step }) => {
           </Button>
         </>
       ) : null}
-      {isSending ? <LoadingSpinner placement="inline" /> : null}
+      {isSending ? (
+        <LoadingSpinner
+          placement="inline"
+          className="onboarding-action__loading"
+        />
+      ) : null}
     </span>
   );
 };

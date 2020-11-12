@@ -2,6 +2,7 @@ import React from 'react';
 import { Pill, LoadingSpinner } from '_common';
 import { stepPropType } from './OnboardingPropTypes';
 import './OnboardingStatus.module.scss';
+import './OnboardingStatus.scss';
 
 const getContents = step => {
   let type = '';
@@ -43,7 +44,10 @@ const getContents = step => {
       return (
         <span styleName="processing">
           <Pill type={type}>Processing</Pill>
-          <LoadingSpinner placement="inline" />
+          <LoadingSpinner
+            placement="inline"
+            className="onboarding-status__loading"
+          />
         </span>
       );
     default:
