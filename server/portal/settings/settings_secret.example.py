@@ -137,8 +137,8 @@ _PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
 _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cep.home.{username}": "/tacc-work",
 
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
+_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
+_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
         'description': 'My Data on Frontera for {username}',
@@ -171,47 +171,6 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None
     }
 ]
-
-
-"""
-Onboarding steps
-
-Each step is an object, with the full package name of the step class and
-an associated settings object. If the 'settings' key is omitted, steps will
-have a default value of None for their settings attribute.
-
-Example:
-
-PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    {
-        'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
-        'settings': {
-            'key': 'value'
-        }
-    }
-]
-"""
-PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    {
-        'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
-        'settings': {}
-    },
-    {
-        'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
-        'settings': {
-            'project_sql_id': 39726
-        }
-    },
-    {
-        'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
-        'settings': {}
-    },
-    {
-        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
-        'settings': {}
-    }
-]
-
 
 #######################
 # PROJECTS SETTING
