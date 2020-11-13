@@ -136,7 +136,82 @@ _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'EXECUTION_SYSTEM'
 _PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
 _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cep.home.{username}": "/tacc-work",
+
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
+    'frontera': {
+        'name': 'My Data (Frontera)',
+        'description': 'My Data on Frontera for {username}',
+        'site': 'frontera',
+        'systemId': 'frontera.home.{username}',
+        'host': 'frontera.tacc.utexas.edu',
+        'rootDir': '/home1/{tasdir}',
+        'port': 22,
+        'icon': None,
+    },
+    'longhorn': {
+        'name': 'My Data (Longhorn)',
+        'description': 'My Data on Longhorn for {username}',
+        'site': 'frontera',
+        'systemId': 'longhorn.home.{username}',
+        'host': 'longhorn.tacc.utexas.edu',
+        'rootDir': '/home/{tasdir}',
+        'port': 22,
+        'requires_allocation': 'longhorn3',
+        'icon': None,
+    },
 }
+
+PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+    {
+        'name': 'Community Data',
+        'system': 'frontera.storage.community',
+        'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    }
+]
+
+
+"""
+Onboarding steps
+
+Each step is an object, with the full package name of the step class and
+an associated settings object. If the 'settings' key is omitted, steps will
+have a default value of None for their settings attribute.
+
+Example:
+
+PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
+        'settings': {
+            'key': 'value'
+        }
+    }
+]
+"""
+PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
+        'settings': {}
+    },
+    {
+        'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
+        'settings': {
+            'project_sql_id': 39726
+        }
+    },
+    {
+        'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
+        'settings': {}
+    },
+    {
+        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
+        'settings': {}
+    }
+]
+
 
 #######################
 # PROJECTS SETTING

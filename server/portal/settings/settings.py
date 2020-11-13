@@ -487,40 +487,13 @@ PORTAL_EXEC_SYSTEMS = {
 """
 SETTINGS: DATA DEPOT
 """
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
-    'frontera': {
-        'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
-        'site': 'frontera',
-        'systemId': 'frontera.home.{username}',
-        'host': 'frontera.tacc.utexas.edu',
-        'rootDir': '/home1/{tasdir}',
-        'port': 22,
-        'icon': None,
-    },
-    'longhorn': {
-        'name': 'My Data (Longhorn)',
-        'description': 'My Data on Longhorn for {username}',
-        'site': 'frontera',
-        'systemId': 'longhorn.home.{username}',
-        'host': 'longhorn.tacc.utexas.edu',
-        'rootDir': '/home/{tasdir}',
-        'port': 22,
-        'requires_allocation': 'longhorn3',
-        'icon': None,
-    },
-}
-
-PORTAL_DATAFILES_STORAGE_SYSTEMS = [
-    {
-        'name': 'Community Data',
-        'system': 'frontera.storage.community',
-        'scheme': 'community',
-        'api': 'tapis',
-        'icon': None
-    }
-]
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret.\
+    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_secret.\
+    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(
+    settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', []
+)
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
@@ -616,47 +589,8 @@ PORTAL_USER_HOME_MANAGER = settings_secret.\
 PORTAL_KEYS_MANAGER = settings_secret.\
     _PORTAL_KEYS_MANAGER
 
-"""
-Onboarding steps
-
-Each step is an object, with the full package name of the step class and
-an associated settings object. If the 'settings' key is omitted, steps will
-have a default value of None for their settings attribute.
-
-Example:
-
-PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    {
-        'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
-        'settings': {
-            'key': 'value'
-        }
-    }
-]
-"""
-PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    {
-        'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
-        'settings': {}
-    },
-    {
-        'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
-        'settings': {
-            'project_sql_id': 39726
-        }
-    },
-    {
-        'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
-        'settings': {}
-    },
-    {
-        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
-        'settings': {}
-    }
-]
-
-PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = settings_secret.\
-    _PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD
+PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
+    _PORTAL_USER_ACCOUNT_SETUP_STEPS
 
 PORTAL_NAMESPACE = settings_secret.\
     _PORTAL_NAMESPACE
