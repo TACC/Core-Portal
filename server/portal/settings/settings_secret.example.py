@@ -199,7 +199,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     },
 }
 
-PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+_PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
         'name': 'Community Data',
         'system': 'frontera.storage.community',
