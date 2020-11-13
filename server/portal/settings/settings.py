@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'portal.apps.workspace',
     'portal.apps.datafiles',
     'portal.apps.system_monitor',
+    'portal.apps.projects',
 
 ]
 
