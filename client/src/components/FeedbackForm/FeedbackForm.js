@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { Formik, Form } from 'formik';
 import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
 import { FormField } from '_common';
@@ -16,8 +15,9 @@ const formSchema = Yup.object().shape({
   problem_description: Yup.string().required('Required')
 });
 
-const FeedbackForm = ({ authenticatedUser }) => {
+const FeedbackForm = () => {
   const dispatch = useDispatch();
+  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
   const creating = useSelector(state => state.ticketCreate.creating);
   const creatingError = useSelector(state => state.ticketCreate.creatingError);
   const creatingErrorMessage = useSelector(
@@ -95,15 +95,6 @@ const FeedbackForm = ({ authenticatedUser }) => {
       }}
     </Formik>
   );
-};
-
-FeedbackForm.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  authenticatedUser: PropTypes.object
-};
-
-FeedbackForm.defaultProps = {
-  authenticatedUser: null
 };
 
 export default FeedbackForm;

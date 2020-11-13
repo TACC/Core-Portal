@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { func, bool } from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -13,8 +12,6 @@ const MODAL_PROPTYPES = {
 };
 
 const FeedbackModal = React.memo(({ isOpen, toggle }) => {
-  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
-
   return (
     <Modal styleName="feedback-modal" isOpen={isOpen} toggle={() => toggle()}>
       <ModalHeader styleName="feedback-header" toggle={toggle} charCode="x">
@@ -36,7 +33,7 @@ const FeedbackModal = React.memo(({ isOpen, toggle }) => {
             submit a ticket.
           </Link>
         </p>
-        <FeedbackForm authenticatedUser={authenticatedUser} />
+        <FeedbackForm />
       </ModalBody>
     </Modal>
   );
