@@ -56,11 +56,14 @@ const OnboardingUser = () => {
           <OnboardingStep step={step} key={uuidv4()} />
         ))}
         <div styleName="access">
-          {user.setupComplete ? (
-            <Button color="primary" styleName="button" href="/workbench/">
-              Access Dashboard
-            </Button>
-          ) : null}
+          <Button
+            color="primary"
+            styleName="button"
+            href="/workbench/"
+            disabled={!user.setupComplete}
+          >
+            Access Dashboard
+          </Button>
         </div>
       </div>
     </div>
