@@ -38,7 +38,10 @@ export const TableTemplate = ({ attributes }) => {
 TableTemplate.propTypes = {
   attributes: shape({
     columns: arrayOf(shape({})).isRequired,
-    data: arrayOf(shape({})).isRequired
+    data: arrayOf(shape({})).isRequired,
+    initialState: shape({
+      hiddenColumns: arrayOf(string)
+    })
   }).isRequired
 };
 
@@ -69,6 +72,9 @@ export const RequiredInformation = () => {
   const data = useMemo(() => [demographics], []);
   const openModal = () =>
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { required: true } });
+  const hiddenColumns = Object.keys(demographics).filter(
+    key => !demographics[key]
+  );
   return (
     <div className="profile-component-wrapper">
       <div className="profile-component-header">
@@ -82,7 +88,15 @@ export const RequiredInformation = () => {
           Edit Required Information
         </Button>
       </div>
-      <TableTemplate attributes={{ columns, data }} />
+      <TableTemplate
+        attributes={{
+          columns,
+          data,
+          initialState: {
+            hiddenColumns
+          }
+        }}
+      />
     </div>
   );
 };
@@ -118,6 +132,7 @@ const LicenseCell = ({ cell: { value } }) => {
           <div dangerouslySetInnerHTML={{ __html }} />
           Click{' '}
           <Link
+            class="btn-link"
             to={`/workbench/dashboard/tickets/create?subject=${type}+Activation`}
           >
             here

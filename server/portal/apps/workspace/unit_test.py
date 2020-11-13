@@ -4,8 +4,10 @@ from mock import patch
 from django.test import TestCase
 from django.conf import settings
 from django.contrib.auth import get_user_model
+import pytest
 
 
+@pytest.mark.django_db(transaction=True)
 class TestAppsApiViews(TestCase):
     fixtures = ['users', 'auth']
 
@@ -37,6 +39,9 @@ class TestAppsApiViews(TestCase):
         with open(os.path.join(agave_path, 'apps', 'app-def.json')) as f:
             self.app_def = json.load(f)
 
+        with open(os.path.join(settings.BASE_DIR, 'fixtures', 'tas', 'tas_user.json')) as f:
+            self.tas_user = json.load(f)
+
     def test_apps_list(self):
         user = get_user_model().objects.get(username="username")
         self.client.force_login(user)
@@ -62,7 +67,9 @@ class TestAppsApiViews(TestCase):
         self.assertEqual(len(data["response"]), 2)
         self.assertTrue(data["response"] == apps)
 
-    def test_job_submit_notifications(self):
+    @patch('portal.apps.accounts.managers.user_systems.get_user_data')
+    def test_job_submit_notifications(self, tas_mock):
+        tas_mock.return_value = self.tas_user
         user = get_user_model().objects.get(username="username")
 
         app_def = self.app_def
@@ -87,7 +94,9 @@ class TestAppsApiViews(TestCase):
         self.assertTrue(pending in notifications)
         self.assertTrue(finished in notifications)
 
-    def test_job_submit_parse_urls(self):
+    @patch('portal.apps.accounts.managers.user_systems.get_user_data')
+    def test_job_submit_parse_urls(self, tas_mock):
+        tas_mock.return_value = self.tas_user
         user = get_user_model().objects.get(username="username")
 
         app_def = self.app_def

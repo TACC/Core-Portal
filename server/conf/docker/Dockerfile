@@ -1,4 +1,4 @@
-FROM python:3.6-buster
+FROM python:3.6-buster as python-base
 
 LABEL maintainer="TACC-ACI-WMA <wma_prtl@tacc.utexas.edu>"
 
@@ -6,6 +6,19 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 EXPOSE 8000
 
+# https://python-poetry.org/docs/configuration/#using-environment-variables
+ENV POETRY_VERSION=1.1.0 \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1 \
+    PYSETUP_PATH="/opt/pysetup" \
+    VENV_PATH="/opt/pysetup/.venv"
+
+# prepend poetry and venv to path
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
+
+FROM python-base as builder-base
 # install locales for en_us.utf-8
 RUN apt-get update && apt-get install -y \
     dialog \
@@ -22,21 +35,48 @@ RUN apt-get update &&  apt-get install -y --no-install-recommends \
     postgresql \
     postgresql-client
 
-# install node 12.x
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get install -y nodejs
-
 RUN pip3 install --upgrade pip setuptools wheel
 
-# install python packages
-COPY server/requirements.txt /tmp/requirements.txt
-RUN pip3 install -r /tmp/requirements.txt
+# Install Poetry - respects $POETRY_VERSION & $POETRY_HOME
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
+
+# copy project requirement files here to ensure they will be cached.
+WORKDIR $PYSETUP_PATH
+COPY server/pyproject.toml server/poetry.lock ./
+
+# install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
+RUN poetry install --no-dev
+
+# `development` image is used for local development
+FROM python-base as development
+WORKDIR $PYSETUP_PATH
+
+# copy in our built poetry + venv
+COPY --from=builder-base $POETRY_HOME $POETRY_HOME
+COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
+
+# quicker install as runtime deps are already installed
+RUN poetry install
 
 COPY . /srv/www/portal
 
 RUN mkdir -p /var/log/portal
 
-ARG build_client=build_client
-RUN chmod u+x /srv/www/portal/client/build_client.sh && /srv/www/portal/client/build_client.sh $build_client
+WORKDIR /srv/www/portal/server
+
+# `production` image is used for deployed runtime environments
+FROM python-base as production
+
+# install node 12.x
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN apt-get install -y nodejs
+
+COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
+
+COPY . /srv/www/portal
+
+RUN mkdir -p /var/log/portal
+
+RUN chmod u+x /srv/www/portal/client/build_client.sh && /srv/www/portal/client/build_client.sh
 
 WORKDIR /srv/www/portal/server
