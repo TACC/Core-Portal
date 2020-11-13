@@ -41,7 +41,6 @@ const FeedbackForm = () => {
       enableReinitialize
       initialValues={defaultValues}
       validationSchema={formSchema}
-      isInitialValid={false}
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach(key => formData.append(key, values[key]));
@@ -55,7 +54,7 @@ const FeedbackForm = () => {
         });
       }}
     >
-      {({ isSubmitting, isValid }) => {
+      {({ isSubmitting, dirty, isValid, submitCount }) => {
         return (
           <Form styleName="feedback-form">
             <FormGroup>
@@ -70,7 +69,7 @@ const FeedbackForm = () => {
               />
             </FormGroup>
             <div className="ticket-create-button-row">
-              {creatingError && (
+              {submitCount > 0 && creatingError && (
                 <Alert color="warning">
                   Feedback creating error: {creatingErrorMessage}
                 </Alert>
@@ -78,7 +77,7 @@ const FeedbackForm = () => {
               <Button
                 type="submit"
                 color="primary"
-                disabled={!isValid || isSubmitting || creating}
+                disabled={!dirty || !isValid || isSubmitting || creating}
               >
                 {creating && (
                   <Spinner
