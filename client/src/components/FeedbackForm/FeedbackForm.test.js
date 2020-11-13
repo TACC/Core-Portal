@@ -8,15 +8,17 @@ import '@testing-library/jest-dom/extend-expect';
 const mockStore = configureStore();
 
 const exampleAuthenticatedUser = {
-  first_name: 'Max',
-  username: 'mmunstermann',
-  last_name: 'Munstermann',
-  email: 'max@munster.mann',
-  oauth: {
-    expires_in: 14400,
-    scope: 'default'
-  },
-  isStaff: false
+  user: {
+    first_name: 'Max',
+    username: 'mmunstermann',
+    last_name: 'Munstermann',
+    email: 'max@munster.mann',
+    oauth: {
+      expires_in: 14400,
+      scope: 'default'
+    },
+    isStaff: false
+  }
 };
 
 describe('FeedbackModal', () => {
@@ -24,11 +26,12 @@ describe('FeedbackModal', () => {
     const store = mockStore({
       ticketCreate: {
         ...ticketCreate
-      }
+      },
+      authenticatedUser: exampleAuthenticatedUser
     });
 
     const { getAllByText, getByDisplayValue } = renderComponent(
-      <FeedbackForm authenticatedUser={exampleAuthenticatedUser} />,
+      <FeedbackForm />,
       store
     );
     expect(getByDisplayValue(/Max/)).toBeInTheDocument();
@@ -41,13 +44,11 @@ describe('FeedbackModal', () => {
       ticketCreate: {
         ...ticketCreate,
         creating: true
-      }
+      },
+      authenticatedUser: exampleAuthenticatedUser
     });
 
-    const { getByTestId } = renderComponent(
-      <FeedbackForm authenticatedUser={exampleAuthenticatedUser} />,
-      store
-    );
+    const { getByTestId } = renderComponent(<FeedbackForm />, store);
     expect(getByTestId('creating-spinner'));
   });
 
@@ -57,13 +58,11 @@ describe('FeedbackModal', () => {
         ...ticketCreate,
         creatingError: true,
         creatingErrorMessage: 'Mock error'
-      }
+      },
+      authenticatedUser: exampleAuthenticatedUser
     });
 
-    const { getByText } = renderComponent(
-      <FeedbackForm authenticatedUser={exampleAuthenticatedUser} />,
-      store
-    );
+    const { getByText } = renderComponent(<FeedbackForm />, store);
     expect(getByText(/Mock error/)).toBeDefined();
   });
 });
