@@ -5,15 +5,14 @@ import FeedbackModal from './FeedbackModal';
 import './FeedbackButton.module.scss';
 
 const FeedbackButton = () => {
-  const [openModal, setOpenModal] = React.useState(false);
+  const [openFeedbackModal, setopenFeedbackModal] = React.useState(false);
   const creatingSuccess = useSelector(
     state => state.ticketCreate.creatingSuccess
   );
   const dispatch = useDispatch();
 
   useEffect(() => {
-    let mounted = true;
-    if (creatingSuccess && mounted) {
+    if (creatingSuccess && openFeedbackModal) {
       const toast = {
         pk: 'feedback-toast',
         event_type: 'generic',
@@ -24,9 +23,8 @@ const FeedbackButton = () => {
         type: 'ADD_TOAST',
         payload: toast
       });
-      setOpenModal(false);
+      setopenFeedbackModal(false);
     }
-    return () => (mounted = false);
   }, [creatingSuccess]);
 
   return (
@@ -35,14 +33,14 @@ const FeedbackButton = () => {
         styleName="button"
         color="link"
         data-testid="feedback-button"
-        onClick={() => setOpenModal(true)}
+        onClick={() => setopenFeedbackModal(true)}
       >
         Leave Feedback
       </Button>
-      {openModal && (
+      {openFeedbackModal && (
         <FeedbackModal
-          isOpen={openModal}
-          toggle={() => setOpenModal(!openModal)}
+          isOpen={openFeedbackModal}
+          toggle={() => setopenFeedbackModal(!openFeedbackModal)}
         />
       )}
     </>
