@@ -40,12 +40,12 @@ const formSchema = Yup.object().shape({
     .of(Yup.string().email('Invalid email'))
 });
 
-function CreatedTicketInformation({ isAuthenticated, ticketId }) {
+function CreatedTicketInformation({ provideDashBoardLinkOnSuccess, ticketId }) {
   if (!ticketId) {
     return null;
   }
 
-  if (isAuthenticated) {
+  if (provideDashBoardLinkOnSuccess) {
     return (
       <Alert color="success">
         <Link
@@ -67,11 +67,14 @@ function CreatedTicketInformation({ isAuthenticated, ticketId }) {
 }
 
 CreatedTicketInformation.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
+  provideDashBoardLinkOnSuccess: PropTypes.bool.isRequired,
   ticketId: PropTypes.number.isRequired
 };
 
-function TicketCreateForm({ authenticatedUser }) {
+function TicketCreateForm({
+  authenticatedUser,
+  provideDashBoardLinkOnSuccess
+}) {
   const { search } = useLocation();
   const subject = new URLSearchParams(search).get('subject');
   const creating = useSelector(state => state.ticketCreate.creating);
@@ -189,7 +192,9 @@ function TicketCreateForm({ authenticatedUser }) {
               {creatingSuccess && (
                 <CreatedTicketInformation
                   ticketId={createdTicketId}
-                  isAuthenticated={isAuthenticated}
+                  provideDashBoardLinkOnSuccess={
+                    isAuthenticated && provideDashBoardLinkOnSuccess
+                  }
                 />
               )}
               {creatingError && (
@@ -220,6 +225,9 @@ function TicketCreateForm({ authenticatedUser }) {
 }
 
 TicketCreateForm.propTypes = {
+  /** provide link to dashboard tickets when creating a ticket */
+  provideDashBoardLinkOnSuccess: PropTypes.bool.isRequired,
+  /** authenticated user */
   authenticatedUser: PropTypes.shape({
     first_name: PropTypes.string,
     last_name: PropTypes.string,

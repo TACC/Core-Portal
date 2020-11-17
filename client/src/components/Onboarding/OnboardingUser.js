@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import OnboardingStep from './OnboardingStep';
 
 import './OnboardingUser.module.scss';
+import { TicketCreateModal } from '../Tickets';
 
 const OnboardingUser = () => {
   const { params } = useRouteMatch();
@@ -17,6 +18,7 @@ const OnboardingUser = () => {
   );
   const loading = useSelector(state => state.onboarding.user.loading);
   const error = useSelector(state => state.onboarding.user.error);
+  const ticketModalOpen = useSelector(state => state.ticketCreate.modalOpen);
 
   useEffect(() => {
     dispatch({
@@ -57,6 +59,13 @@ const OnboardingUser = () => {
         ))}
         <div styleName="access">
           <Button
+            color="link"
+            styleName="button"
+            onClick={() => dispatch({ type: 'TICKET_CREATE_OPEN_MODAL' })}
+          >
+            Get Help
+          </Button>
+          <Button
             color="primary"
             styleName="button"
             href="/workbench/"
@@ -66,6 +75,10 @@ const OnboardingUser = () => {
           </Button>
         </div>
       </div>
+      <TicketCreateModal
+        close={() => dispatch({ type: 'TICKET_CREATE_CLOSE_MODAL' })}
+        isOpen={ticketModalOpen}
+      />
     </div>
   );
 };

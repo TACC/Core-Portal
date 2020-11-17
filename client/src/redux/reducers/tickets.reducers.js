@@ -138,6 +138,7 @@ export function ticketDetailedView(state = initialDetailedTicketView, action) {
 }
 
 export const initialTicketCreateState = {
+  modalOpen: false,
   creating: false,
   creatingError: false,
   creatingErrorMessage: '',
@@ -149,20 +150,35 @@ export function ticketCreate(state = initialTicketCreateState, action) {
   switch (action.type) {
     case 'TICKETS_CREATE_INIT':
       return initialTicketCreateState;
+    case 'TICKET_CREATE_SET_MODAL_CLOSE':
+      return {
+        ...initialTicketCreateState,
+        modalOpen: false
+      };
+    case 'TICKET_CREATE_SET_MODAL_OPEN':
+      return {
+        ...initialTicketCreateState,
+        modalOpen: true
+      };
     case 'TICKET_CREATE_STARTED':
       return {
         ...initialTicketCreateState,
+        modalOpen: state.modal,
         creating: true
       };
     case 'TICKET_CREATE_FAILED':
       return {
         ...initialTicketCreateState,
+        modalOpen: state.modal,
+        creating: false,
         creatingError: true,
         creatingErrorMessage: action.payload
       };
     case 'TICKET_CREATE_SUCCESS':
       return {
         ...initialTicketCreateState,
+        modalOpen: state.modal,
+        creating: false,
         creatingSuccess: true,
         createdTicketId: action.payload
       };
