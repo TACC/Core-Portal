@@ -44,39 +44,59 @@ def _app_license_type(app_id):
     return lic_type
 
 
+def _get_app(app_id, user):
+    METRICS.debug("User " + user.username + " is requesting app id " + app_id)
+    agave = user.agave_oauth.client
+    data = agave.apps.get(appId=app_id)
+
+    # GET EXECUTION SYSTEM INFO FOR USER APPS
+    exec_sys = ExecutionSystem(agave, data['executionSystem'])
+    data['resource'] = exec_sys.login.host
+    data['scheduler'] = exec_sys.scheduler
+    data['exec_sys'] = exec_sys.to_dict()
+
+    # set maxNodes from system queue for app
+    if (data['parallelism'] == 'PARALLEL') and ('defaultQueue' in data):
+        for queue in exec_sys.queues.all():
+            if queue.name == data['defaultQueue']:
+                data['maxNodes'] = queue.maxNodes
+                break
+
+    lic_type = _app_license_type(app_id)
+    data['license'] = {
+        'type': lic_type
+    }
+    if lic_type is not None:
+        _, license_models = get_license_info()
+        license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+        lic = license_model.objects.filter(user=user).first()
+        data['license']['enabled'] = lic is not None
+
+    matching = AppTrayEntry.objects.all().filter(name=data['name'])
+    if len(matching) > 0:
+        first_match = matching[0]
+        if first_match.lastRetrieved and first_match.lastRetrieved != data['id']:
+            data['lastRetrieved'] = first_match.lastRetrieved
+
+    return data
+
+
 @method_decorator(login_required, name='dispatch')
 class AppsView(BaseApiView):
     def get(self, request, *args, **kwargs):
         agave = request.user.agave_oauth.client
         app_id = request.GET.get('app_id')
         if app_id:
-            METRICS.debug("User " + request.user.username + " is requesting app id " + app_id)
-            data = agave.apps.get(appId=app_id)
-
-            # GET EXECUTION SYSTEM INFO FOR USER APPS
-            exec_sys = ExecutionSystem(agave, data['executionSystem'])
-            data['resource'] = exec_sys.login.host
-            data['scheduler'] = exec_sys.scheduler
-            data['exec_sys'] = exec_sys.to_dict()
-
-            lic_type = _app_license_type(app_id)
-            data['license'] = {
-                'type': lic_type
-            }
-            if lic_type is not None:
-                _, license_models = get_license_info()
-                license_model = [x for x in license_models if x.license_type == lic_type][0]
-                lic = license_model.objects.filter(user=request.user).first()
-                data['license']['enabled'] = lic is not None
+            data = _get_app(app_id, request.user)
         else:
             METRICS.debug("User " + request.user.username + " is requesting all public apps")
             public_only = request.GET.get('publicOnly')
+            agave = request.user.agave_oauth.client
             if public_only == 'true':
                 data = agave.apps.list(publicOnly='true')
             else:
                 data = agave.apps.list(privateOnly=True)
         return JsonResponse({"response": data})
-
 
 @method_decorator(login_required, name='dispatch')
 class MonitorsView(BaseApiView):
@@ -366,3 +386,157 @@ class JobHistoryView(BaseApiView):
         agave = request.user.agave_oauth.client
         data = agave.jobs.getHistory(jobId=job_uuid)
         return JsonResponse({"response": data})
+
+
+@method_decorator(login_required, name='dispatch')
+class AppsTrayView(BaseApiView):
+    def getAppIdBySpec(self, app, user):
+        # Retrieve the app specified in the portal
+        # Any fields that are left blank assume that we
+        # are retrieving the "latest" version
+        agave = user.agave_oauth.client
+
+        query = {
+            "name" : app.name,
+            "isPublic" : True
+        }
+        if app.version and len(app.version):
+            query['version'] = app.version
+        if app.revision and len(app.revision):
+            query['revision'] = app.revision
+
+        appList = agave.apps.list(query=query)
+
+        appList.sort(
+            key=lambda appDef: [int(u) for u in appDef['version'].split('.')] + [ int(appDef['revision']) ]
+        )
+        
+        return appList[-1]['id']
+
+    def getApp(self, app, user):
+        if app.appId and len(app.appId) > 0:
+            appId = app.appId
+        else:
+            appId = self.getAppIdBySpec(app, user)
+        if appId != app.lastRetrieved:
+            app.lastRetrieved = appId
+            app.save()
+        return _get_app(appId, user)
+
+    def getPrivateApps(self, user):
+        agave = user.agave_oauth.client
+        apps_listing = agave.apps.list(privateOnly=True)
+        definitions = { }
+        my_apps = [ ]
+        # Get private apps that are not prtl.clone
+        for app in filter(lambda app: not app['id'].startswith("prtl.clone"), apps_listing):
+            # Create an app "metadata" record
+            try:
+                app = _get_app(app['id'], user)
+                definitions[ app['id'] ] = app
+                my_apps.append(
+                    {
+                        "label": app['label'] or app['id'],
+                        "version": app['version'],
+                        "revision": app['revision'],
+                        "shortDescription": app['shortDescription'],
+                        "type": "agave",
+                        "appId": app['id'],
+                    }
+                )
+            except Exception as e:
+                logger.error(
+                    "User {} was unable to retrieve their private app {}".format(
+                        user.username, app['id']
+                    )
+                )
+                logger.exception(e)
+
+        return my_apps, definitions
+
+    def getPublicApps(self, user):
+        agave = user.agave_oauth.client
+        categories = [ ]
+        definitions = { }
+        # Traverse category records in descending priority
+        for category in AppTrayCategory.objects.all().order_by('-priority'):
+            categoryResult = {
+                "title": category.category,
+                "apps": [ ]
+            }
+
+            # Retrieve all apps known to the portal in that directory
+            apps = AppTrayEntry.objects.all().filter(available=True, category=category)
+            for app in apps:
+                # Create something similar to the old metadata record
+                appRecord = {
+                    "label" : app.label or app.name,
+                    "icon": app.icon,
+                    "version": app.version,
+                    "revision": app.revision,
+                    "type": app.appType
+                }
+
+                try:
+                    if str(app.appType).lower() == 'html':
+                        # If this is an HTML app, create a definition for it
+                        # that has the 'html' field
+                        appRecord["appId"] = app.htmlId
+                        definitions[ app.htmlId ] = {
+                            "html": app.html,
+                            "id": app.htmlId,
+                            "label": app.label,
+                            "shortDescription" : app.shortDescription,
+                        }
+                    elif str(app.appType).lower() == 'agave':
+                        # If this is an agave app, retrieve the definition
+                        # from the tenant, with any license or queue
+                        # post processing
+                        definition = self.getApp(app, user)
+                        appId = definition['id']
+                        if not definition['label'] or len(definition['label']) == 0:
+                            definition['label'] = definition['name']
+                        appRecord["appId"] = appId
+                        definitions[ appId ] = definition
+
+                    categoryResult["apps"].append(appRecord)
+
+                except:
+                    logger.info("Could not retrieve app {}".format(app))
+
+            categoryResult["apps"].sort(key=lambda app: app['label'])
+            categories.append(categoryResult)
+
+        return categories, definitions
+
+    def get(self, request):
+        """
+        Returns a structure containing app tray categories with metadata, and app definitions
+
+        { 
+            "categories": {
+                "Category 1": [
+                    { 
+                        "label": "Jupyter",
+                        "id": "jupyterhub",
+                        "icon": "jupyter"
+                        ...
+                    }
+                ]
+            }
+            "definitions": {
+                "jupyterhub": { ... }
+            }
+        }
+        """
+        tabs, definitions = self.getPublicApps(request.user)
+        my_apps, my_definitions = self.getPrivateApps(request.user)
+        tabs.append(
+            {
+                "title": "My Apps",
+                "apps": my_apps
+            }
+        )
+        definitions.update(my_definitions)
+
+        return JsonResponse({ "tabs": tabs, "definitions" : definitions })
