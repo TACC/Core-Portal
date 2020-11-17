@@ -24,6 +24,7 @@ from portal.apps.workspace.managers.user_applications import UserApplicationsMan
 from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
+from portal.apps.workspace.models import AppTrayCategory, AppTrayEntry
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -97,6 +98,7 @@ class AppsView(BaseApiView):
             else:
                 data = agave.apps.list(privateOnly=True)
         return JsonResponse({"response": data})
+
 
 @method_decorator(login_required, name='dispatch')
 class MonitorsView(BaseApiView):
@@ -395,22 +397,18 @@ class AppsTrayView(BaseApiView):
         # Any fields that are left blank assume that we
         # are retrieving the "latest" version
         agave = user.agave_oauth.client
-
         query = {
-            "name" : app.name,
-            "isPublic" : True
+            "name": app.name,
+            "isPublic": True
         }
         if app.version and len(app.version):
             query['version'] = app.version
         if app.revision and len(app.revision):
             query['revision'] = app.revision
-
         appList = agave.apps.list(query=query)
-
         appList.sort(
-            key=lambda appDef: [int(u) for u in appDef['version'].split('.')] + [ int(appDef['revision']) ]
+            key=lambda appDef: [int(u) for u in appDef['version'].split('.')] + [int(appDef['revision'])]
         )
-        
         return appList[-1]['id']
 
     def getApp(self, app, user):
@@ -426,14 +424,14 @@ class AppsTrayView(BaseApiView):
     def getPrivateApps(self, user):
         agave = user.agave_oauth.client
         apps_listing = agave.apps.list(privateOnly=True)
-        definitions = { }
-        my_apps = [ ]
+        definitions = {}
+        my_apps = []
         # Get private apps that are not prtl.clone
         for app in filter(lambda app: not app['id'].startswith("prtl.clone"), apps_listing):
             # Create an app "metadata" record
             try:
                 app = _get_app(app['id'], user)
-                definitions[ app['id'] ] = app
+                definitions[app['id']] = app
                 my_apps.append(
                     {
                         "label": app['label'] or app['id'],
@@ -451,18 +449,16 @@ class AppsTrayView(BaseApiView):
                     )
                 )
                 logger.exception(e)
-
         return my_apps, definitions
 
     def getPublicApps(self, user):
-        agave = user.agave_oauth.client
-        categories = [ ]
-        definitions = { }
+        categories = []
+        definitions = {}
         # Traverse category records in descending priority
         for category in AppTrayCategory.objects.all().order_by('-priority'):
             categoryResult = {
                 "title": category.category,
-                "apps": [ ]
+                "apps": []
             }
 
             # Retrieve all apps known to the portal in that directory
@@ -470,7 +466,7 @@ class AppsTrayView(BaseApiView):
             for app in apps:
                 # Create something similar to the old metadata record
                 appRecord = {
-                    "label" : app.label or app.name,
+                    "label": app.label or app.name,
                     "icon": app.icon,
                     "version": app.version,
                     "revision": app.revision,
@@ -482,11 +478,11 @@ class AppsTrayView(BaseApiView):
                         # If this is an HTML app, create a definition for it
                         # that has the 'html' field
                         appRecord["appId"] = app.htmlId
-                        definitions[ app.htmlId ] = {
+                        definitions[app.htmlId] = {
                             "html": app.html,
                             "id": app.htmlId,
                             "label": app.label,
-                            "shortDescription" : app.shortDescription,
+                            "shortDescription": app.shortDescription,
                         }
                     elif str(app.appType).lower() == 'agave':
                         # If this is an agave app, retrieve the definition
@@ -497,11 +493,10 @@ class AppsTrayView(BaseApiView):
                         if not definition['label'] or len(definition['label']) == 0:
                             definition['label'] = definition['name']
                         appRecord["appId"] = appId
-                        definitions[ appId ] = definition
+                        definitions[appId] = definition
 
                     categoryResult["apps"].append(appRecord)
-
-                except:
+                except Exception:
                     logger.info("Could not retrieve app {}".format(app))
 
             categoryResult["apps"].sort(key=lambda app: app['label'])
@@ -513,10 +508,10 @@ class AppsTrayView(BaseApiView):
         """
         Returns a structure containing app tray categories with metadata, and app definitions
 
-        { 
+        {
             "categories": {
                 "Category 1": [
-                    { 
+                    {
                         "label": "Jupyter",
                         "id": "jupyterhub",
                         "icon": "jupyter"
@@ -539,4 +534,4 @@ class AppsTrayView(BaseApiView):
         )
         definitions.update(my_definitions)
 
-        return JsonResponse({ "tabs": tabs, "definitions" : definitions })
+        return JsonResponse({"tabs": tabs, "definitions": definitions})
