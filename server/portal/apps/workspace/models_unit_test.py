@@ -4,7 +4,6 @@ from portal.apps.workspace.models import (
     AppTrayCategory,
     AppTrayEntry
 )
-import pytest
 
 
 def test_job_submission_model(django_db_reset_sequences, regular_user):
@@ -33,11 +32,11 @@ def test_app_tray_models(django_db_reset_sequences):
         revision="latest"
     )
     app.save()
-    assert str(AppTrayEntry.objects.all()[0]) == "Matlab Latest: matlab-latestulatest"  
+    assert str(AppTrayEntry.objects.all()[0]) == "Matlab Latest: matlab-latestulatest"
     htmlApp = AppTrayEntry.objects.create(
         category=category,
         appType="html",
         label="Jupyter",
         htmlId="jupyterhub"
     )
-    assert str(htmlApp) == "Jupyter: jupyterhub (HTML)" 
+    assert str(htmlApp) == "Jupyter: jupyterhub (HTML)"
