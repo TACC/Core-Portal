@@ -11,6 +11,7 @@ from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
 from portal.apps.users.utils import get_allocations
 from portal.apps.notifications.models import Notification
 from .utils import notify, NOTIFY_ACTIONS
+from portal.apps.accounts.managers.user_systems import UserSystemsManager
 
 logger = logging.getLogger(__name__)
 
@@ -23,14 +24,13 @@ class SystemListingView(BaseApiView):
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
 
         user_systems = get_user_storage_systems(request.user.username, local_systems)
-
         # compare available storage systems to the systems a user can access
         response = {'system_list': []}
-        for _, details in user_systems.items():
+        for system_name, details in user_systems.items():
             response['system_list'].append(
                 {
                     'name': details['name'],
-                    'system': details['prefix'].format(request.user.username),
+                    'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
                     'scheme': 'private',
                     'api': 'tapis',
                     'icon': details['icon']
