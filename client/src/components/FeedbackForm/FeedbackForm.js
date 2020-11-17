@@ -24,6 +24,10 @@ const FeedbackForm = () => {
     state => state.ticketCreate.creatingErrorMessage
   );
 
+  if (authenticatedUser == null) {
+    return <Spinner />;
+  }
+
   const defaultValues = useMemo(
     () => ({
       subject: 'Feedback for the Frontera Portal',
