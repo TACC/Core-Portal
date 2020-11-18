@@ -9,7 +9,6 @@ from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
 from portal.apps.users.utils import get_allocations
-from portal.apps.notifications.models import Notification
 from .utils import notify, NOTIFY_ACTIONS
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 
@@ -54,12 +53,12 @@ class TapisFilesView(BaseApiView):
                 client, scheme, system, path, operation, **request.GET.dict())
 
             operation in NOTIFY_ACTIONS and \
-                notify(request.user.username, operation, Notification.SUCCESS, {'response': response})
+                notify(request.user.username, operation, 'success', {'response': response})
         except HTTPError as e:
             error_status = e.response.status_code
             error_json = e.response.json()
             operation in NOTIFY_ACTIONS and \
-                notify(request.user.username, operation, Notification.ERROR, {'response': error_json})
+                notify(request.user.username, operation, 'error', {'response': error_json})
             if error_status == 502:
                 # In case of 502 determine cause
                 system = dict(client.systems.get(systemId=system))
@@ -89,10 +88,10 @@ class TapisFilesView(BaseApiView):
         try:
             response = tapis_put_handler(client, scheme, system, path, operation, body=body)
             operation in NOTIFY_ACTIONS and \
-                notify(request.user.username, operation, Notification.SUCCESS, {'response': response, 'body': body})
+                notify(request.user.username, operation, 'success', {'response': response, 'body': body})
         except Exception as exc:
             operation in NOTIFY_ACTIONS and \
-                notify(request.user.username, operation, Notification.ERROR, {'response': 'exc', 'body': body})
+                notify(request.user.username, operation, 'error', {'response': 'exc', 'body': body})
             raise exc
 
         return JsonResponse({"data": response})
@@ -108,10 +107,10 @@ class TapisFilesView(BaseApiView):
         try:
             response = tapis_post_handler(client, scheme, system, path, operation, body=body)
             operation in NOTIFY_ACTIONS and \
-                notify(request.user.username, operation, Notification.SUCCESS, {'response': response, 'body': body})
+                notify(request.user.username, operation, 'success', {'response': response, 'path': path})
         except Exception as exc:
             operation in NOTIFY_ACTIONS and \
-                notify(request.user.username, operation, Notification.ERROR, {'response': 'exc', 'body': body})
+                notify(request.user.username, operation, 'error', {'response': 'exc', 'path': path})
             raise exc
 
         return JsonResponse({"data": response})

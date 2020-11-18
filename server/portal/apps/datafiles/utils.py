@@ -6,7 +6,7 @@ NOTIFY_ACTIONS = ['move', 'copy', 'rename', 'trash', 'mkdir', 'upload']
 def notify(username, operation, status, extra):
     event_data = {
         Notification.EVENT_TYPE: 'data_files',
-        Notification.STATUS: status,
+        Notification.STATUS: getattr(Notification, status.upper()),
         Notification.USER: username,
         Notification.EXTRA: extra,
         Notification.OPERATION: operation

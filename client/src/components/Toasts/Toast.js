@@ -78,8 +78,7 @@ const NotificationToast = () => {
           message ? message.toLowerCase() : 'session ready to view.'
         }`;
       case 'data_files': {
-        const type = extra.response.nativeFormat === 'dir' ? 'Folder' : 'File';
-        return `${type} ${OPERATION_MAP.toastMap(operation, status, extra)}`;
+        return OPERATION_MAP.toastMap(operation, status, extra);
       }
       default:
         return message;
