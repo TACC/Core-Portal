@@ -56,6 +56,12 @@ const AppDetail = () => {
     }),
     shallowEqual
   );
+  const { appDict } = useSelector(
+    state => {
+      console.log(state);
+      return state.apps.appDict;
+    }
+  )
 
   if (error.isError) {
     const errorText = error.message ? error.message : 'Something went wrong.';

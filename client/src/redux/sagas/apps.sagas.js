@@ -175,78 +175,42 @@ export async function fetchAppDefinitionUtil(appId) {
   return result.response;
 }
 
-function* getApps() {
-  yield put({ type: 'GET_APPS_START' });
-  try {
-    const [privateResp, metaResp] = yield all([
-      call(fetchUtil, {
-        url: '/api/workspace/apps',
-        params: { private: true }
-      }),
-      call(fetchUtil, { url: '/api/workspace/meta' })
-    ]);
-    // combine apps with metadata and private non-cloned apps into single list
-    const json = [
-      ...privateResp.response.filter(
-        app => app.id.toLowerCase().startsWith('prtl.clone') === false
-      ),
-      ...metaResp.response.listing
-    ].map(meta => {
-      let appMeta = meta;
-
-      // fake meta for private apps with no metadata record
-      if (!('value' in appMeta) && 'id' in appMeta) {
-        appMeta = {
-          value: {
-            definition: appMeta,
-            type: 'agave'
-          }
-        };
-      }
-
-      // If label is undefined, set as id
-      if (!appMeta.value.definition.label) {
-        appMeta.value.definition.label = appMeta.value.definition.id;
-      }
-
-      return appMeta;
-    });
-    const data = yield sortAppMetaUtil(json);
-    yield put({
-      type: 'GET_APPS_SUCCESS',
-      payload: { ...data, defaultTab: metaResp.response.default_tab }
-    });
-  } catch (error) {
-    yield put({ type: 'GET_APPS_ERROR', payload: error });
-  }
-}
-
 const getCurrentApp = state => state.app;
 
 function* getApp(action) {
-  const { appMeta, appId } = action.payload;
+  const { appId } = action.payload;
   const currentApp = yield select(getCurrentApp);
   if (currentApp.definition.id === appId) {
     return;
   }
   yield put({ type: 'FLUSH_SUBMIT' });
   yield put({ type: 'GET_APP_START' });
-  if (appMeta && appMeta.value.type === 'html') {
-    yield put({
-      type: 'LOAD_APP',
-      payload: appMeta
-    });
-  } else {
-    try {
-      const app = yield call(fetchAppDefinitionUtil, appId);
-      yield put({ type: 'LOAD_APP', payload: app });
-    } catch (error) {
-      yield put({ type: 'GET_APP_ERROR', payload: error });
-    }
+  try {
+    const app = yield call(fetchAppDefinitionUtil, appId);
+    yield put({ type: 'LOAD_APP', payload: app });
+  } catch (error) {
+    yield put({ type: 'GET_APP_ERROR', payload: error });
+  }
+}
+
+export async function fetchAppTrayUtil() {
+  const result = await fetchUtil({
+    url: '/api/workspace/tray'
+  });
+  return result;
+}
+
+function* getAppTray(action) {
+  yield put({ type: 'GET_APPS_START' });
+  try {
+    const tray = yield call(fetchAppTrayUtil);
+    yield put({ type: 'GET_APPS_SUCCESS', payload: tray });
+  } catch (error) {
+    yield put({ type: 'GET_APPS_ERROR'})
   }
 }
 
 export default function* watchApps() {
-  yield takeLatest('GET_APPS', getApps);
+  yield takeLatest('GET_APPS', getAppTray);
   yield takeLatest('GET_APP', getApp);
 }

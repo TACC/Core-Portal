@@ -526,7 +526,8 @@ class AppsTrayView(BaseApiView):
         """
         tabs, definitions = self.getPublicApps(request.user)
         my_apps, my_definitions = self.getPrivateApps(request.user)
-        tabs.append(
+        tabs.insert(
+            0,
             {
                 "title": "My Apps",
                 "apps": my_apps

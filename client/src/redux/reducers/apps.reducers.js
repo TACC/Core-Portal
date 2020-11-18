@@ -4,15 +4,25 @@ const initialState = {
   appIcons: {},
   error: { isError: false },
   loading: false,
-  defaultTab: ''
+  defaultTab: '',
+  tray: {}
 };
+
+function unpackCategoryDict(tabs) {
+  let categoryDict = {};
+  tabs.forEach((tab) => {
+    categoryDict[tab.title] = tab.apps;
+  });
+  return categoryDict;
+}
 
 export function apps(state = initialState, action) {
   switch (action.type) {
     case 'GET_APPS_SUCCESS': {
       return {
         ...state,
-        ...action.payload,
+        categoryDict: unpackCategoryDict(action.payload.tabs),
+        appDict: action.payload.definitions,
         loading: false
       };
     }
@@ -27,7 +37,7 @@ export function apps(state = initialState, action) {
         ...state,
         error: {
           ...action.payload,
-          message: action.payload.message,
+          message: action.payload,
           isError: true
         },
         loading: false

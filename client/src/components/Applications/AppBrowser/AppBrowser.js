@@ -7,6 +7,14 @@ import { AppIcon, Icon, Message } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
+const findAppTab = (categoryDict, appId) => {
+  for (let [category, apps] of Object.entries(categoryDict)) {
+    if (apps.some(app => app.appId === appId)) {
+      return category;
+    }
+  }
+}
+
 const AppBrowser = () => {
   const { params } = useRouteMatch();
   const [activeTab, setActiveTab] = useState();
@@ -35,7 +43,7 @@ const AppBrowser = () => {
     !activeTab &&
     params.appId in appDict
   ) {
-    toggle(appDict[params.appId].value.definition.appCategory);
+    toggle(findAppTab(categoryDict, params.appId));
   } else if (!activeTab && Object.keys(categoryDict).includes(defaultTab)) {
     toggle(defaultTab);
   }
@@ -67,16 +75,16 @@ const AppBrowser = () => {
           <TabPane tabId={category} key={`${category}tabPane`}>
             <div className="apps-grid-list">
               {categoryDict[category].map(app => (
-                <div key={app.value.definition.id} className="apps-grid-item">
+                <div key={app.appId} className="apps-grid-item">
                   <NavLink
                     tag={RRNavLink}
-                    to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.value.definition.id}`}
+                    to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.appId}`}
                     activeClassName="active"
                   >
                     <span className="nav-content">
-                      <AppIcon appId={app.value.definition.id} />
+                      <AppIcon appId={app.appId} />
                       <span className="nav-text">
-                        {app.value.definition.label}
+                        {app.label}
                       </span>
                     </span>
                   </NavLink>
