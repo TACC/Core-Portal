@@ -2,14 +2,24 @@
 /* FAQ: Styles are a mix of static design and dev design */
 /* SEE: https://confluence.tacc.utexas.edu/x/gYCeBw */
 
+/* Root */
+
 .container {
   /* Vertically center child elements */
-  display: inline-flex;
   flex-direction: row;
   align-items: center;
 }
+.is-scope-inline {
+  display: inline-flex;
+}
+.is-scope-section {
+  display: flex;
+}
+
+
 
 /* Children */
+
 .text {
   /* … */
 }
@@ -17,7 +27,12 @@
   margin-right: 0.25em; /* ~4px */
 }
 
-/* Types */
+
+
+/* Modifiers */
+
+/* Modifiers: Type */
+
 .is-info {
   color: var(--global-color-primary--x-dark);
 }
@@ -55,4 +70,14 @@
   & a:hover {
     text-decoration-style: double;
   }
+}
+
+
+/* Modifiers: Scope */
+
+.is-scope-inline {
+  /* … */
+}
+.is-scope-section {
+  /* … */
 }
