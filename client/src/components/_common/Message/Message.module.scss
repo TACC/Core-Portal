@@ -26,6 +26,10 @@
 .icon {
   margin-right: 0.25em; /* ~4px */
 }
+.close {
+  // TODO: Style this
+  display: none;
+}
 
 
 
@@ -34,19 +38,19 @@
 
 /* Modifiers: Type */
 
-.is-info .icon { /* … */ }
+// .is-info .icon { }
 .is-warn .icon { color: var(--global-color-warning--alt); }
 .is-error .icon { color: var(--global-color-danger--normal); }
-.is-success .icon { color: var(--global-color-success--alt); }
+.is-success .icon { color: var(--global-color-success--normal); }
 
 
 /* Modifiers: Scope */
 
 .is-scope-inline {
-  &.is-info { /* … */ }
-  &.is-warn { color: var(--global-color-warning--alt); }
+  // &.is-info { }
+  // &.is-warn { }
   &.is-error { color: var(--global-color-danger--normal); }
-  &.is-success { /* … */ }
+  // &.is-success { }
 }
 
 .is-scope-section {
@@ -76,9 +80,9 @@
     background-color: var(--global-color-danger--weak);
   }
   &.is-success {
-    & .icon { color: var(--global-color-success--alt); }
-    border-color: var(--global-color-success--alt);
-    background-color: var(--global-color-success--alt-weak);
+    & .icon { color: var(--global-color-success--normal); }
+    border-color: var(--global-color-success--normal);
+    background-color: var(--global-color-success--weak);
   }
 }
 
