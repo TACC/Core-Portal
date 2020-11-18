@@ -128,7 +128,9 @@ function UIPatternsMessages() {
               All your warning, are come from us. {EXAMPLE_LINK}
             </Message>
           </td>
-          <td rowSpan="2" styleName="is-row-end">{NOTIFICATION_TEXT}</td>
+          <td rowSpan="2" styleName="is-row-end">
+            {NOTIFICATION_TEXT}
+          </td>
         </tr>
         <tr>
           <th scope="row">
