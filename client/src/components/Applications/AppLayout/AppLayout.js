@@ -59,14 +59,14 @@ const AppsRoutes = () => {
                 type: 'LOAD_APP',
                 payload: appDict[params.appId]
               });
-              return;
+            } else {
+              dispatch({
+                type: 'GET_APP',
+                payload: {
+                  appId: params.appId
+                }
+              });
             }
-            dispatch({
-              type: 'GET_APP',
-              payload: {
-                appId: params.appId
-              }
-            });
             return <AppDetail />;
           }}
         />

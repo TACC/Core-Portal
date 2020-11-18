@@ -56,12 +56,8 @@ const AppDetail = () => {
     }),
     shallowEqual
   );
-  const { appDict } = useSelector(
-    state => {
-      console.log(state);
-      return state.apps.appDict;
-    }
-  )
+
+  console.log(app);
 
   if (error.isError) {
     const errorText = error.message ? error.message : 'Something went wrong.';
@@ -73,14 +69,14 @@ const AppDetail = () => {
     );
   }
 
-  if (loading || !app.name || allocationsLoading) {
+  if (loading || allocationsLoading) {
     return <LoadingSpinner />;
   }
 
   return (
     <div id="appDetail-wrapper">
       {!app.name && <AppPlaceholder />}
-      {app.value && app.value.type === 'html' ? (
+      {app.html ? (
         parse(app.value.definition.html)
       ) : (
         <>
