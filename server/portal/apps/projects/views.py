@@ -14,7 +14,7 @@ from portal.utils.decorators import agave_jwt_login
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.managers.base import ProjectsManager
-from portal.apps.search.api.managers.project_search import ProjectSearchManager
+# from portal.apps.search.api.managers.project_search import ProjectSearchManager
 
 
 LOGGER = logging.getLogger(__name__)
@@ -88,9 +88,10 @@ class ProjectsApiView(BaseApiView):
         mgr = ProjectsManager(request.user)
 
         if query_string is not None:
-            search_mgr = ProjectSearchManager(username=request.user.username, query_string=query_string)
-            search_mgr.search(offset=offset, limit=limit)
-            res = search_mgr.list(mgr=mgr)
+            # search_mgr = ProjectSearchManager(username=request.user.username, query_string=query_string)
+            # search_mgr.search(offset=offset, limit=limit)
+            # res = search_mgr.list(mgr=mgr)
+            return
         else:
             res = mgr.list(
                 offset=offset,
