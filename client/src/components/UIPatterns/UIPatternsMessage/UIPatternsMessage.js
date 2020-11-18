@@ -5,7 +5,7 @@ import './UIPatternsMessage.module.scss';
 
 const EXAMPLE_LINK = (
   <a href="#" className="wb-link">
-    Read more.
+    Example link.
   </a>
 );
 
