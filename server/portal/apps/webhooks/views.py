@@ -16,6 +16,11 @@ from portal.apps.notifications.models import Notification
 from portal.apps.search.tasks import agave_indexer
 from portal.views.base import BaseApiView
 from portal.libs.exceptions import PortalLibException
+from portal.exceptions.api import ApiException
+from portal.apps.webhooks.utils import (
+    validate_webhook,
+    execute_callback
+)
 
 from django.conf import settings
 
@@ -303,4 +308,18 @@ class InteractiveWebhookView(BaseApiView):
         #     logger.exception(e)
         #     return HttpResponse("ERROR", status=400)
 
+        return HttpResponse('OK')
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CallbackWebhookView(BaseApiView):
+    """
+    Validates incoming webhook and executes registered callbacks
+    """
+
+    def post(self, request, webhook_id):
+        external_call = validate_webhook(webhook_id)
+        if external_call is None:
+            raise ApiException
+        execute_callback(external_call, request)
         return HttpResponse('OK')

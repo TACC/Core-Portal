@@ -89,6 +89,13 @@ class TestGetAllocations(TestCase):
         super(TestGetAllocations, self).tearDown()
         self.mock_tas_patcher.stop()
 
+    @patch('portal.apps.users.utils.IndexedAllocation')
+    @patch('portal.apps.users.utils.get_tas_allocations')
+    def test_force_get_allocations(self, mock_get, mock_idx):
+        mock_get.return_value = []
+        get_allocations("username", force=True)
+        mock_get.assert_called_with("username")
+
     def test_allocations_returned(self):
         self.mock_tas.return_value.projects_for_user.return_value = [
             {

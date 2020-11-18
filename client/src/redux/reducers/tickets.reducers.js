@@ -1,4 +1,4 @@
-const initialTicketList = {
+export const initialTicketList = {
   content: [],
   loading: false,
   loadingError: false,

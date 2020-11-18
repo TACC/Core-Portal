@@ -16,11 +16,17 @@ class TestAppsApiViews(TestCase):
         super(TestAppsApiViews, cls).setUpClass()
         cls.mock_client_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client')
         cls.mock_client = cls.mock_client_patcher.start()
+        cls.mock_get_user_data_patcher = patch('portal.apps.accounts.managers.user_systems.get_user_data')
+        with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
+            tas_user = json.load(f)
+        cls.mock_get_user_data = cls.mock_get_user_data_patcher.start()
+        cls.mock_get_user_data.return_value = tas_user
 
     @classmethod
     def tearDownClass(cls):
-        cls.mock_client_patcher.stop()
         super(TestAppsApiViews, cls).tearDownClass()
+        cls.mock_get_user_data_patcher.stop()
+        cls.mock_client_patcher.stop()
 
     def setUp(self):
         agave_path = os.path.join(settings.BASE_DIR, 'fixtures/agave')

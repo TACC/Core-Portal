@@ -32,12 +32,12 @@ function getPath(page) {
   }
   return path;
 }
-function renderSideBar(store) {
+function renderSideBar(store, showUIPatterns) {
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['/workbench']}>
         <Route path='/workbench'>
-          <Sidebar />
+          <Sidebar showUIPatterns={showUIPatterns}/>
         </Route>
       </MemoryRouter>
     </Provider>
@@ -48,7 +48,8 @@ describe('workbench sidebar', () => {
   const mockStore = configureStore();
   it.each(PUBLIC_PAGES)('should have a link to the %s page', page => {
     const { getByText, queryByRole } = renderSideBar(
-      mockStore({ workbench, notifications })
+      mockStore({ workbench, notifications }),
+      false
     );
     const path = getPath(page);
     expect(getByText(page)).toBeDefined();
@@ -64,7 +65,8 @@ describe('workbench sidebar', () => {
       mockStore({
         workbench,
         notifications: { list: { unread: 1 } },
-      })
+      }),
+      false
     );
 
     expect(getByRole('status')).toBeDefined();
@@ -73,14 +75,16 @@ describe('workbench sidebar', () => {
 
   it.each(DEBUG_PAGES)('is not available', page => {
     const { queryByText } = renderSideBar(
-      mockStore({ workbench, notifications })
+      mockStore({ workbench, notifications }),
+      false
     );
     expect(queryByText(page)).toBeNull();
   });
 
   it.each(DEBUG_PAGES)('is available in debug mode', page => {
     const { getByText } = renderSideBar(
-      mockStore({ workbench: { status: { debug: true } }, notifications })
+      mockStore({ workbench: { status: { debug: true } }, notifications }),
+      true
     );
     const path = getPath(page);
     expect(getByText(page)).toBeDefined();
