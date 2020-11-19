@@ -1,9 +1,5 @@
 export const getMaxQueueRunTime = (app, queueName) => {
-  const queue = app.exec_sys.queues.find(q => q.name === queueName);
-  if (queue) {
-    return queue.maxRequestedTime;
-  }
-  return "02:00:00";
+  return app.exec_sys.queues.find(q => q.name === queueName).maxRequestedTime;
 };
 
 /**

@@ -28,8 +28,6 @@ const AppBrowser = () => {
     shallowEqual
   );
 
-  console.log(categoryDict, appDict);
-
   if (error.isError) {
     return (
       <Message type="warn" className="appDetail-error">

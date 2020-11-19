@@ -232,10 +232,6 @@ export const AppSchemaForm = ({ app }) => {
             const queue = app.exec_sys.queues.find(
               q => q.name === values.batchQueue
             );
-            console.log(app.id);
-            console.log(values.batchQueue);
-            console.log(queue);
-            const maxNodes = queue.maxNodes ? queue.maxNodes : 1;
             const maxQueueRunTime = getMaxQueueRunTime(app, values.batchQueue);
             const schema = Yup.object({
               parameters: Yup.object({ ...appFields.schema.parameters }),
@@ -248,11 +244,11 @@ export const AppSchemaForm = ({ app }) => {
                 .oneOf(app.exec_sys.queues.map(q => q.name)),
               nodeCount: Yup.number()
                 .min(1)
-                .max(maxNodes),
+                .max(queue.maxNodes),
               processorsOnEachNode: Yup.number()
                 .min(1)
                 .max(
-                  Math.floor(queue.maxProcessorsPerNode / maxNodes) || 1
+                  Math.floor(queue.maxProcessorsPerNode / queue.maxNodes) || 1
                 ),
               maxRunTime: Yup.string()
                 .matches(
