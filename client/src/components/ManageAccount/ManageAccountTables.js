@@ -132,6 +132,7 @@ const LicenseCell = ({ cell: { value } }) => {
           <div dangerouslySetInnerHTML={{ __html }} />
           Click{' '}
           <Link
+            class="btn-link"
             to={`/workbench/dashboard/tickets/create?subject=${type}+Activation`}
           >
             here

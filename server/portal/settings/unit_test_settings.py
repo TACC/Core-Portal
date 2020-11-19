@@ -53,9 +53,6 @@ ROOT_URLCONF = 'portal.urls'
 
 INSTALLED_APPS = [
 
-    # django CMS admin style must be before django.contrib.admin
-    'djangocms_admin_style',
-
     # Core Django.
     'django.contrib.admin',
     'django.contrib.auth',
@@ -64,20 +61,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django.contrib.sites',  # also required for django CMS
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
     # Django Channels
     'channels',
-
-    # Django recaptcha.
-    'captcha',
-
-    # Some django-filer/Pillow stuff
-    'filer',
-    'easy_thumbnails',
-    'mptt',
 
     # Pipeline.
     'bootstrap4',
@@ -92,24 +80,10 @@ INSTALLED_APPS = [
     'portal.apps.notifications',
     'portal.apps.onboarding',
     'portal.apps.search',
+    'portal.apps.webhooks',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
-
-    # django CMS
-    'cms',
-    'menus',
-    'treebeard',
-    'sekizai',
-    'djangocms_text_ckeditor',
-    'djangocms_link',
-    'djangocms_file',
-    'djangocms_picture',
-    'djangocms_video',
-    'djangocms_googlemap',
-    'djangocms_snippet',
-    'djangocms_style',
-    'djangocms_column',
 
 ]
 
@@ -123,18 +97,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'django.middleware.locale.LocaleMiddleware',    # needed for django CMS
     'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
-
-    # Throws an Error.
-    # 'portal.middleware.PortalTermsMiddleware',
-
-    # django CMS
-    'cms.middleware.user.CurrentUserMiddleware',
-    'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',
-    'cms.middleware.utils.ApphookReloadMiddleware',
 ]
 
 TEMPLATES = [
@@ -148,9 +111,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-
-                'sekizai.context_processors.sekizai',
-                'cms.context_processors.cms_settings',
 
                 'portal.utils.contextprocessors.analytics',
                 'portal.utils.contextprocessors.debug',
@@ -196,10 +156,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-
-CMS_TEMPLATES = (
-    ('cms_page.html', 'Main Site Page'),
-)
 
 LANGUAGES = [
     ('en-us', 'US English')
@@ -280,7 +236,12 @@ PORTAL_PROJECTS_PRIVATE_KEY = ('-----BEGIN RSA PRIVATE KEY-----'
 PORTAL_PROJECTS_PUBLIC_KEY = 'ssh-rsa change this'
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    'portal.apps.onboarding.steps.test_steps.MockStep'
+    {
+        'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
+        'settings': {
+            'key': 'value'
+        }
+    }
 ]
 PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = 'dev'
 
@@ -418,77 +379,15 @@ LOGGING = {
 
 MIGRATION_MODULES = {
     'auth': None,
-    'cms': None,
     'contenttypes': None,
 
 
     'default': None,
     'core': None,
     'profiles': None,
-
-    # 'snippets': None,
-    'sites': None,
-
-    # 'scaffold_templates': None,
-
-    'djangocms_column': None,
-    'djangocms_file': None,
-    'djangocms_googlemap': None,
-    'djangocms_link': None,
-    'djangocms_picture': None,
-    'djangocms_snippet': None,
-    'djangocms_style': None,
-    'djangocms_text_ckeditor': None,
-    'djangocms_video': None,
-    'easy_thumbnails': None,
-    'filer': None,
-    'sessions': None,
 }
 
 COMMUNITY_INDEX_SCHEDULE = {'hour': 0, 'minute': 0, 'day_of_week': 0}
-
-# CMS Test Coverage for Settings.
-
-CMS_PERMISSION = True
-
-CMS_PLACEHOLDER_CONF = {}
-
-
-CMSPLUGIN_FILER_IMAGE_STYLE_CHOICES = (
-    ('default', 'Default'),
-)
-CMSPLUGIN_FILER_IMAGE_DEFAULT_STYLE = 'default'
-
-# These settings enable iFrames in the CMS cktext-editor.
-TEXT_ADDITIONAL_TAGS = ('iframe',)
-TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'src', 'height', 'width')
-
-TEXT_SAVE_IMAGE_FUNCTION = 'cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
-
-THUMBNAIL_HIGH_RESOLUTION = True
-
-THUMBNAIL_PROCESSORS = (
-    'easy_thumbnails.processors.colorspace',
-    'easy_thumbnails.processors.autocrop',
-    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
-    'easy_thumbnails.processors.filters',
-    'easy_thumbnails.processors.background'
-)
-
-CKEDITOR_SETTINGS = {
-    'language': '{{ language }}',
-    'skin': 'moono-lisa',
-    'toolbar': 'CMS',
-}
-
-# DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = RECAPTCHA_PUBLIC_KEY
-# DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = RECAPTCHA_PRIVATE_KEY
-
-SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
-
-DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
-
-DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
 
 # Channels
 ASGI_APPLICATION = 'portal.routing.application'
@@ -501,18 +400,22 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
 PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
-        'prefix': 'frontera.home.{}',                                   # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
-        'host': 'frontera.tacc.utexas.edu',                             # PORTAL_DATA_DEPOT_STORAGE_HOST
-        'home_dir': '/home1',                                     # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
-        'storage_port': 22,
+        'description': 'My Data on Frontera for {username}',
+        'site': 'frontera',
+        'systemId': 'frontera.home.{username}',                       # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
+        'host': 'frontera.tacc.utexas.edu',                         # PORTAL_DATA_DEPOT_STORAGE_HOST
+        'rootDir': '/home1/{tasdir}',                              # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+        'port': 22,
         'icon': None,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'prefix': 'longhorn.home.{}',
+        'description': 'My Data on Longhorn for {username}',
+        'site': 'frontera',
+        'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
-        'home_dir': '/home',
-        'storage_port': 22,
+        'rootDir': '/home/{tasdir}',
+        'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
     },
@@ -545,3 +448,6 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None
     }
 ]
+
+WH_BASE_URL = "https://testserver"
+PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"

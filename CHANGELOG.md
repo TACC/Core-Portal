@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.2] - 2020-10-16: Job DateTime Fix and Bugfixes
+
+### Added
+
+- FP-570: Add Allocations Sagas Tests (#213)
+
+### Changed
+
+- Run actions on all PR Branches (#205)
+- FP-735: Refactor Unauthed Ticket Creation (#210)
+- FP-704: Remove citizenship field from Manage Account Required Information (#202)
+
+### Fixed
+
+- FP-723: Pin celery to 4.4.7 to resolve dependency issue (#203)
+- Bump django from 2.2.7 to 2.2.13 (#206)
+- FP-736: Fix Frontend Coverage (#212)
+- FP-760: Show time according to client's time zone (#223)
+- FP-738: Fix Timezone Offset from Tapis job DateTimes (#211)
+
+### Removed
+
+- FP-424: Remove unused Manage Account code (#200)
+
 ## [2.1.1] - 2020-08-24: Grey-Cardinal Release
 
 ### Fixed
@@ -151,7 +175,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.1.1...HEAD
+[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.1.2...HEAD
+[2.1.2]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.2
 [2.1.1]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.1
 [2.1.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.0
 [2.0.1]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.0.1

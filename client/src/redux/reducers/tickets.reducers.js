@@ -1,4 +1,4 @@
-const initialTicketList = {
+export const initialTicketList = {
   content: [],
   loading: false,
   loadingError: false,
@@ -137,7 +137,7 @@ export function ticketDetailedView(state = initialDetailedTicketView, action) {
   }
 }
 
-const initialTicketCreateState = {
+export const initialTicketCreateState = {
   creating: false,
   creatingError: false,
   creatingErrorMessage: '',
