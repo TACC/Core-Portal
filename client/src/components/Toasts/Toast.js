@@ -3,6 +3,7 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
+import { Icon } from '_common';
 import './Toast.scss';
 import { STATUS_TEXT_MAP } from '../Jobs/JobsStatus';
 import OPERATION_MAP from '../DataFiles/DataFilesStatus';
@@ -56,6 +57,8 @@ const NotificationToast = () => {
    * @param {string} notification.extra.status - The event status
    * @param {string} notification.message - The event message
    * @param {string} notification.event_type - The event type
+   * @param {string} notification.status - The status of the notification event
+   * @param {string} notification.operation - The notification operation type
    * @return {string} Message
    *
    * @example
@@ -91,7 +94,9 @@ const NotificationToast = () => {
       status: PropTypes.string
     }),
     event_type: PropTypes.string.isRequired,
-    message: PropTypes.string
+    message: PropTypes.string,
+    status: PropTypes.string,
+    operation: PropTypes.string
   };
   getToastMessage.defaultProps = {
     extra: {},
@@ -121,14 +126,21 @@ const NotificationToast = () => {
       }}
       message={
         <>
-          <div className="notification-toast-icon-wrapper">
-            <i className="icon icon-history" />
-          </div>
-          <div className="notification-toast-content">
-            <span>
-              {notification ? getToastMessage(notification) : undefined}
-            </span>
-          </div>
+          {notification && (
+            <>
+              <div className="notification-toast-icon-wrapper">
+                <Icon
+                  name="history"
+                  className={
+                    notification.status === 'ERROR' ? 'toast-is-error' : ''
+                  }
+                />
+              </div>
+              <div className="notification-toast-content">
+                <span>{getToastMessage(notification)}</span>
+              </div>
+            </>
+          )}
         </>
       }
     />
