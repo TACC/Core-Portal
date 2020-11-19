@@ -35,48 +35,32 @@ SetupStepView tests
 """
 
 
-def test_get_user_parameter(rf, regular_user):
-    request = rf.get("/api/onboarding/user/username")
-    request.user = regular_user
-    view = SetupStepView()
-    # A user should be able to retrieve themselves
-    assert view.get_user_parameter(request, "username") == regular_user
-
-    # A user should not be able to retrieve someone else's setup events
-    with pytest.raises(PermissionDenied):
-        view.get_user_parameter(request, "other")
-
-
-def test_get_user_parameter_as_staff(rf, regular_user, staff_user):
-    request = rf.get("/api/onboarding/user/username")
-    request.user = staff_user
-    view = SetupStepView()
-
-    # A staff user should be able to retrieve another user's setup events
-    assert view.get_user_parameter(request, "username") == regular_user
-
-    # An 404 should be raised when trying to retrieve a non-existent user
-    with pytest.raises(Http404):
-        view.get_user_parameter(request, "other")
-
-
-def test_get_user_as_user(settings, regular_user, client, mock_steps):
-    # A user should be able to retrieve their own setup event info
-    client.force_login(regular_user)
-    response = client.get("/api/onboarding/user/username", follow=True)
-    result = response.json()
-
-    # Make sure we got a valid response
+def test_get_user(client, authenticated_user):
+    response = client.get('/api/onboarding/user/{}'.format(authenticated_user.username))
+    assert response.status_code == 200
+    result = json.loads(response.content)
     assert result["username"] == "username"
-    assert "steps" in result
-    assert result["steps"][0]["step"] == 'portal.apps.onboarding.steps.test_steps.MockStep'
-    assert result["steps"][0]["displayName"] == 'Mock Step'
-    assert result["steps"][0]["state"] == SetupState.COMPLETED
-    assert len(result["steps"][0]["events"]) == 2
 
 
-def test_get_user_as_staff(settings, staff_user, client, mock_steps):
-    client.force_login(staff_user)
+def test_get_user_unauthenticated_forbidden(client, regular_user):
+    response = client.get('/api/onboarding/user/{}'.format(regular_user.username))
+    assert response.status_code == 302
+
+
+def test_get_other_user_forbidden(client, authenticated_user, regular_user2):
+    response = client.get('/api/onboarding/user/{}'.format(regular_user2.username))
+    assert response.status_code == 403
+
+
+def test_get_user_as_staff(client, authenticated_staff, regular_user):
+    response = client.get("/api/onboarding/user/{}".format(regular_user.username))
+    assert response.status_code == 200
+    result = json.loads(response.content)
+    assert result["username"] == regular_user.username
+    assert len(result["steps"][0]["events"]) == 0
+
+
+def test_get_user_as_staff_with_steps(settings, authenticated_staff, client, mock_steps):
     response = client.get("/api/onboarding/user/username", follow=True)
     result = response.json()
 
@@ -85,41 +69,41 @@ def test_get_user_as_staff(settings, staff_user, client, mock_steps):
     assert len(result["steps"][0]["events"]) == 2
 
 
-def test_forbidden(client, regular_user):
-    client.force_login(regular_user)
-    response = client.get("/api/onboarding/user/invalid/", follow=True)
-    # This raises an error, which is caught and converted
-    # into a 500 by portal.views.base
-    assert response.status_code != 200
+def test_get_non_existent_user_as_staff(client, authenticated_staff):
+    response = client.get("/api/onboarding/user/non_existent_user")
+    assert response.status_code == 404
 
 
-def test_not_found(client, staff_user):
-    client.force_login(staff_user)
-    response = client.get("/api/onboarding/user/invalid/", follow=True)
-    assert response.status_code != 200
+def test_get_user_as_user(client, settings, authenticated_user, mock_steps):
+    # A user should be able to retrieve their own setup event info
+    response = client.get("/api/onboarding/user/{}".format(authenticated_user.username), follow=True)
+    result = response.json()
+
+    result = json.loads(response.content)
+    assert result["username"] == authenticated_user.username
+    assert "steps" in result
+    assert result["steps"][0]["step"] == 'portal.apps.onboarding.steps.test_steps.MockStep'
+    assert result["steps"][0]["displayName"] == 'Mock Step'
+    print(result["steps"][0])
+    assert result["steps"][0]["state"] == SetupState.COMPLETED
+    assert len(result["steps"][0]["events"]) == 2
 
 
-def test_incomplete_post(rf, regular_user):
-    view = SetupStepView()
-
-    # post should return HttpResponseBadRequest if fields are missing
-    request = rf.post(
-        "/api/onboarding/user/username",
+def test_incomplete_post(client, authenticated_user):
+    # post should return HttpResponseBadRequest (400) if fields are missing
+    response = client.post(
+        "/api/onboarding/user/{}".format(authenticated_user),
         content_type="application/json",
         data=json.dumps({"action": "user_confirm"})
     )
-    request.user = regular_user
-    response = view.post(request, "username")
-    assert type(response) == HttpResponseBadRequest
+    assert response.status_code == 400
 
-    request = rf.post(
-        "/api/onboarding/user/username",
+    response = client.post(
+        "/api/onboarding/user/{}".format(authenticated_user),
         content_type="application/json",
         data=json.dumps({"step": "setupstep"})
     )
-    request.user = regular_user
-    response = view.post(request, "username")
-    assert type(response) == HttpResponseBadRequest
+    assert response.status_code == 400
 
 
 def test_client_action(regular_user, rf):
@@ -142,14 +126,16 @@ def test_client_action(regular_user, rf):
     )
 
 
-def test_reset_not_staff(regular_user, rf):
-    view = SetupStepView()
-    mock_step = MagicMock()
-    # A user should not be able to perform the reset action
-    with pytest.raises(PermissionDenied):
-        request = rf.post("/api/onboarding/user/username")
-        request.user = regular_user
-        view.reset(request, mock_step)
+def test_reset_not_staff(client, authenticated_user):
+    response = client.post(
+        "/api/onboarding/user/{}".format(authenticated_user.username),
+        content_type='application/json',
+        data=json.dumps({
+            "action": "reset",
+            "step": "portal.apps.onboarding.steps.test_steps.MockStep"
+        })
+    )
+    assert response.status_code == 403
 
 
 def test_reset(rf, staff_user, regular_user, mocked_log_setup_state):
@@ -167,31 +153,23 @@ def test_reset(rf, staff_user, regular_user, mocked_log_setup_state):
     mock_step.prepare.assert_called()
     mock_step.log.assert_called()
     mocked_log_setup_state.assert_called()
-    assert not mock_step.user.profile.setup_complete
+    assert mock_step.user.profile.setup_complete == False
 
 
-def test_complete_not_staff(rf, regular_user):
-    view = SetupStepView()
-    mock_step = MagicMock()
-    request = rf.post("/api/onboarding/user/username")
-    request.user = regular_user
-    with pytest.raises(PermissionDenied):
-        view.complete(request, mock_step)
+def test_complete_not_staff(client, authenticated_user, regular_user2):
+    response = client.post("/api/onboarding/user/{}".format(regular_user2))
+    assert response.status_code == 403
 
 
-def test_complete(rf, staff_user, regular_user, mock_steps, mocked_executor):
-    view = SetupStepView()
-
-    request = rf.post(
-        "/api/onboarding/user/username",
+def test_complete(client, authenticated_staff, regular_user, mock_steps, mocked_executor):
+    response = client.post(
+        "/api/onboarding/user/{}".format(regular_user.username),
         content_type='application/json',
         data=json.dumps({
             "action": "complete",
             "step": "portal.apps.onboarding.steps.test_steps.MockStep"
         })
     )
-    request.user = staff_user
-    response = view.post(request, "username")
 
     # set_state should have put MockStep in COMPLETED, as per request
     events = [event for event in SetupEvent.objects.all()]
@@ -209,23 +187,16 @@ SetupAdminView tests
 """
 
 
-def test_admin_route(rf, staff_user):
-    view = SetupAdminView()
-
+def test_admin_route(client, authenticated_staff):
     # If the user is authenticated and is_staff, then the route should
     # return a JsonResponse
-    request = rf.get("/api/onboarding/admin")
-    request.user = staff_user
-
-    # Get the JsonResponse from SetupAdminView.get
-    response = view.get(request)
+    response = client.get("/api/onboarding/admin/")
     assert type(response) == JsonResponse
 
 
-def test_admin_route_is_protected(regular_user, client):
+def test_admin_route_is_protected(authenticated_user, client):
     # Test to make sure route is protected
-    # If the user is not staff, then the route should return a redirect
-    client.force_login(regular_user)
+    # If the user is not staff, then the route should return a redirect to admin login
     response = client.get("/api/onboarding/admin/", follow=False)
     assert response.status_code == 302
 
@@ -243,14 +214,10 @@ def test_create_user_result(mock_steps, regular_user):
     assert "lastEvent" not in result
 
 
-def test_get_no_profile(rf, staff_user, regular_user):
-    view = SetupAdminView()
-
+def test_get_no_profile(client, authenticated_staff, regular_user):
     # Test that no object is returned for a user with no profile
     regular_user.profile.delete()
-    request = rf.get("/api/onboarding/admin/")
-    request.user = staff_user
-    response = view.get(request)
+    response = client.get("/api/onboarding/admin/")
     response_data = json.loads(response.content)
 
     # regular_user should not appear in results
@@ -259,22 +226,14 @@ def test_get_no_profile(rf, staff_user, regular_user):
     )
 
 
-def test_get(rf, staff_user, regular_user, mock_steps):
+def test_get(client, authenticated_staff, regular_user, mock_steps):
     regular_user.profile.setup_complete = False
     regular_user.profile.save()
 
-    staff_user.profile.setup_complete = True
-    staff_user.profile.save()
+    authenticated_staff.profile.setup_complete = True
+    authenticated_staff.profile.save()
 
-    view = SetupAdminView()
-
-    # Unit test for get method. We are using RequestFactory.get, but
-    # really just to generate a request object with an authenticated user
-    request = rf.get("/api/onboarding/admin/")
-    request.user = staff_user
-
-    # Get the JsonResponse from SetupAdminView.get
-    response = view.get(request)
+    response = client.get("/api/onboarding/admin/")
     result = json.loads(response.content)
 
     users = result["users"]
