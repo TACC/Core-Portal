@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     'portal.apps.datafiles',
     'portal.apps.system_monitor',
     'portal.apps.system_creation',
+    'portal.apps.jupyter_mounts',
 ]
 
 MIDDLEWARE = [
