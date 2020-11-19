@@ -26,7 +26,7 @@ class TestRequestAccessStep(TestCase):
         # prepare should log a STAFFWAIT state
         step = RequestAccessStep(self.user)
         step.prepare()
-        self.assertEqual(step.state, SetupState.STAFFWAIT)
+        self.assertEqual(step.state, SetupState.PENDING)
         mock_log.assert_called_with(ANY)
 
     @patch('portal.apps.onboarding.steps.access.RequestAccessStep.fail')

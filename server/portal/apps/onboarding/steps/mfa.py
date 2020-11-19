@@ -6,34 +6,27 @@ import requests
 
 
 class MFAStep(AbstractStep):
-    mfa_message = """
-        <p>
-            Thank you for using TACC. Prior to accessing this portal, your TACC account
-            must have multi-factor authentication pairing, using the TACC Token App.
-            You may setup your account pairings by viewing your profile at:
-        </p>
-        <p>
-            <a href="https://portal.tacc.utexas.edu/account-profile/-/profile/view" target="_blank">
-                https://portal.tacc.utexas.edu/account-profile/-/profile/view
-            </a>
-        </p>
-        <p>
-            When you have completed the pairing process, you may click the Confirm
-            button in the onboarding page to continue.
-        </p>
-    """
-
     def __init__(self, user):
         super(MFAStep, self).__init__(user)
+        self.user_confirm = "Confirm MFA Pairing"
 
     def display_name(self):
-        return "Confirming MFA Pairing"
+        return "Multi-Factor Authentication"
+
+    def description(self):
+        return """First setup multi-faction authentication on the
+               <a style="color:#9d85ef;" href="https://portal.tacc.utexas.edu">TACC User Portal</a>,
+               then confirm the pairing was successful."""
+
+    def custom_status(self):
+        if self.state == SetupState.COMPLETED:
+            return "Confirmed"
+        return None
 
     def prepare(self):
         self.state = SetupState.PENDING
         self.log(
             "Checking for a multi-factor authentication pairing",
-
         )
 
     def mfa_check(self):
@@ -50,9 +43,6 @@ class MFAStep(AbstractStep):
             self.log(
                 """We were unable to verify your multi-factor authentication pairing. Please try again,
                 then click the Confirm button.""",
-                data={
-                    "more_info": self.mfa_message
-                }
             )
 
     def client_action(self, action, data, request):
