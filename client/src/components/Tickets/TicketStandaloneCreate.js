@@ -31,7 +31,10 @@ function TicketStandaloneCreate() {
           This page allows you to submit a help request via an RT Ticket.
         </Alert>
         <BrowserChecker />
-        <TicketCreateForm authenticatedUser={authenticatedUser} />
+        <TicketCreateForm
+          authenticatedUser={authenticatedUser}
+          provideDashBoardLinkOnSuccess={false}
+        />
       </div>
     </>
   );

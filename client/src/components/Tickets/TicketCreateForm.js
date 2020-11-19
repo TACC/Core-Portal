@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Formik, Form } from 'formik';
 import {
@@ -73,10 +73,9 @@ CreatedTicketInformation.propTypes = {
 
 function TicketCreateForm({
   authenticatedUser,
+  initialSubject,
   provideDashBoardLinkOnSuccess
 }) {
-  const { search } = useLocation();
-  const subject = new URLSearchParams(search).get('subject');
   const creating = useSelector(state => state.ticketCreate.creating);
   const creatingError = useSelector(state => state.ticketCreate.creatingError);
   const creatingErrorMessage = useSelector(
@@ -91,7 +90,7 @@ function TicketCreateForm({
 
   const defaultValues = useMemo(
     () => ({
-      subject: subject || '',
+      subject: initialSubject,
       problem_description: '',
       first_name: authenticatedUser ? authenticatedUser.first_name : '',
       last_name: authenticatedUser ? authenticatedUser.last_name : '',
@@ -99,7 +98,7 @@ function TicketCreateForm({
       cc: '',
       attachments: []
     }),
-    [authenticatedUser]
+    [authenticatedUser, initialSubject]
   );
 
   const dispatch = useDispatch();
@@ -227,6 +226,8 @@ function TicketCreateForm({
 TicketCreateForm.propTypes = {
   /** provide link to dashboard tickets when creating a ticket */
   provideDashBoardLinkOnSuccess: PropTypes.bool.isRequired,
+  /** initial subject for ticket */
+  initialSubject: PropTypes.string,
   /** authenticated user */
   authenticatedUser: PropTypes.shape({
     first_name: PropTypes.string,
@@ -238,7 +239,8 @@ TicketCreateForm.propTypes = {
 };
 
 TicketCreateForm.defaultProps = {
-  authenticatedUser: null
+  authenticatedUser: null,
+  initialSubject: ''
 };
 
 export default TicketCreateForm;

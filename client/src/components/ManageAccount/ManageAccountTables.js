@@ -3,7 +3,6 @@ import { useTable } from 'react-table';
 import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { shape, string, arrayOf } from 'prop-types';
-import { Link } from 'react-router-dom';
 
 export const TableTemplate = ({ attributes }) => {
   const { getTableProps, rows, prepareRow } = useTable(attributes);
@@ -102,6 +101,7 @@ export const RequiredInformation = () => {
 };
 /* eslint-disable react/no-danger */
 const LicenseCell = ({ cell: { value } }) => {
+  const dispatch = useDispatch();
   const [modal, setModal] = React.useState(false);
   const toggle = () => setModal(!modal);
   const { license_type: type, template_html: __html } = value;
@@ -131,12 +131,19 @@ const LicenseCell = ({ cell: { value } }) => {
         <ModalBody>
           <div dangerouslySetInnerHTML={{ __html }} />
           Click{' '}
-          <Link
-            className="btn-link"
-            to={`/workbench/dashboard/tickets/create?subject=${type}+Activation`}
+          <Button
+            onClick={() =>
+              dispatch({
+                type: 'TICKET_CREATE_OPEN_MODAL',
+                payload: {
+                  subject: `${type} Activation`
+                }
+              })
+            }
+            color="link"
           >
             here
-          </Link>{' '}
+          </Button>
           to open a ticket.
         </ModalBody>
       </Modal>

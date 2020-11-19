@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
 import { useDispatch } from 'react-redux';
-import { Link, Route, Switch, useHistory } from 'react-router-dom';
+import { Link, Route, Switch } from 'react-router-dom';
 import JobsView from '../Jobs';
-import Tickets, { TicketModal, TicketCreateModal } from '../Tickets';
+import Tickets, { TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
 import BrowserChecker from '../_common/BrowserChecker';
 import * as ROUTES from '../../constants/routes';
@@ -11,7 +11,6 @@ import './Dashboard.scss';
 
 function Dashboard() {
   const dispatch = useDispatch();
-  const history = useHistory();
 
   return (
     <div className="dashboard-wrapper">
@@ -69,14 +68,9 @@ function Dashboard() {
           exact
           path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
           render={() => {
-            return (
-              <TicketCreateModal
-                close={() => {
-                  history.push(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
-                }}
-                provideDashBoardLinkOnSuccess
-              />
-            );
+            dispatch({
+              type: 'TICKET_CREATE_OPEN_MODAL'
+            });
           }}
         />
         <Route

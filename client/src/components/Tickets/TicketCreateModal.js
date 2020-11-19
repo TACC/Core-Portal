@@ -1,17 +1,50 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import PropTypes from 'prop-types';
 import TicketCreateForm from './TicketCreateForm';
+import * as ROUTES from '../../constants/routes';
 import './TicketCreateModal.scss';
 
-function TicketCreateModal({ isOpen, close, provideDashBoardLinkOnSuccess }) {
+function TicketCreateModal() {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
   const authenticatedUser = useSelector(state => state.authenticatedUser.user);
+  const {
+    modalOpen,
+    subject,
+    showAsModalOnDashboard,
+    provideDashBoardLinkOnSuccess
+  } = useSelector(state => state.ticketCreateModal);
+
+  useEffect(() => {
+    if (
+      modalOpen &&
+      showAsModalOnDashboard &&
+      location.path !==
+        `${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`
+    ) {
+      history.push(
+        `${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`
+      );
+    }
+  }, [showAsModalOnDashboard, modalOpen]);
+
+  const close = () => {
+    dispatch({
+      type: 'TICKET_CREATE_CLOSE_MODAL'
+    });
+
+    if (showAsModalOnDashboard) {
+      history.push(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
+    }
+  };
 
   return (
     <Modal
       modalClassName="ticket-create-modal"
-      isOpen={isOpen}
+      isOpen={modalOpen}
       toggle={close}
       size="lg"
       contentClassName="ticket-create-modal-content"
@@ -21,24 +54,10 @@ function TicketCreateModal({ isOpen, close, provideDashBoardLinkOnSuccess }) {
         <TicketCreateForm
           authenticatedUser={authenticatedUser}
           provideDashBoardLinkOnSuccess={provideDashBoardLinkOnSuccess}
+          initialSubject={subject}
         />
       </ModalBody>
     </Modal>
   );
 }
-
-TicketCreateModal.propTypes = {
-  /** modal is open */
-  isOpen: PropTypes.bool,
-  /** function to call when modal is closed */
-  close: PropTypes.func.isRequired,
-  /** provide link to dashboard tickets when creating a ticket */
-  provideDashBoardLinkOnSuccess: PropTypes.bool
-};
-
-TicketCreateModal.defaultProps = {
-  isOpen: true,
-  provideDashBoardLinkOnSuccess: false
-};
-
 export default TicketCreateModal;
