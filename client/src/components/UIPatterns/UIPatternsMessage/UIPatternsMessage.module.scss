@@ -21,6 +21,7 @@
     & thead tr:not(:first-child):not(:last-child) th { border-bottom-width: 0; }
 
     ul { margin: 0; }
+    [role="status"] + [role="status"] { margin-top: 0.5em; }
 }
 th.secondary {
     font-weight: normal;

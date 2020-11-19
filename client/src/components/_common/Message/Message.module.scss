@@ -5,30 +5,61 @@
 /* Root */
 
 .container {
+  // SEE: "Modifiers"
+  // --buffer-vert: 0;
+  // --buffer-horz: 0;
+
   /* Vertically center child elements */
   flex-direction: row;
-  align-items: center;
+  align-items: start; /* FAQ: Effect visible only if text wraps */
+
+  padding: var(--buffer-vert) var(--buffer-horz);
 }
 .is-scope-inline {
+  --buffer-vert: 0;
+  --buffer-horz: 0;
+
   display: inline-flex;
 }
 .is-scope-section {
+  --buffer-vert: 0.5em;
+  --buffer-horz: 1em;
+
   display: flex;
+}
+p.is-scope-section {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 
 
 /* Children */
 
-.text {
-  /* … */
+.text a {
+  white-space: nowrap;
 }
-.icon {
+// .type-icon,
+// .close-button {
+//   align-self: start;
+// }
+.type-icon {
   margin-right: 0.25em; /* ~4px */
+  margin-top: 0.125em; /* HACK: Align better with 14px–17px sibling font */
 }
-.close {
-  // TODO: Style this
-  display: none;
+.close-button {
+  margin-left: auto;
+  /* FAQ: Ignore padding by moving over it */
+  transform: translateX(var(--buffer-horz));
+
+  border: none;
+  background: transparent;
+
+  -webkit-appearance: none;
+  appearance: none;
+}
+.close-icon {
+  /* … */
 }
 
 
@@ -39,50 +70,47 @@
 /* Modifiers: Type */
 
 // .is-info .icon { }
-.is-warn .icon { color: var(--global-color-warning--alt); }
-.is-error .icon { color: var(--global-color-danger--normal); }
-.is-success .icon { color: var(--global-color-success--normal); }
 
 
 /* Modifiers: Scope */
 
 .is-scope-inline {
-  // &.is-info { }
-  // &.is-warn { }
-  &.is-error { color: var(--global-color-danger--normal); }
-  // &.is-success { }
+  &.is-info .icon { color: var(--global-color-info--normal); }
+  &.is-warn .icon { color: var(--global-color-warning--normal); }
+  &.is-error,
+  &.is-error .icon { color: var(--global-color-danger--normal); }
+  &.is-success .icon { color: var(--global-color-success--normal); }
 }
 
 .is-scope-section {
-  padding: 0.5rem 1rem;
   border-width: var(--global-border-width--normal);
   border-style: solid;
 
   /* Children */
-  & .icon {
+  & .type-icon {
     margin-right: 1rem;
   }
 
   /* Modifiers */
   &.is-info {
-    & .icon { /* … */ }
     border-color: var(--global-color-info--normal);
     background-color: var(--global-color-info--weak);
+    & .icon { color: var(--global-color-info--normal); }
   }
   &.is-warn {
-    & .icon { color: var(--global-color-warning--normal); }
     border-color: var(--global-color-warning--normal);
     background-color: var(--global-color-warning--weak);
+    & .icon { color: var(--global-color-warning--normal); }
   }
   &.is-error {
-    & .icon { color: var(--global-color-danger--normal); }
     border-color: var(--global-color-danger--normal);
     background-color: var(--global-color-danger--weak);
+    & .icon { color: var(--global-color-danger--normal); }
   }
   &.is-success {
-    & .icon { color: var(--global-color-success--normal); }
     border-color: var(--global-color-success--normal);
     background-color: var(--global-color-success--weak);
+    & .icon { color: var(--global-color-success--normal); }
   }
 }
 

@@ -3,9 +3,14 @@ import { Message } from '_common';
 
 import './UIPatternsMessage.module.scss';
 
-const EXAMPLE_LINK = (
+const EXAMPLE_LINK_SHORT = (
   <a href="#" className="wb-link">
-    Example link.
+    Example link
+  </a>
+);
+const EXAMPLE_LINK_LONG = (
+  <a href="#" className="wb-link">
+    Example link can be a complete sentence.
   </a>
 );
 
@@ -88,12 +93,15 @@ function UIPatternsMessages() {
           </th>
           <td>
             <Message type="info" scope="inline">
-              All your information, are belong to us. {EXAMPLE_LINK}
+              All your information, are belong to us. {EXAMPLE_LINK_SHORT}
             </Message>
           </td>
           <td>
             <Message type="info" scope="section">
-              All your information, are belong to us. {EXAMPLE_LINK}
+              All your information, are belong to us. {EXAMPLE_LINK_SHORT}
+            </Message>
+            <Message type="info" scope="section" canDismiss>
+              You exist. {EXAMPLE_LINK_LONG}
             </Message>
           </td>
           <td rowSpan="2">{NOTIFICATION_TEXT}</td>
@@ -104,12 +112,15 @@ function UIPatternsMessages() {
           </th>
           <td>
             <Message type="success" scope="inline">
-              All your success, are belong to us. {EXAMPLE_LINK}
+              All your success, are belong to us. {EXAMPLE_LINK_SHORT}
             </Message>
           </td>
           <td>
             <Message type="success" scope="section">
-              All your success, are belong to us. {EXAMPLE_LINK}
+              All your success, are belong to us. {EXAMPLE_LINK_SHORT}
+            </Message>
+            <Message type="success" scope="section" canDismiss>
+              We did well. {EXAMPLE_LINK_LONG}
             </Message>
           </td>
           {/* <td /> */}
@@ -120,12 +131,15 @@ function UIPatternsMessages() {
           </th>
           <td>
             <Message type="warn" scope="inline">
-              All your warning, are come from us. {EXAMPLE_LINK}
+              All your warning, are come from us. {EXAMPLE_LINK_SHORT}
             </Message>
           </td>
           <td>
             <Message type="warn" scope="section">
-              All your warning, are come from us. {EXAMPLE_LINK}
+              All your warning, are come from us. {EXAMPLE_LINK_SHORT}
+            </Message>
+            <Message type="warn" scope="section" canDismiss>
+              You did poorly. {EXAMPLE_LINK_LONG}
             </Message>
           </td>
           <td rowSpan="2" styleName="is-row-end">
@@ -138,12 +152,15 @@ function UIPatternsMessages() {
           </th>
           <td>
             <Message type="error" scope="inline">
-              All your error, are belong to you. {EXAMPLE_LINK}
+              All your error, are belong to you. {EXAMPLE_LINK_SHORT}
             </Message>
           </td>
           <td>
             <Message type="error" scope="section">
-              All your error, are belong to you. {EXAMPLE_LINK}
+              All your error, are belong to you. {EXAMPLE_LINK_SHORT}
+            </Message>
+            <Message type="error" scope="section" canDismiss>
+              You failed. {EXAMPLE_LINK_LONG}
             </Message>
           </td>
           {/* <td /> */}
