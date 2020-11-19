@@ -57,7 +57,8 @@ const AppDetail = () => {
     shallowEqual
   );
 
-  console.log(app);
+  const categoryDict = useSelector(state => state.apps.categoryDict);
+  const hasApps = Object.keys(categoryDict).some(category => categoryDict[category].length > 0);
 
   if (error.isError) {
     const errorText = error.message ? error.message : 'Something went wrong.';
@@ -75,9 +76,9 @@ const AppDetail = () => {
 
   return (
     <div id="appDetail-wrapper">
-      {!app.name && <AppPlaceholder />}
+      {!app && <AppPlaceholder apps={hasApps}/>}
       {app.html ? (
-        parse(app.value.definition.html)
+        parse(app.html)
       ) : (
         <>
           <AppInfo app={app} />
