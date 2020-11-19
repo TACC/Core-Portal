@@ -1,8 +1,5 @@
-import { useSelector } from 'react-redux';
 import { findSystemDisplayName } from 'utils/systems';
 import truncateMiddle from '../../../utils/truncateMiddle';
-
-const path = require('path');
 
 const OPERATION_MAP = {
   mkdir: 'added',
@@ -11,16 +8,14 @@ const OPERATION_MAP = {
   move: 'moved',
   copy: 'copied',
   trash: 'moved',
-  toastMap(operation, status, { response, body }) {
-    console.log(response);
-    console.log(body);
-    const systemList = useSelector(state => state.systems.systemList);
+  toastMap(operation, status, systemList, { response }) {
     if (status !== 'SUCCESS') {
       switch (operation) {
         case 'mkdir':
           return 'Add folder failed';
         default:
-          return `${operation} failed`;
+          return `${operation.charAt(0).toUpperCase() +
+            operation.slice(1)} failed`;
       }
     }
 
@@ -33,21 +28,20 @@ const OPERATION_MAP = {
       case 'Unknown':
         return `${type} received an unknown operation`;
       case 'rename':
-        return `${type} ${mappedOp} to ${truncateMiddle(body.new_name, 20)}`;
+        return `${type} ${mappedOp} to ${truncateMiddle(response.name, 20)}`;
       case 'mkdir':
-        return `${body.dir_name} added`;
+        return `${response.name} ${mappedOp}`;
       case 'upload':
-        // TODO: system name
-        return `${type} ${mappedOp} to ${truncateMiddle(
-          path.dirname(response.path),
-          20
-        )}`;
       case 'move':
       case 'copy': {
-        const dest = path.join(
-          findSystemDisplayName(systemList, body.dest_system),
-          body.dest_path
-        );
+        const destPath = response.path
+          .split('/')
+          .slice(0, -1)
+          .join('/');
+        const dest =
+          destPath === '/' || destPath === ''
+            ? `${findSystemDisplayName(systemList, response.systemId)}/`
+            : destPath;
         return `${type} ${mappedOp} to ${truncateMiddle(dest, 20)}`;
       }
       default:

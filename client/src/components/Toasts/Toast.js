@@ -14,6 +14,7 @@ const NotificationToast = () => {
   const [notification, setNotification] = useState(undefined);
   const [transition, setTransition] = React.useState(undefined);
 
+  const systemList = useSelector(state => state.systems.systemList);
   const { toasts } = useSelector(
     state => state.notifications.list,
     shallowEqual
@@ -78,7 +79,7 @@ const NotificationToast = () => {
           message ? message.toLowerCase() : 'session ready to view.'
         }`;
       case 'data_files': {
-        return OPERATION_MAP.toastMap(operation, status, extra);
+        return OPERATION_MAP.toastMap(operation, status, systemList, extra);
       }
       default:
         return message;
