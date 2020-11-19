@@ -69,7 +69,7 @@ def _get_app(app_id, user):
     }
     if lic_type is not None:
         _, license_models = get_license_info()
-        license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+        license_model = list(filter(lambda x: x.license_type == lic_type, license_models))[0]
         lic = license_model.objects.filter(user=user).first()
         data['license']['enabled'] = lic is not None
 
