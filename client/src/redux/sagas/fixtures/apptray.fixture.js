@@ -152,7 +152,6 @@ export const appTrayExpectedFixture = {
     'frontera-hpc-jupyter-1.0u11': 'jupyter',
     'matlab-9.5u7': 'matlab',
     'vis-portal': 'vis-portal'
-
   },
   error: {
     isError: false
