@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { jobs, jobDetail } from './jobs.reducers';
-import { app, apps, tray } from './apps.reducers';
+import { app, apps } from './apps.reducers';
 import { systems, files } from './datafiles.reducers';
 import {
   ticketList,

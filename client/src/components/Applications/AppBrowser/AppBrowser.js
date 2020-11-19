@@ -8,12 +8,10 @@ import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
 const findAppTab = (categoryDict, appId) => {
-  for (let [category, apps] of Object.entries(categoryDict)) {
-    if (apps.some(app => app.appId === appId)) {
-      return category;
-    }
-  }
-}
+  return Object.keys(categoryDict).find(category =>
+    categoryDict[category].some(app => app.appId === appId)
+  );
+};
 
 const AppBrowser = () => {
   const { params } = useRouteMatch();
@@ -23,7 +21,7 @@ const AppBrowser = () => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const { categoryDict, appDict, defaultTab, error } = useSelector(
+  const { categoryDict, defaultTab, error } = useSelector(
     state => ({ ...state.apps }),
     shallowEqual
   );
@@ -37,12 +35,7 @@ const AppBrowser = () => {
   }
 
   // set activeTab to url app's category if no tab selected
-  if (
-    Object.keys(appDict).length &&
-    params.appId &&
-    !activeTab &&
-    params.appId in appDict
-  ) {
+  if (params.appId && !activeTab) {
     toggle(findAppTab(categoryDict, params.appId));
   } else if (!activeTab && Object.keys(categoryDict).includes(defaultTab)) {
     toggle(defaultTab);
@@ -83,9 +76,7 @@ const AppBrowser = () => {
                   >
                     <span className="nav-content">
                       <AppIcon appId={app.appId} />
-                      <span className="nav-text">
-                        {app.label}
-                      </span>
+                      <span className="nav-text">{app.label}</span>
                     </span>
                   </NavLink>
                 </div>

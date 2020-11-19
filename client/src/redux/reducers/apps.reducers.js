@@ -4,13 +4,24 @@ const initialState = {
   appIcons: {},
   error: { isError: false },
   loading: false,
-  defaultTab: '',
-  tray: {}
+  defaultTab: ''
 };
 
+function unpackAppIcons(tabs) {
+  const appIcons = {};
+  tabs.forEach(tab => {
+    tab.apps.forEach(appEntry => {
+      if ('icon' in appEntry && appEntry.icon.length > 0) {
+        appIcons[appEntry.appId] = appEntry.icon;
+      }
+    });
+  });
+  return appIcons;
+}
+
 function unpackCategoryDict(tabs) {
-  let categoryDict = {};
-  tabs.forEach((tab) => {
+  const categoryDict = {};
+  tabs.forEach(tab => {
     categoryDict[tab.title] = tab.apps;
   });
   return categoryDict;
@@ -23,6 +34,7 @@ export function apps(state = initialState, action) {
         ...state,
         categoryDict: unpackCategoryDict(action.payload.tabs),
         appDict: action.payload.definitions,
+        appIcons: unpackAppIcons(action.payload.tabs),
         loading: false
       };
     }
