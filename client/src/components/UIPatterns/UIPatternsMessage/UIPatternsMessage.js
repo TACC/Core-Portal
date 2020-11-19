@@ -3,16 +3,36 @@ import { Message } from '_common';
 
 import './UIPatternsMessage.module.scss';
 
-const EXAMPLE_LINK_SHORT = (
-  <a href="#" className="wb-link">
-    Example link
-  </a>
-);
-const EXAMPLE_LINK_LONG = (
-  <a href="#" className="wb-link">
-    Example link can be a complete sentence.
-  </a>
-);
+const EXAMPLE_LINK = {
+  short: (
+    <a href="#" className="wb-link">
+      Example link
+    </a>
+  ),
+  long: (
+    <a href="#" className="wb-link">
+      Example link can be a complete sentence.
+    </a>
+  )
+};
+const EXAMPLE_TEXT = {
+  info: {
+    short: 'You exist.',
+    long: 'All your information, are belong to us.'
+  },
+  success: {
+    short: 'We did well.',
+    long: 'All your success, are belong to us.'
+  },
+  warn: {
+    short: 'You did poorly.',
+    long: 'All your warning, are come from us.'
+  },
+  error: {
+    short: 'You failed.',
+    long: 'All your error, are belong to you.'
+  }
+};
 
 const NOTIFICATION_TEXT = (
   <em>
@@ -35,7 +55,10 @@ function UIPatternsMessages() {
           <th scope="row" styleName="secondary">
             component
           </th>
-          <th scope="col" colSpan="2">
+          <th scope="col">
+            <code>&lt;Message&gt;</code>
+          </th>
+          <th scope="col">
             <code>&lt;Message&gt;</code>
           </th>
           <th scope="col">
@@ -61,22 +84,21 @@ function UIPatternsMessages() {
             <code>type</code>
           </th>
           <td>
-            Example
+            When to Use
             <ul>
               <li>action result statement in table row</li>
-              <li>(?) message when table can not load data</li>
+              <li>message when table can not load data</li>
             </ul>
           </td>
           <td>
-            Example
+            When to Use
             <ul>
               <li>warning at the top of a form</li>
               <li>message after successful submission of form</li>
-              <li>(?) message when table can not load data</li>
             </ul>
           </td>
           <td>
-            Example
+            When to Use
             <ul>
               <li>user action is required</li>
               <li>important user-initiated action is completed</li>
@@ -93,15 +115,19 @@ function UIPatternsMessages() {
           </th>
           <td>
             <Message type="info" scope="inline">
-              All your information, are belong to us. {EXAMPLE_LINK_SHORT}
+              {EXAMPLE_TEXT.info.long} {EXAMPLE_LINK.short}
+            </Message>
+            <hr />
+            <Message type="info" scope="inline">
+              {EXAMPLE_TEXT.info.short} {EXAMPLE_LINK.long}
             </Message>
           </td>
           <td>
             <Message type="info" scope="section">
-              All your information, are belong to us. {EXAMPLE_LINK_SHORT}
+              {EXAMPLE_TEXT.info.long} {EXAMPLE_LINK.short}
             </Message>
             <Message type="info" scope="section" canDismiss>
-              You exist. {EXAMPLE_LINK_LONG}
+              {EXAMPLE_TEXT.info.short} {EXAMPLE_LINK.long}
             </Message>
           </td>
           <td rowSpan="2">{NOTIFICATION_TEXT}</td>
@@ -112,15 +138,19 @@ function UIPatternsMessages() {
           </th>
           <td>
             <Message type="success" scope="inline">
-              All your success, are belong to us. {EXAMPLE_LINK_SHORT}
+              {EXAMPLE_TEXT.success.long} {EXAMPLE_LINK.short}
+            </Message>
+            <hr />
+            <Message type="success" scope="inline" canDismiss>
+              {EXAMPLE_TEXT.success.short} {EXAMPLE_LINK.long}
             </Message>
           </td>
           <td>
             <Message type="success" scope="section">
-              All your success, are belong to us. {EXAMPLE_LINK_SHORT}
+              {EXAMPLE_TEXT.success.long} {EXAMPLE_LINK.short}
             </Message>
             <Message type="success" scope="section" canDismiss>
-              We did well. {EXAMPLE_LINK_LONG}
+              {EXAMPLE_TEXT.success.short} {EXAMPLE_LINK.long}
             </Message>
           </td>
           {/* <td /> */}
@@ -131,15 +161,19 @@ function UIPatternsMessages() {
           </th>
           <td>
             <Message type="warn" scope="inline">
-              All your warning, are come from us. {EXAMPLE_LINK_SHORT}
+              {EXAMPLE_TEXT.warn.long} {EXAMPLE_LINK.short}
+            </Message>
+            <hr />
+            <Message type="warn" scope="inline">
+              {EXAMPLE_TEXT.warn.short} {EXAMPLE_LINK.long}
             </Message>
           </td>
           <td>
             <Message type="warn" scope="section">
-              All your warning, are come from us. {EXAMPLE_LINK_SHORT}
+              {EXAMPLE_TEXT.warn.long} {EXAMPLE_LINK.short}
             </Message>
             <Message type="warn" scope="section" canDismiss>
-              You did poorly. {EXAMPLE_LINK_LONG}
+              {EXAMPLE_TEXT.warn.short} {EXAMPLE_LINK.long}
             </Message>
           </td>
           <td rowSpan="2" styleName="is-row-end">
@@ -152,15 +186,19 @@ function UIPatternsMessages() {
           </th>
           <td>
             <Message type="error" scope="inline">
-              All your error, are belong to you. {EXAMPLE_LINK_SHORT}
+              {EXAMPLE_TEXT.error.long} {EXAMPLE_LINK.short}
+            </Message>
+            <hr />
+            <Message type="error" scope="inline">
+              {EXAMPLE_TEXT.error.short} {EXAMPLE_LINK.long}
             </Message>
           </td>
           <td>
             <Message type="error" scope="section">
-              All your error, are belong to you. {EXAMPLE_LINK_SHORT}
+              {EXAMPLE_TEXT.error.long} {EXAMPLE_LINK.short}
             </Message>
             <Message type="error" scope="section" canDismiss>
-              You failed. {EXAMPLE_LINK_LONG}
+              {EXAMPLE_TEXT.error.short} {EXAMPLE_LINK.long}
             </Message>
           </td>
           {/* <td /> */}
