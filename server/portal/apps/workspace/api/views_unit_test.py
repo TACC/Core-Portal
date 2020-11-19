@@ -210,10 +210,7 @@ def test_get_private_apps(authenticated_user, mock_agave_client, mocker):
     expected_list[0]['type'] = 'agave'
     expected_list[0]['appId'] = 'myapp-0.1'
     expected_list[0].pop('id', None)
-    expected_definitions = {
-        'myapp-0.1': app
-    }
-    assert view.getPrivateApps(authenticated_user) == (expected_list, expected_definitions)
+    assert view.getPrivateApps(authenticated_user) == expected_list
 
 
 @pytest.mark.django_db(transaction=True)
