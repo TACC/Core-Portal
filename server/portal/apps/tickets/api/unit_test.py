@@ -98,7 +98,7 @@ def test_tickets_get_history(client, authenticated_user, mock_rtutil):
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_tickets_get_history_no_access(client, authenticated_user, mock_rtutil_no_access):
     response = client.get('/api/tickets/1/history')
-    assert response.status_code == 500
+    assert response.status_code == 403
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -130,9 +130,9 @@ def test_tickets_post_history_reply_missing_text(client, authenticated_user, moc
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_tickets_post_history_reply_no_accesst(client, authenticated_user, mock_rtutil_no_access):
+def test_tickets_post_history_reply_no_access(client, authenticated_user, mock_rtutil_no_access):
     response = client.post('/api/tickets/1/history')
-    assert response.status_code == 500
+    assert response.status_code == 403
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
