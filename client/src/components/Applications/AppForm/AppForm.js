@@ -232,6 +232,9 @@ export const AppSchemaForm = ({ app }) => {
             const queue = app.exec_sys.queues.find(
               q => q.name === values.batchQueue
             );
+            console.log(app.id);
+            console.log(values.batchQueue);
+            console.log(queue);
             const maxNodes = queue.maxNodes ? queue.maxNodes : 1;
             const maxQueueRunTime = getMaxQueueRunTime(app, values.batchQueue);
             const schema = Yup.object({

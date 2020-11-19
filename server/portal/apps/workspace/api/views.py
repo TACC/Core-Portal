@@ -412,6 +412,9 @@ class AppsTrayView(BaseApiView):
         return appList[-1]['id']
 
     def getApp(self, app, user):
+        return _get_app(self.getAppId(app, user), user)
+
+    def getAppId(self, app, user):
         if app.appId and len(app.appId) > 0:
             appId = app.appId
         else:
@@ -419,19 +422,16 @@ class AppsTrayView(BaseApiView):
         if appId != app.lastRetrieved:
             app.lastRetrieved = appId
             app.save()
-        return _get_app(appId, user)
+        return appId
 
     def getPrivateApps(self, user):
         agave = user.agave_oauth.client
         apps_listing = agave.apps.list(privateOnly=True)
-        definitions = {}
         my_apps = []
         # Get private apps that are not prtl.clone
         for app in filter(lambda app: not app['id'].startswith("prtl.clone"), apps_listing):
             # Create an app "metadata" record
             try:
-                app = _get_app(app['id'], user)
-                definitions[app['id']] = app
                 my_apps.append(
                     {
                         "label": app['label'] or app['id'],
@@ -449,7 +449,7 @@ class AppsTrayView(BaseApiView):
                     )
                 )
                 logger.exception(e)
-        return my_apps, definitions
+        return my_apps
 
     def getPublicApps(self, user):
         categories = []
@@ -488,12 +488,8 @@ class AppsTrayView(BaseApiView):
                         # If this is an agave app, retrieve the definition
                         # from the tenant, with any license or queue
                         # post processing
-                        definition = self.getApp(app, user)
-                        appId = definition['id']
-                        if not definition['label'] or len(definition['label']) == 0:
-                            definition['label'] = definition['name']
+                        appId = self.getAppId(app, user)
                         appRecord["appId"] = appId
-                        definitions[appId] = definition
 
                     categoryResult["apps"].append(appRecord)
                 except Exception:
@@ -525,7 +521,7 @@ class AppsTrayView(BaseApiView):
         }
         """
         tabs, definitions = self.getPublicApps(request.user)
-        my_apps, my_definitions = self.getPrivateApps(request.user)
+        my_apps = self.getPrivateApps(request.user)
         tabs.insert(
             0,
             {
@@ -533,6 +529,5 @@ class AppsTrayView(BaseApiView):
                 "apps": my_apps
             }
         )
-        definitions.update(my_definitions)
 
         return JsonResponse({"tabs": tabs, "definitions": definitions})

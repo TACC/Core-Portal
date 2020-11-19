@@ -16,8 +16,20 @@ function unpackCategoryDict(tabs) {
   return categoryDict;
 }
 
+function cacheAppDef(appDict, definition) {
+  let result = { ...appDict };
+  result[definition.id] = definition;
+  return result;
+}
+
 export function apps(state = initialState, action) {
   switch (action.type) {
+    case 'LOAD_APP': {
+      return {
+        ...state,
+        appDict: cacheAppDef(state.appDict, action.payload)
+      }
+    }
     case 'GET_APPS_SUCCESS': {
       return {
         ...state,
