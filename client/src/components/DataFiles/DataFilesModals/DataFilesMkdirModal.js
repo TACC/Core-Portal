@@ -24,7 +24,7 @@ const DataFilesMkdirModal = () => {
     dirname: Yup.string()
       .min(1)
       .matches(
-        /^[\d\w\-_.]+$/,
+        /^[\d\w\s\-_.]+$/,
         'Please enter a valid directory name (accepted characters are A-Z a-z 0-9 - _ .)'
       )
       .required('Please enter a valid directory name.')
