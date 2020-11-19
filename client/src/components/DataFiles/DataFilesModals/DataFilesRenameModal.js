@@ -32,8 +32,12 @@ const DataFilesRenameModal = () => {
     newName: Yup.string()
       .min(1)
       .matches(
-        /^[\d\w\-_.]+$/,
+        /^[\d\w\s\-_.]+$/,
         'Please enter a valid file name (accepted characters are A-Z a-z 0-9 - _ .)'
+      )
+      .notOneOf(
+        [selected.name],
+        'The new name must differ from the current name.'
       )
       .required('Please enter a valid file name.')
   });
