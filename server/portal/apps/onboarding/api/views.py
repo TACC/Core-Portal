@@ -49,7 +49,7 @@ class SetupStepView(BaseApiView):
 
         return user
 
-    def get(self, request, username):
+    def get(self, request, username=None):
         """
         View for returning a user's setup step events.
 
@@ -74,14 +74,17 @@ class SetupStepView(BaseApiView):
 
         Where step dictionaries are in matching order of PORTAL_USER_ACCOUNT_SETUP_STEPS
         """
+        if username is None:
+            username = request.user.username
+
         user = self.get_user_parameter(request, username)
         account_setup_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
 
         # Result dictionary for user
         result = {
             "username": username,
-            "last_name": user.last_name,
-            "first_name": user.first_name,
+            "lastName": user.last_name,
+            "firstName": user.first_name,
             "email": user.email,
             "isStaff": user.is_staff,
             "steps": [],
@@ -93,18 +96,25 @@ class SetupStepView(BaseApiView):
         for step in account_setup_steps:
             # Get step events in descending order of time
             step_events = SetupEvent.objects.all().filter(
-                user=user, step=step
+                user=user, step=step['step']
             ).order_by('-time')
 
-            step_instance = load_setup_step(user, step)
+            step_instance = load_setup_step(user, step['step'])
 
             step_data = {
-                "step": step,
+                "step": step['step'],
                 "displayName": step_instance.display_name(),
+                "description": step_instance.description(),
+                "userConfirm": step_instance.user_confirm,
+                "staffApprove": step_instance.staff_approve,
+                "staffDeny": step_instance.staff_deny,
                 "state": step_instance.state,
                 "events": [event for event in step_events],
                 "data": None
             }
+            custom_status = step_instance.custom_status()
+            if custom_status:
+                step_data["customStatus"] = custom_status
 
             if step_instance.last_event:
                 step_data["data"] = step_instance.last_event.data
@@ -172,7 +182,7 @@ class SetupStepView(BaseApiView):
 
         {
             "action" : "staff_approve" | "staff_deny" | "user_confirm" |
-                            "set_state" | "reset" | "webhook_send",
+                            "set_state" | "reset"
             "step" : SetupStep module and classname,
             "data" : an optional dictionary of data to send to the action
         }
@@ -180,6 +190,9 @@ class SetupStepView(BaseApiView):
         ..return: A JsonResponse with the last_event for the user's SetupStep,
                     reflecting state change
         """
+        if username is None:
+            username = request.user.username
+
         # Get the user object requested in the route parameter
         user = self.get_user_parameter(request, username)
 

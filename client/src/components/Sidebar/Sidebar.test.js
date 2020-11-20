@@ -30,12 +30,12 @@ function getPath(page) {
   }
   return path;
 }
-function renderSideBar(store) {
+function renderSideBar(store, showUIPatterns) {
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['/workbench']}>
-        <Route path="/workbench">
-          <Sidebar />
+        <Route path='/workbench'>
+          <Sidebar showUIPatterns={showUIPatterns}/>
         </Route>
       </MemoryRouter>
     </Provider>
@@ -50,7 +50,8 @@ describe('workbench sidebar', () => {
         workbench,
         notifications,
         ticketCreate
-      })
+      }),
+      false
     );
     const path = getPath(page);
     expect(getByText(page)).toBeDefined();
@@ -67,7 +68,8 @@ describe('workbench sidebar', () => {
         workbench,
         notifications: { list: { unread: 1 } },
         ticketCreate
-      })
+      }),
+      false
     );
 
     expect(getByRole('status')).toBeDefined();
@@ -80,7 +82,8 @@ describe('workbench sidebar', () => {
         workbench,
         notifications,
         ticketCreate
-      })
+      }),
+      false
     );
     expect(queryByText(page)).toBeNull();
   });
@@ -91,7 +94,8 @@ describe('workbench sidebar', () => {
         workbench: { status: { debug: true } },
         notifications,
         ticketCreate
-      })
+      }),
+      true
     );
     const path = getPath(page);
     expect(getByText(page)).toBeDefined();

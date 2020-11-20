@@ -1,12 +1,13 @@
 export const initialState = {
-  status: null
+  debug: false,
+  setupComplete: window.__INITIAL_SETUP_COMPLETE__
 };
 
 export default function workbench(state = initialState, action) {
   switch (action.type) {
     case 'WORKBENCH_SUCCESS':
       return {
-        status: action.payload
+        ...action.payload
       };
     case 'WORKBENCH_FAILURE':
       return initialState;
