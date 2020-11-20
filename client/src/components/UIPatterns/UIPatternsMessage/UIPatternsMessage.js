@@ -56,10 +56,10 @@ function UIPatternsMessages() {
             component
           </th>
           <th scope="col">
-            <code>&lt;Message&gt;</code>
+            <code>&lt;Message&gt; or &lt;UncontrolledMessage&gt;</code>
           </th>
           <th scope="col">
-            <code>&lt;Message&gt;</code>
+            <code>&lt;Message&gt; or &lt;UncontrolledMessage&gt;</code>
           </th>
           <th scope="col">
             <code>&lt;NotifcationToast&gt;</code>
@@ -141,7 +141,7 @@ function UIPatternsMessages() {
               {EXAMPLE_TEXT.success.long} {EXAMPLE_LINK.short}
             </UncontrolledMessage>
             <hr />
-            <UncontrolledMessage type="success" scope="inline" canDismiss>
+            <UncontrolledMessage type="success" scope="inline">
               {EXAMPLE_TEXT.success.short} {EXAMPLE_LINK.long}
             </UncontrolledMessage>
           </td>

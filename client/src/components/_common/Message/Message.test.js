@@ -130,4 +130,20 @@ describe('Message', () => {
       expect(root.className).toMatch(new RegExp(modifierClassName));
     });
   });
+
+  describe('property dependency', () => {
+    test('is respected for `canDismiss` and `scope`', () => {
+      console.error = jest.fn();
+      render(
+        <Message
+          type={TEST_TYPE}
+          scope="inline"
+          canDismiss
+        >
+          {TEST_CONTENT}
+        </Message>
+      );
+      expect(console.error).toHaveBeenCalledWith(MSG.ERROR_TEXT.mismatchCanDismissScope);
+    });
+  });
 });

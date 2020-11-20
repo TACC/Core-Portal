@@ -5,6 +5,11 @@ import Icon from '_common/Icon';
 
 import './Message.module.scss';
 
+export const ERROR_TEXT = {
+  mismatchCanDismissScope:
+    'For `Message` to use `canDismiss`, `scope` must equal `section`.'
+};
+
 export const TYPE_MAP = {
   info: {
     iconName: 'conversation',
@@ -40,7 +45,7 @@ export const SCOPE_MAP = {
     role: 'status',
     tagName: 'p'
   }
-  // app: 'is-scope-app' // FAQ: Do not use. Use a Notification Toast instead
+  // app: { … } // FAQ: Do not use. Use a Notification Toast instead
 };
 export const SCOPES = ['', ...Object.keys(SCOPE_MAP)];
 export const DEFAULT_SCOPE = 'inline';
@@ -63,6 +68,13 @@ const Message = ({
 }) => {
   const { iconName, iconText } = TYPE_MAP[type];
   const { role, tagName } = SCOPE_MAP[scope || DEFAULT_SCOPE];
+
+  const hasDismissSupport = scope === 'section';
+  if (canDismiss && !hasDismissSupport) {
+    // Tell user that component will work, except `canDismiss` is ineffectual
+    // eslint-disable-next-line no-console
+    console.error(ERROR_TEXT.mismatchCanDismissScope);
+  }
 
   // Manage class names
   const modifierClassNames = [];
@@ -98,7 +110,7 @@ const Message = ({
       <span styleName="text" data-testid="text">
         {children}
       </span>
-      {canDismiss && scope === 'section' ? (
+      {canDismiss && hasDismissSupport ? (
         <button
           type="button"
           styleName="close-button"
