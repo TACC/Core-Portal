@@ -7,9 +7,11 @@ import './Message.module.scss';
 
 export const ERROR_TEXT = {
   mismatchCanDismissScope:
-    'For `Message` to use `canDismiss`, `scope` must equal `section`.',
-  deprecatedTypeWarn:
-    'In `Message`, `type="warn"` is deprecated; use `type="warning"` instead.'
+    'For a <Message> to use `canDismiss`, `scope` must equal `section`.',
+  deprecatedType:
+    'In a <Message> `type="warn"` is deprecated. Use `type="warning"` instead.',
+  missingScope:
+    'A <Message> without a `scope` should become an <InlineMessage>. (If <Message> must be used, then explicitely set `scope="inline"`.)'
 };
 
 export const TYPE_MAP = {
@@ -48,10 +50,10 @@ export const SCOPE_MAP = {
     role: 'status',
     tagName: 'p'
   }
-  // app: { … } // FAQ: Do not use. Use a Notification Toast instead
+  // app: { … } // FAQ: Do not use; instead, use a <NotificationToast>
 };
 export const SCOPES = ['', ...Object.keys(SCOPE_MAP)];
-export const DEFAULT_SCOPE = 'inline';
+export const DEFAULT_SCOPE = 'inline'; // FAQ: Historical support for default
 
 /**
  * Show an event-based message to the user
@@ -84,7 +86,11 @@ const Message = ({
   }
   if (type === 'warn') {
     // Component will work, but `warn` is deprecated value
-    console.warn(ERROR_TEXT.deprecatedTypeWarn);
+    console.warn(ERROR_TEXT.deprecatedType);
+  }
+  if (!scope) {
+    // Component will work, but `scope` should be defined
+    console.warn(ERROR_TEXT.missingScope);
   }
   /* eslint-enable no-console */
 
@@ -148,7 +154,7 @@ Message.propTypes = {
   /** Action on message dismissal (pair with `isVisible`) */
   onDismiss: PropTypes.func,
   /** How to place the message within the layout */
-  scope: PropTypes.oneOf(SCOPES), // RFE: Require scope. Change all instances.
+  scope: PropTypes.oneOf(SCOPES), // RFE: Require scope; change all instances
   /** Message type or severity */
   type: PropTypes.oneOf(TYPES).isRequired
 };
@@ -157,7 +163,7 @@ Message.defaultProps = {
   canDismiss: false,
   isVisible: true,
   onDismiss: () => {},
-  scope: DEFAULT_SCOPE
+  scope: '' // RFE: Require scope; remove this line
 };
 
 export default Message;

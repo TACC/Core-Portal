@@ -162,7 +162,20 @@ describe('Message', () => {
         </Message>
       );
       expect(console.warn).toHaveBeenCalledWith(
-        MSG.ERROR_TEXT.deprecatedTypeWarn
+        MSG.ERROR_TEXT.deprecatedType
+      );
+    });
+    test('is announced for missing `scope` value', () => {
+      console.warn = jest.fn();
+      render(
+        <Message
+          type={TEST_TYPE}
+        >
+          {TEST_CONTENT}
+        </Message>
+      );
+      expect(console.warn).toHaveBeenCalledWith(
+        MSG.ERROR_TEXT.missingScope
       );
     });
   });
