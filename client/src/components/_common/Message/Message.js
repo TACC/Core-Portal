@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Fade } from 'reactstrap';
 import Icon from '_common/Icon';
@@ -70,18 +70,6 @@ const Message = ({
   modifierClassNames.push(SCOPE_MAP[scope || DEFAULT_SCOPE].className);
   const containerStyleNames = ['container', ...modifierClassNames].join(' ');
 
-  // Manage visibility
-  // FAQ: Either user externally manages visibility with isVisible AND onToggle,
-  //      Or component internally manages visibility with isActive
-  const [isActive, setIsActive] = useState(true);
-  const onClick = useCallback(() => {
-    if (typeof onToggleVisibility === 'function') onToggleVisibility();
-    setIsActive(!isActive);
-  }, [isActive]);
-  const isManagedByUser =
-    onToggleVisibility !== undefined && isVisible !== undefined;
-  const shouldShow = isManagedByUser ? isVisible : isActive;
-
   // Manage disappearance
   // FAQ: Design does not want fade, but we still use <Fade> to manage dismissal
   // TODO: Consider replacing <Fade> with a replication of `unmountOnExit: true`
@@ -102,7 +90,7 @@ const Message = ({
       styleName={containerStyleNames}
       className={className}
       role={role}
-      in={shouldShow}
+      in={isVisible}
     >
       <Icon styleName="icon type-icon" name={iconName}>
         {iconText}
@@ -115,7 +103,7 @@ const Message = ({
           type="button"
           styleName="close-button"
           aria-label="Close"
-          onClick={onClick}
+          onClick={onToggleVisibility}
         >
           <Icon styleName="icon close-icon" name="close" />
         </button>
@@ -132,9 +120,9 @@ Message.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
   /** Optional flag for whether message is visible (see `onToggleVisibility`) */
-  isVisible: PropTypes.oneOf(PropTypes.bool, undefined),
+  isVisible: PropTypes.bool,
   /** Optional action triggered on close button click (see `isVisible`) */
-  onToggleVisibility: PropTypes.oneOf(PropTypes.func, undefined),
+  onToggleVisibility: PropTypes.func,
   /** How to place the message within the layout */
   scope: PropTypes.oneOf(SCOPES), // RFE: Require scope. Change all instances.
   /** Message type or severity */
@@ -142,9 +130,9 @@ Message.propTypes = {
 };
 Message.defaultProps = {
   className: '',
-  isVisible: undefined,
   canDismiss: false,
-  onToggleVisibility: undefined,
+  isVisible: true,
+  onToggleVisibility: () => {},
   scope: DEFAULT_SCOPE
 };
 
