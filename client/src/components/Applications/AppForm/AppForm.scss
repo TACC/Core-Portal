@@ -9,6 +9,12 @@
     padding-bottom: 30px;
 }
 
+/* HACK: Temporary style to restore familiar spacing from deprecated <Alert> */
+/* TODO: After FP-385, render <SectionMessage>'s inside a <SectionMessages> */
+#appForm-alerts > * {
+    margin-bottom: 1em;
+}
+
 /* Overwrite independent opinion of Bootstrap styles */
 /* ???: Is `.jumbotron` used without Design review? */
 /* ???: From where does `.jumbotron` originate? */

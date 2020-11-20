@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { Button, FormGroup, Alert } from 'reactstrap';
+import React from 'react';
+import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { AppIcon, FormField, Icon, LoadingSpinner, Message } from '_common';
+import {
+  AppIcon,
+  FormField,
+  Icon,
+  LoadingSpinner,
+  InlineMessage,
+  SectionMessage
+} from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
 import './AppForm.scss';
@@ -61,9 +68,9 @@ const AppDetail = () => {
     const errorText = error.message ? error.message : 'Something went wrong.';
 
     return (
-      <Message type="warn" className="appDetail-error">
+      <InlineMessage type="warn" className="appDetail-error">
         {errorText}
-      </Message>
+      </InlineMessage>
     );
   }
 
@@ -187,29 +194,25 @@ export const AppSchemaForm = ({ app }) => {
     initialValues.allocation = app.scheduler;
   }
 
-  // local state for alerts
-  const [visible, setVisible] = useState(true);
-  const onDismiss = () => setVisible(false);
-
   return (
     <div id="appForm-wrapper">
       {jobSubmission.response && (
         <div id="appForm-alerts">
           {jobSubmission.error ? (
-            <Alert color="warning" isOpen={visible} toggle={onDismiss}>
-              Error: {jobSubmission.response.message}
+            <SectionMessage type="warning" canDismiss>
+              {jobSubmission.response.message}
               {missingAllocation && (
                 <>
-                  &nbsp;Please click&nbsp;
+                  &nbsp;Please&nbsp;
                   <Link to="/workbench/allocations/manage" className="wb-link">
-                    here
+                    request access
                   </Link>
-                  &nbsp;to request access.
+                  .
                 </>
               )}
-            </Alert>
+            </SectionMessage>
           ) : (
-            <Alert color="info" isOpen={visible} toggle={onDismiss}>
+            <SectionMessage type="info" canDismiss>
               Your job has submitted successfully. See details in{' '}
               <Link
                 to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
@@ -218,7 +221,7 @@ export const AppSchemaForm = ({ app }) => {
                 History &gt; Jobs
               </Link>
               .
-            </Alert>
+            </SectionMessage>
           )}
         </div>
       )}
