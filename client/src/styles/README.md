@@ -54,3 +54,11 @@ _These can be used via `composes:` by one or many React components._
 Utilities and helper classes with ability to override anything before it.
 
 _These can be used via `composes:` by one or many React components._
+
+## Notes
+
+### Composition
+
+All styles here may use CSS Modules [composition](https://github.com/css-modules/css-modules#composition) and support [composing from other files](https://github.com/css-modules/css-modules#composing-from-other-files).
+
+> __Warning__: The `composes` syntax ignores media queries such that it applies styles to all medias. See [warning](https://github.com/css-modules/css-modules/issues/126) and [best practices](https://github.com/css-modules/css-modules/issues/75) issues.
