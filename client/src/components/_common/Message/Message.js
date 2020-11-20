@@ -55,7 +55,7 @@ export const DEFAULT_SCOPE = 'inline';
 const Message = ({
   children,
   className,
-  onToggleVisibility,
+  onDismiss,
   canDismiss,
   isVisible,
   scope,
@@ -103,7 +103,7 @@ const Message = ({
           type="button"
           styleName="close-button"
           aria-label="Close"
-          onClick={onToggleVisibility}
+          onClick={onDismiss}
         >
           <Icon styleName="icon close-icon" name="close" />
         </button>
@@ -112,17 +112,17 @@ const Message = ({
   );
 };
 Message.propTypes = {
-  /** Whether a close button is available (only for `section` scope messages) */
+  /** Whether an action can be dismissed (requires scope equals `section`) */
   canDismiss: PropTypes.bool,
   /** Message text (as child node) */
   /* FAQ: We can support any values, even a component */
   children: PropTypes.node.isRequired, // This checks for any render-able value
   /** Additional className for the root element */
   className: PropTypes.string,
-  /** Optional flag for whether message is visible (see `onToggleVisibility`) */
+  /** Whether message is visible (pair with `onDismiss`) */
   isVisible: PropTypes.bool,
-  /** Optional action triggered on close button click (see `isVisible`) */
-  onToggleVisibility: PropTypes.func,
+  /** Action on message dismissal (pair with `isVisible`) */
+  onDismiss: PropTypes.func,
   /** How to place the message within the layout */
   scope: PropTypes.oneOf(SCOPES), // RFE: Require scope. Change all instances.
   /** Message type or severity */
@@ -132,7 +132,7 @@ Message.defaultProps = {
   className: '',
   canDismiss: false,
   isVisible: true,
-  onToggleVisibility: () => {},
+  onDismiss: () => {},
   scope: DEFAULT_SCOPE
 };
 

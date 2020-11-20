@@ -13,7 +13,7 @@ const UncontrolledMessage = props => {
   const [isVisible, setIsVisible] = useState(true);
 
   // Manage visibility
-  const onToggleVisibility = useCallback(() => {
+  const onDismiss = useCallback(() => {
     setIsVisible(!isVisible);
   }, [isVisible]);
 
@@ -21,7 +21,7 @@ const UncontrolledMessage = props => {
   const messageProps = {
     ...Message.defaultProps,
     ...props,
-    onToggleVisibility,
+    onDismiss,
     isVisible
   };
 
@@ -32,7 +32,7 @@ const UncontrolledMessage = props => {
 UncontrolledMessage.propTypes = {
   ...Message.propTypes,
   isVisible: PropTypes.bool,
-  onToggleVisibility: PropTypes.func
+  onDismiss: PropTypes.func
 };
 UncontrolledMessage.defaultProps = Message.defaultProps;
 
