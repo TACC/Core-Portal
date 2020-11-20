@@ -26,7 +26,7 @@ const SectionMessage = props => {
     scope: 'section'
   };
 
-  // Avoid manually syncing <SectionMessage>'s props
+  // Avoid manually syncing <Message>'s props
   // eslint-disable-next-line react/jsx-props-no-spreading
   return <Message {...messageProps} />;
 };
