@@ -146,6 +146,7 @@ const Layout = () => {
 
   return (
     <Section
+      bodyClassName="has-loaded-history"
       routeName="HISTORY"
       header={`History / ${historyType}`}
       headerStyleName="header"

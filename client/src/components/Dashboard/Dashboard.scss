@@ -1,4 +1,4 @@
-/* Global */
+/* External */
 
 /* Wide */
 /* FAQ: The caveat, which the code below avoids, only affects wide screens; applying this fix to all screens can cause three levels of scrolling */
@@ -11,10 +11,14 @@
     --min-height: 500px; /* approx. Dashboard w/ tables @ min. height */
   }
 }
+body.has-loaded-dashboard {
+  /* HACK: Should instead (ask Design) have a responsive sidebar */
+  --min-width: 730px; /* just before My Tickets Number column value overflows */
+}
 
 
 
-/* Local */
+/* Internal */
 /* TODO: Migrate to CSS Modules */
 
 .dashboard-items {

@@ -472,19 +472,22 @@ module.exports = {
 
     // AT-RULE
     // Require or disallow an empty line before at-rules (Autofixable).
-    // 'at-rule-empty-line-before': [ 'always', {
-    //     except: [
-    //       'after-same-name',
-    //       'inside-block',
-    //       'blockless-after-same-name-blockless',
-    //       'blockless-after-blockless',
-    //       'first-nested'
-    //     ],
-    //     ignore: [
-    //       'after-comment',
-    //       'first-nested'
-    //     ]
-    // } ],
+    'at-rule-empty-line-before': [ 'always', {
+        except: [
+          'after-same-name',
+          'inside-block',
+          'blockless-after-same-name-blockless',
+          'blockless-after-blockless',
+          'first-nested'
+        ],
+        ignore: [
+          'after-comment',
+          'first-nested'
+        ],
+        ignoreAtRules: [
+          'media'
+        ]
+    } ],
     // Specify lowercase or uppercase for at-rules names (Autofixable).
     // 'at-rule-name-case': 'lower',
     // Require a newline after at-rule names.

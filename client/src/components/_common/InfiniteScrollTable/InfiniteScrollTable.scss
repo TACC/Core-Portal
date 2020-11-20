@@ -3,6 +3,10 @@
 .FiniteScrollTable {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
 
+  /* Force `width: 100%` to have effect in all scenarios */
+  /* SEE: https://stackoverflow.com/a/6601257 */
+  table-layout: fixed;
+
   position: relative;
   width: 100%;
   max-height: inherit; /* inherit max-height from parent wrapper */
@@ -42,6 +46,7 @@
 
       /* Contain children to cell size and add ellipsis to overflow by default */
       & > :only-child {
+        display: inline-block;
         overflow: hidden;
         text-overflow: ellipsis;
       }
@@ -70,7 +75,6 @@
     }
   }
   /* Allow cell width to propogate to common inline elements */
-  /* Allow `.u-ellipsis` usage to have effect on common inline elements */
   & td > a,
   & td > span {
     display: inline-block;

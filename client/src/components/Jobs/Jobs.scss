@@ -1,61 +1,73 @@
-.jobs-view {
-  /* icon */
-  th:nth-child(1),
-  td:nth-child(1) {
-    min-width: 2em;
+/* Dashboard Table */
+@media only screen and (min-width: 1670px) {
+  .jobs-view {
+    /* icon */    tr > *:nth-child(1) { width: 5%; }
+    /* name */    tr > *:nth-child(2) { width: 35%; }
+    /* status */  tr > *:nth-child(3) { width: 10%; }
+    /* path */    tr > *:nth-child(4) { width: 35%; }
+    /* date */    tr > *:nth-child(5) { width: 15%; }
   }
-  /* name */
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 50%;
+}
+@media only screen and (min-width: 1200px) and (max-width: 1679px),
+       only screen and (min-width: 768px) and (max-width: 991px) {
+  .jobs-view {
+    /* icon */    tr > *:nth-child(1) { width: 5%; }
+    /* name */    tr > *:nth-child(2) { width: 30%; }
+    /* status */  tr > *:nth-child(3) { width: 15%; }
+    /* path */    tr > *:nth-child(4) { width: 30%; }
+    /* date */    tr > *:nth-child(5) { width: 20%; }
   }
-  /* status */
-  th:nth-child(3),
-  td:nth-child(3) {
-    min-width: 15em;
-  }
-  /* path */
-  th:nth-child(4),
-  td:nth-child(4) {
-    width: 50%;
-  }
-  /* date */
-  th:nth-child(5),
-  td:nth-child(5) {
-    min-width: 10em;
+}
+@media only screen and (min-width: 992px) and (max-width: 1199px),
+       only screen and (max-width: 767px) {
+  .jobs-view {
+    /* icon */    tr > *:nth-child(1) { width: 7.5%; }
+    /* name */    tr > *:nth-child(2) { width: 27.5%; }
+    /* status */  tr > *:nth-child(3) { width: 20%; }
+    /* path */    tr > *:nth-child(4) { width: 25%; }
+    /* date */    tr > *:nth-child(5) { width: 20%; }
   }
 }
 
-.jobs-detailed-view {
-  /* icon */
-  th:nth-child(1),
-  td:nth-child(1) {
-    min-width: 2em;
+/* History Table */
+@media only screen and (min-width: 1680px) {
+  .jobs-detailed-view {
+    /* icon */    tr > *:nth-child(1) { width: 2.5%; }
+    /* name */    tr > *:nth-child(2) { width: 37.5%; }
+    /* status */  tr > *:nth-child(3) { width: 10%; }
+    /* details */ tr > *:nth-child(4) { width: 7.5%; }
+    /* path */    tr > *:nth-child(5) { width: 35%; }
+    /* date */    tr > *:nth-child(6) { width: 10%; }
   }
-  /* name */
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 50%;
+}
+@media only screen and (min-width: 1200px) and (max-width: 1679px) {
+  .jobs-detailed-view {
+    /* icon */    tr > *:nth-child(1) { width: 3.5%; }
+    /* name */    tr > *:nth-child(2) { width: 32.5%; }
+    /* status */  tr > *:nth-child(3) { width: 11.5%; }
+    /* details */ tr > *:nth-child(4) { width: 7.5%; }
+    /* path */    tr > *:nth-child(5) { width: 30%; }
+    /* date */    tr > *:nth-child(6) { width: 15%; }
   }
-  /* status */
-  th:nth-child(3),
-  td:nth-child(3) {
-    min-width: 15em;
+}
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .jobs-detailed-view {
+    /* icon */    tr > *:nth-child(1) { width: 5%; }
+    /* name */    tr > *:nth-child(2) { width: 27.5%; }
+    /* status */  tr > *:nth-child(3) { width: 12.5%; }
+    /* details */ tr > *:nth-child(4) { width: 10%; }
+    /* path */    tr > *:nth-child(5) { width: 25%; }
+    /* date */    tr > *:nth-child(6) { width: 20%; }
   }
-  /* details */
-  th:nth-child(4),
-  td:nth-child(4) {
-    min-width: 7em;
-  }
-  /* path */
-  th:nth-child(5),
-  td:nth-child(5) {
-    width: 50%;
-  }
-  /* date */
-  th:nth-child(6),
-  td:nth-child(6) {
-    min-width: 10em;
+}
+@media only screen and (max-width: 991px) {
+  .jobs-detailed-view {
+    /* icon */    tr > *:nth-child(1) { width: 6%; }
+    /* name */    tr > *:nth-child(2) { width: 25%; }
+    /* status */  tr > *:nth-child(3) { width: 15%; }
+    /* details */ tr > *:nth-child(4) { width: 10%; }
+    /* path */    tr > *:nth-child(5) { width: 25%; }
+    /* date */    tr > *:nth-child(6) { width: 19%; }
   }
 }
 
