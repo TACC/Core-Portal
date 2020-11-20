@@ -1,16 +1,24 @@
 import React from 'react';
-import { Message, SectionMessage } from '_common';
+import { InlineMessage, SectionMessage } from '_common';
 
 import './UIPatternsMessage.module.scss';
 
 const EXAMPLE_LINK = {
   short: (
-    <a href="#" className="wb-link">
+    <a
+      href={window.location.href}
+      onClick={e => e.preventDefault()}
+      className="wb-link"
+    >
       Example link
     </a>
   ),
   long: (
-    <a href="#" className="wb-link">
+    <a
+      href={window.location.href}
+      onClick={e => e.preventDefault()}
+      className="wb-link"
+    >
       Example link can be a complete sentence.
     </a>
   )
@@ -56,12 +64,17 @@ function UIPatternsMessages() {
             component
           </th>
           <th scope="col">
-            <code>&lt;Message&gt; or &lt;SectionMessage&gt;</code>
+            <code>&lt;InlineMessage&gt;</code>
+            <code>&lt;Message scope=&quot;inline&quot;&gt;</code>
           </th>
           <th scope="col">
-            <code>&lt;Message&gt; or &lt;SectionMessage&gt;</code>
+            <code>&lt;SectionMessage (canDismiss)&gt;</code>
+            <code>&lt;Message scope=&quot;section&quot; (canDismiss)&gt;</code>
           </th>
           <th scope="col">
+            <code>
+              <s>&lt;AppMessage&gt;</s>
+            </code>
             <code>&lt;NotifcationToast&gt;</code>
           </th>
         </tr>
@@ -114,19 +127,19 @@ function UIPatternsMessages() {
             <code>info</code>
           </th>
           <td>
-            <Message type="info" scope="inline">
+            <InlineMessage type="info">
               {EXAMPLE_TEXT.info.long} {EXAMPLE_LINK.short}
-            </Message>
+            </InlineMessage>
             <hr />
-            <Message type="info" scope="inline">
+            <InlineMessage type="info">
               {EXAMPLE_TEXT.info.short} {EXAMPLE_LINK.long}
-            </Message>
+            </InlineMessage>
           </td>
           <td>
-            <SectionMessage type="info" scope="section">
+            <SectionMessage type="info">
               {EXAMPLE_TEXT.info.long} {EXAMPLE_LINK.short}
             </SectionMessage>
-            <SectionMessage type="info" scope="section" canDismiss>
+            <SectionMessage type="info" canDismiss>
               {EXAMPLE_TEXT.info.short} {EXAMPLE_LINK.long}
             </SectionMessage>
           </td>
@@ -137,19 +150,19 @@ function UIPatternsMessages() {
             <code>success</code>
           </th>
           <td>
-            <Message type="success" scope="inline">
+            <InlineMessage type="success">
               {EXAMPLE_TEXT.success.long} {EXAMPLE_LINK.short}
-            </Message>
+            </InlineMessage>
             <hr />
-            <Message type="success" scope="inline">
+            <InlineMessage type="success">
               {EXAMPLE_TEXT.success.short} {EXAMPLE_LINK.long}
-            </Message>
+            </InlineMessage>
           </td>
           <td>
-            <SectionMessage type="success" scope="section">
+            <SectionMessage type="success">
               {EXAMPLE_TEXT.success.long} {EXAMPLE_LINK.short}
             </SectionMessage>
-            <SectionMessage type="success" scope="section" canDismiss>
+            <SectionMessage type="success" canDismiss>
               {EXAMPLE_TEXT.success.short} {EXAMPLE_LINK.long}
             </SectionMessage>
           </td>
@@ -160,19 +173,19 @@ function UIPatternsMessages() {
             <code>warn</code>
           </th>
           <td>
-            <Message type="warn" scope="inline">
+            <InlineMessage type="warn">
               {EXAMPLE_TEXT.warn.long} {EXAMPLE_LINK.short}
-            </Message>
+            </InlineMessage>
             <hr />
-            <Message type="warn" scope="inline">
+            <InlineMessage type="warn">
               {EXAMPLE_TEXT.warn.short} {EXAMPLE_LINK.long}
-            </Message>
+            </InlineMessage>
           </td>
           <td>
-            <SectionMessage type="warn" scope="section">
+            <SectionMessage type="warn">
               {EXAMPLE_TEXT.warn.long} {EXAMPLE_LINK.short}
             </SectionMessage>
-            <SectionMessage type="warn" scope="section" canDismiss>
+            <SectionMessage type="warn" canDismiss>
               {EXAMPLE_TEXT.warn.short} {EXAMPLE_LINK.long}
             </SectionMessage>
           </td>
@@ -185,19 +198,19 @@ function UIPatternsMessages() {
             <code>error</code>
           </th>
           <td>
-            <Message type="error" scope="inline">
+            <InlineMessage type="error">
               {EXAMPLE_TEXT.error.long} {EXAMPLE_LINK.short}
-            </Message>
+            </InlineMessage>
             <hr />
-            <Message type="error" scope="inline">
+            <InlineMessage type="error">
               {EXAMPLE_TEXT.error.short} {EXAMPLE_LINK.long}
-            </Message>
+            </InlineMessage>
           </td>
           <td>
-            <SectionMessage type="error" scope="section">
+            <SectionMessage type="error">
               {EXAMPLE_TEXT.error.long} {EXAMPLE_LINK.short}
             </SectionMessage>
-            <SectionMessage type="error" scope="section" canDismiss>
+            <SectionMessage type="error" canDismiss>
               {EXAMPLE_TEXT.error.short} {EXAMPLE_LINK.long}
             </SectionMessage>
           </td>

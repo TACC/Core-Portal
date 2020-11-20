@@ -15,6 +15,13 @@
         vertical-align: top;
     }
 
+    /* Decoration */
+    & thead code + code::before {
+        content: '|';
+        display: inline-block;
+        margin: 0 0.25em;
+    }
+
     /* Dimension */
     & tbody > *:nth-child(1) { width: 20%; }
     & tbody > *:nth-child(2) { width: 40%; }

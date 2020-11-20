@@ -8,6 +8,7 @@ export { default as AppIcon } from './AppIcon';
 export { default as Expand } from './Expand';
 export { default as Icon } from './Icon';
 export { default as Message } from './Message';
+export { default as InlineMessage } from './InlineMessage';
 export { default as SectionMessage } from './SectionMessage';
 export { default as DescriptionList } from './DescriptionList';
 export { default as DropdownSelector } from './DropdownSelector';
