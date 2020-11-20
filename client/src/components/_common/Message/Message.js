@@ -7,7 +7,9 @@ import './Message.module.scss';
 
 export const ERROR_TEXT = {
   mismatchCanDismissScope:
-    'For `Message` to use `canDismiss`, `scope` must equal `section`.'
+    'For `Message` to use `canDismiss`, `scope` must equal `section`.',
+  deprecatedTypeWarn:
+    'In `Message`, `type="warn"` is deprecated; use `type="warning"` instead.'
 };
 
 export const TYPE_MAP = {
@@ -21,7 +23,7 @@ export const TYPE_MAP = {
     className: 'is-success',
     iconText: 'Notice'
   },
-  warn: {
+  warning: {
     iconName: 'alert',
     className: 'is-warn',
     iconText: 'Warning'
@@ -32,6 +34,7 @@ export const TYPE_MAP = {
     iconText: 'Error'
   }
 };
+TYPE_MAP.warn = TYPE_MAP.warning; // FAQ: Deprecated support for `type="warn"`
 export const TYPES = Object.keys(TYPE_MAP);
 
 export const SCOPE_MAP = {
@@ -66,20 +69,29 @@ const Message = ({
   scope,
   type
 }) => {
-  const { iconName, iconText } = TYPE_MAP[type];
-  const { role, tagName } = SCOPE_MAP[scope || DEFAULT_SCOPE];
+  const typeMap = TYPE_MAP[type];
+  const scopeMap = SCOPE_MAP[scope || DEFAULT_SCOPE];
+  const { iconName, iconText, className: typeClassName } = typeMap;
+  const { role, tagName, className: scopeClassName } = scopeMap;
 
   const hasDismissSupport = scope === 'section';
+
+  // Manage prop warnings
+  /* eslint-disable no-console */
   if (canDismiss && !hasDismissSupport) {
-    // Tell user that component will work, except `canDismiss` is ineffectual
-    // eslint-disable-next-line no-console
+    // Component will work, except `canDismiss` is ineffectual
     console.error(ERROR_TEXT.mismatchCanDismissScope);
   }
+  if (type === 'warn') {
+    // Component will work, but `warn` is deprecated value
+    console.warn(ERROR_TEXT.deprecatedTypeWarn);
+  }
+  /* eslint-enable no-console */
 
   // Manage class names
   const modifierClassNames = [];
-  modifierClassNames.push(TYPE_MAP[type].className);
-  modifierClassNames.push(SCOPE_MAP[scope || DEFAULT_SCOPE].className);
+  modifierClassNames.push(typeClassName);
+  modifierClassNames.push(scopeClassName);
   const containerStyleNames = ['container', ...modifierClassNames].join(' ');
 
   // Manage disappearance

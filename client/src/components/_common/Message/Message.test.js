@@ -21,6 +21,7 @@ function testClassnamesByType(type, getByRole, getByTestId) {
 
 describe('Message', () => {
   it.each(MSG.TYPES)('has correct text for type %s', type => {
+    if (type === 'warn') console.warn = jest.fn(); // mute deprecation warning
     const { getByTestId } = render(
       <Message
         type={type}
@@ -33,7 +34,8 @@ describe('Message', () => {
   });
 
   describe('elements', () => {
-    it.each(MSG.TYPES)('include icon when type is %s', type => {
+    test.each(MSG.TYPES)('include icon when type is %s', type => {
+      if (type === 'warn') console.warn = jest.fn(); // mute deprecation warning
       const { getByRole } = render(
         <Message
           type={type}
@@ -44,7 +46,8 @@ describe('Message', () => {
       );
       expect(getByRole('img')).toBeDefined(); // WARNING: Relies on `Icon`
     });
-    it.each(MSG.TYPES)('include text when type is %s', type => {
+    test.each(MSG.TYPES)('include text when type is %s', type => {
+      if (type === 'warn') console.warn = jest.fn(); // mute deprecation warning
       const { getByTestId } = render(
         <Message
           type={type}
@@ -67,7 +70,10 @@ describe('Message', () => {
       );
       expect(getByRole('button')).not.toEqual(null);
     });
-    test('invisible when isVisible is false', () => {
+  });
+
+  describe('visibility', () => {
+    test('invisible when `isVisible` is `false`', () => {
       const { queryByRole } = render(
         <Message
           type={TEST_TYPE}
@@ -79,8 +85,8 @@ describe('Message', () => {
       );
       expect(queryByRole('button')).not.toBeInTheDocument();
     });
-    it.todo('appears when isVisible changes from true to false');
-    // FAQ: This feature works, but I could not unit test it — Wesley B
+    test.todo('visible when `isVisible` changes from `false` to `true`');
+    // FAQ: Feature works (manually tested), but unit test is difficult
     // it('appears when isVisible changes from true to false', async () => {
     //   let isVisible = false;
     //   const { findByRole, queryByRole } = render(
@@ -97,8 +103,6 @@ describe('Message', () => {
     //   isVisible = true;
     //   expect(button).toBeDefined();
     // });
-    it.todo('dissapear when dismissed');
-    // FAQ: This feature works, but I could not unit test it — Wesley B
   });
 
   describe('className', () => {
@@ -131,8 +135,8 @@ describe('Message', () => {
     });
   });
 
-  describe('property dependency', () => {
-    test('is respected for `canDismiss` and `scope`', () => {
+  describe('property limitation', () => {
+    test('is announced for `canDismiss` and `scope`', () => {
       console.error = jest.fn();
       render(
         <Message
@@ -143,7 +147,23 @@ describe('Message', () => {
           {TEST_CONTENT}
         </Message>
       );
-      expect(console.error).toHaveBeenCalledWith(MSG.ERROR_TEXT.mismatchCanDismissScope);
+      expect(console.error).toHaveBeenCalledWith(
+        MSG.ERROR_TEXT.mismatchCanDismissScope
+      );
+    });
+    test('is announced for `type="warn"`', () => {
+      console.warn = jest.fn();
+      render(
+        <Message
+          type="warn"
+          scope={TEST_SCOPE}
+        >
+          {TEST_CONTENT}
+        </Message>
+      );
+      expect(console.warn).toHaveBeenCalledWith(
+        MSG.ERROR_TEXT.deprecatedTypeWarn
+      );
     });
   });
 });

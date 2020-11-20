@@ -6,8 +6,8 @@ const TEST_CONTENT = '…';
 const TEST_TYPE = 'info';
 
 describe('SectionMessage', () => {
-  describe('elements', () => {
-    test('dissapear when dismissed', async () => {
+  describe('visibility', () => {
+    test('removed when dismissed', async () => {
       const { getByRole, queryByRole } = render(
         <SectionMessage
           type={TEST_TYPE}
