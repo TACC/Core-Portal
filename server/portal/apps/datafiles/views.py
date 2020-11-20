@@ -38,6 +38,12 @@ class SystemListingView(BaseApiView):
         default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
         response['default_host'] = default_system['host']
 
+        for system in response['system_list']:
+            try:
+                system['definition'] = request.user.agave_oauth.client.systems.get(systemId=system['system'])
+            except Exception:
+                logger.exception("Could not retrieve definition for {}".format(system['system']))
+
         return JsonResponse(response)
 
 
