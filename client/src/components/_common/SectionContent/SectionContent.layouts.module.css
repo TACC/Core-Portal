@@ -67,15 +67,16 @@
   }
 
   /* Create a fake column border */
+  .two-column {
+    composes: u-create-flex-item-as-border--vert from '../../../styles/trumps/u-create-flex-item-as-border.css';
+  }
   .two-column::before {
-    content: '';
-    height: 100%;
-    width: 0;
     order: var(--side-panel-order);
     border-right: 1px solid rgba(112, 112, 112, 0.25);
     margin-left: var(--gutter-width);
     margin-right: var(--gutter-width);
   }
+
   /* Stretch panels only wide enough to create two columns */
   .two-column > * {
     width: 100%;

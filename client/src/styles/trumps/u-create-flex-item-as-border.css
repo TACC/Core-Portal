@@ -1,0 +1,43 @@
+/*
+Create Flex Item Border
+
+A hacky utility to create a border from a pseudo child of a flex box.
+
+WARNING: This depends on external structure styles on the element:
+- `display: flex`
+- `flex-wrap: wrap(…)`
+- `flex-direction: …`
+
+WARNING: This suggests external skin styles on the pseudo element:
+- `order: …`
+- `border: …`
+- `margin: …`
+
+.u-create-flex-item-as-border--vert - Vertical border in `flex-direction: column`
+.u-create-flex-item-as-border--horz - Horizontal border in `flex-direction: row`
+
+Markup: u-create-flex-item-border.twig.html
+
+Style guide: trumps.utilities.create-flex-item-as-border
+*/
+
+/* Prepare flex box */
+/* FAQ: Allow border to be stretched by its own size of `100%` (in Webkit) */
+/* FAQ: Child (the border) size percentage requires parent (flex box) to have definite size */
+/* WARNING: If parent element of this has `flex-wrap: wrap`, then this will stretch just like the border */
+/* SEE: https://stackoverflow.com/a/33644245 */
+.u-create-flex-item-as-border--vert { height: 100%; }
+.u-create-flex-item-as-border--horz { width: 100%; }
+
+/* Create (unstyled) border */
+.u-create-flex-item-as-border--vert::before,
+.u-create-flex-item-as-border--horz::before { content: ''; }
+.u-create-flex-item-as-border--vert::before {
+    height: 100%;
+    width: 0;
+}
+/* WARNING: Untested */
+.u-create-flex-item-as-border--horz::before {
+    width: 100%;
+    height: 0;
+}

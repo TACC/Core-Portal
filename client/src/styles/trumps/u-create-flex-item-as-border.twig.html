@@ -1,0 +1,19 @@
+<div class="u-create-flex-item-as-border--vert">
+    <div>Item 1</div>
+    <div>Item 2</div>
+    <!-- sample location for border -->
+    <div>Item 3</div>
+</div>
+<style>
+  .u-create-flex-item-as-border--vert {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+  .u-create-flex-item-as-border--vert::before {
+    order: 3;
+    border: 1px solid crimson;
+    margin: 0 0.5em;
+  }
+</style>
+  
