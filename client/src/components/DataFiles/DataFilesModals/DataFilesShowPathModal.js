@@ -36,7 +36,17 @@ const DataFilesShowPathModal = React.memo(() => {
       })),
     () => true
   );
-  const systems = useSelector(state => state.systems.systemList);
+
+  const definition = useSelector(state => {
+    if (!selectedFiles[0]) {
+      return null;
+    }
+    const matching = state.systems.systemList.find(sys => sys.system === selectedFiles[0].system);
+    if (!matching) {
+      return null;
+    }
+    return matching.definition;
+  });
 
   const toggle = () =>
     dispatch({
@@ -56,9 +66,9 @@ const DataFilesShowPathModal = React.memo(() => {
     setDisabled(false);
   };
 
-  return (
+  return definition ? (
     <Modal
-      isOpen={isOpen}
+      isOpen={isOpen && definition}
       onOpened={onOpened}
       onClosed={onClosed}
       toggle={toggle}
@@ -75,14 +85,20 @@ const DataFilesShowPathModal = React.memo(() => {
               api={params.api}
               scheme={params.scheme}
               system={params.system}
-              path={params.path || '/'}
+              path={params.path + selectedFiles[0].path || '/'}
               section=""
             />
+            <dl>
+              <dt>Storage Host</dt>
+              <dd>{definition.storage.host}</dd>
+              <dt>Storage Path</dt>
+              <dd>{definition.storage.rootDir}{selectedFiles[0].path}</dd>
+            </dl>
           </div>
         </div>
       </ModalBody>
     </Modal>
-  );
+  ) : null;
 });
 
 export default DataFilesShowPathModal;
