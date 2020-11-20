@@ -13,8 +13,8 @@ const MODAL_PROPTYPES = {
 
 const FeedbackModal = React.memo(({ isOpen, toggle }) => {
   return (
-    <Modal styleName="feedback-modal" isOpen={isOpen} toggle={() => toggle()}>
-      <ModalHeader styleName="feedback-header" toggle={toggle} charCode="x">
+    <Modal styleName="container" isOpen={isOpen} toggle={() => toggle()}>
+      <ModalHeader styleName="header" toggle={toggle} charCode="x">
         Feedback
       </ModalHeader>
       <ModalBody>
