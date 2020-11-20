@@ -1,21 +1,21 @@
 import React from 'react';
 import { render, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
-import UncontrolledMessage from './UncontrolledMessage';
+import SectionMessage from './SectionMessage';
 
 const TEST_CONTENT = '…';
 const TEST_TYPE = 'info';
 
-describe('UncontrolledMessage', () => {
+describe('SectionMessage', () => {
   describe('elements', () => {
     test('dissapear when dismissed', async () => {
       const { getByRole, queryByRole } = render(
-        <UncontrolledMessage
+        <SectionMessage
           type={TEST_TYPE}
           scope="section"
           canDismiss
         >
           {TEST_CONTENT}
-        </UncontrolledMessage>
+        </SectionMessage>
       );
       fireEvent.click(getByRole('button'));
       await waitForElementToBeRemoved(() => queryByRole('button'));

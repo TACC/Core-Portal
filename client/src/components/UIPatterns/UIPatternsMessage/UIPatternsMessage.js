@@ -1,5 +1,5 @@
 import React from 'react';
-import { UncontrolledMessage } from '_common';
+import { Message, SectionMessage } from '_common';
 
 import './UIPatternsMessage.module.scss';
 
@@ -56,10 +56,10 @@ function UIPatternsMessages() {
             component
           </th>
           <th scope="col">
-            <code>&lt;Message&gt; or &lt;UncontrolledMessage&gt;</code>
+            <code>&lt;Message&gt; or &lt;SectionMessage&gt;</code>
           </th>
           <th scope="col">
-            <code>&lt;Message&gt; or &lt;UncontrolledMessage&gt;</code>
+            <code>&lt;Message&gt; or &lt;SectionMessage&gt;</code>
           </th>
           <th scope="col">
             <code>&lt;NotifcationToast&gt;</code>
@@ -114,21 +114,21 @@ function UIPatternsMessages() {
             <code>info</code>
           </th>
           <td>
-            <UncontrolledMessage type="info" scope="inline">
+            <Message type="info" scope="inline">
               {EXAMPLE_TEXT.info.long} {EXAMPLE_LINK.short}
-            </UncontrolledMessage>
+            </Message>
             <hr />
-            <UncontrolledMessage type="info" scope="inline">
+            <Message type="info" scope="inline">
               {EXAMPLE_TEXT.info.short} {EXAMPLE_LINK.long}
-            </UncontrolledMessage>
+            </Message>
           </td>
           <td>
-            <UncontrolledMessage type="info" scope="section">
+            <SectionMessage type="info" scope="section">
               {EXAMPLE_TEXT.info.long} {EXAMPLE_LINK.short}
-            </UncontrolledMessage>
-            <UncontrolledMessage type="info" scope="section" canDismiss>
+            </SectionMessage>
+            <SectionMessage type="info" scope="section" canDismiss>
               {EXAMPLE_TEXT.info.short} {EXAMPLE_LINK.long}
-            </UncontrolledMessage>
+            </SectionMessage>
           </td>
           <td rowSpan="2">{NOTIFICATION_TEXT}</td>
         </tr>
@@ -137,21 +137,21 @@ function UIPatternsMessages() {
             <code>success</code>
           </th>
           <td>
-            <UncontrolledMessage type="success" scope="inline">
+            <Message type="success" scope="inline">
               {EXAMPLE_TEXT.success.long} {EXAMPLE_LINK.short}
-            </UncontrolledMessage>
+            </Message>
             <hr />
-            <UncontrolledMessage type="success" scope="inline">
+            <Message type="success" scope="inline">
               {EXAMPLE_TEXT.success.short} {EXAMPLE_LINK.long}
-            </UncontrolledMessage>
+            </Message>
           </td>
           <td>
-            <UncontrolledMessage type="success" scope="section">
+            <SectionMessage type="success" scope="section">
               {EXAMPLE_TEXT.success.long} {EXAMPLE_LINK.short}
-            </UncontrolledMessage>
-            <UncontrolledMessage type="success" scope="section" canDismiss>
+            </SectionMessage>
+            <SectionMessage type="success" scope="section" canDismiss>
               {EXAMPLE_TEXT.success.short} {EXAMPLE_LINK.long}
-            </UncontrolledMessage>
+            </SectionMessage>
           </td>
           {/* <td /> */}
         </tr>
@@ -160,21 +160,21 @@ function UIPatternsMessages() {
             <code>warn</code>
           </th>
           <td>
-            <UncontrolledMessage type="warn" scope="inline">
+            <Message type="warn" scope="inline">
               {EXAMPLE_TEXT.warn.long} {EXAMPLE_LINK.short}
-            </UncontrolledMessage>
+            </Message>
             <hr />
-            <UncontrolledMessage type="warn" scope="inline">
+            <Message type="warn" scope="inline">
               {EXAMPLE_TEXT.warn.short} {EXAMPLE_LINK.long}
-            </UncontrolledMessage>
+            </Message>
           </td>
           <td>
-            <UncontrolledMessage type="warn" scope="section">
+            <SectionMessage type="warn" scope="section">
               {EXAMPLE_TEXT.warn.long} {EXAMPLE_LINK.short}
-            </UncontrolledMessage>
-            <UncontrolledMessage type="warn" scope="section" canDismiss>
+            </SectionMessage>
+            <SectionMessage type="warn" scope="section" canDismiss>
               {EXAMPLE_TEXT.warn.short} {EXAMPLE_LINK.long}
-            </UncontrolledMessage>
+            </SectionMessage>
           </td>
           <td rowSpan="2" styleName="is-row-end">
             {NOTIFICATION_TEXT}
@@ -185,21 +185,21 @@ function UIPatternsMessages() {
             <code>error</code>
           </th>
           <td>
-            <UncontrolledMessage type="error" scope="inline">
+            <Message type="error" scope="inline">
               {EXAMPLE_TEXT.error.long} {EXAMPLE_LINK.short}
-            </UncontrolledMessage>
+            </Message>
             <hr />
-            <UncontrolledMessage type="error" scope="inline">
+            <Message type="error" scope="inline">
               {EXAMPLE_TEXT.error.short} {EXAMPLE_LINK.long}
-            </UncontrolledMessage>
+            </Message>
           </td>
           <td>
-            <UncontrolledMessage type="error" scope="section">
+            <SectionMessage type="error" scope="section">
               {EXAMPLE_TEXT.error.long} {EXAMPLE_LINK.short}
-            </UncontrolledMessage>
-            <UncontrolledMessage type="error" scope="section" canDismiss>
+            </SectionMessage>
+            <SectionMessage type="error" scope="section" canDismiss>
               {EXAMPLE_TEXT.error.short} {EXAMPLE_LINK.long}
-            </UncontrolledMessage>
+            </SectionMessage>
           </td>
           {/* <td /> */}
         </tr>

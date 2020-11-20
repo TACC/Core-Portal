@@ -21,8 +21,9 @@ const SectionMessage = props => {
   const messageProps = {
     ...Message.defaultProps,
     ...props,
+    isVisible,
     onDismiss,
-    isVisible
+    scope: 'section'
   };
 
   // Avoid manually syncing <SectionMessage>'s props
