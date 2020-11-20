@@ -60,7 +60,7 @@ const FeedbackForm = () => {
     >
       {({ isSubmitting, dirty, isValid, submitCount }) => {
         return (
-          <Form styleName="feedback-form">
+          <Form styleName="container">
             <FormGroup>
               <FormField name="name" label="Full Name" required disabled />
               <FormField name="email" label="Email" required disabled />
