@@ -1,11 +1,12 @@
 from django.test import TestCase, Client, RequestFactory, override_settings
-from mock import Mock, patch, MagicMock, ANY
+from mock import patch, MagicMock
+import pytest
 from django.contrib.auth import get_user_model
-from django.db.models import signals
 from portal.apps.accounts.api.views.systems import SystemsListView
 from portal.libs.agave.models.systems.storage import StorageSystem
-import json
 
+
+@pytest.mark.django_db(transaction=True)
 class TestSystemsListView(TestCase):
     fixtures = ['users', 'auth']
     @classmethod

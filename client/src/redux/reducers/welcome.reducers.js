@@ -1,9 +1,11 @@
-const initialWelcomeMessages = {
+export const initialWelcomeMessages = {
   DASHBOARD: true,
   APPLICATIONS: true,
   DATA: true,
   ALLOCATIONS: true,
-  HISTORY: true
+  HISTORY: true,
+  PROFILE: true,
+  TICKETS: true
 };
 
 function welcomeMessages(state = initialWelcomeMessages, action) {

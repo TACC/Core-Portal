@@ -19,7 +19,7 @@ function Dashboard() {
       messages={<BrowserChecker />}
       header="Dashboard"
       headerActions={
-        <Link to="/accounts/profile" className="wb-link">
+        <Link to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`} className="wb-link">
           Manage Account
         </Link>
       }

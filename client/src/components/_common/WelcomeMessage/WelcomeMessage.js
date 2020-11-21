@@ -31,6 +31,7 @@ export function shouldShowMessage(messageName) {
 function WelcomeMessage({ children, className, messageName }) {
   const dispatch = useDispatch();
   const welcomeMessages = useSelector(state => state.welcomeMessages);
+  const setupComplete = useSelector(state => state.workbench.setupComplete);
   const shouldShow = shouldShowMessage(messageName);
 
   function onDismiss(name) {
@@ -42,14 +43,16 @@ function WelcomeMessage({ children, className, messageName }) {
   }
 
   return (
-    <Alert
-      isOpen={shouldShow}
-      toggle={() => onDismiss(messageName)}
-      color="secondary"
-      className={className}
-    >
-      {children}
-    </Alert>
+    setupComplete && (
+      <Alert
+        isOpen={shouldShow}
+        toggle={() => onDismiss(messageName)}
+        color="secondary"
+        className={className}
+      >
+        {children}
+      </Alert>
+    )
   );
 }
 WelcomeMessage.propTypes = {

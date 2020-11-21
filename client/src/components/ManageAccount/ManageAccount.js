@@ -5,7 +5,6 @@ import { Alert, Col, Row } from 'reactstrap';
 import { isEmpty } from 'lodash';
 
 import { LoadingSpinner, Section } from '_common';
-import Sidebar from '../Sidebar';
 import {
   RequiredInformation,
   ChangePassword,
@@ -26,66 +25,63 @@ const ManageAccountView = () => {
     errors,
     data: { licenses, integrations }
   } = useSelector(state => state.profile);
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch({ type: 'GET_PROFILE_DATA' });
   }, [dispatch, isLoading]);
+
   return (
-    <div className="workbench-wrapper">
-      <Sidebar />
-      <div className="workbench-content">
-        <Section
-          routeName="PROFILE"
-          header="Manage Account"
-          headerActions={
-            <Link to="/workbench/dashboard" className="wb-link">
-              Back to Dashboard
-            </Link>
-          }
-          content={
-            <>
-              <Row className="user-profile">
-                <Col lg="8" className="user-profile-main">
-                  {isLoading ? (
-                    <LoadingSpinner />
-                  ) : (
-                    <>
-                      {errors.data && (
-                        <Alert color="danger">
-                          Unable to get your profile data
-                        </Alert>
-                      )}
-                      {errors.fields && (
-                        <Alert color="danger">Unable to get form fields</Alert>
-                      )}
-                      <RequiredInformation />
-                      <OptionalInformation />
-                      <ChangePasswordModal />
-                      <EditOptionalInformationModal />
-                      <EditRequiredInformationModal />
-                    </>
+    <Section
+      routeName="PROFILE"
+      header="Manage Account"
+      headerActions={
+        <Link to="/workbench/dashboard" className="wb-link">
+          Back to Dashboard
+        </Link>
+      }
+      content={
+        <>
+          <Row className="user-profile">
+            <Col lg="8" className="user-profile-main">
+              {isLoading ? (
+                <LoadingSpinner />
+              ) : (
+                <>
+                  {errors.data && (
+                    <Alert color="danger">
+                      Unable to get your profile data
+                    </Alert>
                   )}
-                </Col>
-                <Col lg="4">
-                  {isLoading ? (
-                    <LoadingSpinner />
-                  ) : (
-                    <>
-                      {!isEmpty(licenses) && <Licenses />}
-                      {!isEmpty(integrations) && <ThirdPartyApps />}
-                      <ChangePassword />
-                    </>
+                  {errors.fields && (
+                    <Alert color="danger">Unable to get form fields</Alert>
                   )}
-                </Col>
-              </Row>
-            </>
-          }
-          contentClassName="manage-account-content"
-          contentLayoutName="oneColumn"
-          contentShouldScroll
-        />
-      </div>
-    </div>
+                  <RequiredInformation />
+                  <OptionalInformation />
+                  <ChangePasswordModal />
+                  <EditOptionalInformationModal />
+                  <EditRequiredInformationModal />
+                </>
+              )}
+            </Col>
+            <Col lg="4">
+              {isLoading ? (
+                <LoadingSpinner />
+              ) : (
+                <>
+                  {!isEmpty(licenses) && <Licenses />}
+                  {!isEmpty(integrations) && <ThirdPartyApps />}
+                  <ChangePassword />
+                </>
+              )}
+            </Col>
+          </Row>
+        </>
+      }
+      contentClassName="manage-account-content"
+      contentLayoutName="oneColumn"
+      contentShouldScroll
+    />
   );
 };
 
