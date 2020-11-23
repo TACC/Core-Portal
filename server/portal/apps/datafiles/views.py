@@ -107,14 +107,13 @@ class PublicUrlView(BaseApiView):
             "unlimited": True
         }
         response = tapis_post_handler(client, scheme, system, path, "download", body=body)
-        public_url = PublicUrl.objects.create(,
-            agave_uri=f"{system}/{path}"
+        public_url = PublicUrl.objects.create(
+            agave_uri=f"{system}/{path}",
             public_url=response
         )
         public_url.save()
         return response
 
-    
     def delete_public_url(self, request, scheme, system, path):
         try:
             public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
@@ -136,7 +135,7 @@ class PublicUrlView(BaseApiView):
             public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
         except PublicUrl.DoesNotExist:
             return Http404
-        return JsonResponse({'publicUrl': public_url.postit_url})
+        return JsonResponse({'data': public_url.postit_url})
 
     def put(self, request, scheme, system, path):
         """Re-generates a new Public URL for one that already has one, expiring the old one
