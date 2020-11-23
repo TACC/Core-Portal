@@ -7,7 +7,10 @@ import { initialState as onboarding } from '../../redux/reducers/onboarding.redu
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
-import { initialTicketList as ticketList } from '../../redux/reducers/tickets.reducers';
+import {
+  initialTicketList as ticketList,
+  initialTicketCreateState as ticketCreate
+} from '../../redux/reducers/tickets.reducers';
 import { initialState as authenticatedUser } from '../../redux/reducers/authenticated_user.reducer';
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
 import { initialWelcomeMessages as welcomeMessages } from '../../redux/reducers/welcome.reducers';
@@ -21,7 +24,8 @@ const state = {
   welcomeMessages,
   jobs,
   systemMonitor,
-  ticketList
+  ticketList,
+  ticketCreate
 };
 
 describe('workbench', () => {
@@ -43,6 +47,10 @@ describe('workbench', () => {
       workbench: {
         ...workbench,
         setupComplete: true
+      },
+      ticketCreate: {
+        ...ticketCreate,
+        creatingSuccess: true
       }
     });
 
