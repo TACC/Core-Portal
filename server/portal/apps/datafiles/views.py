@@ -12,6 +12,7 @@ from portal.apps.users.utils import get_allocations
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.datafiles.models import PublicUrl
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -101,15 +102,19 @@ class PublicUrlView(BaseApiView):
         try:
             client = request.user.agave_oauth.client
         except AttributeError:
-            return HttpResponseForbidden()
+            raise HttpResponseForbidden
         body = {
-            "href": settings.AGAVE_TENANT_BASEURL,
+            "href": "{tenant}/files/v2/media/system/{system}/{path}".format(
+                tenant=settings.AGAVE_TENANT_BASEURL,
+                system=system,
+                path=path
+            ),
             "unlimited": True
         }
         response = tapis_post_handler(client, scheme, system, path, "download", body=body)
         public_url = PublicUrl.objects.create(
             agave_uri=f"{system}/{path}",
-            public_url=response
+            postit_url=response
         )
         public_url.save()
         return response
@@ -118,14 +123,13 @@ class PublicUrlView(BaseApiView):
         try:
             public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
         except PublicUrl.DoesNotExist:
-            return Http404 
+            raise Http404
         try:
             client = request.user.agave_oauth.client
         except AttributeError:
-            return HttpResponseForbidden()
-        client.postits.delete(nonce=public_url.get_nonce())
+            raise HttpResponseForbidden
+        response = client.postits.delete(nonce=public_url.get_nonce())
         public_url.delete()
-        response = self.create_postit(request, scheme, system, path)
         return response
 
     def get(self, request, scheme, system, path):
@@ -134,14 +138,14 @@ class PublicUrlView(BaseApiView):
         try:
             public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
         except PublicUrl.DoesNotExist:
-            return Http404
-        return JsonResponse({'data': public_url.postit_url})
+            raise Http404
+        return JsonResponse({"data": public_url.postit_url})
 
     def put(self, request, scheme, system, path):
         """Re-generates a new Public URL for one that already has one, expiring the old one
         """
         self.delete_public_url(request, scheme, system, path)
-        response = create_postit(request, scheme, system, path)
+        response = self.create_postit(request, scheme, system, path)
         return JsonResponse({"data": response})
 
     def delete(self, request, scheme, system, path):
