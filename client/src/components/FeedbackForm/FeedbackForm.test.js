@@ -21,8 +21,8 @@ const exampleAuthenticatedUser = {
   }
 };
 
-describe('FeedbackModal', () => {
-  it('renders modal with authenticated user information', () => {
+describe('FeedbackForm', () => {
+  it('renders form with authenticated user information', () => {
     const store = mockStore({
       ticketCreate: {
         ...ticketCreate
@@ -50,19 +50,5 @@ describe('FeedbackModal', () => {
 
     const { getByTestId } = renderComponent(<FeedbackForm />, store);
     expect(getByTestId('creating-spinner'));
-  });
-
-  it('renders a feedback creation error', () => {
-    const store = mockStore({
-      ticketCreate: {
-        ...ticketCreate,
-        creatingError: true,
-        creatingErrorMessage: 'Mock error'
-      },
-      authenticatedUser: exampleAuthenticatedUser
-    });
-
-    const { getByText } = renderComponent(<FeedbackForm />, store);
-    expect(getByText(/Mock error/)).toBeDefined();
   });
 });
