@@ -13,7 +13,7 @@ function UIPatterns() {
       </div>
       <div styleName="items">
         <div styleName="grid-item">
-          <h6>Message</h6>
+          <h6>Message &amp; Notification</h6>
           <UIPatternsMessage />
         </div>
         <div styleName="grid-item">
