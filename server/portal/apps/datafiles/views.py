@@ -1,7 +1,7 @@
 from portal.apps.auth.tasks import get_user_storage_systems
 from portal.views.base import BaseApiView
 from django.conf import settings
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseForbidden, Http404
 from requests.exceptions import HTTPError
 import json
 import logging
@@ -10,6 +10,7 @@ from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_post_handler)
 from portal.apps.users.utils import get_allocations
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
+from portal.apps.datafiles.models import PublicUrl
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +73,6 @@ class TapisFilesView(BaseApiView):
 
     def put(self, request, operation=None, scheme=None,
             handler=None, system=None, path='/'):
-
         body = json.loads(request.body)
         try:
             client = request.user.agave_oauth.client
@@ -93,4 +93,64 @@ class TapisFilesView(BaseApiView):
 
         response = tapis_post_handler(client, scheme, system, path, operation, body=body)
 
+        return JsonResponse({"data": response})
+
+
+class PublicUrlView(BaseApiView):
+    def create_postit(self, request, scheme, system, path):
+        try:
+            client = request.user.agave_oauth.client
+        except AttributeError:
+            return HttpResponseForbidden()
+        body = {
+            "href": settings.AGAVE_TENANT_BASEURL,
+            "unlimited": True
+        }
+        response = tapis_post_handler(client, scheme, system, path, "download", body=body)
+        public_url = PublicUrl.objects.create(,
+            agave_uri=f"{system}/{path}"
+            public_url=response
+        )
+        public_url.save()
+        return response
+
+    
+    def delete_public_url(self, request, scheme, system, path):
+        try:
+            public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
+        except PublicUrl.DoesNotExist:
+            return Http404 
+        try:
+            client = request.user.agave_oauth.client
+        except AttributeError:
+            return HttpResponseForbidden()
+        client.postits.delete(nonce=public_url.get_nonce())
+        public_url.delete()
+        response = self.create_postit(request, scheme, system, path)
+        return response
+
+    def get(self, request, scheme, system, path):
+        """Given a file, returns a Public URL for a file
+        """
+        try:
+            public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
+        except PublicUrl.DoesNotExist:
+            return Http404
+        return JsonResponse({'publicUrl': public_url.postit_url})
+
+    def put(self, request, scheme, system, path):
+        """Re-generates a new Public URL for one that already has one, expiring the old one
+        """
+        self.delete_public_url(request, scheme, system, path)
+        response = create_postit(request, scheme, system, path)
+        return JsonResponse({"data": response})
+
+    def delete(self, request, scheme, system, path):
+        response = self.delete_public_url(request, scheme, system, path)
+        return JsonResponse({"data": response})
+
+    def post(self, request, scheme, system, path):
+        """Generates a new Public URL for a file
+        """
+        response = self.create_postit(request, scheme, system, path)
         return JsonResponse({"data": response})
