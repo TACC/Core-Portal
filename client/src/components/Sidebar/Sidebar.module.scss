@@ -26,3 +26,7 @@ $width: 215px;
   font-size: 0.75em; /* ~20px (16px design * 1.2 design-to-app ratio) */
   font-weight: 500;
 }
+
+.disabled {
+  color: var(--global-color-primary--light);
+}
