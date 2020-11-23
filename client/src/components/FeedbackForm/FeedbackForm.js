@@ -75,7 +75,7 @@ const FeedbackForm = () => {
             <div className="ticket-create-button-row">
               {submitCount > 0 && creatingError && (
                 <Alert color="warning">
-                  Feedback creating error: {creatingErrorMessage}
+                  Error submitting feedback: {creatingErrorMessage}
                 </Alert>
               )}
               <Button
