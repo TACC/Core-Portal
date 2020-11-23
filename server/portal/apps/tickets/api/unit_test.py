@@ -85,8 +85,8 @@ def test_tickets_create_with_attachments(client, authenticated_user, mock_rtutil
     assert kwargs['requestor'] == "email@test.com"
     assert kwargs['subject'] == "subject"
     assert kwargs['cc'] == "cc@test.com"
-    assert "firstName" in kwargs['problem_description']
-    assert "lastName" in kwargs['problem_description']
+    assert authenticated_user.first_name in kwargs['problem_description']
+    assert authenticated_user.last_name in kwargs['problem_description']
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
