@@ -19,7 +19,7 @@ function UIPatterns() {
             <UIPatternsSection />
           </div>
           <div styleName="list-item">
-            <h6>Message</h6>
+            <h6>Message &amp; Notification</h6>
             <UIPatternsMessage />
           </div>
           <div styleName="list-item">
