@@ -193,7 +193,7 @@ export function ticketCreateModal(
       };
     case 'TICKET_CREATE_SET_MODAL_CLOSE':
       return {
-        ...initialTicketCreateModalState,
+        ...initialTicketCreateModalState
       };
     default:
       return state;
