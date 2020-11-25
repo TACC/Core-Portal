@@ -49,6 +49,10 @@ describe('workbench', () => {
       workbench: {
         ...workbench,
         setupComplete: true
+      },
+      ticketCreate: {
+        ...ticketCreate,
+        creatingSuccess: true
       }
     });
 
