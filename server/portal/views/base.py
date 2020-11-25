@@ -46,6 +46,7 @@ class BaseApiView(View):
                 logger.info('Error %s', message, exc_info=True, extra=extra)
             return JsonResponse({'message': message}, status=400)
         except (ConnectionError, HTTPError) as e:
+            status = 500
             if e.response is not None:
                 status = e.response.status_code
                 try:
@@ -76,9 +77,15 @@ class BaseApiView(View):
                         }
                     )
             else:
-                logger.error('{}'.format(e), exc_info=True)
+                logger.error(
+                    e,
+                    exc_info=True,
+                    extra={
+                        'username': request.user.username,
+                        'session_key': request.session.session_key
+                    }
+                )
                 message = str(e)
-                status = 500
             return JsonResponse({'message': message}, status=status)
         except Exception as e:  # pylint: disable=broad-except
             logger.error(e, exc_info=True)
