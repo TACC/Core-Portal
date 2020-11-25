@@ -64,7 +64,8 @@ const OnboardingUser = () => {
                 type: 'TICKET_CREATE_OPEN_MODAL',
                 payload: {
                   provideDashBoardLinkOnSuccess: false,
-                  showAsModalOnDashboard: false
+                  showAsModalOnDashboard: false,
+                  subject: `Onboarding`
                 }
               })
             }
