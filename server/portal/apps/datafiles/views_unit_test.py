@@ -80,8 +80,9 @@ def test_get_public_url(client):
 
 
 def test_public_url_not_found(client):
-    # should be 404 but status code is being squashed (FP-517)
-    assert client.get("/api/datafiles/publicurl/tapis/system/notfound").status_code == 500
+    response = client.get("/api/datafiles/publicurl/tapis/system/notfound")
+    result = json.loads(response.content)
+    assert result['data'] is None
 
 
 def test_public_url_post(tapis_post_handler, authenticated_user, client):

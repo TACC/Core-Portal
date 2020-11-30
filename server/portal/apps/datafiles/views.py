@@ -11,6 +11,7 @@ from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
 from portal.apps.users.utils import get_allocations
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.datafiles.models import PublicUrl
+from portal.exceptions.api import ApiException
 
 
 logger = logging.getLogger(__name__)
@@ -134,7 +135,7 @@ class PublicUrlView(BaseApiView):
         try:
             public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
         except PublicUrl.DoesNotExist:
-            raise Http404
+            return JsonResponse({"data": None})
         return JsonResponse({"data": public_url.postit_url})
 
     def delete(self, request, scheme, system, path):
@@ -143,7 +144,7 @@ class PublicUrlView(BaseApiView):
         try:
             public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
         except PublicUrl.DoesNotExist:
-            raise Http404
+            raise ApiException("Post-it does not exist")
         response = self.delete_public_url(request, public_url)
         return JsonResponse({"data": response})
 
