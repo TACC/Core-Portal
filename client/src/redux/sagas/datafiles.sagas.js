@@ -10,6 +10,7 @@ import {
   race,
   take
 } from 'redux-saga/effects';
+import { fetchUtil } from 'utils/fetchUtil';
 
 export async function fetchSystemsUtil() {
   const response = await fetch('/api/datafiles/systems/list/');
@@ -506,6 +507,38 @@ export function* mkdir(action) {
       props: {}
     }
   });
+}
+
+export async function publicUrlUtil(method, scheme, system, path) {
+  const url = `/api/datafiles/publicurl/${scheme}/${system}${path}/`;
+  return await fetchUtil({
+    url,
+    method,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+export function* watchPublicUrl() {
+  yield takeLeading('DATA_FILES_PUBLIC_URL', publicUrl);
+}
+
+export function* publicUrl(action) {
+  const { system, path } = action.payload.file;
+  const { scheme, method } = action.payload;
+  try {
+    const result = yield call(publicUrlUtil, method, scheme, system, path);
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'SUCCESS', operation: 'publicUrl', data: result }
+    });
+  } catch (e) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'ERROR', operation: 'publicUrl', data: e }
+    });
+  }
 }
 
 export async function downloadUtil(api, scheme, system, path, href) {
