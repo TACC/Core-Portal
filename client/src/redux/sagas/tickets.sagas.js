@@ -192,3 +192,20 @@ export function* postTicketCreate(action) {
 export function* watchPostTicketCreate() {
   yield takeLatest('TICKET_CREATE', postTicketCreate);
 }
+
+export function* openTicketModal(action) {
+  yield put({ type: 'TICKET_CREATE_INIT' });
+  yield put({ type: 'TICKET_CREATE_SET_MODAL_OPEN', payload: action.payload });
+}
+
+export function* closeTicketModal(action) {
+  yield put({ type: 'TICKET_CREATE_SET_MODAL_CLOSE' });
+}
+
+export function* watchTicketCreateOpenModal() {
+  yield takeLatest('TICKET_CREATE_OPEN_MODAL', openTicketModal);
+}
+
+export function* watchTicketCreateCloseModal() {
+  yield takeLatest('TICKET_CREATE_CLOSE_MODAL', closeTicketModal);
+}

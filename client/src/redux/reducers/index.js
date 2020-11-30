@@ -5,7 +5,8 @@ import { systems, files } from './datafiles.reducers';
 import {
   ticketList,
   ticketDetailedView,
-  ticketCreate
+  ticketCreate,
+  ticketCreateModal
 } from './tickets.reducers';
 import systemMonitor from './systemMonitor.reducers';
 import allocations from './allocations.reducers';
@@ -28,6 +29,7 @@ export default combineReducers({
   ticketList,
   ticketDetailedView,
   ticketCreate,
+  ticketCreateModal,
   authenticatedUser,
   app,
   apps,
