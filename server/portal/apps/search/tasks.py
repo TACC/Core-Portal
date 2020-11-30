@@ -51,6 +51,11 @@ def index_community_data(self, reindex=False):
             logger.info('INDEXING {} SYSTEM'.format(sys.name))
             agave_indexer.apply_async(args=[sys.system], kwargs={'reindex': reindex})
 
+
+@shared_task(bind=True, max_retries=3, queue='default')
+def project_indexer(self, listing):
+    pass
+
 # @shared_task(bind=True, queue='indexing')
 # def project_indexer(self, projectId):
 #     """
