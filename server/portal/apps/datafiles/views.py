@@ -119,11 +119,7 @@ class PublicUrlView(BaseApiView):
         public_url.save()
         return response
 
-    def delete_public_url(self, request, scheme, system, path):
-        try:
-            public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
-        except PublicUrl.DoesNotExist:
-            raise Http404
+    def delete_public_url(self, request, public_url):
         try:
             client = request.user.agave_oauth.client
         except AttributeError:
@@ -141,19 +137,24 @@ class PublicUrlView(BaseApiView):
             raise Http404
         return JsonResponse({"data": public_url.postit_url})
 
-    def put(self, request, scheme, system, path):
-        """Re-generates a new Public URL for one that already has one, expiring the old one
-        """
-        self.delete_public_url(request, scheme, system, path)
-        response = self.create_postit(request, scheme, system, path)
-        return JsonResponse({"data": response})
-
     def delete(self, request, scheme, system, path):
-        response = self.delete_public_url(request, scheme, system, path)
+        """Delete an existing Public URL for a file
+        """
+        try:
+            public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
+        except PublicUrl.DoesNotExist:
+            raise Http404
+        response = self.delete_public_url(request, public_url)
         return JsonResponse({"data": response})
 
     def post(self, request, scheme, system, path):
-        """Generates a new Public URL for a file
+        """Generates a new Public URL for a file, deleting
+        any pre-existing ones
         """
+        try:
+            public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
+            self.delete_public_url(request, public_url)
+        except PublicUrl.DoesNotExist:
+            pass
         response = self.create_postit(request, scheme, system, path)
         return JsonResponse({"data": response})

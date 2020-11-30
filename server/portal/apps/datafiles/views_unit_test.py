@@ -112,7 +112,7 @@ def test_public_url_delete(tapis_post_handler, authenticated_user, mock_agave_cl
     assert len(PublicUrl.objects.all()) == 0
 
 
-def test_public_url_put(tapis_post_handler, authenticated_user, mock_agave_client, client):
+def test_public_url_post_existing(tapis_post_handler, authenticated_user, mock_agave_client, client):
     mock_agave_client.postits.delete.return_value = "OK"
     tapis_post_handler.return_value = "https://tenant/nonce"
     public_url = PublicUrl.objects.create(
@@ -120,6 +120,6 @@ def test_public_url_put(tapis_post_handler, authenticated_user, mock_agave_clien
         postit_url="https://tenant/oldnonce"
     )
     public_url.save()
-    result = client.put("/api/datafiles/publicurl/tapis/system/path")
+    result = client.post("/api/datafiles/publicurl/tapis/system/path")
     assert json.loads(result.content)["data"] == "https://tenant/nonce"
     assert PublicUrl.objects.all()[0].get_nonce() == "nonce"
