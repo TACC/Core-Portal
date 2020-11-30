@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
+    'portal.apps.projects',
 
 ]
 
@@ -212,15 +213,15 @@ PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
 PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home.{}'
 PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 
-PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'
+PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'test.project'
 
 PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
 
-PORTAL_PROJECTS_NAME_PREFIX = 'cep.project'
+PORTAL_PROJECTS_NAME_PREFIX = 'test.project'
 
-PORTAL_PROJECTS_ID_PREFIX = 'cep.project'
+PORTAL_PROJECTS_ID_PREFIX = 'test.project'
 
 PORTAL_PROJECTS_ROOT_DIR = '/path/to/root'
 
