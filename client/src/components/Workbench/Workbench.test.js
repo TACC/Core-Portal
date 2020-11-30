@@ -9,7 +9,8 @@ import { initialState as notifications } from '../../redux/reducers/notification
 import { initialState as jobs } from '../../redux/reducers/jobs.reducers';
 import {
   initialTicketList as ticketList,
-  initialTicketCreateState as ticketCreate
+  initialTicketCreateState as ticketCreate,
+  initialTicketCreateModalState as ticketCreateModal
 } from '../../redux/reducers/tickets.reducers';
 import { initialState as authenticatedUser } from '../../redux/reducers/authenticated_user.reducer';
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
@@ -25,7 +26,8 @@ const state = {
   jobs,
   systemMonitor,
   ticketList,
-  ticketCreate
+  ticketCreate,
+  ticketCreateModal
 };
 
 describe('workbench', () => {
