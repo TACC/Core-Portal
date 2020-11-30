@@ -61,8 +61,19 @@ const DataFilesToolbar = ({ scheme }) => {
   
   const togglePublicUrlModal = () => {
     dispatch({
+      type: 'DATA_FILES_PUBLIC_URL',
+      payload: {
+        file: selectedFiles[0],
+        scheme
+      },
+      method: 'get'
+    })
+    dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'publicUrl', props: { selectedFiles } }
+      payload: {
+        operation: 'publicUrl',
+        props: { selectedFile: selectedFiles[0] }
+      }
     });
   }
 
