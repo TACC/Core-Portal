@@ -34,15 +34,6 @@ const initialFilesState = {
     trash: {},
     publicUrl: null
   },
-  operationData: {
-    rename: null,
-    move: {},
-    copy: {},
-    select: {},
-    upload: {},
-    trash: {},
-    publicUrl: {}    
-  },
   loadingScroll: {
     FilesListing: false,
     modal: false
@@ -238,10 +229,6 @@ export function files(state = initialFilesState, action) {
         operationStatus: {
           ...state.operationStatus,
           [action.payload.operation]: action.payload.status,
-        },
-        operationData: {
-          ...state.operationData,
-          [action.payload.operation]: action.payload.data || {}
         }
       };
     case 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY':
@@ -252,13 +239,6 @@ export function files(state = initialFilesState, action) {
           [action.payload.operation]: {
             ...state.operationStatus[action.payload.operation],
             [action.payload.key]: action.payload.status
-          }
-        },
-        operationData: {
-          ...state.operationData,
-          [action.payload.operation]: {
-            ...state.operationData[action.payload.operation],
-            [action.payload.key]: action.payload.data || {}
           }
         }
       };

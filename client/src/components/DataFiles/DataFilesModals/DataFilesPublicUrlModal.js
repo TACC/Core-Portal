@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import {
   Button,
   Modal,
@@ -21,7 +22,8 @@ const DataFilesPublicUrlStatus = ({
   loading,
   error
 }) => {
-  const publicUrlOperation = (method) => {
+  const dispatch = useDispatch();
+  const publicUrlOperation = (event, method) => {
     dispatch({
       type: 'DATA_FILES_PUBLIC_URL',
       payload: {
@@ -30,6 +32,7 @@ const DataFilesPublicUrlStatus = ({
         method
       }
     });
+    event.preventDefault();
   }
   if (loading) {
     return <LoadingSpinner />
@@ -39,9 +42,41 @@ const DataFilesPublicUrlStatus = ({
     return <Message type="error">There was a problem retrieving the link for this file.</Message>
   }
   return <FormGroup>
-    <Label>Link</Label>
-    <InputCopy placeholder="Click generate to make a link" value={url} />
-  </FormGroup>
+    {
+      loading 
+        ? <LoadingSpinner placement="inline"/>
+        : <>
+            <Label>Link</Label>
+            <InputCopy placeholder="Click generate to make a link" value={url} />
+            {
+              url
+                ? <>
+                    <Button
+                      type="submit"
+                      disabled={false}
+                      className="data-files-btn"
+                      onClick={(e) => publicUrlOperation(e, 'delete')}
+                    >
+                      Delete
+                    </Button>{' '}
+                  </>
+                : null
+            }
+            <Button
+              type="submit"
+              disabled={false}
+              className="data-files-btn"
+              onClick={(e) => publicUrlOperation(e, 'post')}
+            >
+              {
+                url
+                  ? <>Regenerate</>
+                  : <>Generate</>
+              }
+            </Button>
+          </>
+    }
+   </FormGroup> 
 }
 
 const DataFilesPublicUrlModal = () => {
@@ -53,7 +88,6 @@ const DataFilesPublicUrlModal = () => {
     state.files.modalProps.publicUrl.selectedFile || {}
   );
   const dispatch = useDispatch();
-
   const loading = !status;
   const error = status && "status" in status;
   const url = status ? status.data : null;
@@ -90,14 +124,6 @@ const DataFilesPublicUrlModal = () => {
             error={error}/>
         </ModalBody>
         <ModalFooter>
-          <Button
-            type="submit"
-            disabled={false}
-            className="data-files-btn"
-            onClick={() => publicUrlOperation('post')}
-          >
-            Generate{' '}
-          </Button>{' '}
           <Button
             color="secondary"
             className="data-files-btn-cancel"

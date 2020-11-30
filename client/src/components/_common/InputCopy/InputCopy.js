@@ -31,14 +31,14 @@ const InputCopy = ({
         onChange={onChange}
         readOnly={!value}/>
       <CopyToClipboard text={value} onCopy={onCopy}>
-        <Button disabled={value}>Copy</Button>
+        <Button disabled={value ? false : true}>Copy</Button>
       </CopyToClipboard>
     </div>
     <div styleName="copy-status">
       {
         copied
-          ? <span>Copied!</span>
-          : <span>{' '}</span>
+          ? <>Copied!</>
+          : undefined
       }
     </div>
   </div>
