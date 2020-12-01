@@ -1,5 +1,5 @@
 import { findSystemDisplayName } from 'utils/systems';
-import truncateMiddle from '../../../utils/truncateMiddle';
+import truncateMiddle from 'utils/truncateMiddle';
 
 const OPERATION_MAP = {
   mkdir: 'added',
