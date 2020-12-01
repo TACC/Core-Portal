@@ -96,7 +96,12 @@ const ToastMessage = ({ notification }) => {
   );
 };
 ToastMessage.propTypes = {
-  notification: PropTypes.isRequired
+  notification: PropTypes.shape({
+    status: PropTypes.string
+  })
+};
+ToastMessage.defaultProps = {
+  notification: undefined
 };
 
 /**
@@ -115,9 +120,9 @@ ToastMessage.propTypes = {
  *
  * @example
  * // returns "matlab-v9...20:02:00 is processing"
- * getToastMessage(n)
+ * getToastMessage(n, systemList)
  */
-const getToastMessage = (
+export const getToastMessage = (
   { extra, event_type: eventType, message, status, operation },
   systemList
 ) => {
@@ -145,7 +150,8 @@ getToastMessage.propTypes = {
   event_type: PropTypes.string.isRequired,
   message: PropTypes.string,
   status: PropTypes.string,
-  operation: PropTypes.string
+  operation: PropTypes.string,
+  systemList: PropTypes.list
 };
 getToastMessage.defaultProps = {
   extra: {},
