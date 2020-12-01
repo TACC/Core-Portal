@@ -50,19 +50,11 @@ def test_custom_api_exception(client, api_method_mock):
     assert response.status_code == 400
 
 
-@pytest.fixture
-def system_monitor_mock(settings):
-    # route to be used for testing purposes
-    settings.SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
-    yield settings.SYSTEM_MONITOR_URL
-
-
 @pytest.mark.parametrize("ExceptionClass", [requests.exceptions.HTTPError, requests.exceptions.ConnectionError])
-def test_connectionerror_httperror_no_response_in_exception(ExceptionClass, client, system_monitor_mock, requests_mock):
+def test_connectionerror_httperror_no_response_in_exception(ExceptionClass, client, api_method_mock):
     # testing HTTPError/ConnectionError exception that does not have a response
     # but that the status code is returned is passed on to the response
-    requests_mock.get(system_monitor_mock,
-                      exc=ExceptionClass())
+    api_method_mock.side_effect = ExceptionClass
     response = client.get(API_ROUTE)
 
     assert json.loads(response.content) == {'message': ''}
@@ -71,13 +63,16 @@ def test_connectionerror_httperror_no_response_in_exception(ExceptionClass, clie
 
 @pytest.mark.parametrize("ExceptionClass", [requests.exceptions.HTTPError, requests.exceptions.ConnectionError])
 @pytest.mark.parametrize("status_code", [403, 404, NON_403_404])
-def test_connectionerror_httperror_with_response(ExceptionClass, status_code, client, system_monitor_mock, requests_mock):
+def test_connectionerror_httperror_with_response(ExceptionClass, status_code, client, api_method_mock):
+    # testing HTTPError/ConnectionError exception that does have a response
+    # and that the status code + json contents are used in the response.
+    # NOTE: this is important as our client code uses these status codes in reacting to tapis behavior!
+
     test_response = requests.Response()
     test_response._content = json.dumps({"message": "Custom error message"}).encode('utf-8')
     test_response.status_code = status_code
 
-    requests_mock.get(system_monitor_mock,
-                      exc=ExceptionClass(response=test_response))
+    api_method_mock.side_effect = ExceptionClass(response=test_response)
     response = client.get(API_ROUTE)
     assert json.loads(response.content) == {'message': 'Custom error message'}
     assert response.status_code == status_code
@@ -85,13 +80,12 @@ def test_connectionerror_httperror_with_response(ExceptionClass, status_code, cl
 
 @pytest.mark.parametrize("ExceptionClass", [requests.exceptions.HTTPError, requests.exceptions.ConnectionError])
 @pytest.mark.parametrize("status_code", [403, 404, NON_403_404])
-def test_connectionerror_httperror_non_json_content(ExceptionClass, status_code, client, system_monitor_mock, requests_mock):
+def test_connectionerror_httperror_non_json_content(ExceptionClass, status_code, client, api_method_mock):
     test_response = requests.Response()
     test_response._content = "Non json error content".encode('utf-8')
     test_response.status_code = status_code
 
-    requests_mock.get(system_monitor_mock,
-                      exc=requests.exceptions.HTTPError(response=test_response))
+    api_method_mock.side_effect = requests.exceptions.HTTPError(response=test_response)
     response = client.get(API_ROUTE)
     assert json.loads(response.content) == {'message': 'Unknown Error'}
     assert response.status_code == status_code
