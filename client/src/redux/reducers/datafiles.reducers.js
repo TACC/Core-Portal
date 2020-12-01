@@ -32,7 +32,11 @@ const initialFilesState = {
     select: {},
     upload: {},
     trash: {},
-    publicUrl: null
+    publicUrl: {
+      method: null,
+      url: null,
+      error: null
+    }
   },
   loadingScroll: {
     FilesListing: false,

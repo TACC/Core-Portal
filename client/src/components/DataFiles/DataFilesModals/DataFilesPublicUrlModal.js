@@ -14,16 +14,11 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { LoadingSpinner, Message, InputCopy } from '_common';
+import './DataFilesPublicUrlModal.module.scss';
 
-const DataFilesPublicUrlStatus = ({ 
-  scheme,
-  file,
-  url,
-  loading,
-  error
-}) => {
+const DataFilesPublicUrlAction = ({ scheme, file, text, status, method }) => {
   const dispatch = useDispatch();
-  const publicUrlOperation = (event, method) => {
+  const onClick = (event) => {
     dispatch({
       type: 'DATA_FILES_PUBLIC_URL',
       payload: {
@@ -34,64 +29,70 @@ const DataFilesPublicUrlStatus = ({
     });
     event.preventDefault();
   }
-  if (loading) {
-    return <LoadingSpinner />
-  }
-  if (error) {
+
+  return (
+    <Button
+      type="submit"
+      disabled={status && status.method}
+      className="data-files-btn"
+      onClick={(event) => onClick(event)}
+      styleName="action-root"
+    >
+      {text}
+      {status && status.method === method
+        ? <LoadingSpinner placement="inline"/>
+        : null
+      }
+    </Button>
+  )
+}
+
+const DataFilesPublicUrlStatus = ({ 
+  scheme,
+  file,
+  status
+}) => {
+  if (status && status.error) {
     // Error occurred during retrieval of link
     return <Message type="error">There was a problem retrieving the link for this file.</Message>
   }
   return <FormGroup>
-    {
-      loading 
-        ? <LoadingSpinner placement="inline"/>
-        : <>
-            <Label>Link</Label>
-            <InputCopy placeholder="Click generate to make a link" value={url} />
-            {
-              url
-                ? <>
-                    <Button
-                      type="submit"
-                      disabled={false}
-                      className="data-files-btn"
-                      onClick={(e) => publicUrlOperation(e, 'delete')}
-                    >
-                      Delete
-                    </Button>{' '}
-                  </>
-                : null
-            }
-            <Button
-              type="submit"
-              disabled={false}
-              className="data-files-btn"
-              onClick={(e) => publicUrlOperation(e, 'post')}
-            >
-              {
-                url
-                  ? <>Regenerate</>
-                  : <>Generate</>
-              }
-            </Button>
-          </>
+    <Label>
+      Link
+      {
+        status && status.method === 'get' 
+          ? <LoadingSpinner placement="inline" /> 
+          : null
+      }
+    </Label>
+    <InputCopy placeholder="Click generate to make a link" value={status.url} />
+    { 
+      status && status.url
+        ? <DataFilesPublicUrlAction
+            scheme={scheme}
+            file={file}
+            text='Delete'
+            status={status}
+            method='delete' />
+        : null
     }
-   </FormGroup> 
+    <DataFilesPublicUrlAction
+      scheme={scheme}
+      file={file}
+      text={status && status.url ? 'Replace Link' : 'Generate Link'}
+      status={status}
+      method='post' />
+  </FormGroup> 
 }
 
 const DataFilesPublicUrlModal = () => {
   const isOpen = useSelector(state => state.files.modals.publicUrl);
-
   const status = useSelector(state => state.files.operationStatus.publicUrl);
   const { scheme } = useSelector(state => state.files.params.FilesListing);
   const selectedFile = useSelector(state => 
     state.files.modalProps.publicUrl.selectedFile || {}
   );
   const dispatch = useDispatch();
-  const loading = !status;
-  const error = status && "status" in status;
-  const url = status ? status.data : null;
-
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -119,9 +120,8 @@ const DataFilesPublicUrlModal = () => {
           <DataFilesPublicUrlStatus 
             scheme={scheme}
             file={selectedFile}
-            url={url}
-            loading={loading}
-            error={error}/>
+            status={status}
+          />
         </ModalBody>
         <ModalFooter>
           <Button

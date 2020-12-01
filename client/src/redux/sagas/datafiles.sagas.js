@@ -529,18 +529,39 @@ export function* publicUrl(action) {
   const { scheme, method } = action.payload;
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS',
-    payload: { status: null, operation: 'publicUrl' }
+    payload: {
+      status: {
+        method,
+        url: null,
+        error: null
+      },
+      operation: 'publicUrl'
+    }
   });
   try {
     const result = yield call(publicUrlUtil, method, scheme, system, path);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: result, operation: 'publicUrl' }
+      payload: {
+        status: {
+          method: null,
+          url: result.data,
+          error: null
+        },
+        operation: 'publicUrl'
+      }
     });
-  } catch (e) {
+  } catch (error) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: e, operation: 'publicUrl' }
+      payload: {
+        status: {
+          method: null,
+          url: null,
+          error
+        },
+        operation: 'publicUrl'
+      }
     });
   }
 }
