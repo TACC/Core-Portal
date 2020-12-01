@@ -6,7 +6,11 @@ from portal.libs.exceptions import PortalLibException
 import requests
 import json
 
+# route to be used for testing purposes
 API_ROUTE = '/api/system-monitor/'
+
+# arbitrary status code that is not 403 or 404 for testing purposes
+NON_403_404 = 401
 
 
 @pytest.fixture
@@ -46,95 +50,69 @@ def test_custom_api_exception(client, api_method_mock):
     assert response.status_code == 400
 
 
-def test_requests_connection_error(client, settings, requests_mock):
+@pytest.fixture
+def system_monitor_mock(settings):
+    # route to be used for testing purposes
     settings.SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
+    yield settings.SYSTEM_MONITOR_URL
 
-    requests_mock.get(settings.SYSTEM_MONITOR_URL, exc=requests.exceptions.HTTPError)
+
+@pytest.mark.parametrize("ExceptionClass", [requests.exceptions.HTTPError, requests.exceptions.ConnectionError])
+def test_connectionerror_httperror_no_response_in_exception(ExceptionClass, client, system_monitor_mock, requests_mock):
+    # testing HTTPError/ConnectionError exception that does not have a response
+    # but that the status code is returned is passed on to the response
+    requests_mock.get(system_monitor_mock,
+                      exc=ExceptionClass())
     response = client.get(API_ROUTE)
+
     assert json.loads(response.content) == {'message': ''}
     assert response.status_code == 500
 
+
+@pytest.mark.parametrize("ExceptionClass", [requests.exceptions.HTTPError, requests.exceptions.ConnectionError])
+@pytest.mark.parametrize("status_code", [403, 404, NON_403_404])
+def test_connectionerror_httperror_with_response(ExceptionClass, status_code, client, system_monitor_mock, requests_mock):
     test_response = requests.Response()
     test_response._content = json.dumps({"message": "Custom error message"}).encode('utf-8')
-    test_response.status_code = 404
+    test_response.status_code = status_code
 
-    requests_mock.get(settings.SYSTEM_MONITOR_URL, exc=requests.exceptions.HTTPError(response=test_response))
-    response = client.get(API_ROUTE)
-    assert response.status_code == 404
-
-    test_response.status_code = 403
-    requests_mock.get(settings.SYSTEM_MONITOR_URL, exc=requests.exceptions.HTTPError(response=test_response))
-    response = client.get(API_ROUTE)
-    assert response.status_code == 403
-
-
-def test_requests_http_error(client, settings, requests_mock):
-    settings.SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
-
-    requests_mock.get(settings.SYSTEM_MONITOR_URL, exc=requests.exceptions.HTTPError)
-    response = client.get(API_ROUTE)
-    assert json.loads(response.content) == {'message': ''}
-    assert response.status_code == 500
-
-    test_response = requests.Response()
-    test_response._content = json.dumps({"message": "Custom error message"}).encode('utf-8')
-    test_response.status_code = 403
-
-    requests_mock.get(settings.SYSTEM_MONITOR_URL,
-                      exc=requests.exceptions.HTTPError(response=test_response))
+    requests_mock.get(system_monitor_mock,
+                      exc=ExceptionClass(response=test_response))
     response = client.get(API_ROUTE)
     assert json.loads(response.content) == {'message': 'Custom error message'}
-    assert response.status_code == 403
-
-    test_response.status_code = 404
-    requests_mock.get(settings.SYSTEM_MONITOR_URL,
-                      exc=requests.exceptions.HTTPError(response=test_response))
-    response = client.get(API_ROUTE)
-    assert response.status_code == 404
-    assert json.loads(response.content) == {'message': 'Custom error message'}
+    assert response.status_code == status_code
 
 
-def test_requests_http_error_non_403_or_404_with_json(client, settings, requests_mock):
-    settings.SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
-
-    test_response = requests.Response()
-    test_response._content = json.dumps({"message": "Custom error message"}).encode('utf-8')
-    test_response.status_code = 401
-
-    requests_mock.get(settings.SYSTEM_MONITOR_URL,
-                      exc=requests.exceptions.HTTPError(response=test_response))
-    response = client.get(API_ROUTE)
-    assert json.loads(response.content) == {'message': 'Custom error message'}
-    assert response.status_code == 401
-
-
-def test_requests_http_error_403_non_json(client, settings, requests_mock):
-    settings.SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
-
+@pytest.mark.parametrize("ExceptionClass", [requests.exceptions.HTTPError, requests.exceptions.ConnectionError])
+@pytest.mark.parametrize("status_code", [403, 404, NON_403_404])
+def test_connectionerror_httperror_non_json_content(ExceptionClass, status_code, client, system_monitor_mock, requests_mock):
     test_response = requests.Response()
     test_response._content = "Non json error content".encode('utf-8')
-    test_response.status_code = 403
+    test_response.status_code = status_code
 
-    requests_mock.get(settings.SYSTEM_MONITOR_URL,
+    requests_mock.get(system_monitor_mock,
                       exc=requests.exceptions.HTTPError(response=test_response))
     response = client.get(API_ROUTE)
     assert json.loads(response.content) == {'message': 'Unknown Error'}
-    assert response.status_code == 403
+    assert response.status_code == status_code
 
 
 def test_portal_lib_exception(client, api_method_mock):
     api_method_mock.side_effect = PortalLibException
     response = client.get(API_ROUTE)
     assert response.status_code == 500
+    assert json.loads(response.content) == {'message': 'Something went wrong here...'}
 
 
 def test_django_exceptions_that_squash(client, api_method_mock):
     api_method_mock.side_effect = ObjectDoesNotExist
     response = client.get(API_ROUTE)
     assert response.status_code == 500
+    assert json.loads(response.content) == {'message': 'Something went wrong here...'}
 
 
 def test_exception(client, api_method_mock):
     api_method_mock.side_effect = Exception
     response = client.get(API_ROUTE)
     assert response.status_code == 500
+    assert json.loads(response.content) == {'message': 'Something went wrong here...'}
