@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
 import {
   Button,
   Modal,
@@ -9,16 +8,26 @@ import {
   ModalFooter,
   Form,
   FormGroup,
-  Input,
   Label
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { LoadingSpinner, Message, InputCopy } from '_common';
 import './DataFilesPublicUrlModal.module.scss';
 
+const statusPropType = PropTypes.shape({
+  error: PropTypes.string,
+  url: PropTypes.string,
+  method: PropTypes.string
+});
+
+const filePropType = PropTypes.shape({
+  system: PropTypes.string,
+  path: PropTypes.string
+});
+
 const DataFilesPublicUrlAction = ({ scheme, file, text, status, method }) => {
   const dispatch = useDispatch();
-  const onClick = (event) => {
+  const onClick = event => {
     dispatch({
       type: 'DATA_FILES_PUBLIC_URL',
       payload: {
@@ -28,74 +37,90 @@ const DataFilesPublicUrlAction = ({ scheme, file, text, status, method }) => {
       }
     });
     event.preventDefault();
-  }
+  };
 
   return (
     <Button
       type="submit"
       disabled={status && status.method}
       className="data-files-btn"
-      onClick={(event) => onClick(event)}
+      onClick={event => onClick(event)}
       styleName="action-root"
     >
       {text}
-      {status && status.method === method
-        ? <LoadingSpinner placement="inline"/>
-        : null
-      }
+      {status && status.method === method ? (
+        <LoadingSpinner placement="inline" />
+      ) : null}
     </Button>
-  )
-}
+  );
+};
 
-const DataFilesPublicUrlStatus = ({ 
-  scheme,
-  file,
-  status
-}) => {
+DataFilesPublicUrlAction.propTypes = {
+  scheme: PropTypes.string.isRequired,
+  file: filePropType.isRequired,
+  text: PropTypes.string.isRequired,
+  method: PropTypes.string.isRequired,
+  status: statusPropType.isRequired
+};
+
+const DataFilesPublicUrlStatus = ({ scheme, file, status }) => {
   if (status && status.error) {
     // Error occurred during retrieval of link
-    return <Message type="error">There was a problem retrieving the link for this file.</Message>
+    return (
+      <Message type="error">
+        There was a problem retrieving the link for this file.
+      </Message>
+    );
   }
-  return <FormGroup>
-    <Label>
-      Link
-      {
-        status && status.method === 'get' 
-          ? <LoadingSpinner placement="inline" /> 
-          : null
-      }
-    </Label>
-    <InputCopy placeholder="Click generate to make a link" value={status.url} />
-    { 
-      status && status.url
-        ? <DataFilesPublicUrlAction
-            scheme={scheme}
-            file={file}
-            text='Delete'
-            status={status}
-            method='delete' />
-        : null
-    }
-    <DataFilesPublicUrlAction
-      scheme={scheme}
-      file={file}
-      text={status && status.url ? 'Replace Link' : 'Generate Link'}
-      status={status}
-      method='post' />
-  </FormGroup> 
-}
+  return (
+    <FormGroup>
+      <Label>
+        Link
+        {status && status.method === 'get' ? (
+          <LoadingSpinner placement="inline" />
+        ) : null}
+      </Label>
+      <InputCopy
+        placeholder="Click generate to make a link"
+        value={status.url}
+      />
+      {status && status.url ? (
+        <DataFilesPublicUrlAction
+          scheme={scheme}
+          file={file}
+          text="Delete"
+          status={status}
+          method="delete"
+        />
+      ) : null}
+      <DataFilesPublicUrlAction
+        scheme={scheme}
+        file={file}
+        text={status && status.url ? 'Replace Link' : 'Generate Link'}
+        status={status}
+        method="post"
+      />
+    </FormGroup>
+  );
+};
+
+DataFilesPublicUrlStatus.propTypes = {
+  scheme: PropTypes.string.isRequired,
+  file: filePropType.isRequired,
+  status: statusPropType.isRequired
+};
 
 const DataFilesPublicUrlModal = () => {
   const isOpen = useSelector(state => state.files.modals.publicUrl);
   const status = useSelector(state => state.files.operationStatus.publicUrl);
   const { scheme } = useSelector(state => state.files.params.FilesListing);
-  const selectedFile = useSelector((state) => {
+  const selectedFile = useSelector(state => {
     if (!state.files.modalProps.publicUrl) {
-      return {}
+      return {};
     }
-    return state.files.modalProps.publicUrl.selectedFile || {}
+    return state.files.modalProps.publicUrl.selectedFile || {};
   });
-    
+
   const dispatch = useDispatch();
   const toggle = () => {
     dispatch({
@@ -110,7 +135,7 @@ const DataFilesPublicUrlModal = () => {
       payload: { status: null, operation: 'publicUrl' }
     });
   };
-  
+
   return (
     <Modal
       isOpen={isOpen}
@@ -121,7 +146,7 @@ const DataFilesPublicUrlModal = () => {
       <Form>
         <ModalHeader toggle={toggle}>Link for {selectedFile.name}</ModalHeader>
         <ModalBody>
-          <DataFilesPublicUrlStatus 
+          <DataFilesPublicUrlStatus
             scheme={scheme}
             file={selectedFile}
             status={status}

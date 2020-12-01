@@ -58,7 +58,7 @@ const DataFilesToolbar = ({ scheme }) => {
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'copy', props: { selectedFiles } }
     });
-  
+
   const togglePublicUrlModal = () => {
     dispatch({
       type: 'DATA_FILES_PUBLIC_URL',
@@ -67,7 +67,7 @@ const DataFilesToolbar = ({ scheme }) => {
         scheme
       },
       method: 'get'
-    })
+    });
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
@@ -75,7 +75,7 @@ const DataFilesToolbar = ({ scheme }) => {
         props: { selectedFile: selectedFiles[0] }
       }
     });
-  }
+  };
 
   const download = () => {
     dispatch({

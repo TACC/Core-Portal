@@ -232,7 +232,7 @@ export function files(state = initialFilesState, action) {
         ...state,
         operationStatus: {
           ...state.operationStatus,
-          [action.payload.operation]: action.payload.status,
+          [action.payload.operation]: action.payload.status
         }
       };
     case 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY':

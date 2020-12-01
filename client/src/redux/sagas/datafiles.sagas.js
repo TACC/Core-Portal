@@ -511,7 +511,7 @@ export function* mkdir(action) {
 
 export async function publicUrlUtil(method, scheme, system, path) {
   const url = `/api/datafiles/publicurl/${scheme}/${system}${path}/`;
-  return await fetchUtil({
+  return fetchUtil({
     url,
     method,
     headers: {
@@ -558,7 +558,7 @@ export function* publicUrl(action) {
         status: {
           method: null,
           url: null,
-          error
+          error: error.toString()
         },
         operation: 'publicUrl'
       }
