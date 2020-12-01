@@ -50,7 +50,7 @@ const OPERATION_MAP = {
   }
 };
 
-function getOperationText(operation) {
+export function getOperationText(operation) {
   if (operation in OPERATION_MAP) {
     return OPERATION_MAP[operation];
   }
