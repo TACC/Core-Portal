@@ -60,8 +60,16 @@ DataFilesPublicUrlAction.propTypes = {
   file: filePropType.isRequired,
   text: PropTypes.string.isRequired,
   method: PropTypes.string.isRequired,
-  status: statusPropType.isRequired
+  status: statusPropType
 };
+
+DataFilesPublicUrlAction.defaultProps = {
+  status: {
+    error: null,
+    url: null,
+    method: null
+  }
+}
 
 const DataFilesPublicUrlStatus = ({ scheme, file, status }) => {
   if (status && status.error) {
