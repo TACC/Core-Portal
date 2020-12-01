@@ -6,7 +6,7 @@ import '@testing-library/jest-dom/extend-expect';
 import NotificationToast, { getToastMessage } from './Toast';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialSystemState } from '../../redux/reducers/datafiles.reducers';
-import notificationsDataFilesEvents from '../../redux/sagas/fixtures/notificationsDataFilesEvents.fixture';
+import { dataFilesRename, dataFilesError } from '../../redux/sagas/fixtures/notificationsDataFilesEvents.fixture';
 import { jobStatusUpdatePending, jobInteractiveSessionReady } from '../../redux/sagas/fixtures/notificationsJobsEvents.fixture';
 
 const mockStore = configureStore();
@@ -72,13 +72,13 @@ describe('getToastMessage', () => {
     expect(getToastMessage(jobStatusUpdatePending)).toEqual('RStudio-S...cvserver is processing');
   });
 
-
-  it('returns expected data_files response', () => {
-    expect(getToastMessage(notificationsDataFilesEvents)).toEqual('File renamed to test2.png');
-  });
-
-
   it('returns expected interactive_session_ready response', () => {
     expect(getToastMessage(jobInteractiveSessionReady)).toEqual('RStudio-S...cvserver ready to view.');
   });
+
+  it('returns expected data_files responses', () => {
+    expect(getToastMessage(dataFilesRename)).toEqual('File renamed to test2.png');
+    expect(getToastMessage(dataFilesError)).toEqual('Move failed');
+  });
+
 });
