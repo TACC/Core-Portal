@@ -89,9 +89,13 @@ const DataFilesPublicUrlModal = () => {
   const isOpen = useSelector(state => state.files.modals.publicUrl);
   const status = useSelector(state => state.files.operationStatus.publicUrl);
   const { scheme } = useSelector(state => state.files.params.FilesListing);
-  const selectedFile = useSelector(state => 
-    state.files.modalProps.publicUrl.selectedFile || {}
-  );
+  const selectedFile = useSelector((state) => {
+    if (!state.files.modalProps.publicUrl) {
+      return {}
+    }
+    return state.files.modalProps.publicUrl.selectedFile || {}
+  });
+    
   const dispatch = useDispatch();
   const toggle = () => {
     dispatch({
