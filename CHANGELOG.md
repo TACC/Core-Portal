@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2020-12-01: User Onboarding; Feedback
+
+### Added
+
+- FP-764: Add User Onboarding (#225)
+- FP-186: Feedback link (#201)
+- FP-773: Port projects backend and convert unit tests to Pytest (#252)
+- FP-652: Add welcome messages to Manage Account and Unauthenticated User Ticket Page (#231)
+- FP-772: UI pill component (#232)
+
+### Changed
+
+- FP-299: Use Python Poetry to manage dependencies (#51)
+- FP-639: Message component updates (#260)
+- FP-734: move accounts route under workbench (#226)
+
+### Fixed
+
+- FP-659: Change default blue links in licence modal to purple (#229)
+- FP-629: Apply color signifying ticket responder to date and name (#233)
+- FP-401: Add Formik validation in mkdir/rename modals (#217)
+- FP-517: Refactor exception handling in base view (#256)
+
 ## [2.1.2] - 2020-10-16: Job DateTime Fix and Bugfixes
 
 ### Added
@@ -175,7 +198,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.1.2...HEAD
+[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.2.0
 [2.1.2]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.2
 [2.1.1]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.1
 [2.1.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.0

@@ -4,6 +4,7 @@ import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Icon } from '_common';
+import { FeedbackButton } from '../FeedbackForm';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from '../History/HistoryBadge';
 import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
@@ -96,6 +97,9 @@ const Sidebar = ({ disabled, showUIPatterns }) => {
           disabled={disabled}
         />
       )}
+      <NavItem styleName="feedback-nav-item">
+        <FeedbackButton />
+      </NavItem>
     </Nav>
   );
 };

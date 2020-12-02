@@ -30,7 +30,9 @@ import {
   watchTicketDetailedViewFetchHistory,
   watchTicketDetailedViewFetchSubject,
   watchPostTicketReply,
-  watchPostTicketCreate
+  watchPostTicketCreate,
+  watchTicketCreateOpenModal,
+  watchTicketCreateCloseModal
 } from './tickets.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
 import { watchWorkbench } from './workbench.sagas';
@@ -74,6 +76,8 @@ export default function* rootSaga() {
     watchTicketDetailedViewFetchSubject(),
     watchPostTicketReply(),
     watchPostTicketCreate(),
+    watchTicketCreateOpenModal(),
+    watchTicketCreateCloseModal(),
     watchAuthenticatedUser(),
     watchSocket(),
     watchFetchNotifications(),
