@@ -643,6 +643,10 @@ const getExtractParams = async file => {
 };
 
 export function* extractFiles(action) {
+  const extractErrorAction = {
+    type: 'DATA_FILES_SET_OPERATION_STATUS',
+    payload: { status: 'ERROR', operation: 'extract' }
+  };
   try {
     const params = yield call(getExtractParams, action.payload.file);
     yield put({
@@ -659,7 +663,8 @@ export function* extractFiles(action) {
           operation: 'pushKeys',
           props: {
             onSuccess: action,
-            system: submission.execSys
+            system: submission.execSys,
+            onCancel: extractErrorAction 
           }
         }
       });
@@ -672,10 +677,7 @@ export function* extractFiles(action) {
       throw new Error('Unable to extract files');
     }
   } catch (error) {
-    yield put({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'ERROR', operation: 'extract' }
-    });
+    yield put(extractErrorAction);
   }
 }
 export function* watchExtract() {
@@ -738,6 +740,10 @@ const getCompressParams = async (files, zipfileName) => {
 };
 
 export function* compressFiles(action) {
+  const compressErrorAction = {
+    type: 'DATA_FILES_SET_OPERATION_STATUS',
+    payload: { status: 'ERROR', operation: 'compress' }
+  };
   try {
     const params = yield call(
       getCompressParams,
@@ -758,7 +764,8 @@ export function* compressFiles(action) {
           operation: 'pushKeys',
           props: {
             onSuccess: action,
-            system: submission.execSys
+            system: submission.execSys,
+            onCancel: compressErrorAction
           }
         }
       });
@@ -771,10 +778,7 @@ export function* compressFiles(action) {
       throw new Error('Unable to compress files');
     }
   } catch (error) {
-    yield put({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: 'ERROR', operation: 'compress' }
-    });
+    yield put(compressErrorAction);
   }
 }
 export async function jobHelper(body) {

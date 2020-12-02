@@ -13,7 +13,7 @@ const SystemsPushKeysModal = () => {
   const dispatch = useDispatch();
   const onOpen = () => {};
   const isOpen = useSelector(state => state.pushKeys.modals.pushKeys);
-  const { error, onSuccess, system, submitting } = useSelector(
+  const { error, onSuccess, system, submitting, onCancel } = useSelector(
     state => state.pushKeys.modalProps.pushKeys
   );
 
@@ -23,13 +23,16 @@ const SystemsPushKeysModal = () => {
     history.push(location.pathname);
   };
 
-  const onClosed = () => {};
+  const onClosed = () => { };
 
   const toggle = () => {
     dispatch({
       type: 'SYSTEMS_TOGGLE_MODAL',
       payload: { operation: 'pushKeys', props: {} }
     });
+    if (onCancel) {
+      dispatch(onCancel);
+    }
   };
 
   const pushKeys = ({ password, token }) => {
