@@ -23,7 +23,7 @@ const SystemsPushKeysModal = () => {
     history.push(location.pathname);
   };
 
-  const onClosed = () => { };
+  const onClosed = () => {};
 
   const toggle = () => {
     dispatch({

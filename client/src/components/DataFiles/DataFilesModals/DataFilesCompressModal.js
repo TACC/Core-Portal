@@ -180,9 +180,7 @@ const DataFilesCompressModal = () => {
           styleName="submit-button"
         >
           {buttonIcon}
-          <span styleName={buttonIcon ? 'with-icon' : ''}>
-            Compress
-          </span>
+          <span styleName={buttonIcon ? 'with-icon' : ''}>Compress</span>
         </Button>
         <Button
           color="secondary"

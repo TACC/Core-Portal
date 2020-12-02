@@ -96,9 +96,7 @@ const DataFilesCompressModal = () => {
           styleName="submit-button"
         >
           {buttonIcon}
-          <span styleName={buttonIcon ? 'with-icon' : ''}>
-            Extract
-          </span>
+          <span styleName={buttonIcon ? 'with-icon' : ''}>Extract</span>
         </Button>
         <Button
           color="secondary"

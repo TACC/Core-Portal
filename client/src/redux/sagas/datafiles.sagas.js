@@ -598,14 +598,14 @@ export function* trashFile(system, path, id) {
   }
 }
 
-export const getLatestApp = async (name) => {
+export const getLatestApp = async name => {
   const res = await fetchUtil({
     url: '/api/workspace/apps',
     params: { publicOnly: true }
   });
   const apps = res.response;
 
-  const latest = apps
+  const latestApp = apps
     .filter(app => app.id.includes(name))
     .reduce(
       (latest, app) => {
@@ -623,7 +623,7 @@ export const getLatestApp = async (name) => {
       },
       { revision: null, version: null }
     );
-  return latest.id;
+  return latestApp.id;
 };
 
 const getExtractParams = (file, latestExtract) => {
@@ -669,7 +669,7 @@ export function* extractFiles(action) {
           props: {
             onSuccess: action,
             system: submission.execSys,
-            onCancel: extractErrorAction 
+            onCancel: extractErrorAction
           }
         }
       });
@@ -728,11 +728,11 @@ export function* compressFiles(action) {
   };
   try {
     const latestZippy = yield call(getLatestApp, 'zippy-frontera');
-    const params =  getCompressParams(
+    const params = getCompressParams(
       action.payload.files,
       action.payload.filename,
       latestZippy
-    );      
+    );
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'compress' }
