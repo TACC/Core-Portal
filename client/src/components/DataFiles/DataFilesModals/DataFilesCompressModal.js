@@ -10,7 +10,7 @@ import {
   Input,
   FormGroup
 } from 'reactstrap';
-import { LoadingSpinner, FormField } from '_common';
+import { LoadingSpinner, FormField, Icon } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { isString, chain } from 'lodash';
 import { Formik } from 'formik';
@@ -138,6 +138,15 @@ const DataFilesCompressModal = () => {
     });
   };
 
+  let buttonIcon;
+  if (status === 'RUNNING') {
+    buttonIcon = <LoadingSpinner placement="inline" />;
+  } else if (status === 'ERROR') {
+    buttonIcon = <Icon name="alert" />;
+  } else {
+    buttonIcon = null;
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -170,8 +179,8 @@ const DataFilesCompressModal = () => {
           disabled={status === 'RUNNING'}
           styleName="submit-button"
         >
-          {status === 'RUNNING' && <LoadingSpinner placement="inline" />}
-          <span styleName={status === 'RUNNING' ? 'with-spinner' : ''}>
+          {buttonIcon}
+          <span styleName={buttonIcon ? 'with-icon' : ''}>
             Compress
           </span>
         </Button>

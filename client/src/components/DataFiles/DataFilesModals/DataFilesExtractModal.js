@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Icon } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { isString } from 'lodash';
 import './DataFilesCompressModal.module.scss';
@@ -57,6 +57,16 @@ const DataFilesCompressModal = () => {
       payload: { file: selected[0] }
     });
   };
+
+  let buttonIcon;
+  if (status === 'RUNNING') {
+    buttonIcon = <LoadingSpinner placement="inline" />;
+  } else if (status === 'ERROR') {
+    buttonIcon = <Icon name="alert" />;
+  } else {
+    buttonIcon = null;
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -85,8 +95,8 @@ const DataFilesCompressModal = () => {
           disabled={status === 'RUNNING'}
           styleName="submit-button"
         >
-          {status === 'RUNNING' && <LoadingSpinner placement="inline" />}
-          <span styleName={status === 'RUNNING' ? 'with-spinner' : ''}>
+          {buttonIcon}
+          <span styleName={buttonIcon ? 'with-icon' : ''}>
             Extract
           </span>
         </Button>

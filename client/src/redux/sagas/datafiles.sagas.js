@@ -626,8 +626,7 @@ export const getLatestApp = async (name) => {
   return latest.id;
 };
 
-const getExtractParams = async file => {
-  const latestExtract = await getLatestApp('extract-frontera');
+const getExtractParams = (file, latestExtract) => {
   const inputFile = `agave://${file.system}${file.path}`;
   const archivePath = `agave://${file.system}${file.path.substring(
     0,
@@ -653,7 +652,8 @@ export function* extractFiles(action) {
     payload: { status: 'ERROR', operation: 'extract' }
   };
   try {
-    const params = yield call(getExtractParams, action.payload.file);
+    const latestExtract = yield call(getLatestApp, 'extract-frontera');
+    const params = getExtractParams(action.payload.file, latestExtract);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'extract' }
@@ -696,8 +696,7 @@ export function* watchExtract() {
  * @param {String} zipfileName
  * @returns {String}
  */
-const getCompressParams = async (files, zipfileName) => {
-  const latestZippy = await getLatestApp('zippy-frontera');
+const getCompressParams = (files, zipfileName, latestZippy) => {
   const inputs = {
     inputFiles: files.map(file => `agave://${file.system}${file.path}`)
   };
@@ -728,11 +727,12 @@ export function* compressFiles(action) {
     payload: { status: 'ERROR', operation: 'compress' }
   };
   try {
-    const params = yield call(
-      getCompressParams,
+    const latestZippy = yield call(getLatestApp, 'zippy-frontera');
+    const params =  getCompressParams(
       action.payload.files,
-      action.payload.filename
-    );
+      action.payload.filename,
+      latestZippy
+    );      
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { status: 'RUNNING', operation: 'compress' }
