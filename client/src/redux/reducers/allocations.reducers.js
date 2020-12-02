@@ -50,7 +50,7 @@ function allocations(state = initialState, action) {
         }
       };
     case 'ADD_USERNAMES_TO_TEAM':
-      return {
+      const newState = {
         ...state,
         teams: { ...state.teams, ...action.payload.data },
         loadingUsernames: {
@@ -58,6 +58,8 @@ function allocations(state = initialState, action) {
           ...action.payload.loading
         }
       };
+      console.log(newState);
+      return newState;
     default:
       return state;
   }

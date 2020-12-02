@@ -223,11 +223,29 @@ export const teamPayloadUtil = (
   return { data, loading };
 };
 
+export function* getUsernamesManage(action) {
+  try {
+    const json = yield call(getTeamsUtil, action.payload.name);
+    const payload = {
+      data: { [action.payload.projectId]: json },
+      loading: { [action.payload.projectId]: { loading: false } }
+    };
+    yield put({
+      type: 'ADD_USERNAMES_TO_TEAM',
+      payload
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export function* watchAllocationData() {
   yield takeEvery('GET_ALLOCATIONS', getAllocations);
 }
 export function* watchTeams() {
   yield takeLatest('GET_TEAMS', getUsernames);
 }
-
-export default [watchAllocationData(), watchTeams()];
+export function* watchManageTeams() {
+  yield takeLatest('GET_MANAGE_TEAMS', getUsernamesManage);
+}
+export default [watchAllocationData(), watchTeams(), watchManageTeams()];
