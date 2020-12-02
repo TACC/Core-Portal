@@ -598,15 +598,15 @@ export function* trashFile(system, path, id) {
   }
 }
 
-const getExtractParams = async file => {
+export const getLatestApp = async (name) => {
   const res = await fetchUtil({
     url: '/api/workspace/apps',
     params: { publicOnly: true }
   });
   const apps = res.response;
 
-  const latestExtract = apps
-    .filter(app => app.id.includes('extract-frontera'))
+  const latest = apps
+    .filter(app => app.id.includes(name))
     .reduce(
       (latest, app) => {
         if (app.version > latest.version) {
@@ -623,6 +623,11 @@ const getExtractParams = async file => {
       },
       { revision: null, version: null }
     );
+  return latest.id;
+};
+
+const getExtractParams = async file => {
+  const latestExtract = await getLatestApp('extract-frontera');
   const inputFile = `agave://${file.system}${file.path}`;
   const archivePath = `agave://${file.system}${file.path.substring(
     0,
@@ -630,7 +635,7 @@ const getExtractParams = async file => {
   )}`;
   return JSON.stringify({
     allocation: 'FORK',
-    appId: latestExtract.id,
+    appId: latestExtract,
     archive: true,
     archivePath,
     inputs: {
@@ -692,29 +697,7 @@ export function* watchExtract() {
  * @returns {String}
  */
 const getCompressParams = async (files, zipfileName) => {
-  const res = await fetchUtil({
-    url: '/api/workspace/apps',
-    params: { publicOnly: true }
-  });
-  const apps = res.response;
-  const latestZippy = apps
-    .filter(app => app.id.includes('zippy-frontera'))
-    .reduce(
-      (latest, app) => {
-        if (app.version > latest.version) {
-          return app;
-        }
-        if (app.version < latest.version) {
-          return latest;
-        }
-        // Same version of app
-        if (app.revision >= latest.revision) {
-          return app;
-        }
-        return latest;
-      },
-      { revision: null, version: null }
-    );
+  const latestZippy = await getLatestApp('zippy-frontera');
   const inputs = {
     inputFiles: files.map(file => `agave://${file.system}${file.path}`)
   };
@@ -729,7 +712,7 @@ const getCompressParams = async (files, zipfileName) => {
 
   return JSON.stringify({
     allocation: 'FORK',
-    appId: latestZippy.id,
+    appId: latestZippy,
     archive: true,
     archivePath,
     maxRunTime: '02:00:00',
