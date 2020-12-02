@@ -1,33 +1,63 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import TicketCreateForm from './TicketCreateForm';
-import './TicketCreateModal.scss';
 import * as ROUTES from '../../constants/routes';
+import './TicketCreateModal.scss';
 
 function TicketCreateModal() {
-  const modalAlwaysOpen = true;
-  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
+  const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
+  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
+  const {
+    modalOpen,
+    subject,
+    showAsModalOnDashboard,
+    provideDashBoardLinkOnSuccess
+  } = useSelector(state => state.ticketCreateModal);
+
+  useEffect(() => {
+    if (
+      modalOpen &&
+      showAsModalOnDashboard &&
+      location.path !==
+        `${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`
+    ) {
+      history.push(
+        `${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`
+      );
+    }
+  }, [showAsModalOnDashboard, modalOpen]);
+
   const close = () => {
-    history.push(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
+    dispatch({
+      type: 'TICKET_CREATE_CLOSE_MODAL'
+    });
+
+    if (showAsModalOnDashboard) {
+      history.push(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
+    }
   };
 
   return (
     <Modal
       modalClassName="ticket-create-modal"
-      isOpen={modalAlwaysOpen}
+      isOpen={modalOpen}
       toggle={close}
       size="lg"
       contentClassName="ticket-create-modal-content"
     >
       <ModalHeader toggle={close}>Add Ticket</ModalHeader>
       <ModalBody className="ticket-create-modal-body">
-        <TicketCreateForm authenticatedUser={authenticatedUser} />
+        <TicketCreateForm
+          authenticatedUser={authenticatedUser}
+          provideDashBoardLinkOnSuccess={provideDashBoardLinkOnSuccess}
+          initialSubject={subject}
+        />
       </ModalBody>
     </Modal>
   );
 }
-
 export default TicketCreateModal;
