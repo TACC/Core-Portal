@@ -650,7 +650,20 @@ export function* extractFiles(action) {
       payload: { status: 'RUNNING', operation: 'extract' }
     });
     const submission = yield call(jobHelper, params);
-    if (submission.status === 'ACCEPTED') {
+    if (submission.execSys) {
+      // If the execution system requires pushing keys, then
+      // bring up the modal and retry the extract action
+      yield put({
+        type: 'SYSTEMS_TOGGLE_MODAL',
+        payload: {
+          operation: 'pushKeys',
+          props: {
+            onSuccess: action,
+            system: submission.execSys
+          }
+        }
+      });
+    } else if (submission.status === 'ACCEPTED') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' }
@@ -736,7 +749,20 @@ export function* compressFiles(action) {
       payload: { status: 'RUNNING', operation: 'compress' }
     });
     const submission = yield call(jobHelper, params);
-    if (submission.status === 'ACCEPTED') {
+    if (submission.execSys) {
+      // If the execution system requires pushing keys, then
+      // bring up the modal and retry the compress action
+      yield put({
+        type: 'SYSTEMS_TOGGLE_MODAL',
+        payload: {
+          operation: 'pushKeys',
+          props: {
+            onSuccess: action,
+            system: submission.execSys
+          }
+        }
+      });
+    } else if (submission.status === 'ACCEPTED') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'compress' }
