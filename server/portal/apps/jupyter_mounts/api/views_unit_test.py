@@ -21,6 +21,7 @@ def mock_manager(mocker):
     mock.return_value.get_name.return_value = "mock_name"
     yield mock
 
+
 @pytest.fixture
 def mock_projects(mocker):
     mock = mocker.patch('portal.apps.jupyter_mounts.api.views.ProjectsManager')

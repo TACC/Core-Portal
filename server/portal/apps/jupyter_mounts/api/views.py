@@ -69,18 +69,18 @@ class JupyterMountsApiView(BaseApiView):
         for project in projects:
             name = project.description
             # Resolve project name collisions
-            if any([ existing == name for existing in names ]):
+            if any([existing == name for existing in names]):
                 name = "{name} ({id})".format(name=project.description, id=project.storage.id)
             names.append(name)
 
             # Find a matching role, or return None
             role = next(
-                (role.role for role in project.roles.roles if role.username == user.username), 
+                (role.role for role in project.roles.roles if role.username == user.username),
                 None
             )
             if role == "OWNER" or role == "ADMIN":
                 permissions = "rw"
-            elif role == "GUEST": 
+            elif role == "GUEST":
                 permissions = "ro"
             else:
                 permissions = "ro"
