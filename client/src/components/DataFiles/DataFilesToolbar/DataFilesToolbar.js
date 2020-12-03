@@ -106,13 +106,13 @@ const DataFilesToolbar = ({ scheme }) => {
         <ToolbarButton
           text="Extract"
           onClick={toggleExtractModal}
-          iconName=""
+          iconName="extract"
           disabled={!canExtract}
         />
         <ToolbarButton
           text="Compress"
           onClick={toggleCompressModal}
-          iconName=""
+          iconName="compress"
           disabled={!canCompress}
         />
         <ToolbarButton
