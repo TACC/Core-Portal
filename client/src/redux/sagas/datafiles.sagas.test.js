@@ -245,15 +245,31 @@ describe("scrollFiles", () => {
 });
 
 describe("extractFiles", () => {
+  const jobHelperExpected = JSON.stringify({
+    allocation: 'FORK',
+    appId: 'extract-frontera-0.1u1',
+    archive: true,
+    archivePath: 'agave://test.system/dir/',
+    inputs: {
+      inputFile: 'agave://test.system/dir/test.zip'
+    },
+    maxRunTime: '02:00:00',
+    name: 'Extracting Zip File',
+    parameters: {}
+  });
 
-  it("runs extractFiles saga with success", () => {
-    const payload = {
+  const action = {
+    type: 'DATA_FILES_EXTRACT',
+    payload: {
       file: {
         system: 'test.system',
         path: '/dir/test.zip'
       }
-    }
-    return expectSaga(extractFiles, { payload })
+    } 
+  }
+
+  it("runs extractFiles saga with success", () => {
+   return expectSaga(extractFiles, action)
       .provide([
         [ matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1' ],
         [ matchers.call.fn(jobHelper), { status: 'ACCEPTED' } ]
@@ -264,21 +280,7 @@ describe("extractFiles", () => {
         payload: { status: 'RUNNING', operation: 'extract' }
       })
 
-      .call(
-        jobHelper,
-        JSON.stringify({
-          allocation: 'FORK',
-          appId: 'extract-frontera-0.1u1',
-          archive: true,
-          archivePath: 'agave://test.system/dir/',
-          inputs: {
-            inputFile: 'agave://test.system/dir/test.zip'
-          },
-          maxRunTime: '02:00:00',
-          name: 'Extracting Zip File',
-          parameters: {}
-        })
-      )
+      .call(jobHelper, jobHelperExpected)
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' }
@@ -286,18 +288,7 @@ describe("extractFiles", () => {
       .run();
   });
 
-
   it("runs extractFiles saga with push keys modal", () => {
-
-    const action = {
-      type: 'DATA_FILES_EXTRACT',
-      payload: {
-        file: {
-          system: 'test.system',
-          path: '/dir/test.zip'
-        }
-      } 
-    }
     return expectSaga(extractFiles, action)
       .provide([
         [ matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1' ],
@@ -309,21 +300,7 @@ describe("extractFiles", () => {
         payload: { status: 'RUNNING', operation: 'extract' }
       })
 
-      .call(
-        jobHelper,
-        JSON.stringify({
-          allocation: 'FORK',
-          appId: 'extract-frontera-0.1u1',
-          archive: true,
-          archivePath: 'agave://test.system/dir/',
-          inputs: {
-            inputFile: 'agave://test.system/dir/test.zip'
-          },
-          maxRunTime: '02:00:00',
-          name: 'Extracting Zip File',
-          parameters: {}
-        })
-      )
+      .call(jobHelper, jobHelperExpected)
       .put({
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
