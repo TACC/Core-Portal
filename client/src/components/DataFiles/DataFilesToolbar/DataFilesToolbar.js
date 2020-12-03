@@ -64,7 +64,7 @@ const DataFilesToolbar = ({ scheme }) => {
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'showpath', props: { selectedFiles } }
     });
-  }
+  };
 
   const download = () => {
     dispatch({
@@ -72,7 +72,6 @@ const DataFilesToolbar = ({ scheme }) => {
       payload: { file: selectedFiles[0] }
     });
   };
-
 
   const trash = () => {
     dispatch({
