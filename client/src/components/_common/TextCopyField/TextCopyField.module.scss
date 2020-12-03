@@ -1,0 +1,20 @@
+.root {
+  display: flex;
+}
+
+.input {
+  composes: form-control from '../../../styles/components/bootstrap.form.css';
+}
+
+.copy-button {
+  composes: c-button--secondary from '../../../styles/components/c-button.css';
+}
+
+.button__icon {
+  composes: c-button__icon--before from '../../../styles/components/c-button.css';
+}
+
+.button__text {
+  /* … */
+}
+

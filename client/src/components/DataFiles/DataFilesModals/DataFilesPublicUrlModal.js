@@ -11,7 +11,7 @@ import {
   Label
 } from 'reactstrap';
 import PropTypes from 'prop-types';
-import { LoadingSpinner, Message, InputCopy } from '_common';
+import { LoadingSpinner, Message, TextCopyField } from '_common';
 import './DataFilesPublicUrlModal.module.scss';
 
 const statusPropType = PropTypes.shape({
@@ -69,9 +69,12 @@ DataFilesPublicUrlAction.defaultProps = {
     url: null,
     method: null
   }
-}
+};
 
 const DataFilesPublicUrlStatus = ({ scheme, file, status }) => {
+  if (!status) {
+    return null;
+  }
   if (status && status.error) {
     // Error occurred during retrieval of link
     return (
@@ -88,26 +91,28 @@ const DataFilesPublicUrlStatus = ({ scheme, file, status }) => {
           <LoadingSpinner placement="inline" />
         ) : null}
       </Label>
-      <InputCopy
+      <TextCopyField
         placeholder="Click generate to make a link"
         value={status.url}
       />
-      {status && status.url ? (
+      <div styleName="controls">
+        {status && status.url ? (
+          <DataFilesPublicUrlAction
+            scheme={scheme}
+            file={file}
+            text="Delete"
+            status={status}
+            method="delete"
+          />
+        ) : null}
         <DataFilesPublicUrlAction
           scheme={scheme}
           file={file}
-          text="Delete"
+          text={status && status.url ? 'Replace Link' : 'Generate Link'}
           status={status}
-          method="delete"
+          method="post"
         />
-      ) : null}
-      <DataFilesPublicUrlAction
-        scheme={scheme}
-        file={file}
-        text={status && status.url ? 'Replace Link' : 'Generate Link'}
-        status={status}
-        method="post"
-      />
+      </div>
     </FormGroup>
   );
 };
@@ -115,7 +120,11 @@ const DataFilesPublicUrlStatus = ({ scheme, file, status }) => {
 DataFilesPublicUrlStatus.propTypes = {
   scheme: PropTypes.string.isRequired,
   file: filePropType.isRequired,
-  status: statusPropType.isRequired
+  status: statusPropType
+};
+
+DataFilesPublicUrlStatus.defaultProps = {
+  status: null
 };
 
 const DataFilesPublicUrlModal = () => {
