@@ -7,6 +7,8 @@ from django.http import JsonResponse
 from portal.views.base import BaseApiView
 from portal.libs.agave.utils import service_account
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
+from portal.apps.projects.managers.base import ProjectsManager
+
 import logging
 
 
@@ -59,6 +61,43 @@ class JupyterMountsApiView(BaseApiView):
                 logger.exception("Could not retrieve system {}".format(system))
         return result
 
+    def getProjectSystems(self, user):
+        mgr = ProjectsManager(user)
+        projects = mgr.list()
+        result = []
+        names = []
+        for project in projects:
+            name = project.description
+            # Resolve project name collisions
+            if any([ existing == name for existing in names ]):
+                name = "{name} ({id})".format(name=project.description, id=project.storage.id)
+            names.append(name)
+
+            # Find a matching role, or return None
+            role = next(
+                (role.role for role in project.roles.roles if role.username == user.username), 
+                None
+            )
+            if role == "OWNER" or role == "ADMIN":
+                permissions = "rw"
+            elif role == "GUEST": 
+                permissions = "ro"
+            else:
+                permissions = "ro"
+
+            result.append(
+                {
+                    "path": project.absolute_path,
+                    "mountPath": "/{namespace}/My Projects/{name}".format(
+                        namespace=settings.PORTAL_NAMESPACE,
+                        name=name),
+                    "pems": permissions
+                }
+            )
+        return result
+
     def get(self, request):
-        mounts = self.getDatafilesStorageSystems() + self.getLocalStorageSystems(request.user)
+        mounts = self.getDatafilesStorageSystems() + \
+            self.getLocalStorageSystems(request.user) + \
+            self.getProjectSystems(request.user)
         return JsonResponse(mounts, safe=False)
