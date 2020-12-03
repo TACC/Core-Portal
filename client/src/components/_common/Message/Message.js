@@ -86,11 +86,11 @@ const Message = ({
   }
   if (type === 'warn') {
     // Component will work, but `warn` is deprecated value
-    console.warn(ERROR_TEXT.deprecatedType);
+    console.info(ERROR_TEXT.deprecatedType);
   }
   if (!scope) {
     // Component will work, but `scope` should be defined
-    console.warn(ERROR_TEXT.missingScope);
+    console.info(ERROR_TEXT.missingScope);
   }
   /* eslint-enable no-console */
 
