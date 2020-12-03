@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 def create_project_dir(project_id):
     client = service_account()
-    return mkdir(client, settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, project_id)
+    return mkdir(client, settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, '', project_id)
 
 
 def delete_project_dir(project_id):
     client = service_account()
-    return delete(client, settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, project_id)
+    return delete(client, settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME, '', project_id)
 
 
 def project_id_to_system_id(project_id):
