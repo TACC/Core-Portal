@@ -62,7 +62,7 @@ const DataFilesToolbar = ({ scheme }) => {
   const toggleShowPathModal = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'showpath', props: { selectedFiles } }
+      payload: { operation: 'showpath', props: { file: selectedFiles[0] } }
     });
   };
 

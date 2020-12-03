@@ -10,16 +10,14 @@ const DataFilesShowPathModal = React.memo(() => {
     state => state.files.params.FilesListing,
     shallowEqual
   );
-  const selectedFile = useSelector(
-    state => state.files.listing.FilesListing[0]
-  );
+  const { file } = useSelector(state => state.files.modalProps.showpath);
 
   const definition = useSelector(state => {
-    if (!selectedFile) {
+    if (!file) {
       return null;
     }
     const matching = state.systems.systemList.find(
-      sys => sys.system === selectedFile.system
+      sys => sys.system === file.system
     );
     if (!matching) {
       return null;
@@ -56,13 +54,13 @@ const DataFilesShowPathModal = React.memo(() => {
       toggle={toggle}
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>Show Path</ModalHeader>
+      <ModalHeader toggle={toggle}>Pathnames for {file.name}</ModalHeader>
       <ModalBody>
         <DataFilesBreadcrumbs
           api={params.api}
           scheme={params.scheme}
           system={params.system}
-          path={params.path + selectedFile.path || '/'}
+          path={params.path + file.path || '/'}
           section=""
         />
         <dl>
@@ -71,7 +69,7 @@ const DataFilesShowPathModal = React.memo(() => {
           <dt>Storage Path</dt>
           <dd>
             {definition.storage.rootDir}
-            {selectedFile.path}
+            {file.path}
           </dd>
         </dl>
       </ModalBody>
