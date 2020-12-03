@@ -14,7 +14,7 @@ import {
   jobHelper
 } from "./datafiles.sagas";
 import { fetchUtil } from 'utils/fetchUtil';
-import { expectSaga } from "redux-saga-test-plan";
+import { expectSaga, testSaga } from "redux-saga-test-plan";
 import { throwError } from "redux-saga-test-plan/providers";
 import * as matchers from "redux-saga-test-plan/matchers";
 
@@ -282,6 +282,61 @@ describe("extractFiles", () => {
       .put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' }
+      })
+      .run();
+  });
+
+
+  it("runs extractFiles saga with push keys modal", () => {
+
+    const action = {
+      type: 'DATA_FILES_EXTRACT',
+      payload: {
+        file: {
+          system: 'test.system',
+          path: '/dir/test.zip'
+        }
+      } 
+    }
+    return expectSaga(extractFiles, action)
+      .provide([
+        [ matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1' ],
+        [ matchers.call.fn(jobHelper), { execSys: 'test.cli.system' } ]
+      ])
+      .call(getLatestApp, 'extract-frontera')
+      .put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'RUNNING', operation: 'extract' }
+      })
+
+      .call(
+        jobHelper,
+        JSON.stringify({
+          allocation: 'FORK',
+          appId: 'extract-frontera-0.1u1',
+          archive: true,
+          archivePath: 'agave://test.system/dir/',
+          inputs: {
+            inputFile: 'agave://test.system/dir/test.zip'
+          },
+          maxRunTime: '02:00:00',
+          name: 'Extracting Zip File',
+          parameters: {}
+        })
+      )
+      .put({
+        type: 'SYSTEMS_TOGGLE_MODAL',
+        payload: {
+          operation: 'pushKeys',
+          props: {
+            onSuccess: action,
+            system: 'test.cli.system',
+            onCancel: {
+              type: 'DATA_FILES_SET_OPERATION_STATUS',
+              payload: { status: 'ERROR', operation: 'extract' }
+            }
+          }
+        }
       })
       .run();
   });
