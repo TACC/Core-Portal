@@ -58,28 +58,22 @@ const DataFilesShowPathModal = React.memo(() => {
     >
       <ModalHeader toggle={toggle}>Show Path</ModalHeader>
       <ModalBody>
-        <div className="row h-100">
-          <div className="col-md-6 d-flex flex-column">
-            {/* Table of selected files */}
-            <div className="dataFilesModalColHeader" />
-            <DataFilesBreadcrumbs
-              api={params.api}
-              scheme={params.scheme}
-              system={params.system}
-              path={params.path + selectedFile.path || '/'}
-              section=""
-            />
-            <dl>
-              <dt>Storage Host</dt>
-              <dd>{definition.storage.host}</dd>
-              <dt>Storage Path</dt>
-              <dd>
-                {definition.storage.rootDir}
-                {selectedFile.path}
-              </dd>
-            </dl>
-          </div>
-        </div>
+        <DataFilesBreadcrumbs
+          api={params.api}
+          scheme={params.scheme}
+          system={params.system}
+          path={params.path + selectedFile.path || '/'}
+          section=""
+        />
+        <dl>
+          <dt>Storage Host</dt>
+          <dd>{definition.storage.host}</dd>
+          <dt>Storage Path</dt>
+          <dd>
+            {definition.storage.rootDir}
+            {selectedFile.path}
+          </dd>
+        </dl>
       </ModalBody>
     </Modal>
   ) : null;
