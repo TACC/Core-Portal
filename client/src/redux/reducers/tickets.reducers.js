@@ -147,24 +147,53 @@ export const initialTicketCreateState = {
 
 export function ticketCreate(state = initialTicketCreateState, action) {
   switch (action.type) {
-    case 'TICKETS_CREATE_INIT':
+    case 'TICKET_CREATE_INIT':
       return initialTicketCreateState;
     case 'TICKET_CREATE_STARTED':
       return {
-        ...initialTicketCreateState,
+        ...state,
         creating: true
       };
     case 'TICKET_CREATE_FAILED':
       return {
-        ...initialTicketCreateState,
+        ...state,
+        creating: false,
         creatingError: true,
         creatingErrorMessage: action.payload
       };
     case 'TICKET_CREATE_SUCCESS':
       return {
-        ...initialTicketCreateState,
+        ...state,
+        creating: false,
         creatingSuccess: true,
         createdTicketId: action.payload
+      };
+    default:
+      return state;
+  }
+}
+
+export const initialTicketCreateModalState = {
+  modalOpen: false,
+  subject: '',
+  showAsModalOnDashboard: true,
+  provideDashBoardLinkOnSuccess: true
+};
+
+export function ticketCreateModal(
+  state = initialTicketCreateModalState,
+  action
+) {
+  switch (action.type) {
+    case 'TICKET_CREATE_SET_MODAL_OPEN':
+      return {
+        ...state,
+        ...action.payload,
+        modalOpen: true
+      };
+    case 'TICKET_CREATE_SET_MODAL_CLOSE':
+      return {
+        ...initialTicketCreateModalState
       };
     default:
       return state;

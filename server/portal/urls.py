@@ -56,6 +56,7 @@ urlpatterns = [
     path('api/system-monitor/', include('portal.apps.system_monitor.urls', namespace='system_monitor')),
     path('api/notifications/', include('portal.apps.notifications.urls', namespace='notifications')),
     path('api/jupyter_mounts/', include('portal.apps.jupyter_mounts.api.urls', namespace='jupyter_mounts_api')),
+    path('api/projects/', include('portal.apps.projects.urls', namespace='projects')),
 
     # webhooks
     path('webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
