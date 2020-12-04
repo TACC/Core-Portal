@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { InfiniteScrollTable } from '_common';
 
 const DataFilesProjectsList = () => {
@@ -25,9 +26,12 @@ const DataFilesProjectsList = () => {
       headerStyle: { textAlign: 'left' },
       accessor: 'description',
       Cell: el => (
-        <span>
+        <Link
+          className="data-files-nav-link"
+          to={`/workbench/data/shared/private/${el.row.original.id}`}
+        >
           {el.value}
-        </span>
+        </Link>
       )
     },
     {
