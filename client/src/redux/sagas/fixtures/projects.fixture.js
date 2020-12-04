@@ -1,4 +1,4 @@
-const projectsListingFixture = [
+export const projectsListingFixture = [
   {
     owner: null,
     available: true,
@@ -33,4 +33,10 @@ const projectsListingFixture = [
   }
 ];
 
-export default projectsListingFixture;
+export const projectsFixture = {
+  listing: {
+    projects: projectsListingFixture,
+    loading: false,
+    error: null
+  }
+};

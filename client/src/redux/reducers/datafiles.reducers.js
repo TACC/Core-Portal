@@ -262,9 +262,14 @@ export function files(state = initialFilesState, action) {
         ...state,
         params: {
           ...state.params,
-          FilesListing: { api: 'tapis', scheme: 'projects', system: '', path: '' }
+          FilesListing: {
+            api: 'tapis',
+            scheme: 'projects',
+            system: '',
+            path: ''
+          }
         }
-      }
+      };
     default:
       return state;
   }

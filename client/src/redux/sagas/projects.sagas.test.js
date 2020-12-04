@@ -5,7 +5,10 @@ import {
   fetchProjectsListing
 } from "./projects.sagas";
 import projectsReducer, { initialState } from '../reducers/projects.reducers';
-import projectsListingFixture from './fixtures/projects.fixture';
+import { 
+  projectsFixture,
+  projectsListingFixture
+} from './fixtures/projects.fixture';
 
 jest.mock("cross-fetch");
 
@@ -27,11 +30,7 @@ describe("Projects Sagas", () => {
       })
       .hasFinalState({
         ...initialState,
-        listing: {
-          projects: projectsListingFixture,
-          error: null,
-          loading: false
-        }
+        ...projectsFixture
       })
       .run();
   });

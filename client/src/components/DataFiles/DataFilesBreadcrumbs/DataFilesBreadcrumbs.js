@@ -71,13 +71,13 @@ const DataFilesBreadcrumbs = ({
   const pathComps = [];
   const systemList = useSelector(state => state.systems.systemList);
   const projectsList = useSelector(state => state.projects.listing.projects);
-  const findProjectTitle = (system) => {
-    const matching = projectsList.find(project => project.id === system);
+  const findProjectTitle = projectSystem => {
+    const matching = projectsList.find(project => project.id === projectSystem);
     if (matching) {
       return matching.description;
     }
     return 'Shared Workspaces';
-  }
+  };
 
   path
     .split('/')
