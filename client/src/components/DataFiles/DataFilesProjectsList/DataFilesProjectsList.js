@@ -2,6 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { InfiniteScrollTable, LoadingSpinner, Message } from '_common';
+import './DataFilesProjectsList.scss';
 
 const DataFilesProjectsList = () => {
   const { error, loading, projects } = useSelector(
@@ -65,6 +66,7 @@ const DataFilesProjectsList = () => {
       onInfiniteScroll={infiniteScrollCallback}
       isLoading={loading}
       noDataText={noDataText}
+      className="projects-listing"
     />
   );
 };
