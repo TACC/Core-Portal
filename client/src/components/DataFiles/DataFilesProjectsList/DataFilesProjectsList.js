@@ -28,7 +28,7 @@ const DataFilesProjectsList = () => {
       Cell: el => (
         <Link
           className="data-files-nav-link"
-          to={`/workbench/data/shared/private/${el.row.original.id}`}
+          to={`/workbench/data/shared/${el.row.original.id}`}
         >
           {el.value}
         </Link>

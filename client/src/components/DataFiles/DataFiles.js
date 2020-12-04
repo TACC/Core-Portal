@@ -18,6 +18,7 @@ import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
 import DataFilesSearchbar from './DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
+import DataFilesProjectListing from './DataFilesProjectListing/DataFilesProjectListing';
 
 const PrivateDataRedirect = () => {
   const systems = useSelector(state => state.systems.systemList, shallowEqual);
@@ -36,20 +37,20 @@ const DataFilesSwitch = React.memo(() => {
   return (
     <Switch>
       <Route
-        path={`${path}/shared/private/:system/:path*`}
-        render={({ math: { params } }) => {
+        path={`${path}/shared/:system/:path*`}
+        render={({ match: { params } }) => {
           dispatch({
             type: 'FETCH_FILES',
             payload: {
               ...params,
+              api: 'tapis',
+              scheme: 'private',
               queryString,
               section: 'FilesListing'
             }
           });
           return (
-            <DataFilesListing
-              api="tapis"
-              scheme="private"
+            <DataFilesProjectListing
               system={params.system}
               path={params.path || '/'}
             />
