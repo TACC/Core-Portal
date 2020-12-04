@@ -44,7 +44,7 @@ const DataFilesSwitch = React.memo(() => {
             payload: {
               ...params,
               api: 'tapis',
-              scheme: 'private',
+              scheme: 'projects',
               queryString,
               section: 'FilesListing'
             }
@@ -78,8 +78,16 @@ const DataFilesSwitch = React.memo(() => {
           );
         }}
       />
-      <Route path={`${path}/shared`}>
-        <DataFilesProjectsList />
+      <Route 
+        path={`${path}/shared`}
+        render={() => {
+          dispatch({
+            type: 'DATA_FILES_CLEAR_PROJECT_SELECTION'
+          });
+          return (
+            <DataFilesProjectsList />
+          )
+        }}>
       </Route>
       <Route path={`${path}`}>
         <PrivateDataRedirect />

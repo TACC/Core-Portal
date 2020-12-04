@@ -5,7 +5,7 @@ const DataFilesProjectListing = ({ system, path }) => {
   return (
     <DataFilesListing 
       api="tapis"
-      scheme="private"
+      scheme="projects"
       system={system}
       path={path || '/'}
     />
