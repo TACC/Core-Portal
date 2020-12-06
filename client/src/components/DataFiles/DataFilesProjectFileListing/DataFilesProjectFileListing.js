@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 
-const DataFilesProjectListing = ({ system, path }) => {
+const DataFilesProjectFileListing = ({ system, path }) => {
   return (
     <DataFilesListing
       api="tapis"
@@ -13,9 +13,9 @@ const DataFilesProjectListing = ({ system, path }) => {
   );
 };
 
-DataFilesProjectListing.propTypes = {
+DataFilesProjectFileListing.propTypes = {
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired
 };
 
-export default DataFilesProjectListing;
+export default DataFilesProjectFileListing;

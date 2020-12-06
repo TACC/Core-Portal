@@ -18,7 +18,7 @@ import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
 import DataFilesSearchbar from './DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
-import DataFilesProjectListing from './DataFilesProjectListing/DataFilesProjectListing';
+import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
 
 const PrivateDataRedirect = () => {
   const systems = useSelector(state => state.systems.systemList, shallowEqual);
@@ -50,7 +50,7 @@ const DataFilesSwitch = React.memo(() => {
             }
           });
           return (
-            <DataFilesProjectListing
+            <DataFilesProjectFileListing
               system={params.system}
               path={params.path || '/'}
             />
