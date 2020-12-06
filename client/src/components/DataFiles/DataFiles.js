@@ -78,15 +78,9 @@ const DataFilesSwitch = React.memo(() => {
           );
         }}
       />
-      <Route
-        path={`${path}/shared`}
-        render={() => {
-          dispatch({
-            type: 'DATA_FILES_CLEAR_PROJECT_SELECTION'
-          });
-          return <DataFilesProjectsList />;
-        }}
-      />
+      <Route>
+        <DataFilesProjectsList /> 
+      </Route>
       <Route path={`${path}`}>
         <PrivateDataRedirect />
       </Route>
