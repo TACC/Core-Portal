@@ -9,14 +9,14 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 const DataFilesMkdirModal = () => {
   const dispatch = useDispatch();
   const systemList = useSelector(state => state.systems.systemList);
+  const isOpen = useSelector(state => state.files.modals.mkdir);
   const params = useSelector(
     state => state.files.params.FilesListing,
     shallowEqual
   );
   const currentSystem = systemList.find(
     system => system.system === params.system
-  );
-  const isOpen = useSelector(state => state.files.modals.mkdir);
+  ) || '';
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
