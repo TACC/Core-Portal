@@ -93,19 +93,6 @@ const DataFilesSidebar = () => {
                 </div> 
               </NavLink>
             </NavItem>
-            <NavItem>
-              <NavLink
-                tag={RRNavLink}
-                to={`${match.path}/shared`}
-                activeClassName="active"
-                key="shared"
-              >
-                <div className="nav-content">
-                  <Icon name="my-data" />
-                  <span className="nav-text">Shared Workspaces</span>
-                </div>
-              </NavLink>
-            </NavItem>
           </Nav>
         </div>
       </div>
