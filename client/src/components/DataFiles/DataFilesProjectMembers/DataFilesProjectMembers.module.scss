@@ -1,0 +1,29 @@
+.root {
+  display: block;
+}
+
+.access {
+  text-transform: capitalize;
+}
+
+.member-search {
+  margin-bottom: 1em;
+}
+
+.member-list {
+  /* title */
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 100%;
+  }
+  /* owner */
+  th:nth-child(2),
+  td:nth-child(2) {
+    min-width: 10em;
+  }
+  /* id */
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 10em;
+  }
+}

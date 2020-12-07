@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 
 const DataFilesAddProject = () => {
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ const DataFilesAddProject = () => {
             <ModalHeader toggle={toggle}>Add Shared Workspace</ModalHeader>
             <ModalBody>
               <FormField name="title" label="Workspace Title" />
+              <DataFilesProjectMembers />
             </ModalBody>
             <ModalFooter>
               <Button type="submit" className="data-files-btn">
