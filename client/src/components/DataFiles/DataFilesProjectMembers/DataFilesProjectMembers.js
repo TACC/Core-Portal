@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { InfiniteScrollTable, LoadingSpinner } from '_common'; 
+import { InfiniteScrollTable, LoadingSpinner, DropdownSelector } from '_common'; 
 import { useDispatch, useSelector } from 'react-redux'
 import {
   FormGroup,
@@ -17,18 +17,27 @@ const DataFilesProjectMembers = () => {
   const dispatch = useDispatch();
 
   const userSearchResults = useSelector(state => state.users.search.users);
-  const selectUser = (user) => {
-    console.log("SELECTED USER", user);
-  }
-  const showSearchDropdown = userSearchResults && userSearchResults.length > 0;
+
+  const [ selectedUser, setSelectedUser ] = useState('');
+
+  const formatUser = ({ first_name, last_name, email}) => `${first_name} ${last_name} (${email})`;
 
   const userSearch = (e) => {
-    dispatch({
-      type: 'USERS_SEARCH',
-      payload: {
-        q: e.target.value
-      }
-    });
+    // Try to set the selectedUser to something matching current search results
+    setSelectedUser(userSearchResults.find(user => formatUser(user) === e.target.value));
+    if (!selectedUser) {
+      dispatch({
+        type: 'USERS_SEARCH',
+        payload: {
+          q: e.target.value
+        }
+      });
+    }
+  }
+
+  const onAdd = (e) => {
+    console.log(selectedUser);
+    e.preventDefault();
   }
 
   const projectMembers = [
@@ -63,33 +72,25 @@ const DataFilesProjectMembers = () => {
     }
   ];
 
-  console.log(userSearchResults);
-
   return (
     <div styleName="root">
       <Label className="form-field__label" size="sm">Add Member</Label>
       <div>
         <div className="input-group" styleName="member-search">
           <div className="input-group-prepend">
-            <Button>
+            <Button styleName="add-button" onClick={onAdd} disabled={!selectedUser}>
               Add
             </Button>
           </div>
-          <Input type="text" onChange={e => userSearch(e)} />
+          <Input list="user-search-list" type="text" onChange={e => userSearch(e)} />
+          <datalist id="user-search-list">
+            {
+              userSearchResults.map(user => (
+                <option value={formatUser(user)} key={user.username} />
+              ))
+            }
+          </datalist>
         </div>
-        <DropdownMenu isOpen={showSearchDropdown}>
-          {
-            userSearchResults.map(user => {
-              return (
-                <DropdownItem
-                  onClick={() => selectUser(user)}
-                  key={user.username}>
-                  {user.username}
-                </DropdownItem>
-              )
-            })
-          }
-        </DropdownMenu>
       </div>
       <InfiniteScrollTable
         tableColumns={columns}
