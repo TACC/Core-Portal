@@ -33,6 +33,14 @@ const DataFilesSidebar = () => {
       payload: { operation: 'mkdir', props: {} }
     });
   };
+
+  const toggleAddProjectModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'addproject', props: {} }
+    });
+  };
+
   const match = useRouteMatch();
   return (
     <>
@@ -50,6 +58,9 @@ const DataFilesSidebar = () => {
             <DropdownMenu>
               <DropdownItem onClick={toggleMkdirModal}>
                 <i className="icon-folder" /> Folder
+              </DropdownItem>
+              <DropdownItem onClick={toggleAddProjectModal}>
+                <i className="icon-folder" /> Shared Workspace
               </DropdownItem>
               <DropdownItem
                 className="complex-dropdown-item"
@@ -86,11 +97,12 @@ const DataFilesSidebar = () => {
                 tag={RRNavLink}
                 to={`${match.path}/shared`}
                 activeClassName="active"
-                key="workspaces">
+                key="workspaces"
+              >
                 <div className="nav-content">
-                  <Icon name='my-data' />
+                  <Icon name="my-data" />
                   <span className="nav-text">Shared Workspaces</span>
-                </div> 
+                </div>
               </NavLink>
             </NavItem>
           </Nav>
