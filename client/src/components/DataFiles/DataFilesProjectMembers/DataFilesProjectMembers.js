@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { InfiniteScrollTable, LoadingSpinner, DropdownSelector } from '_common'; 
+import { Link } from 'react-router-dom';
+import { InfiniteScrollTable, LoadingSpinner } from '_common'; 
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  FormGroup,
   Input,
   Label,
   Button,
-  DropdownMenu,
-  DropdownItem
 } from 'reactstrap';
-import {v4 as uuidv4 } from 'uuid';
 import './DataFilesProjectMembers.module.scss';
 
-const DataFilesProjectMembers = () => {
+const DataFilesProjectMembers = ({ members, onAdd, onRemove, onSetOwner, defaultOwner }) => {
   const dispatch = useDispatch();
 
   const userSearchResults = useSelector(state => state.users.search.users);
@@ -35,27 +32,30 @@ const DataFilesProjectMembers = () => {
     }
   }
 
-  const onAdd = (e) => {
-    console.log(selectedUser);
-    e.preventDefault();
+  const addCallback = () => {
+    onAdd(selectedUser);
   }
 
-  const projectMembers = [
-    {
-      name: 'Joon-Yee Chuah',
-      access: 'owner',
-      username: 'jchuah'
-    }
-  ]
+  const removeCallback = (e, user) => {
+    e.preventDefault();
+    onRemove(user)
+  }
+
+  // Check to see if we were passed an empty member list and
+  // the client really wanted to have a default owner
+  // This is a hack due to authenticatedUser refreshing late
+  if (members.length === 0 && onSetOwner && defaultOwner) {
+    onSetOwner(defaultOwner);
+  }
 
   const columns = [
     {
       Header: 'Members',
       headerStyle: { textAlign: 'left' },
-      accessor: 'name',
+      accessor: 'user',
       Cell: el => (
         <span>
-          {el.value}
+          {el.value ? `${el.value.first_name} ${el.value.last_name}` : ''}
         </span>          
       )
     },
@@ -68,7 +68,11 @@ const DataFilesProjectMembers = () => {
       Header: '',
       headerStyle: { textAlign: 'left' },
       accessor: 'username',
-      Cell: el => <span>Remove</span>
+      Cell: el => (
+        el.row.original.access !== 'owner' 
+          ? <Link onClick={e => onRemove(e, el.row.original)}>Remove</Link>
+          : null
+      )
     }
   ];
 
@@ -78,7 +82,7 @@ const DataFilesProjectMembers = () => {
       <div>
         <div className="input-group" styleName="member-search">
           <div className="input-group-prepend">
-            <Button styleName="add-button" onClick={onAdd} disabled={!selectedUser}>
+            <Button styleName="add-button" onClick={addCallback} disabled={!selectedUser}>
               Add
             </Button>
           </div>
@@ -94,7 +98,7 @@ const DataFilesProjectMembers = () => {
       </div>
       <InfiniteScrollTable
         tableColumns={columns}
-        tableData={projectMembers}
+        tableData={members}
         styleName="member-list"
       />
     </div>
