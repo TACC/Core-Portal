@@ -8,9 +8,13 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const DataFilesMkdirModal = () => {
   const dispatch = useDispatch();
+  const systemList = useSelector(state => state.systems.systemList);
   const params = useSelector(
     state => state.files.params.FilesListing,
     shallowEqual
+  );
+  const currentSystem = systemList.find(
+    system => system.system === params.system
   );
   const isOpen = useSelector(state => state.files.modals.mkdir);
   const toggle = () => {
@@ -66,7 +70,7 @@ const DataFilesMkdirModal = () => {
         >
           <Form>
             <ModalHeader toggle={toggle}>
-              Creating folder in: {params.path || '/'}
+              Creating folder in {currentSystem.name}: {params.path || '/'}
             </ModalHeader>
             <ModalBody>
               <FormField
