@@ -5,7 +5,7 @@ import configureStore from "redux-mock-store";
 import DataFilesCopyModalFixture from './DataFilesCopyModal.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 import renderComponent from 'utils/testing';
-
+import { projectsFixture } from '../../../../redux/sagas/fixtures/projects.fixture';
 const mockStore = configureStore();
 
 const initialMockState = {
@@ -15,7 +15,8 @@ const initialMockState = {
     modalProps: {
       pushKeys: false
     }
-  }
+  },
+  projects: projectsFixture
 };
 
 
