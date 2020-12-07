@@ -14,10 +14,7 @@ const DataFilesProjectsList = () => {
 
   useEffect(() => {
     dispatch({
-      type: 'DATA_FILES_CLEAR_PROJECT_SELECTION'
-    });
-    dispatch({
-      type: 'PROJECTS_GET_LISTING'
+      type: 'PROJECTS_SHOW_SHARED_WORKSPACES'
     });
   }, [dispatch]);
 

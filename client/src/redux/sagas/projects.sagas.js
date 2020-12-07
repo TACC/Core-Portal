@@ -27,6 +27,18 @@ export function* getProjectsListing() {
   }
 }
 
+export function* showSharedWorkspaces() {
+  // Clear FileListing params to reset breadcrumbs
+  yield put({
+    type: 'DATA_FILES_CLEAR_PROJECT_SELECTION'
+  });
+  // Load projects list
+  yield put({
+    type: 'PROJECTS_GET_LISTING'
+  });
+}
+
 export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_LISTING', getProjectsListing);
+  yield takeLatest('PROJECTS_SHOW_SHARED_WORKSPACES', showSharedWorkspaces);
 }
