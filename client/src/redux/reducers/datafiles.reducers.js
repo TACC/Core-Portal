@@ -257,6 +257,19 @@ export function files(state = initialFilesState, action) {
           [action.payload.operation]: action.payload.props
         }
       };
+    case 'DATA_FILES_CLEAR_PROJECT_SELECTION':
+      return {
+        ...state,
+        params: {
+          ...state.params,
+          FilesListing: {
+            api: 'tapis',
+            scheme: 'projects',
+            system: '',
+            path: ''
+          }
+        }
+      };
     default:
       return state;
   }
