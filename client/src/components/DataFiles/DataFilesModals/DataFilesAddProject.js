@@ -10,11 +10,13 @@ const DataFilesAddProject = () => {
   const isOpen = useSelector(state => state.files.modals.addproject);
 
   const { user } = useSelector(state => state.authenticatedUser);
-  
+
   // I would like to set the person creating the project as the "Owner" (PI)
   // Unfortunately, useState does not create a new default state just because 
   // useSelector came up with a new value for { user }
   const [ members, setMembers ] = useState([]);
+  // This doesn't work:
+  // const [ members, setMembers ] = useState([ { user, access: "owner" }])
 
   const toggle = () => {
     dispatch({
