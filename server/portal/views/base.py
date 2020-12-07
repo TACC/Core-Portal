@@ -46,6 +46,10 @@ class BaseApiView(View):
                 logger.info('Error %s', message, exc_info=True, extra=extra)
             return JsonResponse({'message': message}, status=400)
         except (ConnectionError, HTTPError) as e:
+            # status code and json content from ConnectionError/HTTPError exceptions
+            # are used in the returned response. Note: the handling of these two exceptions
+            # is significant as client-side code make use of these status codes (e.g. error
+            # responses from tapis are used to determine a tapis storage systems does not exist)
             status = 500
             if e.response is not None:
                 status = e.response.status_code
