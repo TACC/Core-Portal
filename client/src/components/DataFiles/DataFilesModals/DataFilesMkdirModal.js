@@ -14,9 +14,8 @@ const DataFilesMkdirModal = () => {
     state => state.files.params.FilesListing,
     shallowEqual
   );
-  const currentSystem = systemList.find(
-    system => system.system === params.system
-  ) || '';
+  const currentSystem =
+    systemList.find(system => system.system === params.system) || '';
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
