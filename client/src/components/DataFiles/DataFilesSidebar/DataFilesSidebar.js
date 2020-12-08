@@ -26,6 +26,7 @@ const DataFilesSidebar = () => {
   };
   const err = useSelector(state => state.files.error.FilesListing);
   const systems = useSelector(state => state.systems.systemList, shallowEqual);
+  const { user } = useSelector(state => state.authenticatedUser);
 
   const toggleMkdirModal = () => {
     dispatch({
@@ -35,6 +36,10 @@ const DataFilesSidebar = () => {
   };
 
   const toggleAddProjectModal = () => {
+    dispatch({
+      type: 'PROJECTS_MEMBER_LIST_SET',
+      payload: [{ user, access: 'owner' }]
+    });
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'addproject', props: {} }

@@ -9,7 +9,25 @@ export const initialState = {
     loading: false,
     error: null,
     result: null
+  },
+  project: {
+    title: '',
+    members: []
   }
+};
+
+const addProjectMember = (members, newMember) => {
+  return [...members, newMember];
+};
+
+const removeProjectMember = (members, removedMember) => {
+  const index = members.findIndex(
+    el => el.user.username === removedMember.user.username
+  );
+  if (index) {
+    members.splice(index, 1);
+  }
+  return [...members];
 };
 
 export default function projects(state = initialState, action) {
@@ -69,6 +87,30 @@ export default function projects(state = initialState, action) {
           loading: false,
           error: action.payload,
           result: null
+        }
+      };
+    case 'PROJECTS_MEMBER_LIST_SET':
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          members: [...action.payload]
+        }
+      };
+    case 'PROJECTS_MEMBER_LIST_ADD':
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          members: addProjectMember(state.project.members, action.payload)
+        }
+      };
+    case 'PROJECTS_MEMBER_LIST_REMOVE':
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          members: removeProjectMember(state.project.members, action.payload)
         }
       };
     default:

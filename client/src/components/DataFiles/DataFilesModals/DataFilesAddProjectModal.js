@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -13,7 +13,7 @@ const DataFilesAddProjectModal = () => {
   const match = useRouteMatch();
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.addproject);
-  const { user } = useSelector(state => state.authenticatedUser);
+  const { members } = useSelector(state => state.projects.project);
   const isCreating = useSelector(state => {
     return (
       state.projects.operation &&
@@ -21,12 +21,6 @@ const DataFilesAddProjectModal = () => {
       state.projects.operation.loading
     );
   });
-  const [members, setMembers] = useState([]);
-  useEffect(() => {
-    if (user) {
-      setMembers([{ user, access: 'owner' }]);
-    }
-  }, [user]);
 
   const toggle = () => {
     dispatch({
@@ -56,22 +50,22 @@ const DataFilesAddProjectModal = () => {
 
   const onAdd = useCallback(
     newUser => {
-      setMembers([...members, { user: newUser, access: 'edit' }]);
+      dispatch({
+        type: 'PROJECTS_MEMBER_LIST_ADD',
+        payload: newUser
+      });
     },
-    [members, setMembers]
+    [dispatch]
   );
 
   const onRemove = useCallback(
-    removeUser => {
-      const index = members.findIndex(
-        el => el.user.username === removeUser.username && el.access !== 'owner'
-      );
-      if (index) {
-        members.splice(index, 1);
-        setMembers(members);
-      }
+    removedUser => {
+      dispatch({
+        type: 'PROJECTS_MEMBER_LIST_REMOVE',
+        payload: removedUser
+      });
     },
-    [setMembers]
+    [dispatch]
   );
 
   const validationSchema = Yup.object().shape({

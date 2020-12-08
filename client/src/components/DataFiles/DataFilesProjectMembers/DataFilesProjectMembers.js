@@ -64,7 +64,7 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
       Cell: el =>
         el.row.original.access !== 'owner' ? (
           <Button
-            onClick={e => onRemove(el.row.original)}
+            onClick={e => onRemove(el.row.original.user)}
             color="link"
             styleName="remove-member"
             disabled={loading}
@@ -85,7 +85,7 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
           <div className="input-group-prepend">
             <Button
               styleName="add-button"
-              onClick={() => onAdd(selectedUser)}
+              onClick={() => onAdd({ user: selectedUser, access: 'edit' })}
               disabled={!selectedUser || loading}
             >
               Add
