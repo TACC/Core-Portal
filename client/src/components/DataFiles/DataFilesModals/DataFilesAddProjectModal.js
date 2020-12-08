@@ -13,7 +13,7 @@ const DataFilesAddProjectModal = () => {
   const match = useRouteMatch();
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.addproject);
-  const { members } = useSelector(state => state.projects.project);
+  const { members } = useSelector(state => state.projects.metadata);
   const isCreating = useSelector(state => {
     return (
       state.projects.operation &&

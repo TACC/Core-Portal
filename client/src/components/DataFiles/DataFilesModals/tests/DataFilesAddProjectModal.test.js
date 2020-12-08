@@ -3,7 +3,10 @@ import { createMemoryHistory } from "history";
 import  DataFilesAddProjectModal  from "../DataFilesAddProjectModal";
 import configureStore from "redux-mock-store";
 import renderComponent from 'utils/testing';
-import { projectsListingFixture, projectDefFixture } from '../../../../redux/sagas/fixtures/projects.fixture';
+import {
+  projectsListingFixture,
+  projectMetadataFixture
+} from '../../../../redux/sagas/fixtures/projects.fixture';
 const mockStore = configureStore();
 
 const initialMockState = {
@@ -23,7 +26,7 @@ const initialMockState = {
       loading: false,
       error: null
     },
-    project: projectDefFixture
+    metadata: projectMetadataFixture
   },
   authenticatedUser: {
     user: {

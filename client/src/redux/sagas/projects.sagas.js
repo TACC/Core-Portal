@@ -69,8 +69,34 @@ export function* createProject(action) {
   }
 }
 
+export async function fetchMetadata(system) {
+  const result = await fetchUtil({
+    url: `/api/projects/system/${system}/`
+  });
+  return result.response;
+}
+
+export function* getMetadata(action) {
+  yield put({
+    type: 'PROJECTS_GET_METADATA_STARTED'
+  });
+  try {
+    const metadata = yield call(fetchMetadata, action.payload);
+    yield put({
+      type: 'PROJECTS_GET_METADATA_SUCCESS',
+      payload: metadata
+    });
+  } catch (error) {
+    yield put({
+      type: 'PROJECTS_GET_METADATA_FAILED',
+      payload: error
+    });
+  }
+}
+
 export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_LISTING', getProjectsListing);
   yield takeLatest('PROJECTS_SHOW_SHARED_WORKSPACES', showSharedWorkspaces);
   yield takeLatest('PROJECTS_CREATE', createProject);
+  yield takeLatest('PROJECTS_GET_METADATA', getMetadata);
 }

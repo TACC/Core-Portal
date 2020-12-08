@@ -2,12 +2,15 @@ import { expectSaga } from "redux-saga-test-plan";
 import * as matchers from "redux-saga-test-plan/matchers";
 import {
   getProjectsListing,
-  fetchProjectsListing
+  fetchProjectsListing,
+  getMetadata,
+  fetchMetadata
 } from "./projects.sagas";
 import projectsReducer, { initialState } from '../reducers/projects.reducers';
 import { 
   projectsFixture,
-  projectsDefFixture,
+  projectMetadataFixture,
+  projectMetadataResponse,
   projectsListingFixture
 } from './fixtures/projects.fixture';
 
@@ -32,6 +35,27 @@ describe("Projects Sagas", () => {
       .hasFinalState({
         ...initialState,
         ...projectsFixture,
+      })
+      .run();
+  });
+  it("should get project metadata", () => {
+    return expectSaga(getMetadata, { payload: 'system' })
+      .withReducer(projectsReducer)
+      .provide([
+        [
+          matchers.call.fn(fetchMetadata),
+          projectMetadataResponse
+        ]
+      ])
+      .put({ type: "PROJECTS_GET_METADATA_STARTED" })
+      .call(fetchMetadata, "system")
+      .put({
+        type: "PROJECTS_GET_METADATA_SUCCESS",
+        payload: projectMetadataResponse
+      })
+      .hasFinalState({
+        ...initialState,
+        metadata: projectMetadataFixture 
       })
       .run();
   });

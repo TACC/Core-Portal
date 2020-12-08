@@ -69,7 +69,7 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
       Cell: el =>
         el.row.original.access !== 'owner' ? (
           <Button
-            onClick={e => onRemove(el.row.original.user)}
+            onClick={e => onRemove(el.row.original)}
             color="link"
             styleName="remove-member"
             disabled={loading}
