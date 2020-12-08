@@ -10,7 +10,7 @@ class PublicUrl(models.Model):
     postit_url = models.TextField()
     updated = models.DateTimeField(auto_now=True)
 
-    def get_nonce(self):
+    def get_uuid(self):
         return self.postit_url.split('/')[-1]
 
     def to_dict(self):

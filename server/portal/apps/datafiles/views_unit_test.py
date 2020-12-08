@@ -86,10 +86,10 @@ def test_public_url_not_found(client):
 
 
 def test_public_url_post(tapis_post_handler, authenticated_user, client):
-    tapis_post_handler.return_value = "https://tenant/nonce"
+    tapis_post_handler.return_value = "https://tenant/uuid"
     result = client.post("/api/datafiles/publicurl/tapis/system/path")
-    assert json.loads(result.content)["data"] == "https://tenant/nonce"
-    assert PublicUrl.objects.all()[0].get_nonce() == "nonce"
+    assert json.loads(result.content)["data"] == "https://tenant/uuid"
+    assert PublicUrl.objects.all()[0].get_uuid() == "uuid"
     tapis_post_handler.assert_called_with(
         authenticated_user.agave_oauth.client,
         "tapis",
@@ -105,7 +105,7 @@ def test_public_url_post(tapis_post_handler, authenticated_user, client):
 
 def test_public_url_delete(tapis_post_handler, authenticated_user, mock_agave_client, client):
     mock_agave_client.postits.delete.return_value = "OK"
-    tapis_post_handler.return_value = "https://tenant/nonce"
+    tapis_post_handler.return_value = "https://tenant/uuid"
     client.post("/api/datafiles/publicurl/tapis/system/path")
     result = client.delete("/api/datafiles/publicurl/tapis/system/path")
     assert json.loads(result.content)["data"] == "OK"
@@ -115,12 +115,12 @@ def test_public_url_delete(tapis_post_handler, authenticated_user, mock_agave_cl
 
 def test_public_url_post_existing(tapis_post_handler, authenticated_user, mock_agave_client, client):
     mock_agave_client.postits.delete.return_value = "OK"
-    tapis_post_handler.return_value = "https://tenant/nonce"
+    tapis_post_handler.return_value = "https://tenant/uuid"
     public_url = PublicUrl.objects.create(
         agave_uri="system/path",
-        postit_url="https://tenant/oldnonce"
+        postit_url="https://tenant/olduuid"
     )
     public_url.save()
     result = client.post("/api/datafiles/publicurl/tapis/system/path")
-    assert json.loads(result.content)["data"] == "https://tenant/nonce"
-    assert PublicUrl.objects.all()[0].get_nonce() == "nonce"
+    assert json.loads(result.content)["data"] == "https://tenant/uuid"
+    assert PublicUrl.objects.all()[0].get_uuid() == "uuid"

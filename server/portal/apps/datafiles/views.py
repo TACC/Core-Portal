@@ -125,7 +125,7 @@ class PublicUrlView(BaseApiView):
             client = request.user.agave_oauth.client
         except AttributeError:
             raise HttpResponseForbidden
-        response = client.postits.delete(nonce=public_url.get_nonce())
+        response = client.postits.delete(uuid=public_url.get_uuid())
         public_url.delete()
         return response
 
