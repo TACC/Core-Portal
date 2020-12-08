@@ -34,6 +34,10 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
     }
   };
 
+  const alreadyMember = (user) => members.some(
+    existingMember => existingMember.user.username === user.username
+  )
+
   const columns = [
     {
       Header: 'Members',
@@ -86,7 +90,7 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
             <Button
               styleName="add-button"
               onClick={() => onAdd({ user: selectedUser, access: 'edit' })}
-              disabled={!selectedUser || loading}
+              disabled={!selectedUser || loading || alreadyMember(selectedUser)}
             >
               Add
             </Button>
@@ -99,7 +103,9 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
           <datalist id="user-search-list">
             {/* eslint-disable */
               // Need to replace this component with a generalized solution from FP-743
-              userSearchResults.map(user => (
+              userSearchResults
+                .filter(user => !alreadyMember(user))
+                .map(user => (
                 <option value={formatUser(user)} key={user.username} />
               ))
               /* eslint-enable */
