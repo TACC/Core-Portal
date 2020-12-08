@@ -18,7 +18,15 @@ describe('DataFilesSidebar', () => {
           FilesListing: false
         }
       },
-      systems: systemsFixture
+      systems: systemsFixture,
+      authenticatedUser: {
+        user: {
+          username: "username",
+          first_name: "User",
+          last_name: "Name",
+          email: "user@username.com"
+        }
+      }
     });
     const { getByText, debug } = renderComponent(
       <Route path="/workbench/data">

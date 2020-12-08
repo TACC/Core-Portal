@@ -33,10 +33,29 @@ export const projectsListingFixture = [
   }
 ];
 
+export const projectDefFixture = {
+  title: 'My Project',
+  members: [
+    {
+      user: {
+        username: 'username',
+        first_name: 'User',
+        last_name: 'Name',
+        email: 'user@username.com'
+      },
+      access: 'owner'
+    }
+  ]
+};
+
 export const projectsFixture = {
   listing: {
     projects: projectsListingFixture,
     loading: false,
     error: null
+  },
+  project: {
+    title: '',
+    members: []
   }
 };

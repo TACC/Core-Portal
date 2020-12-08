@@ -7,6 +7,7 @@ import {
 import projectsReducer, { initialState } from '../reducers/projects.reducers';
 import { 
   projectsFixture,
+  projectsDefFixture,
   projectsListingFixture
 } from './fixtures/projects.fixture';
 
@@ -30,7 +31,7 @@ describe("Projects Sagas", () => {
       })
       .hasFinalState({
         ...initialState,
-        ...projectsFixture
+        ...projectsFixture,
       })
       .run();
   });
