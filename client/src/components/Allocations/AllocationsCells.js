@@ -3,7 +3,10 @@ import { shape, arrayOf, number, string } from 'prop-types';
 import { Button, Badge } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { AllocationsTeamViewModal } from './AllocationsModals';
+import {
+  AllocationsTeamViewModal,
+  AllocationsManager
+} from './AllocationsModals';
 
 const CELL_PROPTYPES = {
   cell: shape({
@@ -20,11 +23,11 @@ export const Team = ({ cell: { value } }) => {
       state.allocations.inactive
     );
     const current = allocations.find(el => el.projectId === value.projectId);
-    console.log(allocations, name, current);
     if (current && current.pi === name) return true;
     return false;
   });
   const [openModal, setOpenModal] = useState(false);
+  const [openManager, setManager] = useState(false);
   return (
     <>
       <Button
@@ -44,9 +47,26 @@ export const Team = ({ cell: { value } }) => {
       {isManager && (
         <>
           <span>|</span>
-          <Button className="btn btn-sm" color="link">
+          <Button
+            className="btn btn-sm"
+            color="link"
+            onClick={() => {
+              dispatch({
+                type: 'GET_TEAMS',
+                payload: { ...value }
+              });
+              setManager(true);
+            }}
+            disabled={openManager}
+          >
             Hello
           </Button>
+          <AllocationsManager
+            isOpen={openManager}
+            pid={value.projectId}
+            prjName={value.name}
+            toggle={() => setManager(!openManager)}
+          />
         </>
       )}
       <AllocationsTeamViewModal

@@ -46,6 +46,29 @@ export const getTeamsUtil = async projectId => {
   return json;
 };
 
+export function* manageUsers(action) {
+  if (action.params.flag === 'DELETE') {
+    yield call(fetchUtil, {
+      url: `/api/users/team/${action.params.projectId}`,
+      method: 'DELETE',
+      body: JSON.stringify({ username: action.params.username })
+    });
+  } else {
+    yield call(fetchUtil, {
+      url: `/api/users/team/${action.params.projectId}`,
+      method: 'POST',
+      body: JSON.stringify({ username: action.params.username })
+    });
+  }
+  yield put({
+    type: 'GET_TEAMS',
+    payload: {
+      name: action.params.projectName,
+      projectId: action.params.projectId
+    }
+  });
+}
+
 /**
  * Generate an empty dictionary to look up users from project ID and map loading state
  * to each project
@@ -229,5 +252,8 @@ export function* watchAllocationData() {
 export function* watchTeams() {
   yield takeLatest('GET_TEAMS', getUsernames);
 }
+export function* watchManager() {
+  yield takeLatest('MANAGE_TEAMS', manageUsers);
+}
 
-export default [watchAllocationData(), watchTeams()];
+export default [watchAllocationData(), watchTeams(), watchManager()];
