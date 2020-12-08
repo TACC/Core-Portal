@@ -31,12 +31,28 @@ def test_projects_get(regular_user, client, mock_project_mgr):
 
 
 def test_projects_post(regular_user, client, mock_project_mgr):
-    mock_project_mgr.create.return_value = MagicMock(storage={'name': 'PRJ-123'})
+    mock_project = MagicMock(storage={'name': 'PRJ-123'})
+    mock_project_mgr.create.return_value = mock_project
     client.force_login(regular_user)
 
-    response = client.post('/api/projects/', {'title': 'Test Title'})
+    response = client.post(
+        '/api/projects/',
+        json.dumps(
+            {
+                'title': 'Test Title',
+                'members': [
+                    {
+                        'username': 'username',
+                        'access': 'owner'
+                    }
+                ]
+            }
+        ),
+        content_type='application/json'
+    )
 
     mock_project_mgr.create.assert_called_with('Test Title')
+    mock_project.add_pi.assert_called_with(regular_user)
     assert response.status_code == 200
     assert response.json() == {
         'status': 200,

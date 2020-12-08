@@ -50,7 +50,7 @@ export default function projects(state = initialState, action) {
           error: null,
           result: null
         }
-      }
+      };
     case 'PROJECTS_CREATE_SUCCESS':
       return {
         ...state,
@@ -60,7 +60,7 @@ export default function projects(state = initialState, action) {
           loading: false,
           error: null
         }
-      }
+      };
     case 'PROJECTS_CREATE_FAILED':
       return {
         ...state,
@@ -69,8 +69,8 @@ export default function projects(state = initialState, action) {
           loading: false,
           error: action.payload,
           result: null
-        } 
-      }
+        }
+      };
     default:
       return state;
   }

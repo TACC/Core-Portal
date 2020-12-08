@@ -121,7 +121,7 @@ class ProjectsApiView(BaseApiView):
                 elif member['access'] == 'edit':
                     prj.add_co_pi(user)
             except Exception:
-                logger.exception(
+                LOGGER.exception(
                     "Project was created, but could not add {username}", username=member['username']
                 )
         return JsonResponse(

@@ -43,7 +43,7 @@ export async function fetchCreateProject(project) {
     url: `/api/projects/`,
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(project)
   });
@@ -72,5 +72,5 @@ export function* createProject(action) {
 export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_LISTING', getProjectsListing);
   yield takeLatest('PROJECTS_SHOW_SHARED_WORKSPACES', showSharedWorkspaces);
-  yield takeLatest('PROJECTS_CREATE', createProject)
+  yield takeLatest('PROJECTS_CREATE', createProject);
 }
