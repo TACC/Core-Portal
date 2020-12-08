@@ -34,9 +34,10 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
     }
   };
 
-  const alreadyMember = (user) => members.some(
-    existingMember => existingMember.user.username === user.username
-  )
+  const alreadyMember = user =>
+    members.some(
+      existingMember => existingMember.user.username === user.username
+    );
 
   const columns = [
     {
