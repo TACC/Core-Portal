@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
@@ -8,15 +8,13 @@ import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProject
 const DataFilesAddProject = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.addproject);
-
-  const { user } = useSelector(state => state.authenticatedUser);
-
-  // I would like to set the person creating the project as the "Owner" (PI)
-  // Unfortunately, useState does not create a new default state just because 
-  // useSelector came up with a new value for { user }
+  const { user } = useSelector(state => state.authenticatedUser)
   const [ members, setMembers ] = useState([]);
-  // This doesn't work:
-  // const [ members, setMembers ] = useState([ { user, access: "owner" }])
+  useEffect(() => {
+    if (user) {
+      setMembers([ {user, access: "owner" }])
+    }
+  }, [ user ]);
 
   const toggle = () => {
     dispatch({
@@ -48,15 +46,6 @@ const DataFilesAddProject = () => {
     }, [ setMembers ]
   )
 
-  // Setting the owner of this project during new project creation as the sole member
-  // This is a hack, due to redux not setting authenticatedUser state until after
-  // this modal has rendered
-  const onSetOwner = useCallback(
-    (user) => {
-      setMembers([ { user, access: "owner" }])
-    }
-  )
-
   return (
     <>
       <Modal
@@ -75,8 +64,6 @@ const DataFilesAddProject = () => {
                 members={members}
                 onAdd={onAdd}
                 onRemove={onRemove}
-                onSetOwner={onSetOwner}
-                defaultOwner={user}
                 />
             </ModalBody>
             <ModalFooter>

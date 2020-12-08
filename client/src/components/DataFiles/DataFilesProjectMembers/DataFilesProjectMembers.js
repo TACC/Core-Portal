@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 import './DataFilesProjectMembers.module.scss';
 
-const DataFilesProjectMembers = ({ members, onAdd, onRemove, onSetOwner, defaultOwner }) => {
+const DataFilesProjectMembers = ({ members, onAdd, onRemove }) => {
   const dispatch = useDispatch();
 
   const userSearchResults = useSelector(state => state.users.search.users);
@@ -39,13 +39,6 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onSetOwner, default
   const removeCallback = (e, user) => {
     e.preventDefault();
     onRemove(user)
-  }
-
-  // Check to see if we were passed an empty member list and
-  // the client really wanted to have a default owner
-  // This is a hack due to authenticatedUser refreshing late
-  if (members.length === 0 && onSetOwner && defaultOwner) {
-    onSetOwner(defaultOwner);
   }
 
   const columns = [
