@@ -3,6 +3,12 @@ export const initialState = {
     projects: [],
     error: null,
     loading: false
+  },
+  operation: {
+    name: '',
+    loading: false,
+    error: null,
+    result: null
   }
 };
 
@@ -35,6 +41,36 @@ export default function projects(state = initialState, action) {
           loading: false
         }
       };
+    case 'PROJECTS_CREATE_STARTED':
+      return {
+        ...state,
+        operation: {
+          name: 'create',
+          loading: true,
+          error: null,
+          result: null
+        }
+      }
+    case 'PROJECTS_CREATE_SUCCESS':
+      return {
+        ...state,
+        operation: {
+          name: 'create',
+          result: action.payload,
+          loading: false,
+          error: null
+        }
+      }
+    case 'PROJECTS_CREATE_FAILED':
+      return {
+        ...state,
+        operation: {
+          name: 'create',
+          loading: false,
+          error: action.payload,
+          result: null
+        } 
+      }
     default:
       return state;
   }

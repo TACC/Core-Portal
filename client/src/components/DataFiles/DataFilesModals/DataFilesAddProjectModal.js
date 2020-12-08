@@ -1,14 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
+import { LoadingSpinner }from '_common';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 
 const DataFilesAddProjectModal = () => {
+  const history = useHistory();
+  const match = useRouteMatch()
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.addproject);
   const { user } = useSelector(state => state.authenticatedUser);
+  const isCreating = useSelector(state => {
+    return state.projects.operation.name === 'create' && state.projects.operation.loading
+  });
   const [members, setMembers] = useState([]);
   useEffect(() => {
     if (user) {
@@ -23,16 +31,25 @@ const DataFilesAddProjectModal = () => {
     });
   };
 
+  const onCreate = (system) => {
+    toggle();
+    history.push(`${match.path}/shared/${system}`);
+  };
+
   const addproject = ({ title }) => {
     dispatch({
-      type: 'PROJECTS_ADD_PROJECT',
-      payload: {}
+      type: 'PROJECTS_CREATE',
+      payload: {
+        title,
+        members: members.map(member => ({ username: member.user.username, access: member.access })),
+        onCreate
+      },
     });
   };
 
   const onAdd = useCallback(
     newUser => {
-      setMembers([{ user: newUser, access: 'edit' }, ...members]);
+      setMembers([ ...members, { user: newUser, access: 'edit' } ]);
     },
     [members, setMembers]
   );
@@ -50,6 +67,12 @@ const DataFilesAddProjectModal = () => {
     [setMembers]
   );
 
+  const validationSchema = Yup.object().shape({
+    title: Yup.string()
+      .min(1)
+      .required('Please enter a title.')
+  })
+
   return (
     <>
       <Modal
@@ -59,7 +82,10 @@ const DataFilesAddProjectModal = () => {
         className="dataFilesModal"
       >
         {' '}
-        <Formik initialValues={{ title: '' }} onSubmit={addproject}>
+        <Formik
+          initialValues={{ title: '' }}
+          onSubmit={addproject}
+          validationSchema={validationSchema}>
           <Form>
             <ModalHeader toggle={toggle}>Add Shared Workspace</ModalHeader>
             <ModalBody>
@@ -71,8 +97,12 @@ const DataFilesAddProjectModal = () => {
               />
             </ModalBody>
             <ModalFooter>
-              <Button type="submit" className="data-files-btn">
-                Add Workspace
+              <Button type="submit" className="data-files-btn" disabled={isCreating}>
+                {
+                  isCreating
+                    ? <LoadingSpinner placement="inline" />
+                    : null
+                } Add Workspace
               </Button>
             </ModalFooter>
           </Form>

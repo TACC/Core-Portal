@@ -38,7 +38,39 @@ export function* showSharedWorkspaces() {
   });
 }
 
+export async function fetchCreateProject(project) {
+  const result = await fetchUtil({
+    url: `/api/projects/`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(project)
+  });
+  return result.response;
+}
+
+export function* createProject(action) {
+  yield put({
+    type: 'PROJECTS_CREATE_STARTED'
+  });
+  try {
+    const project = yield call(fetchCreateProject, action.payload);
+    yield put({
+      type: 'PROJECTS_CREATE_SUCCESS',
+      payload: project
+    });
+    action.payload.onCreate(project.id);
+  } catch (error) {
+    yield put({
+      type: 'PROJECTS_CREATE_FAILED',
+      payload: error
+    });
+  }
+}
+
 export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_LISTING', getProjectsListing);
   yield takeLatest('PROJECTS_SHOW_SHARED_WORKSPACES', showSharedWorkspaces);
+  yield takeLatest('PROJECTS_CREATE', createProject)
 }

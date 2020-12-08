@@ -14,6 +14,7 @@ from portal.utils.decorators import agave_jwt_login
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.managers.base import ProjectsManager
+from django.contrib.auth import get_user_model
 # from portal.apps.search.api.managers.project_search import ProjectSearchManager
 
 
@@ -107,9 +108,22 @@ class ProjectsApiView(BaseApiView):
 
     def post(self, request):  # pylint: disable=no-self-use
         """POST handler."""
-        title = request.POST.get('title')
+        data = json.loads(request.body)
+        title = data['title']
+        members = data['members']
         mgr = ProjectsManager(request.user)
         prj = mgr.create(title)
+        for member in members:
+            try:
+                user = get_user_model().objects.get(username=member['username'])
+                if member['access'] == 'owner':
+                    prj.add_pi(user)
+                elif member['access'] == 'edit':
+                    prj.add_co_pi(user)
+            except Exception:
+                logger.exception(
+                    "Project was created, but could not add {username}", username=member['username']
+                )
         return JsonResponse(
             {
                 'status': 200,
