@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { shape, arrayOf, number, string } from 'prop-types';
 import { Button, Badge } from 'reactstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { AllocationsTeamViewModal } from './AllocationsModals';
 
@@ -13,8 +13,18 @@ const CELL_PROPTYPES = {
 
 export const Team = ({ cell: { value } }) => {
   const dispatch = useDispatch();
+  const isManager = useSelector(state => {
+    const { firstName, lastName } = state.profile.data.demographics;
+    const name = `${firstName} ${lastName}`;
+    const allocations = state.allocations.active.concat(
+      state.allocations.inactive
+    );
+    const current = allocations.find(el => el.projectId === value.projectId);
+    console.log(allocations, name, current);
+    if (current && current.pi === name) return true;
+    return false;
+  });
   const [openModal, setOpenModal] = useState(false);
-  const { projectId } = value;
   return (
     <>
       <Button
@@ -31,9 +41,17 @@ export const Team = ({ cell: { value } }) => {
       >
         View Team
       </Button>
+      {isManager && (
+        <>
+          <span>|</span>
+          <Button className="btn btn-sm" color="link">
+            Hello
+          </Button>
+        </>
+      )}
       <AllocationsTeamViewModal
         isOpen={openModal}
-        pid={projectId}
+        pid={value.projectId}
         toggle={() => setOpenModal(!openModal)}
       />
     </>
