@@ -125,7 +125,7 @@ services:
     container_name: frontera_prtl_workers
 
   docs:
-    image: taccwma/frontera-docs:latest-master
+    image: taccwma/frontera-docs:8849bc2
     volumes:
       - ../../docs:/docs/site
     command: ["mkdocs", "build"]
