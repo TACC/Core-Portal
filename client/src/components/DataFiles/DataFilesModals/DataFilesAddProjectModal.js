@@ -5,16 +5,16 @@ import FormField from '_common/Form/FormField';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
 
-const DataFilesAddProject = () => {
+const DataFilesAddProjectModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.addproject);
-  const { user } = useSelector(state => state.authenticatedUser)
-  const [ members, setMembers ] = useState([]);
+  const { user } = useSelector(state => state.authenticatedUser);
+  const [members, setMembers] = useState([]);
   useEffect(() => {
     if (user) {
-      setMembers([ {user, access: "owner" }])
+      setMembers([{ user, access: 'owner' }]);
     }
-  }, [ user ]);
+  }, [user]);
 
   const toggle = () => {
     dispatch({
@@ -31,20 +31,24 @@ const DataFilesAddProject = () => {
   };
 
   const onAdd = useCallback(
-    (user) => {
-      setMembers([ { user, access: "edit" }, ...members ]);
-    }, [ members, setMembers ]
-  )
+    newUser => {
+      setMembers([{ user: newUser, access: 'edit' }, ...members]);
+    },
+    [members, setMembers]
+  );
 
   const onRemove = useCallback(
-    (user) => {
-      let index = members.findIndex(el => el.user.username === user.username && el.access !== "owner");
+    removeUser => {
+      const index = members.findIndex(
+        el => el.user.username === removeUser.username && el.access !== 'owner'
+      );
       if (index) {
         members.splice(index, 1);
         setMembers(members);
       }
-    }, [ setMembers ]
-  )
+    },
+    [setMembers]
+  );
 
   return (
     <>
@@ -60,11 +64,11 @@ const DataFilesAddProject = () => {
             <ModalHeader toggle={toggle}>Add Shared Workspace</ModalHeader>
             <ModalBody>
               <FormField name="title" label="Workspace Title" />
-              <DataFilesProjectMembers 
+              <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}
                 onRemove={onRemove}
-                />
+              />
             </ModalBody>
             <ModalFooter>
               <Button type="submit" className="data-files-btn">
@@ -78,4 +82,4 @@ const DataFilesAddProject = () => {
   );
 };
 
-export default DataFilesAddProject;
+export default DataFilesAddProjectModal;
