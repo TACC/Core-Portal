@@ -18,21 +18,37 @@ _ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '*']   # In development.
 # in the requirements.txt file or installed if using ldap.
 _LDAP_ENABLED = True
 
+# Boolean check to determine the appropriate database settings when using containers.
+_USING_CONTAINERS = True
+
 ########################
 # DATABASE SETTINGS
 ########################
 
-_DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'taccsite',
-        'USER': 'postgresadmin',
-        'PASSWORD': 'taccforever',   # Change for deployment configuration.
-        'HOST': 'frontera_cms_postgres',            # 'localhost' in demo/local-dev/SAD CMS deployments, 'taccsite_postgres' in containerized portal deployments
-                                                    # (expect Portal, which expects 'frontera_cms_postgres')
-        'PORT': '5432',
+if _USING_CONTAINERS:
+    # used in container deployments.
+    _DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'PORT': '5432',
+            'NAME': 'taccsite',
+            'USER': 'postgresadmin',
+            'PASSWORD': 'taccforever', # Change before live deployment.
+            'HOST': 'frontera_cms_postgres'
+        }
     }
-}
+else:
+    # used in local dev, venv or manual deployments.
+    _DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'PORT': '5432',
+            'NAME': 'taccsite',
+            'USER': 'postgresadmin',
+            'PASSWORD': 'taccforever', # Change before live deployment.
+            'HOST': 'localhost'
+        }
+    }
 
 ########################
 # DJANGO CMS SETTINGS
@@ -42,9 +58,10 @@ _DATABASES = {
 _SITE_ID = 1
 _CMS_TEMPLATES = (
     # Customize this
-    ('fullwidth.html', 'Fullwidth'),
-    ('sidebar_left.html', 'Sidebar Left'),
-    ('sidebar_right.html', 'Sidebar Right')
+    # FAQ: First template is default template
+    # REF: http://docs.django-cms.org/en/latest/how_to/install.html#templates
+    ('frontera-cms/templates/fullwidth.html', 'Fullwidth'),
+    ('fullwidth.html', 'DEPRECATED Fullwidth'),
 )
 
 ########################
@@ -56,11 +73,67 @@ _GOOGLE_ANALYTICS_PROPERTY_ID = "UA-125525035-13"
 _GOOGLE_ANALYTICS_PRELOAD = True
 
 ########################
-# CUSTOM SITE SETTINGS
+# CMS FORMS
 ########################
 
+# Create CMS Forms
+# SEE: https://pypi.org/project/djangocms-forms/
+# SEE: https://www.google.com/recaptcha/admin/create
 _DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = ""
 _DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = ""
+
+########################
+# ELASTICSEARCH
+########################
+
+_ES_AUTH = 'username:password'
+_ES_HOSTS = 'http://elasticsearch:9200'
+_ES_INDEX_PREFIX = 'cms-dev-{}'
+_ES_DOMAIN = 'http://localhost:8000'
+
+########################
+# FEATURES
+########################
+
+"""
+Features for the CMS that can be turned either ON or OFF
+
+Usage:
+
+- For baked-in features, like BRANDING or PORTAL, see relevant section instead.
+- For optional features, look below, and enable feature(s) via _FEATURES list.
+
+Baked-In Feature Setting Example.
+
+# Desctipion of feature X
+# SEE: [link to user/div guide about feature]
+_FEATURE_A = "someValue"
+
+Optional Feature Toggle Example.
+
+_FEATURES = {
+    # Desctipion of feature X
+    # SEE: [link to user/dev guide about feature]
+    "X": True,
+
+    # Desctipion of feature Y
+    # SEE: [link to user/dev guide about feature]
+    "Y": False,
+
+    # Desctipion of feature Z
+    # SEE: [link to user/dev guide about feature]
+    "Z": True,
+}
+
+"""
+
+_FEATURES = {
+    # Blog/News & Social Media Metadata
+    # GL-42: Split this into two features
+    # SEE: https://confluence.tacc.utexas.edu/x/EwDeCg
+    # SEE: https://confluence.tacc.utexas.edu/x/FAA9Cw
+    "blog": False,
+}
 
 ########################
 # BRANDING & LOGOS
@@ -78,7 +151,7 @@ Usage:
 - The order of the _BRANDING list determines the rendering order of the elements in the template.
 - The portal logo setting must be assigned to the _LOGO variable to render in the template.
 - The following VALUES for new elements set in the configuration object must exist in the portal css as well:
-    - Any new selectors or css styles (add to /taccsite_cms/static/site_cms/styles/exports/branding_logos.css)
+    - Any new selectors or css styles (add to /taccsite_cms/static/site_cms/css/src/_imports/branding_logos.css)
     - Image files being references (add to /taccsite_cms/static/site_cms/img/org_logos)
 
 Values to populate:
@@ -122,7 +195,7 @@ _ANORG_LOGO = [
 """
 
 ########################
-# BRANDING.
+# BRANDING
 
 _TACC_BRANDING = [
     "tacc",
@@ -135,7 +208,7 @@ _TACC_BRANDING = [
     "True"
 ]
 
-_UTEXAS_BRANDING = [
+_UTEXAS_BRANDING =  [
     "utexas",
     "site_cms/img/org_logos/utaustin-white.png",
     "branding-utaustin",
@@ -157,13 +230,13 @@ _NSF_BRANDING = [
     "True"
 ]
 
-# _BRANDING = [_TACC_BRANDING, _UTEXAS_BRANDING]        # Default TACC Portal.
+# _BRANDING = [ _TACC_BRANDING, _UTEXAS_BRANDING ]        # Default TACC Portal.
 _BRANDING = [ _NSF_BRANDING, _TACC_BRANDING, _UTEXAS_BRANDING ]       # NSF Funded TACC Portal.
 
 ########################
-# LOGOS.
+# LOGOS
 
-_PORTAL_LOGO = [
+_PORTAL_LOGO =  [
     "frontera",
     "frontera-cms/img/org_logos/frontera-white-solo.png",
     "",
