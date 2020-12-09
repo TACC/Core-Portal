@@ -1,7 +1,13 @@
 .root {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .searchbar {
   padding-bottom: 15px;
+}
+
+.file-container {
+  flex-grow: 1;
 }

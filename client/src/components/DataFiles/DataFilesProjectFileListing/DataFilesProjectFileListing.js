@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import './DataFilesProjectFileListing.module.scss';
 
@@ -33,6 +33,14 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   if (metadata.loading) {
     return <LoadingSpinner />;
+  }
+
+  if (metadata.error) {
+    return (
+      <Message type="warn">
+        We were unable to retrieve this shared workspace.
+      </Message>
+    );
   }
 
   return (

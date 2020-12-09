@@ -115,9 +115,7 @@ const DataFiles = () => {
       <div styleName="items">
         <DataFilesSidebar styleName="sidebar" />
         <div styleName="content">
-          <div styleName="content-table">
-            <DataFilesSwitch />
-          </div>
+          <DataFilesSwitch />
         </div>
       </div>
       <DataFilesModals />

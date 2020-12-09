@@ -108,13 +108,15 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
         system={system}
         styleName="searchbar"
       />
-      <DataFilesTable
-        data={files}
-        columns={columns}
-        rowSelectCallback={rowSelectCallback}
-        scrollBottomCallback={scrollBottomCallback}
-        section="FilesListing"
-      />
+      <div styleName="file-container">
+        <DataFilesTable
+          data={files}
+          columns={columns}
+          rowSelectCallback={rowSelectCallback}
+          scrollBottomCallback={scrollBottomCallback}
+          section="FilesListing"
+        />
+      </div>
     </div>
   );
 };
