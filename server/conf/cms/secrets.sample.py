@@ -157,8 +157,8 @@ _NSF_BRANDING = [
     "True"
 ]
 
-_BRANDING = [_TACC_BRANDING, _UTEXAS_BRANDING]        # Default TACC Portal.
-# _BRANDING = [ _NSF_BRANDING, _TACC_BRANDING, _UTEXAS_BRANDING ]       # NSF Funded TACC Portal.
+# _BRANDING = [_TACC_BRANDING, _UTEXAS_BRANDING]        # Default TACC Portal.
+_BRANDING = [ _NSF_BRANDING, _TACC_BRANDING, _UTEXAS_BRANDING ]       # NSF Funded TACC Portal.
 
 ########################
 # LOGOS.
