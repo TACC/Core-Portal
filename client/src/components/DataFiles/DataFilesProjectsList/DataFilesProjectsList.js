@@ -2,6 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { InfiniteScrollTable, LoadingSpinner, Message } from '_common';
+import './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 
 const DataFilesProjectsList = () => {
@@ -60,14 +61,16 @@ const DataFilesProjectsList = () => {
   }
 
   return (
-    <InfiniteScrollTable
-      tableColumns={columns}
-      tableData={projects}
-      onInfiniteScroll={infiniteScrollCallback}
-      isLoading={loading}
-      noDataText={noDataText}
-      className="projects-listing"
-    />
+    <div styleName="root">
+      <InfiniteScrollTable
+        tableColumns={columns}
+        tableData={projects}
+        onInfiniteScroll={infiniteScrollCallback}
+        isLoading={loading}
+        noDataText={noDataText}
+        className="projects-listing"
+      />
+    </div>
   );
 };
 

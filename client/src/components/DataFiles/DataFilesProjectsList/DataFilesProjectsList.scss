@@ -1,4 +1,6 @@
 .projects-listing {
+  width: inherit;
+  flex-grow: 1;
   /* title */
   th:nth-child(1),
   td:nth-child(1) {
