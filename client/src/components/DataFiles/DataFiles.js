@@ -16,7 +16,6 @@ import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
 import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
-import DataFilesSearchbar from './DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
 
@@ -116,12 +115,6 @@ const DataFiles = () => {
       <div styleName="items">
         <DataFilesSidebar styleName="sidebar" />
         <div styleName="content">
-          <DataFilesSearchbar
-            styleName="content-toolbar"
-            api={listingParams.api}
-            scheme={listingParams.scheme}
-            system={listingParams.system}
-          />
           <div styleName="content-table">
             <DataFilesSwitch />
           </div>
