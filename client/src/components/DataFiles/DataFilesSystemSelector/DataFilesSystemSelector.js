@@ -34,7 +34,7 @@ const DataFilesSystemSelector = ({ systemId, section, disabled }) => {
     <>
       <DropdownSelector
         onChange={openSystem}
-        value={selectedSystem || ''}
+        value={selectedSystem}
         styleName="system-select"
         disabled={disabled}
       >
@@ -55,7 +55,7 @@ DataFilesSystemSelector.propTypes = {
 };
 
 DataFilesSystemSelector.defaultProps = {
-  systemId: null,
+  systemId: '',
   disabled: false
 };
 
