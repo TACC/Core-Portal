@@ -23,7 +23,7 @@ from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
-
+from portal.apps.accounts.managers.user_systems import UserSystemsManager
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -180,12 +180,11 @@ class JobsView(BaseApiView):
 
         # list jobs
         else:
-            limit = request.GET.get('limit', 10)
-            offset = request.GET.get('offset', 0)
+            limit = int(request.GET.get('limit', 10))
+            offset = int(request.GET.get('offset', 0))
             period = request.GET.get('period', 'all')
 
-            data = agave.jobs.list(limit=limit, offset=offset)
-            jobs = JobSubmission.objects.all().filter(user=request.user)
+            jobs = JobSubmission.objects.all().filter(user=request.user).order_by('-time')
 
             if period != "all":
                 enddate = timezone.now()
@@ -198,15 +197,14 @@ class JobsView(BaseApiView):
                 startdate = enddate - timedelta(days=days)
                 jobs = jobs.filter(time__range=[startdate, enddate])
 
-            user_job_ids = [
-                job.jobId for job in jobs
-            ]
-            data = list(
-                filter(
-                    lambda job: job["id"] in user_job_ids,
-                    data
-                )
-            )
+            all_user_job_ids = [job.jobId for job in jobs]
+            user_job_ids = all_user_job_ids[offset:offset + limit]
+            if user_job_ids:
+                data = agave.jobs.list(query={'id.in': ','.join(user_job_ids)})
+                # re-order agave job info to match our time-ordered jobs
+                data = [next(job for job in data if job["id"] == id) for id in user_job_ids]
+            else:
+                data = []
 
         return JsonResponse({"response": data})
 
@@ -229,6 +227,10 @@ class JobsView(BaseApiView):
             return JsonResponse({"response": data})
         # submit job
         elif job_post:
+            default_sys = UserSystemsManager(
+                request.user,
+                settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+            )
 
             # cleaning archive path value
             if job_post.get('archivePath'):
@@ -247,16 +249,12 @@ class JobsView(BaseApiView):
                 if parsed.netloc:
                     job_post['archiveSystem'] = parsed.netloc
                 else:
-                    default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-                    default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
-                    job_post['archiveSystem'] = default_system_prefix.format(request.user.username)
+                    job_post['archiveSystem'] = default_sys.get_system_id()
             else:
                 job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         timezone.now().strftime('%Y-%m-%d'))
-                default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-                default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
-                job_post['archiveSystem'] = default_system_prefix.format(request.user.username)
+                job_post['archiveSystem'] = default_sys.get_system_id()
 
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])

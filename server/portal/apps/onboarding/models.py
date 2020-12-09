@@ -37,7 +37,7 @@ class SetupEvent(models.Model):
     data = JSONField(null=True)
 
     def __str__(self):
-        return '<SetupEvent: {username} {time} {step} ({state}) - {message} ({data})>'.format(
+        return '{username} {time} {step} ({state}) - {message} ({data})'.format(
             username=self.user.username,
             time=self.time,
             step=self.step,

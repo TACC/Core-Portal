@@ -33,12 +33,6 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
       />
       <ManageAccountInput label="Position/Title" name="title" type="select" />
       <ManageAccountInput label="Residence" name="countryId" type="select" />
-      <ManageAccountInput
-        label="Citizenship"
-        name="citizenshipId"
-        type="select"
-        disabled
-      />
       {/* Django Fields */}
       <ManageAccountInput label="Ethnicity" name="ethnicity" type="select" />
       <ManageAccountInput label="Gender" name="gender" type="select" />
@@ -54,7 +48,9 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
     </Form>
   );
 };
-RequiredInformationFormBody.propTypes = { canSubmit: bool.isRequired };
+RequiredInformationFormBody.propTypes = {
+  canSubmit: bool.isRequired
+};
 
 export default function() {
   const { initialValues, fields } = useSelector(state => {
@@ -78,8 +74,7 @@ export default function() {
       initialValues: {
         ...initial,
         institution: initial.institutionId,
-        country: initial.countryId,
-        citizenship: initial.citizenshipId
+        country: initial.countryId
       },
       isEditing: state.profile.editing
     };
@@ -103,9 +98,8 @@ export default function() {
       .required('Please enter your phone number'),
     // Schema for 'select' fields
     gender: str().required('Please select an option'),
-    ethnicity: str().required('Please select a country'),
+    ethnicity: str().required('Please select an option'),
     countryId: str().required('Please select a country'),
-    citizenshipId: str().required('Please select a country'),
     institutionId: str().required('Please select an institution'),
     title: str().required('Please select your title')
   });
