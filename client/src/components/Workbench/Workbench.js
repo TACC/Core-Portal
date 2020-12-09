@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Dashboard from '../Dashboard';
+import TicketCreateModal from '../Tickets/TicketCreateModal';
 import ManageAccount from '../ManageAccount';
 import Allocations from '../Allocations';
 import Applications from '../Applications';
@@ -81,6 +82,7 @@ function Workbench() {
           </Switch>
         )}
       </div>
+      <TicketCreateModal /* Top level modals */ />
     </div>
   );
 }

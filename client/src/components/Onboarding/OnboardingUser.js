@@ -60,6 +60,22 @@ const OnboardingUser = () => {
           ))}
           <div styleName="access">
             <Button
+              color="link"
+              styleName="button"
+              onClick={() =>
+                dispatch({
+                  type: 'TICKET_CREATE_OPEN_MODAL',
+                  payload: {
+                    provideDashBoardLinkOnSuccess: false,
+                    showAsModalOnDashboard: false,
+                    subject: `Onboarding`
+                  }
+                })
+              }
+            >
+              Get Help
+            </Button>
+            <Button
               color="primary"
               styleName="button"
               href="/workbench/"
