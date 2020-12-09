@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import OnboardingUser from './OnboardingUser';
 import { onboardingUserFixture } from '../../redux/sagas/fixtures/onboarding.fixture';
 import { initialState as initialMockState } from '../../redux/reducers/onboarding.reducers';
+import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
 
 const mockStore = configureStore();
 
@@ -31,7 +32,8 @@ describe('Onboarding User View', () => {
           loading: false
         }
       },
-      authenticatedUser: {}
+      authenticatedUser: {},
+      ticketCreate
     });
 
     const { getByText } = renderOnboardingUserComponent(store);
@@ -48,7 +50,8 @@ describe('Onboarding User View', () => {
           loading: true
         }
       },
-      authenticatedUser: {}
+      authenticatedUser: {},
+      ticketCreate
     });
     const { getByTestId } = renderOnboardingUserComponent(store);
     expect(getByTestId('loading')).toBeDefined();
@@ -64,7 +67,8 @@ describe('Onboarding User View', () => {
           loading: false
         }
       },
-      authenticatedUser: {}
+      authenticatedUser: {},
+      ticketCreate
     });
 
     const { getByText } = renderOnboardingUserComponent(store);
@@ -85,7 +89,8 @@ describe('Onboarding User View', () => {
         user: {
           isStaff: true
         }
-      }
+      },
+      ticketCreate
     });
     const { getByText } = renderOnboardingUserComponent(store);
     expect(getByText(/Last, First/)).toBeDefined();
