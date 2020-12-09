@@ -3,7 +3,6 @@ import { useTable } from 'react-table';
 import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { shape, string, arrayOf } from 'prop-types';
-import { Link } from 'react-router-dom';
 
 export const TableTemplate = ({ attributes }) => {
   const { getTableProps, rows, prepareRow } = useTable(attributes);
@@ -38,7 +37,10 @@ export const TableTemplate = ({ attributes }) => {
 TableTemplate.propTypes = {
   attributes: shape({
     columns: arrayOf(shape({})).isRequired,
-    data: arrayOf(shape({})).isRequired
+    data: arrayOf(shape({})).isRequired,
+    initialState: shape({
+      hiddenColumns: arrayOf(string)
+    })
   }).isRequired
 };
 
@@ -69,6 +71,9 @@ export const RequiredInformation = () => {
   const data = useMemo(() => [demographics], []);
   const openModal = () =>
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { required: true } });
+  const hiddenColumns = Object.keys(demographics).filter(
+    key => !demographics[key]
+  );
   return (
     <div className="profile-component-wrapper">
       <div className="profile-component-header">
@@ -82,12 +87,21 @@ export const RequiredInformation = () => {
           Edit Required Information
         </Button>
       </div>
-      <TableTemplate attributes={{ columns, data }} />
+      <TableTemplate
+        attributes={{
+          columns,
+          data,
+          initialState: {
+            hiddenColumns
+          }
+        }}
+      />
     </div>
   );
 };
 /* eslint-disable react/no-danger */
 const LicenseCell = ({ cell: { value } }) => {
+  const dispatch = useDispatch();
   const [modal, setModal] = React.useState(false);
   const toggle = () => setModal(!modal);
   const { license_type: type, template_html: __html } = value;
@@ -117,11 +131,19 @@ const LicenseCell = ({ cell: { value } }) => {
         <ModalBody>
           <div dangerouslySetInnerHTML={{ __html }} />
           Click{' '}
-          <Link
-            to={`/workbench/dashboard/tickets/create?subject=${type}+Activation`}
+          <Button
+            onClick={() =>
+              dispatch({
+                type: 'TICKET_CREATE_OPEN_MODAL',
+                payload: {
+                  subject: `${type} Activation`
+                }
+              })
+            }
+            color="link"
           >
             here
-          </Link>{' '}
+          </Button>
           to open a ticket.
         </ModalBody>
       </Modal>
@@ -216,12 +238,18 @@ export const ChangePassword = () => {
   );
 };
 const WebsiteCell = ({ cell: { value } }) => {
-  const url = !/^(?:f|ht)tps?:\/\//.test(value) ? `https://${value}` : value;
-  return (
-    <a href={url} target="_blank" rel="noreferrer">
-      {url}
-    </a>
-  );
+  const website = value ? value.trim() : '';
+  if (website) {
+    const url = !/^(?:f|ht)tps?:\/\//.test(website)
+      ? `https://${website}`
+      : website;
+    return (
+      <a href={url} target="_blank" rel="noreferrer">
+        {url}
+      </a>
+    );
+  }
+  return null;
 };
 WebsiteCell.propTypes = {
   cell: shape({ value: string })

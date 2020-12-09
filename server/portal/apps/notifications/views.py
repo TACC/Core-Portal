@@ -1,5 +1,5 @@
 import logging
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from portal.apps.notifications.models import Notification
 
 from portal.views.base import BaseApiView
@@ -11,26 +11,27 @@ logger = logging.getLogger(__name__)
 
 class ManageNotificationsView(BaseApiView):
 
-    def get(self, request, event_type=None, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         """List all notifications of a certain event type.
         """
         limit = request.GET.get('limit', 0)
         page = request.GET.get('page', 0)
         read = request.GET.get('read')
+        event_types = request.GET.getlist('eventTypes')
 
         query_params = {}
         if read is not None:
             query_params['read'] = read
 
-        if event_type is not None:
-            notifs = Notification.objects.filter(event_type=event_type,
+        if event_types:
+            notifs = Notification.objects.filter(event_type__in=event_types,
                                                  deleted=False,
                                                  user=request.user.username,
                                                  **query_params).order_by('-datetime')
-            total = Notification.objects.filter(event_type=event_type,
+            total = Notification.objects.filter(event_type__in=event_types,
                                                 deleted=False,
                                                 user=request.user.username).count()
-            unread = Notification.objects.filter(event_type=event_type,
+            unread = Notification.objects.filter(event_type__in=event_types,
                                                  deleted=False,
                                                  read=False,
                                                  user=request.user.username).count()
@@ -58,26 +59,26 @@ class ManageNotificationsView(BaseApiView):
         body = json.loads(request.body)
         nid = body.get('id')
         read = body.get('read', True)
-        event_type = body.get('eventType', None)
+        event_types = body.get('eventTypes')
 
         if nid == 'all' and read is True:
-            if event_type is not None:
+            if event_types is not None:
                 notifs = Notification.objects.filter(deleted=False,
-                                                     event_type=event_type,
+                                                     read=False,
+                                                     event_type__in=event_types,
                                                      user=request.user.username)
             else:
                 notifs = Notification.objects.filter(deleted=False,
+                                                     read=False,
                                                      user=request.user.username)
-
             for n in notifs:
-                if not n.read:
-                    n.mark_read()
+                n.mark_read()
         else:
             n = Notification.get(id=nid)
             n.read = read
             n.save()
 
-        return HttpResponse('OK')
+        return JsonResponse({'message': 'OK'})
 
     def delete(self, request, pk, *args, **kwargs):
         """Mark notifications as deleted.
@@ -90,4 +91,4 @@ class ManageNotificationsView(BaseApiView):
             x = Notification.objects.get(pk=pk)
             x.mark_deleted()
 
-        return HttpResponse('OK')
+        return JsonResponse({'message': 'OK'})

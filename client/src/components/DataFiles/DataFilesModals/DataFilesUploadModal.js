@@ -11,8 +11,8 @@ import {
   ModalFooter,
   Table
 } from 'reactstrap';
-import { LoadingSpinner } from '_common';
-import FileInputDropZone from '../../_common/Form/FileInputDropZone';
+import { LoadingSpinner, FileInputDropZone } from '_common';
+import { findSystemDisplayName } from 'utils/systems';
 import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
 
 const DataFilesUploadStatus = ({ i, removeCallback }) => {
@@ -51,6 +51,7 @@ const DataFilesUploadModal = () => {
   const isOpen = useSelector(state => state.files.modals.upload);
   const params = useSelector(state => state.files.params.FilesListing);
   const status = useSelector(state => state.files.operationStatus.upload);
+  const systemList = useSelector(state => state.systems.systemList);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
@@ -66,6 +67,8 @@ const DataFilesUploadModal = () => {
         }
       });
   };
+
+  const systemDisplayName = findSystemDisplayName(systemList, params.system);
 
   const removeFile = id => {
     setUploadedFiles(uploadedFiles.filter(f => f.id !== id));
@@ -122,7 +125,7 @@ const DataFilesUploadModal = () => {
 
         <div hidden={uploadedFiles.length === 0} style={{ marginTop: '10px' }}>
           <span style={{ fontSize: '20px' }}>
-            Uploading to {params.path || 'My Data/'}
+            Uploading to {systemDisplayName}/{params.path}
           </span>
 
           <div>

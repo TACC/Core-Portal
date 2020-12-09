@@ -18,10 +18,16 @@ class TestJobsView(TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestJobsView, cls).setUpClass()
+        cls.mock_get_user_data_patcher = patch('portal.apps.accounts.managers.user_systems.get_user_data')
+        with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
+            tas_user = json.load(f)
+        cls.mock_get_user_data = cls.mock_get_user_data_patcher.start()
+        cls.mock_get_user_data.return_value = tas_user
 
     @classmethod
     def tearDownClass(cls):
         super(TestJobsView, cls).tearDownClass()
+        cls.mock_get_user_data_patcher.stop()
 
     def setUp(self):
         super(TestJobsView, self).setUp()
@@ -101,6 +107,16 @@ class TestJobsView(TestCase):
         # Verify that only the job we know about gets returned
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0]["id"], "1234")
+
+    def test_get_no_jobs(self):
+        self.mock_agave_client.jobs.list.return_value = []
+        jobs = self.request_jobs()
+        self.assertEqual(len(jobs), 0)
+
+    def test_get_jobs_bad_offset(self):
+        self.mock_agave_client.jobs.list.return_value = []
+        jobs = self.request_jobs(query_params={"offset": 100})
+        self.assertEqual(len(jobs), 0)
 
     def test_date_filter(self):
         test_time = timezone.now()

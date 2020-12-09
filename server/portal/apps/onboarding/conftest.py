@@ -5,7 +5,11 @@ from portal.apps.onboarding.state import SetupState
 
 @pytest.fixture
 def mock_steps(regular_user, settings):
-    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = ['portal.apps.onboarding.steps.test_steps.MockStep']
+    settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+        {
+            'step': 'portal.apps.onboarding.steps.test_steps.MockStep'
+        }
+    ]
     pending_step = SetupEvent.objects.create(
         user=regular_user,
         step="portal.apps.onboarding.steps.test_steps.MockStep",

@@ -341,7 +341,6 @@ describe("Edit Required Information", () => {
       "Institution",
       "Position/Title",
       "Residence",
-      "Citizenship",
       "Ethnicity",
       "Gender",
     ].forEach(label => {
