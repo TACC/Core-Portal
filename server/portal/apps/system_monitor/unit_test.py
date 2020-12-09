@@ -4,6 +4,7 @@ import os
 import pytz
 from datetime import datetime
 from django.conf import settings
+from django.http import Http404
 
 
 @pytest.fixture
@@ -80,6 +81,6 @@ def test_system_monitor_when_display_list_is_empty(client, settings, requests_mo
 @pytest.mark.django_db()
 def test_system_monitor_when_status_endpoint_fails(client, settings, requests_mock):
     settings.SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu']
-    requests_mock.get(settings.SYSTEM_MONITOR_URL, exc=Exception)
+    requests_mock.get(settings.SYSTEM_MONITOR_URL, exc=Http404)
     response = client.get('/api/system-monitor/')
-    assert response.status_code == 500
+    assert response.status_code == 404

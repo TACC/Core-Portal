@@ -2,15 +2,19 @@ import os
 import json
 from django.conf import settings
 from mock import patch
-from django.test import TestCase
+from django.test import TransactionTestCase
 from django.contrib.auth import get_user_model
+import pytest
 
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.libs.agave.models.applications import Application
 from portal.libs.agave.models.systems.execution import ExecutionSystem
 
 
-class TestUserApplicationsManager(TestCase):
+pytestmark = pytest.mark.django_db
+
+
+class TestUserApplicationsManager(TransactionTestCase):
     fixtures = ['users', 'auth', 'accounts']
 
     @classmethod

@@ -1,4 +1,4 @@
-{% load menu_tags cms_tags staticfiles %}
+{% load staticfiles %}
 
 {% comment %}
 Unused Settings
@@ -36,7 +36,7 @@ They seem useful, and would be re-incoprorated when their usage is necessary.
   </button>
   <!-- Navbar Links -->
   <div class="collapse navbar-collapse" id="navbarsExpandTarget">
-    <ul class="s-cms-nav  navbar-nav" id="cms-nav-pages" data-cms-nav-endpoint="/cms/nav/pages/markup/">
+    <ul class="navbar-nav" id="cms-nav-pages" data-cms-nav-endpoint="/cms/nav/pages/markup/">
       <!-- All top-level CMS controlled nav elements handled here. -->
     </ul>
 
@@ -54,7 +54,7 @@ They seem useful, and would be re-incoprorated when their usage is necessary.
             <a class="dropdown-item" href="{% url 'workbench:dashboard' %}">
               <i class="fas fa-desktop nav-icon"></i> My Dashboard
             </a>
-            <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
+            <a class="dropdown-item" href="{% url 'workbench:account' %}">
               <i class="fas fa-user-circle nav-icon"></i> My Account
             </a>
             <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">

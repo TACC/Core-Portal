@@ -5,7 +5,8 @@ import { systems, files } from './datafiles.reducers';
 import {
   ticketList,
   ticketDetailedView,
-  ticketCreate
+  ticketCreate,
+  ticketCreateModal
 } from './tickets.reducers';
 import systemMonitor from './systemMonitor.reducers';
 import allocations from './allocations.reducers';
@@ -15,6 +16,7 @@ import { pushKeys } from './systems.reducers';
 import notifications from './notifications.reducers';
 import workbench from './workbench.reducers';
 import welcomeMessages from './welcome.reducers';
+import { onboarding } from './onboarding.reducers';
 
 export default combineReducers({
   jobs,
@@ -27,11 +29,13 @@ export default combineReducers({
   ticketList,
   ticketDetailedView,
   ticketCreate,
+  ticketCreateModal,
   authenticatedUser,
   app,
   apps,
   pushKeys,
   notifications,
   workbench,
-  welcomeMessages
+  welcomeMessages,
+  onboarding
 });
