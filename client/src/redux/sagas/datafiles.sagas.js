@@ -540,6 +540,20 @@ export function* publicUrl(action) {
   });
   try {
     const result = yield call(publicUrlUtil, method, scheme, system, path);
+    if (method === 'delete') {
+      yield put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: {
+          status: {
+            method: null,
+            url: null,
+            error: null
+          },
+          operation: 'publicUrl'
+        }
+      });
+      return;
+    }
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: {

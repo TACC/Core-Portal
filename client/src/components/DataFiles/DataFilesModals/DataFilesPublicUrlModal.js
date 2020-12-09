@@ -42,7 +42,7 @@ const DataFilesPublicUrlAction = ({ scheme, file, text, status, method }) => {
   return (
     <Button
       type="submit"
-      disabled={status && status.method}
+      disabled={status && status.method != null}
       className="data-files-btn"
       onClick={event => onClick(event)}
       styleName="action-root"
