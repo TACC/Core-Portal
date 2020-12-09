@@ -105,20 +105,21 @@ class PublicUrlView(BaseApiView):
         except AttributeError:
             raise HttpResponseForbidden
         body = {
-            "href": "{tenant}/files/v2/media/system/{system}/{path}".format(
+            "url": "{tenant}/files/v2/media/system/{system}/{path}".format(
                 tenant=settings.AGAVE_TENANT_BASEURL,
                 system=system,
                 path=path
             ),
             "unlimited": True
         }
-        response = tapis_post_handler(client, scheme, system, path, "download", body=body)
+        response = client.postits.create(body=body)
+        postit = response['_links']['self']['href']
         public_url = PublicUrl.objects.create(
             agave_uri=f"{system}/{path}",
-            postit_url=response
+            postit_url=postit
         )
         public_url.save()
-        return response
+        return postit
 
     def delete_public_url(self, request, public_url):
         try:

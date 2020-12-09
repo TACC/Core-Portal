@@ -9,8 +9,15 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
-def tapis_post_handler(mocker):
-    yield mocker.patch('portal.apps.datafiles.views.tapis_post_handler')
+def postits_create(mock_agave_client):
+    mock_agave_client.postits.create.return_value = {
+        '_links': {
+            'self': {
+                'href': "https://tenant/uuid"
+            }
+        }   
+    }
+    yield mock_agave_client.postits.create
 
 
 def test_get_no_allocation(client, authenticated_user, mocker, monkeypatch, mock_agave_client):
@@ -85,27 +92,20 @@ def test_public_url_not_found(client):
     assert result['data'] is None
 
 
-def test_public_url_post(tapis_post_handler, authenticated_user, client):
-    tapis_post_handler.return_value = "https://tenant/uuid"
+def test_public_url_post(postits_create, authenticated_user, client):
     result = client.post("/api/datafiles/publicurl/tapis/system/path")
     assert json.loads(result.content)["data"] == "https://tenant/uuid"
     assert PublicUrl.objects.all()[0].get_uuid() == "uuid"
-    tapis_post_handler.assert_called_with(
-        authenticated_user.agave_oauth.client,
-        "tapis",
-        "system",
-        "path",
-        "download",
-        body={
-            "href": "https://api.example.com/files/v2/media/system/system/path",
+    postits_create.assert_called_with(
+       body={
+            "url": "https://api.example.com/files/v2/media/system/system/path",
             "unlimited": True
         }
     )
 
 
-def test_public_url_delete(tapis_post_handler, authenticated_user, mock_agave_client, client):
+def test_public_url_delete(postits_create, authenticated_user, mock_agave_client, client):
     mock_agave_client.postits.delete.return_value = "OK"
-    tapis_post_handler.return_value = "https://tenant/uuid"
     client.post("/api/datafiles/publicurl/tapis/system/path")
     result = client.delete("/api/datafiles/publicurl/tapis/system/path")
     assert json.loads(result.content)["data"] == "OK"
@@ -113,9 +113,8 @@ def test_public_url_delete(tapis_post_handler, authenticated_user, mock_agave_cl
     assert len(PublicUrl.objects.all()) == 0
 
 
-def test_public_url_post_existing(tapis_post_handler, authenticated_user, mock_agave_client, client):
+def test_public_url_post_existing(postits_create, authenticated_user, mock_agave_client, client):
     mock_agave_client.postits.delete.return_value = "OK"
-    tapis_post_handler.return_value = "https://tenant/uuid"
     public_url = PublicUrl.objects.create(
         agave_uri="system/path",
         postit_url="https://tenant/olduuid"
