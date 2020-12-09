@@ -1,7 +1,7 @@
 from portal.apps.auth.tasks import get_user_storage_systems
 from portal.views.base import BaseApiView
 from django.conf import settings
-from django.http import JsonResponse, HttpResponseForbidden, Http404
+from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
 import json
 import logging

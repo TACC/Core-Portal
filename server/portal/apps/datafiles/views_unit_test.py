@@ -15,7 +15,7 @@ def postits_create(mock_agave_client):
             'self': {
                 'href': "https://tenant/uuid"
             }
-        }   
+        }
     }
     yield mock_agave_client.postits.create
 
