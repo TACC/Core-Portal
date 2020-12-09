@@ -509,8 +509,8 @@ export function* mkdir(action) {
   });
 }
 
-export async function publicUrlUtil(method, scheme, system, path) {
-  const url = `/api/datafiles/publicurl/${scheme}/${system}${path}/`;
+export async function fileLinkUtil(method, scheme, system, path) {
+  const url = `/api/datafiles/link/${scheme}/${system}${path}/`;
   return fetchUtil({
     url,
     method,
@@ -520,11 +520,11 @@ export async function publicUrlUtil(method, scheme, system, path) {
   });
 }
 
-export function* watchPublicUrl() {
-  yield takeLeading('DATA_FILES_PUBLIC_URL', publicUrl);
+export function* watchLink() {
+  yield takeLeading('DATA_FILES_LINK', fileLink);
 }
 
-export function* publicUrl(action) {
+export function* fileLink(action) {
   const { system, path } = action.payload.file;
   const { scheme, method } = action.payload;
   yield put({
@@ -535,11 +535,11 @@ export function* publicUrl(action) {
         url: null,
         error: null
       },
-      operation: 'publicUrl'
+      operation: 'link'
     }
   });
   try {
-    const result = yield call(publicUrlUtil, method, scheme, system, path);
+    const result = yield call(fileLinkUtil, method, scheme, system, path);
     if (method === 'delete') {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -549,7 +549,7 @@ export function* publicUrl(action) {
             url: null,
             error: null
           },
-          operation: 'publicUrl'
+          operation: 'link'
         }
       });
       return;
@@ -562,7 +562,7 @@ export function* publicUrl(action) {
           url: result.data,
           error: null
         },
-        operation: 'publicUrl'
+        operation: 'link'
       }
     });
   } catch (error) {
@@ -574,7 +574,7 @@ export function* publicUrl(action) {
           url: null,
           error: error.toString()
         },
-        operation: 'publicUrl'
+        operation: 'link'
       }
     });
   }

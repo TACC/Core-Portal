@@ -1,6 +1,6 @@
 from mock import MagicMock
 from requests.exceptions import HTTPError
-from portal.apps.datafiles.models import PublicUrl
+from portal.apps.datafiles.models import Link
 import pytest
 import json
 
@@ -75,27 +75,27 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
     assert response.json() == {'system': system}
 
 
-def test_get_public_url(client):
-    public_url = PublicUrl(
+def test_get_link(client):
+    link = Link(
         agave_uri="system/path",
         postit_url="https://postit"
     )
-    public_url.save()
-    response = client.get("/api/datafiles/publicurl/tapis/system/path")
+    link.save()
+    response = client.get("/api/datafiles/link/tapis/system/path")
     result = json.loads(response.content)
     assert result['data'] == "https://postit"
 
 
-def test_public_url_not_found(client):
-    response = client.get("/api/datafiles/publicurl/tapis/system/notfound")
+def test_link_not_found(client):
+    response = client.get("/api/datafiles/link/tapis/system/notfound")
     result = json.loads(response.content)
     assert result['data'] is None
 
 
-def test_public_url_post(postits_create, authenticated_user, client):
-    result = client.post("/api/datafiles/publicurl/tapis/system/path")
+def test_link_post(postits_create, authenticated_user, client):
+    result = client.post("/api/datafiles/link/tapis/system/path")
     assert json.loads(result.content)["data"] == "https://tenant/uuid"
-    assert PublicUrl.objects.all()[0].get_uuid() == "uuid"
+    assert Link.objects.all()[0].get_uuid() == "uuid"
     postits_create.assert_called_with(
        body={
             "url": "https://api.example.com/files/v2/media/system/system/path",
@@ -104,22 +104,22 @@ def test_public_url_post(postits_create, authenticated_user, client):
     )
 
 
-def test_public_url_delete(postits_create, authenticated_user, mock_agave_client, client):
+def test_link_delete(postits_create, authenticated_user, mock_agave_client, client):
     mock_agave_client.postits.delete.return_value = "OK"
-    client.post("/api/datafiles/publicurl/tapis/system/path")
-    result = client.delete("/api/datafiles/publicurl/tapis/system/path")
+    client.post("/api/datafiles/link/tapis/system/path")
+    result = client.delete("/api/datafiles/link/tapis/system/path")
     assert json.loads(result.content)["data"] == "OK"
     assert result.status_code == 200
-    assert len(PublicUrl.objects.all()) == 0
+    assert len(Link.objects.all()) == 0
 
 
-def test_public_url_post_existing(postits_create, authenticated_user, mock_agave_client, client):
+def test_link_post_existing(postits_create, authenticated_user, mock_agave_client, client):
     mock_agave_client.postits.delete.return_value = "OK"
-    public_url = PublicUrl.objects.create(
+    link = Link.objects.create(
         agave_uri="system/path",
         postit_url="https://tenant/olduuid"
     )
-    public_url.save()
-    result = client.post("/api/datafiles/publicurl/tapis/system/path")
+    link.save()
+    result = client.post("/api/datafiles/link/tapis/system/path")
     assert json.loads(result.content)["data"] == "https://tenant/uuid"
-    assert PublicUrl.objects.all()[0].get_uuid() == "uuid"
+    assert Link.objects.all()[0].get_uuid() == "uuid"

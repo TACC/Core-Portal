@@ -8,7 +8,7 @@ import DataFilesRenameModal from './DataFilesRenameModal';
 import DataFilesPushKeysModal from './DataFilesPushKeysModal';
 import DataFilesCopyModal from './DataFilesCopyModal';
 import DataFilesTrashModal from './DataFilesTrashModal';
-import DataFilesPublicUrlModal from './DataFilesPublicUrlModal';
+import DataFilesLinkModal from './DataFilesLinkModal';
 import './DataFilesModals.scss';
 
 export default function DataFilesModals() {
@@ -22,7 +22,7 @@ export default function DataFilesModals() {
       <DataFilesRenameModal />
       <DataFilesPushKeysModal />
       <DataFilesTrashModal />
-      <DataFilesPublicUrlModal />
+      <DataFilesLinkModal />
       <SystemsPushKeysModal />
     </>
   );

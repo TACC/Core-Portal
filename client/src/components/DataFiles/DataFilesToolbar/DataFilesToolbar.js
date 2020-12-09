@@ -59,9 +59,9 @@ const DataFilesToolbar = ({ scheme }) => {
       payload: { operation: 'copy', props: { selectedFiles } }
     });
 
-  const togglePublicUrlModal = () => {
+  const toggleLinkModal = () => {
     dispatch({
-      type: 'DATA_FILES_PUBLIC_URL',
+      type: 'DATA_FILES_LINK',
       payload: {
         file: selectedFiles[0],
         scheme
@@ -71,7 +71,7 @@ const DataFilesToolbar = ({ scheme }) => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
-        operation: 'publicUrl',
+        operation: 'link',
         props: { selectedFile: selectedFiles[0] }
       }
     });
@@ -126,9 +126,9 @@ const DataFilesToolbar = ({ scheme }) => {
           disabled={!canDownload}
         />
         <ToolbarButton
-          text="Public URL"
-          iconName="download"
-          onClick={togglePublicUrlModal}
+          text="Link"
+          iconName="link"
+          onClick={toggleLinkModal}
           disabled={!canDownload}
         />
         <ToolbarButton

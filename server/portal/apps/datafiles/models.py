@@ -5,7 +5,7 @@
 from django.db import models
 
 
-class PublicUrl(models.Model):
+class Link(models.Model):
     agave_uri = models.TextField(primary_key=True)
     postit_url = models.TextField()
     updated = models.DateTimeField(auto_now=True)

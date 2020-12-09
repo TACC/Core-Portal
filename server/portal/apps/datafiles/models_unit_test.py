@@ -1,11 +1,11 @@
-from portal.apps.datafiles.models import PublicUrl
+from portal.apps.datafiles.models import Link
 import pytest
 
 
 @pytest.mark.django_db
-def test_public_url_uuid():
-    public_url = PublicUrl.objects.create(
+def test_link_uuid():
+    link = Link.objects.create(
         agave_uri="mock.system/path",
         postit_url="https://tenant/postits/v2/listing/uuid"
     )
-    assert public_url.get_uuid() == "uuid"
+    assert link.get_uuid() == "uuid"

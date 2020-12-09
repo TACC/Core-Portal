@@ -12,7 +12,7 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { LoadingSpinner, Message, TextCopyField } from '_common';
-import './DataFilesPublicUrlModal.module.scss';
+import './DataFilesLinkModal.module.scss';
 
 const statusPropType = PropTypes.shape({
   error: PropTypes.string,
@@ -25,11 +25,11 @@ const filePropType = PropTypes.shape({
   path: PropTypes.string
 });
 
-const DataFilesPublicUrlAction = ({ scheme, file, text, status, method }) => {
+const DataFilesLinkAction = ({ scheme, file, text, status, method }) => {
   const dispatch = useDispatch();
   const onClick = event => {
     dispatch({
-      type: 'DATA_FILES_PUBLIC_URL',
+      type: 'DATA_FILES_LINK',
       payload: {
         file,
         scheme,
@@ -47,15 +47,17 @@ const DataFilesPublicUrlAction = ({ scheme, file, text, status, method }) => {
       onClick={event => onClick(event)}
       styleName="action-root"
     >
-      {text}
       {status && status.method === method ? (
-        <LoadingSpinner placement="inline" />
+        <>
+          <LoadingSpinner placement="inline" />{' '}
+        </>
       ) : null}
+      {text}
     </Button>
   );
 };
 
-DataFilesPublicUrlAction.propTypes = {
+DataFilesLinkAction.propTypes = {
   scheme: PropTypes.string.isRequired,
   file: filePropType.isRequired,
   text: PropTypes.string.isRequired,
@@ -63,7 +65,7 @@ DataFilesPublicUrlAction.propTypes = {
   status: statusPropType
 };
 
-DataFilesPublicUrlAction.defaultProps = {
+DataFilesLinkAction.defaultProps = {
   status: {
     error: null,
     url: null,
@@ -71,7 +73,7 @@ DataFilesPublicUrlAction.defaultProps = {
   }
 };
 
-const DataFilesPublicUrlStatus = ({ scheme, file, status }) => {
+const DataFilesLinkStatus = ({ scheme, file, status }) => {
   if (!status) {
     return null;
   }
@@ -97,7 +99,7 @@ const DataFilesPublicUrlStatus = ({ scheme, file, status }) => {
       />
       <div styleName="controls">
         {status && status.url ? (
-          <DataFilesPublicUrlAction
+          <DataFilesLinkAction
             scheme={scheme}
             file={file}
             text="Delete"
@@ -105,7 +107,7 @@ const DataFilesPublicUrlStatus = ({ scheme, file, status }) => {
             method="delete"
           />
         ) : null}
-        <DataFilesPublicUrlAction
+        <DataFilesLinkAction
           scheme={scheme}
           file={file}
           text={status && status.url ? 'Replace Link' : 'Generate Link'}
@@ -117,39 +119,39 @@ const DataFilesPublicUrlStatus = ({ scheme, file, status }) => {
   );
 };
 
-DataFilesPublicUrlStatus.propTypes = {
+DataFilesLinkStatus.propTypes = {
   scheme: PropTypes.string.isRequired,
   file: filePropType.isRequired,
   status: statusPropType
 };
 
-DataFilesPublicUrlStatus.defaultProps = {
+DataFilesLinkStatus.defaultProps = {
   status: null
 };
 
-const DataFilesPublicUrlModal = () => {
-  const isOpen = useSelector(state => state.files.modals.publicUrl);
-  const status = useSelector(state => state.files.operationStatus.publicUrl);
+const DataFilesLinkModal = () => {
+  const isOpen = useSelector(state => state.files.modals.link);
+  const status = useSelector(state => state.files.operationStatus.link);
   const { scheme } = useSelector(state => state.files.params.FilesListing);
   const selectedFile = useSelector(state => {
-    if (!state.files.modalProps.publicUrl) {
+    if (!state.files.modalProps.link) {
       return {};
     }
-    return state.files.modalProps.publicUrl.selectedFile || {};
+    return state.files.modalProps.link.selectedFile || {};
   });
 
   const dispatch = useDispatch();
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'publicUrl', props: {} }
+      payload: { operation: 'link', props: {} }
     });
   };
 
   const onClosed = () => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: null, operation: 'publicUrl' }
+      payload: { status: null, operation: 'link' }
     });
   };
 
@@ -163,7 +165,7 @@ const DataFilesPublicUrlModal = () => {
       <Form>
         <ModalHeader toggle={toggle}>Link for {selectedFile.name}</ModalHeader>
         <ModalBody>
-          <DataFilesPublicUrlStatus
+          <DataFilesLinkStatus
             scheme={scheme}
             file={selectedFile}
             status={status}
@@ -183,4 +185,4 @@ const DataFilesPublicUrlModal = () => {
   );
 };
 
-export default DataFilesPublicUrlModal;
+export default DataFilesLinkModal;

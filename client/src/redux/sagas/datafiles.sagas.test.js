@@ -8,8 +8,8 @@ import {
   fetchSystemsUtil,
   fetchFilesUtil,
   scrollFiles,
-  publicUrlUtil,
-  publicUrl,
+  fileLinkUtil,
+  fileLink,
 } from "./datafiles.sagas";
 //import fetchMock from "fetch-mock";
 import { expectSaga } from "redux-saga-test-plan";
@@ -243,9 +243,9 @@ describe("scrollFiles", () => {
 
 });
 
-describe("publicUrl", () => {
-  it("performs a publicUrl rest operation", () => {
-    return expectSaga(publicUrl, {
+describe("fileLink", () => {
+  it("performs a fileLink operation", () => {
+    return expectSaga(fileLink, {
       payload: {
         scheme: "private",
         file: {
@@ -257,7 +257,7 @@ describe("publicUrl", () => {
     })
       .provide([
         [
-          matchers.call.fn(publicUrlUtil),
+          matchers.call.fn(fileLinkUtil),
           {
             data: 'https://postit'
           }
@@ -271,11 +271,11 @@ describe("publicUrl", () => {
             url: null,
             error: null
           },
-          operation: 'publicUrl'
+          operation: 'link'
         }
       })
       .call(
-        publicUrlUtil,
+        fileLinkUtil,
         "get",
         "private",
         "test.system",
@@ -289,7 +289,7 @@ describe("publicUrl", () => {
             url: 'https://postit',
             error: null
           },
-          operation: 'publicUrl'
+          operation: 'link'
         }
       })
       .run();

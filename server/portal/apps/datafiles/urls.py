@@ -1,6 +1,6 @@
 from django.urls import path
 from portal.apps.datafiles.views import (TapisFilesView,
-                                         PublicUrlView,
+                                         LinkView,
                                          SystemListingView)
 
 
@@ -11,6 +11,6 @@ urlpatterns = [
          TapisFilesView.as_view()),
     path('tapis/<str:operation>/<str:scheme>/<str:system>/<path:path>/',
          TapisFilesView.as_view()),
-    path('publicurl/<str:scheme>/<str:system>/<path:path>',
-         PublicUrlView.as_view())
+    path('link/<str:scheme>/<str:system>/<path:path>',
+         LinkView.as_view())
 ]

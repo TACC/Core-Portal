@@ -10,7 +10,7 @@ from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_post_handler)
 from portal.apps.users.utils import get_allocations
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
-from portal.apps.datafiles.models import PublicUrl
+from portal.apps.datafiles.models import Link
 from portal.exceptions.api import ApiException
 
 
@@ -98,7 +98,7 @@ class TapisFilesView(BaseApiView):
         return JsonResponse({"data": response})
 
 
-class PublicUrlView(BaseApiView):
+class LinkView(BaseApiView):
     def create_postit(self, request, scheme, system, path):
         try:
             client = request.user.agave_oauth.client
@@ -114,49 +114,49 @@ class PublicUrlView(BaseApiView):
         }
         response = client.postits.create(body=body)
         postit = response['_links']['self']['href']
-        public_url = PublicUrl.objects.create(
+        link = Link.objects.create(
             agave_uri=f"{system}/{path}",
             postit_url=postit
         )
-        public_url.save()
+        link.save()
         return postit
 
-    def delete_public_url(self, request, public_url):
+    def delete_link(self, request, link):
         try:
             client = request.user.agave_oauth.client
         except AttributeError:
             raise HttpResponseForbidden
-        response = client.postits.delete(uuid=public_url.get_uuid())
-        public_url.delete()
+        response = client.postits.delete(uuid=link.get_uuid())
+        link.delete()
         return response
 
     def get(self, request, scheme, system, path):
-        """Given a file, returns a Public URL for a file
+        """Given a file, returns a link for a file
         """
         try:
-            public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
-        except PublicUrl.DoesNotExist:
+            link = Link.objects.get(agave_uri=f"{system}/{path}")
+        except Link.DoesNotExist:
             return JsonResponse({"data": None})
-        return JsonResponse({"data": public_url.postit_url})
+        return JsonResponse({"data": link.postit_url})
 
     def delete(self, request, scheme, system, path):
-        """Delete an existing Public URL for a file
+        """Delete an existing link for a file
         """
         try:
-            public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
-        except PublicUrl.DoesNotExist:
+            link = Link.objects.get(agave_uri=f"{system}/{path}")
+        except Link.DoesNotExist:
             raise ApiException("Post-it does not exist")
-        response = self.delete_public_url(request, public_url)
+        response = self.delete_link(request, link)
         return JsonResponse({"data": response})
 
     def post(self, request, scheme, system, path):
-        """Generates a new Public URL for a file, deleting
+        """Generates a new link for a file, deleting
         any pre-existing ones
         """
         try:
-            public_url = PublicUrl.objects.get(agave_uri=f"{system}/{path}")
-            self.delete_public_url(request, public_url)
-        except PublicUrl.DoesNotExist:
+            link = Link.objects.get(agave_uri=f"{system}/{path}")
+            self.delete_link(request, link)
+        except Link.DoesNotExist:
             pass
         response = self.create_postit(request, scheme, system, path)
         return JsonResponse({"data": response})

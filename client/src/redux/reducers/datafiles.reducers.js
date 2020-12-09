@@ -32,7 +32,7 @@ const initialFilesState = {
     select: {},
     upload: {},
     trash: {},
-    publicUrl: {
+    link: {
       method: null,
       url: null,
       error: null
@@ -72,7 +72,7 @@ const initialFilesState = {
     upload: false,
     mkdir: false,
     rename: false,
-    publicUrl: false,
+    link: false,
     pushKeys: false,
     trash: false
   },
@@ -85,7 +85,7 @@ const initialFilesState = {
     mkdir: {},
     rename: {},
     pushKeys: {},
-    publicUrl: {}
+    link: {}
   },
   previewHref: ''
 };
