@@ -15,6 +15,22 @@ import { LoadingSpinner, FileInputDropZone } from '_common';
 import { findSystemDisplayName } from 'utils/systems';
 import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
 
+import './DataFilesUploadModal.module.scss';
+
+export const DIRECTION_CLASS_MAP = {
+  vertical: 'is-vert',
+  horizontal: 'is-horz'
+};
+export const DEFAULT_DIRECTION = 'vertical';
+export const DIRECTIONS = ['', ...Object.keys(DIRECTION_CLASS_MAP)];
+
+export const DENSITY_CLASS_MAP = {
+  compact: 'is-vert',
+  default: 'is-wide'
+};
+export const DEFAULT_DENSITY = 'default';
+export const DENSITIES = ['', ...Object.keys(DENSITY_CLASS_MAP)];
+
 const DataFilesUploadStatus = ({ i, removeCallback }) => {
   const status = useSelector(state => state.files.operationStatus.upload[i]);
   switch (status) {
@@ -41,7 +57,12 @@ DataFilesUploadStatus.propTypes = {
   removeCallback: PropTypes.func.isRequired
 };
 
-const DataFilesUploadModal = () => {
+const DataFilesUploadModal = ({ className, density, direction }) => {
+  const modifierClasses = [];
+  modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
+  modifierClasses.push(DIRECTION_CLASS_MAP[direction || DEFAULT_DIRECTION]);
+  const containerStyleNames = ['container', ...modifierClasses].join(' ');
+
   const history = useHistory();
   const location = useLocation();
   const reloadCallback = () => {
@@ -112,6 +133,7 @@ const DataFilesUploadModal = () => {
       toggle={toggle}
       onClosed={onClosed}
       size="xl"
+      styleName={containerStyleNames}
       className="dataFilesModal"
     >
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
@@ -185,6 +207,23 @@ const DataFilesUploadModal = () => {
       </ModalFooter>
     </Modal>
   );
+};
+
+DataFilesUploadModal.propTypes = {
+  /** Additional className for the root element */
+  className: PropTypes.string,
+  /** Selector type */
+  /* FAQ: We can support any values, even a component */
+  // eslint-disable-next-line react/forbid-prop-types
+  /** Layout density */
+  density: PropTypes.oneOf(DENSITIES),
+  /** Layout direction */
+  direction: PropTypes.oneOf(DIRECTIONS)
+};
+DataFilesUploadModal.defaultProps = {
+  className: '',
+  density: DEFAULT_DENSITY,
+  direction: DEFAULT_DIRECTION
 };
 
 export default DataFilesUploadModal;
