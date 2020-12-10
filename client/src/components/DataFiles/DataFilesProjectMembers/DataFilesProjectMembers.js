@@ -54,11 +54,15 @@ const DataFilesProjectMembers = ({
     );
   };
 
-  const isDuplicateName = (user) => {
-    return members.filter(
-      match => match.user.first_name === user.first_name && match.user.last_name === user.last_name
-    ).length > 1;
-  }
+  const isDuplicateName = user => {
+    return (
+      members.filter(
+        match =>
+          match.user.first_name === user.first_name &&
+          match.user.last_name === user.last_name
+      ).length > 1
+    );
+  };
 
   const memberColumn = {
     Header: 'Members',

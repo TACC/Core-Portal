@@ -13,12 +13,12 @@ const DataFilesManageProjectModal = () => {
   const { user } = useSelector(state => state.authenticatedUser);
   const { loading, error } = useSelector(state => {
     if (state.projects.operation.name === 'member') {
-      return state.projects.operation
-    };
+      return state.projects.operation;
+    }
     return {
       loading: false,
       error: false
-    }
+    };
   });
 
   const toggle = useCallback(() => {
@@ -52,7 +52,7 @@ const DataFilesManageProjectModal = () => {
         payload: {
           projectId,
           data: {
-            action: 'remove_member', 
+            action: 'remove_member',
             username: removedUser.user.username
           }
         }
@@ -71,14 +71,14 @@ const DataFilesManageProjectModal = () => {
           data: {
             action: 'transfer_ownership',
             oldOwner: oldOwner.user.username,
-            newOwner: newOwner.user.username,
+            newOwner: newOwner.user.username
           }
         }
       });
       setTransferMode(false);
     },
     [projectId, members, dispatch, setTransferMode]
-  )
+  );
 
   const toggleTransferMode = useCallback(() => {
     setTransferMode(!transferMode);
@@ -110,13 +110,13 @@ const DataFilesManageProjectModal = () => {
             loading={loading}
             mode={transferMode ? 'transfer' : 'addremove'}
           />
-          {
-            error
-              ? <div styleName="error">
-                  <Message type="warn">An error occurred while modifying team members</Message>
-                </div> 
-              : null
-          }
+          {error ? (
+            <div styleName="error">
+              <Message type="warn">
+                An error occurred while modifying team members
+              </Message>
+            </div>
+          ) : null}
           <div styleName="owner-controls">
             {isOwner ? (
               <Button color="link" onClick={toggleTransferMode}>

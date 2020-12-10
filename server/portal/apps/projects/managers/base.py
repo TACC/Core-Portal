@@ -188,7 +188,7 @@ class ProjectsManager(object):
         project_indexer.apply_async(args=[project_id])
         project_root = project.storage.storage.root_dir
         self._add_acls(username, project_id, project_root)
-    
+
     def transfer_ownership(self, project_id, old_owner, new_owner):
         """Transfer ownership by setting new PI
         and demoting old PI to Co-PI

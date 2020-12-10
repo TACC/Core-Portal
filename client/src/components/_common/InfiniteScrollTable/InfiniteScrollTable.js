@@ -125,7 +125,8 @@ InfiniteScrollTable.defaultProps = {
   isLoading: false,
   className: '',
   noDataText: '',
-  getRowProps: row => {}
+  getRowProps: row => {},
+  columnMemoProps: []
 };
 
 export default InfiniteScrollTable;

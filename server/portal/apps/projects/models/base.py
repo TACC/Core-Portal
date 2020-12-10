@@ -327,7 +327,7 @@ class Project(object):
             return True
 
         return False
-    
+
     def transfer_pi(self, old_pi, new_pi):
         self.remove_co_pi(new_pi)
         self.add_pi(new_pi)

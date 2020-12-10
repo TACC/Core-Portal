@@ -163,7 +163,7 @@ export default function projects(state = initialState, action) {
           error: action.payload
         }
       };
-    case 'PROJECTS_SET_MEMBER_STARTED': 
+    case 'PROJECTS_SET_MEMBER_STARTED':
       return {
         ...state,
         operation: {
@@ -171,9 +171,9 @@ export default function projects(state = initialState, action) {
           loading: true,
           error: null,
           result: null
-        }, 
-      }
-    case 'PROJECTS_SET_MEMBER_SUCCESS': 
+        }
+      };
+    case 'PROJECTS_SET_MEMBER_SUCCESS':
       return {
         ...state,
         metadata: {
@@ -187,7 +187,7 @@ export default function projects(state = initialState, action) {
           error: null,
           result: action.payload
         }
-      }
+      };
     case 'PROJECTS_SET_MEMBER_FAILED':
       return {
         ...state,
@@ -197,7 +197,7 @@ export default function projects(state = initialState, action) {
           error: action.payload,
           result: null
         }
-      }
+      };
     default:
       return state;
   }

@@ -108,7 +108,7 @@ export async function setMemberUtil(projectId, data) {
 
 export function* setMember(action) {
   yield put({
-    type: 'PROJECTS_SET_MEMBER_STARTED',
+    type: 'PROJECTS_SET_MEMBER_STARTED'
   });
   try {
     const { projectId, data } = action.payload;
@@ -116,12 +116,12 @@ export function* setMember(action) {
     yield put({
       type: 'PROJECTS_SET_MEMBER_SUCCESS',
       payload: metadata
-    })
+    });
   } catch (error) {
     yield put({
       type: 'PROJECTS_SET_MEMBER_FAILED',
       payload: error
-    })
+    });
   }
 }
 
