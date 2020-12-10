@@ -120,6 +120,8 @@ class ProjectsApiView(BaseApiView):
                     prj.add_pi(user)
                 elif member['access'] == 'edit':
                     prj.add_co_pi(user)
+                else:
+                    raise ApiException("Unsupported access level")
             except Exception:
                 LOGGER.exception(
                     "Project was created, but could not add {username}", username=member['username']
