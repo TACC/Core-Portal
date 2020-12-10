@@ -36,22 +36,20 @@ def test_projects_post(authenticated_user, client, mock_project_mgr):
 
     response = client.post(
         '/api/projects/',
-        json.dumps(
-            {
-                'title': 'Test Title',
-                'members': [
-                    {
-                        'username': 'username',
-                        'access': 'owner'
-                    }
-                ]
-            }
-        ),
+        {
+            'title': 'Test Title',
+            'members': [
+                {
+                    'username': 'username',
+                    'access': 'owner'
+                }
+            ]
+        },
         content_type='application/json'
     )
 
     mock_project_mgr.create.assert_called_with('Test Title')
-    mock_project.add_pi.assert_called_with(regular_user)
+    mock_project.add_pi.assert_called_with(authenticated_user)
     assert response.status_code == 200
     assert response.json() == {
         'status': 200,
