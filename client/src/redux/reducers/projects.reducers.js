@@ -163,6 +163,37 @@ export default function projects(state = initialState, action) {
           error: action.payload
         }
       };
+    case 'PROJECTS_SET_MEMBER_STARTED': 
+      return {
+        ...state,
+        operation: {
+          name: 'member',
+          loading: true,
+          error: null,
+          result: null
+        }, 
+      }
+    case 'PROJECTS_SET_MEMBER_SUCCESS': 
+      return {
+        ...state,
+        metadata: action.payload,
+        operation: {
+          name: 'member',
+          loading: false,
+          error: null,
+          result: action.payload
+        }
+      }
+    case 'PROJECTS_SET_MEMBER_FAILED':
+      return {
+        ...state,
+        operation: {
+          name: 'member',
+          loading: false,
+          error: action.payload,
+          result: null
+        }
+      }
     default:
       return state;
   }

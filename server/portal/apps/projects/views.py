@@ -236,6 +236,22 @@ class ProjectMembersApiView(BaseApiView):
                 request.POST.dict()
             )
         return operation(request, project_id, **data)
+    
+    def transfer_ownership(self, request, project_id, **data):
+        old_pi = data.get('old_owner')
+        new_pi = data.get('new_owner')
+        res = ProjectsManager(request.user).transfer_ownership(
+            project_id,
+            old_pi,
+            new_pi
+        )
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': res.metadata
+            },
+            encoder=ProjectsManager.meta_serializer_cls
+        )
 
     # pylint: disable=no-self-use
     def add_member(self, request, project_id, **data):

@@ -94,9 +94,41 @@ export function* getMetadata(action) {
   }
 }
 
+export async function setMemberUtil(projectId, data) {
+  const result = await fetchUtil({
+    url: `/api/projects/${projectId}/members/`,
+    method: 'patch',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  return result.response;
+}
+
+export function* setMember(action) {
+  yield put({
+    type: 'PROJECTS_SET_MEMBER_STARTED',
+  });
+  try {
+    const { projectId, data } = action.payload;
+    const metadata = yield call(setMemberUtil, projectId, data);
+    yield put({
+      type: 'PROJECTS_SET_MEMBER_SUCCESS',
+      payload: metadata
+    })
+  } catch (error) {
+    yield put({
+      type: 'PROJECTS_SET_MEMBER_FAILED',
+      payload: error
+    })
+  }
+}
+
 export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_LISTING', getProjectsListing);
   yield takeLatest('PROJECTS_SHOW_SHARED_WORKSPACES', showSharedWorkspaces);
   yield takeLatest('PROJECTS_CREATE', createProject);
   yield takeLatest('PROJECTS_GET_METADATA', getMetadata);
+  yield takeLatest('PROJECTS_SET_MEMBER', setMember);
 }

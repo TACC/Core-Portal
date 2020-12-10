@@ -327,6 +327,11 @@ class Project(object):
             return True
 
         return False
+    
+    def transfer_pi(self, old_pi, new_pi):
+        self.add_pi(self, new_pi)
+        self.add_co_pi(self, old_pi)
+        return self
 
     def add_pi(self, user):
         """Add PI to project.
