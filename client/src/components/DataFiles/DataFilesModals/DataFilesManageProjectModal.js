@@ -12,7 +12,10 @@ const DataFilesManageProjectModal = () => {
   const { members, projectId } = useSelector(state => state.projects.metadata);
   const { user } = useSelector(state => state.authenticatedUser);
   const { loading, error } = useSelector(state => {
-    if (state.projects.operation && state.projects.operation.name === 'member') {
+    if (
+      state.projects.operation &&
+      state.projects.operation.name === 'member'
+    ) {
       return state.projects.operation;
     }
     return {

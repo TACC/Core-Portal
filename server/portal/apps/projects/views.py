@@ -238,7 +238,7 @@ class ProjectMembersApiView(BaseApiView):
                 request.POST.dict()
             )
         return operation(request, project_id, **data)
-    
+
     def transfer_ownership(self, request, project_id, **data):
         old_pi = data.get('oldOwner')
         new_pi = data.get('newOwner')
