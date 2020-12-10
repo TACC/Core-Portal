@@ -7,31 +7,41 @@
 }
 
 .member-action {
+  display: flex;
+  align-items: center;
   h6 {
     margin-bottom: 0;
-    font-size: 1.035em;
+    font-size: 10px;
   }
 }
 
 .member-search {
   margin-bottom: 1em;
+  font-size: 10px !important;
 }
 
 .member-list {
+  th:last-child,
+  td:last-child {
+    justify-content: flex-end;
+  }
+}
+
+.addremove-list {
   /* title */
   th:nth-child(1),
   td:nth-child(1) {
-    width: 100%;
+    width: 60%;
   }
   /* owner */
   th:nth-child(2),
   td:nth-child(2) {
-    min-width: 10em;
+    min-width: 10%;
   }
   /* id */
   th:nth-child(3),
   td:nth-child(3) {
-    width: 10em;
+    width: 30%;
   }
 }
 
@@ -39,12 +49,12 @@
   /* owner */
   th:nth-child(1),
   td:nth-child(1) {
-    width: 50%;
+    width: 60%;
   }
   /* confirmation */
   th:nth-child(2),
   td:nth-child(2) {
-    min-width: 50%;
+    min-width: 40%;
   }
 }
 
@@ -57,6 +67,18 @@
 
 .confirm-controls > * {
   margin-left: 1em;
+}
+
+.ownership-button {
+  height: 18.88px;
+  border-radius: 0;
+  background-color: #F4F4F4;
+  color: #707070;
+  border: 1px solid #AFAFAF;
+  padding: 2px 8px 2px 8px;
+  font-size: 10px !important;
+  display: flex;
+  align-items: center;
 }
 
 .add-button {

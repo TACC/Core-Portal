@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { InfiniteScrollTable, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +6,14 @@ import { Input, Label, Button } from 'reactstrap';
 import './DataFilesProjectMembers.module.scss';
 import './DataFilesProjectMembers.scss';
 
-const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, loading }) => {
+const DataFilesProjectMembers = ({
+  members,
+  onAdd,
+  onRemove,
+  onTransfer,
+  mode,
+  loading
+}) => {
   const dispatch = useDispatch();
 
   const userSearchResults = useSelector(state => state.users.search.users);
@@ -36,33 +43,34 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
     }
   };
 
-  const confirmTransfer = useCallback(
-    () => {
-      onTransfer(transferUser);
-      setTransferUser(null);
-    },
-    [transferUser, setTransferUser]
-  );
+  const confirmTransfer = useCallback(() => {
+    onTransfer(transferUser);
+    setTransferUser(null);
+  }, [transferUser, setTransferUser]);
 
   const alreadyMember = user =>
     members.some(
       existingMember => existingMember.user.username === user.username
     );
 
+  const memberColumn = {
+    Header: 'Members',
+    headerStyle: { textAlign: 'left' },
+    accessor: 'user',
+    className: 'project-members__cell',
+    Cell: el => (
+      <span>
+        {el.value ? `${el.value.first_name} ${el.value.last_name}` : ''}
+      </span>
+    )
+  };
+
   const columns = [
-    {
-      Header: 'Members',
-      headerStyle: { textAlign: 'left' },
-      accessor: 'user',
-      Cell: el => (
-        <span>
-          {el.value ? `${el.value.first_name} ${el.value.last_name}` : ''}
-        </span>
-      )
-    },
+    memberColumn,
     {
       Header: 'Access',
       accessor: 'access',
+      className: 'project-members__cell',
       Cell: el => <span styleName="access">{el.value}</span>
     },
     {
@@ -76,40 +84,36 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
       ),
       headerStyle: { textAlign: 'left' },
       accessor: 'username',
-      Cell: el =>
+      className: 'project-members__cell',
+      Cell: el => (
         <>
-          {
-            mode === 'addremove' && el.row.original.access !== 'owner' ? (
-              <Button
-                onClick={e => onRemove(el.row.original)}
-                color="link"
-                styleName="member-action"
-                disabled={loading}
-              >
-                <h6>Remove</h6>
-              </Button>
-            ) : null
-          }
-          {
-            mode === 'transfer' && el.row.original.access !== 'owner' && transferUser === null ? (
-              <Button onClick={() => setTransferUser(el.row.original.user)}>Transfer Ownership</Button>
-            ) : null
-          }
+          {mode === 'addremove' && el.row.original.access !== 'owner' ? (
+            <Button
+              onClick={e => onRemove(el.row.original)}
+              color="link"
+              styleName="member-action"
+              disabled={loading}
+            >
+              <h6>Remove</h6>
+            </Button>
+          ) : null}
+          {mode === 'transfer' &&
+          el.row.original.access !== 'owner' &&
+          transferUser === null ? (
+            <Button
+              onClick={() => setTransferUser(el.row.original.user)}
+              styleName="ownership-button"
+            >
+              Transfer Ownership
+            </Button>
+          ) : null}
         </>
+      )
     }
   ];
 
   const transferColumns = [
-    {
-      Header: 'Members',
-      headerStyle: { textAlign: 'left' },
-      accessor: 'user',
-      Cell: el => (
-        <span>
-          {el.value ? `${el.value.first_name} ${el.value.last_name}` : ''}
-        </span>
-      )
-    },
+    memberColumn,
     {
       Header: loading ? (
         <LoadingSpinner
@@ -121,19 +125,30 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
       ),
       headerStyle: { textAlign: 'left' },
       accessor: 'username',
-      Cell: el => mode === 'transfer' && el.row.original.user == transferUser ? (
-        <div styleName="confirm-controls">
-          <span>Confirm Ownership Transfer:</span>
-          <Button onClick={confirmTransfer}>Confirm</Button>
-          <Button onClick={() => setTransferUser(null)} color="link" styleName="member-action">
-            <h6>Cancel</h6>
-          </Button>
-        </div>
-       ) : null
+      className: 'project-members__cell',
+      Cell: el =>
+        mode === 'transfer' && el.row.original.user === transferUser ? (
+          <div styleName="confirm-controls">
+            <span>Confirm Ownership Transfer:</span>
+            <Button onClick={confirmTransfer} styleName="ownership-button">
+              Confirm
+            </Button>
+            <Button
+              onClick={() => setTransferUser(null)}
+              color="link"
+              styleName="member-action"
+            >
+              <h6>Cancel</h6>
+            </Button>
+          </div>
+        ) : null
     }
   ];
 
   const isTransferring = mode === 'transfer' && transferUser;
+  const listStyle = `member-list ${
+    isTransferring ? 'transfer-list' : 'addremove-list'
+  }`;
 
   return (
     <div styleName="root">
@@ -141,12 +156,17 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
         Add Member
       </Label>
       <div>
-        <div className="input-group" styleName="member-search">
+        <div className="input-group">
           <div className="input-group-prepend">
             <Button
-              styleName="add-button"
+              styleName="add-button member-search"
               onClick={() => onAdd({ user: selectedUser, access: 'edit' })}
-              disabled={!selectedUser || loading || alreadyMember(selectedUser)}
+              disabled={
+                !selectedUser ||
+                loading ||
+                alreadyMember(selectedUser) ||
+                mode === 'transfer'
+              }
             >
               Add
             </Button>
@@ -155,6 +175,8 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
             list="user-search-list"
             type="text"
             onChange={e => userSearch(e)}
+            styleName="member-search"
+            disabled={loading || mode === 'transfer'}
           />
           <datalist id="user-search-list">
             {/* eslint-disable */
@@ -172,7 +194,7 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
       <InfiniteScrollTable
         tableColumns={isTransferring ? transferColumns : columns}
         tableData={members}
-        styleName={isTransferring ? "transfer-list" : "member-list"}
+        styleName={listStyle}
         columnMemoProps={[mode, transferUser]}
       />
     </div>

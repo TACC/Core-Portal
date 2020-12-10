@@ -1,3 +1,10 @@
 .project-members__loading {
   font-size: 1em;
 }
+
+.project-members__cell {
+  height: 31px;
+  display: flex;
+  align-items: center;
+  font-size: 10px;
+}
