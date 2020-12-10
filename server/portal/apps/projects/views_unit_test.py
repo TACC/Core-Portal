@@ -30,10 +30,9 @@ def test_projects_get(regular_user, client, mock_project_mgr):
     }
 
 
-def test_projects_post(regular_user, client, mock_project_mgr):
+def test_projects_post(authenticated_user, client, mock_project_mgr):
     mock_project = MagicMock(storage={'name': 'PRJ-123'})
     mock_project_mgr.create.return_value = mock_project
-    client.force_login(regular_user)
 
     response = client.post(
         '/api/projects/',
