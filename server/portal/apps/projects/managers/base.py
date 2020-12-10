@@ -181,13 +181,16 @@ class ProjectsManager(object):
             limit=limit
         )]
 
-    def apply_permissions(self, project, username):
+    def apply_permissions(self, project, username, acl=None):
         """Index project and update acls
         """
         project_id = project.project_id
         project_indexer.apply_async(args=[project_id])
         project_root = project.storage.storage.root_dir
-        self._add_acls(username, project_id, project_root)
+        if acl == 'add':
+            self._add_acls(username, project_id, project_root)
+        elif acl == 'remove':
+            self._remove_acls(username, project_id, project_root)
 
     def transfer_ownership(self, project_id, old_owner, new_owner):
         """Transfer ownership by setting new PI
@@ -224,7 +227,7 @@ class ProjectsManager(object):
             prj.add_pi(user)
         else:
             raise Exception('Invalid member type.')
-        self.apply_permissions(prj, username)
+        self.apply_permissions(prj, username, 'add')
         return prj
 
     def remove_member(self, project_id, member_type, username):
@@ -244,7 +247,7 @@ class ProjectsManager(object):
             prj.remove_pi(user)
         else:
             raise Exception('Invalid member type.')
-        self.apply_permissions(prj, username)
+        self.apply_permissions(prj, username, 'remove')
         return prj
 
     def _update_meta(self, project, **data):  # pylint: disable=no-self-use
