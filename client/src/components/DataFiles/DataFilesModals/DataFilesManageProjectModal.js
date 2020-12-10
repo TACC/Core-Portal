@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -11,11 +11,10 @@ import './DataFilesManageProject.module.scss';
 
 const DataFilesManageProjectModal = () => {
   const dispatch = useDispatch();
+  const [ transferMode, setTransferMode ] = useState(false);
   const isOpen = useSelector(state => state.files.modals.manageproject);
-  const { members } = useSelector(state => {
-    console.log(state.projects);
-    return state.projects.metadata;
-  });
+  const { members } = useSelector(state => state.projects.metadata);
+  const { user } = useSelector(state => state.authenticatedUser);
   const isCreating = useSelector(state => {
     return (
       state.projects.operation &&
@@ -24,12 +23,15 @@ const DataFilesManageProjectModal = () => {
     );
   });
 
-  const toggle = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'manageproject', props: {} }
-    });
-  };
+  const toggle = useCallback(
+    () => {
+      setTransferMode(false);
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'manageproject', props: {} }
+      });
+    }, [setTransferMode]
+  );
 
   const onAdd = useCallback(
     newUser => {
@@ -51,6 +53,17 @@ const DataFilesManageProjectModal = () => {
     [dispatch]
   );
 
+  const toggleTransferMode = useCallback(
+    () => {
+      setTransferMode(!transferMode);
+    },
+    [transferMode, setTransferMode]
+  )
+
+  const isOwner = members.some(
+    member => member.user && user && 
+      member.user.username === user.username && member.access === 'owner');
+
   return (
     <div styleName="root">
       <Modal
@@ -65,13 +78,19 @@ const DataFilesManageProjectModal = () => {
             members={members}
             onAdd={onAdd}
             onRemove={onRemove}
+            mode={transferMode ? 'transfer' : 'addremove'}
           />
           <div styleName="owner-controls">
-            <Button
-              color="link"
-            >
-              <h7>Change Ownership</h7>
-            </Button>
+            {
+              isOwner
+                ? <Button
+                    color="link"
+                    onClick={toggleTransferMode}
+                  >
+                    <h7>{ transferMode ? 'Cancel Change Ownership' : 'Change Ownership' }</h7>
+                  </Button>
+                : null
+            }
           </div>
         </ModalBody>
       </Modal>

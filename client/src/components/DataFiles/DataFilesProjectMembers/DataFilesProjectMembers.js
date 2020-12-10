@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { InfiniteScrollTable, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,12 +6,21 @@ import { Input, Label, Button } from 'reactstrap';
 import './DataFilesProjectMembers.module.scss';
 import './DataFilesProjectMembers.scss';
 
-const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
+const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, loading }) => {
   const dispatch = useDispatch();
 
   const userSearchResults = useSelector(state => state.users.search.users);
 
   const [selectedUser, setSelectedUser] = useState('');
+
+  const [transferUser, setTransferUser] = useState(null);
+
+  useEffect(
+    () => {
+      setTransferUser(null);
+    },
+    [setTransferUser]
+  )
 
   /* eslint-disable */
   // The backend needs to camelcase this
@@ -33,6 +42,11 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
       });
     }
   };
+
+  const performTransfer = () => {
+    onTransfer(transferUser);
+    setTransferUser(null);
+  }
 
   const alreadyMember = user =>
     members.some(
@@ -67,16 +81,30 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
       headerStyle: { textAlign: 'left' },
       accessor: 'username',
       Cell: el =>
-        el.row.original.access !== 'owner' ? (
-          <Button
-            onClick={e => onRemove(el.row.original)}
-            color="link"
-            styleName="remove-member"
-            disabled={loading}
-          >
-            <h6>Remove</h6>
-          </Button>
-        ) : null
+        <>
+          {
+            mode === 'addremove' && el.row.original.access !== 'owner' ? (
+              <Button
+                onClick={e => onRemove(el.row.original)}
+                color="link"
+                styleName="remove-member"
+                disabled={loading}
+              >
+                <h6>Remove</h6>
+              </Button>
+            ) : null
+          }
+          {
+            mode === 'transfer' && el.row.original.access !== 'owner' && transferUser === null ? (
+              <Button onClick={() => setTransferUser(el.row.original.user)}>Transfer Ownership</Button>
+            ) : null
+          }
+          {
+            mode === 'transfer' && transferUser === el.row.original.user ? (
+              <Button onClick={performTransfer}>Confirm</Button>
+            ) : null
+          }
+        </>
     }
   ];
 
@@ -118,6 +146,7 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, loading }) => {
         tableColumns={columns}
         tableData={members}
         styleName="member-list"
+        columnMemoProps={[mode, transferUser]}
       />
     </div>
   );
@@ -134,10 +163,14 @@ DataFilesProjectMembers.propTypes = {
   ).isRequired,
   onAdd: PropTypes.func.isRequired,
   onRemove: PropTypes.func.isRequired,
+  onTransfer: PropTypes.func,
+  mode: PropTypes.string,
   loading: PropTypes.bool
 };
 
 DataFilesProjectMembers.defaultProps = {
+  onTransfer: () => {},
+  mode: 'addremove',
   loading: false
 };
 
