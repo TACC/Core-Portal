@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { InfiniteScrollTable, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,13 +14,6 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
   const [selectedUser, setSelectedUser] = useState('');
 
   const [transferUser, setTransferUser] = useState(null);
-
-  useEffect(
-    () => {
-      setTransferUser(null);
-    },
-    [setTransferUser]
-  )
 
   /* eslint-disable */
   // The backend needs to camelcase this
@@ -43,10 +36,13 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
     }
   };
 
-  const performTransfer = () => {
-    onTransfer(transferUser);
-    setTransferUser(null);
-  }
+  const confirmTransfer = useCallback(
+    () => {
+      onTransfer(transferUser);
+      setTransferUser(null);
+    },
+    [transferUser, setTransferUser]
+  );
 
   const alreadyMember = user =>
     members.some(
@@ -87,7 +83,7 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
               <Button
                 onClick={e => onRemove(el.row.original)}
                 color="link"
-                styleName="remove-member"
+                styleName="member-action"
                 disabled={loading}
               >
                 <h6>Remove</h6>
@@ -99,14 +95,45 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
               <Button onClick={() => setTransferUser(el.row.original.user)}>Transfer Ownership</Button>
             ) : null
           }
-          {
-            mode === 'transfer' && transferUser === el.row.original.user ? (
-              <Button onClick={performTransfer}>Confirm</Button>
-            ) : null
-          }
         </>
     }
   ];
+
+  const transferColumns = [
+    {
+      Header: 'Members',
+      headerStyle: { textAlign: 'left' },
+      accessor: 'user',
+      Cell: el => (
+        <span>
+          {el.value ? `${el.value.first_name} ${el.value.last_name}` : ''}
+        </span>
+      )
+    },
+    {
+      Header: loading ? (
+        <LoadingSpinner
+          placement="inline"
+          className="project-members__loading"
+        />
+      ) : (
+        ''
+      ),
+      headerStyle: { textAlign: 'left' },
+      accessor: 'username',
+      Cell: el => mode === 'transfer' && el.row.original.user == transferUser ? (
+        <div styleName="confirm-controls">
+          <span>Confirm Ownership Transfer:</span>
+          <Button onClick={confirmTransfer}>Confirm</Button>
+          <Button onClick={() => setTransferUser(null)} color="link" styleName="member-action">
+            <h6>Cancel</h6>
+          </Button>
+        </div>
+       ) : null
+    }
+  ];
+
+  const isTransferring = mode === 'transfer' && transferUser;
 
   return (
     <div styleName="root">
@@ -143,9 +170,9 @@ const DataFilesProjectMembers = ({ members, onAdd, onRemove, onTransfer, mode, l
         </div>
       </div>
       <InfiniteScrollTable
-        tableColumns={columns}
+        tableColumns={isTransferring ? transferColumns : columns}
         tableData={members}
-        styleName="member-list"
+        styleName={isTransferring ? "transfer-list" : "member-list"}
         columnMemoProps={[mode, transferUser]}
       />
     </div>
