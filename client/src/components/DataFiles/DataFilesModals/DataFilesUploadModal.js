@@ -25,7 +25,7 @@ export const DEFAULT_DIRECTION = 'vertical';
 export const DIRECTIONS = ['', ...Object.keys(DIRECTION_CLASS_MAP)];
 
 export const DENSITY_CLASS_MAP = {
-  compact: 'is-vert',
+  compact: 'is-narrow',
   default: 'is-wide'
 };
 export const DEFAULT_DENSITY = 'default';
@@ -62,6 +62,8 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
   modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
   modifierClasses.push(DIRECTION_CLASS_MAP[direction || DEFAULT_DIRECTION]);
   const containerStyleNames = ['container', ...modifierClasses].join(' ');
+  const showListing =
+    density === DEFAULT_DENSITY && direction === DEFAULT_DIRECTION;
 
   const history = useHistory();
   const location = useLocation();
@@ -145,7 +147,10 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
           maxSizeMessage="Max File Size: 500MB"
         />
 
-        <div hidden={uploadedFiles.length === 0} style={{ marginTop: '10px' }}>
+        <div
+          hidden={showListing ? false : uploadedFiles.length === 0}
+          style={{ marginTop: '10px' }}
+        >
           <span style={{ fontSize: '20px' }}>
             Uploading to {systemDisplayName}/{params.path}
           </span>

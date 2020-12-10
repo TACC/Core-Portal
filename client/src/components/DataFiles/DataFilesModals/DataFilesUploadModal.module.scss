@@ -1,11 +1,15 @@
 /* Types */
 .container {
-}
-.is-horz {
-}
-.is-vert {
-}
-.is-wide {
-}
-.is-narrow {
+  &.is-horz {
+    &.is-wide {
+    }
+    &.is-narrow {
+    }
+  }
+  &.is-vert {
+    &.is-wide {
+    }
+    &.is-narrow {
+    }
+  }
 }
