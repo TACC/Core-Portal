@@ -176,7 +176,11 @@ export default function projects(state = initialState, action) {
     case 'PROJECTS_SET_MEMBER_SUCCESS': 
       return {
         ...state,
-        metadata: action.payload,
+        metadata: {
+          ...transformMetadata(action.payload),
+          loading: false,
+          error: null
+        },
         operation: {
           name: 'member',
           loading: false,

@@ -238,8 +238,8 @@ class ProjectMembersApiView(BaseApiView):
         return operation(request, project_id, **data)
     
     def transfer_ownership(self, request, project_id, **data):
-        old_pi = data.get('old_owner')
-        new_pi = data.get('new_owner')
+        old_pi = data.get('oldOwner')
+        new_pi = data.get('newOwner')
         res = ProjectsManager(request.user).transfer_ownership(
             project_id,
             old_pi,
@@ -255,12 +255,14 @@ class ProjectMembersApiView(BaseApiView):
 
     # pylint: disable=no-self-use
     def add_member(self, request, project_id, **data):
-        """Add member to a project."""
+        """Add member to a project.
+        In Shared Workspaces (CEPv2) members can only
+        be added with "edit" access, which translates to co_pi
+        """
         username = data.get('username')
-        member_type = data.get('memberType')
         res = ProjectsManager(request.user).add_member(
             project_id,
-            member_type,
+            'co_pi',
             username
         )
         return JsonResponse(
@@ -279,10 +281,9 @@ class ProjectMembersApiView(BaseApiView):
         :param dict data: Data.
         """
         username = data.get('username')
-        member_type = data.get('memberType')
         prj = ProjectsManager(request.user).remove_member(
             project_id=project_id,
-            member_type=member_type,
+            member_type='co_pi',
             username=username
         )
         return JsonResponse(

@@ -97,7 +97,7 @@ export function* getMetadata(action) {
 export async function setMemberUtil(projectId, data) {
   const result = await fetchUtil({
     url: `/api/projects/${projectId}/members/`,
-    method: 'patch',
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
     },

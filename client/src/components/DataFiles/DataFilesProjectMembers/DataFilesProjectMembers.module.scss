@@ -23,6 +23,7 @@
 .member-list {
   th:last-child,
   td:last-child {
+    display: flex;
     justify-content: flex-end;
   }
 }

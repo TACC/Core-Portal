@@ -48,10 +48,17 @@ const DataFilesProjectMembers = ({
     setTransferUser(null);
   }, [transferUser, setTransferUser]);
 
-  const alreadyMember = user =>
-    members.some(
+  const alreadyMember = user => {
+    return members.some(
       existingMember => existingMember.user.username === user.username
     );
+  };
+
+  const isDuplicateName = (user) => {
+    return members.filter(
+      match => match.user.first_name === user.first_name && match.user.last_name === user.last_name
+    ).length > 1;
+  }
 
   const memberColumn = {
     Header: 'Members',
@@ -61,6 +68,7 @@ const DataFilesProjectMembers = ({
     Cell: el => (
       <span>
         {el.value ? `${el.value.first_name} ${el.value.last_name}` : ''}
+        {isDuplicateName(el.value) ? ` (${el.value.email})` : ``}
       </span>
     )
   };
@@ -82,8 +90,8 @@ const DataFilesProjectMembers = ({
       ) : (
         ''
       ),
-      headerStyle: { textAlign: 'left' },
       accessor: 'username',
+      headerClassName: 'project-members__loading-header',
       className: 'project-members__cell',
       Cell: el => (
         <>
@@ -101,7 +109,7 @@ const DataFilesProjectMembers = ({
           el.row.original.access !== 'owner' &&
           transferUser === null ? (
             <Button
-              onClick={() => setTransferUser(el.row.original.user)}
+              onClick={() => setTransferUser(el.row.original)}
               styleName="ownership-button"
             >
               Transfer Ownership
@@ -123,11 +131,11 @@ const DataFilesProjectMembers = ({
       ) : (
         ''
       ),
-      headerStyle: { textAlign: 'left' },
       accessor: 'username',
+      headerClassName: 'project-members__loading-header',
       className: 'project-members__cell',
       Cell: el =>
-        mode === 'transfer' && el.row.original.user === transferUser ? (
+        mode === 'transfer' && el.row.original === transferUser ? (
           <div styleName="confirm-controls">
             <span>Confirm Ownership Transfer:</span>
             <Button onClick={confirmTransfer} styleName="ownership-button">
@@ -195,7 +203,7 @@ const DataFilesProjectMembers = ({
         tableColumns={isTransferring ? transferColumns : columns}
         tableData={members}
         styleName={listStyle}
-        columnMemoProps={[mode, transferUser]}
+        columnMemoProps={[loading, mode, transferUser]}
       />
     </div>
   );
