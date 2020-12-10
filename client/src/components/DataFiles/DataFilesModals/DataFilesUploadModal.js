@@ -3,17 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Table
-} from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner, FileInputDropZone } from '_common';
-import { findSystemDisplayName } from 'utils/systems';
-import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
+import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
 
 import './DataFilesUploadModal.module.scss';
 
@@ -74,7 +66,6 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
   const isOpen = useSelector(state => state.files.modals.upload);
   const params = useSelector(state => state.files.params.FilesListing);
   const status = useSelector(state => state.files.operationStatus.upload);
-  const systemList = useSelector(state => state.systems.systemList);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
@@ -89,12 +80,6 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
           reloadCallback
         }
       });
-  };
-
-  const systemDisplayName = findSystemDisplayName(systemList, params.system);
-
-  const removeFile = id => {
-    setUploadedFiles(uploadedFiles.filter(f => f.id !== id));
   };
 
   const onClosed = () => {
@@ -147,55 +132,11 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
           maxSizeMessage="Max File Size: 500MB"
         />
 
-        <div
-          hidden={showListing ? false : uploadedFiles.length === 0}
-          style={{ marginTop: '10px' }}
-        >
-          <span style={{ fontSize: '20px' }}>
-            Uploading to {systemDisplayName}/{params.path}
-          </span>
-
-          <div>
-            <div
-              style={{
-                border: '1px solid black',
-                width: '100%',
-                marginTop: '5px',
-                height: '300px',
-                overflow: 'auto'
-              }}
-            >
-              <Table striped>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Size</th>
-                    <th aria-label="null" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {uploadedFiles.map((file, i) => (
-                    <tr key={file.id}>
-                      <td style={{ verticalAlign: 'middle' }}>
-                        {file.data.name}
-                      </td>
-                      <td style={{ verticalAlign: 'middle' }}>
-                        <FileLengthCell cell={{ value: file.data.size }} />
-                      </td>
-                      <td>
-                        <span className="float-right">
-                          <DataFilesUploadStatus
-                            i={file.id}
-                            removeCallback={removeFile}
-                          />
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </div>
+        <div hidden={showListing ? false : uploadedFiles.length === 0}>
+          <DataFilesUploadModalListingTable
+            uploadedFiles={uploadedFiles}
+            setUploadedFiles={setUploadedFiles}
+          />
         </div>
       </ModalBody>
       <ModalFooter>
