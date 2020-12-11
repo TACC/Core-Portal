@@ -23,7 +23,7 @@ from portal.libs.agave.models.systems.execution import ExecutionSystem
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
-
+from portal.apps.accounts.managers.user_systems import UserSystemsManager
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -227,6 +227,10 @@ class JobsView(BaseApiView):
             return JsonResponse({"response": data})
         # submit job
         elif job_post:
+            default_sys = UserSystemsManager(
+                request.user,
+                settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+            )
 
             # cleaning archive path value
             if job_post.get('archivePath'):
@@ -245,16 +249,12 @@ class JobsView(BaseApiView):
                 if parsed.netloc:
                     job_post['archiveSystem'] = parsed.netloc
                 else:
-                    default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-                    default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
-                    job_post['archiveSystem'] = default_system_prefix.format(request.user.username)
+                    job_post['archiveSystem'] = default_sys.get_system_id()
             else:
                 job_post['archivePath'] = \
                     'archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                         timezone.now().strftime('%Y-%m-%d'))
-                default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-                default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
-                job_post['archiveSystem'] = default_system_prefix.format(request.user.username)
+                job_post['archiveSystem'] = default_sys.get_system_id()
 
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])

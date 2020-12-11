@@ -41,7 +41,7 @@ def log_setup_state(user, message):
         step="portal.apps.onboarding.execute.execute_setup_steps",
         state=SetupState.COMPLETED if user.profile.setup_complete else SetupState.FAILED,
         message=message,
-        data={"setup_complete": user.profile.setup_complete}
+        data={"setupComplete": user.profile.setup_complete}
     )
     event.save()
 
@@ -72,7 +72,7 @@ def prepare_setup_steps(user):
     """
     extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
     for step in extra_steps:
-        setup_step = load_setup_step(user, step)
+        setup_step = load_setup_step(user, step['step'])
         if setup_step.last_event is None:
             setup_step.prepare()
 
@@ -85,7 +85,7 @@ def execute_setup_steps(username):
     extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
     for step in extra_steps:
         # Restore state of this setup step for this user
-        setup_step = load_setup_step(user, step)
+        setup_step = load_setup_step(user, step['step'])
 
         # Run step, if waiting for automatic execution
         # should have this state
@@ -95,6 +95,7 @@ def execute_setup_steps(username):
             try:
                 setup_step.process()
             except Exception as err:
+                logger.exception("Problem processing setup step")
                 setup_step.state = SetupState.ERROR
                 setup_step.log("Exception: {err}".format(err=str(err)))
 

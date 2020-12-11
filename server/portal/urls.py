@@ -40,7 +40,6 @@ urlpatterns = [
     path('accounts/', include('portal.apps.accounts.urls', namespace='portal_accounts')),
     path('api/accounts/', include('portal.apps.accounts.api.urls', namespace='portal_accounts_api')),
 
-    path('onboarding/', include('portal.apps.onboarding.urls', namespace='portal_onboarding')),
     path('api/onboarding/', include('portal.apps.onboarding.api.urls', namespace='portal_onboarding_api')),
     path('register/', RedirectView.as_view(pattern_name='portal_accounts:register', permanent=True), name='register'),
 
@@ -56,6 +55,7 @@ urlpatterns = [
     path('api/datafiles/', include('portal.apps.datafiles.urls', namespace='datafiles')),
     path('api/system-monitor/', include('portal.apps.system_monitor.urls', namespace='system_monitor')),
     path('api/notifications/', include('portal.apps.notifications.urls', namespace='notifications')),
+    path('api/projects/', include('portal.apps.projects.urls', namespace='projects')),
 
     # webhooks
     path('webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),

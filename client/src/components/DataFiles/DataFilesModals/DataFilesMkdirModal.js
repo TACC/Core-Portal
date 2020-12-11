@@ -1,18 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Form,
-  FormGroup,
-  Input,
-  Label
-} from 'reactstrap';
-import { Message } from '_common';
+import * as Yup from 'yup';
+import { Formik, Form } from 'formik';
+import FormField from '_common/Form/FormField';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const DataFilesMkdirModal = () => {
   const dispatch = useDispatch();
@@ -21,8 +13,6 @@ const DataFilesMkdirModal = () => {
     shallowEqual
   );
   const isOpen = useSelector(state => state.files.modals.mkdir);
-  const [dirname, setDirname] = useState('');
-  const [validated, setValidated] = useState(true);
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -30,20 +20,15 @@ const DataFilesMkdirModal = () => {
     });
   };
 
-  const validate = e => {
-    setDirname(e.target.value);
-    const regexp = new RegExp(/["'/\\]/);
-    try {
-      setValidated(!regexp.test(e.target.value));
-    } catch {
-      setValidated(false);
-    }
-  };
-
-  const onClosed = () => {
-    setDirname('');
-    setValidated(true);
-  };
+  const validationSchema = Yup.object().shape({
+    dirname: Yup.string()
+      .min(1)
+      .matches(
+        /^[\d\w\s\-_.]+$/,
+        'Please enter a valid directory name (accepted characters are A-Z a-z 0-9 - _ .)'
+      )
+      .required('Please enter a valid directory name.')
+  });
 
   const history = useHistory();
   const location = useLocation();
@@ -51,7 +36,7 @@ const DataFilesMkdirModal = () => {
     history.push(location.pathname);
   };
 
-  const mkdir = event => {
+  const mkdir = ({ dirname }) => {
     dispatch({
       type: 'DATA_FILES_MKDIR',
       payload: {
@@ -63,7 +48,6 @@ const DataFilesMkdirModal = () => {
         reloadCallback: reloadPage
       }
     });
-    event.preventDefault();
   };
 
   return (
@@ -72,48 +56,31 @@ const DataFilesMkdirModal = () => {
         size="lg"
         isOpen={isOpen}
         toggle={toggle}
-        onClosed={onClosed}
         className="dataFilesModal"
       >
-        <Form>
-          <ModalHeader toggle={toggle}>
-            Creating folder in: {params.path}
-          </ModalHeader>
-          <ModalBody>
-            <FormGroup>
-              <Label>Enter the new name for the new folder:</Label>
-              <Input
-                onChange={validate}
-                className="form-control"
-                value={dirname}
+        {' '}
+        <Formik
+          initialValues={{ dirname: '' }}
+          validationSchema={validationSchema}
+          onSubmit={mkdir}
+        >
+          <Form>
+            <ModalHeader toggle={toggle}>
+              Creating folder in: {params.path || '/'}
+            </ModalHeader>
+            <ModalBody>
+              <FormField
+                name="dirname"
+                label="Enter a name for the new folder:"
               />
-              <Message
-                type="warn"
-                hidden={dirname === '' || validated}
-                className="dataFilesValidationMessage"
-              >
-                Valid characters are: <kbd>A-Z a-z 0-9 . _ -</kbd>
-              </Message>
-            </FormGroup>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              type="submit"
-              disabled={!dirname || !validated}
-              className="data-files-btn"
-              onClick={mkdir}
-            >
-              Create Folder{' '}
-            </Button>
-            <Button
-              color="secondary"
-              className="data-files-btn-cancel"
-              onClick={toggle}
-            >
-              Close
-            </Button>
-          </ModalFooter>
-        </Form>
+            </ModalBody>
+            <ModalFooter>
+              <Button type="submit" className="data-files-btn">
+                Create Folder
+              </Button>
+            </ModalFooter>
+          </Form>
+        </Formik>
       </Modal>
     </>
   );

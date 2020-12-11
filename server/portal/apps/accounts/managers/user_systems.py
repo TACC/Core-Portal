@@ -31,10 +31,10 @@ class UserSystemsManager():
     storage system.
         'localsystem1': {
             'name': 'My Data (Local System One)', <----------- The name to appear in the "My Data" section.
-            'prefix': 'localsystem1.home.{username}', <------- Used to get the system ID for a user
+            'systemId': 'localsystem1.home.{username}', <------- Used to get the system ID for a user
             'host': 'localsystem1.tacc.utexas.edu', <--------- System host
-            'home_dir': '/home', <---------------------- User's home directory
-            'storage_port': 22, <----------------------------- System storage port
+            'rootDir': '/home/{tasdir}', <---------------------- User's home directory
+            'port': 22, <----------------------------- System storage port
             'icon': None <------------------------------------ The CSS class name for the icon used in "My Data".
         }
 
@@ -89,21 +89,14 @@ class UserSystemsManager():
         :returns: unique id for a user's home system. ex: [system].home.[username]
         :rtype: str
         """
-        return self.system['prefix'].format(self.user.username)
-
-    def get_home_dir(self):
-        """Gets home directory for given system
-        :returns: name of home directory path.
-        :rtype: str
-        """
-        return self.system['home_dir']
+        return self.system['systemId'].format(username=self.user.username)
 
     def get_sys_tas_user_dir(self):
         """Gets path to user's home directory for given system
         :returns: full path for system home directory. ex: "/[home]/[tasid]/[username]"
         :rtype: str
         """
-        return os.path.join(self.system['home_dir'], self.tas_user['homeDirectory'])
+        return self.system['rootDir'].format(tasdir=self.tas_user['homeDirectory'])
 
     def get_private_directory(self, *args, **kwargs):
         """Gets private storage directory for a user
@@ -191,7 +184,7 @@ class UserSystemsManager():
             username=username
         )
         system.name = self.get_system_id()
-        system.storage.port = self.system['storage_port']
+        system.storage.port = self.system['port']
         system.storage.home_dir = '/'
         system.storage.root_dir = self.get_sys_tas_user_dir()
         system.storage.protocol = 'SFTP'

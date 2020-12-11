@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from six import add_metaclass
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
-from django.urls import reverse
+from django.conf import settings
 
 
 @add_metaclass(ABCMeta)
@@ -15,8 +15,20 @@ class AbstractStep:
     def __init__(self, user):
         self.state = None
         self.user = user
+        self.user_confirm = "Confirm"
+        self.staff_approve = "Approve"
+        self.staff_deny = "Deny"
         self.last_event = None
         self.events = []
+
+        try:
+            steps = settings.PORTAL_USER_ACCOUNT_SETUP_STEPS
+            step_dict = next(
+                step for step in steps if step['step'] == self.step_name()
+            )
+            self.settings = step_dict['settings']
+        except Exception:
+            self.settings = None
 
         try:
             # Restore event history
@@ -60,12 +72,6 @@ class AbstractStep:
         self.state = SetupState.COMPLETED
         self.log(message, data)
 
-    def webhook_url(self, request):
-        """
-        Utility function for getting a webhook callback url
-        """
-        return request.build_absolute_uri(reverse('webhooks:onboarding_wh_handler'))
-
     def __str__(self):
         return "<{step} for {username} is {state}>".format(
             step=self.step_name(),
@@ -83,9 +89,24 @@ class AbstractStep:
     def display_name(self):
         """
         Called when displaying this step in the client. Should return a string
-        that is a friendly name that describes a step.
+        that is a friendly name for a step.
         """
         return NotImplemented
+
+    @abstractmethod
+    def description(self):
+        """
+        Called when displaying this step in the client. Should return a string
+        that is a detailed description for a step.
+        """
+        return NotImplemented
+
+    def custom_status(self):
+        """
+        Called when displaying this step in the client. Should return a string
+        that displays a custom status
+        """
+        return None
 
     @abstractmethod
     def prepare(self):
@@ -109,14 +130,6 @@ class AbstractStep:
         allowing execution of an action
 
         ..param: action can be "user_confirm" | "staff_approve" | "staff_deny"
-        """
-        pass
-
-    def webhook_action(self, webhook_data=None):
-        """
-        Called by portal.apps.onboarding.api.webhook.SetupStepWebhookView.post
-
-        Child implementations should override this to handle webhook callbacks
         """
         pass
 

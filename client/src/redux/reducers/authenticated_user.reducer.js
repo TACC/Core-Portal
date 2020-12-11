@@ -8,6 +8,10 @@ export default function authenticatedUser(state = initialState, action) {
       return {
         user: action.payload
       };
+    case 'AUTHENTICATED_USER_ERROR':
+      return {
+        ...state
+      };
     default:
       return state;
   }

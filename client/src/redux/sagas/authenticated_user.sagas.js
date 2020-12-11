@@ -1,18 +1,21 @@
-import fetch from 'cross-fetch';
+import { fetchUtil } from 'utils/fetchUtil';
 import { call, put, takeLeading } from 'redux-saga/effects';
 
 export async function fetchAuthenticatedUserUtil() {
-  const response = await fetch('/api/users/auth/');
-  if (!response.ok) {
-    throw new Error(response.status);
-  }
-  const responseJson = await response.json();
-  return responseJson;
+  const result = await fetchUtil({ url: '/api/users/auth/' });
+  return result;
 }
 
 export function* getAuthenticatedUser() {
-  const userJson = yield call(fetchAuthenticatedUserUtil);
-  yield put({ type: 'AUTHENTICATED_USER_SUCCESS', payload: userJson });
+  try {
+    const userJson = yield call(fetchAuthenticatedUserUtil);
+    yield put({ type: 'AUTHENTICATED_USER_SUCCESS', payload: userJson });
+  } catch (error) {
+    yield put({
+      type: 'AUTHENTICATED_USER_ERROR',
+      payload: error
+    });
+  }
 }
 
 export function* watchAuthenticatedUser() {

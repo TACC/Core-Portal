@@ -84,12 +84,14 @@ INSTALLED_APPS = [
     'portal.apps.onboarding',
     'portal.apps.search',
     'portal.apps.signals',
+    'portal.apps.webhooks',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.datafiles',
     'portal.apps.system_monitor',
     'portal.apps.googledrive_integration',
-
+    'portal.apps.projects',
+    'portal.apps.system_creation',
 ]
 
 MIDDLEWARE = [
@@ -107,9 +109,6 @@ MIDDLEWARE = [
 
     # Throws an Error.
     # 'portal.middleware.PortalTermsMiddleware',
-
-    # Onboarding
-    # 'portal.apps.onboarding.middleware.SetupCompleteMiddleware'
 ]
 
 TEMPLATES = [
@@ -490,9 +489,13 @@ PORTAL_EXEC_SYSTEMS = {
 """
 SETTINGS: DATA DEPOT
 """
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
-PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', [])
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret.\
+    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_secret.\
+    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(
+    settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', {}
+)
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
@@ -588,11 +591,7 @@ PORTAL_USER_HOME_MANAGER = settings_secret.\
 PORTAL_KEYS_MANAGER = settings_secret.\
     _PORTAL_KEYS_MANAGER
 
-PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
-    _PORTAL_USER_ACCOUNT_SETUP_STEPS
-
-PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = settings_secret.\
-    _PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD
+PORTAL_USER_ACCOUNT_SETUP_STEPS = getattr(settings_secret, '_PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
 
 PORTAL_NAMESPACE = settings_secret.\
     _PORTAL_NAMESPACE
@@ -609,6 +608,8 @@ PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '')
 
+PORTAL_KEY_SERVICE_ACTOR_ID = getattr(settings_secret, '_PORTAL_KEY_SERVICE_ACTOR_ID', "jzQP0EeX7mE1K")
+
 PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
                                   "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
 
@@ -622,14 +623,6 @@ WH_BASE_URL = getattr(settings_secret, '_WH_BASE_URL', '')
 PORTAL_DOMAIN = settings_secret._PORTAL_DOMAIN
 
 PORTAL_ALLOCATION = getattr(settings_secret, '_PORTAL_ALLOCATION', '')
-
-ALLOCATION_SYSTEMS = getattr(settings_secret, '_ALLOCATION_SYSTEMS', [])
-
-"""
-SETTINGS: settings related to possible steps in PORTAL_USER_ACCOUNT_SETUP_STEPS
-"""
-# ProjectMembershipStep
-REQUIRED_PROJECTS = getattr(settings_secret, '_REQUIRED_PROJECTS', [])
 
 """
 SETTINGS: ELASTICSEARCH

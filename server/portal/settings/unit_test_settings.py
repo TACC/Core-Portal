@@ -80,10 +80,12 @@ INSTALLED_APPS = [
     'portal.apps.notifications',
     'portal.apps.onboarding',
     'portal.apps.search',
+    'portal.apps.webhooks',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
     'portal.apps.googledrive_integration'
+    'portal.apps.projects',
 
 ]
 
@@ -212,15 +214,15 @@ PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
 PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home.{}'
 PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 
-PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'cep.project'
+PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'test.project'
 
 PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
 
-PORTAL_PROJECTS_NAME_PREFIX = 'cep.project'
+PORTAL_PROJECTS_NAME_PREFIX = 'test.project'
 
-PORTAL_PROJECTS_ID_PREFIX = 'cep.project'
+PORTAL_PROJECTS_ID_PREFIX = 'test.project'
 
 PORTAL_PROJECTS_ROOT_DIR = '/path/to/root'
 
@@ -236,7 +238,12 @@ PORTAL_PROJECTS_PRIVATE_KEY = ('-----BEGIN RSA PRIVATE KEY-----'
 PORTAL_PROJECTS_PUBLIC_KEY = 'ssh-rsa change this'
 
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-    'portal.apps.onboarding.steps.test_steps.MockStep'
+    {
+        'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
+        'settings': {
+            'key': 'value'
+        }
+    }
 ]
 PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = 'dev'
 
@@ -395,18 +402,22 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
 PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
-        'prefix': 'frontera.home.{}',                                   # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
-        'host': 'frontera.tacc.utexas.edu',                             # PORTAL_DATA_DEPOT_STORAGE_HOST
-        'home_dir': '/home1',                                     # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
-        'storage_port': 22,
+        'description': 'My Data on Frontera for {username}',
+        'site': 'frontera',
+        'systemId': 'frontera.home.{username}',                       # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
+        'host': 'frontera.tacc.utexas.edu',                         # PORTAL_DATA_DEPOT_STORAGE_HOST
+        'rootDir': '/home1/{tasdir}',                              # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+        'port': 22,
         'icon': None,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'prefix': 'longhorn.home.{}',
+        'description': 'My Data on Longhorn for {username}',
+        'site': 'frontera',
+        'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
-        'home_dir': '/home',
-        'storage_port': 22,
+        'rootDir': '/home/{tasdir}',
+        'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
     },
@@ -439,3 +450,6 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None
     }
 ]
+
+WH_BASE_URL = "https://testserver"
+PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"
