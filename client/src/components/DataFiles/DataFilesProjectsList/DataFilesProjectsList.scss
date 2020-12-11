@@ -1,6 +1,10 @@
 .projects-listing {
   width: inherit;
   flex-grow: 1;
+  th,
+  td {
+    font-size: 16px;
+  }
   /* title */
   th:nth-child(1),
   td:nth-child(1) {
