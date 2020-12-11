@@ -36,7 +36,7 @@ const DataFilesSwitch = React.memo(() => {
   return (
     <Switch>
       <Route
-        path={`${path}/shared/:system/:path*`}
+        path={`${path}/tapis/projects/:system/:path*`}
         render={({ match: { params } }) => {
           dispatch({
             type: 'FETCH_FILES',
@@ -77,7 +77,7 @@ const DataFilesSwitch = React.memo(() => {
           );
         }}
       />
-      <Route path={`${path}/shared`}>
+      <Route path={`${path}/tapis/projects`}>
         <DataFilesProjectsList />
       </Route>
       <Route path={`${path}`}>

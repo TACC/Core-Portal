@@ -110,7 +110,7 @@ const DataFilesSidebar = ({ readOnly }) => {
                 : null}
               <NavLink
                 tag={RRNavLink}
-                to={`${match.path}/shared`}
+                to={`${match.path}/tapis/projects`}
                 activeClassName="active"
                 key="workspaces"
               >

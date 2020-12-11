@@ -27,7 +27,7 @@ const DataFilesProjectsList = () => {
       Cell: el => (
         <Link
           className="data-files-nav-link"
-          to={`/workbench/data/shared/${el.row.original.id}`}
+          to={`/workbench/data/tapis/projects/${el.row.original.id}`}
         >
           {el.value}
         </Link>
