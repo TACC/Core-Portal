@@ -178,6 +178,7 @@ const DataFilesProjectMembers = ({
             list="user-search-list"
             type="text"
             onChange={e => userSearch(e)}
+            placeholder="Search by name or e-mail address"
             styleName="member-search"
             disabled={loading || mode === 'transfer'}
           />
