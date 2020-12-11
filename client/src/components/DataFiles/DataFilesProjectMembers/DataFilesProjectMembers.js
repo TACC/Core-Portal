@@ -56,7 +56,7 @@ const DataFilesProjectMembers = ({
 
   const memberColumn = {
     Header: 'Members',
-    headerStyle: { textAlign: 'left' },
+    headerStyle: { textAlign: 'left', color: '#484848' },
     accessor: 'user',
     className: 'project-members__cell',
     Cell: el => (
@@ -71,6 +71,7 @@ const DataFilesProjectMembers = ({
     memberColumn,
     {
       Header: 'Access',
+      headerStyle: { color: '#484848' },
       accessor: 'access',
       className: 'project-members__cell',
       Cell: el => <span styleName="access">{el.value}</span>
