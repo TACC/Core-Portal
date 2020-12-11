@@ -25,7 +25,7 @@ const addProjectMember = (members, newMember) => {
 };
 
 const removeProjectMember = (members, removedMember) => {
-  return members.filter(el => el.user.username !== removedMember.user.username)
+  return members.filter(el => el.user.username !== removedMember.user.username);
 };
 
 const transformMetadata = project => {

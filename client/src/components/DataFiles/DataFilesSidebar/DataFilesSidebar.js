@@ -48,7 +48,7 @@ const DataFilesSidebar = ({ readOnly }) => {
     });
   };
 
-  const writeItemStyle = readOnly ? "read-only" : "";
+  const writeItemStyle = readOnly ? 'read-only' : '';
 
   const match = useRouteMatch();
   return (
@@ -65,10 +65,7 @@ const DataFilesSidebar = ({ readOnly }) => {
               + Add
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem
-                onClick={toggleMkdirModal}
-                disabled={readOnly}
-              >
+              <DropdownItem onClick={toggleMkdirModal} disabled={readOnly}>
                 <span styleName={writeItemStyle}>
                   <i className="icon-folder" /> Folder
                 </span>
@@ -81,7 +78,7 @@ const DataFilesSidebar = ({ readOnly }) => {
                 onClick={toggleUploadModal}
                 disabled={readOnly}
               >
-                <i className="icon-upload" styleName={writeItemStyle}/>
+                <i className="icon-upload" styleName={writeItemStyle} />
                 <span className="multiline-menu-item-wrapper">
                   <span styleName={writeItemStyle}>Upload</span>
                   <small styleName={writeItemStyle}> Up to 500mb </small>
