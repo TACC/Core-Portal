@@ -158,7 +158,7 @@ const DataFilesProjectMembers = ({
       <Label className="form-field__label" size="sm">
         Add Member
       </Label>
-      <div>
+      <div styleName="user-search">
         <div className="input-group">
           <div className="input-group-prepend">
             <Button
