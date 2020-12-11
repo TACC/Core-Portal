@@ -113,7 +113,10 @@ const DataFiles = () => {
       </div>
       {/* row containing sidebar and listing pane */}
       <div styleName="items">
-        <DataFilesSidebar styleName="sidebar" />
+        <DataFilesSidebar
+          styleName="sidebar"
+          readOnly={listingParams.scheme === 'projects'}
+        />
         <div styleName="content">
           <DataFilesSwitch />
         </div>

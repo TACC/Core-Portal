@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import {
   Nav,
@@ -9,12 +10,13 @@ import {
   DropdownToggle,
   DropdownItem
 } from 'reactstrap';
+import './DataFilesSidebar.module.scss';
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { Icon } from '_common';
 import './DataFilesSidebar.scss';
 
-const DataFilesSidebar = () => {
+const DataFilesSidebar = ({ readOnly }) => {
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -48,7 +50,7 @@ const DataFilesSidebar = () => {
 
   const match = useRouteMatch();
   return (
-    <>
+    <div styleName="root">
       <div className="data-files-sidebar">
         <div id="add-button-wrapper">
           <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
@@ -61,7 +63,11 @@ const DataFilesSidebar = () => {
               + Add
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={toggleMkdirModal}>
+              <DropdownItem
+                onClick={toggleMkdirModal}
+                disabled={readOnly}
+                styleName={readOnly ? 'read-only' : ''}
+              >
                 <i className="icon-folder" /> Folder
               </DropdownItem>
               <DropdownItem onClick={toggleAddProjectModal}>
@@ -70,6 +76,8 @@ const DataFilesSidebar = () => {
               <DropdownItem
                 className="complex-dropdown-item"
                 onClick={toggleUploadModal}
+                disabled={readOnly}
+                styleName={readOnly ? 'read-only' : ''}
               >
                 <i className="icon-upload" />
                 <span className="multiline-menu-item-wrapper">
@@ -113,8 +121,16 @@ const DataFilesSidebar = () => {
           </Nav>
         </div>
       </div>
-    </>
+    </div>
   );
+};
+
+DataFilesSidebar.propTypes = {
+  readOnly: PropTypes.bool
+};
+
+DataFilesSidebar.defaultProps = {
+  readOnly: false
 };
 
 export default DataFilesSidebar;
