@@ -68,7 +68,7 @@ DataFilesLinkAction.propTypes = {
 DataFilesLinkAction.defaultProps = {
   status: {
     error: null,
-    url: null,
+    url: '',
     method: null
   }
 };

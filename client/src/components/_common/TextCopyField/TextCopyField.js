@@ -14,11 +14,18 @@ const TextCopyField = ({ value, placeholder }) => {
     event.preventDefault();
   };
   const onCopy = onChange;
+
+  const isEmpty = !value || value.length === 0;
+
   return (
     <div className="input-group" styleName="root">
       <div className="input-group-prepend">
         <CopyToClipboard text={value}>
-          <Button styleName="copy-button" onClick={event => onCopy(event)}>
+          <Button
+            styleName="copy-button"
+            onClick={event => onCopy(event)}
+            disabled={isEmpty}
+          >
             <Icon name="link" styleName="button__icon" />
             <span styleName="button__text">Copy</span>
           </Button>
@@ -27,12 +34,12 @@ const TextCopyField = ({ value, placeholder }) => {
       <input
         type="text"
         onChange={onChange}
-        value={value || ''}
+        value={value}
         styleName="input"
         className="form-control"
-        placeholder={placeholder || ''}
+        placeholder={placeholder}
         data-testid="input"
-        readOnly={!value}
+        readOnly={isEmpty}
       />
     </div>
   );
@@ -44,8 +51,8 @@ TextCopyField.propTypes = {
 };
 
 TextCopyField.defaultProps = {
-  value: null,
-  placeholder: null
+  value: '',
+  placeholder: ''
 };
 
 export default TextCopyField;

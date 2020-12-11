@@ -34,7 +34,7 @@ const initialFilesState = {
     trash: {},
     link: {
       method: null,
-      url: null,
+      url: '',
       error: null
     }
   },

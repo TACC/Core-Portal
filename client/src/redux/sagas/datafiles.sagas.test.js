@@ -268,7 +268,7 @@ describe("fileLink", () => {
         payload: {
           status: {
             method: 'get',
-            url: null,
+            url: '',
             error: null
           },
           operation: 'link'
