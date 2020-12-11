@@ -31,7 +31,7 @@ const DataFilesAddProjectModal = () => {
 
   const onCreate = system => {
     toggle();
-    history.push(`${match.path}/shared/${system}`);
+    history.push(`${match.path}/tapis/projects/${system}`);
   };
 
   const addproject = ({ title }) => {
