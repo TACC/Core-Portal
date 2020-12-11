@@ -54,16 +54,6 @@ const DataFilesProjectMembers = ({
     );
   };
 
-  const isDuplicateName = user => {
-    return (
-      members.filter(
-        match =>
-          match.user.first_name === user.first_name &&
-          match.user.last_name === user.last_name
-      ).length > 1
-    );
-  };
-
   const memberColumn = {
     Header: 'Members',
     headerStyle: { textAlign: 'left' },
@@ -71,8 +61,8 @@ const DataFilesProjectMembers = ({
     className: 'project-members__cell',
     Cell: el => (
       <span>
-        {el.value ? `${el.value.first_name} ${el.value.last_name}` : ''}
-        {isDuplicateName(el.value) ? ` (${el.value.email})` : ``}
+        <span styleName="printed-name">{`${el.value.first_name} ${el.value.last_name}`}</span>
+        {` ${el.value.username} (${el.value.email})`}
       </span>
     )
   };
