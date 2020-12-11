@@ -171,15 +171,6 @@ const DataFilesLinkModal = () => {
             status={status}
           />
         </ModalBody>
-        <ModalFooter>
-          <Button
-            color="secondary"
-            className="data-files-btn-cancel"
-            onClick={toggle}
-          >
-            Close
-          </Button>
-        </ModalFooter>
       </Form>
     </Modal>
   );
