@@ -25,13 +25,7 @@ const addProjectMember = (members, newMember) => {
 };
 
 const removeProjectMember = (members, removedMember) => {
-  const index = members.findIndex(
-    el => el.user.username === removedMember.user.username
-  );
-  if (index) {
-    members.splice(index, 1);
-  }
-  return [...members];
+  return members.filter(el => el.user.username !== removedMember.user.username)
 };
 
 const transformMetadata = project => {
