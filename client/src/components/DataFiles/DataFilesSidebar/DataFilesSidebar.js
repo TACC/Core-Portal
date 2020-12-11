@@ -48,6 +48,8 @@ const DataFilesSidebar = ({ readOnly }) => {
     });
   };
 
+  const writeItemStyle = readOnly ? "read-only" : "";
+
   const match = useRouteMatch();
   return (
     <div styleName="root">
@@ -66,9 +68,10 @@ const DataFilesSidebar = ({ readOnly }) => {
               <DropdownItem
                 onClick={toggleMkdirModal}
                 disabled={readOnly}
-                styleName={readOnly ? 'read-only' : ''}
               >
-                <i className="icon-folder" /> Folder
+                <span styleName={writeItemStyle}>
+                  <i className="icon-folder" /> Folder
+                </span>
               </DropdownItem>
               <DropdownItem onClick={toggleAddProjectModal}>
                 <i className="icon-folder" /> Shared Workspace
@@ -77,12 +80,11 @@ const DataFilesSidebar = ({ readOnly }) => {
                 className="complex-dropdown-item"
                 onClick={toggleUploadModal}
                 disabled={readOnly}
-                styleName={readOnly ? 'read-only' : ''}
               >
-                <i className="icon-upload" />
+                <i className="icon-upload" styleName={writeItemStyle}/>
                 <span className="multiline-menu-item-wrapper">
-                  Upload
-                  <small> Up to 500mb </small>
+                  <span styleName={writeItemStyle}>Upload</span>
+                  <small styleName={writeItemStyle}> Up to 500mb </small>
                 </span>
               </DropdownItem>
             </DropdownMenu>

@@ -93,6 +93,7 @@ const DataFiles = () => {
     shallowEqual
   );
 
+  const readOnly = listingParams.scheme === 'projects' && (listingParams.system === '' || !listingParams.system);
   return (
     <div styleName="container">
       {/* row containing breadcrumbs and toolbar */}
@@ -115,7 +116,7 @@ const DataFiles = () => {
       <div styleName="items">
         <DataFilesSidebar
           styleName="sidebar"
-          readOnly={listingParams.scheme === 'projects'}
+          readOnly={readOnly}
         />
         <div styleName="content">
           <DataFilesSwitch />
