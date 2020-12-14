@@ -11,7 +11,7 @@ const mockStore = configureStore();
 const initialMockState = {
   files: {
     modals: {
-      manageproject: {}
+      manageproject: true
     }
   },
   users: {
