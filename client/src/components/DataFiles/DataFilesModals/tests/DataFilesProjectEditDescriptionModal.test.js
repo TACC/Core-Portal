@@ -27,7 +27,7 @@ const initialMockState = {
       error: null
     },
     operation: {
-      name: 'editDescription',
+      name: '',
       loading: false,
       error: null,
       result: null
@@ -64,7 +64,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
       ...initialMockState,
     };
     state.projects.operation = {
-      name: 'editDescription',
+      name: 'titleDescription',
       loading: true,
       error: null,
       result: null
@@ -82,7 +82,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
       ...initialMockState,
     };
     state.projects.operation = {
-      name: 'editDescription',
+      name: 'titleDescription',
       loading: null,
       error: 'something went wrong',
       result: null
