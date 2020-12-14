@@ -35,7 +35,7 @@ class AuthenticatedView(BaseApiView):
             }
 
             return JsonResponse(out)
-        return HttpResponse('Unauthorized', status=401)
+        return JsonResponse({'message': 'Unauthorized'}, status=401)
 
 
 @method_decorator(login_required, name='dispatch')

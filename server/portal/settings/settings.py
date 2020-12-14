@@ -56,8 +56,6 @@ ROOT_URLCONF = 'portal.urls'
 # Application definition
 
 INSTALLED_APPS = [
-    # django CMS admin style must be before django.contrib.admin
-    'djangocms_admin_style',
 
     # Core Django.
     'django.contrib.admin',
@@ -67,22 +65,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django.contrib.sites',  # also required for django CMS
     'django.contrib.sitemaps',
     'django.contrib.sessions.middleware',
 
     # Django Channels
     'channels',
 
-    # Django recaptcha.
-    'captcha',
-
-    # Some django-filer/Pillow stuff
-    'filer',
-    'easy_thumbnails',
-    'mptt',
-
-    # Pipeline.
     'bootstrap4',
     'termsandconditions',
     'impersonate',
@@ -96,26 +84,13 @@ INSTALLED_APPS = [
     'portal.apps.onboarding',
     'portal.apps.search',
     'portal.apps.signals',
+    'portal.apps.webhooks',
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.datafiles',
     'portal.apps.system_monitor',
-
-    # django CMS
-    'cms',
-    'menus',
-    'treebeard',
-    'sekizai',
-    'djangocms_text_ckeditor',
-    'djangocms_link',
-    'djangocms_file',
-    'djangocms_picture',
-    'djangocms_video',
-    'djangocms_googlemap',
-    'djangocms_snippet',
-    'djangocms_style',
-    'djangocms_column',
-
+    'portal.apps.projects',
+    'portal.apps.system_creation',
 ]
 
 MIDDLEWARE = [
@@ -129,21 +104,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'portal.apps.auth.middleware.AgaveTokenRefreshMiddleware',   # Custom Portal Auth Check.
-    'django.middleware.locale.LocaleMiddleware',    # needed for django CMS
     'impersonate.middleware.ImpersonateMiddleware',  # must be AFTER django.contrib.auth
 
     # Throws an Error.
     # 'portal.middleware.PortalTermsMiddleware',
-
-    # django CMS
-    'cms.middleware.user.CurrentUserMiddleware',
-    'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',
-    'cms.middleware.utils.ApphookReloadMiddleware',
-
-    # Onboarding
-    # 'portal.apps.onboarding.middleware.SetupCompleteMiddleware'
 ]
 
 TEMPLATES = [
@@ -170,9 +134,6 @@ TEMPLATES = [
                 'portal.utils.contextprocessors.debug',
                 'portal.utils.contextprocessors.messages',
 
-                # django CMS
-                'sekizai.context_processors.sekizai',
-                'cms.context_processors.cms_settings',
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
@@ -293,10 +254,6 @@ RT_PW = settings_secret._RT_PW
 RT_QUEUE = settings_secret._RT_QUEUE
 RT_TAG = getattr(settings_secret, '_RT_TAG', "")
 
-# Recaptcha Authentication.
-RECAPTCHA_PUBLIC_KEY = settings_secret._RECAPTCHA_PUBLIC_KEY
-RECAPTCHA_PRIVATE_KEY = settings_secret._RECAPTCHA_PRIVATE_KEY
-RECAPTCHA_USE_SSL = settings_secret._RECAPTCHA_USE_SSL
 
 # Google Analytics.
 GOOGLE_ANALYTICS_PROPERTY_ID = settings_secret._GOOGLE_ANALYTICS_PROPERTY_ID
@@ -410,114 +367,6 @@ AGAVE_JWT_PUBKEY = (
 AGAVE_JWT_HEADER = settings_secret._AGAVE_JWT_HEADER
 AGAVE_JWT_ISSUER = 'wso2.org/products/am'
 AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
-
-"""
-SETTINGS: DJANGO CMS
-"""
-
-SITE_ID = settings_secret._SITE_ID
-FILER_DEBUG = True
-FILER_ENABLE_LOGGING = True
-DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', )}
-
-CMS_LANGUAGES = {
-    # Customize this
-    'default': {
-        'public': True,
-        'hide_untranslated': False,
-        'redirect_on_fallback': True,
-    },
-    1: [
-        {
-            'public': True,
-            'code': 'en',
-            'hide_untranslated': False,
-            'name': gettext('en-us'),  # 'en'
-            'redirect_on_fallback': True,
-        },
-    ],
-}
-
-CMS_TEMPLATES = (
-    ('cms_page.html', 'Main Site Page'),
-)
-
-CMS_PERMISSION = True
-
-CMS_PLACEHOLDER_CONF = {}
-
-
-CMSPLUGIN_FILER_IMAGE_STYLE_CHOICES = (
-    ('default', 'Default'),
-)
-CMSPLUGIN_FILER_IMAGE_DEFAULT_STYLE = 'default'
-
-# These settings enable iFrames in the CMS cktext-editor.
-TEXT_ADDITIONAL_TAGS = ('iframe',)
-TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder', 'src', 'height', 'width')
-
-TEXT_SAVE_IMAGE_FUNCTION = 'cmsplugin_filer_image.integrations.ckeditor.create_image_plugin'
-
-# Django Filer settings
-THUMBNAIL_HIGH_RESOLUTION = True
-
-THUMBNAIL_PROCESSORS = (
-    'easy_thumbnails.processors.colorspace',
-    'easy_thumbnails.processors.autocrop',
-    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
-    'easy_thumbnails.processors.filters',
-    'easy_thumbnails.processors.background'
-)
-
-# CKEDITOR_SETTINGS = {
-#     'language': '{{ language }}',
-#     'toolbar_CMS': [
-#         ['Undo', 'Redo'],
-#         ['cmsplugins', '-', 'ShowBlocks'],
-#         ['Format', 'Styles'],
-#     ],
-#     'skin': 'moono-lisa',
-#     'contentsCss': [
-#         'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-#         # '/css/mysitestyles.css',
-#     ],
-# }
-
-CKEDITOR_SETTINGS = {
-    'language': '{{ language }}',
-    'skin': 'moono-lisa',
-    'toolbar': 'CMS',
-}
-
-
-DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = RECAPTCHA_PUBLIC_KEY
-DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = RECAPTCHA_PRIVATE_KEY
-# DJANGOCMS_FORMS_PLUGIN_MODULE = _('Generic')
-# DJANGOCMS_FORMS_PLUGIN_NAME = _('Form')
-# DJANGOCMS_FORMS_DEFAULT_TEMPLATE = 'djangocms_forms/form_template/default.html'  # Path?
-# DJANGOCMS_FORMS_TEMPLATES = (
-#     ('djangocms_forms/form_template/default.html', _('Default')),
-# )
-# DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
-# DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
-# DJANGOCMS_FORMS_REDIRECT_DELAY = 10000  # 10 seconds. Default is 1 second.
-# instance.redirect_delay > DJANGOCMS_FORMS_REDIRECT_DELAY > 1000 (default)  # per form delay.
-
-# Media Plugins.
-DJANGOCMS_AUDIO_ALLOWED_EXTENSIONS = ['mp3', 'ogg', 'wav']
-# DJANGOCMS_AUDIO_TEMPLATES = [
-#     # ('default', _('Default Version')),
-#     ('feature', _('Featured Version')),
-# ]
-
-# DJANGOCMS_EMBED_API_KEY = ""    # Requires an embed.ly account to use.
-
-DJANGOCMS_VIDEO_ALLOWED_EXTENSIONS = ['mp4', 'webm', 'ogv']
-# DJANGOCMS_VIDEO_TEMPLATES = [
-#     ('feature', _('Featured Version')),
-# ]
-# Requires registering portal app on youtube: https://developers.google.com/youtube/registering_an_application
-# DJANGOCMS_YOUTUBE_API_KEY = '<youtube_data_api_server_key>'
 
 
 """
@@ -639,9 +488,13 @@ PORTAL_EXEC_SYSTEMS = {
 """
 SETTINGS: DATA DEPOT
 """
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret._PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
-PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', [])
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret.\
+    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_secret.\
+    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(
+    settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', {}
+)
 
 PORTAL_SEARCH_MANAGERS = {
     'my-data': 'portal.apps.search.api.managers.private_data_search.PrivateDataSearchManager',
@@ -737,11 +590,7 @@ PORTAL_USER_HOME_MANAGER = settings_secret.\
 PORTAL_KEYS_MANAGER = settings_secret.\
     _PORTAL_KEYS_MANAGER
 
-PORTAL_USER_ACCOUNT_SETUP_STEPS = settings_secret.\
-    _PORTAL_USER_ACCOUNT_SETUP_STEPS
-
-PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = settings_secret.\
-    _PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD
+PORTAL_USER_ACCOUNT_SETUP_STEPS = getattr(settings_secret, '_PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
 
 PORTAL_NAMESPACE = settings_secret.\
     _PORTAL_NAMESPACE
@@ -758,6 +607,8 @@ PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '')
 
+PORTAL_KEY_SERVICE_ACTOR_ID = getattr(settings_secret, '_PORTAL_KEY_SERVICE_ACTOR_ID', "jzQP0EeX7mE1K")
+
 PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
                                   "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
 
@@ -771,14 +622,6 @@ WH_BASE_URL = getattr(settings_secret, '_WH_BASE_URL', '')
 PORTAL_DOMAIN = settings_secret._PORTAL_DOMAIN
 
 PORTAL_ALLOCATION = getattr(settings_secret, '_PORTAL_ALLOCATION', '')
-
-ALLOCATION_SYSTEMS = getattr(settings_secret, '_ALLOCATION_SYSTEMS', [])
-
-"""
-SETTINGS: settings related to possible steps in PORTAL_USER_ACCOUNT_SETUP_STEPS
-"""
-# ProjectMembershipStep
-REQUIRED_PROJECTS = getattr(settings_secret, '_REQUIRED_PROJECTS', [])
 
 """
 SETTINGS: ELASTICSEARCH

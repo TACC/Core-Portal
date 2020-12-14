@@ -55,7 +55,7 @@ DataFilesSystemSelector.propTypes = {
 };
 
 DataFilesSystemSelector.defaultProps = {
-  systemId: null,
+  systemId: '',
   disabled: false
 };
 

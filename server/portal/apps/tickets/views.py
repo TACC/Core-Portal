@@ -11,7 +11,7 @@ def tickets(request):
 
 @ensure_csrf_cookie
 def ticket_create(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.profile.setup_complete:
         response = redirect('/workbench/dashboard/tickets/create/')
         return response
     return render(request, 'portal/apps/workbench/index.html')
