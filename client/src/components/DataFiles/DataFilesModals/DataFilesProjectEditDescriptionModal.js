@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -12,7 +12,9 @@ import './DataFilesProjectEditDescription.module.scss';
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.editproject);
-  const { title, description, projectId } = useSelector(state => state.projects.metadata);
+  const { title, description, projectId } = useSelector(
+    state => state.projects.metadata
+  );
   const isUpdating = useSelector(state => {
     return (
       state.projects.operation &&
