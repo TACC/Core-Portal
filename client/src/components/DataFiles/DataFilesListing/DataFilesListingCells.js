@@ -11,7 +11,6 @@ import { Icon } from '_common';
 import { Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
-import './DataFilesListingCells.module.scss';
 
 export const CheckboxHeaderCell = () => {
   const selected = useSelector(state => state.files.selectAll.FilesListing);
@@ -173,8 +172,8 @@ export const ViewPathCell = ({ file }) => {
     });
   };
   return (
-    <Button color="link" onClick={onClick} styleName="viewpath-root">
-      <h6>View Path</h6>
+    <Button color="link" onClick={onClick}>
+      View Path
     </Button>
   );
 };
