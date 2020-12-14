@@ -1,15 +1,17 @@
-import { expectSaga } from "redux-saga-test-plan";
-import * as matchers from "redux-saga-test-plan/matchers";
+import { expectSaga } from 'redux-saga-test-plan';
+import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   getProjectsListing,
   fetchProjectsListing,
   getMetadata,
   fetchMetadata,
   setMember,
-  setMemberUtil
-} from "./projects.sagas";
+  setMemberUtil,
+  setTitleDescription,
+  setTitleDescriptionUtil
+} from './projects.sagas';
 import projectsReducer, { initialState } from '../reducers/projects.reducers';
-import { 
+import {
   projectsFixture,
   projectMetadataFixture,
   projectMetadataResponse,
