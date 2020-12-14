@@ -72,11 +72,13 @@ const DataFilesCopyModal = React.memo(() => {
   const copyCallback = useCallback(
     (system, path) => {
       setDisabled(true);
-      const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
+      const filteredSelected = selected
+        .filter(f => status[f.id] !== 'SUCCESS')
+        .map(f => ({ ...f, api: params.api }));
       dispatch({
         type: 'DATA_FILES_COPY',
         payload: {
-          dest: { system, path },
+          dest: { system, path, api: modalParams.api },
           src: filteredSelected,
           reloadCallback: reloadPage
         }

@@ -1,3 +1,5 @@
+from portal.apps.accounts.managers.user_systems import UserSystemsManager
+from portal.apps.users.utils import get_allocations
 from portal.apps.auth.tasks import get_user_storage_systems
 from portal.views.base import BaseApiView
 from django.conf import settings
@@ -8,8 +10,11 @@ import logging
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
-from portal.apps.users.utils import get_allocations
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
+from portal.apps.datafiles.handlers.googledrive_handlers import \
+    (googledrive_get_handler,
+     googledrive_put_handler)
+from portal.libs.transfer.operations import transfer, transfer_folder
+from portal.exceptions.api import ApiException
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +84,8 @@ class TapisFilesView(BaseApiView):
         except AttributeError:
             return HttpResponseForbidden
 
-        response = tapis_put_handler(client, scheme, system, path, operation, body=body)
+        response = tapis_put_handler(client, scheme, system, path, operation,
+                                     body=body)
 
         return JsonResponse({"data": response})
 
@@ -91,6 +97,67 @@ class TapisFilesView(BaseApiView):
         except AttributeError:
             return HttpResponseForbidden()
 
-        response = tapis_post_handler(client, scheme, system, path, operation, body=body)
+        response = tapis_post_handler(client, scheme, system, path, operation,
+                                      body=body)
 
         return JsonResponse({"data": response})
+
+
+class GoogleDriveFilesView(BaseApiView):
+    def get(self, request, operation=None, scheme=None, system=None,
+            path='root'):
+        try:
+            client = request.user.googledrive_user_token.client
+        except AttributeError:
+            raise ApiException("Login Required", status=400)
+        try:
+            response = googledrive_get_handler(
+                client, scheme, system, path, operation, **request.GET.dict())
+        except HTTPError as e:
+            raise e
+
+        return JsonResponse({'data': response})
+
+    def put(self, request, operation=None, scheme=None,
+            handler=None, system=None, path='root'):
+
+        body = json.loads(request.body)
+        try:
+            client = request.user.googledrive_user_token.client
+        except AttributeError:
+            return HttpResponseForbidden
+
+        response = googledrive_put_handler(client, scheme, system, path,
+                                           operation, body=body)
+
+        return JsonResponse({"data": response})
+
+
+def get_client(user, api):
+    client_mappings = {
+        'tapis': 'agave_oauth',
+        'shared': 'agave_oauth',
+        'googledrive': 'googledrive_user_token',
+        'box': 'box_user_token',
+        'dropbox': 'dropbox_user_token'
+    }
+    return getattr(user, client_mappings[api]).client
+
+
+class TransferFilesView(BaseApiView):
+    def put(self, request, format):
+        body = json.loads(request.body)
+
+        src_client = get_client(request.user, body['src_api'])
+        dest_client = get_client(request.user, body['dest_api'])
+
+        try:
+            if format == 'dir':
+                transfer_folder(src_client, dest_client, **body)
+                return JsonResponse({'success': True})
+            else:
+                transfer(src_client, dest_client, **body)
+                return JsonResponse({'success': True})
+        except Exception as exc:
+            logger.info(exc)
+            raise exc

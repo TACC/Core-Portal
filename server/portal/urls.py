@@ -62,6 +62,9 @@ urlpatterns = [
 
     # views
     path('tickets/', include('portal.apps.tickets.urls', namespace='tickets')),
+    path('googledrive-privacy-policy/',
+         include('portal.apps.googledrive_integration.urls',
+                 namespace='googledrive-privacy-policy')),
     path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
 
     # integrations

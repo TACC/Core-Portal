@@ -11,6 +11,15 @@ import {
   take
 } from 'redux-saga/effects';
 
+/**
+ * Utility function to replace instances of 2 or more slashes in a URL with
+ * a single slash.
+ * @param {string} url
+ */
+export const removeDuplicateSlashes = url => {
+  return url.replace(/\/{2,}/g, '/');
+};
+
 export async function fetchSystemsUtil() {
   const response = await fetch('/api/datafiles/systems/list/');
   if (!response.ok) {
@@ -85,11 +94,19 @@ export async function fetchFilesUtil(
   path,
   offset = 0,
   limit = 100,
-  queryString = ''
+  queryString = '',
+  nextPageToken = null
 ) {
   const operation = queryString ? 'search' : 'listing';
-  const q = stringify({ limit, offset, query_string: queryString });
-  const url = `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`;
+  const q = stringify({
+    limit,
+    offset,
+    query_string: queryString,
+    nextPageToken
+  });
+  const url = removeDuplicateSlashes(
+    `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`
+  );
   const response = await fetch(url);
 
   const responseJson = await response.json();
@@ -133,6 +150,7 @@ export function* fetchFiles(action) {
       payload: {
         files: listingResponse.listing,
         reachedEnd: listingResponse.reachedEnd,
+        nextPageToken: listingResponse.nextPageToken,
         section: action.payload.section
       }
     });
@@ -175,13 +193,15 @@ export function* scrollFiles(action) {
     action.payload.path || '',
     action.payload.offset,
     action.payload.limit,
-    action.payload.queryString
+    action.payload.queryString,
+    action.payload.nextPageToken
   );
   yield put({
     type: 'SCROLL_FILES_SUCCESS',
     payload: {
       files: listingResponse.listing,
       reachedEnd: listingResponse.reachedEnd,
+      nextPageToken: listingResponse.nextPageToken,
       section: action.payload.section
     }
   });
@@ -306,15 +326,41 @@ export async function copyFileUtil(
   scheme,
   system,
   path,
+  filename,
+  filetype,
+  destApi,
   destSystem,
   destPath
 ) {
-  const url = `/api/datafiles/${api}/copy/${scheme}/${system}${path}/`;
+  let url, body;
+  if (api === destApi) {
+    url = removeDuplicateSlashes(
+      `/api/datafiles/${api}/copy/${scheme}/${system}/${path}/`
+    );
+    body = {
+      dest_system: destSystem,
+      dest_path: destPath,
+      filename,
+      filetype
+    };
+  } else {
+    url = removeDuplicateSlashes(`/api/datafiles/transfer/${filetype}/`);
+    body = {
+      src_api: api,
+      dest_api: destApi,
+      src_system: system,
+      dest_system: destSystem,
+      src_path: path,
+      dest_path: destPath,
+      dirname: filename
+    };
+  }
+
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath })
+    body: JSON.stringify(body)
   });
   if (!request.ok) {
     throw new Error(request.status);
@@ -327,6 +373,7 @@ export function* watchCopy() {
 }
 
 export function* copyFile(src, dest, index) {
+  const filetype = src.type === 'dir' ? 'dir' : 'file';
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'RUNNING', key: index, operation: 'copy' }
@@ -334,10 +381,13 @@ export function* copyFile(src, dest, index) {
   try {
     yield call(
       copyFileUtil,
-      'tapis',
+      src.api,
       'private',
       src.system,
       src.path,
+      src.name,
+      filetype,
+      dest.api,
       dest.system,
       dest.path,
       index

@@ -38,6 +38,8 @@ const DataFilesToolbar = ({ scheme }) => {
     )
   );
 
+  const { api } = useSelector(state => state.files.params.FilesListing);
+
   const toggleRenameModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -73,12 +75,17 @@ const DataFilesToolbar = ({ scheme }) => {
     });
   };
 
-  const canRename = selectedFiles.length === 1 && scheme === 'private';
-  const canMove = selectedFiles.length > 0 && scheme === 'private';
+  const canRename =
+    selectedFiles.length === 1 && scheme === 'private' && api !== 'googledrive';
+  const canMove =
+    selectedFiles.length > 0 && scheme === 'private' && api !== 'googledrive';
   const canCopy = selectedFiles.length > 0 && scheme === 'private';
   const canDownload =
-    selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
-  const canTrash = selectedFiles.length > 0 && scheme === 'private';
+    selectedFiles.length === 1 &&
+    selectedFiles[0].format !== 'folder' &&
+    api !== 'googledrive';
+  const canTrash =
+    selectedFiles.length > 0 && scheme === 'private' && api !== 'googledrive';
 
   return (
     <>

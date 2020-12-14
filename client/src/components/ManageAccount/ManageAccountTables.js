@@ -3,7 +3,6 @@ import { useTable } from 'react-table';
 import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { shape, string, arrayOf, bool } from 'prop-types';
-import { Link } from 'react-router-dom';
 import { GoogleDriveModal } from './ManageAccountModals';
 
 export const TableTemplate = ({ attributes }) => {

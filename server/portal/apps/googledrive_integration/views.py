@@ -6,10 +6,21 @@ from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.base import TemplateView
 from portal.apps.googledrive_integration.models import GoogleDriveUserToken
 
 import logging
 logger = logging.getLogger(__name__)
+
+
+class IndexView(TemplateView):
+    """
+    Main workbench view.
+    """
+    template_name = 'portal/apps/workbench/index.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(IndexView, self).dispatch(request, *args, **kwargs)
 
 
 def get_client_config():

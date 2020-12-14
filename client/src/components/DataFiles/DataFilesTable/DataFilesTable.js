@@ -87,6 +87,20 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
         </div>
       );
     }
+    if (err === '400') {
+      return (
+        <div className="h-100 listing-placeholder">
+          <Message type="warn">
+            Connect your Google Drive account under the &quot;3rd Party Apps
+            &quot; section in the &nbsp;
+            <Link to="/workbench/account/" className="wb-link">
+              Manage Account page
+            </Link>
+            .
+          </Message>
+        </div>
+      );
+    }
     return (
       <div className="h-100 listing-placeholder">
         <Message type="warn">
