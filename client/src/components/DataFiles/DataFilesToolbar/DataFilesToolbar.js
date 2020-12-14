@@ -59,13 +59,6 @@ const DataFilesToolbar = ({ scheme }) => {
       payload: { operation: 'copy', props: { selectedFiles } }
     });
 
-  const toggleShowPathModal = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'showpath', props: { file: selectedFiles[0] } }
-    });
-  };
-
   const download = () => {
     dispatch({
       type: 'DATA_FILES_DOWNLOAD',
@@ -86,7 +79,6 @@ const DataFilesToolbar = ({ scheme }) => {
   const canDownload =
     selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
   const canTrash = selectedFiles.length > 0 && scheme === 'private';
-  const canShowPath = selectedFiles.length === 1;
 
   return (
     <>
@@ -114,12 +106,6 @@ const DataFilesToolbar = ({ scheme }) => {
           iconName="download"
           onClick={download}
           disabled={!canDownload}
-        />
-        <ToolbarButton
-          text="Show Path"
-          iconName="download"
-          onClick={toggleShowPathModal}
-          disabled={!canShowPath}
         />
         <ToolbarButton
           text="Trash"

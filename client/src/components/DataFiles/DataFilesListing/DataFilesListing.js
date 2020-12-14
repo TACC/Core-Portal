@@ -9,7 +9,8 @@ import {
   FileNavCell,
   FileLengthCell,
   LastModifiedCell,
-  FileIconCell
+  FileIconCell,
+  ViewPathCell
 } from './DataFilesListingCells';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 
@@ -89,12 +90,17 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
       width: 0.5,
       Cell: fileNavCellCallback
     },
-    { Header: 'Size', accessor: 'length', Cell: FileLengthCell, width: 0.2 },
+    { Header: 'Size', accessor: 'length', Cell: FileLengthCell, width: 0.15 },
     {
       Header: 'Last Modified',
       accessor: 'lastModified',
       Cell: LastModifiedCell,
-      width: 0.2
+      width: 0.15
+    },
+    {
+      Header: 'Path',
+      width: 0.1,
+      Cell: el => <ViewPathCell file={el.row.original} />
     }
   ]);
 
