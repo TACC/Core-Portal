@@ -59,7 +59,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
     expect(getAllByText(/Update Changes/)).toBeDefined();
   });
 
-  it('renders spinner when when updating', () => {
+  it('renders spinner during updating', () => {
     const state = {
       ...initialMockState,
     };
@@ -74,10 +74,10 @@ describe('DataFilesProjectEditDescriptionModal', () => {
       <DataFilesProjectEditDescriptionModal />,
       store
     );
-    expect(getByTestId('loading-spinner'));
+    expect(getByTestId('loading-spinner')).toBeDefined();
   });
 
-  it('renders error when when updating error', () => {
+  it('renders error when updating error occurs', () => {
     const state = {
       ...initialMockState,
     };
@@ -92,6 +92,6 @@ describe('DataFilesProjectEditDescriptionModal', () => {
       <DataFilesProjectEditDescriptionModal />,
       store
     );
-    expect(getByTestId('updating-error'));
+    expect(getByTestId('updating-error')).toBeDefined();
   });
 });
