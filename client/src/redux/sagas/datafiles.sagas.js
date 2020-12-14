@@ -431,33 +431,28 @@ export function* uploadFile(api, scheme, system, path, file, index) {
 }
 
 export function* watchPreview() {
-  yield takeLeading('DATA_FILES_PREVIEW', preview);
+  yield takeLatest('DATA_FILES_PREVIEW', preview);
 }
 
 export function* preview(action) {
   yield put({
-    type: 'DATA_FILES_SET_PREVIEW',
-    payload: { href: null, content: null }
+    type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+    payload: { href: '', content: '', isLoading: true }
   });
 
-  const { response, cancel } = yield race({
-    response: call(
-      previewUtil,
-      action.payload.api,
-      action.payload.scheme,
-      action.payload.system,
-      action.payload.path,
-      action.payload.href
-    ),
-    cancel: take('DATA_FILES_MODAL_CLOSE')
+  const response = yield call(
+    previewUtil,
+    action.payload.api,
+    action.payload.scheme,
+    action.payload.system,
+    action.payload.path,
+    action.payload.href
+  );
+  const { content, href } = response;
+  yield put({
+    type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+    payload: { content, href, isLoading: false }
   });
-  if (!cancel) {
-    const { content, href } = response;
-    yield put({
-      type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-      payload: { content, href }
-    });
-  }
 }
 
 export async function previewUtil(api, scheme, system, path, href) {

@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { LoadingSpinner } from '_common';
-import { func, string } from 'prop-types';
 
 const PreviewModalSpinner = () => (
   <div className="h-100 listing-placeholder">
@@ -10,30 +9,13 @@ const PreviewModalSpinner = () => (
   </div>
 );
 
-const PreviewModalText = ({ onLoad, text }) => {
-  React.useEffect(() => {
-    onLoad();
-  }, [onLoad]);
-  return (
-    <div>
-      <code>
-        <pre>{text}</pre>
-      </code>
-    </div>
-  );
-};
-PreviewModalText.propTypes = {
-  onLoad: func.isRequired,
-  text: string.isRequired
-};
-
 const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.preview);
   const params = useSelector(state => state.files.modalProps.preview);
   const previewHref = useSelector(state => state.files.preview.href);
   const previewContent = useSelector(state => state.files.preview.content);
-  const [loadingPreview, setLoadingPreview] = useState(false);
+  const isLoading = useSelector(state => state.files.preview.isLoading);
 
   const toggle = () =>
     dispatch({
@@ -42,8 +24,6 @@ const DataFilesPreviewModal = () => {
     });
 
   const onOpen = () => {
-    setLoadingPreview(true);
-
     dispatch({
       type: 'DATA_FILES_PREVIEW',
       payload: {
@@ -59,7 +39,7 @@ const DataFilesPreviewModal = () => {
   const onClosed = () => {
     dispatch({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-      payload: { content: '', href: '' }
+      payload: { content: '', href: '', isLoading: true }
     });
   };
 
@@ -75,12 +55,13 @@ const DataFilesPreviewModal = () => {
       >
         <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
         <ModalBody>
-          {loadingPreview && <PreviewModalSpinner />}
+          {isLoading && <PreviewModalSpinner />}
           {previewContent ? (
-            <PreviewModalText
-              onLoad={() => setLoadingPreview(false)}
-              text={previewContent}
-            />
+            <div>
+              <code>
+                <pre>{previewContent}</pre>
+              </code>
+            </div>
           ) : (
             <div className="embed-responsive embed-responsive-4by3">
               <iframe
@@ -88,7 +69,6 @@ const DataFilesPreviewModal = () => {
                 frameBorder="0"
                 className="embed-responsive-item"
                 src={previewHref}
-                onLoad={() => setLoadingPreview(false)}
               />
             </div>
           )}

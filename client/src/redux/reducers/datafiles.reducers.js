@@ -82,7 +82,8 @@ const initialFilesState = {
   },
   preview: {
     href: '',
-    content: ''
+    content: '',
+    isLoading: true
   }
 };
 
@@ -247,7 +248,8 @@ export function files(state = initialFilesState, action) {
         ...state,
         preview: {
           href: action.payload.href,
-          content: action.payload.content
+          content: action.payload.content,
+          isLoading: action.payload.isLoading
         }
       };
     case 'DATA_FILES_TOGGLE_MODAL':
