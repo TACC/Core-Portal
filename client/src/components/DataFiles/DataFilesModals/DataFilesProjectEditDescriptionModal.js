@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, {useCallback, useMemo} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -12,18 +12,18 @@ import './DataFilesProjectEditDescription.module.scss';
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.editproject);
-  const { title, description } = useSelector(state => state.projects.metadata);
+  const { title, description, projectId } = useSelector(state => state.projects.metadata);
   const isUpdating = useSelector(state => {
     return (
       state.projects.operation &&
-      state.projects.operation.name === 'editDescription' &&
+      state.projects.operation.name === 'titleDescription' &&
       state.projects.operation.loading
     );
   });
   const updatingError = useSelector(state => {
     return (
       state.projects.operation &&
-      state.projects.operation.name === 'editDescription' &&
+      state.projects.operation.name === 'titleDescription' &&
       state.projects.operation.error
     );
   });
@@ -43,15 +43,21 @@ const DataFilesProjectEditDescriptionModal = () => {
     });
   };
 
-  const setProjectTitleDescription = values => {
-    dispatch({
-      type: 'PROJECTS_SET_TITLE_DESCRIPTION',
-      payload: {
-        title: values.title,
-        description: values.description
-      }
-    });
-  };
+  const setProjectTitleDescription = useCallback(
+    values => {
+      dispatch({
+        type: 'PROJECTS_SET_TITLE_DESCRIPTION',
+        payload: {
+          projectId,
+          data: {
+            title: values.title,
+            description: values.description
+          }
+        }
+      });
+    },
+    [projectId, dispatch]
+  );
 
   const validationSchema = Yup.object().shape({
     title: Yup.string()
