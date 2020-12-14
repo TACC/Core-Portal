@@ -64,6 +64,7 @@ export const DEFAULT_SCOPE = 'inline'; // FAQ: Historical support for default
  */
 const Message = ({
   children,
+  tagName,
   className,
   onDismiss,
   canDismiss,
@@ -74,7 +75,7 @@ const Message = ({
   const typeMap = TYPE_MAP[type];
   const scopeMap = SCOPE_MAP[scope || DEFAULT_SCOPE];
   const { iconName, iconText, className: typeClassName } = typeMap;
-  const { role, tagName, className: scopeClassName } = scopeMap;
+  const { role, tagName: defaultTagName, className: scopeClassName } = scopeMap;
 
   const hasDismissSupport = scope === 'section';
 
@@ -116,7 +117,7 @@ const Message = ({
       // Avoid manually syncing Reactstrap <Fade>'s default props
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...fadeProps}
-      tag={tagName}
+      tag={tagName || defaultTagName}
       styleName={containerStyleNames}
       className={className}
       role={role}
@@ -155,6 +156,9 @@ Message.propTypes = {
   onDismiss: PropTypes.func,
   /** How to place the message within the layout */
   scope: PropTypes.oneOf(SCOPES), // RFE: Require scope; change all instances
+  /** A specific element tag to use for the root element */
+  /* HACK: Tag name should not be user-defined (because the default per scope is sematnic), but this allows reducing size of message text (by setting `small` tagName) (size reduction should be done consistently based on context, not whenever design chooses; but that context is not defined, yet) */
+  tagName: PropTypes.string,
   /** Message type or severity */
   type: PropTypes.oneOf(TYPES).isRequired
 };
@@ -163,7 +167,8 @@ Message.defaultProps = {
   canDismiss: false,
   isVisible: true,
   onDismiss: () => {},
-  scope: '' // RFE: Require scope; remove this line
+  scope: '', // RFE: Require scope; remove this line
+  tagName: ''
 };
 
 export default Message;

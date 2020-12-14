@@ -128,10 +128,41 @@ describe('Message', () => {
         </Message>
       );
       const root = getByRole('status');
-      const modifierClassName = MSG.SCOPE_MAP[scope || MSG.DEFAULT_SCOPE];
+      const modifierClassName = MSG.SCOPE_MAP[scope || MSG.DEFAULT_SCOPE].className;
 
       testClassnamesByType(TEST_TYPE, getByRole, getByTestId);
       expect(root.className).toMatch(new RegExp(modifierClassName));
+    });
+    it.each(MSG.SCOPES)('has accurate tagName when scope is "%s"', scope => {
+      const { getByRole, getByTestId } = render(
+        <Message
+          type={TEST_TYPE}
+          scope={scope}
+        >
+          {TEST_CONTENT}
+        </Message>
+      );
+      const root = getByRole('status');
+      const tagName = MSG.SCOPE_MAP[scope || MSG.DEFAULT_SCOPE].tagName;
+
+      testClassnamesByType(TEST_TYPE, getByRole, getByTestId);
+      expect(root.tagName.toLowerCase()).toMatch(tagName);
+    });
+    it.each(MSG.SCOPES)('has accurate tagName when tagName is provided for scope "%s"', scope => {
+      const { getByRole, getByTestId } = render(
+        <Message
+          type={TEST_TYPE}
+          scope={scope}
+          tagName="small"
+        >
+          {TEST_CONTENT}
+        </Message>
+      );
+      const root = getByRole('status');
+      const tagName = 'small';
+
+      testClassnamesByType(TEST_TYPE, getByRole, getByTestId);
+      expect(root.tagName.toLowerCase()).toMatch(tagName);
     });
   });
 
