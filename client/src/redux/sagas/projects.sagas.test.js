@@ -98,4 +98,50 @@ describe("Projects Sagas", () => {
       })
       .run();
   });
+  it('should allow change to project title description', () => {
+    const action = {
+      type: 'PROJECTS_SET_TITLE_DESCRIPTION',
+      payload: {
+        projectId: 'PRJ-123',
+        data: {
+          title: 'new title',
+          description: 'new description'
+        }
+      }
+    };
+    const updatedProjectMetadataResponse = {
+      ...projectMetadataResponse,
+      title: action.payload.data.title,
+      description: action.payload.data.description
+    };
+    return expectSaga(setTitleDescription, action)
+      .withReducer(projectsReducer)
+      .provide([
+        [
+          matchers.call.fn(setTitleDescriptionUtil),
+          updatedProjectMetadataResponse
+        ]
+      ])
+      .put({ type: 'PROJECTS_SET_TITLE_DESCRIPTION_STARTED' })
+      .call(setTitleDescriptionUtil, 'PRJ-123', action.payload.data)
+      .put({
+        type: 'PROJECTS_SET_TITLE_DESCRIPTION_SUCCESS',
+        payload: updatedProjectMetadataResponse
+      })
+      .hasFinalState({
+        ...initialState,
+        metadata: {
+          ...projectMetadataFixture,
+          title: 'new title',
+          description: 'new description'
+        },
+        operation: {
+          name: 'titleDescription',
+          loading: false,
+          error: null,
+          result: updatedProjectMetadataResponse
+        }
+      })
+      .run();
+  });
 });
