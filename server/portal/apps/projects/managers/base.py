@@ -181,7 +181,7 @@ class ProjectsManager(object):
             limit=limit
         )]
 
-    def apply_permissions(self, project, username, acl=None):
+    def apply_permissions(self, project, username, acl):
         """Index project and update acls
         """
         project_id = project.project_id
@@ -203,8 +203,7 @@ class ProjectsManager(object):
             project_id
         )
         prj.transfer_pi(old_pi, new_pi)
-        self.apply_permissions(prj, new_owner)
-        self.apply_permissions(prj, old_owner)
+        project_indexer.apply_async(args=[prj.project_id])
         return prj
 
     def add_member(self, project_id, member_type, username):
