@@ -45,8 +45,11 @@ p.is-scope-section {
 // }
 .type-icon {
   margin-right: 0.25em; /* ~4px */
-  margin-top: 0.125em; /* HACK: Align better with 14px–17px sibling font */
 }
+/* HACK: Align icon better with different `.text` of different font sizes */
+.type-icon { margin-top: 0.125em; } /* align well with 14–17px text */
+small.container .type-icon { margin-top: 0; } /* align well with 11–14px text */
+
 .close-button {
   margin-left: auto;
   /* FAQ: Ignore padding by moving over it */
