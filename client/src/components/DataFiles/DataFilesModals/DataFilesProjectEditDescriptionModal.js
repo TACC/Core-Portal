@@ -43,9 +43,9 @@ const DataFilesProjectEditDescriptionModal = () => {
     });
   };
 
-  const editProject = values => {
+  const setProjectTitleDescription = values => {
     dispatch({
-      type: 'PROJECTS_EDIT_METADATA',
+      type: 'PROJECTS_SET_TITLE_DESCRIPTION',
       payload: {
         title: values.title,
         description: values.description
@@ -66,7 +66,7 @@ const DataFilesProjectEditDescriptionModal = () => {
       <ModalBody>
         <Formik
           initialValues={initialValues}
-          onSubmit={editProject}
+          onSubmit={setProjectTitleDescription}
           validationSchema={validationSchema}
         >
           <Form>
@@ -86,7 +86,10 @@ const DataFilesProjectEditDescriptionModal = () => {
               >
                 {isUpdating && <LoadingSpinner placement="inline" />}
                 {updatingError && (
-                  <FontAwesomeIcon icon={faExclamationCircle} />
+                  <FontAwesomeIcon
+                    icon={faExclamationCircle}
+                    data-testid="updating-error"
+                  />
                 )}
                 Update Changes
               </Button>
