@@ -51,7 +51,6 @@ describe("DataFilesManageProjectModal", () => {
       <DataFilesManageProjectModal />,
       store
     )
-    debug();
 
     // Check that the authenticated user sees the Change Ownership option
     expect(getAllByText(/Change Ownership/)).toBeDefined();

@@ -12,7 +12,7 @@ const mockStore = configureStore();
 const initialMockState = {
   files: {
     modals: {
-      addproject: {}
+      addproject: true
     }
   },
   users: {

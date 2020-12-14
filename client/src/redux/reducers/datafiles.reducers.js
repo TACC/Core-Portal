@@ -60,6 +60,7 @@ const initialFilesState = {
     modal: true
   },
   modals: {
+    addproject: false,
     preview: false,
     move: false,
     copy: false,
