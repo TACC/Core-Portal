@@ -16,7 +16,6 @@ import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
 import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
-import DataFilesSearchbar from './DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
 
@@ -37,7 +36,7 @@ const DataFilesSwitch = React.memo(() => {
   return (
     <Switch>
       <Route
-        path={`${path}/shared/:system/:path*`}
+        path={`${path}/tapis/projects/:system/:path*`}
         render={({ match: { params } }) => {
           dispatch({
             type: 'FETCH_FILES',
@@ -78,7 +77,7 @@ const DataFilesSwitch = React.memo(() => {
           );
         }}
       />
-      <Route path={`${path}/shared`}>
+      <Route path={`${path}/tapis/projects`}>
         <DataFilesProjectsList />
       </Route>
       <Route path={`${path}`}>
@@ -94,6 +93,9 @@ const DataFiles = () => {
     shallowEqual
   );
 
+  const readOnly =
+    listingParams.scheme === 'projects' &&
+    (listingParams.system === '' || !listingParams.system);
   return (
     <div styleName="container">
       {/* row containing breadcrumbs and toolbar */}
@@ -114,17 +116,9 @@ const DataFiles = () => {
       </div>
       {/* row containing sidebar and listing pane */}
       <div styleName="items">
-        <DataFilesSidebar styleName="sidebar" />
+        <DataFilesSidebar styleName="sidebar" readOnly={readOnly} />
         <div styleName="content">
-          <DataFilesSearchbar
-            styleName="content-toolbar"
-            api={listingParams.api}
-            scheme={listingParams.scheme}
-            system={listingParams.system}
-          />
-          <div styleName="content-table">
-            <DataFilesSwitch />
-          </div>
+          <DataFilesSwitch />
         </div>
       </div>
       <DataFilesModals />

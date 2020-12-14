@@ -24,7 +24,15 @@ describe('DataFiles', () => {
           pushKeys: {}
         }
       },
-      projects: projectsFixture
+      projects: projectsFixture,
+      authenticatedUser: {
+        user: {
+          username: "username",
+          first_name: "User",
+          last_name: "Name",
+          email: "user@name.com"
+        }
+      }
     });
     const { getByText, getAllByText } = renderComponent(
       <DataFiles />,

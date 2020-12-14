@@ -2,6 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { InfiniteScrollTable, LoadingSpinner, Message } from '_common';
+import './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 
 const DataFilesProjectsList = () => {
@@ -26,7 +27,7 @@ const DataFilesProjectsList = () => {
       Cell: el => (
         <Link
           className="data-files-nav-link"
-          to={`/workbench/data/shared/${el.row.original.id}`}
+          to={`/workbench/data/tapis/projects/${el.row.original.id}`}
         >
           {el.value}
         </Link>
@@ -60,14 +61,16 @@ const DataFilesProjectsList = () => {
   }
 
   return (
-    <InfiniteScrollTable
-      tableColumns={columns}
-      tableData={projects}
-      onInfiniteScroll={infiniteScrollCallback}
-      isLoading={loading}
-      noDataText={noDataText}
-      className="projects-listing"
-    />
+    <div styleName="root">
+      <InfiniteScrollTable
+        tableColumns={columns}
+        tableData={projects}
+        onInfiniteScroll={infiniteScrollCallback}
+        isLoading={loading}
+        noDataText={noDataText}
+        className="projects-listing"
+      />
+    </div>
   );
 };
 

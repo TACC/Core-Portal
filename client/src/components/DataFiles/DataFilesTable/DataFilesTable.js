@@ -12,6 +12,7 @@ import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Link } from 'react-router-dom';
 import { LoadingSpinner, Message } from '_common';
+import './DataFilesTable.module.scss';
 import './DataFilesTable.scss';
 
 // What to render if there are no files to display
@@ -265,6 +266,7 @@ const DataFilesTable = ({
       onResize={resizeCallback}
       disableHeight={process.env.NODE_ENV === 'test'}
       disableWidth={process.env.NODE_ENV === 'test'}
+      styleName="root"
     >
       {({ width, height }) => (
         <div {...getTableProps()}>

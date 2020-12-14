@@ -11,7 +11,9 @@ import {
   LastModifiedCell,
   FileIconCell
 } from './DataFilesListingCells';
+import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
+import './DataFilesListing.module.scss';
 
 const DataFilesListing = ({ api, scheme, system, path }) => {
   // Redux hooks
@@ -99,13 +101,23 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
   ]);
 
   return (
-    <DataFilesTable
-      data={files}
-      columns={columns}
-      rowSelectCallback={rowSelectCallback}
-      scrollBottomCallback={scrollBottomCallback}
-      section="FilesListing"
-    />
+    <div styleName="root">
+      <DataFilesSearchbar
+        api={api}
+        scheme={scheme}
+        system={system}
+        styleName="searchbar"
+      />
+      <div styleName="file-container">
+        <DataFilesTable
+          data={files}
+          columns={columns}
+          rowSelectCallback={rowSelectCallback}
+          scrollBottomCallback={scrollBottomCallback}
+          section="FilesListing"
+        />
+      </div>
+    </div>
   );
 };
 DataFilesListing.propTypes = {

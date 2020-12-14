@@ -8,6 +8,8 @@ import DataFilesRenameModal from './DataFilesRenameModal';
 import DataFilesPushKeysModal from './DataFilesPushKeysModal';
 import DataFilesCopyModal from './DataFilesCopyModal';
 import DataFilesTrashModal from './DataFilesTrashModal';
+import DataFilesAddProjectModal from './DataFilesAddProjectModal';
+import DataFilesManageProjectModal from './DataFilesManageProjectModal';
 import './DataFilesModals.scss';
 
 export default function DataFilesModals() {
@@ -22,6 +24,8 @@ export default function DataFilesModals() {
       <DataFilesPushKeysModal />
       <DataFilesTrashModal />
       <SystemsPushKeysModal />
+      <DataFilesAddProjectModal />
+      <DataFilesManageProjectModal />
     </>
   );
 }
