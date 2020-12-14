@@ -261,6 +261,10 @@ export function files(state = initialFilesState, action) {
     case 'DATA_FILES_CLEAR_PROJECT_SELECTION':
       return {
         ...state,
+        error: {
+          ...state.error,
+          FilesListing: false
+        },
         params: {
           ...state.params,
           FilesListing: {
