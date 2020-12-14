@@ -27,7 +27,7 @@ const DataFilesAddProjectModal = () => {
       state.projects.operation &&
       state.projects.operation.name === 'create' &&
       state.projects.operation.error
-    )
+    );
   });
 
   const toggle = () => {
@@ -105,11 +105,11 @@ const DataFilesAddProjectModal = () => {
                 onAdd={onAdd}
                 onRemove={onRemove}
               />
-              {
-                error 
-                  ? <Message type="warning">Your shared workspace could not be created</Message>
-                  : null
-              }
+              {error ? (
+                <Message type="warning">
+                  Your shared workspace could not be created
+                </Message>
+              ) : null}
             </ModalBody>
             <ModalFooter>
               <Button
