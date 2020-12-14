@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-
+import { TextCopyField } from '_common';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 
 const DataFilesShowPathModal = React.memo(() => {
@@ -68,8 +68,9 @@ const DataFilesShowPathModal = React.memo(() => {
           <dd>{definition.storage.host}</dd>
           <dt>Storage Path</dt>
           <dd>
-            {definition.storage.rootDir}
-            {file.path}
+            <TextCopyField
+              value={`${definition.storage.rootDir}${file.path}`}
+            />
           </dd>
         </dl>
       </ModalBody>
