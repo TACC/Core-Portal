@@ -50,7 +50,7 @@ function Workbench() {
       <NotificationToast />
       <Sidebar disabled={!setupComplete} showUIPatterns={showUIPatterns} />
       <div className="workbench-content">
-        {loading || setupComplete === undefined ? (
+        {loading ? (
           <LoadingSpinner />
         ) : (
           <>
