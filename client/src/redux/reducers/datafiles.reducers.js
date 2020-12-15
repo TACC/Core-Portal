@@ -35,7 +35,8 @@ const initialFilesState = {
     link: {
       method: null,
       url: '',
-      error: null
+      error: null,
+      loading: false
     }
   },
   loadingScroll: {

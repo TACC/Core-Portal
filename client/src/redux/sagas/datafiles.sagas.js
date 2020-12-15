@@ -533,7 +533,8 @@ export function* fileLink(action) {
       status: {
         method,
         url: '',
-        error: null
+        error: null,
+        loading: true
       },
       operation: 'link'
     }
@@ -547,7 +548,8 @@ export function* fileLink(action) {
           status: {
             method: null,
             url: '',
-            error: null
+            error: null,
+            loading: false
           },
           operation: 'link'
         }
@@ -560,7 +562,8 @@ export function* fileLink(action) {
         status: {
           method: null,
           url: result.data || '',
-          error: null
+          error: null,
+          loading: false
         },
         operation: 'link'
       }
@@ -572,7 +575,8 @@ export function* fileLink(action) {
         status: {
           method: null,
           url: '',
-          error: error.toString()
+          error: error.toString(),
+          loading: false
         },
         operation: 'link'
       }

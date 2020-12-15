@@ -150,13 +150,25 @@ class LinkView(BaseApiView):
         return JsonResponse({"data": response})
 
     def post(self, request, scheme, system, path):
-        """Generates a new link for a file, deleting
-        any pre-existing ones
+        """Generates a new link for a file
+        """
+        try:
+            link = Link.objects.get(agave_uri=f"{system}/{path}")
+        except Link.DoesNotExist:
+            # Link doesn't exist - proceed with creating one
+            response = self.create_postit(request, scheme, system, path)
+            return JsonResponse({"data": response})
+        # Link for this file already exists, raise an exception
+        raise ApiException("Link for this file already exists")
+
+    
+    def put(self, request, scheme, system, path):
+        """Replace an existing link for a file
         """
         try:
             link = Link.objects.get(agave_uri=f"{system}/{path}")
             self.delete_link(request, link)
         except Link.DoesNotExist:
-            pass
+            raise ApiException("Could not find pre-existing link")
         response = self.create_postit(request, scheme, system, path)
         return JsonResponse({"data": response})
