@@ -70,9 +70,11 @@ const DataFilesSidebar = ({ readOnly }) => {
                   <i className="icon-folder" /> Folder
                 </span>
               </DropdownItem>
-              <DropdownItem onClick={toggleAddProjectModal}>
-                <i className="icon-folder" /> Shared Workspace
-              </DropdownItem>
+              {systems.some(s => s.scheme === 'projects') && (
+                <DropdownItem onClick={toggleAddProjectModal}>
+                  <i className="icon-folder" /> Shared Workspace
+                </DropdownItem>
+              )}
               <DropdownItem
                 className="complex-dropdown-item"
                 onClick={toggleUploadModal}
