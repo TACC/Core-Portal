@@ -18,6 +18,7 @@ import workbench from './workbench.reducers';
 import welcomeMessages from './welcome.reducers';
 import { onboarding } from './onboarding.reducers';
 import projects from './projects.reducers';
+import { users } from './users.reducers';
 
 export default combineReducers({
   jobs,
@@ -39,5 +40,6 @@ export default combineReducers({
   workbench,
   welcomeMessages,
   onboarding,
-  projects
+  projects,
+  users
 });

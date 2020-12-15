@@ -23,10 +23,9 @@ def _seralize_user(user):
     :param user: User model instance.
     """
     return {
-        'fullName': '{last_name}, {first_name}'.format(
-            last_name=user.last_name,
-            first_name=user.first_name
-        ),
+        'last_name': user.last_name,
+        'first_name': user.first_name,
+        'email': user.email,
         'username': user.username
     }
 

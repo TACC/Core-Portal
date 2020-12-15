@@ -14,7 +14,10 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
   const history = useHistory();
   const hasQuery = queryString.parse(useLocation().search).query_string;
-  const sectionName = findSystemDisplayName(systemList, system);
+  const sectionName =
+    scheme === 'projects'
+      ? 'Workspace'
+      : findSystemDisplayName(systemList, system);
 
   const routeSearch = () => {
     const qs = query
