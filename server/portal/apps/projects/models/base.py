@@ -22,10 +22,12 @@ from django.contrib.auth import get_user_model
 from portal.utils import encryption as EncryptionUtil
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.models.systems.storage import StorageSystem
+from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.apps.projects import utils as ProjectsUtils
 from portal.apps.projects.models.metadata import ProjectMetadata
 from portal.apps.projects.exceptions import NotAuthorizedError
 from portal.apps.accounts.models import SSHKeys
+
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -495,3 +497,19 @@ class ProjectId(models.Model):
     def __str__(self):
         """Str -> self.value."""
         return str(self.value)
+
+
+class ProjectSystemSerializer(BaseAgaveSystemSerializer):
+    def default(self, obj):
+        agave_result = super(ProjectSystemSerializer, self).default(obj)
+        try:
+            pi = ProjectMetadata.objects.get(project_id=obj.name).pi
+            agave_result['owner'] = {
+                'username': pi.username,
+                'first_name': pi.first_name,
+                'last_name': pi.last_name,
+                'email': pi.email
+            }
+        except Exception:
+            logger.error("No metadata info for {}".format(obj.name))
+        return agave_result

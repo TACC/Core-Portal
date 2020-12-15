@@ -86,11 +86,12 @@ const DataFilesSidebar = () => {
                 tag={RRNavLink}
                 to={`${match.path}/shared`}
                 activeClassName="active"
-                key="workspaces">
+                key="workspaces"
+              >
                 <div className="nav-content">
-                  <Icon name='my-data' />
+                  <Icon name="my-data" />
                   <span className="nav-text">Shared Workspaces</span>
-                </div> 
+                </div>
               </NavLink>
             </NavItem>
           </Nav>

@@ -35,7 +35,11 @@ const DataFilesProjectsList = () => {
     {
       Header: 'Owner',
       accessor: 'owner',
-      Cell: el => <span>{el.value ? el.value : ''}</span>
+      Cell: el => (
+        <span>
+          {el.value ? `${el.value.first_name} ${el.value.last_name}` : ''}
+        </span>
+      )
     },
     {
       Header: 'ID',

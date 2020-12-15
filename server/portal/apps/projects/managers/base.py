@@ -9,11 +9,11 @@ from future.utils import python_2_unicode_compatible
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.libs.agave.utils import service_account
-from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.apps.projects.models import Project, ProjectId
+from portal.apps.projects.models import Project, ProjectId, ProjectSystemSerializer
 from portal.apps.projects.serializers import MetadataJSONSerializer
 from portal.apps.search.tasks import project_indexer
+
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ METRICS = logging.getLogger('{}.{}'.format('metrics', __name__))
 class ProjectsManager(object):
     """Projects Manager."""
 
-    systems_serializer_cls = BaseAgaveSystemSerializer
+    systems_serializer_cls = ProjectSystemSerializer
     meta_serializer_cls = MetadataJSONSerializer
 
     def __init__(
