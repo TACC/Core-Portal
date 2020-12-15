@@ -88,7 +88,7 @@ _DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = ""
 
 _ES_AUTH = 'username:password'
 _ES_HOSTS = 'http://elasticsearch:9200'
-_ES_INDEX_PREFIX = 'cms-dev-{}'
+_ES_INDEX_PREFIX = 'frontera-dev-{}'
 _ES_DOMAIN = 'http://localhost:8000'
 
 ########################
