@@ -725,3 +725,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+"""
+SETTINGS: WORKBENCH SETTINGS
+"""
+WORKBENCH_SETTINGS = getattr(settings_secret, '_WORKBENCH_SETTINGS', {})
