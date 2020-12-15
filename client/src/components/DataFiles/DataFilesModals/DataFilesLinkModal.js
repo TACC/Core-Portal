@@ -18,12 +18,8 @@ import './DataFilesLinkModal.scss';
 const statusPropType = PropTypes.shape({
   error: PropTypes.string,
   url: PropTypes.string,
-  method: PropTypes.string
-});
-
-const filePropType = PropTypes.shape({
-  system: PropTypes.string,
-  path: PropTypes.string
+  method: PropTypes.string,
+  loading: PropTypes.bool
 });
 
 const DataFilesLinkActions = ({ status, onClick }) => {
@@ -48,7 +44,7 @@ const DataFilesLinkActions = ({ status, onClick }) => {
           Replace Link
         </Button>
       </>
-    )
+    );
   }
 
   return (
@@ -59,7 +55,7 @@ const DataFilesLinkActions = ({ status, onClick }) => {
     >
       Generate Link
     </Button>
-  )
+  );
 };
 
 DataFilesLinkActions.propTypes = {
@@ -81,7 +77,7 @@ const DataFilesLinkStatus = ({ status }) => {
     return null;
   }
   if (status.loading) {
-    return <LoadingSpinner placement="inline" />
+    return <LoadingSpinner placement="inline" />;
   }
   if (status.error) {
     // Error occurred during retrieval of link
@@ -93,9 +89,7 @@ const DataFilesLinkStatus = ({ status }) => {
   }
   return (
     <FormGroup>
-      <Label>
-        Link
-      </Label>
+      <Label>Link</Label>
       <TextCopyField
         placeholder="Click generate to make a link"
         value={status.url}
@@ -108,8 +102,6 @@ const DataFilesLinkStatus = ({ status }) => {
 };
 
 DataFilesLinkStatus.propTypes = {
-  scheme: PropTypes.string.isRequired,
-  file: filePropType.isRequired,
   status: statusPropType
 };
 
@@ -121,9 +113,9 @@ const DataFilesLinkModal = () => {
   const isOpen = useSelector(state => state.files.modals.link);
   const status = useSelector(state => state.files.operationStatus.link);
   const { scheme } = useSelector(state => state.files.params.FilesListing);
-  const [ confirming, setConfirming ] = useState(false);
-  const [ method, setMethod ] = useState('');
-  const [ message, setMessage ] = useState(null);
+  const [confirming, setConfirming] = useState(false);
+  const [method, setMethod] = useState('');
+  const [message, setMessage] = useState(null);
   const file = useSelector(state => {
     if (!state.files.modalProps.link) {
       return {};
@@ -132,18 +124,15 @@ const DataFilesLinkModal = () => {
   });
 
   const dispatch = useDispatch();
-  const toggle = useCallback(
-    () => {
-      dispatch({
-        type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { operation: 'link', props: {} }
-      });
-      setMethod('');
-      setMessage(null);
-      setConfirming(false);
-    },
-    [ setMethod, setMessage, setConfirming ]
-  );
+  const toggle = useCallback(() => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'link', props: {} }
+    });
+    setMethod('');
+    setMessage(null);
+    setConfirming(false);
+  }, [setMethod, setMessage, setConfirming]);
 
   const onClosed = () => {
     dispatch({
@@ -152,51 +141,44 @@ const DataFilesLinkModal = () => {
     });
   };
 
-  const onCancel = useCallback(
-    () => {
-      setConfirming(false);
-      setMethod(false);
-    },
-    [ setConfirming, setMethod ]
-  );
+  const onCancel = useCallback(() => {
+    setConfirming(false);
+    setMethod(false);
+  }, [setConfirming, setMethod]);
 
-  const onConfirm = useCallback(
-    () => {
-      dispatch({
-        type: 'DATA_FILES_LINK',
-        payload: { file, scheme, method }
-      });
-      setConfirming(false);
-    },
-    [ method, setConfirming, file, scheme ]
-  )
+  const onConfirm = useCallback(() => {
+    dispatch({
+      type: 'DATA_FILES_LINK',
+      payload: { file, scheme, method }
+    });
+    setConfirming(false);
+  }, [method, setConfirming, file, scheme]);
 
   const onActionClick = useCallback(
-    (actionMethod) => {
+    actionMethod => {
       setMethod(actionMethod);
       switch (actionMethod) {
         case 'post':
         case 'put':
-          setMessage("Link generated");
+          setMessage('Link generated');
           break;
         case 'delete':
-          setMessage("Link removed");
+          setMessage('Link removed');
           break;
         default:
           setMessage(null);
       }
       if (actionMethod === 'post') {
-
         dispatch({
           type: 'DATA_FILES_LINK',
           payload: { file, scheme, method: 'post' }
-        })
+        });
       } else {
         setConfirming(true);
       }
     },
-    [ setMethod, setConfirming, file, scheme, setMessage ]
-  )
+    [setMethod, setConfirming, file, scheme, setMessage]
+  );
 
   return (
     <Modal
@@ -208,29 +190,27 @@ const DataFilesLinkModal = () => {
       <Form>
         <ModalHeader toggle={toggle}>Link for {file.name}</ModalHeader>
         <ModalBody>
-          <DataFilesLinkStatus
-            scheme={scheme}
-            file={file}
-            status={status}
-          />
+          <DataFilesLinkStatus scheme={scheme} file={file} status={status} />
         </ModalBody>
         <ModalFooter>
-          {
-            confirming
-              ? <>
-                  <span styleName="warning">The original link will be disabled</span>
-                  <Button onClick={onConfirm}>Confirm</Button>
-                  <Button color="link" onClick={onCancel}>Cancel</Button>
-                </>
-              : <>
-                  {
-                    status && !status.loading && !status.error && message
-                      ? <InlineMessage type="success">{message}</InlineMessage>
-                      : null
-                  }
-                  <DataFilesLinkActions status={status} onClick={onActionClick} />
-                </>
-          }
+          {confirming ? (
+            <>
+              <span styleName="warning">
+                The original link will be disabled
+              </span>
+              <Button onClick={onConfirm}>Confirm</Button>
+              <Button color="link" onClick={onCancel}>
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <>
+              {status && !status.loading && !status.error && message ? (
+                <InlineMessage type="success">{message}</InlineMessage>
+              ) : null}
+              <DataFilesLinkActions status={status} onClick={onActionClick} />
+            </>
+          )}
         </ModalFooter>
       </Form>
     </Modal>
