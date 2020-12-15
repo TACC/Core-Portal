@@ -269,7 +269,8 @@ describe("fileLink", () => {
           status: {
             method: 'get',
             url: '',
-            error: null
+            error: null,
+            loading: true
           },
           operation: 'link'
         }
@@ -287,7 +288,8 @@ describe("fileLink", () => {
           status: {
             method: null,
             url: 'https://postit',
-            error: null
+            error: null,
+            loading: false
           },
           operation: 'link'
         }

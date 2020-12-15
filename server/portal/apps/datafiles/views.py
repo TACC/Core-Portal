@@ -153,7 +153,7 @@ class LinkView(BaseApiView):
         """Generates a new link for a file
         """
         try:
-            link = Link.objects.get(agave_uri=f"{system}/{path}")
+            Link.objects.get(agave_uri=f"{system}/{path}")
         except Link.DoesNotExist:
             # Link doesn't exist - proceed with creating one
             response = self.create_postit(request, scheme, system, path)
@@ -161,7 +161,6 @@ class LinkView(BaseApiView):
         # Link for this file already exists, raise an exception
         raise ApiException("Link for this file already exists")
 
-    
     def put(self, request, scheme, system, path):
         """Replace an existing link for a file
         """

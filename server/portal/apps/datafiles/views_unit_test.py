@@ -113,13 +113,13 @@ def test_link_delete(postits_create, authenticated_user, mock_agave_client, clie
     assert len(Link.objects.all()) == 0
 
 
-def test_link_post_existing(postits_create, authenticated_user, mock_agave_client, client):
+def test_link_put(postits_create, authenticated_user, mock_agave_client, client):
     mock_agave_client.postits.delete.return_value = "OK"
     link = Link.objects.create(
         agave_uri="system/path",
         postit_url="https://tenant/olduuid"
     )
     link.save()
-    result = client.post("/api/datafiles/link/tapis/system/path")
+    result = client.put("/api/datafiles/link/tapis/system/path")
     assert json.loads(result.content)["data"] == "https://tenant/uuid"
     assert Link.objects.all()[0].get_uuid() == "uuid"
