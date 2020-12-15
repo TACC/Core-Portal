@@ -95,13 +95,6 @@ const DataFilesTrashModal = React.memo(() => {
         >
           Trash
         </Button>
-        <Button
-          color="secondary"
-          className="data-files-btn-cancel"
-          onClick={toggle}
-        >
-          Close
-        </Button>
       </ModalFooter>
     </Modal>
   );
