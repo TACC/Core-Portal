@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     'portal.apps.system_monitor',
     'portal.apps.projects',
     'portal.apps.system_creation',
+    'portal.apps.public_data'
 ]
 
 MIDDLEWARE = [

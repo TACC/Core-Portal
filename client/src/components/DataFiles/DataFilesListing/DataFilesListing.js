@@ -13,7 +13,7 @@ import {
 } from './DataFilesListingCells';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 
-const DataFilesListing = ({ api, scheme, system, path }) => {
+const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   // Redux hooks
   const dispatch = useDispatch();
   const queryString = parse(useLocation().search).query_string;
@@ -60,6 +60,7 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
           api={api}
           scheme={scheme}
           href={row.original._links.self.href}
+          isPublic={isPublic}
         />
       );
     },
@@ -112,7 +113,11 @@ DataFilesListing.propTypes = {
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired
+  path: PropTypes.string.isRequired,
+  isPublic: PropTypes.bool
+};
+DataFilesListing.defaultProps = {
+  isPublic: false
 };
 
 export default DataFilesListing;

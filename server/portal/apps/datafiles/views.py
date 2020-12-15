@@ -20,7 +20,6 @@ class SystemListingView(BaseApiView):
     def get(self, request):
         portal_systems = settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
-
         user_systems = get_user_storage_systems(request.user.username, local_systems)
         # compare available storage systems to the systems a user can access
         response = {'system_list': []}
@@ -35,9 +34,10 @@ class SystemListingView(BaseApiView):
                 }
             )
         response['system_list'] += portal_systems
-        default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
-        response['default_host'] = default_system['host']
-
+        if request.user.is_authenticated:
+            default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
+            response['default_host'] = default_system['host']
+        logger.debug(response)
         return JsonResponse(response)
 
 

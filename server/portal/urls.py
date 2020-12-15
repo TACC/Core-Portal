@@ -63,7 +63,7 @@ urlpatterns = [
     # views
     path('tickets/', include('portal.apps.tickets.urls', namespace='tickets')),
     path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
-
+    path('public-data/', include('portal.apps.public_data.urls', namespace='public')),
     # version check.
     path('version/', portal_version),
 
