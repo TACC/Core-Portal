@@ -38,6 +38,10 @@ const DataFilesToolbar = ({ scheme }) => {
     )
   );
 
+  const showMakeLink = useSelector(
+    state => state.workbench && state.workbench.config.makeLink
+  );
+
   const toggleRenameModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -125,12 +129,14 @@ const DataFilesToolbar = ({ scheme }) => {
           onClick={download}
           disabled={!canDownload}
         />
-        <ToolbarButton
-          text="Link"
-          iconName="link"
-          onClick={toggleLinkModal}
-          disabled={!canDownload}
-        />
+        {showMakeLink && (
+          <ToolbarButton
+            text="Link"
+            iconName="link"
+            onClick={toggleLinkModal}
+            disabled={!canDownload}
+          />
+        )}
         <ToolbarButton
           text="Trash"
           iconName="trash"
