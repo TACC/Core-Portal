@@ -70,7 +70,6 @@ const initialFilesState = {
     rename: false,
     pushKeys: false,
     trash: false,
-    addproject: false,
     manageproject: false,
     editproject: false
   },
