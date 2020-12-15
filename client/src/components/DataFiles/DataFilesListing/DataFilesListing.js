@@ -23,7 +23,7 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
     shallowEqual
   );
 
-  const showViewPath = useSelector(state => state.workbench.config.viewPath);
+  const showViewPath = useSelector(state => state.workbench && state.workbench.config.viewPath);
 
   const scrollBottomCallback = useCallback(() => {
     dispatch({
