@@ -90,6 +90,8 @@ small.container .type-icon { margin-top: 0; } /* align well with 11–14px text 
   border-style: solid;
 
   /* Children */
+  /* FAQ: The stylelint issue exists only when `small.container .type-icon` rule is present, which is an undesirable hack, anyway */
+  /* stylelint-disable-next-line no-descending-specificity */
   & .type-icon {
     margin-right: 1rem;
   }
