@@ -29,7 +29,7 @@ const DataFilesShowPathModalFixture = {
     }
   },
   modals: {
-    showpath: {}
+    showpath: true
   }
 };
 
