@@ -91,14 +91,10 @@ const DataFilesBreadcrumbs = ({
 
   const root = (() => {
     switch (scheme) {
-      case 'private':
-        return findSystemDisplayName(systemList, system);
-      case 'community':
-        return 'Community Data';
       case 'projects':
         return findProjectTitle(system);
       default:
-        return null;
+        return findSystemDisplayName(systemList, system);
     }
   })();
 
