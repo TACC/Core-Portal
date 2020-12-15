@@ -163,12 +163,12 @@ FileIconCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired
 };
 
-export const ViewPathCell = ({ file }) => {
+export const ViewPathCell = ({ file, api }) => {
   const dispatch = useDispatch();
   const onClick = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'showpath', props: { file } }
+      payload: { operation: 'showpath', props: { file, api } }
     });
   };
   return (

@@ -40,7 +40,10 @@ class SystemListingView(BaseApiView):
 
         for system in response['system_list']:
             try:
-                system['definition'] = request.user.agave_oauth.client.systems.get(systemId=system['system'])
+                if system['api'] == 'tapis':
+                    system['definition'] = request.user.agave_oauth.client.systems.get(
+                        systemId=system['system']
+                    )
             except Exception:
                 logger.exception("Could not retrieve definition for {}".format(system['system']))
 

@@ -100,9 +100,9 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
     {
       Header: 'Path',
       width: 0.1,
-      Cell: el => <ViewPathCell file={el.row.original} />
+      Cell: el => <ViewPathCell file={el.row.original} api={api}/>
     }
-  ]);
+  ], [api]);
 
   return (
     <DataFilesTable

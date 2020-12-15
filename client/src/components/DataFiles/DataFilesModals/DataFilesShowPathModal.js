@@ -46,36 +46,48 @@ const DataFilesShowPathModal = React.memo(() => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
   };
 
-  return definition ? (
-    <Modal
-      isOpen={isOpen}
-      onOpened={onOpened}
-      onClosed={onClosed}
-      toggle={toggle}
-      className="dataFilesModal"
-    >
-      <ModalHeader toggle={toggle}>Pathnames for {file.name}</ModalHeader>
-      <ModalBody>
-        <DataFilesBreadcrumbs
-          api={params.api}
-          scheme={params.scheme}
-          system={params.system}
-          path={params.path + file.path || '/'}
-          section=""
-        />
-        <dl>
-          <dt>Storage Host</dt>
-          <dd>{definition.storage.host}</dd>
-          <dt>Storage Path</dt>
-          <dd>
-            <TextCopyField
-              value={`${definition.storage.rootDir}${file.path}`}
-            />
-          </dd>
-        </dl>
-      </ModalBody>
-    </Modal>
-  ) : null;
+  return (
+    file && (
+      <Modal
+        isOpen={isOpen}
+        onOpened={onOpened}
+        onClosed={onClosed}
+        toggle={toggle}
+        className="dataFilesModal"
+      >
+        <ModalHeader toggle={toggle}>Pathnames for {file.name}</ModalHeader>
+        <ModalBody>
+          <DataFilesBreadcrumbs
+            api={params.api}
+            scheme={params.scheme}
+            system={params.system}
+            path={params.path + file.path || '/'}
+            section=""
+          />
+          <dl>
+            {params.api === 'tapis' && definition && (
+              <>
+                <dt>Storage Host</dt>
+                <dd>{definition.storage.host}</dd>
+                <dt>Storage Path</dt>
+              </>
+            )}
+            {params.api === 'googledrive' && (
+              <>
+                <dt>Storage Location</dt>
+                <dd>Google Drive</dd>
+              </>
+            )}
+            <dd>
+              <TextCopyField
+                value={`${definition.storage.rootDir}${file.path}`}
+              />
+            </dd>
+          </dl>
+        </ModalBody>
+      </Modal>
+    )
+  );
 });
 
 export default DataFilesShowPathModal;
