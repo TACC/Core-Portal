@@ -9,6 +9,7 @@ def notify(username, operation, status, extra):
         Notification.STATUS: getattr(Notification, status.upper()),
         Notification.USER: username,
         Notification.EXTRA: extra,
-        Notification.OPERATION: operation
+        Notification.OPERATION: operation,
+        Notification.READ: True
     }
     Notification.objects.create(**event_data)

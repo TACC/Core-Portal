@@ -28,7 +28,14 @@ function Workbench() {
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({ type: 'FETCH_WORKBENCH' });
-    dispatch({ type: 'FETCH_NOTIFICATIONS' });
+    dispatch({
+      type: 'FETCH_NOTIFICATIONS',
+      payload: {
+        body: {
+          eventTypes: ['job', 'interactive_session_ready']
+        }
+      }
+    });
 
     if (setupComplete) {
       dispatch({ type: 'FETCH_SYSTEMS' });
