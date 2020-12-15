@@ -14,7 +14,6 @@ import History from '../History';
 import Onboarding from '../Onboarding';
 import * as ROUTES from '../../constants/routes';
 import NotificationToast from '../Toasts';
-import WelcomeMessages from './WelcomeMessages';
 import './Workbench.scss';
 
 function Workbench() {
@@ -54,7 +53,6 @@ function Workbench() {
           <LoadingSpinner />
         ) : (
           <>
-            <WelcomeMessages />
             {setupComplete ? (
               <Switch>
                 <Route path={`${path}${ROUTES.DASHBOARD}`}>
