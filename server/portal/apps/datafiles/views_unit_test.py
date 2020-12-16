@@ -75,7 +75,7 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
     assert response.json() == {'system': system}
 
 
-def test_get_link(client):
+def test_get_link(client, authenticated_user):
     link = Link(
         agave_uri="system/path",
         postit_url="https://postit"
@@ -86,7 +86,7 @@ def test_get_link(client):
     assert result['data'] == "https://postit"
 
 
-def test_link_not_found(client):
+def test_link_not_found(client, authenticated_user):
     response = client.get("/api/datafiles/link/tapis/system/notfound")
     result = json.loads(response.content)
     assert result['data'] is None

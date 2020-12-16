@@ -12,6 +12,8 @@ from portal.apps.users.utils import get_allocations
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.datafiles.models import Link
 from portal.exceptions.api import ApiException
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
 logger = logging.getLogger(__name__)
@@ -98,12 +100,10 @@ class TapisFilesView(BaseApiView):
         return JsonResponse({"data": response})
 
 
+@method_decorator(login_required, name='dispatch')
 class LinkView(BaseApiView):
     def create_postit(self, request, scheme, system, path):
-        try:
-            client = request.user.agave_oauth.client
-        except AttributeError:
-            raise HttpResponseForbidden
+        client = request.user.agave_oauth.client
         body = {
             "url": "{tenant}/files/v2/media/system/{system}/{path}".format(
                 tenant=settings.AGAVE_TENANT_BASEURL,
@@ -122,10 +122,7 @@ class LinkView(BaseApiView):
         return postit
 
     def delete_link(self, request, link):
-        try:
-            client = request.user.agave_oauth.client
-        except AttributeError:
-            raise HttpResponseForbidden
+        client = request.user.agave_oauth.client
         response = client.postits.delete(uuid=link.get_uuid())
         link.delete()
         return response
