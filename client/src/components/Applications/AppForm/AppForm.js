@@ -79,7 +79,7 @@ const AppDetail = () => {
   return (
     <div id="appDetail-wrapper">
       {!app && <AppPlaceholder apps={hasApps} />}
-      {app.html ? (
+      {app.appType === 'html' ? (
         parse(app.html)
       ) : (
         <>
