@@ -2,6 +2,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 import { call, put, takeLeading } from 'redux-saga/effects';
 
 export function* fetchWorkbench(action) {
+  yield put({ type: 'WORKBENCH_INIT' });
   try {
     const res = yield call(fetchUtil, {
       url: `/api/workbench/`
