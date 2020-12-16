@@ -73,12 +73,18 @@ const DataFilesSystemSelector = ({
         styleName="system-select"
         disabled={disabled}
       >
-        {systemList.map(system => (
-          <option key={uuidv4()} value={system.system}>
-            {system.name}
-          </option>
-        ))}
-        <option value="shared">Shared Workspaces</option>
+        {systemList
+          .filter(s => s.scheme !== 'projects')
+          .map(system => (
+            <option key={uuidv4()} value={system.system}>
+              {system.name}
+            </option>
+          ))}
+        {systemList.find(s => s.scheme === 'projects') ? (
+          <option value="shared">Shared Workspaces</option>
+        ) : (
+          <></>
+        )}
       </DropdownSelector>
       {selectedSystem === 'shared' && !showProjects && (
         <button type="button" className="btn btn-link" onClick={resetProjects}>

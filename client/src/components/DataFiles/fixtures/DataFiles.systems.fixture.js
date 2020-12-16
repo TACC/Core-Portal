@@ -12,6 +12,11 @@ const systemsFixture = {
       system: 'longhorn.home.username',
       scheme: 'private',
       api: 'tapis'
+    },
+    {
+      name: 'Shared Workspaces',
+      scheme: 'projects',
+      api: 'tapis',
     }
   ]
 };
