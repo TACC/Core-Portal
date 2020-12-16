@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { LoadingSpinner } from '_common';
 
 const PreviewModalSpinner = () => (
@@ -66,15 +66,6 @@ const DataFilesPreviewModal = () => {
             </div>
           )}
         </ModalBody>
-        <ModalFooter>
-          <Button
-            color="secondary"
-            className="data-files-btn-cancel"
-            onClick={toggle}
-          >
-            Close
-          </Button>
-        </ModalFooter>
       </Modal>
     </>
   );
