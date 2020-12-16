@@ -125,10 +125,42 @@ export function* setMember(action) {
   }
 }
 
+export async function setTitleDescriptionUtil(projectId, data) {
+  const result = await fetchUtil({
+    url: `/api/projects/${projectId}/`,
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  return result.response;
+}
+
+export function* setTitleDescription(action) {
+  yield put({
+    type: 'PROJECTS_SET_TITLE_DESCRIPTION_STARTED'
+  });
+  try {
+    const { projectId, data } = action.payload;
+    const metadata = yield call(setTitleDescriptionUtil, projectId, data);
+    yield put({
+      type: 'PROJECTS_SET_TITLE_DESCRIPTION_SUCCESS',
+      payload: metadata
+    });
+  } catch (error) {
+    yield put({
+      type: 'PROJECTS_SET_TITLE_DESCRIPTION_FAILED',
+      payload: error
+    });
+  }
+}
+
 export function* watchProjects() {
   yield takeLatest('PROJECTS_GET_LISTING', getProjectsListing);
   yield takeLatest('PROJECTS_SHOW_SHARED_WORKSPACES', showSharedWorkspaces);
   yield takeLatest('PROJECTS_CREATE', createProject);
   yield takeLatest('PROJECTS_GET_METADATA', getMetadata);
   yield takeLatest('PROJECTS_SET_MEMBER', setMember);
+  yield takeLatest('PROJECTS_SET_TITLE_DESCRIPTION', setTitleDescription);
 }

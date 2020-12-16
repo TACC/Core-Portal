@@ -70,9 +70,11 @@ const DataFilesSidebar = ({ readOnly }) => {
                   <i className="icon-folder" /> Folder
                 </span>
               </DropdownItem>
-              <DropdownItem onClick={toggleAddProjectModal}>
-                <i className="icon-folder" /> Shared Workspace
-              </DropdownItem>
+              {systems.some(s => s.scheme === 'projects') && (
+                <DropdownItem onClick={toggleAddProjectModal}>
+                  <i className="icon-folder" /> Shared Workspace
+                </DropdownItem>
+              )}
               <DropdownItem
                 className="complex-dropdown-item"
                 onClick={toggleUploadModal}
@@ -89,34 +91,25 @@ const DataFilesSidebar = ({ readOnly }) => {
         </div>
         <div className="data-files-nav">
           <Nav vertical>
-            <NavItem>
-              {systems
-                ? systems.map(sys => (
+            {systems
+              ? systems.map(sys => (
+                  <NavItem>
                     <NavLink
                       tag={RRNavLink}
-                      to={`${match.path}/${sys.api}/${sys.scheme}/${sys.system}/`}
+                      to={`${match.path}/${sys.api}/${sys.scheme}/${
+                        sys.system ? `${sys.system}/` : ''
+                      }`}
                       activeClassName="active"
-                      key={sys.system}
+                      key={`${sys.name}`}
                     >
                       <div className="nav-content">
                         <Icon name={sys.icon || 'my-data'} />
                         <span className="nav-text">{sys.name}</span>
                       </div>
                     </NavLink>
-                  ))
-                : null}
-              <NavLink
-                tag={RRNavLink}
-                to={`${match.path}/tapis/projects`}
-                activeClassName="active"
-                key="workspaces"
-              >
-                <div className="nav-content">
-                  <Icon name="my-data" />
-                  <span className="nav-text">Shared Workspaces</span>
-                </div>
-              </NavLink>
-            </NavItem>
+                  </NavItem>
+                ))
+              : null}
           </Nav>
         </div>
       </div>

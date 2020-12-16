@@ -192,6 +192,41 @@ export default function projects(state = initialState, action) {
           result: null
         }
       };
+    case 'PROJECTS_SET_TITLE_DESCRIPTION_STARTED':
+      return {
+        ...state,
+        operation: {
+          name: 'titleDescription',
+          loading: true,
+          error: null,
+          result: null
+        }
+      };
+    case 'PROJECTS_SET_TITLE_DESCRIPTION_SUCCESS':
+      return {
+        ...state,
+        metadata: {
+          ...transformMetadata(action.payload),
+          loading: false,
+          error: null
+        },
+        operation: {
+          name: 'titleDescription',
+          loading: false,
+          error: null,
+          result: action.payload
+        }
+      };
+    case 'PROJECTS_SET_TITLE_DESCRIPTION_FAILED':
+      return {
+        ...state,
+        operation: {
+          name: 'titleDescription',
+          loading: false,
+          error: action.payload,
+          result: null
+        }
+      };
     default:
       return state;
   }
