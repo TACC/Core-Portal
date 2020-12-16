@@ -8,15 +8,15 @@ const GoogleDrivePrivacyPolicy = () => (
       By connecting your Google Drive account, you consent to giving this portal{' '}
       <strong>read</strong> and <strong>write</strong> access to your Google
       Drive account. This portal makes a secure connection to your Google Drive
-      account to list your data in the Data Depot, and to copy data to and from
+      account to list your data in Data Files, and to copy data to and from
       TACC&lsquo;s data servers.
     </p>
     <p>
       We request this level of scope access (as opposed to read-only) to give
       you the best user experience, allowing you to upload field data and
-      simulation results directly to your Google Drive, while also viewing and
+      computational results directly to your Google Drive, while also viewing and
       using these files in experimental workflows by copying data from Google
-      Drive to a directory you own in the Data Depot.
+      Drive to a directory you own in Data Files.
     </p>
     <p>
       <strong>
