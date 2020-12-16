@@ -69,7 +69,7 @@ _CMS_TEMPLATES = (
 ########################
 
 # To use during dev, Tracking Protection in browser needs to be turned OFF.
-_GOOGLE_ANALYTICS_PROPERTY_ID = "UA-125525035-13"
+_GOOGLE_ANALYTICS_PROPERTY_ID = "UA-123ABC@%$&-#"
 _GOOGLE_ANALYTICS_PRELOAD = True
 
 ########################
