@@ -21,9 +21,6 @@ const DataFilesSystemSelector = ({
       if (event.target.value === 'shared') {
         setSelectedSystem('shared');
         dispatch({
-          type: 'PROJECTS_GET_MODAL_LISTING'
-        });
-        dispatch({
           type: 'DATA_FILES_SET_MODAL_PROPS',
           payload: {
             operation,
