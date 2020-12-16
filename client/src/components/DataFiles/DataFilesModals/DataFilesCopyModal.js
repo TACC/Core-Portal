@@ -157,6 +157,7 @@ const DataFilesCopyModal = React.memo(() => {
                 systemId={params.system}
                 section="modal"
                 disabled={disabled}
+                showProjects={showProjects}
               />
             </div>
             {!showProjects && (

@@ -9,7 +9,8 @@ const DataFilesSystemSelector = ({
   systemId,
   section,
   disabled,
-  operation
+  operation,
+  showProjects
 }) => {
   const dispatch = useDispatch();
   const systemList = useSelector(state => state.systems.systemList);
@@ -79,7 +80,7 @@ const DataFilesSystemSelector = ({
         ))}
         <option value="shared">Shared Workspaces</option>
       </DropdownSelector>
-      {selectedSystem === 'shared' && (
+      {selectedSystem === 'shared' && !showProjects && (
         <button type="button" className="btn btn-link" onClick={resetProjects}>
           Return to Shared Workspaces
         </button>
@@ -92,12 +93,14 @@ DataFilesSystemSelector.propTypes = {
   systemId: PropTypes.string,
   section: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
-  operation: PropTypes.string.isRequired
+  operation: PropTypes.string.isRequired,
+  showProjects: PropTypes.bool
 };
 
 DataFilesSystemSelector.defaultProps = {
   systemId: '',
-  disabled: false
+  disabled: false,
+  showProjects: false
 };
 
 export default DataFilesSystemSelector;

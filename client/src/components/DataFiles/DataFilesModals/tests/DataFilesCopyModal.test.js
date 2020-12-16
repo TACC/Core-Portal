@@ -98,7 +98,6 @@ describe('DataFilesCopyModal', () => {
     );
 
     fireEvent.change(getByTestId('selector'), { target: { value: 'shared' } });
-    expect(getByText('Return to Shared Workspaces')).toBeDefined();
 
     expect(store.getActions()).toEqual([
       {

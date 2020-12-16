@@ -22,7 +22,7 @@ export function findSystemDisplayName(systemList, system, isRoot) {
     return matchingSystem.name;
   }
   if (isRoot) {
-    return '/'
+    return '/';
   }
   return getSystemName(system);
 }
