@@ -73,6 +73,7 @@ def _get_app(app_id, user):
         lic = license_model.objects.filter(user=user).first()
         data['license']['enabled'] = lic is not None
 
+    # Update any App Tray entries upon app retrieval, if their revision numbers have changed
     matching = AppTrayEntry.objects.all().filter(name=data['name'])
     if len(matching) > 0:
         first_match = matching[0]
