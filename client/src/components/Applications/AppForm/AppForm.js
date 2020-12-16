@@ -57,6 +57,11 @@ const AppDetail = () => {
     shallowEqual
   );
 
+  const categoryDict = useSelector(state => state.apps.categoryDict);
+  const hasApps = Object.keys(categoryDict).some(
+    category => categoryDict[category] && categoryDict[category].length > 0
+  );
+
   if (error.isError) {
     const errorText = error.message ? error.message : 'Something went wrong.';
 
@@ -67,15 +72,15 @@ const AppDetail = () => {
     );
   }
 
-  if (loading || !app.name || allocationsLoading) {
+  if (loading || allocationsLoading) {
     return <LoadingSpinner />;
   }
 
   return (
     <div id="appDetail-wrapper">
-      {!app.name && <AppPlaceholder />}
-      {app.value && app.value.type === 'html' ? (
-        parse(app.value.definition.html)
+      {!app && <AppPlaceholder apps={hasApps} />}
+      {app.appType === 'html' ? (
+        parse(app.html)
       ) : (
         <>
           <AppInfo app={app} />
