@@ -1,96 +1,55 @@
-{% load staticfiles %}
+{# NOTE: Removed references to unused settings #}
+{# WARNING: Some markup is duplicated in other repositories #}
+{# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
+{# FAQ: Extra lines exist to ease CMS/Portal/Guide template comparison #}
 
-{% comment %}
-Unused Settings
-===
-These settings were used before 2020-01 consolidation of Portal & CMS header.
-They seem useful, and would be re-incoprorated when their usage is necessary.
-
-- settings.PORTAL_NAVBAR_BACKGROUND_FILENAME
-- settings.PORTAL_LOGO_FILENAME
-- settings.PORTAL_NAMESPACE
-{% endcomment %}
 
 <!-- Sponsor Logos -->
 <div class="branding-header">
-  <a href="https://www.nsf.gov/" target="_blank">
-    <img class="nav-logo-header nav-logo-nsf-double" src="/static/site_cms/images/org_logos/nsf-white.png" crossorigin="anonymous">
-  </a>
-  <a href="https://www.tacc.utexas.edu/" target="_blank">
-    <img class="nav-logo-header nav-logo-border-left nav-logo-tacc-double" src="/static/site_cms/images/org_logos/tacc-white.png" crossorigin="anonymous">
-  </a>
-  <a href="https://www.utexas.edu/">
-    <img class="nav-logo-header nav-logo-border-left nav-logo-utaustin-double" src="/static/site_cms/images/org_logos/utaustin-white.png" crossorigin="anonymous">
-  </a>
+
+
+
+        <a href="https://www.nsf.gov/" target="">
+          <img class="branding-logo branding-nsf" src="/static/site_cms/img/org_logos/nsf-white.png" crossorigin="anonymous" alt="NSF Logo">
+        </a>
+        <span class="branding-seperator"></span>
+        <a href="https://www.tacc.utexas.edu/" target="">
+          <img class="branding-logo branding-tacc" src="/static/site_cms/img/org_logos/tacc-white.png" crossorigin="anonymous" alt="TACC Logo">
+        </a>
+        <span class="branding-seperator"></span>
+        <a href="https://www.utexas.edu/" target="">
+          <img class="branding-logo branding-utaustin" src="/static/site_cms/img/org_logos/utaustin-white.png" crossorigin="anonymous" alt="University of Texas at Austin Logo">
+        </a>
+
+
+
+
 </div>
+
+
 
 <!-- Navigation Bar -->
 <nav id="s-header" class="s-header  navbar navbar-expand-lg navbar-dark">
-  <!-- Branding Logos -->
-  <a class="navbar-brand" href="/">
-    <img class="nav-logo-double nav-logo-frontera-double" src="/static/site_cms/images/org_logos/frontera-white-solo.png" crossorigin="anonymous">
-  </a>
+  <!-- Portal Logo -->
+
+
+    <a class="navbar-brand" href="/" target="">
+    <img class="portal-logo " src="/static/frontera-cms/img/org_logos/frontera-white-solo.png" crossorigin="anonymous" alt="Frontera Logo">
+    </a>
+
+
+
   <!-- Navbar Accordian Toggle on Small Screens  -->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+
   <!-- Navbar Links -->
   <div class="collapse navbar-collapse" id="navbarsExpandTarget">
-    <ul class="navbar-nav" id="cms-nav-pages" data-cms-nav-endpoint="/cms/nav/pages/markup/">
-      <!-- All top-level CMS controlled nav elements handled here. -->
-    </ul>
+    {# FAQ: Only the version of this template _from the CMS repo_ can not use `only`; here can #}
+    {% include "includes/nav_cms.html" with className="navbar-nav" only %}
 
-    {# Duplicated at https://gitlab.tacc.utexas.edu/wma-cms/frontera-cms/blob/master/taccsite_cms/templates/nav_branding_partials/nav.branding.frontera.v2.html #}
-    {# Duplicated at https://bitbucket.org/taccaci/frontera-tech-docs/src/staging/frontera_theme/header.html #}
-    <ul class="s-portal-nav  navbar-nav navbar-right  ml-auto">
-      {% if user.is_authenticated %}
-      <div class="navbar-nav">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-user-circle fa-lg nav-icon"></i> {{ user.get_username }}
-            <span class="sr-only">Toggle Dropdown</span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="{% url 'workbench:dashboard' %}">
-              <i class="fas fa-desktop nav-icon"></i> My Dashboard
-            </a>
-            <a class="dropdown-item" href="{% url 'workbench:account' %}">
-              <i class="fas fa-user-circle nav-icon"></i> My Account
-            </a>
-            <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">
-              <i class="fas fa-sign-out-alt nav-icon"></i> Log Out
-            </a>
-          </div>
-        </li>
-      </div>
-      {% else %}
-      <li class="nav-item">
-        <a class="nav-link" role="button" href="{% url 'portal_auth:agave_oauth' %}">
-          <i class="fas fa-sign-in-alt nav-icon"></i> Log in
-        </a>
-      </li>
-      {% endif %}
-      <!-- end of user logged in/not logged in if -->
-    </ul>
+    {% include "includes/nav_portal.html" with className="navbar-nav navbar-right  ml-auto" user=user only %}
   </div>
 </nav>
-<script>
-  function includeCMSPagesHTML() {
-    const cmsPagesElement = document.getElementById("cms-nav-pages");
-    cmsPagesEndpoint = cmsPagesElement.dataset.cmsNavEndpoint;
-    if (cmsPagesEndpoint) {
-      fetch(cmsPagesEndpoint).then((response) => {
-        return response.text();
-      }).then((data) => {
-        cmsPagesElement.innerHTML = data;
-      }, (err) => {
-        cmsPagesElement.innerHTML = null;
-      }).finally(() => {
-        cmsPagesElement.removeAttribute("data-cms-nav-endpoint");
-      });
-    }
-  }
-</script>
-<script>
-  includeCMSPagesHTML();
-</script>
+
