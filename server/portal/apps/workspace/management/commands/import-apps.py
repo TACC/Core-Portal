@@ -71,10 +71,9 @@ class Command(BaseCommand):
                     app_entry.lastRetrieved = definition['id']
                     
                 app_entry.save()
-                print("Imported {}".format(app_entry))
-            except Exception as err:
-                print("Error importing application")
-                print(err)
-                print(app)
+                logger.info("Imported {}".format(app_entry))
+            except Exception:
+                logger.exception("Error importing application")
+                logger.info("Following app could not be imported: {}".format(app))
 
             
