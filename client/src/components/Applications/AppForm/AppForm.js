@@ -2,7 +2,13 @@ import React from 'react';
 import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { AppIcon, FormField, Icon, LoadingSpinner, Message } from '_common';
+import {
+  AppIcon,
+  FormField,
+  Icon,
+  LoadingSpinner,
+  SectionMessage
+} from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
 import './AppForm.scss';
@@ -66,9 +72,9 @@ const AppDetail = () => {
     const errorText = error.message ? error.message : 'Something went wrong.';
 
     return (
-      <Message type="warn" className="appDetail-error">
+      <SectionMessage type="warning" className="appDetail-error">
         {errorText}
-      </Message>
+      </SectionMessage>
     );
   }
 
@@ -197,7 +203,7 @@ export const AppSchemaForm = ({ app }) => {
       {jobSubmission.response && (
         <div id="appForm-alerts">
           {jobSubmission.error ? (
-            <Message type="warn" className="appDetail-error">
+            <SectionMessage type="warning" className="appDetail-error">
               Error: {jobSubmission.response.message}
               {missingAllocation && (
                 <>
@@ -208,9 +214,9 @@ export const AppSchemaForm = ({ app }) => {
                   &nbsp;to request access.
                 </>
               )}
-            </Message>
+            </SectionMessage>
           ) : (
-            <Message type="info" className="appDetail-error">
+            <SectionMessage type="info" className="appDetail-error">
               Your job has submitted successfully. See details in{' '}
               <Link
                 to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
@@ -219,7 +225,7 @@ export const AppSchemaForm = ({ app }) => {
                 History &gt; Jobs
               </Link>
               .
-            </Message>
+            </SectionMessage>
           )}
         </div>
       )}
