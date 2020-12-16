@@ -92,7 +92,6 @@ class AppsView(BaseApiView):
         else:
             METRICS.debug("User " + request.user.username + " is requesting all public apps")
             public_only = request.GET.get('publicOnly')
-            agave = request.user.agave_oauth.client
             if public_only == 'true':
                 data = agave.apps.list(publicOnly='true')
             else:

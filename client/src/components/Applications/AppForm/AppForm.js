@@ -59,7 +59,7 @@ const AppDetail = () => {
 
   const categoryDict = useSelector(state => state.apps.categoryDict);
   const hasApps = Object.keys(categoryDict).some(
-    category => categoryDict[category].length > 0
+    category => categoryDict[category] && categoryDict[category].length > 0
   );
 
   if (error.isError) {

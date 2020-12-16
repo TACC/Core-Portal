@@ -11,7 +11,7 @@ function unpackAppIcons(tabs) {
   const appIcons = {};
   tabs.forEach(tab => {
     tab.apps.forEach(appEntry => {
-      if ('icon' in appEntry && appEntry.icon.length > 0) {
+      if ('icon' in appEntry && appEntry.icon && appEntry.icon.length > 0) {
         appIcons[appEntry.appId] = appEntry.icon;
       }
     });
