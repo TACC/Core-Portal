@@ -1,9 +1,11 @@
+import pytest
+import os
+import json
 from mock import MagicMock
 from requests.exceptions import HTTPError
 from portal.apps.datafiles.models import Link
-import pytest
-import json
-
+from django.conf import settings
+from portal.apps.notifications.models import Notification
 
 pytestmark = pytest.mark.django_db
 
@@ -123,3 +125,19 @@ def test_link_put(postits_create, authenticated_user, mock_agave_client, client)
     result = client.put("/api/datafiles/link/tapis/system/path")
     assert json.loads(result.content)["data"] == "https://tenant/uuid"
     assert Link.objects.all()[0].get_uuid() == "uuid"
+
+
+def test_generate_notification_on_request(client, authenticated_user, mocker, mock_agave_client):
+    mocker.patch('portal.libs.agave.operations.agave_indexer')
+
+    mock_response = {'nativeFormat': 'dir'}
+    mock_agave_client.files.manage.return_value = mock_response
+
+    response = client.put("/api/datafiles/tapis/move/private/frontera.home.username/test.txt/",
+                          content_type="application/json",
+                          data=json.dumps({"dest_path": "/testfol",
+                                           "dest_system": "frontera.home.username"}))
+    assert response.json() == {'data': mock_response}
+    n = Notification.objects.last()
+    extra_from_notification = n.to_dict()['extra']
+    assert extra_from_notification == {'response': mock_response}
