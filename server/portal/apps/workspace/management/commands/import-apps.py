@@ -8,6 +8,9 @@ from portal.apps.workspace.models import (
 )
 import json
 
+
+logger = logging.getLogger(__name__)
+
 class Command(BaseCommand):
     """
     This command imports the current set of apps specified with metadata
