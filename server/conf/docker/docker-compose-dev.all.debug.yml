@@ -4,7 +4,7 @@
 version: "3"
 services:
   cms:
-    image: taccwma/frontera-cms:445ec0e
+    image: taccwma/frontera-cms:c0173cc
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
@@ -61,9 +61,9 @@ services:
       - frontera_cms_postgres_data:/var/lib/postgresql/data/portal
     container_name: frontera_cms_postgres
     environment:
-      - POSTGRES_PASSWORD=dev
-      - POSTGRES_USER=dev
-      - POSTGRES_DB=dev
+      - POSTGRES_PASSWORD=taccforever
+      - POSTGRES_USER=postgresadmin
+      - POSTGRES_DB=taccsite
       - PGDATA=/var/lib/postgresql/data/portal
 
   nginx:
@@ -125,7 +125,7 @@ services:
     container_name: frontera_prtl_workers
 
   docs:
-    image: taccwma/frontera-docs:latest-master
+    image: taccwma/frontera-docs:8849bc2
     volumes:
       - ../../docs:/docs/site
     command: ["mkdocs", "build"]
