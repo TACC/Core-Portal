@@ -16,10 +16,13 @@ export function getSystemName(host) {
  * @param {string} system
  * @return {string} display name of system
  */
-export function findSystemDisplayName(systemList, system) {
+export function findSystemDisplayName(systemList, system, isRoot) {
   const matchingSystem = systemList.find(s => s.system === system);
   if (matchingSystem) {
     return matchingSystem.name;
+  }
+  if (isRoot) {
+    return '/'
   }
   return getSystemName(system);
 }
