@@ -1,5 +1,5 @@
 import json
-import logger
+import logging
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
@@ -17,8 +17,6 @@ from django.utils.decorators import method_decorator
 from .utils import notify, NOTIFY_ACTIONS
 
 logger = logging.getLogger(__name__)
-
-
 
 
 class SystemListingView(BaseApiView):

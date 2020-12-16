@@ -1,10 +1,8 @@
 import pytest
-import os
 import json
 from mock import MagicMock
 from requests.exceptions import HTTPError
 from portal.apps.datafiles.models import Link
-from django.conf import settings
 from portal.apps.notifications.models import Notification
 
 pytestmark = pytest.mark.django_db
