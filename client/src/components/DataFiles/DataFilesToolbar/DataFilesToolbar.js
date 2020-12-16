@@ -29,7 +29,7 @@ ToolbarButton.propTypes = {
   iconName: PropTypes.string.isRequired
 };
 
-const DataFilesToolbar = ({ scheme }) => {
+const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
 
   const selectedFiles = useSelector(state =>
@@ -39,7 +39,8 @@ const DataFilesToolbar = ({ scheme }) => {
   );
 
   const showMakeLink = useSelector(
-    state => state.workbench && state.workbench.config.makeLink
+    state =>
+      state.workbench && state.workbench.config.makeLink && api === 'tapis'
   );
 
   const toggleRenameModal = () =>
@@ -148,7 +149,8 @@ const DataFilesToolbar = ({ scheme }) => {
   );
 };
 DataFilesToolbar.propTypes = {
-  scheme: PropTypes.string.isRequired
+  scheme: PropTypes.string.isRequired,
+  api: PropTypes.string.isRequired
 };
 
 export default DataFilesToolbar;
