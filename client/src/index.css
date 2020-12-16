@@ -76,3 +76,9 @@ body > .content,
 #react-root > :only-child {
   flex-grow: 1;
 }
+
+/* FP-546: If this style has become unnecessary, then remove it */
+.btn-link,
+.btn-link:hover {
+  color: var(--global-color-accent--normal);
+}

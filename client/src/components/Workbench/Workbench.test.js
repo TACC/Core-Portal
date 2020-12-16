@@ -36,7 +36,13 @@ describe('workbench', () => {
   const mockStore = configureStore();
   it('renders workbench for onboarding)', () => {
     const history = createMemoryHistory();
-    const store = mockStore(state);
+    const store = mockStore({
+      ...state,
+      workbench: {
+        ...workbench,
+        setupComplete: false
+      }
+    });
     const { getByText } = renderComponent(<Workbench />, store, history);
     expect(
       getByText(
@@ -51,10 +57,6 @@ describe('workbench', () => {
       workbench: {
         ...workbench,
         setupComplete: true
-      },
-      ticketCreate: {
-        ...ticketCreate,
-        creatingSuccess: true
       }
     });
 
