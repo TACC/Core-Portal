@@ -5,7 +5,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { DropdownSelector } from '_common';
 import './DataFilesSystemSelector.module.scss';
 
-const DataFilesSystemSelector = ({ systemId, section, disabled }) => {
+const DataFilesSystemSelector = ({
+  systemId,
+  section,
+  disabled,
+  operation
+}) => {
   const dispatch = useDispatch();
   const systemList = useSelector(state => state.systems.systemList);
   const findSystem = id => systemList.find(system => system.system === id);
@@ -13,6 +18,21 @@ const DataFilesSystemSelector = ({ systemId, section, disabled }) => {
 
   const openSystem = useCallback(
     event => {
+      if (event.target.value === 'shared') {
+        setSelectedSystem('shared');
+        dispatch({
+          type: 'PROJECTS_GET_MODAL_LISTING'
+        });
+        dispatch({
+          type: 'DATA_FILES_SET_MODAL_PROPS',
+          payload: {
+            operation,
+            props: { showProjects: true }
+          }
+        });
+        return;
+      }
+
       const system = findSystem(event.target.value);
       setSelectedSystem(system.system);
       dispatch({
@@ -22,13 +42,30 @@ const DataFilesSystemSelector = ({ systemId, section, disabled }) => {
           section
         }
       });
+      dispatch({
+        type: 'DATA_FILES_SET_MODAL_PROPS',
+        payload: {
+          operation,
+          props: { showProjects: false }
+        }
+      });
     },
     [dispatch, section, findSystem, setSelectedSystem]
   );
 
+  const resetProjects = () => {
+    dispatch({
+      type: 'DATA_FILES_SET_MODAL_PROPS',
+      payload: {
+        operation,
+        props: { showProjects: true }
+      }
+    });
+  };
+
   useEffect(() => {
     setSelectedSystem(systemId);
-  });
+  }, []);
 
   return (
     <>
@@ -43,7 +80,13 @@ const DataFilesSystemSelector = ({ systemId, section, disabled }) => {
             {system.name}
           </option>
         ))}
+        <option value="shared">Shared Workspaces</option>
       </DropdownSelector>
+      {selectedSystem === 'shared' && (
+        <button type="button" className="btn btn-link" onClick={resetProjects}>
+          Return to Shared Workspaces
+        </button>
+      )}
     </>
   );
 };
@@ -51,7 +94,8 @@ const DataFilesSystemSelector = ({ systemId, section, disabled }) => {
 DataFilesSystemSelector.propTypes = {
   systemId: PropTypes.string,
   section: PropTypes.string.isRequired,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
+  operation: PropTypes.string.isRequired
 };
 
 DataFilesSystemSelector.defaultProps = {

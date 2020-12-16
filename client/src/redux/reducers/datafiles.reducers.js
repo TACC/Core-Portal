@@ -258,6 +258,14 @@ export function files(state = initialFilesState, action) {
           [action.payload.operation]: action.payload.props
         }
       };
+    case 'DATA_FILES_SET_MODAL_PROPS':
+      return {
+        ...state,
+        modalProps: {
+          ...state.modalProps,
+          [action.payload.operation]: action.payload.props
+        }
+      };
     case 'DATA_FILES_CLEAR_PROJECT_SELECTION':
       return {
         ...state,

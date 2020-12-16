@@ -1,11 +1,12 @@
 import React, { useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { InfiniteScrollTable, LoadingSpinner, Message } from '_common';
 import './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 
-const DataFilesProjectsList = () => {
+const DataFilesProjectsList = ({ modal }) => {
   const { error, loading, projects } = useSelector(
     state => state.projects.listing
   );
@@ -14,10 +15,34 @@ const DataFilesProjectsList = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    const actionType = modal
+      ? 'PROJECTS_GET_LISTING'
+      : 'PROJECTS_SHOW_SHARED_WORKSPACES';
     dispatch({
-      type: 'PROJECTS_SHOW_SHARED_WORKSPACES'
+      type: actionType
     });
   }, [dispatch]);
+
+  const listingCallback = (e, el) => {
+    e.preventDefault();
+    dispatch({
+      type: 'FETCH_FILES',
+      payload: {
+        api: 'tapis',
+        system: el.row.original.id,
+        scheme: 'projects',
+        path: '',
+        section: 'modal'
+      }
+    });
+    dispatch({
+      type: 'DATA_FILES_SET_MODAL_PROPS',
+      payload: {
+        operation: modal,
+        props: { showProjects: false }
+      }
+    });
+  };
 
   const columns = [
     {
@@ -28,6 +53,7 @@ const DataFilesProjectsList = () => {
         <Link
           className="data-files-nav-link"
           to={`/workbench/data/tapis/projects/${el.row.original.id}`}
+          onClick={e => listingCallback(e, el)}
         >
           {el.value}
         </Link>
@@ -76,6 +102,12 @@ const DataFilesProjectsList = () => {
       />
     </div>
   );
+};
+DataFilesProjectsList.propTypes = {
+  modal: PropTypes.string
+};
+DataFilesProjectsList.defaultProps = {
+  modal: null
 };
 
 export default DataFilesProjectsList;

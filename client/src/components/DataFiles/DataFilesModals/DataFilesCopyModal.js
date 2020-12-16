@@ -8,6 +8,7 @@ import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
 import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
 import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemSelector';
+import DataFilesProjectsList from '../DataFilesProjectsList/DataFilesProjectsList';
 
 const DataFilesCopyModal = React.memo(() => {
   const history = useHistory();
@@ -31,11 +32,13 @@ const DataFilesCopyModal = React.memo(() => {
   };
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
   const isOpen = useSelector(state => state.files.modals.copy);
+  const { showProjects } = useSelector(state => state.files.modalProps.copy);
   const status = useSelector(
     state => state.files.operationStatus.copy,
     shallowEqual
   );
   const [disabled, setDisabled] = useState(false);
+  const systems = useSelector(state => state.systems.systemList, shallowEqual);
 
   const selectedFiles = useSelector(
     state =>
@@ -54,9 +57,24 @@ const DataFilesCopyModal = React.memo(() => {
     });
 
   const onOpened = () => {
+    const systemParams = {
+      api: 'tapis',
+      scheme: 'private',
+      system: systems[0].system
+    };
     dispatch({
       type: 'FETCH_FILES_MODAL',
-      payload: { ...params, section: 'modal' }
+      payload: {
+        ...systemParams,
+        section: 'modal'
+      }
+    });
+    dispatch({
+      type: 'DATA_FILES_SET_MODAL_PROPS',
+      payload: {
+        operation: 'copy',
+        props: {}
+      }
     });
   };
 
@@ -135,27 +153,34 @@ const DataFilesCopyModal = React.memo(() => {
             <div className="dataFilesModalColHeader">
               Destination
               <DataFilesSystemSelector
-                systemId={modalParams.system}
+                operation="copy"
+                systemId={params.system}
                 section="modal"
                 disabled={disabled}
               />
             </div>
-            <DataFilesBreadcrumbs
-              api={modalParams.api}
-              scheme={modalParams.scheme}
-              system={modalParams.system}
-              path={modalParams.path || '/'}
-              section="modal"
-            />
-            <div className="filesListing">
-              <DataFilesModalListingTable
-                data={files.filter(listingFilter)}
-                operationName="Copy"
-                operationCallback={copyCallback}
-                operationOnlyForFolders
-                operationAllowedOnRootFolder
-                disabled={disabled}
+            {!showProjects && (
+              <DataFilesBreadcrumbs
+                api={modalParams.api}
+                scheme={modalParams.scheme}
+                system={modalParams.system}
+                path={modalParams.path || '/'}
+                section="modal"
               />
+            )}
+            <div className="filesListing">
+              {showProjects ? (
+                <DataFilesProjectsList modal="copy" />
+              ) : (
+                <DataFilesModalListingTable
+                  data={files.filter(listingFilter)}
+                  operationName="Copy"
+                  operationCallback={copyCallback}
+                  operationOnlyForFolders
+                  operationAllowedOnRootFolder
+                  disabled={disabled}
+                />
+              )}
             </div>
           </div>
         </div>
