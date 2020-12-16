@@ -340,7 +340,7 @@ export async function copyFileUtil(
     body = {
       dest_system: destSystem,
       dest_path: destPath,
-      filename,
+      file_name: filename,
       filetype
     };
   } else {

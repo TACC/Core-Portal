@@ -162,7 +162,7 @@ def download(client, system, path, *args, **kwargs):
     return fh
 
 
-def copy(client, src_system, src_path, dest_system, dest_path, filename,
+def copy(client, src_system, src_path, dest_system, dest_path, file_name,
          filetype='file', *args):
     from portal.libs.transfer.operations import transfer, transfer_folder
     if not src_path:
@@ -174,6 +174,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, filename,
                  dest_system, src_path, dest_path)
     if filetype == 'dir':
         transfer_folder(client, client, 'googledrive', 'googledrive',
-                        src_system, dest_system, src_path, dest_path, filename)
+                        src_system, dest_system, src_path, dest_path,
+                        file_name)
 
     return {}

@@ -14,9 +14,9 @@ const GoogleDrivePrivacyPolicy = () => (
     <p>
       We request this level of scope access (as opposed to read-only) to give
       you the best user experience, allowing you to upload field data and
-      computational results directly to your Google Drive, while also viewing and
-      using these files in experimental workflows by copying data from Google
-      Drive to a directory you own in Data Files.
+      computational results directly to your Google Drive, while also viewing
+      and using these files in experimental workflows by copying data from
+      Google Drive to a directory you own in Data Files.
     </p>
     <p>
       <strong>

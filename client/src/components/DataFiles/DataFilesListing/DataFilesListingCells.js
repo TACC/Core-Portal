@@ -90,7 +90,10 @@ export const FileNavCell = React.memo(
         <span className="data-files-name">
           <Link
             className="data-files-nav-link"
-            to={`/workbench/data/${api}/${scheme}/${system}${path}/`}
+            to={`/workbench/data/${api}/${scheme}/${system}/${path}/`.replace(
+              /\/{2,}/g, // Replace duplicate slashes with single slash
+              '/'
+            )}
             onClick={format !== 'folder' ? previewCallback : null}
           >
             {name}

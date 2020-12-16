@@ -261,7 +261,8 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     return move_result
 
 
-def copy(client, src_system, src_path, dest_system, dest_path, file_name=None):
+def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
+         *args, **kwargs):
     """Copies the current file to the provided destination path.
 
      Params

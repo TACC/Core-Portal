@@ -280,7 +280,7 @@ describe('copyFiles', () => {
       '/api/datafiles/tapis/copy/private/test.system/testpath/',
       {
         body:
-          '{"dest_system":"test.system","dest_path":"testpath2","filename":"testfilename","filetype":"dir"}',
+          '{"dest_system":"test.system","dest_path":"testpath2","file_name":"testfilename","filetype":"dir"}',
         credentials: 'same-origin',
         headers: { 'X-CSRFToken': undefined },
         method: 'PUT'

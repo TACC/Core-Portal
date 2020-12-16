@@ -25,6 +25,7 @@ const DataFilesSidebar = () => {
     });
   };
   const err = useSelector(state => state.files.error.FilesListing);
+  const { api } = useSelector(state => state.files.params.FilesListing);
   const systems = useSelector(state => state.systems.systemList, shallowEqual);
 
   const toggleMkdirModal = () => {
@@ -43,7 +44,7 @@ const DataFilesSidebar = () => {
               color="primary"
               id="data-files-add"
               className="data-files-btn"
-              disabled={err !== false}
+              disabled={err !== false || api === 'googledrive'}
             >
               + Add
             </DropdownToggle>

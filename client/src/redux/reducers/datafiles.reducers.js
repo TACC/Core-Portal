@@ -20,7 +20,7 @@ export function systems(state = initialSystemState, action) {
   }
 }
 
-const initialFilesState = {
+export const initialFilesState = {
   loading: {
     FilesListing: false,
     modal: false

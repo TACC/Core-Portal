@@ -169,9 +169,9 @@ export const GoogleDriveModal = ({ active, toggle }) => {
           </p>
           <Button
             href="/accounts/applications/googledrive/initialize/"
-            className="btn btn-success"
+            className="manage-account-submit-button"
           >
-            Agree and Connect to Google Drive
+            <span>Agree and Connect to Google Drive</span>
           </Button>
         </div>
       </ModalBody>
