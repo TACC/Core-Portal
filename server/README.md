@@ -6,7 +6,7 @@
 - `conf`: Configure services (like CMS, Nginx, and Docker that runs them).
 - _`docs`: Isolate assets for the Tech Docs / User Guide._
 - _`media`: Dumped assets for the temporary CMS in which the Portal runs._
-- `portal`: Isolate code for the Portal.
+- `portal`: Isolate code for the Portal's backend.
 - _`static`: Dumped assets for the temporary CMS in which the Portal runs._
 
 Any _`italic`_ directories are dynamically created, thus should be ignored by version control.
