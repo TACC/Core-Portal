@@ -41,13 +41,9 @@ def files_search(query_string, system, offset=0, limit=10):
     return (res['count'], res['listing'])
 
 
-class IndexView(BaseApiView):
-    """
-    Main workbench view.
-    """
-    template_name = 'portal/apps/workbench/index.html'
+class SiteSearchApiView(BaseApiView):
 
-    def dispatch(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         logger.debug(request.GET)
         qs = request.GET.get('query_string', '')
         page = request.GET.get('page', 1)
@@ -74,7 +70,8 @@ class IndexView(BaseApiView):
         except StopIteration:
             pass
 
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and \
+                request.user.profile.setup_complete:
             try:
                 community_conf = \
                     next(conf for conf

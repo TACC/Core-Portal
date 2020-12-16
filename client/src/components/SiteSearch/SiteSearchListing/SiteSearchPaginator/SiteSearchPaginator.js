@@ -20,15 +20,21 @@ const SiteSearchPaginator = ({ lastPageIndex }) => {
     return `${pathname}?${queryStringParser.stringify(queryString)}`;
   };
 
+  const disabledLinkCallback = e => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
   return (
     <>
-      <nav aria-label="Page navigation example">
+      <nav aria-label="Page navigation">
         <ul className="pagination">
           <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
             <NavLink
               className="page-link"
               to={pageHref(currentPage - 1)}
               aria-label="Previous"
+              onClick={currentPage === 1 ? disabledLinkCallback : () => {}}
             >
               <span styleName="paginator-link" aria-hidden="true">
                 &lsaquo;
@@ -38,7 +44,11 @@ const SiteSearchPaginator = ({ lastPageIndex }) => {
           </li>
           {pageRange.map(i => (
             <li key={i} className="page-item">
-              <NavLink className="page-link" to={pageHref(i)}>
+              <NavLink
+                className="page-link"
+                to={pageHref(i)}
+                styleName={currentPage === i && 'active'}
+              >
                 <span styleName="paginator-link">{i}</span>
               </NavLink>
             </li>
@@ -52,6 +62,9 @@ const SiteSearchPaginator = ({ lastPageIndex }) => {
               className="page-link"
               to={pageHref(currentPage + 1)}
               aria-label="next"
+              onClick={
+                currentPage === lastPageIndex ? disabledLinkCallback : () => {}
+              }
             >
               <span styleName="paginator-link" aria-hidden="true">
                 &rsaquo;
