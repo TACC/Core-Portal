@@ -75,7 +75,11 @@ const Message = ({
   const typeMap = TYPE_MAP[type];
   const scopeMap = SCOPE_MAP[scope || DEFAULT_SCOPE];
   const { iconName, iconText, className: typeClassName } = typeMap;
-  const { role, tagName: defaultTagName, className: scopeClassName } = scopeMap;
+  const {
+    role,
+    tagName: standardTagName,
+    className: scopeClassName
+  } = scopeMap;
 
   const hasDismissSupport = scope === 'section';
 
@@ -117,7 +121,7 @@ const Message = ({
       // Avoid manually syncing Reactstrap <Fade>'s default props
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...fadeProps}
-      tag={tagName || defaultTagName}
+      tag={tagName || standardTagName}
       styleName={containerStyleNames}
       className={className}
       role={role}
