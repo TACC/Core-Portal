@@ -93,14 +93,13 @@ const DataFilesSidebar = ({ readOnly }) => {
           <Nav vertical>
             {systems
               ? systems.map(sys => (
-                  <NavItem>
+                  <NavItem key={`${sys.name}`}>
                     <NavLink
                       tag={RRNavLink}
                       to={`${match.path}/${sys.api}/${sys.scheme}/${
                         sys.system ? `${sys.system}/` : ''
                       }`}
                       activeClassName="active"
-                      key={`${sys.name}`}
                     >
                       <div className="nav-content">
                         <Icon name={sys.icon || 'my-data'} />

@@ -16,7 +16,7 @@ const systemsFixture = {
     {
       name: 'Shared Workspaces',
       scheme: 'projects',
-      api: 'tapis',
+      api: 'tapis'
     }
   ]
 };
