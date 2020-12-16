@@ -24,6 +24,7 @@ const DataFilesProjectsList = ({ modal }) => {
   }, [dispatch]);
 
   const listingCallback = (e, el) => {
+    if (!modal) return;
     e.preventDefault();
     dispatch({
       type: 'FETCH_FILES',
