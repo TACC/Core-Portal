@@ -17,6 +17,7 @@ import {
   watchPreview,
   watchMkdir,
   watchDownload,
+  watchLink,
   watchTrash
 } from './datafiles.sagas';
 import watchAllocations from './allocations.sagas';
@@ -60,6 +61,7 @@ export default function* rootSaga() {
     watchPreview(),
     watchMkdir(),
     watchDownload(),
+    watchLink(),
     watchTrash(),
     ...watchAllocations,
     watchApps(),

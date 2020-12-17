@@ -31,7 +31,13 @@ const initialFilesState = {
     copy: {},
     select: {},
     upload: {},
-    trash: {}
+    trash: {},
+    link: {
+      method: null,
+      url: '',
+      error: null,
+      loading: false
+    }
   },
   loadingScroll: {
     FilesListing: false,
@@ -67,6 +73,7 @@ const initialFilesState = {
     upload: false,
     mkdir: false,
     rename: false,
+    link: false,
     pushKeys: false,
     trash: false
   },
@@ -79,6 +86,7 @@ const initialFilesState = {
     mkdir: {},
     rename: {},
     pushKeys: {},
+    link: {},
     showpath: {}
   },
   previewHref: ''
@@ -258,6 +266,7 @@ export function files(state = initialFilesState, action) {
           [action.payload.operation]: action.payload.props
         }
       };
+
     default:
       return state;
   }
