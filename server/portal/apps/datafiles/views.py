@@ -1,10 +1,9 @@
-from portal.apps.auth.tasks import get_user_storage_systems
-from portal.views.base import BaseApiView
+import json
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
-import json
-import logging
+from portal.apps.auth.tasks import get_user_storage_systems
+from portal.views.base import BaseApiView
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
@@ -12,6 +11,7 @@ from portal.apps.users.utils import get_allocations
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
+from .utils import notify, NOTIFY_ACTIONS
 
 
 logger = logging.getLogger(__name__)
@@ -62,9 +62,13 @@ class TapisFilesView(BaseApiView):
         try:
             response = tapis_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
+
+            operation in NOTIFY_ACTIONS and \
+                notify(request.user.username, operation, 'success', {'response': response})
         except HTTPError as e:
             error_status = e.response.status_code
             error_json = e.response.json()
+            operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
             if error_status == 502:
                 # In case of 502 determine cause
                 system = dict(client.systems.get(systemId=system))
@@ -91,7 +95,13 @@ class TapisFilesView(BaseApiView):
         except AttributeError:
             return HttpResponseForbidden
 
-        response = tapis_put_handler(client, scheme, system, path, operation, body=body)
+        try:
+            response = tapis_put_handler(client, scheme, system, path, operation, body=body)
+            operation in NOTIFY_ACTIONS and \
+                notify(request.user.username, operation, 'success', {'response': response})
+        except Exception as exc:
+            operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
+            raise exc
 
         return JsonResponse({"data": response})
 
@@ -103,6 +113,12 @@ class TapisFilesView(BaseApiView):
         except AttributeError:
             return HttpResponseForbidden()
 
-        response = tapis_post_handler(client, scheme, system, path, operation, body=body)
+        try:
+            response = tapis_post_handler(client, scheme, system, path, operation, body=body)
+            operation in NOTIFY_ACTIONS and \
+                notify(request.user.username, operation, 'success', {'response': response})
+        except Exception as exc:
+            operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
+            raise exc
 
         return JsonResponse({"data": response})

@@ -1,6 +1,10 @@
+import pytest
+import os
+import json
 from mock import MagicMock
 from requests.exceptions import HTTPError
-import pytest
+from django.conf import settings
+from portal.apps.notifications.models import Notification
 
 pytestmark = pytest.mark.django_db
 
@@ -58,3 +62,19 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
     response = client.get('/api/datafiles/tapis/listing/private/frontera.home.username/')
     assert response.status_code == 502
     assert response.json() == {'system': system}
+
+
+def test_generate_notification_on_request(client, authenticated_user, mocker, mock_agave_client):
+    mocker.patch('portal.libs.agave.operations.agave_indexer')
+
+    mock_response = {'nativeFormat': 'dir'}
+    mock_agave_client.files.manage.return_value = mock_response
+
+    response = client.put("/api/datafiles/tapis/move/private/frontera.home.username/test.txt/",
+                          content_type="application/json",
+                          data=json.dumps({"dest_path": "/testfol",
+                                           "dest_system": "frontera.home.username"}))
+    assert response.json() == {'data': mock_response}
+    n = Notification.objects.last()
+    extra_from_notification = n.to_dict()['extra']
+    assert extra_from_notification == {'response': mock_response}
