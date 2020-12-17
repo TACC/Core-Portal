@@ -72,9 +72,9 @@ const AppDetail = () => {
     const errorText = error.message ? error.message : 'Something went wrong.';
 
     return (
-      <SectionMessage type="warning" className="appDetail-error">
-        {errorText}
-      </SectionMessage>
+      <div className="appDetail-error">
+        <SectionMessage type="warning">{errorText}</SectionMessage>
+      </div>
     );
   }
 
@@ -203,29 +203,36 @@ export const AppSchemaForm = ({ app }) => {
       {jobSubmission.response && (
         <div id="appForm-alerts">
           {jobSubmission.error ? (
-            <SectionMessage type="warning" className="appDetail-error">
-              Error: {jobSubmission.response.message}
-              {missingAllocation && (
-                <>
-                  &nbsp;Please click&nbsp;
-                  <Link to="/workbench/allocations/manage" className="wb-link">
-                    here
-                  </Link>
-                  &nbsp;to request access.
-                </>
-              )}
-            </SectionMessage>
+            <div className="appDetail-error">
+              <SectionMessage type="warning">
+                Error: {jobSubmission.response.message}
+                {missingAllocation && (
+                  <>
+                    &nbsp;Please click&nbsp;
+                    <Link
+                      to="/workbench/allocations/manage"
+                      className="wb-link"
+                    >
+                      here
+                    </Link>
+                    &nbsp;to request access.
+                  </>
+                )}
+              </SectionMessage>
+            </div>
           ) : (
-            <SectionMessage type="info" className="appDetail-error">
-              Your job has submitted successfully. See details in{' '}
-              <Link
-                to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
-                className="wb-link"
-              >
-                History &gt; Jobs
-              </Link>
-              .
-            </SectionMessage>
+            <div className="appDetail-error">
+              <SectionMessage type="info">
+                Your job has submitted successfully. See details in{' '}
+                <Link
+                  to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
+                  className="wb-link"
+                >
+                  History &gt; Jobs
+                </Link>
+                .
+              </SectionMessage>
+            </div>
           )}
         </div>
       )}
