@@ -90,9 +90,7 @@ const DataFilesLinkStatus = ({ status }) => {
   return (
     <FormGroup>
       <Label>Link</Label>
-      <TextCopyField
-        value={status.url}
-      />
+      <TextCopyField value={status.url} />
       <div styleName="help-text">
         This link downloads the file without requiring login or an account.
       </div>
