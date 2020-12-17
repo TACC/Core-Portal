@@ -32,7 +32,7 @@ export function* fetchSystems() {
 }
 
 export async function fetchSystemDefinitionUtil(system) {
-  const response = await fetch(`/api/datafiles/systems/definition/${system}/`)
+  const response = await fetch(`/api/datafiles/systems/definition/${system}/`);
   if (!response.ok) {
     throw new Error(response.status);
   }
@@ -44,8 +44,11 @@ export function* fetchSystemDefinition(action) {
   yield put({ type: 'FETCH_SYSTEM_DEFINITION_STARTED' });
   try {
     const systemsJson = yield call(fetchSystemDefinitionUtil, action.payload);
-    yield put({ type: 'FETCH_SYSTEM_DEFINITION_SUCCESS', payload: systemsJson});
-  } catch(e) {
+    yield put({
+      type: 'FETCH_SYSTEM_DEFINITION_SUCCESS',
+      payload: systemsJson
+    });
+  } catch (e) {
     yield put({ type: 'FETCH_SYSTEM_DEFINITION_ERROR', payload: e.message });
   }
 }

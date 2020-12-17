@@ -4,15 +4,15 @@ export const initialSystemState = {
   error: false,
   errorMessage: null,
   loading: false,
-  definitions: [],
+  definitions: []
 };
 
 export const addSystemDefinition = (system, definitionList) => {
   return [
     ...definitionList.filter(existing => existing.id !== system.id),
     system
-  ]
-}
+  ];
+};
 
 export function systems(state = initialSystemState, action) {
   switch (action.type) {
@@ -22,7 +22,7 @@ export function systems(state = initialSystemState, action) {
         error: false,
         errorMessage: null,
         loading: true
-      }
+      };
     case 'FETCH_SYSTEMS_SUCCESS':
       return {
         ...state,
@@ -31,14 +31,19 @@ export function systems(state = initialSystemState, action) {
         loading: false
       };
     case 'FETCH_SYSTEMS_ERROR':
-      return { ...state, error: true, errorMessage: action.payload, loading: false };
+      return {
+        ...state,
+        error: true,
+        errorMessage: action.payload,
+        loading: false
+      };
     case 'FETCH_SYSTEM_DEFINITION_STARTED':
       return {
         ...state,
         error: false,
         errorMessage: null,
         loading: true
-      }
+      };
     case 'FETCH_SYSTEM_DEFINITION_SUCCESS':
       return {
         ...state,
@@ -46,14 +51,14 @@ export function systems(state = initialSystemState, action) {
         error: false,
         errorMessage: null,
         loading: false
-      }
+      };
     case 'FETCH_SYSTEM_DEFINITION_ERROR':
       return {
         ...state,
         error: true,
         errorMessage: action.payload,
         loading: false
-      }
+      };
     default:
       return state;
   }

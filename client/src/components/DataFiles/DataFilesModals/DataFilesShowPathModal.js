@@ -11,17 +11,14 @@ const DataFilesShowPathModal = React.memo(() => {
     shallowEqual
   );
 
-  useEffect(
-    () => {
-      if (params.api === 'tapis' && params.system) {
-        dispatch({
-          type: 'FETCH_SYSTEM_DEFINITION',
-          payload: params.system
-        })
-      }
-    },
-    [ params, dispatch ]
-  );
+  useEffect(() => {
+    if (params.api === 'tapis' && params.system) {
+      dispatch({
+        type: 'FETCH_SYSTEM_DEFINITION',
+        payload: params.system
+      });
+    }
+  }, [params, dispatch]);
 
   const { file } = useSelector(state => state.files.modalProps.showpath);
 
@@ -31,7 +28,7 @@ const DataFilesShowPathModal = React.memo(() => {
     }
     const matching = state.systems.definitions.find(
       sys => sys.id === file.system
-    )
+    );
     return matching;
   });
 
