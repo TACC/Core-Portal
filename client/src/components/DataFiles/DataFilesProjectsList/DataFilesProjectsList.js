@@ -79,10 +79,6 @@ const DataFilesProjectsList = ({ modal }) => {
 
   const noDataText = "You don't have any Shared Workspaces.";
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
   if (error) {
     return (
       <Message type="error">
