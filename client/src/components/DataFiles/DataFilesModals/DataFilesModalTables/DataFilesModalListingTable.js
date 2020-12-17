@@ -111,12 +111,13 @@ const DataFilesModalButtonCell = ({
   system,
   path,
   format,
+  name,
   operationName,
   operationCallback,
   operationOnlyForFolders,
   disabled
 }) => {
-  const onClick = () => operationCallback(system, path);
+  const onClick = () => operationCallback(system, path, name);
   const formatSupportsOperation =
     !operationOnlyForFolders || format === 'folder';
   return (
@@ -137,6 +138,7 @@ DataFilesModalButtonCell.propTypes = {
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   format: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   operationName: PropTypes.string.isRequired,
   operationCallback: PropTypes.func.isRequired,
   operationOnlyForFolders: PropTypes.bool.isRequired,
@@ -204,7 +206,7 @@ const DataFilesModalListingTable = ({
   const ButtonCell = useCallback(
     ({
       row: {
-        original: { system, path, format }
+        original: { system, path, format, name }
       }
     }) => (
       <DataFilesModalButtonCell
@@ -212,6 +214,7 @@ const DataFilesModalListingTable = ({
         scheme={params.scheme}
         system={system}
         path={path}
+        name={name}
         format={format}
         operationName={operationName}
         operationCallback={operationCallback}
