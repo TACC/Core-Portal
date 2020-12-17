@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
+    'portal.apps.datafiles',
     'portal.apps.projects',
 
 ]
@@ -452,3 +453,7 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
 
 WH_BASE_URL = "https://testserver"
 PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"
+
+WORKBENCH_SETTINGS = {
+    "debug": False
+}

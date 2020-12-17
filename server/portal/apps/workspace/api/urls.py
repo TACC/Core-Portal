@@ -15,6 +15,7 @@ urlpatterns = [
     ),
     url(r'^jobs/?', views.JobsView.as_view()),
     url(r'^monitors/?', views.MonitorsView.as_view()),
-    url(r'^systems/?', views.SystemsView.as_view())
+    url(r'^systems/?', views.SystemsView.as_view()),
+    url(r'^tray/?', views.AppsTrayView.as_view())
 
 ]

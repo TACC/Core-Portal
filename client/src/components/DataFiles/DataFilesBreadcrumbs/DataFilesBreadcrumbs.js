@@ -94,19 +94,6 @@ const DataFilesBreadcrumbs = ({
       return comp;
     }, '');
 
-  const root = (() => {
-    switch (scheme) {
-      case 'private':
-        return findSystemDisplayName(systemList, system);
-      case 'community':
-        return 'Community Data';
-      case 'public':
-        return 'Public Data';
-      default:
-        return null;
-    }
-  })();
-
   return (
     <div className={`breadcrumbs ${className}`}>
       <BreadcrumbLink
@@ -117,7 +104,7 @@ const DataFilesBreadcrumbs = ({
         section={section}
         isPublic={isPublic}
       >
-        <>{root}</>
+        <>{findSystemDisplayName(systemList, system)}</>
       </BreadcrumbLink>
       {pathComps.map((pathComp, i) => {
         if (i < paths.length - 2) {

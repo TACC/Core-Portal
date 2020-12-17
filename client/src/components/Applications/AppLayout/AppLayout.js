@@ -54,13 +54,20 @@ const AppsRoutes = () => {
           exact
           path={`${path}/:appId`}
           render={({ match: { params } }) => {
-            dispatch({
-              type: 'GET_APP',
-              payload: {
-                appMeta: appDict[params.appId],
-                appId: params.appId
-              }
-            });
+            const appDef = appDict[params.appId];
+            if (appDef && 'html' in appDef) {
+              dispatch({
+                type: 'LOAD_APP',
+                payload: appDict[params.appId]
+              });
+            } else {
+              dispatch({
+                type: 'GET_APP',
+                payload: {
+                  appId: params.appId
+                }
+              });
+            }
             return <AppDetail />;
           }}
         />

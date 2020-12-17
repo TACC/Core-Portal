@@ -293,3 +293,17 @@ _GOOGLE_ANALYTICS_PRELOAD = True
 _ES_HOSTS = 'frontera_prtl_elasticsearch:9200'
 _ES_AUTH = 'username:password'
 _ES_INDEX_PREFIX = 'frontera-dev-{}'
+
+########################
+# WORKBENCH SETTINGS
+########################
+"""
+This setting dictionary is a catch-all space for simple configuration
+flags that will be passed to the frontend to determine what non-standard
+components to render.
+"""
+_WORKBENCH_SETTINGS = {
+    "debug": _DEBUG,
+    "viewPath": True,
+    "makeLink": True
+}
