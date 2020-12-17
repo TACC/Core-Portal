@@ -222,7 +222,7 @@ export const AppSchemaForm = ({ app }) => {
             </div>
           ) : (
             <div className="appDetail-error">
-              <SectionMessage type="info">
+              <SectionMessage type="success">
                 Your job has submitted successfully. See details in{' '}
                 <Link
                   to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
