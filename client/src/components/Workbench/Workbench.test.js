@@ -15,6 +15,7 @@ import {
 import { initialState as authenticatedUser } from '../../redux/reducers/authenticated_user.reducer';
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
 import { initialWelcomeMessages as welcomeMessages } from '../../redux/reducers/welcome.reducers';
+import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
 
 /* state required to render workbench/dashboard */
 const state = {
@@ -26,6 +27,7 @@ const state = {
   jobs,
   systemMonitor,
   ticketList,
+  systems,
   ticketCreate,
   ticketCreateModal
 };

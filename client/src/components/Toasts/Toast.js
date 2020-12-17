@@ -3,8 +3,10 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
+import { Icon } from '_common';
 import './Toast.scss';
 import { STATUS_TEXT_MAP } from '../Jobs/JobsStatus';
+import OPERATION_MAP from '../DataFiles/DataFilesStatus';
 import truncateMiddle from '../../utils/truncateMiddle';
 
 const NotificationToast = () => {
@@ -45,52 +47,6 @@ const NotificationToast = () => {
     setOpen(false);
   };
 
-  /**
-   * Returns a human readable message from a job update event.
-   *
-   * @param {Object} notification - The notification event object
-   * @param {Object} notification.extra - The embedded job status update object
-   * @param {string} notification.extra.name - The job name
-   * @param {string} notification.extra.status - The event status
-   * @param {string} notification.message - The event message
-   * @param {string} notification.event_type - The event type
-   * @return {string} Message
-   *
-   * @example
-   * // returns "matlab-v9...20:02:00 is processing"
-   * getToastMessage(n)
-   */
-  const getToastMessage = ({
-    extra: { name, status },
-    event_type: eventType,
-    message
-  }) => {
-    switch (eventType) {
-      case 'job':
-        return `${truncateMiddle(name, 20)} ${STATUS_TEXT_MAP.toastMap(
-          status
-        )}`;
-      case 'interactive_session_ready':
-        return `${truncateMiddle(name, 20)} ${
-          message ? message.toLowerCase() : 'session ready to view.'
-        }`;
-      default:
-        return message;
-    }
-  };
-  getToastMessage.propTypes = {
-    extra: PropTypes.shape({
-      name: PropTypes.string,
-      status: PropTypes.string
-    }),
-    event_type: PropTypes.string.isRequired,
-    message: PropTypes.string
-  };
-  getToastMessage.defaultProps = {
-    extra: {},
-    message: ''
-  };
-
   return (
     <Snackbar
       key={notification ? notification.pk : undefined}
@@ -112,20 +68,94 @@ const NotificationToast = () => {
           message: 'notification-toast-body'
         }
       }}
-      message={
-        <>
-          <div className="notification-toast-icon-wrapper">
-            <i className="icon icon-history" />
-          </div>
-          <div className="notification-toast-content">
-            <span>
-              {notification ? getToastMessage(notification) : undefined}
-            </span>
-          </div>
-        </>
-      }
+      message={<ToastMessage notification={notification} />}
     />
   );
+};
+
+const ToastMessage = ({ notification }) => {
+  const systemList = useSelector(state => state.systems.systemList);
+  return (
+    <>
+      {notification && (
+        <>
+          <div className="notification-toast-icon-wrapper">
+            <Icon
+              name="history"
+              className={
+                notification.status === 'ERROR' ? 'toast-is-error' : ''
+              }
+            />
+          </div>
+          <div className="notification-toast-content">
+            <span>{getToastMessage(notification, systemList)}</span>
+          </div>
+        </>
+      )}
+    </>
+  );
+};
+ToastMessage.propTypes = {
+  notification: PropTypes.shape({
+    status: PropTypes.string
+  })
+};
+ToastMessage.defaultProps = {
+  notification: undefined
+};
+
+/**
+ * Returns a human readable message from a job update event.
+ *
+ * @param {Object} notification - The notification event object
+ * @param {Object} notification.extra - The embedded job status update object
+ * @param {string} notification.extra.name - The job name
+ * @param {string} notification.extra.status - The event status
+ * @param {string} notification.message - The event message
+ * @param {string} notification.event_type - The event type
+ * @param {string} notification.status - The status of the notification event
+ * @param {string} notification.operation - The notification operation type
+ * @param {string} systemList - List of storage systems available to the user in Data Files
+ * @return {string} Message
+ *
+ * @example
+ * // returns "matlab-v9...20:02:00 is processing"
+ * getToastMessage(n, systemList)
+ */
+export const getToastMessage = (
+  { extra, event_type: eventType, message, status, operation },
+  systemList
+) => {
+  switch (eventType) {
+    case 'job':
+      return `${truncateMiddle(extra.name, 20)} ${STATUS_TEXT_MAP.toastMap(
+        extra.status
+      )}`;
+    case 'interactive_session_ready':
+      return `${truncateMiddle(extra.name, 20)} ${
+        message ? message.toLowerCase() : 'session ready to view.'
+      }`;
+    case 'data_files': {
+      return OPERATION_MAP.toastMap(operation, status, systemList, extra);
+    }
+    default:
+      return message;
+  }
+};
+getToastMessage.propTypes = {
+  extra: PropTypes.shape({
+    name: PropTypes.string,
+    status: PropTypes.string
+  }),
+  event_type: PropTypes.string.isRequired,
+  message: PropTypes.string,
+  status: PropTypes.string,
+  operation: PropTypes.string,
+  systemList: PropTypes.list
+};
+getToastMessage.defaultProps = {
+  extra: {},
+  message: ''
 };
 
 export default NotificationToast;
