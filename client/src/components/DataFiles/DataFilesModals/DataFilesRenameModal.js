@@ -85,14 +85,7 @@ const DataFilesRenameModal = () => {
           </ModalBody>
           <ModalFooter>
             <Button type="submit" className="data-files-btn">
-              Rename{' '}
-            </Button>{' '}
-            <Button
-              color="secondary"
-              className="data-files-btn-cancel"
-              onClick={toggle}
-            >
-              Close
+              Rename
             </Button>
           </ModalFooter>
         </Form>

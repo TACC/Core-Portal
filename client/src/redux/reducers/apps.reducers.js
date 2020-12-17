@@ -7,12 +7,34 @@ const initialState = {
   defaultTab: ''
 };
 
+function unpackAppIcons(tabs) {
+  const appIcons = {};
+  tabs.forEach(tab => {
+    tab.apps.forEach(appEntry => {
+      if ('icon' in appEntry && appEntry.icon && appEntry.icon.length > 0) {
+        appIcons[appEntry.appId] = appEntry.icon;
+      }
+    });
+  });
+  return appIcons;
+}
+
+function unpackCategoryDict(tabs) {
+  const categoryDict = {};
+  tabs.forEach(tab => {
+    categoryDict[tab.title] = tab.apps;
+  });
+  return categoryDict;
+}
+
 export function apps(state = initialState, action) {
   switch (action.type) {
     case 'GET_APPS_SUCCESS': {
       return {
         ...state,
-        ...action.payload,
+        categoryDict: unpackCategoryDict(action.payload.tabs),
+        appDict: action.payload.definitions,
+        appIcons: unpackAppIcons(action.payload.tabs),
         loading: false
       };
     }
@@ -27,7 +49,7 @@ export function apps(state = initialState, action) {
         ...state,
         error: {
           ...action.payload,
-          message: action.payload.message,
+          message: action.payload,
           isError: true
         },
         loading: false
