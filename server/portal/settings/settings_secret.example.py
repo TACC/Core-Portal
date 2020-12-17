@@ -304,5 +304,6 @@ components to render.
 """
 _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
-    "viewPath": True
+    "viewPath": True,
+    "makeLink": True
 }
