@@ -426,7 +426,7 @@ def upload(client, system, path, uploaded_file):
     return resp
 
 
-def preview(client, system, path, href, max_uses=3, lifetime=600):
+def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
     """Preview a file.
     Params
     ------
@@ -461,10 +461,13 @@ def preview(client, system, path, href, max_uses=3, lifetime=600):
 
     result = client.postits.create(body=args)
     url = result['_links']['self']['href']
-    content = None
+    txt = None
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
-        txt = text_preview(url)
+        if kwargs['length'] < 1000000:
+            txt = text_preview(url)
+        else:
+            txt = {'content': 'Unable to show preview.'}
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
         file_type = 'image'
     elif file_ext in settings.SUPPORTED_OBJECT_PREVIEW_EXTS:
@@ -479,8 +482,11 @@ def preview(client, system, path, href, max_uses=3, lifetime=600):
         url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
     else:
         file_type = 'other'
-        txt = text_preview(url)
-        logger.debug(content)
+        if kwargs['length'] < 1000000:
+            txt = text_preview(url)
+        else:
+            txt = {'content': 'Unable to show preview.'}
+        logger.debug(txt)
 
     if txt:
         return {'href': url, 'fileType': file_type, **txt}

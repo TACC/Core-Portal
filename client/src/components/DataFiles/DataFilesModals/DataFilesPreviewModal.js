@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { LoadingSpinner } from '_common';
+import './DataFilesPreviewModal.module.scss';
 
 const PreviewModalSpinner = () => (
   <div className="h-100 listing-placeholder">
@@ -31,7 +32,8 @@ const DataFilesPreviewModal = () => {
         scheme: params.scheme,
         system: params.system,
         path: params.path,
-        href: params.href
+        href: params.href,
+        length: params.length
       }
     });
   };
@@ -42,7 +44,6 @@ const DataFilesPreviewModal = () => {
       payload: { content: '', href: '', isLoading: true }
     });
   };
-
   return (
     <>
       <Modal
@@ -59,7 +60,7 @@ const DataFilesPreviewModal = () => {
           {previewContent ? (
             <div>
               <code>
-                <pre>{previewContent}</pre>
+                <pre styleName="text-preview">{previewContent}</pre>
               </code>
             </div>
           ) : (

@@ -439,29 +439,42 @@ export function* preview(action) {
     type: 'DATA_FILES_SET_PREVIEW_CONTENT',
     payload: { href: '', content: '', isLoading: true }
   });
-
-  const response = yield call(
-    previewUtil,
-    action.payload.api,
-    action.payload.scheme,
-    action.payload.system,
-    action.payload.path,
-    action.payload.href
-  );
-  const { content, href } = response;
-  yield put({
-    type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-    payload: { content, href, isLoading: false }
-  });
+  try {
+    if (action.payload.api !== 'tapis')
+      throw new Error('Previewable files must use TAPIS');
+    const response = yield call(
+      previewUtil,
+      action.payload.api,
+      action.payload.scheme,
+      action.payload.system,
+      action.payload.path,
+      action.payload.href,
+      action.payload.length
+    );
+    const { content, href } = response;
+    yield put({
+      type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+      payload: { content, href, isLoading: false }
+    });
+  } catch (e) {
+    yield put({
+      type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+      payload: {
+        content: 'Unable to show preview.',
+        href: '',
+        isLoading: false
+      }
+    });
+  }
 }
 
-export async function previewUtil(api, scheme, system, path, href) {
+export async function previewUtil(api, scheme, system, path, href, length) {
   const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ href })
+    body: JSON.stringify({ href, length })
   });
   const requestJson = await request.json();
   return requestJson.data;
