@@ -91,7 +91,6 @@ const DataFilesLinkStatus = ({ status }) => {
     <FormGroup>
       <Label>Link</Label>
       <TextCopyField
-        placeholder="Click generate to make a link"
         value={status.url}
       />
       <div styleName="help-text">
