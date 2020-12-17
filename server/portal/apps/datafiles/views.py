@@ -12,6 +12,7 @@ from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from .utils import notify, NOTIFY_ACTIONS
+import logging
 
 
 logger = logging.getLogger(__name__)
