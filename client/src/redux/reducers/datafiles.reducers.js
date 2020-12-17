@@ -86,7 +86,8 @@ const initialFilesState = {
     mkdir: {},
     rename: {},
     pushKeys: {},
-    link: {}
+    link: {},
+    showpath: {}
   },
   previewHref: ''
 };

@@ -9,6 +9,7 @@ import DataFilesPushKeysModal from './DataFilesPushKeysModal';
 import DataFilesCopyModal from './DataFilesCopyModal';
 import DataFilesTrashModal from './DataFilesTrashModal';
 import DataFilesLinkModal from './DataFilesLinkModal';
+import DataFilesShowPathModal from './DataFilesShowPathModal';
 import './DataFilesModals.scss';
 
 export default function DataFilesModals() {
@@ -23,6 +24,7 @@ export default function DataFilesModals() {
       <DataFilesPushKeysModal />
       <DataFilesTrashModal />
       <DataFilesLinkModal />
+      <DataFilesShowPathModal />
       <SystemsPushKeysModal />
     </>
   );
