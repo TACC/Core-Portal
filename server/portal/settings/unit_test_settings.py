@@ -335,10 +335,6 @@ LOGGING = {
             'format': '[DJANGO-TEST] %(levelname)s %(asctime)s %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
-        'agave': {
-            'format': '[AGAVE-TEST] %(levelname)s %(asctime)s %(module)s '
-                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
-        },
         'metrics': {
             'format': '[METRICS-TEST] %(levelname)s %(module)s %(name)s.'
                       '%(funcName)s:%(lineno)s: %(message)s '
