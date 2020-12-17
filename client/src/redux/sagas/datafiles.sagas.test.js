@@ -11,7 +11,9 @@ import {
   getLatestApp,
   extractFiles,
   compressFiles,
-  jobHelper
+  jobHelper,
+  fileLinkUtil,
+  fileLink,
 } from "./datafiles.sagas";
 import { fetchUtil } from 'utils/fetchUtil';
 import { expectSaga, testSaga } from "redux-saga-test-plan";
@@ -401,6 +403,61 @@ describe("compressFiles", () => {
               payload: { status: 'ERROR', operation: 'compress' }
             }
           }
+        }
+      })
+      .run();
+  });
+});
+
+describe("fileLink", () => {
+  it("performs a fileLink operation", () => {
+    return expectSaga(fileLink, {
+      payload: {
+        scheme: "private",
+        file: {
+          system: "test.system",
+          path: "path/to/file"
+        },
+        method: 'get'
+      }
+    })
+      .provide([
+        [
+          matchers.call.fn(fileLinkUtil),
+          {
+            data: 'https://postit'
+          }
+        ]
+      ])
+      .put({
+        type: "DATA_FILES_SET_OPERATION_STATUS",
+        payload: {
+          status: {
+            method: 'get',
+            url: '',
+            error: null,
+            loading: true
+          },
+          operation: 'link'
+        }
+      })
+      .call(
+        fileLinkUtil,
+        "get",
+        "private",
+        "test.system",
+        "path/to/file",
+      )
+      .put({
+        type: "DATA_FILES_SET_OPERATION_STATUS",
+        payload: {
+          status: {
+            method: null,
+            url: 'https://postit',
+            error: null,
+            loading: false
+          },
+          operation: 'link'
         }
       })
       .run();

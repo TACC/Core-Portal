@@ -39,6 +39,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
     )
   );
 
+  const showMakeLink = useSelector(
+    state =>
+      state.workbench && state.workbench.config.makeLink && api === 'tapis'
+  );
+
   const toggleRenameModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -72,6 +77,24 @@ const DataFilesToolbar = ({ scheme, api }) => {
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
         operation: 'extract',
+        props: { selectedFile: selectedFiles[0] }
+      }
+    });
+  };
+
+  const toggleLinkModal = () => {
+    dispatch({
+      type: 'DATA_FILES_LINK',
+      payload: {
+        file: selectedFiles[0],
+        scheme
+      },
+      method: 'get'
+    });
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'link',
         props: { selectedFile: selectedFiles[0] }
       }
     });
@@ -139,6 +162,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
           onClick={download}
           disabled={!canDownload}
         />
+        {showMakeLink && (
+          <ToolbarButton
+            text="Link"
+            iconName="link"
+            onClick={toggleLinkModal}
+            disabled={!canDownload}
+          />
+        )}
         <ToolbarButton
           text="Trash"
           iconName="trash"

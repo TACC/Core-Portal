@@ -509,6 +509,81 @@ export function* mkdir(action) {
   });
 }
 
+export async function fileLinkUtil(method, scheme, system, path) {
+  const url = `/api/datafiles/link/${scheme}/${system}${path}/`;
+  return fetchUtil({
+    url,
+    method,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+export function* watchLink() {
+  yield takeLeading('DATA_FILES_LINK', fileLink);
+}
+
+export function* fileLink(action) {
+  const { system, path } = action.payload.file;
+  const { scheme, method } = action.payload;
+  yield put({
+    type: 'DATA_FILES_SET_OPERATION_STATUS',
+    payload: {
+      status: {
+        method,
+        url: '',
+        error: null,
+        loading: true
+      },
+      operation: 'link'
+    }
+  });
+  try {
+    const result = yield call(fileLinkUtil, method, scheme, system, path);
+    if (method === 'delete') {
+      yield put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: {
+          status: {
+            method: null,
+            url: '',
+            error: null,
+            loading: false
+          },
+          operation: 'link'
+        }
+      });
+      return;
+    }
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: {
+        status: {
+          method: null,
+          url: result.data || '',
+          error: null,
+          loading: false
+        },
+        operation: 'link'
+      }
+    });
+  } catch (error) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: {
+        status: {
+          method: null,
+          url: '',
+          error: error.toString(),
+          loading: false
+        },
+        operation: 'link'
+      }
+    });
+  }
+}
+
 export async function downloadUtil(api, scheme, system, path, href) {
   const url = `/api/datafiles/${api}/download/${scheme}/${system}${path}/`;
   const request = await fetch(url, {
