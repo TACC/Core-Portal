@@ -43,7 +43,7 @@ def agave_oauth(request):
     redirect_uri = 'https://{}{}'.format(request.get_host(),
                                          reverse('portal_auth:agave_oauth_callback'))
     logger.debug('redirect_uri %s', redirect_uri)
-    METRICS.debug("user:{} starting oauth redirect login".format(user.username))
+    METRICS.debug("user:{} starting oauth redirect login".format(request.user.username))
     authorization_url = (
         '%s/authorize?client_id=%s&response_type=code&redirect_uri=%s&state=%s' % (
             tenant_base_url,
