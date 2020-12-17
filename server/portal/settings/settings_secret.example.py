@@ -302,6 +302,7 @@ This setting dictionary is a catch-all space for simple configuration
 flags that will be passed to the frontend to determine what non-standard
 components to render.
 """
-WORKBENCH_SETTINGS = {
-    "debug": _DEBUG
+_WORKBENCH_SETTINGS = {
+    "debug": _DEBUG,
+    "viewPath": True
 }

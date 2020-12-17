@@ -9,7 +9,8 @@ import {
   FileNavCell,
   FileLengthCell,
   LastModifiedCell,
-  FileIconCell
+  FileIconCell,
+  ViewPathCell
 } from './DataFilesListingCells';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 
@@ -20,6 +21,10 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
   const files = useSelector(
     state => state.files.listing.FilesListing,
     shallowEqual
+  );
+
+  const showViewPath = useSelector(
+    state => state.workbench && state.workbench.config.viewPath
   );
 
   const scrollBottomCallback = useCallback(() => {
@@ -66,37 +71,51 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
     [api, scheme]
   );
 
-  const columns = useMemo(() => [
-    {
-      id: 'checkbox',
-      width: 0.05,
-      minWidth: 20,
-      maxWidth: 40,
-      Header: CheckboxHeaderCell,
-      Cell: checkboxCellCallback
-    },
-    {
-      id: 'icon',
-      accessor: 'format',
-      width: 0.05,
-      minWidth: 20,
-      maxWidth: 25,
-      Cell: FileIconCell
-    },
-    {
-      Header: 'Name',
-      accessor: 'name',
-      width: 0.5,
-      Cell: fileNavCellCallback
-    },
-    { Header: 'Size', accessor: 'length', Cell: FileLengthCell, width: 0.2 },
-    {
-      Header: 'Last Modified',
-      accessor: 'lastModified',
-      Cell: LastModifiedCell,
-      width: 0.2
+  const columns = useMemo(() => {
+    const cells = [
+      {
+        id: 'checkbox',
+        width: 0.05,
+        minWidth: 20,
+        maxWidth: 40,
+        Header: CheckboxHeaderCell,
+        Cell: checkboxCellCallback
+      },
+      {
+        id: 'icon',
+        accessor: 'format',
+        width: 0.05,
+        minWidth: 20,
+        maxWidth: 25,
+        Cell: FileIconCell
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+        width: 0.5,
+        Cell: fileNavCellCallback
+      },
+      { Header: 'Size', accessor: 'length', Cell: FileLengthCell, width: 0.2 },
+      {
+        Header: 'Last Modified',
+        accessor: 'lastModified',
+        Cell: LastModifiedCell,
+        width: 0.2
+      }
+    ];
+    if (showViewPath) {
+      // Modify these column widths
+      ['Size', 'Last Modified'].forEach(header => {
+        cells.find(col => col.Header === header).width = 0.15;
+      });
+      cells.push({
+        Header: 'Path',
+        width: 0.1,
+        Cell: el => <ViewPathCell file={el.row.original} api={api} />
+      });
     }
-  ]);
+    return cells;
+  }, [api, showViewPath]);
 
   return (
     <DataFilesTable

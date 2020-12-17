@@ -78,7 +78,8 @@ const initialFilesState = {
     upload: {},
     mkdir: {},
     rename: {},
-    pushKeys: {}
+    pushKeys: {},
+    showpath: {}
   },
   previewHref: ''
 };
