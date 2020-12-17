@@ -78,5 +78,5 @@
     justify-content: center;
     height: 100%; /* Be consistent with `#appDetail-wrapper`/`.app-placeholder` (which can exist at the same location),
                      so that `appBrowser-wrapper` height does not change based on sibling content */
-    padding: 30px;
+    padding: 30px 0;
 }
