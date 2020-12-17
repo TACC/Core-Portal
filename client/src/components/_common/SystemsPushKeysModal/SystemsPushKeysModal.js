@@ -140,7 +140,7 @@ const SystemsPushKeysModal = () => {
               </ModalBody>
               <ModalFooter>
                 {error && !submitting && (
-                  <InlineMessage type="error" className="data-files-footer-msg">
+                  <InlineMessage type="error">
                     {error.message}
                   </InlineMessage>
                 )}
