@@ -11,6 +11,8 @@ import DataFilesTrashModal from './DataFilesTrashModal';
 import DataFilesAddProjectModal from './DataFilesAddProjectModal';
 import DataFilesManageProjectModal from './DataFilesManageProjectModal';
 import DataFilesProjectEditDescriptionModal from './DataFilesProjectEditDescriptionModal';
+import DataFilesLinkModal from './DataFilesLinkModal';
+import DataFilesShowPathModal from './DataFilesShowPathModal';
 import './DataFilesModals.scss';
 
 export default function DataFilesModals() {
@@ -24,6 +26,8 @@ export default function DataFilesModals() {
       <DataFilesRenameModal />
       <DataFilesPushKeysModal />
       <DataFilesTrashModal />
+      <DataFilesLinkModal />
+      <DataFilesShowPathModal />
       <SystemsPushKeysModal />
       <DataFilesAddProjectModal />
       <DataFilesManageProjectModal />

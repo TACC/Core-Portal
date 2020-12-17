@@ -31,7 +31,13 @@ const initialFilesState = {
     copy: {},
     select: {},
     upload: {},
-    trash: {}
+    trash: {},
+    link: {
+      method: null,
+      url: '',
+      error: null,
+      loading: false
+    }
   },
   loadingScroll: {
     FilesListing: false,
@@ -68,6 +74,7 @@ const initialFilesState = {
     upload: false,
     mkdir: false,
     rename: false,
+    link: false,
     pushKeys: false,
     trash: false,
     manageproject: false,
@@ -81,7 +88,9 @@ const initialFilesState = {
     upload: {},
     mkdir: {},
     rename: {},
-    pushKeys: {}
+    pushKeys: {},
+    link: {},
+    showpath: {}
   },
   previewHref: ''
 };
