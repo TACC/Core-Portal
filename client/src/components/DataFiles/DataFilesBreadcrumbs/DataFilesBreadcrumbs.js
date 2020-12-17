@@ -107,7 +107,7 @@ const DataFilesBreadcrumbs = ({
         path=""
         section={section}
       >
-        <>{findSystemDisplayName(systemList, system)}</>
+        <>{root}</>
       </BreadcrumbLink>
       {pathComps.map((pathComp, i) => {
         if (i < paths.length - 2) {
