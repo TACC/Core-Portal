@@ -69,11 +69,12 @@ class TapisFilesView(BaseApiView):
         except AttributeError:
             client = None
         try:
-            METRICS.info("user:{} op:{} api:tapis scheme:{} system:{} path:{}".format(request.user.username,
-                                                                                      operation,
-                                                                                      scheme,
-                                                                                      system,
-                                                                                      path))
+            METRICS.info("user:{} op:{} api:tapis scheme:{} "
+                         "system:{} path:{}".format(request.user.username,
+                                                    operation,
+                                                    scheme,
+                                                    system,
+                                                    path))
             response = tapis_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
 
@@ -109,12 +110,13 @@ class TapisFilesView(BaseApiView):
             return HttpResponseForbidden
 
         try:
-            METRICS.info("user:{} op:{} api:tapis scheme:{} system:{} path:{} body:{}".format(request.user.username,
-                                                                                              operation,
-                                                                                              scheme,
-                                                                                              system,
-                                                                                              path,
-                                                                                              body))
+            METRICS.info("user:{} op:{} api:tapis scheme:{} "
+                         "system:{} path:{} body:{}".format(request.user.username,
+                                                            operation,
+                                                            scheme,
+                                                            system,
+                                                            path,
+                                                            body))
             response = tapis_put_handler(client, scheme, system, path, operation, body=body)
             operation in NOTIFY_ACTIONS and \
                 notify(request.user.username, operation, 'success', {'response': response})
@@ -133,12 +135,13 @@ class TapisFilesView(BaseApiView):
             return HttpResponseForbidden()
 
         try:
-            METRICS.info("user:{} op:{} api:tapis scheme:{} system:{} path:{} body:{}".format(request.user.username,
-                                                                                              operation,
-                                                                                              scheme,
-                                                                                              system,
-                                                                                              path,
-                                                                                              body))
+            METRICS.info("user:{} op:{} api:tapis scheme:{} "
+                         "system:{} path:{} body:{}".format(request.user.username,
+                                                            operation,
+                                                            scheme,
+                                                            system,
+                                                            path,
+                                                            body))
             response = tapis_post_handler(client, scheme, system, path, operation, body=body)
             operation in NOTIFY_ACTIONS and \
                 notify(request.user.username, operation, 'success', {'response': response})
