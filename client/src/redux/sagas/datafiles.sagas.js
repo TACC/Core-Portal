@@ -641,7 +641,7 @@ const getExtractParams = (file, latestExtract) => {
       inputFile
     },
     maxRunTime: '02:00:00',
-    name: 'Extracting Zip File',
+    name: 'Extracting Compressed File',
     parameters: {}
   });
 };

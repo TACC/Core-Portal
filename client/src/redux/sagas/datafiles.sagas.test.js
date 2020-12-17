@@ -254,7 +254,7 @@ describe("extractFiles", () => {
       inputFile: 'agave://test.system/dir/test.zip'
     },
     maxRunTime: '02:00:00',
-    name: 'Extracting Zip File',
+    name: 'Extracting Compressed File',
     parameters: {}
   });
 
