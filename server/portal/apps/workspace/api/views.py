@@ -245,10 +245,12 @@ class JobsView(BaseApiView):
 
         # cancel job / stop job
         if job_id and job_action:
+            METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
             data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
             return JsonResponse({"response": data})
         # submit job
         elif job_post:
+            METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
             default_sys = UserSystemsManager(
                 request.user,
                 settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
