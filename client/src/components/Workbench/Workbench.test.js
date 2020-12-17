@@ -15,6 +15,7 @@ import {
 import { initialState as authenticatedUser } from '../../redux/reducers/authenticated_user.reducer';
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
 import { initialWelcomeMessages as welcomeMessages } from '../../redux/reducers/welcome.reducers';
+import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
 
 /* state required to render workbench/dashboard */
 const state = {
@@ -26,6 +27,7 @@ const state = {
   jobs,
   systemMonitor,
   ticketList,
+  systems,
   ticketCreate,
   ticketCreateModal
 };
@@ -34,7 +36,13 @@ describe('workbench', () => {
   const mockStore = configureStore();
   it('renders workbench for onboarding)', () => {
     const history = createMemoryHistory();
-    const store = mockStore(state);
+    const store = mockStore({
+      ...state,
+      workbench: {
+        ...workbench,
+        setupComplete: false
+      }
+    });
     const { getByText } = renderComponent(<Workbench />, store, history);
     expect(
       getByText(
@@ -49,10 +57,6 @@ describe('workbench', () => {
       workbench: {
         ...workbench,
         setupComplete: true
-      },
-      ticketCreate: {
-        ...ticketCreate,
-        creatingSuccess: true
       }
     });
 

@@ -7,6 +7,12 @@ import { AppIcon, Icon, Message } from '_common';
 import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
+const findAppTab = (categoryDict, appId) => {
+  return Object.keys(categoryDict).find(category =>
+    categoryDict[category].some(app => app.appId === appId)
+  );
+};
+
 const AppBrowser = () => {
   const { params } = useRouteMatch();
   const [activeTab, setActiveTab] = useState();
@@ -15,7 +21,7 @@ const AppBrowser = () => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const { categoryDict, appDict, defaultTab, error } = useSelector(
+  const { categoryDict, defaultTab, error } = useSelector(
     state => ({ ...state.apps }),
     shallowEqual
   );
@@ -29,13 +35,8 @@ const AppBrowser = () => {
   }
 
   // set activeTab to url app's category if no tab selected
-  if (
-    Object.keys(appDict).length &&
-    params.appId &&
-    !activeTab &&
-    params.appId in appDict
-  ) {
-    toggle(appDict[params.appId].value.definition.appCategory);
+  if (params.appId && !activeTab) {
+    toggle(findAppTab(categoryDict, params.appId));
   } else if (!activeTab && Object.keys(categoryDict).includes(defaultTab)) {
     toggle(defaultTab);
   }
@@ -67,17 +68,15 @@ const AppBrowser = () => {
           <TabPane tabId={category} key={`${category}tabPane`}>
             <div className="apps-grid-list">
               {categoryDict[category].map(app => (
-                <div key={app.value.definition.id} className="apps-grid-item">
+                <div key={app.appId} className="apps-grid-item">
                   <NavLink
                     tag={RRNavLink}
-                    to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.value.definition.id}`}
+                    to={`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${app.appId}`}
                     activeClassName="active"
                   >
                     <span className="nav-content">
-                      <AppIcon appId={app.value.definition.id} />
-                      <span className="nav-text">
-                        {app.value.definition.label}
-                      </span>
+                      <AppIcon appId={app.appId} />
+                      <span className="nav-text">{app.label}</span>
                     </span>
                   </NavLink>
                 </div>
