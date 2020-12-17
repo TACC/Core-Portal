@@ -1,12 +1,23 @@
 import pytest
-import os
 import json
 from mock import MagicMock
 from requests.exceptions import HTTPError
-from django.conf import settings
+from portal.apps.datafiles.models import Link
 from portal.apps.notifications.models import Notification
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture
+def postits_create(mock_agave_client):
+    mock_agave_client.postits.create.return_value = {
+        '_links': {
+            'self': {
+                'href': "https://tenant/uuid"
+            }
+        }
+    }
+    yield mock_agave_client.postits.create
 
 
 def test_get_no_allocation(client, authenticated_user, mocker, monkeypatch, mock_agave_client):
@@ -62,6 +73,56 @@ def test_get_requires_push_keys(client, authenticated_user, mocker, monkeypatch,
     response = client.get('/api/datafiles/tapis/listing/private/frontera.home.username/')
     assert response.status_code == 502
     assert response.json() == {'system': system}
+
+
+def test_get_link(client, authenticated_user):
+    link = Link(
+        agave_uri="system/path",
+        postit_url="https://postit"
+    )
+    link.save()
+    response = client.get("/api/datafiles/link/tapis/system/path")
+    result = json.loads(response.content)
+    assert result['data'] == "https://postit"
+
+
+def test_link_not_found(client, authenticated_user):
+    response = client.get("/api/datafiles/link/tapis/system/notfound")
+    result = json.loads(response.content)
+    assert result['data'] is None
+
+
+def test_link_post(postits_create, authenticated_user, client):
+    result = client.post("/api/datafiles/link/tapis/system/path")
+    assert json.loads(result.content)["data"] == "https://tenant/uuid"
+    assert Link.objects.all()[0].get_uuid() == "uuid"
+    postits_create.assert_called_with(
+       body={
+            "url": "https://api.example.com/files/v2/media/system/system/path",
+            "unlimited": True
+        }
+    )
+
+
+def test_link_delete(postits_create, authenticated_user, mock_agave_client, client):
+    mock_agave_client.postits.delete.return_value = "OK"
+    client.post("/api/datafiles/link/tapis/system/path")
+    result = client.delete("/api/datafiles/link/tapis/system/path")
+    assert json.loads(result.content)["data"] == "OK"
+    assert result.status_code == 200
+    assert len(Link.objects.all()) == 0
+
+
+def test_link_put(postits_create, authenticated_user, mock_agave_client, client):
+    mock_agave_client.postits.delete.return_value = "OK"
+    link = Link.objects.create(
+        agave_uri="system/path",
+        postit_url="https://tenant/olduuid"
+    )
+    link.save()
+    result = client.put("/api/datafiles/link/tapis/system/path")
+    assert json.loads(result.content)["data"] == "https://tenant/uuid"
+    assert Link.objects.all()[0].get_uuid() == "uuid"
 
 
 def test_generate_notification_on_request(client, authenticated_user, mocker, mock_agave_client):
