@@ -303,5 +303,6 @@ flags that will be passed to the frontend to determine what non-standard
 components to render.
 """
 _WORKBENCH_SETTINGS = {
-    "debug": _DEBUG
+    "debug": _DEBUG,
+    "viewPath": True
 }
