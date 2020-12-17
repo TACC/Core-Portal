@@ -87,7 +87,12 @@ const DataFilesSystemSelector = ({
         )}
       </DropdownSelector>
       {selectedSystem === 'shared' && !showProjects && (
-        <button type="button" className="btn btn-link" onClick={resetProjects}>
+        <button
+          type="button"
+          className="btn btn-link"
+          styleName="btn-shared"
+          onClick={resetProjects}
+        >
           Return to Shared Workspaces
         </button>
       )}
