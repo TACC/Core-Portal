@@ -59,6 +59,12 @@ class SystemListingView(BaseApiView):
         return JsonResponse(response, encoder=BaseAgaveSystemSerializer)
 
 
+class SystemDefinitionView(BaseApiView):
+    """Get definitions for individual systems"""
+
+    def get(self, request, system):
+        return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=system))
+
 class TapisFilesView(BaseApiView):
     def get(self, request, operation=None, scheme=None, system=None, path='/'):
         try:
