@@ -34,7 +34,6 @@ const OPERATION_MAP = {
       case 'upload':
       case 'move':
       case 'copy': {
-        console.log(response.path)
         const destPath = response.path
           .split('/')
           .slice(0, -1)
