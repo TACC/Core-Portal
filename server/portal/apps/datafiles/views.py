@@ -46,16 +46,6 @@ class SystemListingView(BaseApiView):
         response['system_list'] += portal_systems
         default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
         response['default_host'] = default_system['host']
-
-        for system in response['system_list']:
-            try:
-                if system['api'] == 'tapis' and 'system' in system:
-                    system['definition'] = StorageSystem(
-                        request.user.agave_oauth.client, id=system['system']
-                    )
-            except Exception:
-                logger.exception("Could not retrieve definition for {}".format(system['system']))
-
         return JsonResponse(response, encoder=BaseAgaveSystemSerializer)
 
 

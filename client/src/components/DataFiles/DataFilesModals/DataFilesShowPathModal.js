@@ -26,23 +26,13 @@ const DataFilesShowPathModal = React.memo(() => {
   const { file } = useSelector(state => state.files.modalProps.showpath);
 
   const definition = useSelector(state => {
-    console.log(state.systems);
     if (!file) {
       return null;
     }
-    let matching = state.systems.systemList.find(
-      sys => sys.system === file.system
-    );
-    if (matching) {
-      return matching.definition;
-    }
-    matching = state.systems.definitions.find(
+    const matching = state.systems.definitions.find(
       sys => sys.id === file.system
     )
-    if (matching) {
-      return matching;
-    }
-    return null;
+    return matching;
   });
 
   const isOpen = useSelector(
