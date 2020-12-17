@@ -10,7 +10,7 @@ import {
   Input,
   FormGroup
 } from 'reactstrap';
-import { LoadingSpinner, FormField, Icon } from '_common';
+import { LoadingSpinner, FormField, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { isString, chain } from 'lodash';
 import { Formik } from 'formik';
@@ -79,7 +79,10 @@ DataFilesCompressForm.propTypes = {
   formRef: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Element) })
-  ]).isRequired
+  ])
+};
+DataFilesCompressForm.defaultProps = {
+  formRef: null
 };
 
 const DataFilesCompressModal = () => {
@@ -166,28 +169,19 @@ const DataFilesCompressModal = () => {
           check the status of this job on your Dashboard, and your compressed
           file will appear in this directory.
         </p>
-        {status === 'SUCCESS' && (
-          <span style={{ color: 'green' }}>
-            Successfully started compress job
-          </span>
-        )}
       </ModalBody>
       <ModalFooter>
+        <InlineMessage isVisible={status === 'SUCCESS'} type="success">
+          Successfully started compress job
+        </InlineMessage>
         <Button
           onClick={compressCallback}
           className="data-files-btn"
-          disabled={status === 'RUNNING'}
+          disabled={status === 'RUNNING' || status === 'SUCCESS'}
           styleName="submit-button"
         >
           {buttonIcon}
           <span styleName={buttonIcon ? 'with-icon' : ''}>Compress</span>
-        </Button>
-        <Button
-          color="secondary"
-          className="data-files-btn-cancel"
-          onClick={toggle}
-        >
-          Close
         </Button>
       </ModalFooter>
     </Modal>

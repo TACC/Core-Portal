@@ -1,4 +1,4 @@
-import { default as getFilePermissions } from './filePermissions';
+import getFilePermissions from './filePermissions';
 
 const fixture = {
   files: [
@@ -11,6 +11,7 @@ const fixture = {
     },
   ],
   scheme: "private",
+  api: 'tapis'
 };
 describe('getFilePermissions utility function', () => {
   it.each([

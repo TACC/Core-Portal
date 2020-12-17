@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { LoadingSpinner, Icon } from '_common';
+import { LoadingSpinner, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { isString } from 'lodash';
 import './DataFilesCompressModal.module.scss';
 
-const DataFilesCompressModal = () => {
+const DataFilesExtractModal = () => {
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -82,32 +82,23 @@ const DataFilesCompressModal = () => {
           check the status of this job on your Dashboard, and your extracted
           files will appear in this directory.
         </p>
-        {status === 'SUCCESS' && (
-          <span style={{ color: 'green' }}>
-            Successfully started extract job
-          </span>
-        )}
       </ModalBody>
       <ModalFooter>
+        <InlineMessage isVisible={status === 'SUCCESS'} type="success">
+          Successfully started extract job
+        </InlineMessage>
         <Button
           onClick={extractCallback}
           className="data-files-btn"
-          disabled={status === 'RUNNING'}
+          disabled={status === 'RUNNING' || status === 'SUCCESS'}
           styleName="submit-button"
         >
           {buttonIcon}
           <span styleName={buttonIcon ? 'with-icon' : ''}>Extract</span>
-        </Button>
-        <Button
-          color="secondary"
-          className="data-files-btn-cancel"
-          onClick={toggle}
-        >
-          Close
         </Button>
       </ModalFooter>
     </Modal>
   );
 };
 
-export default DataFilesCompressModal;
+export default DataFilesExtractModal;

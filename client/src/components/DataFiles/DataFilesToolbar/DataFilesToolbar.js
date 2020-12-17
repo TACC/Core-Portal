@@ -30,7 +30,7 @@ ToolbarButton.propTypes = {
   iconName: PropTypes.string.isRequired
 };
 
-const DataFilesToolbar = ({ scheme }) => {
+const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
 
   const selectedFiles = useSelector(state =>
@@ -91,7 +91,7 @@ const DataFilesToolbar = ({ scheme }) => {
     });
   };
 
-  const permissionParams = { files: selectedFiles, scheme };
+  const permissionParams = { files: selectedFiles, scheme, api };
   const canRename = getFilePermissions('rename', permissionParams);
   const canMove = getFilePermissions('move', permissionParams);
   const canCopy = getFilePermissions('copy', permissionParams);
@@ -150,7 +150,8 @@ const DataFilesToolbar = ({ scheme }) => {
   );
 };
 DataFilesToolbar.propTypes = {
-  scheme: PropTypes.string.isRequired
+  scheme: PropTypes.string.isRequired,
+  api: PropTypes.string.isRequired
 };
 
 export default DataFilesToolbar;
