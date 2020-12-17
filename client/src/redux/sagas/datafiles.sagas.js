@@ -342,7 +342,8 @@ export async function copyFileUtil(
       dest_system: destSystem,
       dest_path: destPath,
       file_name: filename,
-      filetype
+      filetype,
+      dest_path_name: destPathName
     };
   } else {
     url = removeDuplicateSlashes(`/api/datafiles/transfer/${filetype}/`);

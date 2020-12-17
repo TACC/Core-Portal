@@ -163,7 +163,7 @@ def download(client, system, path, *args, **kwargs):
 
 
 def copy(client, src_system, src_path, dest_system, dest_path, file_name,
-         filetype='file', *args):
+         filetype='file', dest_path_name='', *args):
     from portal.libs.transfer.operations import transfer, transfer_folder
     if not src_path:
         src_path = 'root'
@@ -177,4 +177,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name,
                         src_system, dest_system, src_path, dest_path,
                         file_name)
 
-    return {}
+    return {'nativeFormat': filetype,
+            'name': dest_path_name,
+            'path': os.path.join(dest_path_name, file_name),
+            'systemId': dest_system}
