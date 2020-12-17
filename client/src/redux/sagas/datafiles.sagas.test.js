@@ -273,14 +273,15 @@ describe('copyFiles', () => {
       'dir',
       'tapis',
       'test.system',
-      'testpath2'
+      'testpath2',
+      'destname'
     );
     expect(apiResult).resolves.toEqual('200 response');
     expect(fetch).toBeCalledWith(
       '/api/datafiles/tapis/copy/private/test.system/testpath/',
       {
         body:
-          '{"dest_system":"test.system","dest_path":"testpath2","file_name":"testfilename","filetype":"dir"}',
+          '{"dest_system":"test.system","dest_path":"testpath2","file_name":"testfilename","filetype":"dir","dest_path_name":"destname"}',
         credentials: 'same-origin',
         headers: { 'X-CSRFToken': undefined },
         method: 'PUT'
@@ -298,7 +299,8 @@ describe('copyFiles', () => {
       'dir',
       'other',
       'test.system2',
-      'testpath2'
+      'testpath2',
+      'destname'
     );
     const expectedBody = {
       src_api: 'tapis',
@@ -307,6 +309,7 @@ describe('copyFiles', () => {
       dest_system: 'test.system2',
       src_path: 'testpath',
       dest_path: 'testpath2',
+      dest_path_name: 'destname',
       dirname: 'testfilename'
     };
     expect(apiResult).resolves.toEqual('200 response');

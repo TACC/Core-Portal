@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from portal.apps.accounts.managers.user_systems import UserSystemsManager
 from portal.apps.users.utils import get_allocations
 from portal.apps.auth.tasks import get_user_storage_systems
@@ -143,8 +144,14 @@ class GoogleDriveFilesView(BaseApiView):
         except AttributeError:
             return HttpResponseForbidden
 
-        response = googledrive_put_handler(client, scheme, system, path,
-                                           operation, body=body)
+        try:
+            response = googledrive_put_handler(client, scheme, system, path,
+                                               operation, body=body)
+            operation in NOTIFY_ACTIONS and \
+                notify(request.user.username, operation, 'success', {'response': response})
+        except Exception as exc:
+            operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
+            raise exc
 
         return JsonResponse({"data": response})
 
@@ -161,19 +168,28 @@ def get_client(user, api):
 
 
 class TransferFilesView(BaseApiView):
-    def put(self, request, format):
+    def put(self, request, filetype):
         body = json.loads(request.body)
 
         src_client = get_client(request.user, body['src_api'])
         dest_client = get_client(request.user, body['dest_api'])
 
         try:
-            if format == 'dir':
+            if filetype == 'dir':
                 transfer_folder(src_client, dest_client, **body)
-                return JsonResponse({'success': True})
             else:
                 transfer(src_client, dest_client, **body)
-                return JsonResponse({'success': True})
+
+            # Respond with tapis-like info for a toast notification
+            file_info = {
+                'nativeFormat': filetype,
+                'name': body['dirname'],
+                'path': os.path.join(body['dest_path_name'], body['dirname']),
+                'systemId': body['dest_system']
+            }
+            notify(request.user.username, 'copy', 'success', {'response': file_info})
+            return JsonResponse({'success': True})
         except Exception as exc:
             logger.info(exc)
+            notify(request.user.username, 'copy', 'error', {})
             raise exc
