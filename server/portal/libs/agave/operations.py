@@ -113,7 +113,8 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
     res = search.execute()
     hits = [hit.to_dict() for hit in res]
 
-    return {'listing': hits, 'reachedEnd': len(hits) < int(limit)}
+    return {'listing': hits, 'count': res.hits.total.value,
+            'reachedEnd': len(hits) < int(limit)}
 
 
 def download(client, system, path, href, force=True, max_uses=3, lifetime=600):

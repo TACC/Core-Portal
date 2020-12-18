@@ -39,7 +39,7 @@ const TextCopyField = ({ value, placeholder }) => {
         className="form-control"
         placeholder={placeholder}
         data-testid="input"
-        readOnly={isEmpty}
+        readOnly
       />
     </div>
   );

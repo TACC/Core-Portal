@@ -57,6 +57,7 @@ urlpatterns = [
     path('api/notifications/', include('portal.apps.notifications.urls', namespace='notifications')),
     path('api/jupyter_mounts/', include('portal.apps.jupyter_mounts.api.urls', namespace='jupyter_mounts_api')),
     path('api/projects/', include('portal.apps.projects.urls', namespace='projects')),
+    path('api/site-search/', include('portal.apps.site_search.api.urls', namespace='site_search_api')),
 
     # webhooks
     path('webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
@@ -67,6 +68,7 @@ urlpatterns = [
          include('portal.apps.googledrive_integration.urls',
                  namespace='googledrive-privacy-policy')),
     path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
+    path('search/', include('portal.apps.site_search.urls', namespace='site_search')),
 
     # integrations
     path('accounts/applications/googledrive/', include('portal.apps.googledrive_integration.urls', namespace='googledrive_integration')),

@@ -11,3 +11,4 @@ export const WORKBENCH = '/workbench';
 export const USER_GUIDE = '/user-guide';
 export const ONBOARDING = '/onboarding';
 export const ACCOUNT = '/account';
+export const SEARCH = '/workbench/search';

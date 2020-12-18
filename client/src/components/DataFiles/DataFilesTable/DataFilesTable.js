@@ -281,6 +281,7 @@ const DataFilesTable = ({
       onResize={resizeCallback}
       disableHeight={process.env.NODE_ENV === 'test'}
       disableWidth={process.env.NODE_ENV === 'test'}
+      styleName="root"
     >
       {({ width, height }) => (
         <div {...getTableProps()}>

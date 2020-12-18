@@ -172,7 +172,9 @@ FileIconCell.propTypes = {
 
 export const ViewPathCell = ({ file }) => {
   const dispatch = useDispatch();
-  const onClick = () => {
+  const onClick = e => {
+    e.stopPropagation();
+    e.preventDefault();
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'showpath', props: { file } }
