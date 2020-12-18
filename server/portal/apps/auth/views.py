@@ -4,7 +4,7 @@ Auth views.
 import logging
 import time
 import requests
-import secrets
+import os
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -27,6 +27,10 @@ def logged_out(request):
     return render(request, 'portal/apps/auth/logged_out.html')
 
 
+def _get_auth_state():
+    return os.urandom(24).encode('hex')
+
+
 # Create your views here.
 def agave_oauth(request):
     """First step for agave OAuth workflow.
@@ -35,7 +39,7 @@ def agave_oauth(request):
     client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
 
     session = request.session
-    session['auth_state'] = secrets.token_hex(24)
+    session['auth_state'] = _get_auth_state()
     next_page = request.GET.get('next')
     if next_page:
         session['next'] = next_page
