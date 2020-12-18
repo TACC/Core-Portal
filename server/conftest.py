@@ -1,6 +1,9 @@
 import pytest
+import json
+import os
 from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.accounts.models import PortalProfile
+from django.conf import settings
 
 
 @pytest.fixture
@@ -76,3 +79,33 @@ def staff_user(client, django_user_model, django_db_reset_sequences, mock_agave_
 def authenticated_staff(client, staff_user):
     client.force_login(staff_user)
     return staff_user
+
+
+@pytest.fixture
+def agave_indexer(mocker):
+    yield mocker.patch('portal.libs.agave.operations.agave_indexer')
+
+
+@pytest.fixture
+def agave_listing_indexer(mocker):
+    yield mocker.patch('portal.libs.agave.operations.agave_listing_indexer')
+
+
+@pytest.fixture
+def agave_storage_system_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')))
+
+
+@pytest.fixture
+def agave_file_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file.json')))
+
+
+@pytest.fixture
+def agave_file_listing_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file-listing.json')))
+
+
+@pytest.fixture
+def agave_listing_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/listing.json')))
