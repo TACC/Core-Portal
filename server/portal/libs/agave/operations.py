@@ -1,5 +1,6 @@
 import urllib
 import os
+import io
 import datetime
 from django.conf import settings
 from requests.exceptions import HTTPError
@@ -50,6 +51,27 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     # Update Elasticsearch after each listing.
     agave_listing_indexer.delay(listing)
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
+
+
+def iterate_listing(client, system, path, limit=100):
+    """Iterate over a filesystem level yielding an attrdict for each file/folder
+        on the level.
+        :param str client: an Agave client
+        :param str system: system
+        :param str path: path to walk
+        :param int limit: Number of docs to retrieve per API call
+
+        :rtype agavepy.agave.AttrDict
+    """
+    offset = 0
+
+    while True:
+        page = listing(client, system, path, offset, limit)['listing']
+        yield from page
+        offset += limit
+        if len(page) != limit:
+            # Break out of the loop if the listing is exhausted.
+            break
 
 
 def search(client, system, path, offset=0, limit=100, query_string='', **kwargs):
@@ -240,7 +262,8 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     return move_result
 
 
-def copy(client, src_system, src_path, dest_system, dest_path, file_name=None):
+def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
+         *args, **kwargs):
     """Copies the current file to the provided destination path.
 
      Params
@@ -424,7 +447,7 @@ def upload(client, system, path, uploaded_file):
                                       'filePath': path,
                                       'recurse': False},
                               )
-    return resp
+    return dict(resp)
 
 
 def preview(client, system, path, href, max_uses=3, lifetime=600):
@@ -481,3 +504,24 @@ def preview(client, system, path, href, max_uses=3, lifetime=600):
         file_type = 'other'
 
     return {'href': url, 'fileType': file_type}
+
+
+def download_bytes(client, system, path):
+    """Returns a BytesIO object representing the file.
+
+    Params
+    ------
+    client: agavepy.agave.Agave
+        Tapis client to use.
+    system: str
+    path: str
+    Returns
+    -------
+    io.BytesIO
+        BytesIO object representing the downloaded file.
+    """
+    file_name = os.path.basename(path)
+    resp = client.files.download(systemId=system, filePath=path)
+    result = io.BytesIO(resp.content)
+    result.name = file_name
+    return result

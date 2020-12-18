@@ -1,4 +1,5 @@
 import pytest
+from mock import MagicMock
 import json
 import os
 import tempfile
@@ -10,6 +11,12 @@ from django.conf import settings
 @pytest.fixture
 def mock_agave_client(mocker):
     yield mocker.patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
+
+
+@pytest.fixture
+def mock_googledrive_client(mocker):
+    from googleapiclient.discovery import Resource
+    return MagicMock()
 
 
 @pytest.fixture
