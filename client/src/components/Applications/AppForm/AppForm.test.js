@@ -28,7 +28,8 @@ const initialMockState = {
         scheme: '',
         system: ''
       }
-    }
+    },
+    modalProps: { select: {} }
   }
 };
 

@@ -15,13 +15,13 @@ from portal.apps.datafiles.models import Link
 from portal.exceptions.api import ApiException
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from .utils import notify, NOTIFY_ACTIONS
-import logging
 
 
 logger = logging.getLogger(__name__)
+
+
+METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
 
 class SystemListingView(BaseApiView):
@@ -30,34 +30,31 @@ class SystemListingView(BaseApiView):
     def get(self, request):
         portal_systems = settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+
+        user_systems = get_user_storage_systems(request.user.username, local_systems)
+        # compare available storage systems to the systems a user can access
         response = {'system_list': []}
-        if request.user.is_authenticated:
-            user_systems = get_user_storage_systems(request.user.username, local_systems)
-            # compare available storage systems to the systems a user can access
-            for system_name, details in user_systems.items():
-                response['system_list'].append(
-                    {
-                        'name': details['name'],
-                        'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
-                        'scheme': 'private',
-                        'api': 'tapis',
-                        'icon': details['icon']
-                    }
-                )
-            default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
-            response['default_host'] = default_system['host']
-
+        for system_name, details in user_systems.items():
+            response['system_list'].append(
+                {
+                    'name': details['name'],
+                    'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
+                    'scheme': 'private',
+                    'api': 'tapis',
+                    'icon': details['icon']
+                }
+            )
         response['system_list'] += portal_systems
-        for system in response['system_list']:
-            try:
-                if system['api'] == 'tapis' and 'system' in system:
-                    system['definition'] = StorageSystem(
-                        request.user.agave_oauth.client, id=system['system']
-                    )
-            except Exception:
-                logger.exception("Could not retrieve definition for {}".format(system['system']))
+        default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
+        response['default_host'] = default_system['host']
+        return JsonResponse(response)
 
-        return JsonResponse(response, encoder=BaseAgaveSystemSerializer)
+
+@method_decorator(login_required, name='dispatch')
+class SystemDefinitionView(BaseApiView):
+    """Get definitions for individual systems"""
+    def get(self, request, systemId):
+        return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=systemId))
 
 
 class TapisFilesView(BaseApiView):
@@ -70,6 +67,12 @@ class TapisFilesView(BaseApiView):
                     if sys['system'] == system and sys['scheme'] == 'public'):
                 client = service_account()
         try:
+            METRICS.info("user:{} op:{} api:tapis scheme:{} "
+                         "system:{} path:{}".format(request.user.username,
+                                                    operation,
+                                                    scheme,
+                                                    system,
+                                                    path))
             response = tapis_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
 
@@ -105,6 +108,13 @@ class TapisFilesView(BaseApiView):
             return HttpResponseForbidden
 
         try:
+            METRICS.info("user:{} op:{} api:tapis scheme:{} "
+                         "system:{} path:{} body:{}".format(request.user.username,
+                                                            operation,
+                                                            scheme,
+                                                            system,
+                                                            path,
+                                                            body))
             response = tapis_put_handler(client, scheme, system, path, operation, body=body)
             operation in NOTIFY_ACTIONS and \
                 notify(request.user.username, operation, 'success', {'response': response})
@@ -123,6 +133,14 @@ class TapisFilesView(BaseApiView):
             return HttpResponseForbidden()
 
         try:
+            METRICS.info("user:{} op:{} api:tapis scheme:{} "
+                         "system:{} path:{} filename:{}".format(request.user.username,
+                                                             operation,
+                                                             scheme,
+                                                             system,
+                                                             path,
+                                                             body['uploaded_file'].name))
+
             response = tapis_post_handler(client, scheme, system, path, operation, body=body)
             operation in NOTIFY_ACTIONS and \
                 notify(request.user.username, operation, 'success', {'response': response})

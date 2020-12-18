@@ -26,39 +26,57 @@ def get_user_data(mocker):
 
 @pytest.fixture
 def apps_manager(mocker):
-    yield mocker.patch(
+    mock_apps_manager = mocker.patch(
         'portal.apps.workspace.api.views.UserApplicationsManager'
     )
-
-
-@pytest.fixture
-def test_job():
-    with open(os.path.join(settings.BASE_DIR, 'fixtures', 'job-submission.json')) as f:
-        yield json.load(f)
-
-
-def test_job_post(rf, authenticated_user, get_user_data,
-                  regular_user, mock_agave_client, apps_manager, test_job):
-    mock_agave_client.jobs.submit.return_value = {"id": "1234"}
-    view = JobsView()
     # Patch the User Applications Manager to return a fake cloned app
     mock_app = MagicMock()
     mock_app.id = "mock_app"
     mock_app.exec_sys = False
-    apps_manager.return_value.get_or_create_app.return_value = mock_app
+    mock_apps_manager.return_value.get_or_create_app.return_value = mock_app
+    yield mock_apps_manager
 
-    # Send a job submission request
-    request = rf.post(
+
+@pytest.fixture
+def job_submmission_definition():
+    with open(os.path.join(settings.BASE_DIR, 'fixtures', 'job-submission.json')) as f:
+        yield json.load(f)
+
+
+@pytest.fixture
+def logging_metric_mock(mocker):
+    yield mocker.patch('portal.apps.workspace.api.views.logging.Logger.info')
+
+
+def test_job_post(client, authenticated_user, get_user_data, mock_agave_client,
+                  apps_manager, job_submmission_definition):
+    mock_agave_client.jobs.submit.return_value = {"id": "1234"}
+
+    response = client.post(
         "/api/workspace/jobs",
-        data=json.dumps(test_job),
+        data=json.dumps(job_submmission_definition),
         content_type="application/json"
     )
-    request.user = authenticated_user
-    view.post(request)
+    assert response.status_code == 200
+    assert response.json() == {"response": {"id": "1234"}}
 
     # The job submission request
     job = JobSubmission.objects.all()[0]
     assert job.jobId == "1234"
+
+
+def test_job_post_is_logged_for_metrics(client, authenticated_user, get_user_data, mock_agave_client,
+                                        apps_manager, job_submmission_definition, logging_metric_mock):
+    mock_agave_client.jobs.submit.return_value = {"id": "1234"}
+
+    client.post(
+        "/api/workspace/jobs",
+        data=json.dumps(job_submmission_definition),
+        content_type="application/json"
+    )
+    # Ensure metric-related logging is being performed
+    logging_metric_mock.assert_called_with("user:{} is submitting job:{}".format(authenticated_user.username,
+                                                                                 job_submmission_definition))
 
 
 def request_jobs_util(rf, authenticated_user, query_params={}):
