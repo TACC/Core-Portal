@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { InfiniteScrollTable, LoadingSpinner, Message } from '_common';
+import { InfiniteScrollTable, Message } from '_common';
 import './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 
@@ -78,10 +78,6 @@ const DataFilesProjectsList = ({ modal }) => {
   ];
 
   const noDataText = "You don't have any Shared Workspaces.";
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
 
   if (error) {
     return (

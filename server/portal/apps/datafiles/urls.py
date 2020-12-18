@@ -8,7 +8,7 @@ from portal.apps.datafiles.views import (TapisFilesView,
 app_name = 'users'
 urlpatterns = [
     path('systems/list/', SystemListingView.as_view()),
-    path('systems/definition/<str:system>/', SystemDefinitionView.as_view()),
+    path('systems/definition/<str:systemId>/', SystemDefinitionView.as_view()),
     path('tapis/<str:operation>/<str:scheme>/<str:system>/',
          TapisFilesView.as_view()),
     path('tapis/<str:operation>/<str:scheme>/<str:system>/<path:path>/',

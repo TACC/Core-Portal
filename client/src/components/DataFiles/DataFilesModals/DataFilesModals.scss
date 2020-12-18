@@ -41,6 +41,22 @@
     .modal-title {
       font-size: 18px;
     }
+
+    .InfiniteScrollTable.projects-listing {
+      th {
+        color: #484848;
+      }
+      th,
+      td {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        padding: 5px 15px;
+      }
+      td {
+        height: 45px;
+      }
+    }
 }
 
 /* Quick port of inline style to stylesheet */

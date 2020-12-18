@@ -49,8 +49,8 @@ class SystemListingView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class SystemDefinitionView(BaseApiView):
     """Get definitions for individual systems"""
-    def get(self, request, system):
-        return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=system))
+    def get(self, request, systemId):
+        return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=systemId))
 
 
 class TapisFilesView(BaseApiView):
