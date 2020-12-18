@@ -4,7 +4,7 @@ import DataFilesShowPathModal from '../DataFilesShowPathModal';
 import configureStore from 'redux-mock-store';
 import DataFilesShowPathModalFixture from './DataFilesShowPathModal.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
-import projectsFixture from '../../../../redux/sagas/fixtures/projects.fixture';
+import { projectsFixture } from '../../../../redux/sagas/fixtures/projects.fixture';
 import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
