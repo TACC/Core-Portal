@@ -1,5 +1,6 @@
 import pytest
 import json
+import logging
 from mock import MagicMock
 from requests.exceptions import HTTPError
 from portal.apps.datafiles.models import Link
@@ -141,7 +142,8 @@ def test_generate_notification_on_request(client, authenticated_user, mock_agave
 
 @pytest.fixture
 def logging_metric_mock(mocker):
-    yield mocker.patch('portal.apps.datafiles.views.logging.Logger.info')
+    logger = logging.getLogger('metrics.{}'.format("portal.apps.datafiles.views"))
+    yield mocker.patch.object(logger, 'info')
 
 
 def test_tapis_file_view_get_is_logged_for_metrics(client, authenticated_user, mocker, mock_agave_client,
