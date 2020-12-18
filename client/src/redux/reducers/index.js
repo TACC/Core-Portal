@@ -17,6 +17,8 @@ import notifications from './notifications.reducers';
 import workbench from './workbench.reducers';
 import welcomeMessages from './welcome.reducers';
 import { onboarding } from './onboarding.reducers';
+import projects from './projects.reducers';
+import { users } from './users.reducers';
 import siteSearch from './siteSearch.reducers';
 
 export default combineReducers({
@@ -39,5 +41,7 @@ export default combineReducers({
   workbench,
   welcomeMessages,
   onboarding,
+  projects,
+  users,
   siteSearch
 });

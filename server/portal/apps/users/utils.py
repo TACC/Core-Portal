@@ -38,6 +38,7 @@ def q_to_model_queries(q):
         query = Q(email__icontains=q)
         query |= Q(first_name__icontains=q)
         query |= Q(last_name__icontains=q)
+        query |= Q(username__icontains=q)
 
     return query
 
