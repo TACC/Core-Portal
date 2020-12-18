@@ -139,3 +139,18 @@ def test_generate_notification_on_request(client, authenticated_user, mocker, mo
     n = Notification.objects.last()
     extra_from_notification = n.to_dict()['extra']
     assert extra_from_notification == {'response': mock_response}
+
+
+def test_get_system(client, authenticated_user, mock_agave_client, agave_storage_system_mock):
+    mock_agave_client.systems.get.return_value = agave_storage_system_mock
+
+    response = client.get("/api/datafiles/systems/definition/MySystem/")
+    assert response.status_code == 200
+    assert response.json() == agave_storage_system_mock
+
+
+def test_get_system_forbidden(client, regular_user, mock_agave_client, agave_storage_system_mock):
+    mock_agave_client.systems.get.return_value = agave_storage_system_mock
+
+    response = client.get("/api/datafiles/systems/definition/MySystem/")
+    assert response.status_code == 302 # redirect to login
