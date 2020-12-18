@@ -2,6 +2,7 @@ from django.urls import path
 from portal.apps.datafiles.views import (TapisFilesView,
                                          GoogleDriveFilesView,
                                          TransferFilesView,
+                                         LinkView,
                                          SystemListingView)
 
 
@@ -17,4 +18,6 @@ urlpatterns = [
          GoogleDriveFilesView.as_view()),
     path('googledrive/<str:operation>/<str:scheme>/<str:system>/<path:path>/',
          GoogleDriveFilesView.as_view()),
+    path('link/<str:scheme>/<str:system>/<path:path>',
+         LinkView.as_view())
 ]

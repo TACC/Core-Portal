@@ -8,6 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-regular-svg-icons';
 import { Icon } from '_common';
+import { Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
 
@@ -167,4 +168,23 @@ export const FileIconCell = ({ cell }) => {
 };
 FileIconCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired
+};
+
+export const ViewPathCell = ({ file }) => {
+  const dispatch = useDispatch();
+  const onClick = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'showpath', props: { file } }
+    });
+  };
+  return (
+    <Button color="link" onClick={onClick}>
+      View Path
+    </Button>
+  );
+};
+
+ViewPathCell.propTypes = {
+  file: PropTypes.shape({}).isRequired
 };

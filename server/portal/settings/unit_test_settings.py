@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     'portal.apps.workspace',
     'portal.apps.system_monitor',
     'portal.apps.googledrive_integration',
+    'portal.apps.datafiles',
     'portal.apps.projects',
 
 ]

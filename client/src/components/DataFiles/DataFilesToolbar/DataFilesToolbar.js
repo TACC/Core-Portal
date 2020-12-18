@@ -29,7 +29,7 @@ ToolbarButton.propTypes = {
   iconName: PropTypes.string.isRequired
 };
 
-const DataFilesToolbar = ({ scheme }) => {
+const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
 
   const selectedFiles = useSelector(state =>
@@ -38,7 +38,10 @@ const DataFilesToolbar = ({ scheme }) => {
     )
   );
 
-  const { api } = useSelector(state => state.files.params.FilesListing);
+  const showMakeLink = useSelector(
+    state =>
+      state.workbench && state.workbench.config.makeLink && api === 'tapis'
+  );
 
   const toggleRenameModal = () =>
     dispatch({
@@ -60,6 +63,24 @@ const DataFilesToolbar = ({ scheme }) => {
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'copy', props: { selectedFiles } }
     });
+
+  const toggleLinkModal = () => {
+    dispatch({
+      type: 'DATA_FILES_LINK',
+      payload: {
+        file: selectedFiles[0],
+        scheme
+      },
+      method: 'get'
+    });
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'link',
+        props: { selectedFile: selectedFiles[0] }
+      }
+    });
+  };
 
   const download = () => {
     dispatch({
@@ -114,6 +135,14 @@ const DataFilesToolbar = ({ scheme }) => {
           onClick={download}
           disabled={!canDownload}
         />
+        {showMakeLink && (
+          <ToolbarButton
+            text="Link"
+            iconName="link"
+            onClick={toggleLinkModal}
+            disabled={!canDownload}
+          />
+        )}
         <ToolbarButton
           text="Trash"
           iconName="trash"
@@ -125,7 +154,8 @@ const DataFilesToolbar = ({ scheme }) => {
   );
 };
 DataFilesToolbar.propTypes = {
-  scheme: PropTypes.string.isRequired
+  scheme: PropTypes.string.isRequired,
+  api: PropTypes.string.isRequired
 };
 
 export default DataFilesToolbar;

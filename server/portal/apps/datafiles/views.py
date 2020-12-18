@@ -17,6 +17,11 @@ from portal.apps.datafiles.handlers.googledrive_handlers import \
      googledrive_put_handler)
 from portal.libs.transfer.operations import transfer, transfer_folder
 from portal.exceptions.api import ApiException
+from portal.apps.datafiles.models import Link
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from portal.libs.agave.models.systems.storage import StorageSystem
+from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from .utils import notify, NOTIFY_ACTIONS
 
 logger = logging.getLogger(__name__)
@@ -46,7 +51,16 @@ class SystemListingView(BaseApiView):
         default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
         response['default_host'] = default_system['host']
 
-        return JsonResponse(response)
+        for system in response['system_list']:
+            try:
+                if system['api'] == 'tapis' and 'system' in system:
+                    system['definition'] = StorageSystem(
+                        request.user.agave_oauth.client, id=system['system']
+                    )
+            except Exception:
+                logger.exception("Could not retrieve definition for {}".format(system['system']))
+
+        return JsonResponse(response, encoder=BaseAgaveSystemSerializer)
 
 
 class TapisFilesView(BaseApiView):
@@ -84,7 +98,6 @@ class TapisFilesView(BaseApiView):
 
     def put(self, request, operation=None, scheme=None,
             handler=None, system=None, path='/'):
-
         body = json.loads(request.body)
         try:
             client = request.user.agave_oauth.client
@@ -193,3 +206,73 @@ class TransferFilesView(BaseApiView):
             logger.info(exc)
             notify(request.user.username, 'copy', 'error', {})
             raise exc
+
+
+@method_decorator(login_required, name='dispatch')
+class LinkView(BaseApiView):
+    def create_postit(self, request, scheme, system, path):
+        client = request.user.agave_oauth.client
+        body = {
+            "url": "{tenant}/files/v2/media/system/{system}/{path}".format(
+                tenant=settings.AGAVE_TENANT_BASEURL,
+                system=system,
+                path=path
+            ),
+            "unlimited": True
+        }
+        response = client.postits.create(body=body)
+        postit = response['_links']['self']['href']
+        link = Link.objects.create(
+            agave_uri=f"{system}/{path}",
+            postit_url=postit
+        )
+        link.save()
+        return postit
+
+    def delete_link(self, request, link):
+        client = request.user.agave_oauth.client
+        response = client.postits.delete(uuid=link.get_uuid())
+        link.delete()
+        return response
+
+    def get(self, request, scheme, system, path):
+        """Given a file, returns a link for a file
+        """
+        try:
+            link = Link.objects.get(agave_uri=f"{system}/{path}")
+        except Link.DoesNotExist:
+            return JsonResponse({"data": None})
+        return JsonResponse({"data": link.postit_url})
+
+    def delete(self, request, scheme, system, path):
+        """Delete an existing link for a file
+        """
+        try:
+            link = Link.objects.get(agave_uri=f"{system}/{path}")
+        except Link.DoesNotExist:
+            raise ApiException("Post-it does not exist")
+        response = self.delete_link(request, link)
+        return JsonResponse({"data": response})
+
+    def post(self, request, scheme, system, path):
+        """Generates a new link for a file
+        """
+        try:
+            Link.objects.get(agave_uri=f"{system}/{path}")
+        except Link.DoesNotExist:
+            # Link doesn't exist - proceed with creating one
+            response = self.create_postit(request, scheme, system, path)
+            return JsonResponse({"data": response})
+        # Link for this file already exists, raise an exception
+        raise ApiException("Link for this file already exists")
+
+    def put(self, request, scheme, system, path):
+        """Replace an existing link for a file
+        """
+        try:
+            link = Link.objects.get(agave_uri=f"{system}/{path}")
+            self.delete_link(request, link)
+        except Link.DoesNotExist:
+            raise ApiException("Could not find pre-existing link")
+        response = self.create_postit(request, scheme, system, path)
+        return JsonResponse({"data": response})
