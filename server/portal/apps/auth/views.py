@@ -4,7 +4,7 @@ Auth views.
 import logging
 import time
 import requests
-import os
+import secrets
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -28,7 +28,7 @@ def logged_out(request):
 
 
 def _get_auth_state():
-    return os.urandom(24).encode('hex')
+    return secrets.token_hex(24)
 
 
 # Create your views here.
