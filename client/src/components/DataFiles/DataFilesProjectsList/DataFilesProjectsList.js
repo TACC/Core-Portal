@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { InfiniteScrollTable, LoadingSpinner, Message } from '_common';
+import { InfiniteScrollTable, Message } from '_common';
 import './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 
