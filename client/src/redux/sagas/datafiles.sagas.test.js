@@ -291,7 +291,6 @@ describe('copyFiles', () => {
       'testpath2',
       'destname'
     );
-    //expect(apiResult).resolves.toEqual('200 response');
     expect(fetch).toBeCalledWith(
       '/api/datafiles/tapis/copy/private/test.system/testpath/',
       {
@@ -327,7 +326,6 @@ describe('copyFiles', () => {
       dest_path_name: 'destname',
       dirname: 'testfilename'
     };
-    //expect(apiResult).resolves.toEqual('200 respons');
     expect(fetch).toBeCalledWith('/api/datafiles/transfer/dir/', {
       body: JSON.stringify(expectedBody),
       credentials: 'same-origin',
