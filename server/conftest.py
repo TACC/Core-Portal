@@ -1,6 +1,7 @@
 import pytest
 import json
 import os
+import tempfile
 from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.accounts.models import PortalProfile
 from django.conf import settings
@@ -82,5 +83,39 @@ def authenticated_staff(client, staff_user):
 
 
 @pytest.fixture
+def agave_indexer(mocker):
+    yield mocker.patch('portal.libs.agave.operations.agave_indexer')
+
+
+@pytest.fixture
+def agave_listing_indexer(mocker):
+    yield mocker.patch('portal.libs.agave.operations.agave_listing_indexer')
+
+
+@pytest.fixture
 def agave_storage_system_mock():
     yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/systems/storage.json')))
+
+
+@pytest.fixture
+def agave_file_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file.json')))
+
+
+@pytest.fixture
+def agave_file_listing_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/file-listing.json')))
+
+
+@pytest.fixture
+def agave_listing_mock():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/listing.json')))
+
+@pytest.fixture
+def text_file_fixture():
+    with tempfile.TemporaryDirectory() as temp_directory:
+        filename = os.path.join(temp_directory, "text_file.txt")
+        with open(filename, "w") as text_file:
+            text_file.write("this is the contents of my text file")
+        with open(filename, 'rb') as text_file:
+            yield text_file
