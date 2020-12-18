@@ -13,6 +13,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { Link } from 'react-router-dom';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
+import './DataFilesTable.module.scss';
 
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
