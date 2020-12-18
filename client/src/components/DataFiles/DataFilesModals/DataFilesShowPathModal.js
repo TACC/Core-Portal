@@ -33,7 +33,7 @@ const DataFilesShowPathModal = React.memo(() => {
   });
 
   const isOpen = useSelector(
-    state => state.files.modals.showpath && definition
+    state => state.files.modals.showpath && Boolean(definition)
   );
 
   const toggle = () =>
