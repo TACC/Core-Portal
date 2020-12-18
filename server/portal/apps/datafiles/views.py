@@ -52,6 +52,7 @@ class SystemListingView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 class SystemDefinitionView(BaseApiView):
     """Get definitions for individual systems"""
+
     def get(self, request, systemId):
         return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=systemId))
 
@@ -134,11 +135,11 @@ class TapisFilesView(BaseApiView):
         try:
             METRICS.info("user:{} op:{} api:tapis scheme:{} "
                          "system:{} path:{} filename:{}".format(request.user.username,
-                                                             operation,
-                                                             scheme,
-                                                             system,
-                                                             path,
-                                                             body['uploaded_file'].name))
+                                                                operation,
+                                                                scheme,
+                                                                system,
+                                                                path,
+                                                                body['uploaded_file'].name))
 
             response = tapis_post_handler(client, scheme, system, path, operation, body=body)
             operation in NOTIFY_ACTIONS and \
