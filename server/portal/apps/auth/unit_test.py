@@ -3,7 +3,7 @@ from django.test import (
     override_settings
 )
 from django.contrib.auth import get_user_model
-from mock import Mock, patch, MagicMock
+from mock import patch, MagicMock
 from portal.apps.auth.backends import AgaveOAuthBackend
 from requests import Response
 from portal.apps.auth.views import launch_setup_checks
