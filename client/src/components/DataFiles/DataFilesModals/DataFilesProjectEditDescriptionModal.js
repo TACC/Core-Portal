@@ -77,32 +77,34 @@ const DataFilesProjectEditDescriptionModal = () => {
           onSubmit={setProjectTitleDescription}
           validationSchema={validationSchema}
         >
-          <Form>
-            <FormField name="title" label="Workspace Title" />
-            <FormField
-              name="description"
-              label="Workspace Description"
-              type="textarea"
-              styleName="description-textarea"
-            />
-            <div styleName="button-container">
-              <Button
-                type="submit"
-                className="data-files-btn"
-                styleName="update-button"
-                disabled={isUpdating}
-              >
-                {isUpdating && <LoadingSpinner placement="inline" />}
-                {updatingError && (
-                  <FontAwesomeIcon
-                    icon={faExclamationCircle}
-                    data-testid="updating-error"
-                  />
-                )}
-                Update Changes
-              </Button>
-            </div>
-          </Form>
+          {({ isValid, dirty }) => (
+            <Form>
+              <FormField name="title" label="Workspace Title" />
+              <FormField
+                name="description"
+                label="Workspace Description"
+                type="textarea"
+                styleName="description-textarea"
+              />
+              <div styleName="button-container">
+                <Button
+                  type="submit"
+                  className="data-files-btn"
+                  styleName="update-button"
+                  disabled={isUpdating || !isValid || !dirty}
+                >
+                  {isUpdating && <LoadingSpinner placement="inline" />}
+                  {updatingError && (
+                    <FontAwesomeIcon
+                      icon={faExclamationCircle}
+                      data-testid="updating-error"
+                    />
+                  )}
+                  Update Changes
+                </Button>
+              </div>
+            </Form>
+          )}
         </Formik>
       </ModalBody>
     </Modal>
