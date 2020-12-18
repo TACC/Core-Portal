@@ -122,12 +122,12 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
 
   return (
     <div styleName="root">
-      <DataFilesSearchbar
+      {!isPublic && <DataFilesSearchbar
         api={api}
         scheme={scheme}
         system={system}
         styleName="searchbar"
-      />
+      /> }
       <div styleName="file-container">
         <DataFilesTable
           data={files}

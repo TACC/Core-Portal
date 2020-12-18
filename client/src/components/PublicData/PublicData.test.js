@@ -29,6 +29,11 @@ describe('PublicData', () => {
     const store = mockStore({
       systems: systemsFixture,
       files: filesFixture,
+      projects: {
+        listing: {
+          projects: []
+        }
+      },
       pushKeys: { target: {} }
     });
     console.log(filesFixture);
