@@ -1,5 +1,4 @@
 import json
-import logging
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
@@ -14,8 +13,6 @@ from portal.apps.datafiles.models import Link
 from portal.exceptions.api import ApiException
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from .utils import notify, NOTIFY_ACTIONS
 import logging
 
@@ -49,11 +46,12 @@ class SystemListingView(BaseApiView):
         return JsonResponse(response)
 
 
+@method_decorator(login_required, name='dispatch')
 class SystemDefinitionView(BaseApiView):
     """Get definitions for individual systems"""
-
     def get(self, request, system):
         return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=system))
+
 
 class TapisFilesView(BaseApiView):
     def get(self, request, operation=None, scheme=None, system=None, path='/'):
