@@ -42,13 +42,6 @@ const DataFilesShowPathModal = React.memo(() => {
       payload: { operation: 'showpath', props: {} }
     });
 
-  const onOpened = () => {
-    dispatch({
-      type: 'FETCH_FILES_MODAL',
-      payload: { ...params, section: 'modal' }
-    });
-  };
-
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
   };
@@ -57,7 +50,6 @@ const DataFilesShowPathModal = React.memo(() => {
     file && (
       <Modal
         isOpen={isOpen}
-        onOpened={onOpened}
         onClosed={onClosed}
         toggle={toggle}
         className="dataFilesModal"
