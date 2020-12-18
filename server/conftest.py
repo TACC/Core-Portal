@@ -1,6 +1,7 @@
 import pytest
 import json
 import os
+import tempfile
 from portal.apps.auth.models import AgaveOAuthToken
 from portal.apps.accounts.models import PortalProfile
 from django.conf import settings
@@ -109,3 +110,12 @@ def agave_file_listing_mock():
 @pytest.fixture
 def agave_listing_mock():
     yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/listing.json')))
+
+@pytest.fixture
+def text_file_fixture():
+    with tempfile.TemporaryDirectory() as temp_directory:
+        filename = os.path.join(temp_directory, "text_file.txt")
+        with open(filename, "w") as text_file:
+            text_file.write("this is the contents of my text file")
+        with open(filename, 'rb') as text_file:
+            yield text_file
