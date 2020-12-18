@@ -44,6 +44,7 @@ import {
   watchOnboardingAdminIndividualUser,
   watchOnboardingAction
 } from './onboarding.sagas';
+import { watchSiteSearch } from './siteSearch.sagas';
 
 export default function* rootSaga() {
   yield all([
@@ -84,6 +85,7 @@ export default function* rootSaga() {
     watchSaveWelcomeMessages(),
     watchOnboardingAdminList(),
     watchOnboardingAdminIndividualUser(),
-    watchOnboardingAction()
+    watchOnboardingAction(),
+    watchSiteSearch()
   ]);
 }
