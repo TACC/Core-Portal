@@ -39,7 +39,8 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         path: path || '/',
         section: 'FilesListing',
         offset: files.length,
-        queryString
+        queryString,
+        nextPageToken: files.nextPageToken
       }
     });
   }, [dispatch, files.length]);

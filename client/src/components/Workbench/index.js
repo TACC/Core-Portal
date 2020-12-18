@@ -6,6 +6,7 @@ import Workbench from './Workbench';
 import * as ROUTES from '../../constants/routes';
 import TicketStandaloneCreate from '../Tickets/TicketStandaloneCreate';
 import PublicData from '../PublicData/PublicData';
+import GoogleDrivePrivacyPolicy from '../ManageAccount/GoogleDrivePrivacyPolicy/GoogleDrivePrivacyPolicy';
 import SiteSearch from '../SiteSearch';
 
 function AppRouter() {
@@ -20,6 +21,10 @@ function AppRouter() {
       <Route path={ROUTES.WORKBENCH} component={Workbench} />
       <Route path="/tickets/new" component={TicketStandaloneCreate} />
       <Route path="/public-data" component={PublicData} />
+      <Route
+        path="/googledrive-privacy-policy"
+        component={GoogleDrivePrivacyPolicy}
+      />
     </Router>
   );
 }
