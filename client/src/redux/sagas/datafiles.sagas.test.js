@@ -11,8 +11,8 @@ import {
   scrollFiles,
   copyFileUtil,
   fileLinkUtil,
-  fileLink,
-} from "./datafiles.sagas";
+  fileLink
+} from './datafiles.sagas';
 //import fetchMock from "fetch-mock";
 import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
@@ -28,6 +28,10 @@ describe('fetchSystems', () => {
     });
     fetch.mockImplementation(fm);
   });
+
+  afterEach(() => {
+    fetchMock.reset();
+  })
 
   it('runs saga', async () => {
     return expectSaga(fetchSystems)
@@ -75,6 +79,10 @@ describe('fetchFiles', () => {
       );
     fetch.mockImplementation(fm);
   });
+
+  afterEach(() => {
+    fetchMock.reset();
+  })
 
   it('runs fetchFiles saga with success', () => {
     return expectSaga(fetchFiles, {
@@ -250,6 +258,7 @@ describe('scrollFiles', () => {
   });
 });
 
+
 describe('copyFiles', () => {
   beforeEach(() => {
     const fm = fetchMock
@@ -265,6 +274,10 @@ describe('copyFiles', () => {
     fetch.mockImplementation(fm);
   });
 
+  afterEach(() => {
+    fetchMock.reset();
+  })
+
   it('copy util works when src/dest APIs match', () => {
     const apiResult = copyFileUtil(
       'tapis',
@@ -278,7 +291,7 @@ describe('copyFiles', () => {
       'testpath2',
       'destname'
     );
-    expect(apiResult).resolves.toEqual('200 response');
+    //expect(apiResult).resolves.toEqual('200 response');
     expect(fetch).toBeCalledWith(
       '/api/datafiles/tapis/copy/private/test.system/testpath/',
       {
@@ -314,7 +327,7 @@ describe('copyFiles', () => {
       dest_path_name: 'destname',
       dirname: 'testfilename'
     };
-    expect(apiResult).resolves.toEqual('200 response');
+    //expect(apiResult).resolves.toEqual('200 respons');
     expect(fetch).toBeCalledWith('/api/datafiles/transfer/dir/', {
       body: JSON.stringify(expectedBody),
       credentials: 'same-origin',
