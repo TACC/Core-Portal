@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'portal.apps.projects',
     'portal.apps.system_creation',
     'portal.apps.site_search',
+    'portal.apps.jupyter_mounts',
 ]
 
 MIDDLEWARE = [
@@ -278,10 +279,8 @@ LOGGING = {
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(levelname)s %(asctime)s UTC %(module)s %(name)s.'
-                      '%(funcName)s:%(lineno)s: %(message)s '
-                      'user=%(user)s sessionId=%(sessionId)s '
-                      'op=%(operation)s info=%(info)s'
+            'format': '[METRICS] %(levelname)s %(asctime)s UTC %(module)s '
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
     },
     'handlers': {
@@ -299,7 +298,7 @@ LOGGING = {
             'formatter': 'default',
         },
         'metrics_console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'metrics',
         },
@@ -324,7 +323,7 @@ LOGGING = {
         },
         'metrics': {
             'handlers': ['metrics_console', 'metrics_file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
         },
         'paramiko': {
             'handlers': ['console'],

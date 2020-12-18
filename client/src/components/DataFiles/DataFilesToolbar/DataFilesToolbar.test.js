@@ -30,7 +30,7 @@ describe("ToolbarButton", () => {
 describe("DataFilesToolbar", () => {
   it("render necessary buttons", () => {
     const { getByText } = renderComponent(
-      <DataFilesToolbar scheme="private" />,
+      <DataFilesToolbar scheme="private" api="tapis"/>,
       mockStore({files: {selected: { FilesListing: []}}, listing: {selected: {FilesListing: []}}}),
       createMemoryHistory()
     );

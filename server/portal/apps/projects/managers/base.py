@@ -164,10 +164,7 @@ class ProjectsManager(object):
             self.user.username,
             'ADMIN'
         )
-        METRICS.info(
-            'Project created: project_id=%s, project_title:%s, username=%s',
-            project_id, title, self.user.username
-        )
+        METRICS.info('user:{} created project: id={}, title:{}'.format(self.user.username, project_id, title))
 
         project_indexer.apply_async(args=[project_id])
 
