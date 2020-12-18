@@ -10,6 +10,9 @@ import DataFilesCopyModal from './DataFilesCopyModal';
 import DataFilesTrashModal from './DataFilesTrashModal';
 import DataFilesCompressModal from './DataFilesCompressModal';
 import DataFilesExtractModal from './DataFilesExtractModal';
+import DataFilesAddProjectModal from './DataFilesAddProjectModal';
+import DataFilesManageProjectModal from './DataFilesManageProjectModal';
+import DataFilesProjectEditDescriptionModal from './DataFilesProjectEditDescriptionModal';
 import DataFilesLinkModal from './DataFilesLinkModal';
 import DataFilesShowPathModal from './DataFilesShowPathModal';
 import './DataFilesModals.scss';
@@ -30,6 +33,9 @@ export default function DataFilesModals() {
       <SystemsPushKeysModal />
       <DataFilesCompressModal />
       <DataFilesExtractModal />
+      <DataFilesAddProjectModal />
+      <DataFilesManageProjectModal />
+      <DataFilesProjectEditDescriptionModal />
     </>
   );
 }

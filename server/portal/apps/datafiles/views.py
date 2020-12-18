@@ -14,8 +14,6 @@ from portal.apps.datafiles.models import Link
 from portal.exceptions.api import ApiException
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from .utils import notify, NOTIFY_ACTIONS
 
 
@@ -48,17 +46,14 @@ class SystemListingView(BaseApiView):
         response['system_list'] += portal_systems
         default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
         response['default_host'] = default_system['host']
+        return JsonResponse(response)
 
-        for system in response['system_list']:
-            try:
-                if system['api'] == 'tapis' and 'system' in system:
-                    system['definition'] = StorageSystem(
-                        request.user.agave_oauth.client, id=system['system']
-                    )
-            except Exception:
-                logger.exception("Could not retrieve definition for {}".format(system['system']))
 
-        return JsonResponse(response, encoder=BaseAgaveSystemSerializer)
+@method_decorator(login_required, name='dispatch')
+class SystemDefinitionView(BaseApiView):
+    """Get definitions for individual systems"""
+    def get(self, request, systemId):
+        return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=systemId))
 
 
 class TapisFilesView(BaseApiView):

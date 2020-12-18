@@ -7,23 +7,24 @@
  * @returns {Boolean}
  */
 export default function getFilePermissions(name, { files, scheme, api }) {
+  const isPrivate = ['projects', 'private'].includes(scheme);
   switch (name) {
     case 'rename':
-      return files.length === 1 && scheme === 'private';
+      return files.length === 1 && isPrivate;
     case 'download':
       return files.length === 1 && files[0].format !== 'folder';
     case 'extract':
       return (
         files.length === 1 &&
         (files[0].name.includes('.zip') || files[0].name.includes('tar.gz')) &&
-        scheme === 'private' &&
+        isPrivate &&
         api === 'tapis'
       );
     case 'compress':
     case 'copy':
     case 'move':
     case 'trash':
-      return files.length > 0 && scheme === 'private' && api === 'tapis';
+      return files.length > 0 && isPrivate && api === 'tapis';
     default:
       throw new RangeError('Unknown File Operation');
   }

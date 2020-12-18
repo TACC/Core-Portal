@@ -16,7 +16,6 @@ const SidebarItem = ({ to, label, iconName, children, disabled }) => {
     <NavItem>
       <NavLink
         tag={RRNavLink}
-        exact
         to={to}
         styleName="link"
         activeStyleName="link--active"

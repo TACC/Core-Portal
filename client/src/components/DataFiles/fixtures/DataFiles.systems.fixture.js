@@ -5,24 +5,33 @@ const systemsFixture = {
       name: 'My Data (Frontera)',
       system: 'frontera.home.username',
       scheme: 'private',
-      api: 'tapis',
-      definition: {
-        storage: {
-          host: 'frontera.tacc.utexas.edu',
-          rootDir: '/home1/012345/username'
-        }
-      }
+      api: 'tapis'
     },
     {
       name: 'My Data (Longhorn)',
       system: 'longhorn.home.username',
       scheme: 'private',
-      api: 'tapis',
-      definition: {
-        storage: {
-          host: 'longhorn.tacc.utexas.edu',
-          rootDir: '/home/012345/username'
-        }
+      api: 'tapis'
+    },
+    {
+      name: 'Shared Workspaces',
+      scheme: 'projects',
+      api: 'tapis'
+    }
+  ],
+  definitions: [
+    {
+      id: 'frontera.home.username',
+      storage: {
+        host: 'frontera.tacc.utexas.edu',
+        rootDir: '/home1/012345/username'
+      }
+    },
+    {
+      id: 'longhorn.home.username',
+      storage: {
+        host: 'longhorn.tacc.utexas.edu',
+        rootDir: '/home/012345/username'
       }
     }
   ]
