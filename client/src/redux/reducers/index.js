@@ -19,6 +19,7 @@ import welcomeMessages from './welcome.reducers';
 import { onboarding } from './onboarding.reducers';
 import projects from './projects.reducers';
 import { users } from './users.reducers';
+import siteSearch from './siteSearch.reducers';
 
 export default combineReducers({
   jobs,
@@ -41,5 +42,6 @@ export default combineReducers({
   welcomeMessages,
   onboarding,
   projects,
-  users
+  users,
+  siteSearch
 });
