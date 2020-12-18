@@ -1,5 +1,4 @@
 from mock import MagicMock
-from elasticsearch_dsl.response import Hit
 import pytest
 
 
@@ -52,10 +51,11 @@ def configure_public(settings):
 
 def test_search_with_auth(regular_user, client, mock_cms_search,
                           mock_files_search):
+    regular_user.profile.setup_complete = True
+    regular_user.profile.save()
     client.force_login(regular_user)
-    response = client.post('/api/site-search/?page=0&query_string=test')
+    response = client.get('/api/site-search/?page=0&query_string=test')
 
-    print(response.json())
     assert response.json() == {
         'cms': {'count': 1,
                 'listing': [{'title': 'test res',
@@ -70,9 +70,8 @@ def test_search_with_auth(regular_user, client, mock_cms_search,
 
 
 def test_search_no_auth(client, mock_cms_search, mock_files_search):
-    response = client.post('/api/site-search/?page=0&query_string=test')
+    response = client.get('/api/site-search/?page=0&query_string=test')
 
-    print(response.json())
     assert response.json() == {
         'cms': {'count': 1,
                 'listing': [{'title': 'test res',
@@ -83,9 +82,8 @@ def test_search_no_auth(client, mock_cms_search, mock_files_search):
 
 def test_search_public(client, configure_public, mock_cms_search,
                        mock_files_search):
-    response = client.post('/api/site-search/?page=0&query_string=test')
+    response = client.get('/api/site-search/?page=0&query_string=test')
 
-    print(response.json())
     assert response.json() == {
         'cms': {'count': 1,
                 'listing': [{'title': 'test res',

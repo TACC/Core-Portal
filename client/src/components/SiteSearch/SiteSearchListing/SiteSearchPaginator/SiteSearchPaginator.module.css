@@ -1,3 +1,11 @@
 .paginator-link {
   color: #9d85ef;
 }
+
+.active {
+  background-color: #9d85ef;
+}
+
+.active .paginator-link {
+  color: white;
+}

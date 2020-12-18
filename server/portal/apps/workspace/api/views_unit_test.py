@@ -1,177 +1,229 @@
 from portal.apps.workspace.models import JobSubmission
-from django.contrib.auth import get_user_model
-from django.test import RequestFactory, TestCase
-from mock import patch, MagicMock
+from mock import MagicMock
 from django.conf import settings
-from portal.apps.workspace.api.views import JobsView
-from portal.apps.auth.models import AgaveOAuthToken
+from portal.apps.workspace.api.views import JobsView, AppsTrayView
+from portal.apps.workspace.models import AppTrayCategory
 import json
 import os
 import pytest
+import copy
 from datetime import timedelta
 from django.utils import timezone
+from django.core.management import call_command
+
+
+pytest.mark.django_db(transaction=True)
+
+
+@pytest.fixture
+def get_user_data(mocker):
+    mock = mocker.patch('portal.apps.accounts.managers.user_systems.get_user_data')
+    with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
+        tas_user = json.load(f)
+    mock.return_value = tas_user
+    yield mock
+
+
+@pytest.fixture
+def apps_manager(mocker):
+    yield mocker.patch(
+        'portal.apps.workspace.api.views.UserApplicationsManager'
+    )
+
+
+@pytest.fixture
+def test_job():
+    with open(os.path.join(settings.BASE_DIR, 'fixtures', 'job-submission.json')) as f:
+        yield json.load(f)
+
+
+def test_job_post(rf, authenticated_user, get_user_data,
+                  regular_user, mock_agave_client, apps_manager, test_job):
+    mock_agave_client.jobs.submit.return_value = {"id": "1234"}
+    view = JobsView()
+    # Patch the User Applications Manager to return a fake cloned app
+    mock_app = MagicMock()
+    mock_app.id = "mock_app"
+    mock_app.exec_sys = False
+    apps_manager.return_value.get_or_create_app.return_value = mock_app
+
+    # Send a job submission request
+    request = rf.post(
+        "/api/workspace/jobs",
+        data=json.dumps(test_job),
+        content_type="application/json"
+    )
+    request.user = authenticated_user
+    view.post(request)
+
+    # The job submission request
+    job = JobSubmission.objects.all()[0]
+    assert job.jobId == "1234"
+
+
+def request_jobs_util(rf, authenticated_user, query_params={}):
+    # Unit test helper function
+    view = JobsView()
+    request = rf.get("/api/workspace/jobs/", query_params)
+    request.user = authenticated_user
+    response = view.get(request)
+    return json.loads(response.content)["response"]
+
+
+def test_get_no_jobs(rf, authenticated_user, mock_agave_client):
+    mock_agave_client.jobs.list.return_value = []
+    jobs = request_jobs_util(rf, authenticated_user)
+    assert len(jobs) == 0
+
+
+def test_get_jobs_bad_offset(rf, authenticated_user, mock_agave_client):
+    mock_agave_client.jobs.list.return_value = []
+    jobs = request_jobs_util(rf, authenticated_user, query_params={"offset": 100})
+    assert len(jobs) == 0
+
+
+def test_date_filter(rf, authenticated_user, mock_agave_client):
+    test_time = timezone.now()
+
+    # today_job
+    JobSubmission.objects.create(
+        user=authenticated_user,
+        jobId="9876"
+    )
+    JobSubmission.objects.filter(jobId="9876").update(time=test_time)
+
+    # recent_job
+    JobSubmission.objects.create(
+        user=authenticated_user,
+        jobId="1234",
+    )
+    JobSubmission.objects.filter(jobId="1234").update(time=test_time - timedelta(days=3))
+
+    # older_job
+    JobSubmission.objects.create(
+        user=authenticated_user,
+        jobId="2345",
+    )
+    JobSubmission.objects.filter(jobId="2345").update(time=test_time - timedelta(days=15))
+
+    # oldest_job
+    JobSubmission.objects.create(
+        user=authenticated_user,
+        jobId="3456",
+    )
+    JobSubmission.objects.filter(jobId="3456").update(time=test_time - timedelta(days=120))
+
+    mock_agave_client.jobs.list.return_value = [
+        {"id": "9876"},
+        {"id": "1234"},
+        {"id": "2345"},
+        {"id": "3456"}
+    ]
+
+    # Test request for jobs with no period query param
+    jobs = request_jobs_util(rf, authenticated_user)
+    assert len(jobs) == 4
+
+    # Test request for jobs with query for all jobs
+    jobs = request_jobs_util(rf, authenticated_user, query_params={"period": "all"})
+    assert len(jobs) == 4
+
+    # Test request for jobs within one month
+    jobs = request_jobs_util(rf, authenticated_user, query_params={"period": "month"})
+    assert len(jobs) == 3
+
+    # Test request for jobs within one week
+    jobs = request_jobs_util(rf, authenticated_user, query_params={"period": "week"})
+    assert len(jobs) == 2
+
+    # Test request for jobs from today
+    jobs = request_jobs_util(rf, authenticated_user, query_params={"period": "day"})
+    assert len(jobs) == 1
+
+
+def test_get_appid_by_spec(authenticated_user, mock_agave_client):
+    compress_01u1 = {
+        'id': 'compress-0.1u1',
+        'name': 'compress',
+        'version': '0.1',
+        'revision': '1'
+    }
+    compress_01u2 = {
+        'id': 'compress-0.1u2',
+        'name': 'compress',
+        'version': '0.1',
+        'revision': '2'
+    }
+    compress_02u1 = {
+        'id': 'compress-0.2u1',
+        'name': 'compress',
+        'version': '0.2',
+        'revision': 1
+    }
+    view = AppsTrayView()
+    mock_agave_client.apps.list.return_value = [compress_01u1, compress_01u2]
+    assert view.getAppIdBySpec(
+        MagicMock(name='compress', version='0.1'), authenticated_user) == 'compress-0.1u2'
+    mock_agave_client.apps.list.return_value = [compress_01u2, compress_02u1]
+    assert view.getAppIdBySpec(
+        MagicMock(name='compress', version='0.1'), authenticated_user) == 'compress-0.2u1'
+
+
+def test_get_app(mocker, authenticated_user):
+    mock_get_by_spec = mocker.patch.object(AppsTrayView, 'getAppIdBySpec')
+    mock_get_app = mocker.patch('portal.apps.workspace.api.views._get_app')
+    view = AppsTrayView()
+
+    # Try retrieving an app spec without a specific appId
+    mock_spec = MagicMock(
+        name='compress', version='0.1', appId=None, lastRetrieved='compress-0.1u1'
+    )
+    mock_get_by_spec.return_value = 'compress-0.1u1'
+    view.getApp(mock_spec, authenticated_user)
+    mock_get_app.assert_called_with('compress-0.1u1', authenticated_user)
+
+    # Try retrieving a specific app ID and see that the lastRetrieved field is updated
+    mock_spec.appId = 'compress-0.2u1'
+    view.getApp(mock_spec, authenticated_user)
+    assert mock_spec.lastRetrieved == 'compress-0.2u1'
+    mock_get_app.assert_called_with('compress-0.2u1', authenticated_user)
+
+
+def test_get_private_apps(authenticated_user, mock_agave_client, mocker):
+    view = AppsTrayView()
+    mock_get_app = mocker.patch('portal.apps.workspace.api.views._get_app')
+    app = {
+        'id': 'myapp-0.1',
+        'label': 'My App',
+        'version': '0.1',
+        'revision': '1',
+        'shortDescription': 'My App',
+    }
+    mock_agave_client.apps.list.return_value = [
+        {
+            'id': 'prtl.clone.hidden'
+        },
+        app
+    ]
+    mock_get_app.return_value = app
+    expected_list = [copy.deepcopy(app)]
+    expected_list[0]['type'] = 'agave'
+    expected_list[0]['appId'] = 'myapp-0.1'
+    expected_list[0].pop('id', None)
+    assert view.getPrivateApps(authenticated_user) == expected_list
 
 
 @pytest.mark.django_db(transaction=True)
-class TestJobsView(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestJobsView, cls).setUpClass()
-        cls.mock_get_user_data_patcher = patch('portal.apps.accounts.managers.user_systems.get_user_data')
-        with open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_user.json')) as f:
-            tas_user = json.load(f)
-        cls.mock_get_user_data = cls.mock_get_user_data_patcher.start()
-        cls.mock_get_user_data.return_value = tas_user
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestJobsView, cls).tearDownClass()
-        cls.mock_get_user_data_patcher.stop()
-
-    def setUp(self):
-        super(TestJobsView, self).setUp()
-        self.rf = RequestFactory()
-        self.view = JobsView()
-        self.user = get_user_model().objects.create_user("test", "test", "test")
-        token = AgaveOAuthToken(
-            token_type="bearer",
-            scope="default",
-            access_token="1234fsf",
-            refresh_token="123123123",
-            expires_in=14400,
-            created=1523633447)
-        token.user = self.user
-        token.save()
-        self.mock_agave_patcher = patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
-        self.mock_agave_client = self.mock_agave_patcher.start()
-        self.mock_apps_manager_patcher = patch(
-            'portal.apps.workspace.api.views.UserApplicationsManager'
-        )
-        self.mock_apps_manager = self.mock_apps_manager_patcher.start()
-
-        with open(os.path.join(settings.BASE_DIR, 'fixtures', 'job-submission.json')) as f:
-            self.job_data = json.load(f)
-
-    def tearDown(self):
-        super(TestJobsView, self).tearDown()
-        JobSubmission.objects.all().delete()
-        self.mock_agave_patcher.stop()
-        self.mock_apps_manager.stop()
-
-    def test_post(self):
-        # Make the fake agave client return a mock job response
-        self.mock_agave_client.jobs.submit.return_value = {"id": "1234"}
-
-        # Patch the User Applications Manager to return a fake cloned app
-        mock_app = MagicMock()
-        mock_app.id = "mock_app"
-        mock_app.exec_sys = False
-        self.mock_apps_manager.return_value.get_or_create_app.return_value = mock_app
-
-        # Send a job submission request
-        request = self.rf.post(
-            "/api/workspace/jobs",
-            data=json.dumps(self.job_data),
-            content_type="application/json"
-        )
-        request.user = self.user
-        self.view.post(request)
-
-        # The job submission request
-        job = JobSubmission.objects.all()[0]
-        self.assertEqual(job.jobId, "1234")
-
-    def request_jobs(self, query_params={}):
-        # Unit test helper function
-        request = self.rf.get("/api/workspace/jobs/", query_params)
-        request.user = self.user
-        response = self.view.get(request)
-        return json.loads(response.content)["response"]
-
-    def test_get(self):
-        # Register one job with this portal
-        JobSubmission.objects.create(
-            user=self.user,
-            jobId="1234"
-        )
-
-        # Fake a job listing response that includes extra jobs
-        self.mock_agave_client.jobs.list.return_value = [
-            {"id": "1234"},
-            {"id": "5678"}
-        ]
-
-        jobs = self.request_jobs()
-
-        # Verify that only the job we know about gets returned
-        self.assertEqual(len(jobs), 1)
-        self.assertEqual(jobs[0]["id"], "1234")
-
-    def test_get_no_jobs(self):
-        self.mock_agave_client.jobs.list.return_value = []
-        jobs = self.request_jobs()
-        self.assertEqual(len(jobs), 0)
-
-    def test_get_jobs_bad_offset(self):
-        self.mock_agave_client.jobs.list.return_value = []
-        jobs = self.request_jobs(query_params={"offset": 100})
-        self.assertEqual(len(jobs), 0)
-
-    def test_date_filter(self):
-        test_time = timezone.now()
-
-        # today_job
-        JobSubmission.objects.create(
-            user=self.user,
-            jobId="9876"
-        )
-        JobSubmission.objects.filter(jobId="9876").update(time=test_time)
-
-        # recent_job
-        JobSubmission.objects.create(
-            user=self.user,
-            jobId="1234",
-        )
-        JobSubmission.objects.filter(jobId="1234").update(time=test_time - timedelta(days=3))
-
-        # older_job
-        JobSubmission.objects.create(
-            user=self.user,
-            jobId="2345",
-        )
-        JobSubmission.objects.filter(jobId="2345").update(time=test_time - timedelta(days=15))
-
-        # oldest_job
-        JobSubmission.objects.create(
-            user=self.user,
-            jobId="3456",
-        )
-        JobSubmission.objects.filter(jobId="3456").update(time=test_time - timedelta(days=120))
-
-        self.mock_agave_client.jobs.list.return_value = [
-            {"id": "9876"},
-            {"id": "1234"},
-            {"id": "2345"},
-            {"id": "3456"}
-        ]
-
-        # Test request for jobs with no period query param
-        jobs = self.request_jobs()
-        self.assertEqual(len(jobs), 4)
-
-        # Test request for jobs with query for all jobs
-        jobs = self.request_jobs(query_params={"period": "all"})
-        self.assertEqual(len(jobs), 4)
-
-        # Test request for jobs within one month
-        jobs = self.request_jobs(query_params={"period": "month"})
-        self.assertEqual(len(jobs), 3)
-
-        # Test request for jobs within one week
-        jobs = self.request_jobs(query_params={"period": "week"})
-        self.assertEqual(len(jobs), 2)
-
-        # Test request for jobs from today
-        jobs = self.request_jobs(query_params={"period": "day"})
-        self.assertEqual(len(jobs), 1)
+def test_get_public_apps(django_db_setup, django_db_blocker, mocker,
+                         mock_agave_client, authenticated_user):
+    # Load fixtures
+    with django_db_blocker.unblock():
+        call_command('loaddata', 'app-tray.json')
+    # Assert that fixtures were loaded
+    assert len(AppTrayCategory.objects.all()) == 3
+    mocker.patch.object(AppsTrayView, 'getApp')
+    view = AppsTrayView()
+    categories, definitions = view.getPublicApps(authenticated_user)
+    assert len(categories) == 3
+    assert categories[0]['title'] == 'Simulation'
+    assert len(categories[0]['apps']) == 1

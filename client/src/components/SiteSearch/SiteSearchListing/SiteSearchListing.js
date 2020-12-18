@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { InlineMessage, LoadingSpinner } from '_common';
+import renderHtml from 'utils/renderHtml';
 import SiteSearchSearchbar from './SiteSearchSearchbar/SiteSearchSearchbar';
 import SiteSearchPaginator from './SiteSearchPaginator/SiteSearchPaginator';
 import './SiteSearchListing.module.scss';
@@ -12,13 +13,11 @@ export const CMSListingItem = ({ title, url, highlight }) => (
         <b>{title}</b>
       </a>
     </div>
-    {/* eslint-disable react/no-danger */}
     {/* eslint-disable react/no-array-index-key */}
     {(highlight.body || highlight.title).map((h, i) => (
-      <div key={i} dangerouslySetInnerHTML={{ __html: h }} />
+      <div key={i}> {renderHtml(h)}</div>
     ))}
     {/* eslint-disable react/no-array-index-key */}
-    {/* eslint-disable react/no-danger */}
   </div>
 );
 CMSListingItem.propTypes = {
@@ -101,7 +100,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
         ))}
 
       {results.count > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div styleName="paginator-container">
           <SiteSearchPaginator lastPageIndex={lastPageIndex} />
         </div>
       )}
