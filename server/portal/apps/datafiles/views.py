@@ -135,12 +135,13 @@ class TapisFilesView(BaseApiView):
 
         try:
             METRICS.info("user:{} op:{} api:tapis scheme:{} "
-                         "system:{} path:{} body:{}".format(request.user.username,
-                                                            operation,
-                                                            scheme,
-                                                            system,
-                                                            path,
-                                                            body))
+                         "system:{} path:{} filename:{}".format(request.user.username,
+                                                             operation,
+                                                             scheme,
+                                                             system,
+                                                             path,
+                                                             body['uploaded_file'].name))
+
             response = tapis_post_handler(client, scheme, system, path, operation, body=body)
             operation in NOTIFY_ACTIONS and \
                 notify(request.user.username, operation, 'success', {'response': response})
