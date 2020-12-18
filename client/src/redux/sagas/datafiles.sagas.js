@@ -22,6 +22,7 @@ export async function fetchSystemsUtil() {
 }
 
 export function* fetchSystems() {
+  yield put({ type: 'FETCH_SYSTEMS_STARTED' });
   try {
     const systemsJson = yield call(fetchSystemsUtil);
     yield put({ type: 'FETCH_SYSTEMS_SUCCESS', payload: systemsJson });
@@ -30,10 +31,33 @@ export function* fetchSystems() {
   }
 }
 
+export async function fetchSystemDefinitionUtil(system) {
+  const response = await fetch(`/api/datafiles/systems/definition/${system}/`);
+  if (!response.ok) {
+    throw new Error(response.status);
+  }
+  const responseJson = await response.json();
+  return responseJson;
+}
+
+export function* fetchSystemDefinition(action) {
+  yield put({ type: 'FETCH_SYSTEM_DEFINITION_STARTED' });
+  try {
+    const systemsJson = yield call(fetchSystemDefinitionUtil, action.payload);
+    yield put({
+      type: 'FETCH_SYSTEM_DEFINITION_SUCCESS',
+      payload: systemsJson
+    });
+  } catch (e) {
+    yield put({ type: 'FETCH_SYSTEM_DEFINITION_ERROR', payload: e.message });
+  }
+}
+
 export function* watchFetchSystems() {
   // The result of the systems call shouldn't change so we only care about
   // the first result.
   yield takeLeading('FETCH_SYSTEMS', fetchSystems);
+  yield takeLeading('FETCH_SYSTEM_DEFINITION', fetchSystemDefinition);
 }
 
 export async function pushKeysUtil(system, form) {

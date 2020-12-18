@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { TextCopyField } from '_common';
@@ -10,23 +10,30 @@ const DataFilesShowPathModal = React.memo(() => {
     state => state.files.params.FilesListing,
     shallowEqual
   );
+
+  useEffect(() => {
+    if (params.api === 'tapis' && params.system) {
+      dispatch({
+        type: 'FETCH_SYSTEM_DEFINITION',
+        payload: params.system
+      });
+    }
+  }, [params, dispatch]);
+
   const { file } = useSelector(state => state.files.modalProps.showpath);
 
   const definition = useSelector(state => {
     if (!file) {
       return null;
     }
-    const matching = state.systems.systemList.find(
-      sys => sys.system === file.system
+    const matching = state.systems.definitions.find(
+      sys => sys.id === file.system
     );
-    if (!matching) {
-      return null;
-    }
-    return matching.definition;
+    return matching;
   });
 
   const isOpen = useSelector(
-    state => state.files.modals.showpath && definition
+    state => state.files.modals.showpath && Boolean(definition)
   );
 
   const toggle = () =>
