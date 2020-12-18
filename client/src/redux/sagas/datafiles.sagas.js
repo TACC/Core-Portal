@@ -10,6 +10,7 @@ import {
   race,
   take
 } from 'redux-saga/effects';
+import { fetchUtil } from 'utils/fetchUtil';
 
 export async function fetchSystemsUtil() {
   const response = await fetch('/api/datafiles/systems/list/');
@@ -21,6 +22,7 @@ export async function fetchSystemsUtil() {
 }
 
 export function* fetchSystems() {
+  yield put({ type: 'FETCH_SYSTEMS_STARTED' });
   try {
     const systemsJson = yield call(fetchSystemsUtil);
     yield put({ type: 'FETCH_SYSTEMS_SUCCESS', payload: systemsJson });
@@ -29,10 +31,35 @@ export function* fetchSystems() {
   }
 }
 
+export async function fetchSystemDefinitionUtil(systemId) {
+  const response = await fetch(
+    `/api/datafiles/systems/definition/${systemId}/`
+  );
+  if (!response.ok) {
+    throw new Error(response.status);
+  }
+  const responseJson = await response.json();
+  return responseJson;
+}
+
+export function* fetchSystemDefinition(action) {
+  yield put({ type: 'FETCH_SYSTEM_DEFINITION_STARTED' });
+  try {
+    const systemJson = yield call(fetchSystemDefinitionUtil, action.payload);
+    yield put({
+      type: 'FETCH_SYSTEM_DEFINITION_SUCCESS',
+      payload: systemJson
+    });
+  } catch (e) {
+    yield put({ type: 'FETCH_SYSTEM_DEFINITION_ERROR', payload: e.message });
+  }
+}
+
 export function* watchFetchSystems() {
   // The result of the systems call shouldn't change so we only care about
   // the first result.
   yield takeLeading('FETCH_SYSTEMS', fetchSystems);
+  yield takeLeading('FETCH_SYSTEM_DEFINITION', fetchSystemDefinition);
 }
 
 export async function pushKeysUtil(system, form) {
@@ -518,6 +545,81 @@ export function* mkdir(action) {
       props: {}
     }
   });
+}
+
+export async function fileLinkUtil(method, scheme, system, path) {
+  const url = `/api/datafiles/link/${scheme}/${system}${path}/`;
+  return fetchUtil({
+    url,
+    method,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+export function* watchLink() {
+  yield takeLeading('DATA_FILES_LINK', fileLink);
+}
+
+export function* fileLink(action) {
+  const { system, path } = action.payload.file;
+  const { scheme, method } = action.payload;
+  yield put({
+    type: 'DATA_FILES_SET_OPERATION_STATUS',
+    payload: {
+      status: {
+        method,
+        url: '',
+        error: null,
+        loading: true
+      },
+      operation: 'link'
+    }
+  });
+  try {
+    const result = yield call(fileLinkUtil, method, scheme, system, path);
+    if (method === 'delete') {
+      yield put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: {
+          status: {
+            method: null,
+            url: '',
+            error: null,
+            loading: false
+          },
+          operation: 'link'
+        }
+      });
+      return;
+    }
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: {
+        status: {
+          method: null,
+          url: result.data || '',
+          error: null,
+          loading: false
+        },
+        operation: 'link'
+      }
+    });
+  } catch (error) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: {
+        status: {
+          method: null,
+          url: '',
+          error: error.toString(),
+          loading: false
+        },
+        operation: 'link'
+      }
+    });
+  }
 }
 
 export async function downloadUtil(api, scheme, system, path, href) {

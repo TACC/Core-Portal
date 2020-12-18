@@ -170,7 +170,7 @@ const DataFilesModalListingTable = ({
       const currentFolderEntry = {
         name: isNotRoot
           ? getCurrentDirectory(params.path)
-          : findSystemDisplayName(systemList, params.system),
+          : findSystemDisplayName(systemList, params.system, !isNotRoot),
         format: 'folder',
         system: params.system,
         path: params.path,

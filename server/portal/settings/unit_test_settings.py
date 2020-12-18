@@ -84,6 +84,7 @@ INSTALLED_APPS = [
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
+    'portal.apps.datafiles',
     'portal.apps.projects',
 
 ]
@@ -332,10 +333,6 @@ LOGGING = {
     'formatters': {
         'default': {
             'format': '[DJANGO-TEST] %(levelname)s %(asctime)s %(module)s '
-                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
-        },
-        'agave': {
-            'format': '[AGAVE-TEST] %(levelname)s %(asctime)s %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
