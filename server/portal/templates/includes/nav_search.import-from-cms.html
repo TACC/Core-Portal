@@ -1,0 +1,22 @@
+{# @var className #}
+
+{# RFE: Use a custom element or React component whose code exists in one repo #}
+{# WARNING: Some markup is duplicated in other repositories #}
+{# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
+<div class="s-search-bar  {{className}}" id="s-search-bar">
+
+<!-- The header search bar handled here. -->
+{# FAQ: Content populated via JavaScript, below #}
+
+</div>
+<script type="module">
+import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
+
+const searchBarContainer = document.getElementById('s-search-bar');
+
+importHTML.fromURL(searchBarContainer, '/cms/nav/search/markup/');
+</script>
+
+{# WARNING: Frontera-specific code from CMS #}
+{# WARNING: There is no plan yet for how to handle Project-specific styling #}
+<link rel="stylesheet" href="/static/frontera-cms/css/build/site.tacc-search-bar.css">
