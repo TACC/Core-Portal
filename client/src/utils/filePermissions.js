@@ -10,9 +10,13 @@ export default function getFilePermissions(name, { files, scheme, api }) {
   const isPrivate = ['projects', 'private'].includes(scheme);
   switch (name) {
     case 'rename':
-      return files.length === 1 && isPrivate;
+      return files.length === 1 && isPrivate && api !== 'googledrive';
     case 'download':
-      return files.length === 1 && files[0].format !== 'folder';
+      return (
+        files.length === 1 &&
+        files[0].format !== 'folder' &&
+        api !== 'googledrive'
+      );
     case 'extract':
       return (
         files.length === 1 &&

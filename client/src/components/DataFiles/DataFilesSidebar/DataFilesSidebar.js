@@ -27,6 +27,7 @@ const DataFilesSidebar = ({ readOnly }) => {
     });
   };
   const err = useSelector(state => state.files.error.FilesListing);
+  const { api } = useSelector(state => state.files.params.FilesListing);
   const systems = useSelector(state => state.systems.systemList, shallowEqual);
   const { user } = useSelector(state => state.authenticatedUser);
 
@@ -60,7 +61,7 @@ const DataFilesSidebar = ({ readOnly }) => {
               color="primary"
               id="data-files-add"
               className="data-files-btn"
-              disabled={err !== false}
+              disabled={err !== false || api === 'googledrive'}
             >
               + Add
             </DropdownToggle>
