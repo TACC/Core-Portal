@@ -28,6 +28,7 @@
   flex-wrap: wrap; /* prevent breadcrumbs and action buttons from colliding */
   justify-content: space-between;
   align-items: flex-end;
+  margin-bottom: 15px;
 }
 
 /* Children (of `header`) */
