@@ -78,7 +78,7 @@ DataFilesCompressForm.propTypes = {
   first: PropTypes.string.isRequired,
   formRef: PropTypes.oneOfType([
     PropTypes.func,
-    PropTypes.shape({ current: PropTypes.instanceOf(Element) })
+    PropTypes.shape({ current: PropTypes.instanceOf(Object) })
   ])
 };
 DataFilesCompressForm.defaultProps = {
