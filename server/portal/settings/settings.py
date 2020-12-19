@@ -469,19 +469,24 @@ SETTINGS: EXECUTION SYSTEMS
 """
 PORTAL_EXEC_SYSTEMS = {
     'data': {
-        'scratch_dir': '/scratch/{}'
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
     'stampede2': {
-        'scratch_dir': '/scratch/{}'
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
     'lonestar5': {
-        'scratch_dir': '/scratch/{}'
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
     'longhorn': {
-        'scratch_dir': '/scratch/{}'
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
     'frontera': {
-        'scratch_dir': '/scratch1/{}'
+        'scratch_dir': '/scratch1/{}',
+        'home_dir': '/home1/{}'
     }
 }
 
