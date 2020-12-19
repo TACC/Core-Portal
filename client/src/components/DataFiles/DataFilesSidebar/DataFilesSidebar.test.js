@@ -16,6 +16,9 @@ describe('DataFilesSidebar', () => {
       files: {
         error: {
           FilesListing: false
+        },
+        params: {
+          FilesListing: {}
         }
       },
       systems: systemsFixture,
