@@ -8,9 +8,12 @@
 
 <template id="tacc-search-bar">
   <style type="text/css">
-    /* Hide form before CSS load (to be shown after CSS load) to avoid FOUC */
+    /* Hide search bar before all relevant styles and scripts have loaded */
+    /* FAQ: Manage visibility of search bar to avoid FOUC */
+    /* HACK: This should be done via a dynamically-added `-is-loaded` class */
     form {
-      display: none;
+      height: 0;
+      visibility: hidden;
     }
   </style>
 
@@ -29,6 +32,8 @@
 
   <link id="css-site" rel="stylesheet" href="/static/site_cms/css/build/site.css">
   <link id="css-site-header" rel="stylesheet" href="/static/site_cms/css/build/site.header.css">
+  {# Do NOT move `tacc-search-bar` code to `assets_site.html` yet #}
+  {# FAQ: Need to FIRST figure out why Docs are not registering `:root` vars #}
   <link id="css-site-tacc-search-bar" rel="stylesheet" href="/static/site_cms/css/build/site.tacc-search-bar.css">
 
   <!-- Site Assets: Scripts. -->
@@ -37,6 +42,7 @@
   <!-- Custom Assets. -->
   <link rel="stylesheet" href="/static/frontera-cms/css/build/site.css">
   <link rel="stylesheet" href="/static/frontera-cms/css/build/site.tacc-search-bar.css">
+
 
   {# / Include Standard Assets #}
 
@@ -98,3 +104,12 @@
     return false;
   }
 </script>
+<style type="text/css">
+  /* Render search bar after all relevant styles and scripts have loaded */
+  /* FAQ: Manage visibility of search bar to avoid FOUC */
+  /* HACK: This should be done via a dynamically-added `-is-loaded` class */
+  tacc-search-bar::part(form) {
+    height: auto;
+    visibility: visible;
+  }
+</style>
