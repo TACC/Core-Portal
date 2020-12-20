@@ -1,115 +1,20 @@
 {# @var className #}
 
+{# RFE: Use a custom element or React component whose code exists in one repo #}
 {# WARNING: Some markup is duplicated in other repositories #}
 {# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
+<div class="s-search-bar  {{className}}" id="s-search-bar">
+  <!-- The search bar is created here. -->
+  {# FAQ: Content populated via JavaScript, below #}
+</div>
+<script type="module">
+  import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
+  import * as registerCustomElement from '/static/site_cms/js/modules/registerCustomElement.js';
 
-{# Encapsulate search bar as custom element, so styles do not bleed out #}
-<tacc-search-bar class="s-search-bar  {{className}}"></tacc-search-bar>
+  const searchBarContainer = document.getElementById('s-search-bar');
 
-<template id="tacc-search-bar">
-  <style type="text/css">
-    /* Hide search bar before all relevant styles and scripts have loaded */
-    /* FAQ: Manage visibility of search bar to avoid FOUC */
-    /* HACK: This should be done via a dynamically-added `-is-loaded` class */
-    form {
-      height: 0;
-      visibility: hidden;
-    }
-  </style>
-
-  {# Include Standard Assets #}
-  {# WARNING: This markup mimics CMS render until we can load CMS version #}
-  {# SEE: server/portal/templates/includes/nav_search.import-from-cms.html #}
-
-  <!-- Site Font and/or Custom Font. -->
-  <link id="css-site-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&amp;display=swap">
-
-  <!-- Site Assets: Favicon. -->
-  <link rel="icon" href="/static/site_cms/img/favicons/favicon.ico" type="image/x-icon">
-
-  <!-- Site Assets: Styles. -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-  <link id="css-site" rel="stylesheet" href="/static/site_cms/css/build/site.css">
-  <link id="css-site-header" rel="stylesheet" href="/static/site_cms/css/build/site.header.css">
-  {# Do NOT move `tacc-search-bar` code to `assets_site.html` yet #}
-  {# FAQ: Need to FIRST figure out why Docs are not registering `:root` vars #}
-  <link id="css-site-tacc-search-bar" rel="stylesheet" href="/static/site_cms/css/build/site.tacc-search-bar.css">
-
-  <!-- Site Assets: Scripts. -->
-  <script src="/static/site_cms/js/site.js"></script>
-
-  <!-- Custom Assets. -->
-  <link rel="stylesheet" href="/static/frontera-cms/css/build/site.css">
-  <link rel="stylesheet" href="/static/frontera-cms/css/build/site.tacc-search-bar.css">
-
-
-  {# / Include Standard Assets #}
-
-  <form part="form" onsubmit="return search(event)">
-    <div class="input-group">
-      <div class="input-group-prepend">
-        <button part="button" type="submit" class="btn btn-secondary">
-          <i part="button__icon" class="icon icon-search" role="img" aria-label=""></i>
-          <span class="">Search</span>
-        </button>
-      </div>
-      <input part="input" type="search" name="query" aria-label="Search the website" class="form-control" placeholder="Search the website" data-testid="input" autocomplete="off" value="">
-    </div>
-  </form>
-
-  {# Include Standard Assets #}
-  {# WARNING: This markup mimics CMS render until we can load CMS version #}
-  {# SEE: server/portal/templates/includes/nav_search.import-from-cms.html #}
-
-  <!-- Site Assets (Delayed): Scripts. -->
-  {# !!!: This causes an error (commenting bootstrap.js load resolves error) #}
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-  <!-- Custom Assets (Delayed). -->
-  {# FAQ: Frontera has no such assets #}
-
-  {# / Include Standard Assets #}
-
-</template>
-
-<script id="js-load-search-element">
-  let template = document.querySelector("#tacc-search-bar");
-
-  window.customElements.define(template.id, class extends HTMLElement {
-    constructor() {
-      super();
-      console.debug(template);
-      this.attachShadow({ mode: "open" });
-      this.shadowRoot.appendChild(template.content);
-    }
+  importHTML.fromURL(searchBarContainer, '/cms/nav/search/markup/', () => {
+    const template = document.getElementById('nav-search');
+    registerCustomElement.fromTemplate('tacc-search-bar', template);
   });
 </script>
-<script id="js-perform-search">
-  function search(event) {
-    event.preventDefault();
-
-    const url = new URL(window.location.origin);
-    const form = new FormData(event.target);
-    const queryString = form.get('query');
-
-    url.pathname = 'search';
-    url.searchParams.set('page', 1);
-    url.searchParams.append('query_string', queryString);
-
-    window.location = url.toString();
-
-    return false;
-  }
-</script>
-<style type="text/css">
-  /* Render search bar after all relevant styles and scripts have loaded */
-  /* FAQ: Manage visibility of search bar to avoid FOUC */
-  /* HACK: This should be done via a dynamically-added `-is-loaded` class */
-  tacc-search-bar::part(form) {
-    height: auto;
-    visibility: visible;
-  }
-</style>
