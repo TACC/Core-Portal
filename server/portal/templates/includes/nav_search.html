@@ -11,10 +11,10 @@
   import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
   import * as registerCustomElement from '/static/site_cms/js/modules/registerCustomElement.js';
 
-  const searchBarContainer = document.getElementById('s-search-bar');
+  const container = document.getElementById('s-search-bar');
 
-  importHTML.fromURL(searchBarContainer, '/cms/nav/search/markup/', () => {
-    const template = document.getElementById('nav-search');
+  importHTML.fromURL(container, '/cms/nav/search/markup/', () => {
+    const template = container.getElementsByTagName('template')[0];
     registerCustomElement.fromTemplate('tacc-search-bar', template);
   });
 </script>

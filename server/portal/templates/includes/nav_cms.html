@@ -13,13 +13,13 @@
   import flagLinkActive from '/static/site_cms/js/modules/flagLinkActive.js';
   import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
 
-  const navListItemContainer = document.getElementById('s-cms-nav');
+  const container = document.getElementById('s-cms-nav');
 
-  importHTML.fromURL(navListItemContainer, '/cms/nav/pages/markup/', () => {
+  importHTML.fromURL(container, '/cms/nav/pages/markup/', () => {
     flagLinkActive({
       activeClassname: 'active',
       linkSelector: 'a',
-      scopeElement: navListItemContainer,
+      scopeElement: container,
       ancestorActiveElementSelector: 'li'
     });
   });
