@@ -161,12 +161,11 @@ def logging_metric_mock(mocker):
     yield mocker.patch.object(logger, 'info')
 
 
-def test_tapis_file_view_get_is_logged_for_metrics(client, authenticated_user, mocker, mock_agave_client,
-                                                  agave_file_listing_mock, agave_listing_indexer, logging_metric_mock):
+def test_tapis_file_view_get_is_logged_for_metrics(client, authenticated_user, mock_agave_client,
+                                                   agave_file_listing_mock, agave_listing_indexer, logging_metric_mock):
     mock_agave_client.files.list.return_value = agave_file_listing_mock
     response = client.get("/api/datafiles/tapis/listing/private/frontera.home.username/test.txt/")
     assert response.status_code == 200
-    j = response.json()
     assert response.json() == {"data": {"listing": agave_file_listing_mock, "reachedEnd": True}}
 
     # Ensure metric-related logging is being performed
@@ -175,8 +174,8 @@ def test_tapis_file_view_get_is_logged_for_metrics(client, authenticated_user, m
             authenticated_user.username))
 
 
-def test_tapis_file_view_put_is_logged_for_metrics(client, authenticated_user, mocker, mock_agave_client,
-                                                  agave_indexer, logging_metric_mock):
+def test_tapis_file_view_put_is_logged_for_metrics(client, authenticated_user, mock_agave_client,
+                                                   agave_indexer, logging_metric_mock):
     mock_response = {'nativeFormat': 'dir'}
     mock_agave_client.files.manage.return_value = mock_response
     body = {"dest_path": "/testfol", "dest_system": "frontera.home.username"}
@@ -191,9 +190,9 @@ def test_tapis_file_view_put_is_logged_for_metrics(client, authenticated_user, m
         "system:frontera.home.username path:test.txt body:{}".format(authenticated_user.username, body))
 
 
-def test_tapis_file_view_post_is_logged_for_metrics(client, authenticated_user, mocker, mock_agave_client,
-                                                  agave_indexer, agave_listing_indexer, logging_metric_mock,
-                                                   agave_file_mock, text_file_fixture):
+def test_tapis_file_view_post_is_logged_for_metrics(client, authenticated_user, mock_agave_client,
+                                                    agave_indexer, agave_listing_indexer, logging_metric_mock,
+                                                    agave_file_mock, text_file_fixture):
     mock_agave_client.files.importData.return_value = agave_file_mock
     response = client.post("/api/datafiles/tapis/upload/private/frontera.home.username/",
                           data={"uploaded_file": text_file_fixture})
