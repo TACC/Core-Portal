@@ -32,8 +32,7 @@ const DataFilesPreviewModal = () => {
         scheme: params.scheme,
         system: params.system,
         path: params.path,
-        href: params.href,
-        length: params.length
+        href: params.href
       }
     });
   };
