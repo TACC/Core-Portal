@@ -345,8 +345,12 @@ describe('removeDuplicateSlashes', () => {
 describe("Preview Files", () => {
   it.todo("should fetch and set previews");
   it.todo("should be dispatched by an effect creator");
-})
+});
 
+describe("fileLink", () => {
+  it("performs a fileLink operation", () => {
+    return expectSaga(fileLink, {
+      payload: {
         scheme: "private",
         file: {
           system: "test.system",
