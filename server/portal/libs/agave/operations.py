@@ -9,7 +9,7 @@ from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
 from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 from portal.exceptions.api import ApiException
-
+from portal.libs.agave.utils import text_preview
 logger = logging.getLogger(__name__)
 
 
@@ -450,7 +450,7 @@ def upload(client, system, path, uploaded_file):
     return dict(resp)
 
 
-def preview(client, system, path, href, max_uses=3, lifetime=600):
+def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
     """Preview a file.
     Params
     ------
@@ -485,9 +485,13 @@ def preview(client, system, path, href, max_uses=3, lifetime=600):
 
     result = client.postits.create(body=args)
     url = result['_links']['self']['href']
-
+    txt = None
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
+        if kwargs['length'] < 10000000:
+            txt = text_preview(url)
+        else:
+            txt = {'content': 'Unable to show preview.'}
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
         file_type = 'image'
     elif file_ext in settings.SUPPORTED_OBJECT_PREVIEW_EXTS:
@@ -502,7 +506,14 @@ def preview(client, system, path, href, max_uses=3, lifetime=600):
         url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
     else:
         file_type = 'other'
+        if kwargs['length'] < 10000000:
+            txt = text_preview(url)
+        else:
+            txt = {'content': 'Unable to show preview.'}
+        logger.debug(txt)
 
+    if txt:
+        return {'href': url, 'fileType': file_type, **txt}
     return {'href': url, 'fileType': file_type}
 
 
