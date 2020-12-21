@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 20px 40px 0 20px;
+  padding: 20px 40px 0 40px;
 }
 
 /* Children */
@@ -28,6 +28,7 @@
   flex-wrap: wrap; /* prevent breadcrumbs and action buttons from colliding */
   justify-content: space-between;
   align-items: flex-end;
+  margin-bottom: 15px;
 }
 
 /* Children (of `header`) */
