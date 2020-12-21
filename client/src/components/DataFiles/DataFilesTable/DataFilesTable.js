@@ -11,9 +11,9 @@ import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Link } from 'react-router-dom';
-import { LoadingSpinner, Message } from '_common';
-import './DataFilesTable.module.scss';
+import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
+import './DataFilesTable.module.scss';
 
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
@@ -58,48 +58,64 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
 
       return (
         <div className="h-100 listing-placeholder">
-          <Message type="warn">
+          <SectionMessage type="warning">
             There was a problem accessing this file system. If this is your
             first time logging in, you may need to {link`push your keys`}.
-          </Message>
+          </SectionMessage>
         </div>
       );
     }
     if (err === '404') {
       return (
         <div className="h-100 listing-placeholder">
-          <Message type="warn">
+          <SectionMessage type="warning">
             The file or folder that you are attempting to access does not exist.
-          </Message>
+          </SectionMessage>
         </div>
       );
     }
     if (err === '403') {
       return (
         <div className="h-100 listing-placeholder">
-          <Message type="warn">
+          <SectionMessage type="warning">
             You are missing the required allocation for this system. Please
             click&nbsp;
             <Link to="/workbench/allocations/manage" className="wb-link">
               here
             </Link>
             &nbsp;to request access.
-          </Message>
+          </SectionMessage>
+        </div>
+      );
+    }
+    if (err === '400') {
+      return (
+        <div className="h-100 listing-placeholder">
+          <SectionMessage type="warning">
+            Connect your Google Drive account under the &quot;3rd Party Apps
+            &quot; section in the &nbsp;
+            <Link to="/workbench/account/" className="wb-link">
+              Manage Account page
+            </Link>
+            .
+          </SectionMessage>
         </div>
       );
     }
     return (
       <div className="h-100 listing-placeholder">
-        <Message type="warn">
+        <SectionMessage type="warning">
           There was a problem accessing this file system.
-        </Message>
+        </SectionMessage>
       </div>
     );
   }
   if (filesLength === 0) {
     return (
       <div className="h-100 listing-placeholder">
-        <Message type="warn">No files or folders to show.</Message>
+        <SectionMessage type="warn">
+          No files or folders to show.
+        </SectionMessage>
       </div>
     );
   }

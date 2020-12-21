@@ -64,7 +64,7 @@ export function systems(state = initialSystemState, action) {
   }
 }
 
-const initialFilesState = {
+export const initialFilesState = {
   loading: {
     FilesListing: false,
     modal: false
@@ -108,6 +108,10 @@ const initialFilesState = {
   reachedEnd: {
     FilesListing: true,
     modal: true
+  },
+  nextPageToken: {
+    FilesListing: null,
+    modal: null
   },
   modals: {
     addproject: false,
@@ -164,6 +168,10 @@ export function files(state = initialFilesState, action) {
         selectAll: {
           ...state.selectAll,
           [action.payload.section]: false
+        },
+        nextPageToken: {
+          ...state.nextPageToken,
+          [action.payload.section]: null
         }
       };
     case 'FETCH_FILES_SUCCESS':
@@ -178,6 +186,10 @@ export function files(state = initialFilesState, action) {
         reachedEnd: {
           ...state.reachedEnd,
           [action.payload.section]: action.payload.reachedEnd
+        },
+        nextPageToken: {
+          ...state.nextPageToken,
+          [action.payload.section]: action.payload.nextPageToken
         }
       };
     case 'FETCH_FILES_ERROR':
@@ -219,6 +231,10 @@ export function files(state = initialFilesState, action) {
         reachedEnd: {
           ...state.reachedEnd,
           [action.payload.section]: action.payload.reachedEnd
+        },
+        nextPageToken: {
+          ...state.nextPageToken,
+          [action.payload.section]: action.payload.nextPageToken
         }
       };
     case 'SCROLL_FILES_ERR':
