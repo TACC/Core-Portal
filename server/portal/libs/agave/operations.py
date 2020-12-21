@@ -488,7 +488,7 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
     txt = None
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
-        if kwargs['length'] < 1000000:
+        if kwargs['length'] < 10000000:
             txt = text_preview(url)
         else:
             txt = {'content': 'Unable to show preview.'}
@@ -506,7 +506,7 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
         url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
     else:
         file_type = 'other'
-        if kwargs['length'] < 1000000:
+        if kwargs['length'] < 10000000:
             txt = text_preview(url)
         else:
             txt = {'content': 'Unable to show preview.'}
