@@ -15,7 +15,7 @@
 
   const container = document.getElementById('s-cms-nav');
 
-  importHTML.fromURL(container, '/cms/nav/pages/markup/', () => {
+  importHTML.insertFromURL('/cms/nav/pages/markup/', container).then(container => {
     flagLinkActive({
       activeClassname: 'active',
       linkSelector: 'a',

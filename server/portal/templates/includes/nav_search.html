@@ -1,20 +1,18 @@
 {# @var className #}
 
-{# RFE: Use a custom element or React component whose code exists in one repo #}
+{# Encapsulate search bar as custom element, so styles do not bleed out #}
+{# IDEA: Should CMS use React component or Portal's React use custom element #}
 {# WARNING: Some markup is duplicated in other repositories #}
 {# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
-<tacc-search-bar class="s-search-bar  {{className}}" id="s-search-bar">
-  <!-- The search bar is created here. -->
+<tacc-search-bar class="s-search-bar  {{className}}">
+  <!-- The search bar is populated here (from an external template). -->
   {# FAQ: Content populated via JavaScript, below #}
 </tacc-search-bar>
 <script type="module">
   import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
   import * as registerCustomElement from '/static/site_cms/js/modules/registerCustomElement.js';
 
-  const container = document.getElementById('s-search-bar');
-
-  importHTML.fromURL(container, '/cms/nav/search/markup/', () => {
-    const template = container.getElementsByTagName('template')[0];
-    registerCustomElement.fromTemplate('tacc-search-bar', template);
+  importHTML.getFromURL('/cms/nav/search/markup/').then(markup => {
+    registerCustomElement.fromHTMLString(markup, 'tacc-search-bar');
   });
 </script>
