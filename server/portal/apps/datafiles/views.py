@@ -1,27 +1,28 @@
 import json
 import logging
+import os
+from portal.apps.accounts.managers.user_systems import UserSystemsManager
+from portal.apps.users.utils import get_allocations
+from portal.apps.auth.tasks import get_user_storage_systems
+from portal.views.base import BaseApiView
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
-from portal.apps.auth.tasks import get_user_storage_systems
 from portal.views.base import BaseApiView
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
-from portal.apps.users.utils import get_allocations
-from portal.apps.accounts.managers.user_systems import UserSystemsManager
-from portal.apps.datafiles.models import Link
+from portal.apps.datafiles.handlers.googledrive_handlers import \
+    (googledrive_get_handler,
+     googledrive_put_handler)
+from portal.libs.transfer.operations import transfer, transfer_folder
 from portal.exceptions.api import ApiException
+from portal.apps.datafiles.models import Link
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from .utils import notify, NOTIFY_ACTIONS
 
-
 logger = logging.getLogger(__name__)
-
-
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
 
@@ -48,17 +49,14 @@ class SystemListingView(BaseApiView):
         response['system_list'] += portal_systems
         default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
         response['default_host'] = default_system['host']
+        return JsonResponse(response)
 
-        for system in response['system_list']:
-            try:
-                if system['api'] == 'tapis' and 'system' in system:
-                    system['definition'] = StorageSystem(
-                        request.user.agave_oauth.client, id=system['system']
-                    )
-            except Exception:
-                logger.exception("Could not retrieve definition for {}".format(system['system']))
 
-        return JsonResponse(response, encoder=BaseAgaveSystemSerializer)
+@method_decorator(login_required, name='dispatch')
+class SystemDefinitionView(BaseApiView):
+    """Get definitions for individual systems"""
+    def get(self, request, systemId):
+        return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=systemId))
 
 
 class TapisFilesView(BaseApiView):
@@ -150,6 +148,81 @@ class TapisFilesView(BaseApiView):
             raise exc
 
         return JsonResponse({"data": response})
+
+
+class GoogleDriveFilesView(BaseApiView):
+    def get(self, request, operation=None, scheme=None, system=None,
+            path='root'):
+        try:
+            client = request.user.googledrive_user_token.client
+        except AttributeError:
+            raise ApiException("Login Required", status=400)
+        try:
+            response = googledrive_get_handler(
+                client, scheme, system, path, operation, **request.GET.dict())
+        except HTTPError as e:
+            raise e
+
+        return JsonResponse({'data': response})
+
+    def put(self, request, operation=None, scheme=None,
+            handler=None, system=None, path='root'):
+
+        body = json.loads(request.body)
+        try:
+            client = request.user.googledrive_user_token.client
+        except AttributeError:
+            return HttpResponseForbidden
+
+        try:
+            response = googledrive_put_handler(client, scheme, system, path,
+                                               operation, body=body)
+            operation in NOTIFY_ACTIONS and \
+                notify(request.user.username, operation, 'success', {'response': response})
+        except Exception as exc:
+            operation in NOTIFY_ACTIONS and notify(request.user.username, operation, 'error', {})
+            raise exc
+
+        return JsonResponse({"data": response})
+
+
+def get_client(user, api):
+    client_mappings = {
+        'tapis': 'agave_oauth',
+        'shared': 'agave_oauth',
+        'googledrive': 'googledrive_user_token',
+        'box': 'box_user_token',
+        'dropbox': 'dropbox_user_token'
+    }
+    return getattr(user, client_mappings[api]).client
+
+
+class TransferFilesView(BaseApiView):
+    def put(self, request, filetype):
+        body = json.loads(request.body)
+
+        src_client = get_client(request.user, body['src_api'])
+        dest_client = get_client(request.user, body['dest_api'])
+
+        try:
+            if filetype == 'dir':
+                transfer_folder(src_client, dest_client, **body)
+            else:
+                transfer(src_client, dest_client, **body)
+
+            # Respond with tapis-like info for a toast notification
+            file_info = {
+                'nativeFormat': filetype,
+                'name': body['dirname'],
+                'path': os.path.join(body['dest_path_name'], body['dirname']),
+                'systemId': body['dest_system']
+            }
+            notify(request.user.username, 'copy', 'success', {'response': file_info})
+            return JsonResponse({'success': True})
+        except Exception as exc:
+            logger.info(exc)
+            notify(request.user.username, 'copy', 'error', {})
+            raise exc
 
 
 @method_decorator(login_required, name='dispatch')

@@ -70,6 +70,14 @@ const DataFilesBreadcrumbs = ({
   const paths = [];
   const pathComps = [];
   const systemList = useSelector(state => state.systems.systemList);
+  const projectsList = useSelector(state => state.projects.listing.projects);
+  const findProjectTitle = projectSystem => {
+    const matching = projectsList.find(project => project.id === projectSystem);
+    if (matching) {
+      return matching.description;
+    }
+    return 'Shared Workspaces';
+  };
 
   path
     .split('/')
@@ -81,6 +89,15 @@ const DataFilesBreadcrumbs = ({
       return comp;
     }, '');
 
+  const root = (() => {
+    switch (scheme) {
+      case 'projects':
+        return findProjectTitle(system);
+      default:
+        return findSystemDisplayName(systemList, system);
+    }
+  })();
+
   return (
     <div className={`breadcrumbs ${className}`}>
       <BreadcrumbLink
@@ -90,7 +107,7 @@ const DataFilesBreadcrumbs = ({
         path=""
         section={section}
       >
-        <>{findSystemDisplayName(systemList, system)}</>
+        <>{root}</>
       </BreadcrumbLink>
       {pathComps.map((pathComp, i) => {
         if (i < paths.length - 2) {

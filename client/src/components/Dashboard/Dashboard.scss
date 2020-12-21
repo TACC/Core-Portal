@@ -55,6 +55,9 @@
 /* RFC: Class name `.dashboard-item` (to coincide with `.dashboard-items`) */
 .dash-grid-item {
     margin-top: 20px;
+    .InfiniteScrollTable {
+        border-bottom: 1px solid #707070;
+    }
 }
 
 .sysmon-wrapper {

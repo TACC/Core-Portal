@@ -73,6 +73,10 @@ export const FileNavCell = React.memo(
     const previewCallback = e => {
       e.stopPropagation();
       e.preventDefault();
+      if (api === 'googledrive') {
+        window.open(href, '_blank');
+        return;
+      }
       dispatch({
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
@@ -87,7 +91,10 @@ export const FileNavCell = React.memo(
         <span className="data-files-name">
           <Link
             className="data-files-nav-link"
-            to={`/workbench/data/${api}/${scheme}/${system}${path}/`}
+            to={`/workbench/data/${api}/${scheme}/${system}/${path}/`.replace(
+              /\/{2,}/g, // Replace duplicate slashes with single slash
+              '/'
+            )}
             onClick={format !== 'folder' ? previewCallback : null}
           >
             {name}
@@ -165,7 +172,9 @@ FileIconCell.propTypes = {
 
 export const ViewPathCell = ({ file }) => {
   const dispatch = useDispatch();
-  const onClick = () => {
+  const onClick = e => {
+    e.stopPropagation();
+    e.preventDefault();
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'showpath', props: { file } }
