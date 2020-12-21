@@ -8,11 +8,17 @@
   <!-- The search bar is populated here (from an external template). -->
   {# FAQ: Content populated via JavaScript, below #}
 </tacc-search-bar>
+
 <script type="module">
   import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
   import * as registerCustomElement from '/static/site_cms/js/modules/registerCustomElement.js';
 
   importHTML.getFromURL('/cms/nav/search/markup/').then(markup => {
+    /* Load necessary Bootstrap outside raw markup so CMS */
+    /* FAQ: CMS, Portal, User Guide each use a different Bootstrap file */
+    /* TODO: After CMS redesign, use only one Bootstrap version (Portal's) */
+    markup = document.getElementById('css-bootstrap').outerHTML + markup;
+
     registerCustomElement.fromHTMLString(markup, 'tacc-search-bar');
   });
 </script>
