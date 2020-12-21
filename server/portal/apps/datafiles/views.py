@@ -69,6 +69,10 @@ class TapisFilesView(BaseApiView):
             if next(sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
                     if sys['system'] == system and sys['scheme'] == 'public'):
                 client = service_account()
+            else:
+                return JsonResponse(
+                    {'message': 'This data requires authentication to view.'},
+                    status=403)
         try:
             METRICS.info("user:{} op:{} api:tapis scheme:{} "
                          "system:{} path:{}".format(request.user.username,
