@@ -9,6 +9,7 @@ import urllib.parse
 import urllib.error
 from django.conf import settings
 from agavepy.agave import Agave
+import requests
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -197,3 +198,28 @@ def service_account():
     return Agave(
         api_server=settings.AGAVE_TENANT_BASEURL,
         token=settings.AGAVE_SUPER_TOKEN)
+
+
+def text_preview(url):
+    """Generate a text preview
+    Args:
+    ------
+        url (str): postit url from Agave
+    Returns:
+    ------
+        str: text content to preview. If there are non-ascii characters, the text content is a message to display on the front-end.
+    """
+    output = {'content': '', 'error': False}
+    try:
+        resp = requests.get(url)
+        if (resp.encoding == 'UTF-8'):
+            output['content'] = resp.text
+
+            # Raises UnicodeDecodeError for files with non-ascii characters
+            output['content'].encode('ascii', 'strict')
+    except Exception as e:
+        if e is UnicodeDecodeError:
+            logger.debug("Unable to decode file/contains non-ascii characters")
+        output['error'] = True
+        output['content'] = 'Unable to show preview for this file.'
+    return output

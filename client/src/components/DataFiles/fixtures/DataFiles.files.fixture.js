@@ -111,7 +111,10 @@ const filesFixture = {
     pushKeys: {},
     showpath: {}
   },
-  previewHref: ''
+  preview: {
+    href: '',
+    content: ''
+  }
 };
 
 export default filesFixture;
