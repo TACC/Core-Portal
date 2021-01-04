@@ -29,13 +29,18 @@ ToolbarButton.propTypes = {
   iconName: PropTypes.string.isRequired
 };
 
-const DataFilesToolbar = ({ scheme }) => {
+const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
 
   const selectedFiles = useSelector(state =>
     state.files.selected.FilesListing.map(
       i => state.files.listing.FilesListing[i]
     )
+  );
+
+  const showMakeLink = useSelector(
+    state =>
+      state.workbench && state.workbench.config.makeLink && api === 'tapis'
   );
 
   const toggleRenameModal = () =>
@@ -59,6 +64,24 @@ const DataFilesToolbar = ({ scheme }) => {
       payload: { operation: 'copy', props: { selectedFiles } }
     });
 
+  const toggleLinkModal = () => {
+    dispatch({
+      type: 'DATA_FILES_LINK',
+      payload: {
+        file: selectedFiles[0],
+        scheme
+      },
+      method: 'get'
+    });
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'link',
+        props: { selectedFile: selectedFiles[0] }
+      }
+    });
+  };
+
   const download = () => {
     dispatch({
       type: 'DATA_FILES_DOWNLOAD',
@@ -73,12 +96,18 @@ const DataFilesToolbar = ({ scheme }) => {
     });
   };
 
-  const canRename = selectedFiles.length === 1 && scheme === 'private';
-  const canMove = selectedFiles.length > 0 && scheme === 'private';
-  const canCopy = selectedFiles.length > 0 && scheme === 'private';
+  const isPrivate = ['projects', 'private'].includes(scheme);
+  const canRename =
+    selectedFiles.length === 1 && isPrivate && api !== 'googledrive';
+  const canMove =
+    selectedFiles.length > 0 && isPrivate && api !== 'googledrive';
+  const canCopy = selectedFiles.length > 0 && isPrivate;
   const canDownload =
-    selectedFiles.length === 1 && selectedFiles[0].format !== 'folder';
-  const canTrash = selectedFiles.length > 0 && scheme === 'private';
+    selectedFiles.length === 1 &&
+    selectedFiles[0].format !== 'folder' &&
+    api !== 'googledrive';
+  const canTrash =
+    selectedFiles.length > 0 && isPrivate && api !== 'googledrive';
 
   return (
     <>
@@ -107,6 +136,14 @@ const DataFilesToolbar = ({ scheme }) => {
           onClick={download}
           disabled={!canDownload}
         />
+        {showMakeLink && (
+          <ToolbarButton
+            text="Link"
+            iconName="link"
+            onClick={toggleLinkModal}
+            disabled={!canDownload}
+          />
+        )}
         <ToolbarButton
           text="Trash"
           iconName="trash"
@@ -118,7 +155,8 @@ const DataFilesToolbar = ({ scheme }) => {
   );
 };
 DataFilesToolbar.propTypes = {
-  scheme: PropTypes.string.isRequired
+  scheme: PropTypes.string.isRequired,
+  api: PropTypes.string.isRequired
 };
 
 export default DataFilesToolbar;

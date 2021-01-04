@@ -84,6 +84,8 @@ INSTALLED_APPS = [
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
+    'portal.apps.googledrive_integration',
+    'portal.apps.datafiles',
     'portal.apps.projects',
 
 ]
@@ -334,10 +336,6 @@ LOGGING = {
             'format': '[DJANGO-TEST] %(levelname)s %(asctime)s %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
-        'agave': {
-            'format': '[AGAVE-TEST] %(levelname)s %(asctime)s %(module)s '
-                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
-        },
         'metrics': {
             'format': '[METRICS-TEST] %(levelname)s %(module)s %(name)s.'
                       '%(funcName)s:%(lineno)s: %(message)s '
@@ -452,3 +450,7 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
 
 WH_BASE_URL = "https://testserver"
 PORTAL_KEY_SERVICE_ACTOR_ID = "test.actorId"
+
+WORKBENCH_SETTINGS = {
+    "debug": False
+}

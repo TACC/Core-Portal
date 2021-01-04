@@ -138,6 +138,50 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cep.home.{username}": "/tacc-work",
 }
 
+_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
+_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
+    'frontera': {
+        'name': 'My Data (Frontera)',
+        'description': 'My Data on Frontera for {username}',
+        'site': 'frontera',
+        'systemId': 'frontera.home.{username}',
+        'host': 'frontera.tacc.utexas.edu',
+        'rootDir': '/home1/{tasdir}',
+        'port': 22,
+        'icon': None,
+    },
+    'longhorn': {
+        'name': 'My Data (Longhorn)',
+        'description': 'My Data on Longhorn for {username}',
+        'site': 'frontera',
+        'systemId': 'longhorn.home.{username}',
+        'host': 'longhorn.tacc.utexas.edu',
+        'rootDir': '/home/{tasdir}',
+        'port': 22,
+        'requires_allocation': 'longhorn3',
+        'icon': None,
+    },
+}
+
+_PORTAL_DATAFILES_STORAGE_SYSTEMS = [
+    {
+        'name': 'Community Data',
+        'system': 'frontera.storage.community',
+        'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Shared Workspaces',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': None
+    }
+]
+
+########################
+# DJANGO APP: ONBOARDING
+########################
 """
 Onboarding steps
 Each step is an object, with the full package name of the step class and
@@ -171,41 +215,6 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
         'settings': {}
-    }
-]
-
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
-    'frontera': {
-        'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
-        'site': 'frontera',
-        'systemId': 'frontera.home.{username}',
-        'host': 'frontera.tacc.utexas.edu',
-        'rootDir': '/home1/{tasdir}',
-        'port': 22,
-        'icon': None,
-    },
-    'longhorn': {
-        'name': 'My Data (Longhorn)',
-        'description': 'My Data on Longhorn for {username}',
-        'site': 'frontera',
-        'systemId': 'longhorn.home.{username}',
-        'host': 'longhorn.tacc.utexas.edu',
-        'rootDir': '/home/{tasdir}',
-        'port': 22,
-        'requires_allocation': 'longhorn3',
-        'icon': None,
-    },
-}
-
-_PORTAL_DATAFILES_STORAGE_SYSTEMS = [
-    {
-        'name': 'Community Data',
-        'system': 'frontera.storage.community',
-        'scheme': 'community',
-        'api': 'tapis',
-        'icon': None
     }
 ]
 
@@ -293,3 +302,17 @@ _GOOGLE_ANALYTICS_PRELOAD = True
 _ES_HOSTS = 'frontera_prtl_elasticsearch:9200'
 _ES_AUTH = 'username:password'
 _ES_INDEX_PREFIX = 'frontera-dev-{}'
+
+########################
+# WORKBENCH SETTINGS
+########################
+"""
+This setting dictionary is a catch-all space for simple configuration
+flags that will be passed to the frontend to determine what non-standard
+components to render.
+"""
+_WORKBENCH_SETTINGS = {
+    "debug": _DEBUG,
+    "viewPath": True,
+    "makeLink": True
+}
