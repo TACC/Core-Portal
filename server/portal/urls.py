@@ -55,14 +55,23 @@ urlpatterns = [
     path('api/datafiles/', include('portal.apps.datafiles.urls', namespace='datafiles')),
     path('api/system-monitor/', include('portal.apps.system_monitor.urls', namespace='system_monitor')),
     path('api/notifications/', include('portal.apps.notifications.urls', namespace='notifications')),
+    path('api/jupyter_mounts/', include('portal.apps.jupyter_mounts.api.urls', namespace='jupyter_mounts_api')),
     path('api/projects/', include('portal.apps.projects.urls', namespace='projects')),
+    path('api/site-search/', include('portal.apps.site_search.api.urls', namespace='site_search_api')),
 
     # webhooks
     path('webhooks/', include('portal.apps.webhooks.urls', namespace='webhooks')),
 
     # views
     path('tickets/', include('portal.apps.tickets.urls', namespace='tickets')),
+    path('googledrive-privacy-policy/',
+         include('portal.apps.googledrive_integration.urls',
+                 namespace='googledrive-privacy-policy')),
     path('workbench/', include('portal.apps.workbench.urls', namespace='workbench')),
+    path('search/', include('portal.apps.site_search.urls', namespace='site_search')),
+
+    # integrations
+    path('accounts/applications/googledrive/', include('portal.apps.googledrive_integration.urls', namespace='googledrive_integration')),
 
     # version check.
     path('version/', portal_version),

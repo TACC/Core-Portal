@@ -8,6 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-regular-svg-icons';
 import { Icon } from '_common';
+import { Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
 
@@ -67,16 +68,20 @@ CheckboxCell.propTypes = {
 };
 
 export const FileNavCell = React.memo(
-  ({ system, path, name, format, api, scheme, href }) => {
+  ({ system, path, name, format, api, scheme, href, length }) => {
     const dispatch = useDispatch();
     const previewCallback = e => {
       e.stopPropagation();
       e.preventDefault();
+      if (api === 'googledrive') {
+        window.open(href, '_blank');
+        return;
+      }
       dispatch({
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'preview',
-          props: { api, scheme, system, path, name, href }
+          props: { api, scheme, system, path, name, href, length }
         }
       });
     };
@@ -86,7 +91,10 @@ export const FileNavCell = React.memo(
         <span className="data-files-name">
           <Link
             className="data-files-nav-link"
-            to={`/workbench/data/${api}/${scheme}/${system}${path}/`}
+            to={`/workbench/data/${api}/${scheme}/${system}/${path}/`.replace(
+              /\/{2,}/g, // Replace duplicate slashes with single slash
+              '/'
+            )}
             onClick={format !== 'folder' ? previewCallback : null}
           >
             {name}
@@ -103,7 +111,8 @@ FileNavCell.propTypes = {
   format: PropTypes.string.isRequired,
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
-  href: PropTypes.string.isRequired
+  href: PropTypes.string.isRequired,
+  length: PropTypes.number.isRequired
 };
 
 export const FileLengthCell = ({ cell }) => {
@@ -160,4 +169,25 @@ export const FileIconCell = ({ cell }) => {
 };
 FileIconCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired
+};
+
+export const ViewPathCell = ({ file }) => {
+  const dispatch = useDispatch();
+  const onClick = e => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'showpath', props: { file } }
+    });
+  };
+  return (
+    <Button color="link" onClick={onClick}>
+      View Path
+    </Button>
+  );
+};
+
+ViewPathCell.propTypes = {
+  file: PropTypes.shape({}).isRequired
 };

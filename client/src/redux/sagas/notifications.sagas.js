@@ -24,10 +24,6 @@ export function* watchSocket() {
 export function* handleSocket(action) {
   const eventType = action.event_type.toLowerCase();
   switch (eventType) {
-    case 'interactive_session_ready':
-      yield put({ type: 'NEW_NOTIFICATION', payload: action });
-      yield put({ type: 'ADD_TOAST', payload: action });
-      break;
     case 'job': {
       // parse current jobs list for job event
       const jobsList = yield select(state => state.jobs.list);
@@ -48,8 +44,12 @@ export function* handleSocket(action) {
     case 'setup_event':
       yield put({ type: 'ONBOARDING_EVENT', payload: action });
       break;
+    case 'data_files':
+      yield put({ type: 'ADD_TOAST', payload: action });
+      break;
     default:
       yield put({ type: 'NEW_NOTIFICATION', payload: action });
+      yield put({ type: 'ADD_TOAST', payload: action });
   }
 }
 

@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2020-12-21: Shared Workspaces, Site Search, Apps Metadata, Google Drive
+
+### Added
+
+- FP-690: Google Drive integration
+- FP-213: Shared Workspaces Frontend
+- FP-208: Site Search
+- FP-694: Site Metrics
+- FP-698: Jupyter Mounts endpoint
+- FP-695: Data Files Events and Notification Toasts
+
+
+### Changed
+
+- FP-597: Swap Alert component to Message in applications
+- FP-427: Apps Metadata Port
+- FP-806: Workbench Config
+- FP-604: Remove "close" buttons from modals with X button
+
+### Fixed
+
+- FP-371: Fix File Preview
+- FP-363: Consistent Header Templates
+- FP-601: Correct color of back button in file navigation
+
+
 ## [2.2.0] - 2020-12-01: User Onboarding; Feedback
 
 ### Added
@@ -198,7 +224,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.2.0...HEAD
+[unreleased]: https://github.com/TACC/Frontera-Portal/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.3.0
 [2.2.0]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.2.0
 [2.1.2]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.2
 [2.1.1]: https://github.com/TACC/Frontera-Portal/releases/tag/v2.1.1

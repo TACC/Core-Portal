@@ -35,7 +35,12 @@ class TestOperations(TestCase):
         mock_hit = Hit({})
         mock_hit.system = 'test.system'
         mock_hit.path = '/path/to/file'
-        mock_search().query().filter().extra().execute.return_value = [mock_hit]
+
+        mock_result = MagicMock()
+        mock_result.__iter__.return_value = [mock_hit]
+        mock_result.hits.total.value = 1
+        mock_search().query().filter().extra().execute\
+            .return_value = mock_result
 
         search_res = search(None, 'test.system', '/path', query_string='query')
 
@@ -52,7 +57,7 @@ class TestOperations(TestCase):
         self.assertEqual(search_res, {'listing':
                                       [{'system': 'test.system',
                                         'path': '/path/to/file'}],
-                                      'reachedEnd': True})
+                                      'reachedEnd': True, 'count': 1})
 
     @patch('portal.libs.agave.operations.agave_indexer')
     def test_mkdir(self, mock_indexer):
