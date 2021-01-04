@@ -1,12 +1,13 @@
-import React from "react";
+import React from 'react';
+import { render, wait, fireEvent } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 import {
-  render,
-  wait,
-  fireEvent
-} from "@testing-library/react";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
-import { ChangePasswordModal, EditOptionalInformationModal, EditRequiredInformationModal } from "../ManageAccountModals";
+  ChangePasswordModal,
+  EditOptionalInformationModal,
+  EditRequiredInformationModal,
+  GoogleDriveModal
+} from '../ManageAccountModals';
 
 const dummyState = {
   isLoading: false,
@@ -15,30 +16,30 @@ const dummyState = {
   success: {
     optional: false,
     required: false,
-    password: false,
+    password: false
   },
   data: {
     demographics: {
-      ethnicity: "Asian",
-      gender: "Male",
-      username: "tuser",
-      email: "testuser@gmail.com",
-      firstName: "Test",
-      lastName: "User",
-      phone: "512-555-5555",
-      title: "Center Non-Researcher Staff",
+      ethnicity: 'Asian',
+      gender: 'Male',
+      username: 'tuser',
+      email: 'testuser@gmail.com',
+      firstName: 'Test',
+      lastName: 'User',
+      phone: '512-555-5555',
+      title: 'Center Non-Researcher Staff',
       // Required Information Fields Provided By TAS
-      institution: "University of Texas at Austin",
+      institution: 'University of Texas at Austin',
       institutionId: 1,
-      country: "United States",
+      country: 'United States',
       countryId: 230,
-      citizenship: "United States",
+      citizenship: 'United States',
       citizenshipId: 230,
       // Optional Information
-      bio: "",
-      website: "",
-      orcid_id: "",
-      professional_level: "",
+      bio: '',
+      website: '',
+      orcid_id: '',
+      professional_level: ''
     }
   },
   errors: {},
@@ -46,14 +47,14 @@ const dummyState = {
   modals: {
     required: false,
     optional: false,
-    password: true,
-  },
+    password: true
+  }
 };
 
 const mockStore = configureStore({});
 
-describe("Change Password", () => {
-  test("Change Password Form", async () => {
+describe('Change Password', () => {
+  test('Change Password Form', async () => {
     // Render Modal
     const testStore = mockStore({ profile: dummyState });
     const {
@@ -86,18 +87,18 @@ describe("Change Password", () => {
 
     fireEvent.change(current, {
       target: {
-        value: "testuser",
-      },
+        value: 'testuser'
+      }
     });
     fireEvent.change(newPassword, {
       target: {
-        value: "testuser",
-      },
+        value: 'testuser'
+      }
     });
     fireEvent.change(confirm, {
       target: {
-        value: "testuser",
-      },
+        value: 'testuser'
+      }
     });
 
     await wait(() => {
@@ -109,18 +110,18 @@ describe("Change Password", () => {
     // Submit
     fireEvent.change(current, {
       target: {
-        value: "testpassword",
-      },
+        value: 'testpassword'
+      }
     });
     fireEvent.change(newPassword, {
       target: {
-        value: "Newpassword1",
-      },
+        value: 'Newpassword1'
+      }
     });
     fireEvent.change(confirm, {
       target: {
-        value: "Newpassword1",
-      },
+        value: 'Newpassword1'
+      }
     });
 
     // Dispatch
@@ -149,18 +150,18 @@ describe("Change Password", () => {
       profile: {
         ...dummyState,
         success: {
-          password: true,
-        },
-      },
+          password: true
+        }
+      }
     });
     rerender(
-      <Provider
-        store={successStore}
-      >
+      <Provider store={successStore}>
         <ChangePasswordModal />
       </Provider>
     );
-    expect(getByText(/Your password has been successfully changed./)).toBeDefined();
+    expect(
+      getByText(/Your password has been successfully changed./)
+    ).toBeDefined();
 
     // Close Modal
     const closeButton = getByLabelText(/Close/);
@@ -173,14 +174,14 @@ describe("Change Password", () => {
   });
 });
 
-describe("Edit Optional Information", () => {
+describe('Edit Optional Information', () => {
   let getByText, rerender, getByLabelText;
   beforeEach(() => {
     const testState = {
       ...dummyState,
       modals: {
-        optional: true,
-      },
+        optional: true
+      }
     };
     const testStore = mockStore({ profile: testState });
     const utils = render(
@@ -192,22 +193,22 @@ describe("Edit Optional Information", () => {
     rerender = utils.rerender;
     getByLabelText = utils.getByLabelText;
   });
-  
-  it("should show the loading spinner when fetching form data", () => {
+
+  it('should show the loading spinner when fetching form data', () => {
     expect(getByText(/Loading.../)).toBeDefined();
   });
 
-  it("should render a form for optional information", async () => {
+  it('should render a form for optional information', async () => {
     const stateWithFields = {
       ...dummyState,
       fields: {
-        countries: [[230, "United States"]],
-        institutions: [[1, "University of Texas at Austin"]],
-        ethnicities: [["Decline", "Decline to Identify"]],
-        genders: [["Other", "Other"]],
-        professionalLevels: [["Other", "Other"]],
-        titles: [["Other User", "Other User"]],
-      },
+        countries: [[230, 'United States']],
+        institutions: [[1, 'University of Texas at Austin']],
+        ethnicities: [['Decline', 'Decline to Identify']],
+        genders: [['Other', 'Other']],
+        professionalLevels: [['Other', 'Other']],
+        titles: [['Other User', 'Other User']]
+      }
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
     rerender(
@@ -217,7 +218,7 @@ describe("Edit Optional Information", () => {
     );
 
     // Check for labels
-    ["Website", "Orcid ID", "Professional Level", "Bio"].forEach((label) => {
+    ['Website', 'Orcid ID', 'Professional Level', 'Bio'].forEach(label => {
       expect(getByText(label)).toBeDefined();
     });
 
@@ -228,28 +229,27 @@ describe("Edit Optional Information", () => {
     await wait(() => {
       expect(storeWithFields.getActions()).toHaveLength(1);
     });
-
   });
 
-  it("should render a loading spinner when the form data is being sent to the back-end", () => {
+  it('should render a loading spinner when the form data is being sent to the back-end', () => {
     const stateWithFields = {
       ...dummyState,
       fields: {
-        countries: [[230, "United States"]],
-        institutions: [[1, "University of Texas at Austin"]],
-        ethnicities: [["Decline", "Decline to Identify"]],
-        genders: [["Other", "Other"]],
-        professionalLevels: [["Other", "Other"]],
-        titles: [["Other User", "Other User"]],
-      },
+        countries: [[230, 'United States']],
+        institutions: [[1, 'University of Texas at Austin']],
+        ethnicities: [['Decline', 'Decline to Identify']],
+        genders: [['Other', 'Other']],
+        professionalLevels: [['Other', 'Other']],
+        titles: [['Other User', 'Other User']]
+      }
     };
     rerender(
       <Provider
         store={mockStore({
           profile: {
             ...stateWithFields,
-            editing: true,
-          },
+            editing: true
+          }
         })}
       >
         <EditOptionalInformationModal />
@@ -258,21 +258,21 @@ describe("Edit Optional Information", () => {
     expect(getByText(/Loading.../)).toBeDefined();
   });
 
-  it("should dispatch actions on close", async () => {
+  it('should dispatch actions on close', async () => {
     const store = mockStore({
       profile: {
         ...dummyState,
         fields: {
-          countries: [[230, "United States"]],
-          institutions: [[1, "University of Texas at Austin"]],
-          ethnicities: [["Decline", "Decline to Identify"]],
-          genders: [["Other", "Other"]],
-          professionalLevels: [["Other", "Other"]],
-          titles: [["Other User", "Other User"]],
+          countries: [[230, 'United States']],
+          institutions: [[1, 'University of Texas at Austin']],
+          ethnicities: [['Decline', 'Decline to Identify']],
+          genders: [['Other', 'Other']],
+          professionalLevels: [['Other', 'Other']],
+          titles: [['Other User', 'Other User']]
         },
         editing: false,
-        success: { optional: true },
-      },
+        success: { optional: true }
+      }
     });
     rerender(
       <Provider store={store}>
@@ -287,16 +287,15 @@ describe("Edit Optional Information", () => {
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
       expect(reload.type).toEqual('LOAD_PROFILE_DATA');
     });
-  })
-
+  });
 });
 
-describe("Edit Required Information", () => {
+describe('Edit Required Information', () => {
   const testState = { ...dummyState, modals: { required: true } };
   let getByText, rerender, getByLabelText;
   beforeEach(() => {
     const testStore = mockStore({
-      profile: testState,
+      profile: testState
     });
     const utils = render(
       <Provider store={testStore}>
@@ -308,22 +307,22 @@ describe("Edit Required Information", () => {
     getByLabelText = utils.getByLabelText;
   });
 
-  it("should render a loading spinner when form data is being fetched", () => {
+  it('should render a loading spinner when form data is being fetched', () => {
     expect(getByText(/Loading.../)).toBeDefined();
     expect(getByText(/Edit Required Information/)).toBeDefined();
   });
 
-  it("should render a form", () => {
+  it('should render a form', () => {
     const stateWithFields = {
       ...testState,
       fields: {
-        countries: [[230, "United States"]],
-        institutions: [[1, "University of Texas at Austin"]],
-        ethnicities: [["Decline", "Decline to Identify"]],
-        genders: [["Other", "Other"]],
-        professionalLevels: [["Other", "Other"]],
-        titles: [["Other User", "Other User"]],
-      },
+        countries: [[230, 'United States']],
+        institutions: [[1, 'University of Texas at Austin']],
+        ethnicities: [['Decline', 'Decline to Identify']],
+        genders: [['Other', 'Other']],
+        professionalLevels: [['Other', 'Other']],
+        titles: [['Other User', 'Other User']]
+      }
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
 
@@ -334,34 +333,33 @@ describe("Edit Required Information", () => {
     );
 
     [
-      "First Name",
-      "Last Name",
-      "Email Address",
-      "Phone Number",
-      "Institution",
-      "Position/Title",
-      "Residence",
-      "Ethnicity",
-      "Gender",
+      'First Name',
+      'Last Name',
+      'Email Address',
+      'Phone Number',
+      'Institution',
+      'Position/Title',
+      'Residence',
+      'Ethnicity',
+      'Gender'
     ].forEach(label => {
       expect(getByText(label)).toBeDefined();
     });
 
     expect(getByText(/Submit/)).toBeDefined();
-
   });
 
-  it("should show users errors if the fields are missing or invalid", async () => {
+  it('should show users errors if the fields are missing or invalid', async () => {
     const stateWithFields = {
       ...testState,
       fields: {
-        countries: [[230, "United States"]],
-        institutions: [[1, "University of Texas at Austin"]],
-        ethnicities: [["Decline", "Decline to Identify"]],
-        genders: [["Other", "Other"]],
-        professionalLevels: [["Other", "Other"]],
-        titles: [["Other User", "Other User"]],
-      },
+        countries: [[230, 'United States']],
+        institutions: [[1, 'University of Texas at Austin']],
+        ethnicities: [['Decline', 'Decline to Identify']],
+        genders: [['Other', 'Other']],
+        professionalLevels: [['Other', 'Other']],
+        titles: [['Other User', 'Other User']]
+      }
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
 
@@ -370,45 +368,44 @@ describe("Edit Required Information", () => {
         <EditRequiredInformationModal />
       </Provider>
     );
-    
+
     const emailField = getByLabelText(/email/);
     const phoneField = getByLabelText(/phone/);
     const submitButton = getByLabelText(/required-submit/);
-    
+
     // Invalid Entries
     fireEvent.change(emailField, {
       target: {
-        value: "email"
+        value: 'email'
       }
     });
     fireEvent.change(phoneField, {
       target: {
-        value: "123"
+        value: '123'
       }
     });
     const clickSpy = () => jest.fn();
-    submitButton.addEventListener('click', clickSpy, false)
+    submitButton.addEventListener('click', clickSpy, false);
     fireEvent.click(submitButton);
     wait(() => {
       expect(getByText(/Please enter a valid email address/)).toBeDefined();
       expect(getByText(/Phone number is not valid/)).toBeDefined();
       expect(clickSpy).not.toHaveBeenCalled();
     });
-    
   });
-  
-  it("should render a loading spinner when the form data is being sent to the back-end", () => {
+
+  it('should render a loading spinner when the form data is being sent to the back-end', () => {
     const stateWithFields = {
       ...testState,
       editing: true,
       fields: {
-        countries: [[230, "United States"]],
-        institutions: [[1, "University of Texas at Austin"]],
-        ethnicities: [["Decline", "Decline to Identify"]],
-        genders: [["Other", "Other"]],
-        professionalLevels: [["Other", "Other"]],
-        titles: [["Other User", "Other User"]],
-      },
+        countries: [[230, 'United States']],
+        institutions: [[1, 'University of Texas at Austin']],
+        ethnicities: [['Decline', 'Decline to Identify']],
+        genders: [['Other', 'Other']],
+        professionalLevels: [['Other', 'Other']],
+        titles: [['Other User', 'Other User']]
+      }
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
 
@@ -418,26 +415,26 @@ describe("Edit Required Information", () => {
       </Provider>
     );
     expect(getByText(/Loading.../)).toBeDefined();
-  })
+  });
 
-  it("should close and reload the modal on success", async () => {
+  it('should close and reload the modal on success', async () => {
     const store = mockStore({
       profile: {
         ...dummyState,
         fields: {
-          countries: [[230, "United States"]],
-          institutions: [[1, "University of Texas at Austin"]],
-          ethnicities: [["Decline", "Decline to Identify"]],
-          genders: [["Other", "Other"]],
-          professionalLevels: [["Other", "Other"]],
-          titles: [["Other User", "Other User"]],
+          countries: [[230, 'United States']],
+          institutions: [[1, 'University of Texas at Austin']],
+          ethnicities: [['Decline', 'Decline to Identify']],
+          genders: [['Other', 'Other']],
+          professionalLevels: [['Other', 'Other']],
+          titles: [['Other User', 'Other User']]
         },
         editing: false,
-        success: { required: true },
-      },
+        success: { required: true }
+      }
     });
     // Mock scrollIntoView (not a part of jsdom)
-    window.HTMLElement.prototype.scrollIntoView = jest.fn()
+    window.HTMLElement.prototype.scrollIntoView = jest.fn();
     rerender(
       <Provider store={store}>
         <EditRequiredInformationModal />
@@ -451,6 +448,20 @@ describe("Edit Required Information", () => {
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
       expect(reload.type).toEqual('LOAD_PROFILE_DATA');
     });
-  })
+  });
+});
 
+describe('connect google drive', () => {
+  it('should render privacy policy and link', () => {
+    const { getByText, getByRole } = render(
+      <GoogleDriveModal active={true} toggle={() => {}} />
+    );
+    expect(getByText(/Google Drive Privacy Policy/)).toBeDefined();
+    const expectedHref = `${window.location.href}accounts/applications/googledrive/initialize/`;
+    expect(
+      getByText(/Agree and Connect to Google Drive/)
+        .closest('a')
+        .getAttribute('href')
+    ).toBe('/accounts/applications/googledrive/initialize/');
+  });
 });

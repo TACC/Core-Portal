@@ -45,15 +45,7 @@
   border-right: var(--global-border--normal);
 }
 .content {
-  display: flex;
-  flex-direction: column;
-
   padding-top: 20px;
   padding-left: 20px;
-}
-.content-toolbar {
-  padding-bottom: 15px; /* ~15px (12px design * 1.2 design-to-app ratio) */
-}
-.content-table {
-  flex-grow: 1;
+  display: flex;
 }

@@ -14,10 +14,7 @@ from portal.apps.search.tasks import agave_indexer
 from django.conf import settings
 
 
-# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-METRICS = logging.getLogger('metrics.{}'.format(__name__))
-# pylint: enable=invalid-name
 
 
 @method_decorator(login_required, name='dispatch')

@@ -108,9 +108,13 @@ const filesFixture = {
     upload: {},
     mkdir: {},
     rename: {},
-    pushKeys: {}
+    pushKeys: {},
+    showpath: {}
   },
-  previewHref: ''
+  preview: {
+    href: '',
+    content: ''
+  }
 };
 
 export default filesFixture;

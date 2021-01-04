@@ -76,14 +76,7 @@ const DataFilesMkdirModal = () => {
             </ModalBody>
             <ModalFooter>
               <Button type="submit" className="data-files-btn">
-                Create Folder{' '}
-              </Button>
-              <Button
-                color="secondary"
-                className="data-files-btn-cancel"
-                onClick={toggle}
-              >
-                Close
+                Create Folder
               </Button>
             </ModalFooter>
           </Form>

@@ -22,6 +22,7 @@
     .filesListing {
       flex-grow: 1;
       outline: 1px solid #707070;
+      overflow-y: auto;
     }
     .tr-header {
         border-bottom-color: #C6C6C6;
@@ -40,6 +41,27 @@
     /* Overrides bootstrap modal tittle */
     .modal-title {
       font-size: 18px;
+    }
+
+    .flex-column {
+      height: 100%;
+    }
+
+    /* Matches layout of other data files listings */
+    .InfiniteScrollTable.projects-listing {
+      th {
+        color: #484848;
+      }
+      th,
+      td {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        padding: 5px 15px;
+      }
+      td {
+        height: 45px;
+      }
     }
 }
 

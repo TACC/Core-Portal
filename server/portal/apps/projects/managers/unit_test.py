@@ -27,6 +27,7 @@ def service_account(mocker):
 def project_manager(mocker, mock_owner):
     mocker.patch('portal.apps.projects.managers.base.ProjectsManager.get_project')
     project = ProjectsManager(mock_owner)
+    project.get_project().project_id = "PRJ-123"
     project.get_project().storage.storage.root_dir = os.path.join(settings.PORTAL_PROJECTS_ROOT_DIR, "PRJ-123")
     return project
 
