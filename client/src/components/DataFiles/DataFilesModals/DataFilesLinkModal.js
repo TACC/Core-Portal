@@ -193,7 +193,7 @@ const DataFilesLinkModal = () => {
           {confirming ? (
             <>
               <span styleName="warning">
-                The original link will be disabled
+                The original link will be disabled.
               </span>
               <Button
                 className="data-files-btn"
