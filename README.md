@@ -56,23 +56,38 @@ OR
 
 #### Initialize the application in the `frontera_prtl_django` container:
 
+1. Run migrations, create a super user, and collect static resources:
+
+    ```
     docker exec -it frontera_prtl_django /bin/bash
     python3 manage.py migrate
     python3 manage.py createsuperuser
     python3 manage.py collectstatic
+    ```
+2. (Optional) Skip user account onboarding:
 
+    ```
+    from django.contrib.auth import get_user_model
+    wes = get_user_model().objects.get(username="wbomar")
+    wes.profile.setup_complete = True
+    wes.profile.save()
+    ```
+
+    _NOTE: If these steps are not be explicit enough, ask peers for assistance._
 #### Initialize the CMS in the `frontera_prtl_cms` container:
-First, copy the sample secrets:
 
-    cp /server/conf/cms/secrets.sample.py /server/conf/cms/secrets.py
-Then, run migrations and `collectstatic`:
-```
+1. Run migrations, create a super user, and collect static resources:
+
+    ```
     docker exec -it frontera_prtl_cms /bin/bash
     python3 manage.py migrate
     python3 manage.py createsuperuser
     python3 manage.py collectstatic
-```
-Finally, create a home page in the CMS.
+    ```
+
+2. Create a home page in the CMS.
+
+    _Visit https://cep.dev to do this. This may require performing the "Installing local CA" step, first._
 
 *NOTE*: TACC VPN or physical connection to the TACC network is required To log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
 
