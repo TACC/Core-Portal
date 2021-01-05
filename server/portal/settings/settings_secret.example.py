@@ -18,6 +18,9 @@ _PORTAL_DOMAIN = 'Frontera Portal'
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
 
+# Unorganized
+_LOGIN_REDIRECT_URL = '/workbench/dashboard'
+_PORTAL_JOB_NOTIFICATION_STATES: ["PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
 _SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utexas.edu', 'lonestar5.tacc.utexas.edu']
 
 ########################
@@ -64,7 +67,9 @@ _AGAVE_TENANT_BASEURL = 'https://agave.mytenant.org'
 _AGAVE_CLIENT_KEY = 'TH1$_!$-MY=K3Y!~'
 _AGAVE_CLIENT_SECRET = 'TH1$_!$-My=S3cr3t!~'
 _AGAVE_SUPER_TOKEN = 'S0m3T0k3n_tHaT-N3v3r=3xp1R35'
-_AGAVE_STORAGE_SYSTEM = 'my.storage.default'
+_AGAVE_STORAGE_SYSTEM = 'cep.storage.default'
+_AGAVE_PUBLIC_DATA_SYSTEM = 'cep.storage.public'
+_AGAVE_COMMUNITY_DATA_SYSTEM = 'cep.storage.community'
 _AGAVE_DEFAULT_TRASH_NAME = 'Trash'
 
 _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
@@ -89,7 +94,36 @@ _RESULT_BACKEND_DB = '0'
 # ELASTICSEARCH SETTINGS
 ########################
 
-_ES_HOSTS = 'frontera_prtl_elasticsearch'
+# _ES_HOSTS = {
+#     'default': {
+#         'hosts': [
+#             'PROJECTVM.tacc.utexas.edu',
+#             'PROJECTVM.tacc.utexas.edu',
+#         ],
+#     },
+#     'staging': { #dev/qa
+#         'hosts':  [
+#             'PROJECTVMSTAGING.tacc.utexas.edu',
+#         ]
+#     },
+#     'dev': {
+#         'hosts': [
+#             'elasticsearch'
+#         ]
+#     },
+#     'localhost': {
+#         'hosts': [
+#             'localhost'
+#         ]
+#     }
+# }
+
+_ES_HOSTS = 'frontera_prtl_elasticsearch:9200'
+_ES_AUTH = 'username:password'
+_ES_INDEX_PREFIX = 'frontera-dev-{}'
+
+# !!!: Should we use `{}` or `None` (see other instance)
+_COMMUNITY_INDEX_SCHEDULE = {}
 
 ########################
 # CELERY SETTINGS
@@ -122,6 +156,7 @@ _WH_BASE_URL = ''
 # Absolute with respect to the host
 # Use only if all home directories are under one parent directory.
 _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/corral-repl/tacc/aci/CEP/home_dirs/'
+# _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/home/wma_prtl/cep/home_dirs/'
 # Relative path from the default sotrage system where home directories
 # should be created.
 # Use only if all home directories are under one parent directory.
@@ -129,8 +164,12 @@ _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/corral-repl/tacc/aci/CEP/home_d
 _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
 _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home.{}'
 _PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
-_PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
+_PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'frontera.project'
+
+# _PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
+_PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_work_home.UserWORKHomeManager'
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
+
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'EXECUTION_SYSTEM'
 _PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
@@ -138,36 +177,46 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cep.home.{username}": "/tacc-work",
 }
 
+_PORTAL_KEY_SERVICE_ACTOR_ID = "???"
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
         'description': 'My Data on Frontera for {username}',
         'site': 'frontera',
+        'prefix': 'frontera.home.{username}',
         'systemId': 'frontera.home.{username}',
         'host': 'frontera.tacc.utexas.edu',
-        'rootDir': '/home1/{tasdir}',
-        'port': 22,
+        'home_dir': '/home1/{tasdir}',
+        'storage_port': 22,
         'icon': None,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
         'description': 'My Data on Longhorn for {username}',
         'site': 'frontera',
+        'prefix': 'longhorn.home.{username}',
         'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
-        'rootDir': '/home/{tasdir}',
-        'port': 22,
+        'home_dir': '/home/{tasdir}',
+        'storage_port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
-    },
+    }
 }
 
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
         'name': 'Community Data',
-        'system': 'frontera.storage.community',
+        'system': _AGAVE_COMMUNITY_DATA_SYSTEM,
         'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Public Data',
+        'system': _AGAVE_PUBLIC_DATA_SYSTEM,
+        'scheme': 'public',
         'api': 'tapis',
         'icon': None
     },
@@ -175,6 +224,13 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Google Drive',
+        'system': 'googledrive',
+        'scheme': 'private',
+        'api': 'googledrive',
         'icon': None
     }
 ]
@@ -197,6 +253,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     }
 ]
 """
+
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
@@ -273,6 +330,7 @@ _HAYSTACK_CONNECTIONS = {
     }
 }
 
+# !!!: Should we use `{}` or `None` (see other instance)
 _COMMUNITY_INDEX_SCHEDULE = None
 
 ########################
@@ -281,9 +339,20 @@ _COMMUNITY_INDEX_SCHEDULE = None
 # {% static %} won't work in conjunction with {{ VARIABLE }} so use full paths.
 ########################
 
+# No Art.
+# _PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
+_PORTAL_LOGO_FILENAME = ''                  # Empty string yields text 'CEP'.
+# _PORTAL_NAVBAR_BACKGROUND_FILENAME=''    # Empty string yields NO bg art.
+
+# Default Art.
 _PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
 _PORTAL_NAVBAR_BACKGROUND_FILENAME = ''
 _PORTAL_LOGO_FILENAME = ''
+
+# Custom Art (example using old CEP art).
+# _PORTAL_ICON_FILENAME='/static/img/favicon.cep.png'
+# _PORTAL_LOGO_FILENAME='/static/img/logo.cep.png'
+# _PORTAL_NAVBAR_BACKGROUND_FILENAME='/static/img/network-Header.jpg'
 
 ########################
 # GOOGLE ANALYTICS
@@ -295,13 +364,6 @@ _PORTAL_LOGO_FILENAME = ''
 # NOTE: Use the _AGAVE_TENANT_ID URL value when setting up the tracking property.
 _GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-XXXXX-Y'
 _GOOGLE_ANALYTICS_PRELOAD = True
-
-########################
-# Elasticsearch
-########################
-_ES_HOSTS = 'frontera_prtl_elasticsearch:9200'
-_ES_AUTH = 'username:password'
-_ES_INDEX_PREFIX = 'frontera-dev-{}'
 
 ########################
 # WORKBENCH SETTINGS
