@@ -420,6 +420,8 @@ describe("compressFiles", () => {
         }
       })
       .run();
+  });
+});
 
 describe('copyFiles', () => {
   beforeEach(() => {

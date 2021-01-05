@@ -469,23 +469,23 @@ CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 SETTINGS: EXECUTION SYSTEMS
 """
 PORTAL_EXEC_SYSTEMS = {
-    'data': {
+    'data.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home/{}'
     },
-    'stampede2': {
+    'stampede2.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home/{}'
     },
-    'lonestar5': {
+    'lonestar5.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home/{}'
     },
-    'longhorn': {
+    'longhorn.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
         'home_dir': '/home/{}'
     },
-    'frontera': {
+    'frontera.tacc.utexas.edu': {
         'scratch_dir': '/scratch1/{}',
         'home_dir': '/home1/{}'
     }

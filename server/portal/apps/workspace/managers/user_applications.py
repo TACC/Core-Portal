@@ -299,10 +299,13 @@ class UserApplicationsManager(AbstractApplicationsManager):
         if not system.available:
             system.enable()
 
-        exec_settings_key = system.login.host.split('.')[0]
-        storage_settings_key = system.storage.host.split('.')[0]
-        exec_settings = settings.PORTAL_EXEC_SYSTEMS.get(exec_settings_key, {})
-        storage_settings = settings.PORTAL_EXEC_SYSTEMS.get(storage_settings_key, {})
+        storage_settings = {}
+        exec_settings = {}
+        for host, val in settings.PORTAL_EXEC_SYSTEMS:
+            if host in system.storage.host:
+                storage_settings = val
+            if host in system.login.host:
+                exec_settings = val
 
         system.site = settings.PORTAL_DOMAIN
         system.name = "Execution system for user {}".format(self.user.username)
