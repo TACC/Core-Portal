@@ -144,7 +144,11 @@ export const initialFilesState = {
     link: {},
     showpath: {}
   },
-  previewHref: ''
+  preview: {
+    href: '',
+    content: '',
+    isLoading: true
+  }
 };
 
 let selectedSet, enabled, setValue;
@@ -315,12 +319,15 @@ export function files(state = initialFilesState, action) {
           }
         }
       };
-    case 'DATA_FILES_SET_PREVIEW_HREF':
+    case 'DATA_FILES_SET_PREVIEW_CONTENT':
       return {
         ...state,
-        previewHref: action.payload.href
+        preview: {
+          href: action.payload.href,
+          content: action.payload.content,
+          isLoading: action.payload.isLoading
+        }
       };
-
     case 'DATA_FILES_TOGGLE_MODAL':
       return {
         ...state,
