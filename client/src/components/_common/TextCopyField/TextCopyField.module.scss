@@ -1,22 +1,33 @@
 .root {
   display: flex;
-  .copy-button {
-    transition: background-color 5s;
-  }
-}
-
-.root.copied {
-  .copy-button {
-    background-color: green;
-  }
 }
 
 .input {
   composes: form-control from '../../../styles/components/bootstrap.form.css';
 }
 
+@keyframes copied-anim {
+  0% {
+    background-color: green;
+    color: white;
+  }
+  80% {
+    background-color: green;
+    color: white;
+  }
+  100% {
+    background-color: #F4F4F4;
+    color: #484848;
+  }
+}
+
 .copy-button {
   composes: c-button--secondary from '../../../styles/components/c-button.css';
+}
+
+.copy-button.copied {
+  animation-name: copied-anim;
+  animation-duration: 2s;
 }
 
 .button__icon {
