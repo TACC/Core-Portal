@@ -6,7 +6,7 @@ $frontera-portal-color-primary: #9d85ef;
 .data-files-sidebar {
   --horizontal-buffer: var(--global-space--section-left);
   // NOTE: Added in PR #275 for FP-213
-  // TODO: Ensure this works in PR #236 for FP-385
+  // TODO: Ensure this works or is removed in PR #236 for FP-385
   height: 100%;
 }
 

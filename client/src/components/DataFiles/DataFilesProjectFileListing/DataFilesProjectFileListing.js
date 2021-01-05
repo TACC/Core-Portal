@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { LoadingSpinner, Message } from '_common';
+import { LoadingSpinner, Message, SectionTable } from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import './DataFilesProjectFileListing.module.scss';
 
@@ -44,9 +44,10 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   }
 
   return (
-    <div styleName="root">
-      <div styleName="title-bar">
-        <h6>{metadata.title}</h6>
+    <SectionTable
+      styleName="content"
+      header={metadata.title}
+      headerActions={
         <div styleName="controls">
           <Button color="link" styleName="edit" onClick={onEdit}>
             <h6>Edit Descriptions</h6>
@@ -56,7 +57,8 @@ const DataFilesProjectFileListing = ({ system, path }) => {
             <h6>Manage Team</h6>
           </Button>
         </div>
-      </div>
+      }
+    >
       <div styleName="description">{metadata.description}</div>
       <DataFilesListing
         api="tapis"
@@ -64,7 +66,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         system={system}
         path={path || '/'}
       />
-    </div>
+    </SectionTable>
   );
 };
 

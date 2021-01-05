@@ -9,7 +9,7 @@ import {
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
 
-import { Section, SectionTable } from '_common';
+import { Section } from '_common';
 
 import './DataFiles.module.css';
 import './DataFiles.css';
@@ -122,18 +122,7 @@ const DataFiles = () => {
       content={
         <>
           <DataFilesSidebar styleName="sidebar" readOnly={readOnly} />
-          <SectionTable
-            styleName="content"
-            // FP-538: !!!: Make table header actions dynamic or conditionally render one table or the other
-            headerActions={
-              <span>
-                Should have <code>DataFilesSearchbar</code> only for{' '}
-                <code>DataFilesProjectFileListing</code>
-              </span>
-            }
-          >
-            <DataFilesSwitch />
-          </SectionTable>
+          <DataFilesSwitch />
           <DataFilesModals />
         </>
       }

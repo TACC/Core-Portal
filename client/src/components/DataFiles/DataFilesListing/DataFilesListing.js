@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
 import { useLocation } from 'react-router-dom';
+
+import { SectionTable } from '_common';
+
 import {
   CheckboxCell,
   CheckboxHeaderCell,
@@ -122,23 +125,25 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
   }, [api, showViewPath]);
 
   return (
-    <div styleName="root">
-      <DataFilesSearchbar
-        api={api}
-        scheme={scheme}
-        system={system}
-        styleName="searchbar"
-      />
-      <div styleName="file-container">
-        <DataFilesTable
-          data={files}
-          columns={columns}
-          rowSelectCallback={rowSelectCallback}
-          scrollBottomCallback={scrollBottomCallback}
-          section="FilesListing"
+    <SectionTable
+      styleName="content"
+      headerActions={
+        <DataFilesSearchbar
+          api={api}
+          scheme={scheme}
+          system={system}
+          styleName="searchbar"
         />
-      </div>
-    </div>
+      }
+    >
+      <DataFilesTable
+        data={files}
+        columns={columns}
+        rowSelectCallback={rowSelectCallback}
+        scrollBottomCallback={scrollBottomCallback}
+        section="FilesListing"
+      />
+    </SectionTable>
   );
 };
 DataFilesListing.propTypes = {
