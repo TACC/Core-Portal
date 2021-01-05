@@ -26,7 +26,8 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
   );
 
   const showViewPath = useSelector(
-    state => api === 'tapis' && state.workbench && state.workbench.config.viewPath
+    state =>
+      api === 'tapis' && state.workbench && state.workbench.config.viewPath
   );
 
   const scrollBottomCallback = useCallback(() => {
