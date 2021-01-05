@@ -19,3 +19,4 @@ export { default as DescriptionList } from './DescriptionList';
 export { default as DropdownSelector } from './DropdownSelector';
 export { default as WelcomeMessage, shouldShowMessage } from './WelcomeMessage';
 export { default as Pill } from './Pill';
+export { default as TextCopyField } from './TextCopyField';

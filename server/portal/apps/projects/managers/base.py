@@ -9,11 +9,11 @@ from future.utils import python_2_unicode_compatible
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.libs.agave.utils import service_account
-from portal.libs.agave.serializers import BaseAgaveSystemSerializer
 from portal.libs.agave.models.systems.storage import StorageSystem
-from portal.apps.projects.models import Project, ProjectId
+from portal.apps.projects.models import Project, ProjectId, ProjectSystemSerializer
 from portal.apps.projects.serializers import MetadataJSONSerializer
 from portal.apps.search.tasks import project_indexer
+
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ METRICS = logging.getLogger('{}.{}'.format('metrics', __name__))
 class ProjectsManager(object):
     """Projects Manager."""
 
-    systems_serializer_cls = BaseAgaveSystemSerializer
+    systems_serializer_cls = ProjectSystemSerializer
     meta_serializer_cls = MetadataJSONSerializer
 
     def __init__(
@@ -164,10 +164,7 @@ class ProjectsManager(object):
             self.user.username,
             'ADMIN'
         )
-        METRICS.info(
-            'Project created: project_id=%s, project_title:%s, username=%s',
-            project_id, title, self.user.username
-        )
+        METRICS.info('user:{} created project: id={}, title:{}'.format(self.user.username, project_id, title))
 
         project_indexer.apply_async(args=[project_id])
 
@@ -181,6 +178,31 @@ class ProjectsManager(object):
             limit=limit
         )]
 
+    def apply_permissions(self, project, username, acl):
+        """Index project and update acls
+        """
+        project_id = project.project_id
+        project_indexer.apply_async(args=[project_id])
+        project_root = project.storage.storage.root_dir
+        if acl == 'add':
+            self._add_acls(username, project_id, project_root)
+        elif acl == 'remove':
+            self._remove_acls(username, project_id, project_root)
+
+    def transfer_ownership(self, project_id, old_owner, new_owner):
+        """Transfer ownership by setting new PI
+        and demoting old PI to Co-PI
+        """
+        old_pi = get_user_model().objects.get(username=old_owner)
+        new_pi = get_user_model().objects.get(username=new_owner)
+        prj = Project(
+            service_account(),
+            project_id
+        )
+        prj.transfer_pi(old_pi, new_pi)
+        project_indexer.apply_async(args=[prj.project_id])
+        return prj
+
     def add_member(self, project_id, member_type, username):
         """Add member to a project.
 
@@ -192,7 +214,6 @@ class ProjectsManager(object):
         :param str username: Username.
         """
         user = get_user_model().objects.get(username=username)
-
         prj = self.get_project(project_id)
         if member_type == 'team_member':
             prj.add_member(user)
@@ -202,10 +223,7 @@ class ProjectsManager(object):
             prj.add_pi(user)
         else:
             raise Exception('Invalid member type.')
-
-        project_indexer.apply_async(args=[project_id])
-        project_root = prj.storage.storage.root_dir
-        self._add_acls(username, project_id, project_root)
+        self.apply_permissions(prj, username, 'add')
         return prj
 
     def remove_member(self, project_id, member_type, username):
@@ -225,9 +243,7 @@ class ProjectsManager(object):
             prj.remove_pi(user)
         else:
             raise Exception('Invalid member type.')
-        project_indexer.apply_async(args=[project_id])
-        project_root = prj.storage.storage.root_dir
-        self._remove_acls(username, project_id, project_root)
+        self.apply_permissions(prj, username, 'remove')
         return prj
 
     def _update_meta(self, project, **data):  # pylint: disable=no-self-use

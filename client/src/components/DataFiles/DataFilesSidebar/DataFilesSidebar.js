@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import {
   Nav,
@@ -9,13 +10,13 @@ import {
   DropdownToggle,
   DropdownItem
 } from 'reactstrap';
-import PropTypes from 'prop-types';
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { Icon } from '_common';
 import './DataFilesSidebar.scss';
+import './DataFilesSidebar.module.scss';
 
-const DataFilesSidebar = ({ className }) => {
+const DataFilesSidebar = ({ className, readOnly }) => {
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -26,7 +27,9 @@ const DataFilesSidebar = ({ className }) => {
     });
   };
   const err = useSelector(state => state.files.error.FilesListing);
+  const { api } = useSelector(state => state.files.params.FilesListing);
   const systems = useSelector(state => state.systems.systemList, shallowEqual);
+  const { user } = useSelector(state => state.authenticatedUser);
 
   const toggleMkdirModal = () => {
     dispatch({
@@ -34,9 +37,23 @@ const DataFilesSidebar = ({ className }) => {
       payload: { operation: 'mkdir', props: {} }
     });
   };
+
+  const toggleAddProjectModal = () => {
+    dispatch({
+      type: 'PROJECTS_MEMBER_LIST_SET',
+      payload: [{ user, access: 'owner' }]
+    });
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'addproject', props: {} }
+    });
+  };
+
+  const writeItemStyle = readOnly ? 'read-only' : '';
+
   const match = useRouteMatch();
   return (
-    <>
+    <div styleName="root">
       <div className={`data-files-sidebar ${className}`}>
         <div id="add-button-wrapper">
           <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
@@ -44,22 +61,30 @@ const DataFilesSidebar = ({ className }) => {
               color="primary"
               id="data-files-add"
               className="data-files-btn"
-              disabled={err !== false}
+              disabled={err !== false || api === 'googledrive'}
             >
               + Add
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={toggleMkdirModal}>
-                <i className="icon-folder" /> Folder
+              <DropdownItem onClick={toggleMkdirModal} disabled={readOnly}>
+                <span styleName={writeItemStyle}>
+                  <i className="icon-folder" /> Folder
+                </span>
               </DropdownItem>
+              {systems.some(s => s.scheme === 'projects') && (
+                <DropdownItem onClick={toggleAddProjectModal}>
+                  <i className="icon-folder" /> Shared Workspace
+                </DropdownItem>
+              )}
               <DropdownItem
                 className="complex-dropdown-item"
                 onClick={toggleUploadModal}
+                disabled={readOnly}
               >
-                <i className="icon-upload" />
+                <i className="icon-upload" styleName={writeItemStyle} />
                 <span className="multiline-menu-item-wrapper">
-                  Upload
-                  <small> Up to 500mb </small>
+                  <span styleName={writeItemStyle}>Upload</span>
+                  <small styleName={writeItemStyle}> Up to 500mb </small>
                 </span>
               </DropdownItem>
             </DropdownMenu>
@@ -67,27 +92,28 @@ const DataFilesSidebar = ({ className }) => {
         </div>
         <div className="data-files-nav">
           <Nav vertical>
-            <NavItem>
-              {systems
-                ? systems.map(sys => (
+            {systems
+              ? systems.map(sys => (
+                  <NavItem key={`${sys.name}`}>
                     <NavLink
                       tag={RRNavLink}
-                      to={`${match.path}/${sys.api}/${sys.scheme}/${sys.system}/`}
+                      to={`${match.path}/${sys.api}/${sys.scheme}/${
+                        sys.system ? `${sys.system}/` : ''
+                      }`}
                       activeClassName="active"
-                      key={sys.system}
                     >
                       <div className="nav-content">
                         <Icon name={sys.icon || 'my-data'} />
                         <span className="nav-text">{sys.name}</span>
                       </div>
                     </NavLink>
-                  ))
-                : null}
-            </NavItem>
+                  </NavItem>
+                ))
+              : null}
           </Nav>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 DataFilesSidebar.propTypes = {
@@ -96,6 +122,14 @@ DataFilesSidebar.propTypes = {
 };
 DataFilesSidebar.defaultProps = {
   className: ''
+};
+
+DataFilesSidebar.propTypes = {
+  readOnly: PropTypes.bool
+};
+
+DataFilesSidebar.defaultProps = {
+  readOnly: false
 };
 
 export default DataFilesSidebar;

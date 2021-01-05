@@ -17,6 +17,7 @@ import {
   watchPreview,
   watchMkdir,
   watchDownload,
+  watchLink,
   watchTrash
 } from './datafiles.sagas';
 import watchAllocations from './allocations.sagas';
@@ -43,6 +44,9 @@ import {
   watchOnboardingAdminIndividualUser,
   watchOnboardingAction
 } from './onboarding.sagas';
+import { watchProjects } from './projects.sagas';
+import { watchUsers } from './users.sagas';
+import { watchSiteSearch } from './siteSearch.sagas';
 
 export default function* rootSaga() {
   yield all([
@@ -60,6 +64,7 @@ export default function* rootSaga() {
     watchPreview(),
     watchMkdir(),
     watchDownload(),
+    watchLink(),
     watchTrash(),
     ...watchAllocations,
     watchApps(),
@@ -82,6 +87,9 @@ export default function* rootSaga() {
     watchSaveWelcomeMessages(),
     watchOnboardingAdminList(),
     watchOnboardingAdminIndividualUser(),
-    watchOnboardingAction()
+    watchOnboardingAction(),
+    watchProjects(),
+    watchUsers(),
+    watchSiteSearch()
   ]);
 }

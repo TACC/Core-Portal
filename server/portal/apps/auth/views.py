@@ -27,6 +27,10 @@ def logged_out(request):
     return render(request, 'portal/apps/auth/logged_out.html')
 
 
+def _get_auth_state():
+    return secrets.token_hex(24)
+
+
 # Create your views here.
 def agave_oauth(request):
     """First step for agave OAuth workflow.
@@ -35,7 +39,7 @@ def agave_oauth(request):
     client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
 
     session = request.session
-    session['auth_state'] = secrets.token_hex(24)
+    session['auth_state'] = _get_auth_state()
     next_page = request.GET.get('next')
     if next_page:
         session['next'] = next_page
@@ -43,7 +47,7 @@ def agave_oauth(request):
     redirect_uri = 'https://{}{}'.format(request.get_host(),
                                          reverse('portal_auth:agave_oauth_callback'))
     logger.debug('redirect_uri %s', redirect_uri)
-    METRICS.debug("Starting oauth redirect login")
+    METRICS.debug("user:{} starting oauth redirect login".format(request.user.username))
     authorization_url = (
         '%s/authorize?client_id=%s&response_type=code&redirect_uri=%s&state=%s' % (
             tenant_base_url,
@@ -115,7 +119,7 @@ def agave_oauth_callback(request):
             token.save()
 
             login(request, user)
-            METRICS.debug("Successful oauth login for user " + user.username)
+            METRICS.debug("user:{} successful oauth login".format(user.username))
             launch_setup_checks(user)
         else:
             messages.error(

@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
-import { Button, FormGroup, Alert } from 'reactstrap';
+import React from 'react';
+import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { AppIcon, FormField, Icon, LoadingSpinner, Message } from '_common';
+import {
+  AppIcon,
+  FormField,
+  Icon,
+  LoadingSpinner,
+  SectionMessage
+} from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
 import './AppForm.scss';
@@ -59,17 +65,22 @@ const AppDetail = () => {
     shallowEqual
   );
 
+  const categoryDict = useSelector(state => state.apps.categoryDict);
+  const hasApps = Object.keys(categoryDict).some(
+    category => categoryDict[category] && categoryDict[category].length > 0
+  );
+
   if (error.isError) {
     const errorText = error.message ? error.message : 'Something went wrong.';
 
     return (
       <div id="appDetail-wrapper" className="has-message">
-        <Message type="warn">{errorText}</Message>
+        <SectionMessage type="warning">{errorText}</SectionMessage>
       </div>
     );
   }
 
-  if (loading || !app.name || allocationsLoading) {
+  if (loading || allocationsLoading) {
     return (
       <div id="appDetail-wrapper" className="is-loading">
         <LoadingSpinner />
@@ -79,14 +90,14 @@ const AppDetail = () => {
 
   return (
     <>
-      {!app.name && (
+      {!app && (
         <div id="appDetail-wrapper" className="has-message">
-          <AppPlaceholder />
+          <AppPlaceholder apps={hasApps} />
         </div>
       )}
-      {app.value && app.value.type === 'html' ? (
+      {app.appType === 'html' ? (
         <div id="appDetail-wrapper" className="has-external-app">
-          {parse(app.value.definition.html)}
+          {parse(app.html)}
         </div>
       ) : (
         <div id="appDetail-wrapper" className="has-internal-app">
@@ -199,38 +210,41 @@ export const AppSchemaForm = ({ app }) => {
     initialValues.allocation = app.scheduler;
   }
 
-  // local state for alerts
-  const [visible, setVisible] = useState(true);
-  const onDismiss = () => setVisible(false);
-
   return (
     <div id="appForm-wrapper">
       {jobSubmission.response && (
         <div id="appForm-alerts">
           {jobSubmission.error ? (
-            <Alert color="warning" isOpen={visible} toggle={onDismiss}>
-              Error: {jobSubmission.response.message}
-              {missingAllocation && (
-                <>
-                  &nbsp;Please click&nbsp;
-                  <Link to="/workbench/allocations/manage" className="wb-link">
-                    here
-                  </Link>
-                  &nbsp;to request access.
-                </>
-              )}
-            </Alert>
+            <div className="appDetail-error">
+              <SectionMessage type="warning">
+                Error: {jobSubmission.response.message}
+                {missingAllocation && (
+                  <>
+                    &nbsp;Please click&nbsp;
+                    <Link
+                      to="/workbench/allocations/manage"
+                      className="wb-link"
+                    >
+                      here
+                    </Link>
+                    &nbsp;to request access.
+                  </>
+                )}
+              </SectionMessage>
+            </div>
           ) : (
-            <Alert color="info" isOpen={visible} toggle={onDismiss}>
-              Your job has submitted successfully. See details in{' '}
-              <Link
-                to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
-                className="wb-link"
-              >
-                History &gt; Jobs
-              </Link>
-              .
-            </Alert>
+            <div className="appDetail-error">
+              <SectionMessage type="success">
+                Your job has submitted successfully. See details in{' '}
+                <Link
+                  to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
+                  className="wb-link"
+                >
+                  History &gt; Jobs
+                </Link>
+                .
+              </SectionMessage>
+            </div>
           )}
         </div>
       )}

@@ -37,6 +37,11 @@
     padding: 0;
 }
 
+.toast-is-error {
+  color: var(--global-color-danger--normal);
+  font-weight: 1000;
+}
+
 .notification-toast-body {
     height: var(--toast-height);
     display: grid;

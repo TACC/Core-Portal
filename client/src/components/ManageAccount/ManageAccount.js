@@ -9,8 +9,8 @@ import {
   RequiredInformation,
   ChangePassword,
   Licenses,
-  ThirdPartyApps,
-  OptionalInformation
+  OptionalInformation,
+  Integrations
 } from './ManageAccountTables';
 import {
   ChangePasswordModal,
@@ -70,7 +70,7 @@ const ManageAccountView = () => {
               ) : (
                 <>
                   {!isEmpty(licenses) && <Licenses />}
-                  {!isEmpty(integrations) && <ThirdPartyApps />}
+                  {!isEmpty(integrations) && <Integrations />}
                   <ChangePassword />
                 </>
               )}

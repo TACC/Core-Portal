@@ -101,3 +101,8 @@
 .appDetail-message {
     font-size: 1.4rem;
 }
+
+// FP-385: !!!: This change was brought in from PR #228
+.appDetail-error {
+    padding: 30px 0;
+}

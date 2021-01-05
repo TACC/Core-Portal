@@ -19,7 +19,8 @@ import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
 import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
-import DataFilesSearchbar from './DataFilesSearchbar/DataFilesSearchbar';
+import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
+import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
 
 const PrivateDataRedirect = () => {
   const systems = useSelector(state => state.systems.systemList, shallowEqual);
@@ -37,6 +38,27 @@ const DataFilesSwitch = React.memo(() => {
   const queryString = parse(useLocation().search).query_string;
   return (
     <Switch>
+      <Route
+        path={`${path}/tapis/projects/:system/:path*`}
+        render={({ match: { params } }) => {
+          dispatch({
+            type: 'FETCH_FILES',
+            payload: {
+              ...params,
+              api: 'tapis',
+              scheme: 'projects',
+              queryString,
+              section: 'FilesListing'
+            }
+          });
+          return (
+            <DataFilesProjectFileListing
+              system={params.system}
+              path={params.path || '/'}
+            />
+          );
+        }}
+      />
       <Route
         path={`${path}/:api/:scheme/:system/:path*`}
         render={({ match: { params } }) => {
@@ -58,6 +80,9 @@ const DataFilesSwitch = React.memo(() => {
           );
         }}
       />
+      <Route path={`${path}/tapis/projects`}>
+        <DataFilesProjectsList />
+      </Route>
       <Route path={`${path}`}>
         <PrivateDataRedirect />
       </Route>
@@ -71,6 +96,9 @@ const DataFiles = () => {
     shallowEqual
   );
 
+  const readOnly =
+    listingParams.scheme === 'projects' &&
+    (listingParams.system === '' || !listingParams.system);
   return (
     <Section
       bodyClassName="has-loaded-datafiles"
@@ -93,15 +121,15 @@ const DataFiles = () => {
       }
       content={
         <>
-          <DataFilesSidebar styleName="sidebar" />
+          <DataFilesSidebar styleName="sidebar" readOnly={readOnly} />
           <SectionTable
             styleName="content"
+            // FP-538: !!!: Make table header actions dynamic or conditionally render one table or the other
             headerActions={
-              <DataFilesSearchbar
-                api={listingParams.api}
-                scheme={listingParams.scheme}
-                system={listingParams.system}
-              />
+              <span>
+                Should have <code>DataFilesSearchbar</code> only for{' '}
+                <code>DataFilesProjectFileListing</code>
+              </span>
             }
           >
             <DataFilesSwitch />
