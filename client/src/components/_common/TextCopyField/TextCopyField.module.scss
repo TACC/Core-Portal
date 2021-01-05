@@ -1,5 +1,14 @@
 .root {
   display: flex;
+  .copy-button {
+    transition: background-color 5s;
+  }
+}
+
+.root.copied {
+  .copy-button {
+    background-color: green;
+  }
 }
 
 .input {

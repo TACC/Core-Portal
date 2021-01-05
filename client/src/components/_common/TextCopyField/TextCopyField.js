@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
@@ -6,6 +6,7 @@ import Icon from '../Icon';
 import './TextCopyField.module.scss';
 
 const TextCopyField = ({ value, placeholder }) => {
+  const wrapperRef = React.createRef();
   const onChange = event => {
     // Swallow keyboard events on the Input control, but
     // still allow selecting the text. readOnly property of
@@ -13,12 +14,21 @@ const TextCopyField = ({ value, placeholder }) => {
     // prevents text selection
     event.preventDefault();
   };
-  const onCopy = onChange;
+  
+  const onCopy = (event) => {
+    onChange(event);
+    const wrapper = wrapperRef.current;
+    wrapper.classList.toggle('copied');
+    setTimeout(() => {
+      console.log("Timeout");
+      wrapper.classList.toggle('copied')
+    }, 1000);
+  }
 
   const isEmpty = !value || value.length === 0;
 
   return (
-    <div className="input-group" styleName="root">
+    <div ref={wrapperRef} className="input-group" styleName="root">
       <div className="input-group-prepend">
         <CopyToClipboard text={value}>
           <Button
