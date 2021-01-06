@@ -1,6 +1,7 @@
 DOCKERHUB_REPO := taccwma/$(shell cat ./docker_repo.var)
 DOCKER_TAG ?= $(shell git rev-parse --short HEAD)
 DOCKER_IMAGE := $(DOCKERHUB_REPO):$(DOCKER_TAG)
+DOCKER_IMAGE_BRANCH := $(DOCKERHUB_REPO):$(shell git symbolic-ref --short HEAD)
 DOCKER_IMAGE_LATEST := $(DOCKERHUB_REPO):latest
 DOCKER_IMAGE_LOCAL := $(DOCKERHUB_REPO):local
 
@@ -17,7 +18,7 @@ build-full:
 .PHONY: publish
 publish:
 	docker push $(DOCKER_IMAGE)
-	docker push $(DOCKER_IMAGE_LATEST)
+	docker push $(DOCKER_IMAGE_BRANCH)
 
 .PHONY: publish-latest
 publish-latest:
