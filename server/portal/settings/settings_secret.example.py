@@ -185,8 +185,9 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
 """
 Onboarding steps
 Each step is an object, with the full package name of the step class and
-an associated settings object. If the 'settings' key is omitted, steps will
-have a default value of None for their settings attribute.
+an associated settings object.
+- If the 'settings' key is omitted, steps will have a default value of None for their settings attribute.
+- If the '_PORTAL_USER_ACCOUNT_SETUP_STEPS' secret is set to [], onboarding will be skipped.
 Example:
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
@@ -196,7 +197,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         }
     }
 ]
-"""
+Sample:
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
@@ -217,6 +218,8 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'settings': {}
     }
 ]
+"""
+_PORTAL_USER_ACCOUNT_SETUP_STEPS = []
 
 #######################
 # PROJECTS SETTING
