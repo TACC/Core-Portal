@@ -1,7 +1,5 @@
 import fetch from 'cross-fetch';
 import fetchMock from 'fetch-mock';
-import { runSaga } from 'redux-saga';
-import { put, call, takeLatest } from 'redux-saga/effects';
 import {
   removeDuplicateSlashes,
   fetchFiles,
@@ -14,7 +12,8 @@ import {
   compressFiles,
   jobHelper,
   fileLinkUtil,
-  fileLink
+  fileLink,
+  copyFileUtil
 } from './datafiles.sagas';
 import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
@@ -420,6 +419,8 @@ describe("compressFiles", () => {
         }
       })
       .run();
+  });
+});
 
 describe('copyFiles', () => {
   beforeEach(() => {

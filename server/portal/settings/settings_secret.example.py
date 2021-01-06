@@ -142,8 +142,6 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
-        'site': 'frontera',
         'systemId': 'frontera.home.{username}',
         'host': 'frontera.tacc.utexas.edu',
         'rootDir': '/home1/{tasdir}',
@@ -152,22 +150,27 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'description': 'My Data on Longhorn for {username}',
-        'site': 'frontera',
         'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
         'rootDir': '/home/{tasdir}',
         'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
-    },
+    }
 }
 
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
         'name': 'Community Data',
-        'system': 'frontera.storage.community',
+        'system': 'cep.storage.community',
         'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Public Data',
+        'system': 'cep.storage.public',
+        'scheme': 'public',
         'api': 'tapis',
         'icon': None
     },
@@ -175,6 +178,13 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Google Drive',
+        'system': 'googledrive',
+        'scheme': 'private',
+        'api': 'googledrive',
         'icon': None
     }
 ]
