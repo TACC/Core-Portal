@@ -68,7 +68,7 @@ CheckboxCell.propTypes = {
 };
 
 export const FileNavCell = React.memo(
-  ({ system, path, name, format, api, scheme, href, length }) => {
+  ({ system, path, name, format, api, scheme, href, isPublic, length }) => {
     const dispatch = useDispatch();
     const previewCallback = e => {
       e.stopPropagation();
@@ -86,12 +86,14 @@ export const FileNavCell = React.memo(
       });
     };
 
+    const basePath = isPublic ? '/public-data' : '/workbench/data';
+
     return (
       <>
         <span className="data-files-name">
           <Link
             className="data-files-nav-link"
-            to={`/workbench/data/${api}/${scheme}/${system}/${path}/`.replace(
+            to={`${basePath}/${api}/${scheme}/${system}/${path}/`.replace(
               /\/{2,}/g, // Replace duplicate slashes with single slash
               '/'
             )}
@@ -112,7 +114,11 @@ FileNavCell.propTypes = {
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
   href: PropTypes.string.isRequired,
+  isPublic: PropTypes.bool,
   length: PropTypes.number.isRequired
+};
+FileNavCell.defaultProps = {
+  isPublic: false
 };
 
 export const FileLengthCell = ({ cell }) => {
