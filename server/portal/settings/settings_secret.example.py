@@ -157,7 +157,7 @@ _WH_BASE_URL = ''
 # Use only if all home directories are under one parent directory.
 _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/corral-repl/tacc/aci/CEP/home_dirs/'
 # _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/home/wma_prtl/cep/home_dirs/'
-# Relative path from the default sotrage system where home directories
+# Relative path from the default storage system where home directories
 # should be created.
 # Use only if all home directories are under one parent directory.
 # NOTE: Replace PORTAL_NAME with name of project (e.g. - cep).
@@ -187,8 +187,8 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'prefix': 'frontera.home.{username}',
         'systemId': 'frontera.home.{username}',
         'host': 'frontera.tacc.utexas.edu',
-        'home_dir': '/home1/{tasdir}',
-        'storage_port': 22,
+        'rootDir': '/home1/{tasdir}',
+        'port': 22,
         'icon': None,
     },
     'longhorn': {
@@ -198,8 +198,8 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'prefix': 'longhorn.home.{username}',
         'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
-        'home_dir': '/home/{tasdir}',
-        'storage_port': 22,
+        'rootDir': '/home/{tasdir}',
+        'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
     }
