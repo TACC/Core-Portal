@@ -399,42 +399,43 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
 PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
-        'site': 'frontera',
-        'systemId': 'frontera.home.{username}',                       # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
-        'host': 'frontera.tacc.utexas.edu',                         # PORTAL_DATA_DEPOT_STORAGE_HOST
-        'rootDir': '/home1/{tasdir}',                              # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+        'systemId': 'frontera.home.{username}',
+        'host': 'frontera.tacc.utexas.edu',
+        'rootDir': '/home1/{tasdir}',
         'port': 22,
         'icon': None,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'description': 'My Data on Longhorn for {username}',
-        'site': 'frontera',
         'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
         'rootDir': '/home/{tasdir}',
         'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
-    },
+    }
 }
 
 PORTAL_EXEC_SYSTEMS = {
-    'data': {
-        'scratch_dir': '/scratch/{}'
+    'data.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'stampede2': {
-        'scratch_dir': '/scratch/{}'
+    'stampede2.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'lonestar5': {
-        'scratch_dir': '/scratch/{}'
+    'lonestar5.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'longhorn': {
-        'scratch_dir': '/scratch/{}'
+    'longhorn.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'frontera': {
-        'scratch_dir': '/scratch1/{}'
+    'frontera.tacc.utexas.edu': {
+        'scratch_dir': '/scratch1/{}',
+        'home_dir': '/home1/{}'
     }
 }
 
@@ -444,6 +445,19 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'portal.storage.community',
         'scheme': 'community',
         'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Shared Workspaces',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Google Drive',
+        'system': 'googledrive',
+        'scheme': 'private',
+        'api': 'googledrive',
         'icon': None
     }
 ]

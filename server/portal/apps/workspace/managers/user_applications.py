@@ -301,7 +301,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
         storage_settings = {}
         exec_settings = {}
-        for host, val in settings.PORTAL_EXEC_SYSTEMS:
+        for host, val in settings.PORTAL_EXEC_SYSTEMS.items():
             if host in system.storage.host:
                 storage_settings = val
             if host in system.login.host:
