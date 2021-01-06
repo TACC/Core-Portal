@@ -104,9 +104,9 @@ ngrok http 443
 
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.dev`
 
-    _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
+    _WARNING: The `_AGAVE_TENANT_ID` must align with the `_AGAVE_TENANT_BASEURL` (Agave callback URL) e.g. a `_AGAVE_TENANT_ID` of "portals" must accompany an `_AGAVE_TENANT_BASEURL` url of  https://portals-api.tacc.utexas.edu._
 
-    _Note: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
+    _NOTE: Do NOT have your VPN connected when you do this. Otherwise your hosts file will be overwritten and you will have to do this step again._
 
   2. Direct your browser to `https://cep.dev`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/login`.
 
