@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'portal.apps.googledrive_integration',
     'portal.apps.projects',
     'portal.apps.system_creation',
+    'portal.apps.public_data',
     'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
 ]

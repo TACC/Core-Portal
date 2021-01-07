@@ -44,7 +44,6 @@ def files_search(query_string, system, offset=0, limit=10):
 class SiteSearchApiView(BaseApiView):
 
     def get(self, request, *args, **kwargs):
-        logger.debug(request.GET)
         qs = request.GET.get('query_string', '')
         page = request.GET.get('page', 1)
         limit = 10
