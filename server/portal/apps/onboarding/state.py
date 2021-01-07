@@ -12,7 +12,7 @@ class SetupState:
     FAILED = "failed"
 
     # Steps in COMPLETED state will cause the next step to be
-    # checked for automated processing 
+    # checked for automated processing
     # by portal.apps.onboarding.execute.execute_setup_steps
     COMPLETED = "completed"
 
@@ -24,15 +24,9 @@ class SetupState:
 
     # Steps in STAFFWAIT state will show an "Approve" and "Deny"
     # action to staff users, allowing them to approve or deny
-    # a portal onboarding step. The client will send 
+    # a portal onboarding step. The client will send
     # "staff_approve" or "staff_deny" to the step's client_action method
     STAFFWAIT = "staffwait"
-
-    # Steps in WEBHOOK will allow the webhook_callback method to
-    # be invoked by portal.apps.accounts.api.webhook.SetupStepWebhookView.post
-    # This state should be set and logged after an external call
-    # has been successfully sent
-    WEBHOOK = "webhook"
 
     # Steps in ERROR have been processed in execute_setup_steps but
     # generated an exception. This state will also cause the front end

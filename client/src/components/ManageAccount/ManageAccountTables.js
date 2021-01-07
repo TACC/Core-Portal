@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { useTable } from 'react-table';
 import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { shape, string, arrayOf } from 'prop-types';
-import { Link } from 'react-router-dom';
+import { shape, string, arrayOf, bool } from 'prop-types';
+import { GoogleDriveModal } from './ManageAccountModals';
 
 export const TableTemplate = ({ attributes }) => {
   const { getTableProps, rows, prepareRow } = useTable(attributes);
@@ -102,6 +102,7 @@ export const RequiredInformation = () => {
 };
 /* eslint-disable react/no-danger */
 const LicenseCell = ({ cell: { value } }) => {
+  const dispatch = useDispatch();
   const [modal, setModal] = React.useState(false);
   const toggle = () => setModal(!modal);
   const { license_type: type, template_html: __html } = value;
@@ -131,11 +132,19 @@ const LicenseCell = ({ cell: { value } }) => {
         <ModalBody>
           <div dangerouslySetInnerHTML={{ __html }} />
           Click{' '}
-          <Link
-            to={`/workbench/dashboard/tickets/create?subject=${type}+Activation`}
+          <Button
+            onClick={() =>
+              dispatch({
+                type: 'TICKET_CREATE_OPEN_MODAL',
+                payload: {
+                  subject: `${type} Activation`
+                }
+              })
+            }
+            color="link"
           >
             here
-          </Link>{' '}
+          </Button>
           to open a ticket.
         </ModalBody>
       </Modal>
@@ -175,14 +184,69 @@ export const Licenses = () => {
   );
 };
 
-export const ThirdPartyApps = () => {
+export const IntegrationCell = ({ cell: { value } }) => {
+  const { activated, label } = value;
+  switch (label) {
+    case 'Google Drive':
+      return <GoogleDriveIntegrationCell activated={activated} />;
+    default:
+      return <></>;
+  }
+};
+IntegrationCell.propTypes = {
+  cell: shape({
+    value: shape({
+      activated: bool.isRequired,
+      label: string.isRequired
+    })
+  }).isRequired
+};
+
+export const GoogleDriveIntegrationCell = ({ activated }) => {
+  const [modal, setModal] = React.useState(false);
+  const toggle = () => setModal(!modal);
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'flex-end'
+      }}
+    >
+      {activated ? (
+        <div>
+          <a href="/accounts/applications/googledrive/disconnect/">
+            Disconnect
+          </a>
+        </div>
+      ) : (
+        <div>
+          <Button
+            color="link"
+            size="sm"
+            onClick={toggle}
+            className="license-button"
+          >
+            Connect to Google Drive
+          </Button>
+        </div>
+      )}
+      <GoogleDriveModal active={modal} toggle={toggle} />
+    </div>
+  );
+};
+GoogleDriveIntegrationCell.propTypes = {
+  activated: bool.isRequired
+};
+
+export const Integrations = () => {
   const { integrations } = useSelector(state => state.profile.data);
   const columns = useMemo(
-    () => [
-      { Header: 'Google Drive' },
-      { Header: 'Box' },
-      { Header: 'Dropbox' }
-    ],
+    () =>
+      integrations.map(app => ({
+        Header: app.label,
+        accessor: () => app,
+        Cell: IntegrationCell
+      })),
     []
   );
   const data = useMemo(() => integrations, [integrations]);

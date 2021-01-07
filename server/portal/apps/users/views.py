@@ -3,7 +3,7 @@ from portal.views.base import BaseApiView
 from portal.apps.users import utils as users_utils
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
-from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
+from django.http import HttpResponseNotFound, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -35,7 +35,7 @@ class AuthenticatedView(BaseApiView):
             }
 
             return JsonResponse(out)
-        return HttpResponse('Unauthorized', status=401)
+        return JsonResponse({'message': 'Unauthorized'}, status=401)
 
 
 @method_decorator(login_required, name='dispatch')

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { LoadingSpinner } from '_common';
+import './DataFilesPreviewModal.module.scss';
 
 const PreviewModalSpinner = () => (
   <div className="h-100 listing-placeholder">
@@ -13,8 +14,9 @@ const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.preview);
   const params = useSelector(state => state.files.modalProps.preview);
-  const previewHref = useSelector(state => state.files.previewHref);
-  const [loadingPreview, setLoadingPreview] = useState(false);
+  const previewHref = useSelector(state => state.files.preview.href);
+  const previewContent = useSelector(state => state.files.preview.content);
+  const isLoading = useSelector(state => state.files.preview.isLoading);
 
   const toggle = () =>
     dispatch({
@@ -23,8 +25,6 @@ const DataFilesPreviewModal = () => {
     });
 
   const onOpen = () => {
-    setLoadingPreview(true);
-
     dispatch({
       type: 'DATA_FILES_PREVIEW',
       payload: {
@@ -32,15 +32,18 @@ const DataFilesPreviewModal = () => {
         scheme: params.scheme,
         system: params.system,
         path: params.path,
-        href: params.href
+        href: params.href,
+        length: params.length
       }
     });
   };
 
   const onClosed = () => {
-    dispatch({ type: 'DATA_FILES_SET_PREVIEW_HREF', payload: { href: '' } });
+    dispatch({
+      type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+      payload: { content: '', href: '', isLoading: true }
+    });
   };
-
   return (
     <>
       <Modal
@@ -53,28 +56,24 @@ const DataFilesPreviewModal = () => {
       >
         <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
         <ModalBody>
-          {loadingPreview && <PreviewModalSpinner />}
-          {previewHref && (
+          {isLoading && <PreviewModalSpinner />}
+          {previewContent ? (
+            <div>
+              <code>
+                <pre styleName="text-preview">{previewContent}</pre>
+              </code>
+            </div>
+          ) : (
             <div className="embed-responsive embed-responsive-4by3">
               <iframe
                 title="preview"
                 frameBorder="0"
                 className="embed-responsive-item"
                 src={previewHref}
-                onLoad={() => setLoadingPreview(false)}
               />
             </div>
           )}
         </ModalBody>
-        <ModalFooter>
-          <Button
-            color="secondary"
-            className="data-files-btn-cancel"
-            onClick={toggle}
-          >
-            Close
-          </Button>
-        </ModalFooter>
       </Modal>
     </>
   );

@@ -158,8 +158,9 @@ const TicketHistoryCard = ({
       >
         <span className="ticket-history-header d-inline-block text-truncate">
           <strong>
-            <span className={ticketHeaderClassName}> {creator} </span> |{' '}
-            {`${formatDateTime(created)}`}
+            <span className={ticketHeaderClassName}>
+              {creator} | {`${formatDateTime(created)}`}
+            </span>
           </strong>{' '}
           {isOpen ? '' : content}
         </span>

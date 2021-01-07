@@ -12,11 +12,12 @@ from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
-from celery import group
 from portal.apps.auth.models import AgaveOAuthToken
-from portal.apps.auth.tasks import setup_user, get_user_storage_systems
-from portal.apps.onboarding.execute import new_user_setup_check
-from portal.apps.search.tasks import index_allocations
+from portal.apps.onboarding.execute import (
+    execute_setup_steps,
+    new_user_setup_check
+)
+
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -24,6 +25,10 @@ METRICS = logging.getLogger('metrics.{}'.format(__name__))
 
 def logged_out(request):
     return render(request, 'portal/apps/auth/logged_out.html')
+
+
+def _get_auth_state():
+    return secrets.token_hex(24)
 
 
 # Create your views here.
@@ -34,7 +39,7 @@ def agave_oauth(request):
     client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
 
     session = request.session
-    session['auth_state'] = secrets.token_hex(24)
+    session['auth_state'] = _get_auth_state()
     next_page = request.GET.get('next')
     if next_page:
         session['next'] = next_page
@@ -42,7 +47,7 @@ def agave_oauth(request):
     redirect_uri = 'https://{}{}'.format(request.get_host(),
                                          reverse('portal_auth:agave_oauth_callback'))
     logger.debug('redirect_uri %s', redirect_uri)
-    METRICS.debug("Starting oauth redirect login")
+    METRICS.debug("user:{} starting oauth redirect login".format(request.user.username))
     authorization_url = (
         '%s/authorize?client_id=%s&response_type=code&redirect_uri=%s&state=%s' % (
             tenant_base_url,
@@ -52,6 +57,17 @@ def agave_oauth(request):
         )
     )
     return HttpResponseRedirect(authorization_url)
+
+
+def launch_setup_checks(user):
+    """Perform any onboarding checks that may spawn celery tasks
+    """
+
+    # Check onboarding settings
+    new_user_setup_check(user)
+    if not user.profile.setup_complete:
+        logger.info("Executing onboarding setup steps for %s", user.username)
+        execute_setup_steps.apply_async(args=[user.username])
 
 
 def agave_oauth_callback(request):
@@ -103,22 +119,8 @@ def agave_oauth_callback(request):
             token.save()
 
             login(request, user)
-            METRICS.debug("Successful oauth login for user " + user.username)
-            # msg_tmpl = 'Login successful. Welcome back, %s %s.'
-            # msg_tmpl = getattr(settings, 'LOGIN_SUCCESS_MSG', msg_tmpl)
-            # messages.success(request, msg_tmpl % (user.first_name, user.last_name))
-
-            # Synchronously do the onboarding preparation
-            new_user_setup_check(user)
-
-            # Apply asynchronous long onboarding calls
-            logger.info("Starting celery task for onboarding {username}".format(username=user.username))
-            index_allocations.apply_async(args=[user.username])
-
-            system_names = get_user_storage_systems(user.username, settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS)
-            group(
-                setup_user.s(user.username, system) for system in system_names
-            ).apply_async()
+            METRICS.debug("user:{} successful oauth login".format(user.username))
+            launch_setup_checks(user)
         else:
             messages.error(
                 request,

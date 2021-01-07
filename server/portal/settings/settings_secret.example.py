@@ -131,7 +131,6 @@ _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home.{}'
 _PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 _PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
-_PORTAL_USER_ACCOUNT_SETUP_STEPS = []
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
 _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'EXECUTION_SYSTEM'
 _PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
@@ -143,31 +142,79 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'frontera': {
         'name': 'My Data (Frontera)',
-        'prefix': 'frontera.home.{}',
+        'description': 'My Data on Frontera for {username}',
+        'site': 'frontera',
+        'systemId': 'frontera.home.{username}',
         'host': 'frontera.tacc.utexas.edu',
-        'home_dir': '/home1',
-        'storage_port': 22,
+        'rootDir': '/home1/{tasdir}',
+        'port': 22,
         'icon': None,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'prefix': 'longhorn.home.{}',
+        'description': 'My Data on Longhorn for {username}',
+        'site': 'frontera',
+        'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
-        'home_dir': '/home',
-        'storage_port': 22,
+        'rootDir': '/home/{tasdir}',
+        'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
     },
 }
 
-# Configurable list of non-private systems that appear on the frontend
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
         'name': 'Community Data',
-        'system': 'portal.storage.community',
+        'system': 'frontera.storage.community',
         'scheme': 'community',
         'api': 'tapis',
         'icon': None
+    },
+    {
+        'name': 'Shared Workspaces',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': None
+    }
+]
+
+########################
+# DJANGO APP: ONBOARDING
+########################
+"""
+Onboarding steps
+Each step is an object, with the full package name of the step class and
+an associated settings object. If the 'settings' key is omitted, steps will
+have a default value of None for their settings attribute.
+Example:
+_PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
+        'settings': {
+            'key': 'value'
+        }
+    }
+]
+"""
+_PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
+        'settings': {}
+    },
+    {
+        'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
+        'settings': {
+            'project_sql_id': 12345
+        }
+    },
+    {
+        'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
+        'settings': {}
+    },
+    {
+        'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
+        'settings': {}
     }
 ]
 
@@ -255,3 +302,17 @@ _GOOGLE_ANALYTICS_PRELOAD = True
 _ES_HOSTS = 'frontera_prtl_elasticsearch:9200'
 _ES_AUTH = 'username:password'
 _ES_INDEX_PREFIX = 'frontera-dev-{}'
+
+########################
+# WORKBENCH SETTINGS
+########################
+"""
+This setting dictionary is a catch-all space for simple configuration
+flags that will be passed to the frontend to determine what non-standard
+components to render.
+"""
+_WORKBENCH_SETTINGS = {
+    "debug": _DEBUG,
+    "viewPath": True,
+    "makeLink": True
+}

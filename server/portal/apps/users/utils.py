@@ -38,6 +38,7 @@ def q_to_model_queries(q):
         query = Q(email__icontains=q)
         query |= Q(first_name__icontains=q)
         query |= Q(last_name__icontains=q)
+        query |= Q(username__icontains=q)
 
     return query
 
@@ -110,7 +111,7 @@ def get_tas_allocations(username):
     }
 
 
-def get_allocations(username):
+def get_allocations(username, force=False):
     """
     Returns indexed allocation data cached in Elasticsearch, or fetches
     allocations from TAS and indexes them if not cached yet.
@@ -123,6 +124,9 @@ def get_allocations(username):
         dict
     """
     try:
+        if force:
+            logger.debug("Forcing TAS allocation retrieval")
+            raise NotFoundError
         result = {
             'hosts': {},
             'portal_alloc': None,

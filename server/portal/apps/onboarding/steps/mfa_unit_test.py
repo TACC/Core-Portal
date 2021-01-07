@@ -35,7 +35,7 @@ def test_mfa_not_found(mocker, authenticated_user, mock_mfa_check, mock_mfa_log)
     step = MFAStep(authenticated_user)
     mock_mfa_check.return_value = False
     step.process()
-    mock_mfa_log.assert_called_with(mocker.ANY, data=mocker.ANY)
+    mock_mfa_log.assert_called_with(mocker.ANY)
 
 
 def test_mfa_check(authenticated_user, requests_mock):

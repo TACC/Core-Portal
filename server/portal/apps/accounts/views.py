@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
+from django.shortcuts import redirect
 from pytas.http import TASClient
 
 from portal.apps.accounts import integrations
@@ -19,6 +20,11 @@ from portal.apps.accounts import form_fields as forms
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
+
+
+def accounts(request):
+    response = redirect('/workbench/account/')
+    return response
 
 
 class LogoutView(View):
@@ -90,7 +96,7 @@ def get_profile_data(request):
         'demographics': demographics,
         'history': history,
         'licenses': manage_licenses(request),
-        'integrations': manage_applications(request),
+        'integrations': manage_integrations(request),
     }
 
     return JsonResponse(context)
@@ -111,8 +117,8 @@ def manage_licenses(request):
 
 
 @login_required
-def manage_applications(request):
-    return integrations.get_integrations()
+def manage_integrations(request):
+    return integrations.get_integrations(request.user)
 
 
 @login_required

@@ -1,0 +1,23 @@
+@import url('../../styles/settings/space.css');
+
+.root {
+  padding: var(--global-space--section);
+}
+
+.access {
+  text-align: right;
+}
+
+.title {
+  width: 100%;
+  border-bottom: 1px solid black;
+  margin-bottom: 1em;
+}
+
+.container {
+  width: 75%;
+}
+
+.button {
+  border-radius: 0;
+}

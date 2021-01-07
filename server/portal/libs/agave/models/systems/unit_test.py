@@ -8,7 +8,6 @@ import json
 import copy
 from mock import patch, call, Mock
 from requests.exceptions import HTTPError
-from requests.models import Response, Request
 from django.test import TestCase
 from django.conf import settings
 from portal.libs.agave.models.systems.storage import StorageSystem
@@ -21,8 +20,6 @@ logger = logging.getLogger(__name__)
 
 class TestAgaveSystems(TestCase):
     """Test Agave File"""
-
-    fixtures = ['users', 'auth', 'accounts']
 
     @classmethod
     def setUpClass(cls):
