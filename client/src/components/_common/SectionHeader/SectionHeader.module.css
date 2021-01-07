@@ -5,8 +5,6 @@
   justify-content: space-between;
   align-items: flex-end;
 
-  /* NOTE: Only Data Files experiences this, and it avoids it by setting body min width... so, what does Design actually want to happen in this case?  */
-  flex-wrap: wrap; /* prevent text and actions from colliding */
   align-content: flex-end; /* preserve alignment of items when wrapped */
 
   height: 2rem; /* ~32px (26px design * 1.2 design-to-app ratio) */
