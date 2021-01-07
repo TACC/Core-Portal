@@ -46,7 +46,8 @@
       white-space: nowrap;
 
       /* Contain children to cell size and add ellipsis to overflow by default */
-      & > :only-child {
+      /* HACK: The selector part that avoids affecting `.loading-icon` couples the components InfiniteScrollTable and LoadingSpinner */
+      & > :only-child:not(.loading-icon) {
         display: inline-block;
         overflow: hidden;
         text-overflow: ellipsis;
