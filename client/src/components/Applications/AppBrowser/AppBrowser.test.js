@@ -19,7 +19,7 @@ describe('App Browser', () => {
     expect(getByText('My Apps [1]')).toBeDefined();
   });
 
-  it('should have selected category and populate app list for that selected category', () => {
+  it('should have selected category and populate app list for that default/selected category', () => {
     const store = mockStore({
       apps: {...appTrayExpectedFixture, defaultTab: "Simulation"}
     });
