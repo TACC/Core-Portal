@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { InfiniteScrollTable, Message } from '_common';
+import { InfiniteScrollTable, SectionMessage, SectionTable } from '_common';
 import './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 
@@ -81,14 +81,16 @@ const DataFilesProjectsList = ({ modal }) => {
 
   if (error) {
     return (
-      <Message type="error">
-        There was a problem retrieving your Shared Workspaces
-      </Message>
+      <div styleName="content-placeholder">
+        <SectionMessage type="error">
+          There was a problem retrieving your Shared Workspaces.
+        </SectionMessage>
+      </div>
     );
   }
 
   return (
-    <div styleName="root">
+    <SectionTable styleName="content">
       <InfiniteScrollTable
         tableColumns={columns}
         tableData={projects}
@@ -97,7 +99,7 @@ const DataFilesProjectsList = ({ modal }) => {
         noDataText={noDataText}
         className="projects-listing"
       />
-    </div>
+    </SectionTable>
   );
 };
 DataFilesProjectsList.propTypes = {

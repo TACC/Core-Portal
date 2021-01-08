@@ -1,18 +1,8 @@
-// NOTE: Added in PR #275 for FP-213
-// TODO: Ensure this works or is removed in PR #236 for FP-385
-// .title-bar {
-//   border-bottom: 1px solid black;
-//   padding-left: 1em;
-//   margin-bottom: 0.5em;
-//   display: flex;
-//   justify-content: space-between;
-// }
-
-// NOTE: Added in PR #275 for FP-213
-// TODO: Migrate this to `SectionTable`
 .description {
-  padding-left: 1em;
+  padding-top: 0.5em;
   padding-bottom: 1em;
+
+  border-top: var(--global-border-width--normal) solid var(--global-color-primary--dark);
 }
 
 .controls {
@@ -20,12 +10,8 @@
   align-items: flex-start;
 }
 
-// NOTE: Added in PR #275 for FP-213
-// TODO: Ensure this works or is removed in PR #236 for FP-385
 .edit {
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-right: 0;
+  padding: 0;
 }
 
 .separator {
@@ -38,7 +24,16 @@
   /* As a flex child */
   flex-grow: 1;
 
-  /* NOTE: Mimicked on: History, Allocations, DataFilesListing, DataFilesProjectFileListing */
+  /* NOTE: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */
   padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
   padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+}
+
+/* NOTE: Mimicked on: DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */
+.content-placeholder {
+  flex-grow: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
