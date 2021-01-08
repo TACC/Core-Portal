@@ -8,12 +8,13 @@ DOCKER_IMAGE_LOCAL := $(DOCKERHUB_REPO):local
 .PHONY: build
 build:
 	docker-compose -f ./server/conf/docker/docker-compose.yml build
+	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_LOCAL)
 
 .PHONY: build-full
 build-full:
 	docker build -t $(DOCKER_IMAGE) --target production -f ./server/conf/docker/Dockerfile .
 	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_LATEST)
-	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_LOCAL)
+	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_BRANCH)
 
 .PHONY: publish
 publish:
