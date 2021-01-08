@@ -203,3 +203,48 @@ def test_tapis_file_view_post_is_logged_for_metrics(client, authenticated_user, 
     logging_metric_mock.assert_called_with(
         "user:{} op:upload api:tapis scheme:private "
         "system:frontera.home.username path:/ filename:text_file.txt".format(authenticated_user.username))
+
+
+POSTIT_HREF = "https://tapis.example/postit/something"
+
+
+@pytest.mark.parametrize("EXTENSION,TYPE", [("PNG", "image", ), ("JPG", "image"), ("jpeg", "image"),
+                                            ("doc", "ms-office"), ("docx", "ms-office"),
+                                            ("pdf", "object")])
+def test_tapis_file_view_preview_supported_non_text_files(client, authenticated_user, mock_agave_client,
+                                                          agave_file_listing_mock, agave_indexer, EXTENSION, TYPE):
+    mock_agave_client.files.list.return_value = agave_file_listing_mock
+    mock_agave_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
+    response = client.put("/api/datafiles/tapis/preview/private/frontera.home.username/test_text.{}/".format(EXTENSION),
+                          content_type="application/json",
+                          data={"href": "https//tapis.example/href"})
+
+    href = POSTIT_HREF if TYPE != "ms-office" \
+        else "https://view.officeapps.live.com/op/view.aspx?src={}".format(POSTIT_HREF)
+
+    assert response.status_code == 200
+    assert response.json() == {"data": {"href": href, "fileType": TYPE}}
+
+
+def test_tapis_file_view_preview_text_file(client, authenticated_user, mock_agave_client, agave_file_listing_mock,
+                                           requests_mock, agave_indexer):
+    mock_agave_client.files.list.return_value = agave_file_listing_mock
+    mock_agave_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
+    requests_mock.get(POSTIT_HREF, text="file content")
+    response = client.put("/api/datafiles/tapis/preview/private/frontera.home.username/test_text.txt/",
+                          content_type="application/json",
+                          data={"href": "https//tapis.example/href"})
+    assert response.status_code == 200
+    assert response.json() == {"data": {"href": POSTIT_HREF, "fileType": "text", "content": "file content", "error": None}}
+
+
+def test_tapis_file_view_preview_other_text_file(client, authenticated_user, mock_agave_client, agave_file_listing_mock,
+                                           requests_mock, agave_indexer):
+    mock_agave_client.files.list.return_value = agave_file_listing_mock
+    mock_agave_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
+    requests_mock.get(POSTIT_HREF, text="file content")
+    response = client.put("/api/datafiles/tapis/preview/private/frontera.home.username/some_other_txt_file_like_log.applog/",
+                          content_type="application/json",
+                          data={"href": "https//tapis.example/href"})
+    assert response.status_code == 200
+    assert response.json() == {"data": {"href": POSTIT_HREF, "fileType": "other", "content": "file content", "error": None}}

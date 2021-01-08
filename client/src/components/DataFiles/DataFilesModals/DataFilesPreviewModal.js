@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import './DataFilesPreviewModal.module.scss';
 
 const PreviewModalSpinner = () => (
@@ -14,9 +14,15 @@ const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.preview);
   const params = useSelector(state => state.files.modalProps.preview);
-  const previewHref = useSelector(state => state.files.preview.href);
-  const previewContent = useSelector(state => state.files.preview.content);
-  const isLoading = useSelector(state => state.files.preview.isLoading);
+  const {
+    href: previewHref,
+    content: previewTextContent,
+    error: previewError,
+    isLoading
+  } = useSelector(state => state.files.preview);
+  const hasError = previewError !== null;
+  const previewUsingTextContent = !hasError && previewTextContent !== null;
+  const previewUsingHref = !hasError && !previewUsingTextContent;
 
   const toggle = () =>
     dispatch({
@@ -40,7 +46,7 @@ const DataFilesPreviewModal = () => {
   const onClosed = () => {
     dispatch({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-      payload: { content: '', href: '', isLoading: true }
+      payload: { content: null, href: null, error: null, isLoading: true }
     });
   };
   return (
@@ -56,13 +62,14 @@ const DataFilesPreviewModal = () => {
         <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
         <ModalBody>
           {isLoading && <PreviewModalSpinner />}
-          {previewContent ? (
+          {previewUsingTextContent && (
             <div>
               <code>
-                <pre styleName="text-preview">{previewContent}</pre>
+                <pre styleName="text-preview">{previewTextContent}</pre>
               </code>
             </div>
-          ) : (
+          )}
+          {previewUsingHref && (
             <div className="embed-responsive embed-responsive-4by3">
               <iframe
                 title="preview"
@@ -72,6 +79,7 @@ const DataFilesPreviewModal = () => {
               />
             </div>
           )}
+          {hasError && <Message type="warn">{previewError}</Message>}
         </ModalBody>
       </Modal>
     </>
