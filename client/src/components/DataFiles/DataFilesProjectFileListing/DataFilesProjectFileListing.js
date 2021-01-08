@@ -36,7 +36,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   if (metadata.loading) {
     return (
-      <div styleName="content-placeholder">
+      <div styleName="root-placeholder">
         <LoadingSpinner />
       </div>
     );
@@ -44,7 +44,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   if (metadata.error) {
     return (
-      <div styleName="content-placeholder">
+      <div styleName="root-placeholder">
         <SectionMessage type="warning">
           We were unable to retrieve this shared workspace.
         </SectionMessage>
@@ -54,7 +54,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   return (
     <SectionTable
-      styleName="content"
+      styleName="root"
       header={metadata.title}
       headerActions={
         <div styleName="controls">

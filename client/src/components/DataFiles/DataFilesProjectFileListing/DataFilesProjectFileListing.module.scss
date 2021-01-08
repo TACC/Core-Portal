@@ -1,3 +1,21 @@
+.root {
+  /* As a flex child */
+  flex-grow: 1;
+
+  /* NOTE: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */
+  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+}
+
+/* NOTE: Mimicked on: DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */
+.root-placeholder {
+  flex-grow: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .description {
   padding-top: 0.5em;
   padding-bottom: 1em;
@@ -18,22 +36,4 @@
   font-weight: bold;
   padding-left: 0.25em;
   padding-right: 0.25em;
-}
-
-.content {
-  /* As a flex child */
-  flex-grow: 1;
-
-  /* NOTE: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */
-  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
-  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
-}
-
-/* NOTE: Mimicked on: DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */
-.content-placeholder {
-  flex-grow: 1;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
