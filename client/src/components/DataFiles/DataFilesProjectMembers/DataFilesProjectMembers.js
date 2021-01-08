@@ -87,7 +87,6 @@ const DataFilesProjectMembers = ({
         ''
       ),
       accessor: 'username',
-      headerClassName: 'project-members__loading-header',
       className: 'project-members__cell',
       Cell: el => (
         <>
@@ -128,7 +127,6 @@ const DataFilesProjectMembers = ({
         ''
       ),
       accessor: 'username',
-      headerClassName: 'project-members__loading-header',
       className: 'project-members__cell',
       Cell: el =>
         mode === 'transfer' && el.row.original === transferUser ? (
