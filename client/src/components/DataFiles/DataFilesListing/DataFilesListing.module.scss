@@ -1,8 +1,4 @@
-.content {
-  /* As a flex child */
-  flex-grow: 1;
 
-  /* NOTE: Mimicked on: History, Allocations, DataFilesListing, DataFilesProjectFileListing */
-  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
-  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+.searchbar {
+  padding-bottom: 15px;
 }

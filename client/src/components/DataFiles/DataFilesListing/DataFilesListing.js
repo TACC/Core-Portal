@@ -4,8 +4,6 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
 import { useLocation } from 'react-router-dom';
 
-import { SectionTable } from '_common';
-
 import {
   CheckboxCell,
   CheckboxHeaderCell,
@@ -126,19 +124,15 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   }, [api, showViewPath]);
 
   return (
-    <SectionTable
-      styleName="content"
-      headerActions={
-        !isPublic && (
-          <DataFilesSearchbar
-            api={api}
-            scheme={scheme}
-            system={system}
-            styleName="searchbar"
-          />
-        )
-      }
-    >
+    <>
+      {!isPublic && (
+        <DataFilesSearchbar
+          api={api}
+          scheme={scheme}
+          system={system}
+          styleName="searchbar"
+        />
+      )}
       <DataFilesTable
         data={files}
         columns={columns}
@@ -146,7 +140,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         scrollBottomCallback={scrollBottomCallback}
         section="FilesListing"
       />
-    </SectionTable>
+    </>
   );
 };
 DataFilesListing.propTypes = {

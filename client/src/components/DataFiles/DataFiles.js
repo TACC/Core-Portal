@@ -9,7 +9,7 @@ import {
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
 
-import { Section } from '_common';
+import { Section, SectionTable } from '_common';
 
 import './DataFiles.module.css';
 import './DataFiles.css';
@@ -71,12 +71,14 @@ const DataFilesSwitch = React.memo(() => {
             }
           });
           return (
-            <DataFilesListing
-              api={params.api}
-              scheme={params.scheme}
-              system={params.system}
-              path={params.path || '/'}
-            />
+            <SectionTable styleName="content">
+              <DataFilesListing
+                api={params.api}
+                scheme={params.scheme}
+                system={params.system}
+                path={params.path || '/'}
+              />
+            </SectionTable>
           );
         }}
       />
