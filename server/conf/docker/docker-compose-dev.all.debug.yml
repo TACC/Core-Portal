@@ -1,7 +1,7 @@
 # This compose file is useful for testing https.
 # The .env file sets ENVVARS for the Docker CLI used by this compose file.
 ---
-version: "3"
+version: "3.8"
 services:
   cms:
     image: taccwma/frontera-cms:c0173cc

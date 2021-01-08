@@ -1,6 +1,6 @@
 # This compose file is useful for testing https
 ---
-version: "3"
+version: "3.8"
 services:
     django:
       build:
