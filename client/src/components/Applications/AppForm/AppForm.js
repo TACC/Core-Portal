@@ -90,11 +90,7 @@ const AppDetail = () => {
 
   return (
     <>
-      {!app && (
-        <div id="appDetail-wrapper" className="has-message">
-          <AppPlaceholder apps={hasApps} />
-        </div>
-      )}
+      {!app && <AppPlaceholder apps={hasApps} />}
       {app.appType === 'html' ? (
         <div id="appDetail-wrapper" className="has-external-app">
           {parse(app.html)}
