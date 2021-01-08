@@ -104,6 +104,8 @@ ngrok http 443
 For your browser to open your local development environment, you need to configure your computer to accept the development environment's self-signed certificates.
 Every file needed is in `conf/nginx/certificates`.
 
+NOTE: This may require a computer restart to take effect.
+
 #### OSX
 
 1. Open mac's Keychain Access

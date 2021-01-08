@@ -227,6 +227,11 @@ export default function projects(state = initialState, action) {
           result: null
         }
       };
+    case 'PROJECTS_CLEAR_OPERATION':
+      return {
+        ...state,
+        operation: initialState.operation
+      };
     default:
       return state;
   }

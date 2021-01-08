@@ -40,6 +40,12 @@ const DataFilesSidebar = ({ className, readOnly }) => {
 
   const toggleAddProjectModal = () => {
     dispatch({
+      type: 'USERS_CLEAR_SEARCH'
+    });
+    dispatch({
+      type: 'PROJECTS_CLEAR_OPERATION'
+    });
+    dispatch({
       type: 'PROJECTS_MEMBER_LIST_SET',
       payload: [{ user, access: 'owner' }]
     });

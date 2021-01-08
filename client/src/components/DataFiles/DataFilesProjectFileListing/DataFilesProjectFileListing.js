@@ -26,6 +26,9 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   const onManage = () => {
     dispatch({
+      type: 'USERS_CLEAR_SEARCH'
+    });
+    dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'manageproject', props: {} }
     });
