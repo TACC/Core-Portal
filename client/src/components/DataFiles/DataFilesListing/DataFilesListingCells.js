@@ -113,8 +113,8 @@ FileNavCell.propTypes = {
   format: PropTypes.string.isRequired,
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
-  href: PropTypes.string.isRequired
-  isPublic: PropTypes.bool,
+  href: PropTypes.string.isRequired,
+  isPublic: PropTypes.bool
 };
 FileNavCell.defaultProps = {
   isPublic: false
