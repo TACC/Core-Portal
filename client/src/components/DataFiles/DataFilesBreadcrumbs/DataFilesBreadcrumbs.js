@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
 import { findSystemDisplayName } from 'utils/systems';
+import findProjectTitle from '../../../utils/projects';
 
 const BreadcrumbLink = ({
   api,
@@ -84,13 +85,6 @@ const DataFilesBreadcrumbs = ({
   const pathComps = [];
   const systemList = useSelector(state => state.systems.systemList);
   const projectsList = useSelector(state => state.projects.listing.projects);
-  const findProjectTitle = projectSystem => {
-    const matching = projectsList.find(project => project.id === projectSystem);
-    if (matching) {
-      return matching.description;
-    }
-    return 'Shared Workspaces';
-  };
 
   path
     .split('/')
@@ -105,7 +99,7 @@ const DataFilesBreadcrumbs = ({
   const root = (() => {
     switch (scheme) {
       case 'projects':
-        return findProjectTitle(system);
+        return findProjectTitle(projectsList, system);
       default:
         return findSystemDisplayName(systemList, system);
     }

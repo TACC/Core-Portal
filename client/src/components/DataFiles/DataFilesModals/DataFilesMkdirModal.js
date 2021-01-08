@@ -6,16 +6,25 @@ import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
 import { findSystemDisplayName } from 'utils/systems';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import findProjectTitle from '../../../utils/projects';
 
 const DataFilesMkdirModal = () => {
   const dispatch = useDispatch();
   const systemList = useSelector(state => state.systems.systemList);
+  const projectsList = useSelector(state => state.projects.listing.projects);
   const isOpen = useSelector(state => state.files.modals.mkdir);
   const params = useSelector(
     state => state.files.params.FilesListing,
     shallowEqual
   );
-  const systemDisplayName = findSystemDisplayName(systemList, params.system);
+  const systemDisplayName = (() => {
+    switch (params.scheme) {
+      case 'projects':
+        return findProjectTitle(projectsList, params.system);
+      default:
+        return findSystemDisplayName(systemList, params.system);
+    }
+  })();
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
