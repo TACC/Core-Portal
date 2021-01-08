@@ -44,14 +44,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-
-      /* Contain children to cell size and add ellipsis to overflow by default */
-      /* HACK: The selector part that avoids affecting `.loading-icon` couples the components InfiniteScrollTable and LoadingSpinner */
-      & > :only-child:not(.loading-icon) {
-        display: inline-block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
     }
 
     .-status {
@@ -59,11 +51,8 @@
       td {
         padding-top: 0.5em;
         padding-bottom: 0.5em;
-        text-align: justify;
+        text-align: center;
       }
-    }
-    .-status__message {
-      text-align: center;
     }
 
     tr:not([class=-status]) td {
@@ -79,8 +68,6 @@
   /* Allow cell width to propogate to common inline elements */
   & td > a,
   & td > span {
-    display: inline-block;
-
     /* Stretch cell content to fit available space */
     /* WARNING: Unexpected behavior with child text nodes `<td>…<a>…</a>…</td>` */
     width: 100%;
