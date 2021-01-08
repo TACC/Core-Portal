@@ -31,6 +31,8 @@ def get_user_storage_systems(username, systems):
         :param obj systems: systems object from portal settings
         :returns: filtered object of systems to setup for user
     """
+    if not username:
+        return {}
     try:
         user_allocations = get_allocations(username)
     except Exception:
