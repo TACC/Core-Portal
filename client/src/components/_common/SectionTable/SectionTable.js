@@ -65,7 +65,6 @@ function SectionTable({
 }) {
   let styleName = '';
   const styleNameList = ['root'];
-  const shouldBuildHeader = header || headerActions;
   const TagName = tagName;
 
   if (shouldScroll) styleNameList.push('should-scroll');
@@ -85,18 +84,14 @@ function SectionTable({
       {manualHeader ? (
         <>{manualHeader}</>
       ) : (
-        <>
-          {shouldBuildHeader && (
-            <SectionHeader
-              styleName="header"
-              className={headerClassName}
-              actions={headerActions}
-              isForTable
-            >
-              {header}
-            </SectionHeader>
-          )}
-        </>
+        <SectionHeader
+          styleName="header"
+          className={headerClassName}
+          actions={headerActions}
+          isForTable
+        >
+          {header}
+        </SectionHeader>
       )}
       {/* This wrapper is the keystone of this component */}
       {/* FAQ: A table can NOT be a flex item; <div> wrap is safest solution */}
