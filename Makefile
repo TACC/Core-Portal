@@ -2,7 +2,6 @@ DOCKERHUB_REPO := taccwma/$(shell cat ./docker_repo.var)
 DOCKER_TAG ?= $(shell git rev-parse --short HEAD)
 DOCKER_IMAGE := $(DOCKERHUB_REPO):$(DOCKER_TAG)
 DOCKER_IMAGE_LATEST := $(DOCKERHUB_REPO):latest
-DOCKER_IMAGE_LOCAL := $(DOCKERHUB_REPO):local
 
 ####
 # `DOCKER_IMAGE_BRANCH` tag is the git tag for the commit if it exists, else the branch on which the commit exists
