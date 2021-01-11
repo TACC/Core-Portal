@@ -76,7 +76,7 @@ export const Layout = ({ page }) => {
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <SectionTable className="allocations-content" shouldScroll>
+            <SectionTable className="allocations-content" contentShouldScroll>
               <AllocationsTable page={page} />
             </SectionTable>
           )}

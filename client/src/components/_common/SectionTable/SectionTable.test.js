@@ -6,7 +6,7 @@ import SectionTable from './SectionTable';
 const TABLE_MARKUP = <table><tbody><tr><td>Table Cell</td></tr></tbody></table>;
 
 export const PARAMETER_CLASS_MAP = {
-  shouldScroll: 'should-scroll'
+  contentShouldScroll: 'should-scroll'
 };
 export const PARAMETERS = [...Object.keys(PARAMETER_CLASS_MAP)];
 

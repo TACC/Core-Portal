@@ -90,7 +90,7 @@ const DataFilesProjectsList = ({ modal }) => {
   }
 
   return (
-    <SectionTable styleName="root" shouldScroll>
+    <SectionTable styleName="root" contentShouldScroll>
       <InfiniteScrollTable
         tableColumns={columns}
         tableData={projects}

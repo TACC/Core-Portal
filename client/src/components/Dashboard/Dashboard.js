@@ -31,7 +31,7 @@ function Dashboard() {
           <SectionTable
             header="System Status"
             className="sysmon-wrapper"
-            shouldScroll
+            contentShouldScroll
           >
             <Sysmon />
           </SectionTable>
@@ -46,7 +46,7 @@ function Dashboard() {
                 View History
               </Link>
             }
-            shouldScroll
+            contentShouldScroll
           >
             <JobsView />
           </SectionTable>
@@ -61,7 +61,7 @@ function Dashboard() {
                 Add Ticket
               </Link>
             }
-            shouldScroll
+            contentShouldScroll
           >
             <Tickets />
           </SectionTable>

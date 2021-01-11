@@ -25,7 +25,7 @@ const JobHistory = ({ className }) => {
   };
 
   return (
-    <SectionTable className={`job-history ${className}`} shouldScroll>
+    <SectionTable className={`job-history ${className}`} contentShouldScroll>
       {loading ? (
         <LoadingSpinner />
       ) : (

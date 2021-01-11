@@ -17,7 +17,7 @@ import './SectionTable.module.css';
  * @example
  * // wrap a table (no header)
  * <SectionTable>
- *   <AnyTableComponent />
+ *   <AnyTableComponent {…} >
  * </SectionTable>
  * @example
  * // wrap a table, prepend a header, apply a className
@@ -25,7 +25,7 @@ import './SectionTable.module.css';
  *   styleName="table-wrapper"
  *   header={<SectionHeader>Heading</SectionHeader>}
  * >
- *   <AnyTableComponent />
+ *   <AnyTableComponent {…} >
  * </SectionTable>
  * @example
  * // automatically build sub-components, with some customization
@@ -34,11 +34,20 @@ import './SectionTable.module.css';
  *   headerStyleName="header"
  *   headerActions={…}
  * >
- *   <AnyTableComponent />
+ *   <AnyTableComponent {…} >
+ * </SectionTable>
+ * @example
+ * // alternate syntax to automatically build content
+ * <SectionTable
+ *   content={
+ *     <AnyTableComponent {…} >
+ *   }
  * </SectionTable>
  * @example
  * // manually build sub-components
  * // WARNING: This component's styles are NOT applied to manual sub-components
+ * // FAQ: The <SectionHeader> offers auto-built header's layout styles
+ * // FAQ: The `o-table-wrap` wrapper mirrors auto-built content's layout fixes
  * <SectionTable
  *   manualHeader={
  *     <SectionHeader
@@ -49,30 +58,51 @@ import './SectionTable.module.css';
  *       Dashboard
  *     </SectionHeader>
  *   }
- * >
- *   <AnyTableComponent />
+ *   manualContent={
+ *     <div class="o-table-wrap">
+ *       <AnyTableComponent {…} >
+ *     </div>
+ *   }
+ * />
+ * @example
+ * // manually build content (alternate method)
+ * // WARNING: This component's styles are NOT applied to manual sub-components
+ * // FAQ: The `o-table-wrap` wrapper mirrors auto-built content's layout fixes
+ * <SectionTable
+ *   <div class="o-table-wrap">
+ *     <AnyTableComponent {…} >
+ *   </div>
  * </SectionTable>
  */
 function SectionTable({
   className,
   children,
+  content,
+  contentClassName,
+  contentShouldScroll,
   header,
   headerActions,
   headerClassName,
+  manualContent,
   manualHeader,
-  shouldScroll,
   tagName
 }) {
   let styleName = '';
   const styleNameList = ['root'];
   const TagName = tagName;
+  const shouldBuildHeader = header || headerClassName || headerActions;
 
-  if (shouldScroll) styleNameList.push('should-scroll');
+  if (contentShouldScroll) styleNameList.push('should-scroll');
 
   // Do not join inside JSX (otherwise arcane styleName error occurs)
   styleName = styleNameList.join(' ');
 
   // Allowing ineffectual prop combinations would lead to confusion
+  if (manualContent && (content || contentClassName || contentShouldScroll)) {
+    throw new Error(
+      'When passing `manualContent`, the following props are ineffectual: `content`, `contentClassName`, `contentShouldScroll`'
+    );
+  }
   if (manualHeader && (header || headerClassName || headerActions)) {
     throw new Error(
       'When passing `manualHeader`, the following props are ineffectual: `header`, `headerClassName`, `headerActions`'
@@ -84,51 +114,73 @@ function SectionTable({
       {manualHeader ? (
         <>{manualHeader}</>
       ) : (
-        <SectionHeader
-          styleName="header"
-          className={headerClassName}
-          actions={headerActions}
-          isForTable
-        >
-          {header}
-        </SectionHeader>
+        shouldBuildHeader && (
+          <SectionHeader
+            styleName="header"
+            className={headerClassName}
+            actions={headerActions}
+            isForTable
+          >
+            {header}
+          </SectionHeader>
+        )
       )}
-      {/* This wrapper is the keystone of this component */}
-      {/* FAQ: A table can NOT be a flex item; <div> wrap is safest solution */}
-      {/* SEE: https://stackoverflow.com/q/41421512/11817077 */}
-      <div styleName="table-wrap">{children}</div>
+      {manualContent ? (
+        <>
+          {manualContent}
+          {children}
+        </>
+      ) : (
+        // This wrapper is the keystone of this component
+        // WARNING: When using `manualContent`, user must implement this feature
+        // FAQ: A table can NOT be a flex item; <div> wrap is safest solution
+        // SEE: https://stackoverflow.com/q/41421512/11817077
+        <div styleName="table-wrap" className={contentClassName}>
+          {content}
+          {children}
+        </div>
+      )}
     </TagName>
   );
 }
 SectionTable.propTypes = {
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
-  /** Component-based table */
+  /** Alternate way to pass `manualContent` and `content` */
+  children: PropTypes.element.isRequired,
+  /** The table content itself (content wrapper built automatically) */
   /* RFE: Ideally, limit this to one `InfiniteScrollTable` or `OtherTable` */
   /* SEE: https://github.com/facebook/react/issues/2979 */
-  children: PropTypes.element.isRequired,
-  /** The table-specific heading */
+  content: PropTypes.node,
+  /** Any additional className(s) for the content element */
+  contentClassName: PropTypes.string,
+  /** Whether to allow content to scroll */
+  contentShouldScroll: PropTypes.bool,
+  /** The table header text (header element built automatically) */
   header: PropTypes.node,
-  /** Any section actions for the header element */
+  /** Any table actions for the header element */
   headerActions: PropTypes.node,
   /** Any additional className(s) for the header element */
   headerClassName: PropTypes.string,
-  /** The section header element (built by user) */
-  /* RFE: Ideally, limit this to one `SectionHeader` */
+  /** The table content (built by user) flag or element */
+  /* RFE: Ideally, limit these to one relevant `Section[…]` component */
   /* SEE: https://github.com/facebook/react/issues/2979 */
+  manualContent: PropTypes.oneOfType([PropTypes.bool, PropTypes.element]),
+  /** The section header (built by user) element */
   manualHeader: PropTypes.element,
-  /** Whether to allow wrapper element to scroll */
-  shouldScroll: PropTypes.bool,
   /** Override tag of the root element */
   tagName: PropTypes.string
 };
 SectionTable.defaultProps = {
   className: '',
+  content: '',
+  contentClassName: '',
+  contentShouldScroll: false,
   header: '',
   headerActions: '',
   headerClassName: '',
   manualHeader: undefined,
-  shouldScroll: false,
+  manualContent: undefined,
   tagName: 'article'
 };
 
