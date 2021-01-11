@@ -32,7 +32,7 @@ import './Section.module.css';
  *   contentLayoutName="twoColumn"
  * />
  * @example
- * // alternate syntax to automatically build component sub-component
+ * // alternate syntax to automatically build content
  * <Section
  *   contentStyleName="items"
  *   contentLayoutName="twoColumn"
@@ -42,22 +42,22 @@ import './Section.module.css';
  * @example
  * // manually build sub-components
  * // WARNING: This component's styles are NOT applied to manual sub-components
+ * // FAQ: The <SectionHeader> offers auto-built header's layout styles
+ * // FAQ: The <SectionContent> offers auto-built content's layout styles
  * <Section
  *   manualHeader={
- *     <SectionHeader
- *       styleName="header"
- *       actions={…}
- *     >
- *       Dashboard
- *     </SectionHeader>
+ *     <SectionHeader {…} />
  *   }
  *   manualContent={
- *     <SectionContent
- *       styleName="content"
- *       layoutName="twoColumn">
- *       {…}
- *     </SectionContent>
+ *     <SectionContent {…} />
  *   }
+ * />
+ * @example
+ * // manually build content (alternate method)
+ * // WARNING: This component's styles are NOT applied to manual sub-components
+ * // FAQ: The <SectionContent> offers auto-built content's layout options
+ * <Section manualContent>
+ *   <SectionContent {…} />
  * />
  */
 function Section({
@@ -80,6 +80,8 @@ function Section({
   messagesClassName,
   routeName
 }) {
+  const shouldBuildHeader = header || headerClassName || headerActions;
+
   // Allowing ineffectual prop combinations would lead to confusion
   if (manualContent && (content || contentClassName || contentLayoutName)) {
     throw new Error(
@@ -124,13 +126,15 @@ function Section({
       {manualHeader ? (
         <>{manualHeader}</>
       ) : (
-        <SectionHeader
-          styleName="header"
-          className={headerClassName}
-          actions={headerActions}
-        >
-          {header}
-        </SectionHeader>
+        shouldBuildHeader && (
+          <SectionHeader
+            styleName="header"
+            className={headerClassName}
+            actions={headerActions}
+          >
+            {header}
+          </SectionHeader>
+        )
       )}
       {manualContent ? (
         <>
@@ -146,6 +150,7 @@ function Section({
           shouldScroll={contentShouldScroll}
         >
           {content}
+          {children}
         </SectionContent>
       )}
     </section>
@@ -154,7 +159,7 @@ function Section({
 Section.propTypes = {
   /** Name of class to append to body when section is active */
   bodyClassName: PropTypes.string,
-  /** Alias for `manualContent` */
+  /** Alternate way to pass `manualContent` and `content` */
   children: PropTypes.node,
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
@@ -172,11 +177,11 @@ Section.propTypes = {
   headerActions: PropTypes.node,
   /** Any additional className(s) for the header element */
   headerClassName: PropTypes.string,
-  /** The section content element (built by user) */
-  /* RFE: Ideally, limit these to one relevant `Section[…]` */
+  /** The section content (built by user) flag or element */
+  /* RFE: Ideally, limit these to one relevant `Section[…]` component */
   /* SEE: https://github.com/facebook/react/issues/2979 */
-  manualContent: PropTypes.element,
-  /** The section header element (built by user) */
+  manualContent: PropTypes.oneOfType([PropTypes.bool, PropTypes.element]),
+  /** The section header (built by user) element */
   manualHeader: PropTypes.element,
   // /** The page-specific sidebar */
   // sidebar: PropTypes.node,
