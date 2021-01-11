@@ -83,9 +83,12 @@ function Section({
   const shouldBuildHeader = header || headerClassName || headerActions;
 
   // Allowing ineffectual prop combinations would lead to confusion
-  if (manualContent && (content || contentClassName || contentLayoutName)) {
+  if (
+    manualContent &&
+    (content || contentClassName || contentLayoutName || contentShouldScroll)
+  ) {
     throw new Error(
-      'When passing `manualContent`, the following props are ineffectual: `content`, `contentClassName`, `contentLayoutName`'
+      'When passing `manualContent`, the following props are ineffectual: `content`, `contentClassName`, `contentLayoutName`, `contentShouldScroll`'
     );
   }
   if (manualHeader && (header || headerClassName || headerActions)) {
