@@ -10,7 +10,11 @@ import { useSelector } from 'react-redux';
 import './DataFilesSearchbar.module.css';
 
 const DataFilesSearchbar = ({ api, scheme, system, className }) => {
-  const err = useSelector(state => state.files.error.FilesListing !== false);
+  const err = useSelector(
+    state =>
+      state.files.loading.FilesListing === true ||
+      state.files.error.FilesListing !== false
+  );
   const systemList = useSelector(state => state.systems.systemList);
   const [query, setQuery] = useState('');
   const history = useHistory();
