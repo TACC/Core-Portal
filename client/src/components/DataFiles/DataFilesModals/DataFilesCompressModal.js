@@ -12,19 +12,33 @@ import {
 } from 'reactstrap';
 import { LoadingSpinner, FormField, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
-import { isString, chain } from 'lodash';
+import { isString } from 'lodash';
 import { Formik } from 'formik';
 import PropTypes from 'prop-types';
 import * as yup from 'yup';
 import './DataFilesCompressModal.module.scss';
 
-const DataFilesCompressForm = ({ first, formRef }) => {
+const makeDate = () => {
+  const date = new Date();
+  const d = new Date(date);
+  let month = `${d.getMonth() + 1}`;
+  let day = `${d.getDate()}`;
+  const year = d.getFullYear();
+
+  if (month.length < 2) month = `0${month}`;
+  if (day.length < 2) day = `0${day}`;
+
+  return [year, month, day].join('-');
+};
+
+const DataFilesCompressForm = ({ singleFile, formRef }) => {
+  const dateTimeStr = makeDate();
   const initialValues = {
-    filename: `${first}.zip`,
-    filetype: 'zip'
+    filenameDisplay: `${singleFile ? dateTimeStr : ''}`,
+    filetype: '.zip'
   };
   const validationSchema = yup.object().shape({
-    filename: yup.string().required('The filename is required')
+    filenameDisplay: yup.string().required('The filename is required')
   });
 
   return (
@@ -33,39 +47,22 @@ const DataFilesCompressForm = ({ first, formRef }) => {
       initialValues={initialValues}
       validationSchema={validationSchema}
     >
-      {({ values, setFieldValue, ...props }) => {
-        const handleSelectChange = e => {
-          const ext = e.target.value;
-          setFieldValue('filetype', ext);
-          if (!values.filename.includes(ext) && ext === 'tar.gz') {
-            const newFileName = chain(values.filename.split('.'))
-              .initial()
-              .push(ext)
-              .value()
-              .join('.');
-            setFieldValue('filename', newFileName);
-          } else {
-            const newFileName = chain(values.filename.split('.'))
-              .initial()
-              .initial()
-              .push(ext)
-              .value()
-              .join('.');
-            setFieldValue('filename', newFileName);
-          }
+      {({ values, setFieldValue }) => {
+        const handelSelectChange = e => {
+          setFieldValue('filetype', e.target.value);
         };
         return (
           <Form>
-            <FormField label="Filename" name="filename" />
+            <FormField label="Filename" name="filenameDisplay" />
             <FormGroup>
               <Input
                 type="select"
                 name="filetype"
                 bsSize="sm"
-                onChange={handleSelectChange}
+                onChange={handelSelectChange}
               >
-                <option value="zip">zip</option>
-                <option value="tar.gz">tar.gz</option>
+                <option value=".zip">zip</option>
+                <option value=".tar.gz">tar.gz</option>
               </Input>
             </FormGroup>
           </Form>
@@ -75,7 +72,7 @@ const DataFilesCompressForm = ({ first, formRef }) => {
   );
 };
 DataFilesCompressForm.propTypes = {
-  first: PropTypes.string.isRequired,
+  singleFile: PropTypes.bool.isRequired,
   formRef: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Object) })
@@ -134,7 +131,8 @@ const DataFilesCompressModal = () => {
   };
 
   const compressCallback = () => {
-    const { filename } = formRef.current.values;
+    const { filenameDisplay, filetype } = formRef.current.values;
+    const filename = `${filenameDisplay.split(' ').join('')}${filetype}`;
     dispatch({
       type: 'DATA_FILES_COMPRESS',
       payload: { filename, files: selected }
@@ -162,7 +160,7 @@ const DataFilesCompressModal = () => {
       <ModalBody>
         <DataFilesCompressForm
           formRef={formRef}
-          first={(selectedFiles[0] && selectedFiles[0].name) || ''}
+          singleFile={selectedFiles.length === 1}
         />
         <p>
           A job to compress your files will be submitted on your behalf. You can

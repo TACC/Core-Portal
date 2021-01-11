@@ -8,6 +8,9 @@
  */
 export default function getFilePermissions(name, { files, scheme, api }) {
   const isPrivate = ['projects', 'private'].includes(scheme);
+  const isArchive = files[0]
+    ? files[0].name.includes('.zip') || files[0].name.includes('tar.gz')
+    : false;
   switch (name) {
     case 'rename':
       return files.length === 1 && isPrivate && api !== 'googledrive';
@@ -18,13 +21,9 @@ export default function getFilePermissions(name, { files, scheme, api }) {
         api !== 'googledrive'
       );
     case 'extract':
-      return (
-        files.length === 1 &&
-        (files[0].name.includes('.zip') || files[0].name.includes('tar.gz')) &&
-        isPrivate &&
-        api === 'tapis'
-      );
+      return files.length === 1 && isArchive && isPrivate && api === 'tapis';
     case 'compress':
+      return !isArchive && files.length > 0 && isPrivate && api === 'tapis';
     case 'copy':
     case 'move':
     case 'trash':
