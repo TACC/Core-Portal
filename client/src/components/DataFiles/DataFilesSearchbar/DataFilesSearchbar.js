@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import './DataFilesSearchbar.module.css';
 
 const DataFilesSearchbar = ({ api, scheme, system, className }) => {
+  const err = useSelector(state => state.files.error.FilesListing);
   const systemList = useSelector(state => state.systems.systemList);
   const [query, setQuery] = useState('');
   const history = useHistory();
@@ -47,7 +48,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
     >
       <div className="input-group" styleName="query-fieldset">
         <div className="input-group-prepend">
-          <Button type="submit" styleName="submit-button">
+          <Button type="submit" styleName="submit-button" disabled={err}>
             <Icon name="search" styleName="button__icon" />
             <span styleName="button__text">Search</span>
           </Button>
@@ -63,6 +64,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
           placeholder={`Search in ${sectionName}`}
           data-testid="input"
           autoComplete="off"
+          disabled={err}
         />
       </div>
       {hasQuery && (
