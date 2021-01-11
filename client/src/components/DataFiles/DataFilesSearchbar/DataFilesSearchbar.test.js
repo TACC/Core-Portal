@@ -16,7 +16,8 @@ describe('DataFilesSearchbar', () => {
     const store = mockStore({
       systems: systemsFixture,
       files: {
-        error: {}
+        error: {},
+        loading: {}
       }
     });
     const { getByRole } = renderComponent(
@@ -45,7 +46,8 @@ describe('DataFilesSearchbar', () => {
     const store = mockStore({
       systems: systemsFixture,
       files: {
-        error: {}
+        error: {},
+        loading: {}
       }
     });
     const { getByRole, getByTestId, getByPlaceholderText } = renderComponent(
