@@ -35,5 +35,5 @@ stop:
 	docker-compose -f server/conf/docker/docker-compose-dev.all.debug.yml down
 
 .PHONY: stop-full
-stop-full:
+stop-v:
 	docker-compose -f server/conf/docker/docker-compose-dev.all.debug.yml down -v
