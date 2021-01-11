@@ -211,6 +211,7 @@ function TicketCreateForm({
                     size="sm"
                     color="white"
                     data-testid="creating-spinner"
+                    className="ticket-create-spinner"
                   />
                 )}
                 Add Ticket
