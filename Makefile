@@ -11,7 +11,6 @@ DOCKER_IMAGE_BRANCH := $(DOCKERHUB_REPO):$(shell git describe --exact-match --ta
 .PHONY: build
 build:
 	docker-compose -f ./server/conf/docker/docker-compose.yml build
-	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_LOCAL)
 
 .PHONY: build-full
 build-full:
