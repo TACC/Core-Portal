@@ -13,7 +13,12 @@ describe('DataFilesSearchbar', () => {
     // Render the searchbar, enter a query string, and submit form
     const history = createMemoryHistory();
     history.push('/workbench/data/api/scheme/system/path');
-    const store = mockStore({systems: systemsFixture});
+    const store = mockStore({
+      systems: systemsFixture,
+      files: {
+        error: {}
+      }
+    });
     const { getByRole } = renderComponent(
       <DataFilesSearchbar
         api="test-api"
@@ -37,7 +42,12 @@ describe('DataFilesSearchbar', () => {
   it('has expected elements', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/api/scheme/system/path?query_string=testquery');
-    const store = mockStore({systems: systemsFixture});
+    const store = mockStore({
+      systems: systemsFixture,
+      files: {
+        error: {}
+      }
+    });
     const { getByRole, getByTestId, getByPlaceholderText } = renderComponent(
       <DataFilesSearchbar
         api="tapis"
