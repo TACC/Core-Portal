@@ -18,14 +18,15 @@
 @import url('./elements/text-semantics.css');
 
 /* OBJECTS */
-/* NOTE: For the most part, allow React components to explicitely import as needed */
+/* Usually, allow React component CSS modules to explicitely import as needed */
 @import url('./objects/o-fixed-header-table.css');
+@import url('./objects/o-flex-item-table-wrap.css');
 
 /* COMPONENTS */
-/* NOTE: For the most part, allow React components to explicitely import as needed */
+/* Usually, allow React component CSS modules to explicitely import as needed */
 @import url('./components/bootstrap.form.css');
 
 /* TRUMPS */
-/* NOTE: For the most part, allow React components to explicitely import as needed */
+/* Usually, allow React component CSS modules to explicitely import as needed */
 @import url('./trumps/icon.css');
 @import url('./trumps/bootstrap.css');

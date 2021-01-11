@@ -7,24 +7,9 @@
 
 /* Elements */
 
-/* stylelint-disable selector-pseudo-class-no-unknown */
-.table-wrap,
-/* TODO: Create a global `o-table-wrap` */
-:global(.o-table-wrap) {
-  flex-grow: 1;
-
-  position: relative;
+.table-wrap {
+  composes: o-flex-item-table-wrap from '../../../styles/objects/o-flex-item-table-wrap.css';
 }
-.table-wrap > table,
-/* TODO: Create a global `o-table-wrap` */
-:global(.o-table-wrap) > table {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-/* stylelint-enable selector-pseudo-class-no-unknown */
 
 /* Elements: Sub-Components */
 /* CAVEAT: These are only applied to automatically-built sub-components */

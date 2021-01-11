@@ -47,7 +47,7 @@ import './SectionTable.module.css';
  * // manually build sub-components
  * // WARNING: This component's styles are NOT applied to manual sub-components
  * // FAQ: The <SectionHeader> offers auto-built header's layout styles
- * // FAQ: The `o-table-wrap` wrapper mirrors auto-built content's layout fixes
+ * // FAQ: The `o-flex-item-table-wrap` mirrors auto-built content layout fixes
  * <SectionTable
  *   manualHeader={
  *     <SectionHeader
@@ -59,7 +59,7 @@ import './SectionTable.module.css';
  *     </SectionHeader>
  *   }
  *   manualContent={
- *     <div class="o-table-wrap">
+ *     <div class="o-flex-item-table-wrap">
  *       <AnyTableComponent {…} >
  *     </div>
  *   }
@@ -67,9 +67,9 @@ import './SectionTable.module.css';
  * @example
  * // manually build content (alternate method)
  * // WARNING: This component's styles are NOT applied to manual sub-components
- * // FAQ: The `o-table-wrap` wrapper mirrors auto-built content's layout fixes
+ * // FAQ: The `o-flex-item-table-wrap` mirrors auto-built content layout fixes
  * <SectionTable
- *   <div class="o-table-wrap">
+ *   <div class="o-flex-item-table-wrap">
  *     <AnyTableComponent {…} >
  *   </div>
  * </SectionTable>

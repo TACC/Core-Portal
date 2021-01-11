@@ -79,7 +79,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           system={system}
           styleName="searchbar"
         />
-        <div className="o-table-wrap">
+        <div className="o-flex-item-table-wrap">
           <DataFilesListing
             api="tapis"
             scheme="projects"

@@ -80,7 +80,7 @@ const DataFilesSwitch = React.memo(() => {
                   system={params.system}
                   styleName="searchbar"
                 />
-                <div className="o-table-wrap">
+                <div className="o-flex-item-table-wrap">
                   <DataFilesListing
                     api={params.api}
                     scheme={params.scheme}
