@@ -23,6 +23,10 @@
   border-top: var(--global-border-width--normal) solid var(--global-color-primary--dark);
 }
 
+.searchbar {
+  padding-bottom: 15px;
+}
+
 .controls {
   display: flex;
   align-items: flex-start;

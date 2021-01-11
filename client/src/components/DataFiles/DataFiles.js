@@ -18,6 +18,7 @@ import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
 import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
+import DataFilesSearchbar from './DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
@@ -71,13 +72,23 @@ const DataFilesSwitch = React.memo(() => {
             }
           });
           return (
-            <SectionTable styleName="content">
-              <DataFilesListing
-                api={params.api}
-                scheme={params.scheme}
-                system={params.system}
-                path={params.path || '/'}
-              />
+            <SectionTable styleName="content" manualContent>
+              <>
+                <DataFilesSearchbar
+                  api={params.api}
+                  scheme={params.scheme}
+                  system={params.system}
+                  styleName="searchbar"
+                />
+                <div className="o-table-wrap">
+                  <DataFilesListing
+                    api={params.api}
+                    scheme={params.scheme}
+                    system={params.system}
+                    path={params.path || '/'}
+                  />
+                </div>
+              </>
             </SectionTable>
           );
         }}

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import { LoadingSpinner, SectionMessage, SectionTable } from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
+import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({ system, path }) => {
@@ -67,16 +68,25 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           </Button>
         </div>
       }
+      manualContent
     >
       <>
         {/* WARNING: This unique description element could become (A) part of the <SectionTable>'s header (thus becoming part of the <SectionHeader>), (B) an independent component <SectionDescription>, or (C) both "A" and "B" */}
         <div styleName="description">{metadata.description}</div>
-        <DataFilesListing
+        <DataFilesSearchbar
           api="tapis"
           scheme="projects"
           system={system}
-          path={path || '/'}
+          styleName="searchbar"
         />
+        <div className="o-table-wrap">
+          <DataFilesListing
+            api="tapis"
+            scheme="projects"
+            system={system}
+            path={path || '/'}
+          />
+        </div>
       </>
     </SectionTable>
   );
