@@ -19,6 +19,7 @@
 .copy-button.is-copied:focus,
 .copy-button.is-copied:active {
   background-color: var(--global-color-success--normal);
+  color: var(--global-color-primary--xx-light);
 }
 
 .button__icon {
