@@ -6,8 +6,6 @@ import { LoadingSpinner } from '_common';
 import { findSystemDisplayName } from 'utils/systems';
 import { FileLengthCell } from '../../DataFilesListing/DataFilesListingCells';
 
-import './DataFilesUploadModalListingTable.module.scss';
-
 const DataFilesUploadStatus = ({ i, removeCallback }) => {
   const status = useSelector(state => state.files.operationStatus.upload[i]);
   switch (status) {
