@@ -11,26 +11,28 @@ const TextCopyFieldButton = ({ isEmpty }) => {
   const stateDuration = 1; // second(s)
   const stateTimeout = transitionDuration + stateDuration; // second(s)
 
-  const buttonStyleName = 'copy-button';
-  const [styleName, setStyleName] = useState(buttonStyleName);
+  const [isCopied, setIsCopied] = useState(false);
 
   const onCopy = useCallback(() => {
-    setStyleName(`${buttonStyleName} is-copied`);
+    setIsCopied(true);
 
     const timeout = setTimeout(() => {
-      setStyleName(buttonStyleName);
+      setIsCopied(false);
       clearTimeout(timeout);
     }, stateTimeout * 1000);
-  }, [styleName, setStyleName]);
+  }, [isCopied, setIsCopied]);
 
   return (
     <Button
-      styleName={styleName}
+      styleName={`copy-button ${isCopied ? 'is-copied' : ''}`}
       onClick={onCopy}
       disabled={isEmpty}
       type="button"
     >
-      <Icon name="link" styleName="button__icon" />
+      <Icon
+        name={isCopied ? 'approved-reverse' : 'link'}
+        styleName="button__icon"
+      />
       <span styleName="button__text">Copy</span>
     </Button>
   );

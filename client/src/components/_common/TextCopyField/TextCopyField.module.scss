@@ -18,8 +18,7 @@
 .copy-button.is-copied:hover,
 .copy-button.is-copied:focus,
 .copy-button.is-copied:active {
-  background-color: green;
-  color: white;
+  background-color: var(--global-color-success--normal);
 }
 
 .button__icon {
