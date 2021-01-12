@@ -10,6 +10,8 @@ allowed_actions = {
                 'move', 'rename', 'trash', 'preview', 'upload'],
     'public': ['listing', 'search', 'copy', 'download', 'preview'],
     'community': ['listing', 'search', 'copy', 'download', 'preview'],
+    'projects': ['listing', 'search', 'copy', 'download', 'mkdir',
+                  'move', 'rename', 'trash', 'preview', 'upload']
 }
 
 

@@ -147,13 +147,6 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
       <ModalFooter>
         <Button className="data-files-btn" onClick={uploadStart}>
           Upload Selected
-        </Button>{' '}
-        <Button
-          color="secondary"
-          className="data-files-btn-cancel"
-          onClick={toggle}
-        >
-          Close
         </Button>
       </ModalFooter>
     </Modal>
