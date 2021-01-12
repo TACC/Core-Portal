@@ -24,7 +24,6 @@
   padding-bottom: 0.75rem; /* ~10px * design * 1.2 design-to-app ratio */
 
   display: flex;
-  flex-wrap: wrap; /* prevent breadcrumbs and action buttons from colliding */
   justify-content: space-between;
   align-items: flex-end;
 }
