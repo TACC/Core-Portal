@@ -119,7 +119,8 @@ function SectionTable({
             styleName="header"
             className={headerClassName}
             actions={headerActions}
-            isForTable
+            // XXX: Only Dashboard needs the stlye this adds
+            // isForTable
           >
             {header}
           </SectionHeader>

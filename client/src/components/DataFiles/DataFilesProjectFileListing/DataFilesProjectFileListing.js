@@ -70,7 +70,15 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       }
       manualContent
     >
-      <>
+      <div
+        style={{
+          overflowY: 'scroll',
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%'
+        }}
+      >
         {/* WARNING: This unique description element could become (A) part of the <SectionTable>'s header (thus becoming part of the <SectionHeader>), (B) an independent component <SectionDescription>, or (C) both "A" and "B" */}
         <div styleName="description">{metadata.description}</div>
         <DataFilesSearchbar
@@ -87,7 +95,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
             path={path || '/'}
           />
         </div>
-      </>
+      </div>
     </SectionTable>
   );
 };
