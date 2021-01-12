@@ -4,9 +4,8 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
-import { findSystemDisplayName } from 'utils/systems';
+import { findSystemOrProjectDisplayName } from 'utils/systems';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import findProjectTitle from '../../../utils/projects';
 
 const DataFilesMkdirModal = () => {
   const dispatch = useDispatch();
@@ -17,14 +16,12 @@ const DataFilesMkdirModal = () => {
     state => state.files.params.FilesListing,
     shallowEqual
   );
-  const systemDisplayName = (() => {
-    switch (params.scheme) {
-      case 'projects':
-        return findProjectTitle(projectsList, params.system);
-      default:
-        return findSystemDisplayName(systemList, params.system);
-    }
-  })();
+  const systemDisplayName = findSystemOrProjectDisplayName(
+    params.scheme,
+    systemList,
+    projectsList,
+    params.system
+  );
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -78,8 +75,7 @@ const DataFilesMkdirModal = () => {
         >
           <Form>
             <ModalHeader toggle={toggle}>
-              Creating folder in {systemDisplayName}
-              {params.path || '/'}
+              Creating folder in {systemDisplayName}/{params.path}
             </ModalHeader>
             <ModalBody>
               <FormField

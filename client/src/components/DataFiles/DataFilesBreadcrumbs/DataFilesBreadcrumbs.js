@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
-import { findSystemDisplayName } from 'utils/systems';
-import findProjectTitle from '../../../utils/projects';
+import { findSystemOrProjectDisplayName } from 'utils/systems';
 
 const BreadcrumbLink = ({
   api,
@@ -96,14 +95,12 @@ const DataFilesBreadcrumbs = ({
       return comp;
     }, '');
 
-  const root = (() => {
-    switch (scheme) {
-      case 'projects':
-        return findProjectTitle(projectsList, system);
-      default:
-        return findSystemDisplayName(systemList, system);
-    }
-  })();
+  const root = findSystemOrProjectDisplayName(
+    scheme,
+    systemList,
+    projectsList,
+    system
+  );
 
   return (
     <div className={`breadcrumbs ${className}`}>
