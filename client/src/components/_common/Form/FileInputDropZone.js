@@ -81,7 +81,7 @@ function FileInputDropZone({
           <strong>or</strong>
           <strong>Drag and Drop</strong>
           <br />
-          {maxSizeMessage}
+          <p>{maxSizeMessage}</p>
         </div>
       )}
       {showFileList && (

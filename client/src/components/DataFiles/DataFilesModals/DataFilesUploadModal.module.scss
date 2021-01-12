@@ -1,15 +1,42 @@
 /* Types */
 .container {
+  display: flex;
+  flex-direction: column;
   &.is-horz {
-    &.is-wide {
-    }
+    &.is-wide,
     &.is-narrow {
+      .dataFilesListing {
+        order: -1;
+      }
+      .compact-view {
+        i,
+        p,
+        strong {
+          display: none;
+        }
+        div {
+          max-height: 80px;
+        }
+      }
     }
   }
   &.is-vert {
     &.is-wide {
     }
     &.is-narrow {
+      .dataFilesListing {
+        order: -1;
+      }
+      .compact-view {
+        i,
+        p,
+        strong {
+          display: none;
+        }
+        div {
+          max-height: 80px;
+        }
+      }
     }
   }
 }

@@ -54,8 +54,6 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
   modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
   modifierClasses.push(DIRECTION_CLASS_MAP[direction || DEFAULT_DIRECTION]);
   const containerStyleNames = ['container', ...modifierClasses].join(' ');
-  const showListing =
-    density === DEFAULT_DENSITY && direction === DEFAULT_DIRECTION;
 
   const history = useHistory();
   const location = useLocation();
@@ -82,6 +80,13 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
       });
   };
 
+  const showListing =
+    uploadedFiles.length > 0 ||
+    (density === DEFAULT_DENSITY && direction === DEFAULT_DIRECTION);
+  const isCompactView =
+    uploadedFiles.length > 0 &&
+    !(density === DEFAULT_DENSITY && direction === DEFAULT_DIRECTION);
+    
   const onClosed = () => {
     setUploadedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
@@ -120,19 +125,20 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
       toggle={toggle}
       onClosed={onClosed}
       size="xl"
-      styleName={containerStyleNames}
       className="dataFilesModal"
     >
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
-      <ModalBody>
-        <FileInputDropZone
-          onSetFiles={selectFiles}
-          onRejectedFiles={onRejectedFiles}
-          maxSize={524288000}
-          maxSizeMessage="Max File Size: 500MB"
-        />
+      <ModalBody styleName={containerStyleNames}>
+        <div styleName={isCompactView ? 'compact-view' : ''}>
+          <FileInputDropZone
+            onSetFiles={selectFiles}
+            onRejectedFiles={onRejectedFiles}
+            maxSize={524288000}
+            maxSizeMessage="Max File Size: 500MB"
+          />
+        </div>
 
-        <div hidden={showListing ? false : uploadedFiles.length === 0}>
+        <div hidden={!showListing} styleName="dataFilesListing">
           <DataFilesUploadModalListingTable
             uploadedFiles={uploadedFiles}
             setUploadedFiles={setUploadedFiles}
