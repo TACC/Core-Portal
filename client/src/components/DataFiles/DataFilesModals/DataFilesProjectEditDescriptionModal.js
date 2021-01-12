@@ -65,7 +65,7 @@ const DataFilesProjectEditDescriptionModal = () => {
     title: Yup.string()
       .min(1)
       .required('Please enter a title.'),
-    description: Yup.string()
+    description: Yup.string().nullable()
   });
 
   return (
