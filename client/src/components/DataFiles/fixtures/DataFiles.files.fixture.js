@@ -29,7 +29,13 @@ const filesFixture = {
         format: 'folder',
         system: 'frontera.home.username',
         mimeType: 'text/directory',
-        type: 'dir'
+        type: 'dir',
+        _links: {
+          self: {
+            href:
+              'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app0.js'
+          }
+        }
       },
       {
         name: '.local',
@@ -40,7 +46,13 @@ const filesFixture = {
         format: 'folder',
         system: 'frontera.home.username',
         mimeType: 'text/directory',
-        type: 'dir'
+        type: 'dir',
+        _links: {
+          self: {
+            href:
+              'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app1.js'
+          }
+        }
       },
       {
         name: '.Trash',
@@ -51,7 +63,13 @@ const filesFixture = {
         format: 'folder',
         system: 'frontera.home.username',
         mimeType: 'text/directory',
-        type: 'dir'
+        type: 'dir',
+        _links: {
+          self: {
+            href:
+              'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app2.js'
+          }
+        }
       },
       {
         name: 'archive',
@@ -62,7 +80,13 @@ const filesFixture = {
         format: 'folder',
         system: 'frontera.home.username',
         mimeType: 'text/directory',
-        type: 'dir'
+        type: 'dir',
+        _links: {
+          self: {
+            href:
+              'https://portals-api.tacc.utexas.edu/files/v2/media/system/cep.storage.community//app3.js'
+          }
+        }
       }
     ],
     modal: []
@@ -108,9 +132,13 @@ const filesFixture = {
     upload: {},
     mkdir: {},
     rename: {},
-    pushKeys: {}
+    pushKeys: {},
+    showpath: {}
   },
-  previewHref: ''
+  preview: {
+    href: '',
+    content: ''
+  }
 };
 
 export default filesFixture;

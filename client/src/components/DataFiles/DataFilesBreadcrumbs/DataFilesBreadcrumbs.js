@@ -6,7 +6,15 @@ import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
 import { findSystemDisplayName } from 'utils/systems';
 
-const BreadcrumbLink = ({ api, scheme, system, path, children, section }) => {
+const BreadcrumbLink = ({
+  api,
+  scheme,
+  system,
+  path,
+  children,
+  section,
+  isPublic
+}) => {
   const dispatch = useDispatch();
   const onClick = e => {
     e.stopPropagation();
@@ -22,13 +30,13 @@ const BreadcrumbLink = ({ api, scheme, system, path, children, section }) => {
       }
     });
   };
-
+  const basePath = isPublic ? '/public-data' : '/workbench/data';
   switch (section) {
     case 'FilesListing':
       return (
         <Link
           className="breadcrumb-link"
-          to={`/workbench/data/${api}/${scheme}/${system}${path}/`}
+          to={`${basePath}/${api}/${scheme}/${system}${path}/`}
         >
           {children}
         </Link>
@@ -56,7 +64,11 @@ BreadcrumbLink.propTypes = {
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
-  children: PropTypes.element.isRequired
+  children: PropTypes.element.isRequired,
+  isPublic: PropTypes.bool
+};
+BreadcrumbLink.defaultProps = {
+  isPublic: false
 };
 
 const DataFilesBreadcrumbs = ({
@@ -65,11 +77,20 @@ const DataFilesBreadcrumbs = ({
   system,
   path,
   section,
+  isPublic,
   className
 }) => {
   const paths = [];
   const pathComps = [];
   const systemList = useSelector(state => state.systems.systemList);
+  const projectsList = useSelector(state => state.projects.listing.projects);
+  const findProjectTitle = projectSystem => {
+    const matching = projectsList.find(project => project.id === projectSystem);
+    if (matching) {
+      return matching.description;
+    }
+    return 'Shared Workspaces';
+  };
 
   path
     .split('/')
@@ -83,12 +104,10 @@ const DataFilesBreadcrumbs = ({
 
   const root = (() => {
     switch (scheme) {
-      case 'private':
-        return findSystemDisplayName(systemList, system);
-      case 'community':
-        return 'Community Data';
+      case 'projects':
+        return findProjectTitle(system);
       default:
-        return null;
+        return findSystemDisplayName(systemList, system);
     }
   })();
 
@@ -100,6 +119,7 @@ const DataFilesBreadcrumbs = ({
         system={system}
         path=""
         section={section}
+        isPublic={isPublic}
       >
         <>{root}</>
       </BreadcrumbLink>
@@ -135,10 +155,12 @@ DataFilesBreadcrumbs.propTypes = {
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
+  isPublic: PropTypes.bool,
   /** Additional className for the root element */
   className: PropTypes.string
 };
 DataFilesBreadcrumbs.defaultProps = {
+  isPublic: false,
   className: ''
 };
 

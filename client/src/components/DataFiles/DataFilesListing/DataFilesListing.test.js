@@ -38,6 +38,9 @@ const initialMockState = {
     reachedEnd: {
       FilesListing: true
     }
+  },
+  systems: {
+    systemList: []
   }
 };
 
