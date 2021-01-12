@@ -3,8 +3,8 @@
 }
 
 .copy-button {
-  // Must equal JS `transitionDuration` value
-  --transition-duration: 0.15s;
+  // May be changed by JavaScript which also needs the value
+  --transition-duration: 0;
 
   transition:
     color var(--transition-duration),

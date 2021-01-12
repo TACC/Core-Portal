@@ -6,7 +6,6 @@ import Icon from '../Icon';
 import './TextCopyField.module.scss';
 
 const TextCopyFieldButton = ({ isEmpty }) => {
-  // Must equal CSS `--transition-duration` value
   const transitionDuration = 0.15; // second(s)
   const stateDuration = 1; // second(s)
   const stateTimeout = transitionDuration + stateDuration; // second(s)
@@ -25,6 +24,10 @@ const TextCopyFieldButton = ({ isEmpty }) => {
   return (
     <Button
       styleName={`copy-button ${isCopied ? 'is-copied' : ''}`}
+      // RFE: Avoid manual JS ↔ CSS sync of transition duration by using:
+      //      - `data-attribute` and `attr()` (pending browser support)
+      //      - PostCSS and JSON variables (pending greater need for this)
+      style={{ '--transition-duration': `${transitionDuration}s` }}
       onClick={onCopy}
       disabled={isEmpty}
       type="button"
