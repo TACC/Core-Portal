@@ -1,33 +1,25 @@
-.root {
-  display: flex;
-}
-
 .input {
   composes: form-control from '../../../styles/components/bootstrap.form.css';
 }
 
-@keyframes copied-anim {
-  0% {
-    background-color: green;
-    color: white;
-  }
-  80% {
-    background-color: green;
-    color: white;
-  }
-  100% {
-    background-color: #F4F4F4;
-    color: #484848;
-  }
-}
-
 .copy-button {
+  // Must equal JS `transitionDuration` value
+  --transition-duration: 0.15s;
+
+  transition:
+    color var(--transition-duration),
+    background-color var(--transition-duration);
+
   composes: c-button--secondary from '../../../styles/components/c-button.css';
 }
 
-.copy-button.copied {
-  animation-name: copied-anim;
-  animation-duration: 2s;
+.copy-button.is-copied,
+// FAQ: The pseudo-classes allow override of Bootstrap styles/selectors
+.copy-button.is-copied:hover,
+.copy-button.is-copied:focus,
+.copy-button.is-copied:active {
+  background-color: green;
+  color: white;
 }
 
 .button__icon {
@@ -37,4 +29,3 @@
 .button__text {
   /* … */
 }
-

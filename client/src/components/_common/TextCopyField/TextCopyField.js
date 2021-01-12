@@ -6,23 +6,29 @@ import Icon from '../Icon';
 import './TextCopyField.module.scss';
 
 const TextCopyFieldButton = ({ isEmpty }) => {
-  const [style, setStyle] = useState('copy-button');
-  const onCopy = useCallback(
-    event => {
-      event.preventDefault();
-      setStyle('copy-button copied');
-      setTimeout(() => {
-        setStyle('copy-button');
-      }, 2000);
-    },
-    [style, setStyle]
-  );
+  // Must equal CSS `--transition-duration` value
+  const transitionDuration = 0.15; // second(s)
+  const stateDuration = 1; // second(s)
+  const stateTimeout = transitionDuration + stateDuration; // second(s)
+
+  const buttonStyleName = 'copy-button';
+  const [styleName, setStyleName] = useState(buttonStyleName);
+
+  const onCopy = useCallback(() => {
+    setStyleName(`${buttonStyleName} is-copied`);
+
+    const timeout = setTimeout(() => {
+      setStyleName(buttonStyleName);
+      clearTimeout(timeout);
+    }, stateTimeout * 1000);
+  }, [styleName, setStyleName]);
 
   return (
     <Button
-      styleName={style}
-      onClick={event => onCopy(event)}
+      styleName={styleName}
+      onClick={onCopy}
       disabled={isEmpty}
+      type="button"
     >
       <Icon name="link" styleName="button__icon" />
       <span styleName="button__text">Copy</span>
@@ -45,7 +51,7 @@ const TextCopyField = ({ value, placeholder }) => {
   };
 
   return (
-    <div className="input-group" styleName="root">
+    <div className="input-group">
       <div className="input-group-prepend">
         <CopyToClipboard text={value}>
           <TextCopyFieldButton isEmpty={isEmpty} />
