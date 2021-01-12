@@ -86,7 +86,6 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
   const isCompactView =
     uploadedFiles.length > 0 &&
     !(density === DEFAULT_DENSITY && direction === DEFAULT_DIRECTION);
-    
   const onClosed = () => {
     setUploadedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
