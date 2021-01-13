@@ -3,10 +3,10 @@ services:
   nginx:
     image: nginx
     volumes:
-      - /etc/ssl/dev.cep.tacc.utexas.edu.cer:/etc/ssl/certs/portal.cer
-      - /etc/ssl/dev.cep.tacc.utexas.edu.key:/etc/ssl/private/portal.key
+      - /etc/ssl/certs/dev.cep.tacc.utexas.edu.cer:/etc/ssl/certs/portal.cer
+      - /etc/ssl/private/dev.cep.tacc.utexas.edu.key:/etc/ssl/private/portal.key
 
   websockets:
     volumes:
-      - /etc/ssl/dev.cep.tacc.utexas.edu.cer:/etc/ssl/certs/portal.cer
-      - /etc/ssl/dev.cep.tacc.utexas.edu.key:/etc/ssl/private/portal.key
+      - /etc/ssl/certs/dev.cep.tacc.utexas.edu.cer:/etc/ssl/certs/portal.cer
+      - /etc/ssl/private/dev.cep.tacc.utexas.edu.key:/etc/ssl/private/portal.key
