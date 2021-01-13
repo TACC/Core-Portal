@@ -89,7 +89,9 @@ const ToastMessage = ({ notification }) => {
             />
           </div>
           <div className="notification-toast-content">
-            <span>{getToastMessage(notification, systemList, projectList)}</span>
+            <span>
+              {getToastMessage(notification, systemList, projectList)}
+            </span>
           </div>
         </>
       )}
@@ -138,7 +140,13 @@ export const getToastMessage = (
         message ? message.toLowerCase() : 'session ready to view.'
       }`;
     case 'data_files': {
-      return OPERATION_MAP.toastMap(operation, status, systemList, projectList, extra);
+      return OPERATION_MAP.toastMap(
+        operation,
+        status,
+        systemList,
+        projectList,
+        extra
+      );
     }
     default:
       return message;
