@@ -75,6 +75,7 @@ const NotificationToast = () => {
 
 const ToastMessage = ({ notification }) => {
   const systemList = useSelector(state => state.systems.systemList);
+  const projectList = useSelector(state => state.projects.listing.projects);
   return (
     <>
       {notification && (
@@ -88,7 +89,7 @@ const ToastMessage = ({ notification }) => {
             />
           </div>
           <div className="notification-toast-content">
-            <span>{getToastMessage(notification, systemList)}</span>
+            <span>{getToastMessage(notification, systemList, projectList)}</span>
           </div>
         </>
       )}
@@ -124,7 +125,8 @@ ToastMessage.defaultProps = {
  */
 export const getToastMessage = (
   { extra, event_type: eventType, message, status, operation },
-  systemList
+  systemList,
+  projectList
 ) => {
   switch (eventType) {
     case 'job':
@@ -136,7 +138,7 @@ export const getToastMessage = (
         message ? message.toLowerCase() : 'session ready to view.'
       }`;
     case 'data_files': {
-      return OPERATION_MAP.toastMap(operation, status, systemList, extra);
+      return OPERATION_MAP.toastMap(operation, status, systemList, projectList, extra);
     }
     default:
       return message;

@@ -26,3 +26,14 @@ export function findSystemDisplayName(systemList, system, isRoot) {
   }
   return getSystemName(system);
 }
+
+export function findProjectDisplayName(projectList, system, isRoot) {
+  const matchingProject = projectList.find(s => s.id === system);
+  if (matchingProject) {
+    if (isRoot) {
+      return '/';
+    }
+    return matchingProject.name;
+  }
+  return null;
+}
