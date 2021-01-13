@@ -183,6 +183,7 @@ const DataFilesProjectMembers = ({
             placeholder="Search by name"
             styleName="member-search"
             disabled={loading || mode === 'transfer'}
+            autoComplete="false"
           />
           <datalist id="user-search-list">
             {/* eslint-disable */
