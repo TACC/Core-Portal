@@ -14,16 +14,16 @@ build:
 .PHONY: build-full
 build-full:
 	docker build -t $(DOCKER_IMAGE) --target production -f ./server/conf/docker/Dockerfile .
-	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_LATEST)
-	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_BRANCH)
+	# docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_BRANCH)
 
 .PHONY: publish
 publish:
 	docker push $(DOCKER_IMAGE)
-	docker push $(DOCKER_IMAGE_BRANCH)
+	# docker push $(DOCKER_IMAGE_BRANCH)
 
 .PHONY: publish-latest
 publish-latest:
+	docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_LATEST)
 	docker push $(DOCKER_IMAGE_LATEST)
 
 .PHONY: start
