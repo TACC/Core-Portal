@@ -198,7 +198,7 @@ const DataFilesLinkModal = () => {
               </span>
               <Button
                 className="data-files-btn"
-                color="primary"
+                color="secondary"
                 onClick={onConfirm}
               >
                 Confirm
