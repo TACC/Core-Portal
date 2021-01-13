@@ -8,7 +8,8 @@ import {
   ModalFooter,
   Form,
   FormGroup,
-  Label
+  Label,
+  FormText
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { LoadingSpinner, Message, TextCopyField, InlineMessage } from '_common';
@@ -91,9 +92,9 @@ const DataFilesLinkStatus = ({ status }) => {
     <FormGroup>
       <Label>Link</Label>
       <TextCopyField value={status.url} />
-      <div styleName="help-text">
+      <FormText className="form-field__help" color="muted">
         This link downloads the file without requiring login or an account.
-      </div>
+      </FormText>
     </FormGroup>
   );
 };
