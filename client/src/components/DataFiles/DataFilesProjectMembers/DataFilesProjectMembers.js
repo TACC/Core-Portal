@@ -161,7 +161,7 @@ const DataFilesProjectMembers = ({
         Add Member
       </Label>
       <div styleName="user-search">
-        <div className="input-group">
+        <div className="input-group" styleName="member-search-group">
           <div className="input-group-prepend">
             <Button
               styleName="add-button member-search"
