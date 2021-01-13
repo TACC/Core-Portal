@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { InfiniteScrollTable, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,6 +48,16 @@ const DataFilesProjectMembers = ({
     onTransfer(transferUser);
     setTransferUser(null);
   }, [transferUser, setTransferUser]);
+
+  const formRef = useRef();
+
+  const onAddCallback = useCallback(
+    user => {
+      onAdd(user);
+      formRef.current.reset();
+    },
+    [formRef, onAdd]
+  );
 
   const alreadyMember = user => {
     return members.some(
@@ -161,32 +171,35 @@ const DataFilesProjectMembers = ({
         Add Member
       </Label>
       <div styleName="user-search">
-        <div className="input-group" styleName="member-search-group">
-          <div className="input-group-prepend">
-            <Button
-              styleName="add-button member-search"
-              onClick={() => onAdd({ user: selectedUser, access: 'edit' })}
-              disabled={
-                !selectedUser ||
-                loading ||
-                alreadyMember(selectedUser) ||
-                mode === 'transfer'
-              }
-            >
-              Add
-            </Button>
-          </div>
-          <Input
-            list="user-search-list"
-            type="text"
-            onChange={e => userSearch(e)}
-            placeholder="Search by name"
-            styleName="member-search"
-            disabled={loading || mode === 'transfer'}
-            autoComplete="false"
-          />
-          <datalist id="user-search-list">
-            {/* eslint-disable */
+        <form ref={formRef}>
+          <div className="input-group" styleName="member-search-group">
+            <div className="input-group-prepend">
+              <Button
+                styleName="add-button member-search"
+                onClick={() =>
+                  onAddCallback({ user: selectedUser, access: 'edit' })
+                }
+                disabled={
+                  !selectedUser ||
+                  loading ||
+                  alreadyMember(selectedUser) ||
+                  mode === 'transfer'
+                }
+              >
+                Add
+              </Button>
+            </div>
+            <Input
+              list="user-search-list"
+              type="text"
+              onChange={e => userSearch(e)}
+              placeholder="Search by name"
+              styleName="member-search"
+              disabled={loading || mode === 'transfer'}
+              autoComplete="false"
+            />
+            <datalist id="user-search-list">
+              {/* eslint-disable */
               // Need to replace this component with a generalized solution from FP-743
               userSearchResults
                 .filter(user => !alreadyMember(user))
@@ -194,9 +207,10 @@ const DataFilesProjectMembers = ({
                 <option value={formatUser(user)} key={user.username} />
               ))
               /* eslint-enable */
-            }
-          </datalist>
-        </div>
+              }
+            </datalist>
+          </div>
+        </form>
       </div>
       <InfiniteScrollTable
         tableColumns={isTransferring ? transferColumns : columns}
