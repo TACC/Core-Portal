@@ -6,25 +6,36 @@ import Icon from '../Icon';
 import './TextCopyField.module.scss';
 
 const TextCopyFieldButton = ({ isEmpty }) => {
-  const [style, setStyle] = useState('copy-button');
-  const onCopy = useCallback(
-    event => {
-      event.preventDefault();
-      setStyle('copy-button copied');
-      setTimeout(() => {
-        setStyle('copy-button');
-      }, 2000);
-    },
-    [style, setStyle]
-  );
+  const transitionDuration = 0.15; // second(s)
+  const stateDuration = 1; // second(s)
+  const stateTimeout = transitionDuration + stateDuration; // second(s)
+
+  const [isCopied, setIsCopied] = useState(false);
+
+  const onCopy = useCallback(() => {
+    setIsCopied(true);
+
+    const timeout = setTimeout(() => {
+      setIsCopied(false);
+      clearTimeout(timeout);
+    }, stateTimeout * 1000);
+  }, [isCopied, setIsCopied]);
 
   return (
     <Button
-      styleName={style}
-      onClick={event => onCopy(event)}
+      styleName={`copy-button ${isCopied ? 'is-copied' : ''}`}
+      // RFE: Avoid manual JS ↔ CSS sync of transition duration by using:
+      //      - `data-attribute` and `attr()` (pending browser support)
+      //      - PostCSS and JSON variables (pending greater need for this)
+      style={{ '--transition-duration': `${transitionDuration}s` }}
+      onClick={onCopy}
       disabled={isEmpty}
+      type="button"
     >
-      <Icon name="link" styleName="button__icon" />
+      <Icon
+        name={isCopied ? 'approved-reverse' : 'link'}
+        styleName="button__icon"
+      />
       <span styleName="button__text">Copy</span>
     </Button>
   );
@@ -45,7 +56,7 @@ const TextCopyField = ({ value, placeholder }) => {
   };
 
   return (
-    <div className="input-group" styleName="root">
+    <div className="input-group">
       <div className="input-group-prepend">
         <CopyToClipboard text={value}>
           <TextCopyFieldButton isEmpty={isEmpty} />
