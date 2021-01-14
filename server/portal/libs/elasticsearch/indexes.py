@@ -37,7 +37,7 @@ def setup_indexes(doc_type, reindex=False, force=False):
         # If an index exists under the alias and force=True, delete any indices
         # with that alias.
         while index.exists():
-            Index(index.get_alias().keys()[0]).delete(ignore=404)
+            Index(list(index.get_alias().keys())[0]).delete(ignore=404)
             index = Index(alias)
         # Create a new index with the provided name.
         index = Index(indexName)
