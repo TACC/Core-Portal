@@ -9,6 +9,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden
 from requests.exceptions import HTTPError
 from portal.views.base import BaseApiView
+from portal.libs.agave.utils import service_account
 from portal.apps.datafiles.handlers.tapis_handlers import (tapis_get_handler,
                                                            tapis_put_handler,
                                                            tapis_post_handler)
@@ -33,28 +34,30 @@ class SystemListingView(BaseApiView):
         portal_systems = settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
         local_systems = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
 
-        user_systems = get_user_storage_systems(request.user.username, local_systems)
         # compare available storage systems to the systems a user can access
         response = {'system_list': []}
-        for system_name, details in user_systems.items():
-            response['system_list'].append(
-                {
-                    'name': details['name'],
-                    'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
-                    'scheme': 'private',
-                    'api': 'tapis',
-                    'icon': details['icon']
-                }
-            )
+        if request.user.is_authenticated:
+            user_systems = get_user_storage_systems(request.user.username, local_systems)
+            for system_name, details in user_systems.items():
+                response['system_list'].append(
+                    {
+                        'name': details['name'],
+                        'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
+                        'scheme': 'private',
+                        'api': 'tapis',
+                        'icon': details['icon']
+                    }
+                )
+            default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
+            response['default_host'] = default_system['host']
         response['system_list'] += portal_systems
-        default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
-        response['default_host'] = default_system['host']
         return JsonResponse(response)
 
 
 @method_decorator(login_required, name='dispatch')
 class SystemDefinitionView(BaseApiView):
     """Get definitions for individual systems"""
+
     def get(self, request, systemId):
         return JsonResponse(request.user.agave_oauth.client.systems.get(systemId=systemId))
 
@@ -64,7 +67,14 @@ class TapisFilesView(BaseApiView):
         try:
             client = request.user.agave_oauth.client
         except AttributeError:
-            client = None
+            # Make sure that we only let unauth'd users see public systems
+            if next(sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
+                    if sys['system'] == system and sys['scheme'] == 'public'):
+                client = service_account()
+            else:
+                return JsonResponse(
+                    {'message': 'This data requires authentication to view.'},
+                    status=403)
         try:
             METRICS.info("user:{} op:{} api:tapis scheme:{} "
                          "system:{} path:{}".format(request.user.username,
@@ -134,11 +144,11 @@ class TapisFilesView(BaseApiView):
         try:
             METRICS.info("user:{} op:{} api:tapis scheme:{} "
                          "system:{} path:{} filename:{}".format(request.user.username,
-                                                             operation,
-                                                             scheme,
-                                                             system,
-                                                             path,
-                                                             body['uploaded_file'].name))
+                                                                operation,
+                                                                scheme,
+                                                                system,
+                                                                path,
+                                                                body['uploaded_file'].name))
 
             response = tapis_post_handler(client, scheme, system, path, operation, body=body)
             operation in NOTIFY_ACTIONS and \
