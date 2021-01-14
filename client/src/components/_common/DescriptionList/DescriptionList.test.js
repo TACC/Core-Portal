@@ -46,7 +46,7 @@ describe('Description List', () => {
         'Frodo Baggins',
         'Samwise Gamgee',
         'Meriadoc Brandybuck',
-        'Peregrin'
+        'Peregrin Took'
       ]
     }
     const { findAllByTestId } = render(<DescriptionList data={dataWithArray} />);
