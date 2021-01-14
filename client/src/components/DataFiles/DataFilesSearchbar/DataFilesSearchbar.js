@@ -68,7 +68,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
           placeholder={`Search in ${sectionName}`}
           data-testid="input"
           autoComplete="off"
-          disabled={err}
+          disabled={disabled}
         />
       </div>
       {hasQuery && (
