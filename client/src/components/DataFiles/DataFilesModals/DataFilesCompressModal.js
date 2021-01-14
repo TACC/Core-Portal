@@ -8,7 +8,8 @@ import {
   ModalFooter,
   Form,
   Input,
-  FormGroup
+  FormGroup,
+  InputGroupAddon
 } from 'reactstrap';
 import { LoadingSpinner, FormField, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -53,17 +54,25 @@ const DataFilesCompressForm = ({ singleFile, formRef }) => {
         };
         return (
           <Form>
-            <FormField label="Filename" name="filenameDisplay" />
             <FormGroup>
-              <Input
-                type="select"
-                name="filetype"
-                bsSize="sm"
-                onChange={handelSelectChange}
-              >
-                <option value=".zip">.zip</option>
-                <option value=".tar.gz">.tar.gz</option>
-              </Input>
+              <FormField
+                label="Filename"
+                name="filenameDisplay"
+                addonType="append"
+                addon={
+                  <InputGroupAddon addonType="append">
+                    <Input
+                      type="select"
+                      name="filetype"
+                      bsSize="sm"
+                      onChange={handelSelectChange}
+                    >
+                      <option value=".zip">.zip</option>
+                      <option value=".tar.gz">.tar.gz</option>
+                    </Input>
+                  </InputGroupAddon>
+                }
+              />
             </FormGroup>
           </Form>
         );
