@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import DescriptionList, * as DL from './DescriptionList';
+import renderComponent from 'utils/testing';
 
 const DATA = {
   Username: 'bobward500',
@@ -37,5 +38,21 @@ describe('Description List', () => {
     const className = DL.DENSITY_CLASS_MAP[density || DL.DEFAULT_DENSITY];
     expect(list).toBeDefined();
     expect(list.className).toMatch(className);
+  });
+
+  it('renders multiple <dd> terms when value is an Array', async () => {
+    const dataWithArray = {
+      Hobbits: [
+        'Frodo Baggins',
+        'Samwise Gamgee',
+        'Meriadoc Brandybuck',
+        'Peregrin Took'
+      ]
+    }
+    const { findAllByTestId } = render(<DescriptionList data={dataWithArray} />);
+    const keys = await findAllByTestId('key');
+    const values = await findAllByTestId('value');
+    expect(keys.length).toEqual(1)
+    expect(values.length).toEqual(4)
   });
 });
