@@ -61,8 +61,8 @@ const DataFilesCompressForm = ({ singleFile, formRef }) => {
                 bsSize="sm"
                 onChange={handelSelectChange}
               >
-                <option value=".zip">zip</option>
-                <option value=".tar.gz">tar.gz</option>
+                <option value=".zip">.zip</option>
+                <option value=".tar.gz">.tar.gz</option>
               </Input>
             </FormGroup>
           </Form>
