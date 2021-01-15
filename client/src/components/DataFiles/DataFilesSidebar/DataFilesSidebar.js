@@ -74,12 +74,12 @@ const DataFilesSidebar = ({ readOnly }) => {
               color="primary"
               id="data-files-add"
               className="data-files-btn"
-              disabled={disabled}
+              disabled={err !== false || api === 'googledrive'}
             >
               + Add
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={toggleMkdirModal} disabled={readOnly}>
+              <DropdownItem onClick={toggleMkdirModal} disabled={disabled}>
                 <span styleName={writeItemStyle}>
                   <i className="icon-folder" /> Folder
                 </span>
