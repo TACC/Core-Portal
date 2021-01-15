@@ -16,7 +16,7 @@ import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 import './DataFilesListing.module.scss';
 
-const DataFilesListing = ({ api, scheme, system, path }) => {
+const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   // Redux hooks
   const dispatch = useDispatch();
   const queryString = parse(useLocation().search).query_string;
@@ -26,7 +26,8 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
   );
 
   const showViewPath = useSelector(
-    state => state.workbench && state.workbench.config.viewPath
+    state =>
+      api === 'tapis' && state.workbench && state.workbench.config.viewPath
   );
 
   const scrollBottomCallback = useCallback(() => {
@@ -69,6 +70,7 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
           scheme={scheme}
           length={row.original.length}
           href={row.original._links.self.href}
+          isPublic={isPublic}
         />
       );
     },
@@ -123,12 +125,14 @@ const DataFilesListing = ({ api, scheme, system, path }) => {
 
   return (
     <div styleName="root">
-      <DataFilesSearchbar
-        api={api}
-        scheme={scheme}
-        system={system}
-        styleName="searchbar"
-      />
+      {!isPublic && (
+        <DataFilesSearchbar
+          api={api}
+          scheme={scheme}
+          system={system}
+          styleName="searchbar"
+        />
+      )}
       <div styleName="file-container">
         <DataFilesTable
           data={files}
@@ -145,7 +149,11 @@ DataFilesListing.propTypes = {
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired
+  path: PropTypes.string.isRequired,
+  isPublic: PropTypes.bool
+};
+DataFilesListing.defaultProps = {
+  isPublic: false
 };
 
 export default DataFilesListing;
