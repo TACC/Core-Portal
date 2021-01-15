@@ -68,15 +68,11 @@ Styleguide Components.Button
 .c-button--secondary {
   /* OVERWRITE BOOTSTRAP `.btn-secondary` */
   color: var(--global-color-primary--x-dark);
-  background-color: var(--global-color-primary--normal);
-  border-color: var(--global-color-primary--x-dark);
+  background-color: var(--global-color-primary--x-light);
+  border: var(--global-border--normal);
 }
 .c-button--secondary:disabled {
   /* OVERWRITE BOOTSTRAP `.btn-secondary:disabled` */
-  color: var(--global-color-primary--x-dark);
-  background-color: var(--global-color-primary--x-light);
-  border: var(--global-border--normal);
-
   /* FP-546: Implementation of this style (which matches design) is pending:
      - Confirmation from designers (these styles have poor color contrast)
      - Removal of overly-specific `Workbench.scss` styles (requires FP-546)
