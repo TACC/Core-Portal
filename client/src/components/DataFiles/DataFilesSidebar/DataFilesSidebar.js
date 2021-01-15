@@ -74,7 +74,6 @@ const DataFilesSidebar = ({ readOnly }) => {
               color="primary"
               id="data-files-add"
               className="data-files-btn"
-              disabled={err !== false || api === 'googledrive'}
             >
               + Add
             </DropdownToggle>
