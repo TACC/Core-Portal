@@ -53,7 +53,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           projectId,
           data: {
             title: values.title,
-            description: values.description
+            description: values.description || ''
           }
         }
       });
