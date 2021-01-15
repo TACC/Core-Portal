@@ -5,7 +5,7 @@ import { Button } from 'reactstrap';
 import Icon from '../Icon';
 import './TextCopyField.module.scss';
 
-const TextCopyFieldButton = ({ isEmpty }) => {
+const TextCopyField = ({ value, placeholder }) => {
   const transitionDuration = 0.15; // second(s)
   const stateDuration = 1; // second(s)
   const stateTimeout = transitionDuration + stateDuration; // second(s)
@@ -20,32 +20,6 @@ const TextCopyFieldButton = ({ isEmpty }) => {
       clearTimeout(timeout);
     }, stateTimeout * 1000);
   }, [isCopied, setIsCopied]);
-
-  return (
-    <Button
-      styleName={`copy-button ${isCopied ? 'is-copied' : ''}`}
-      // RFE: Avoid manual JS ↔ CSS sync of transition duration by using:
-      //      - `data-attribute` and `attr()` (pending browser support)
-      //      - PostCSS and JSON variables (pending greater need for this)
-      style={{ '--transition-duration': `${transitionDuration}s` }}
-      onClick={onCopy}
-      disabled={isEmpty}
-      type="button"
-    >
-      <Icon
-        name={isCopied ? 'approved-reverse' : 'link'}
-        styleName="button__icon"
-      />
-      <span styleName="button__text">Copy</span>
-    </Button>
-  );
-};
-
-TextCopyFieldButton.propTypes = {
-  isEmpty: PropTypes.bool.isRequired
-};
-
-const TextCopyField = ({ value, placeholder }) => {
   const isEmpty = !value || value.length === 0;
   const onChange = event => {
     // Swallow keyboard events on the Input control, but
@@ -59,7 +33,22 @@ const TextCopyField = ({ value, placeholder }) => {
     <div className="input-group">
       <div className="input-group-prepend">
         <CopyToClipboard text={value}>
-          <TextCopyFieldButton isEmpty={isEmpty} />
+          <Button
+            styleName={`copy-button ${isCopied ? 'is-copied' : ''}`}
+            // RFE: Avoid manual JS ↔ CSS sync of transition duration by using:
+            //      - `data-attribute` and `attr()` (pending browser support)
+            //      - PostCSS and JSON variables (pending greater need for this)
+            style={{ '--transition-duration': `${transitionDuration}s` }}
+            onClick={onCopy}
+            disabled={isEmpty}
+            type="button"
+          >
+            <Icon
+              name={isCopied ? 'approved-reverse' : 'link'}
+              styleName="button__icon"
+            />
+            <span styleName="button__text">Copy</span>
+          </Button>
         </CopyToClipboard>
       </div>
       <input
