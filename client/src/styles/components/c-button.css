@@ -71,7 +71,7 @@ Styleguide Components.Button
   background-color: var(--global-color-primary--normal);
   border-color: var(--global-color-primary--x-dark);
 }
-.btn-secondary:disabled {
+.c-button--secondary:disabled {
   /* OVERWRITE BOOTSTRAP `.btn-secondary:disabled` */
   color: var(--global-color-primary--x-dark);
   background-color: var(--global-color-primary--x-light);
@@ -87,7 +87,7 @@ Styleguide Components.Button
   */
 }
 /* WARNING: These styles are NOT defined by Design (origin: DataFiles) — 2020-07-21 */
-.btn-secondary:not(:disabled):hover {
+.c-button--secondary:not(:disabled):hover {
   /* OVERWRITE BOOTSTRAP `.btn-secondary:not(:disabled):hover` */
   color: var(--global-color-primary--x-dark);
   background-color: var(--global-color-primary--normal);
