@@ -58,7 +58,6 @@ OR
 
     docker exec -it frontera_prtl_django /bin/bash
     python3 manage.py migrate
-    python3 manage.py createsuperuser
     python3 manage.py collectstatic --noinput
 
 #### Initialize the CMS in the `frontera_prtl_cms` container:
@@ -70,7 +69,6 @@ Then, run migrations and `collectstatic`:
 ```
     docker exec -it frontera_prtl_cms /bin/bash
     python3 manage.py migrate
-    python3 manage.py createsuperuser
     python3 manage.py collectstatic --noinput
 ```
 Finally, create a home page in the CMS.
