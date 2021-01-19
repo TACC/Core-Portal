@@ -344,7 +344,7 @@ module.exports = {
     // Require a newline or disallow whitespace before the commas of value lists.
     // 'value-list-comma-newline-before': null,
     // Require a single space or disallow whitespace after the commas of value lists (Autofixable).
-    'value-list-comma-space-after': 'always',
+    // 'value-list-comma-space-after': 'always-single-line',
     // Require a single space or disallow whitespace before the commas of value lists (Autofixable).
     // 'value-list-comma-space-before': null,
     // Limit the number of adjacent empty lines within value lists (Autofixable).
