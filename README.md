@@ -64,7 +64,8 @@ OR
 #### Initialize the CMS in the `frontera_prtl_cms` container:
 First, copy the sample secrets:
 
-    cp /server/conf/cms/secrets.sample.py /server/conf/cms/secrets.py
+    cp server/conf/cms/secrets.sample.py server/conf/cms/secrets.py
+
 Then, run migrations and `collectstatic`:
 ```
     docker exec -it frontera_prtl_cms /bin/bash
