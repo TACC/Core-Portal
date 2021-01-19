@@ -14,7 +14,7 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
       onClick={onClick}
       className="data-files-toolbar-button"
     >
-      {iconName && <i className={iconClassName} data-testid="toolbar-icon" />}
+      <i className={iconClassName} data-testid="toolbar-icon" />
       <span className="toolbar-button-text">{text}</span>
     </Button>
   );

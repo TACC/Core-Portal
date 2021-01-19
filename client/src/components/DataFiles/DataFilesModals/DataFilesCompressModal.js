@@ -12,29 +12,14 @@ import {
 } from 'reactstrap';
 import { LoadingSpinner, FormField, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
-import { isString } from 'lodash';
 import { Formik } from 'formik';
 import PropTypes from 'prop-types';
 import * as yup from 'yup';
 import './DataFilesCompressModal.module.scss';
 
-const makeDate = () => {
-  const date = new Date();
-  const d = new Date(date);
-  let month = `${d.getMonth() + 1}`;
-  let day = `${d.getDate()}`;
-  const year = d.getFullYear();
-
-  if (month.length < 2) month = `0${month}`;
-  if (day.length < 2) day = `0${day}`;
-
-  return [year, month, day].join('-');
-};
-
 const DataFilesCompressForm = ({ singleFile, formRef }) => {
-  const dateTimeStr = makeDate();
   const initialValues = {
-    filenameDisplay: `${singleFile ? dateTimeStr : ''}`,
+    filenameDisplay: `${singleFile || ''}`,
     filetype: '.zip'
   };
   const validationSchema = yup.object().shape({
@@ -48,7 +33,7 @@ const DataFilesCompressForm = ({ singleFile, formRef }) => {
       validationSchema={validationSchema}
     >
       {({ values, setFieldValue }) => {
-        const handelSelectChange = e => {
+        const handleSelectChange = e => {
           setFieldValue('filetype', e.target.value);
         };
         return (
@@ -59,10 +44,10 @@ const DataFilesCompressForm = ({ singleFile, formRef }) => {
                 type="select"
                 name="filetype"
                 bsSize="sm"
-                onChange={handelSelectChange}
+                onChange={handleSelectChange}
               >
-                <option value=".zip">zip</option>
-                <option value=".tar.gz">tar.gz</option>
+                <option value=".zip">.zip</option>
+                <option value=".tar.gz">.tar.gz</option>
               </Input>
             </FormGroup>
           </Form>
@@ -72,14 +57,15 @@ const DataFilesCompressForm = ({ singleFile, formRef }) => {
   );
 };
 DataFilesCompressForm.propTypes = {
-  singleFile: PropTypes.bool.isRequired,
+  singleFile: PropTypes.string,
   formRef: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Object) })
   ])
 };
 DataFilesCompressForm.defaultProps = {
-  formRef: null
+  formRef: null,
+  singleFile: null
 };
 
 const DataFilesCompressModal = () => {
@@ -121,7 +107,7 @@ const DataFilesCompressModal = () => {
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
-    if (isString(status)) {
+    if (status) {
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: {}, operation: 'compress' }
@@ -147,7 +133,7 @@ const DataFilesCompressModal = () => {
   } else {
     buttonIcon = null;
   }
-
+  const firstFile = selectedFiles[0] ? selectedFiles.name : '';
   return (
     <Modal
       isOpen={isOpen}
@@ -160,7 +146,7 @@ const DataFilesCompressModal = () => {
       <ModalBody>
         <DataFilesCompressForm
           formRef={formRef}
-          singleFile={selectedFiles.length === 1}
+          singleFile={selectedFiles.length > 1 ? null : firstFile}
         />
         <p>
           A job to compress your files will be submitted on your behalf. You can
