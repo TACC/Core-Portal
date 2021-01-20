@@ -10,7 +10,7 @@ const SiteSearchSearchbar = () => {
   const history = useHistory();
   const { filter } = useParams();
   const [query, setQuery] = useState('');
-  const urlQueryParam = (queryString.parse(window.location.href)).query_string;
+  const urlQueryParam = queryString.parse(window.location.search).query_string;
 
   const baseUrl = filter ? `/search/${filter}` : '/search';
   const routeSearch = () => {
@@ -18,6 +18,8 @@ const SiteSearchSearchbar = () => {
       ? `?${queryString.stringify({ query_string: query, page: 1 })}`
       : '';
     history.push(`${baseUrl}/${qs}`);
+
+    window.dispatchEvent(new Event('portal.search'));
   };
 
   const onSubmit = e => {
@@ -39,7 +41,7 @@ const SiteSearchSearchbar = () => {
         <input
           type="search"
           onChange={onChange}
-          value={query || urlQueryParam}
+          value={query || urlQueryParam || ''}
           name="query"
           aria-label="Search"
           styleName="input"

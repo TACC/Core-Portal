@@ -14,13 +14,10 @@
 <script>
   function populateSearchFieldValueFromURLParams() {
     import('/static/site_cms/js/modules/inputFieldValue.js').then((inputFieldValue) => {
-    
       const shadowRoot = document.getElementById('s-search-bar').shadowRoot;
-      console.log({
-        searchBar: document.getElementById('s-search-bar'),
-        shadowRoot
-      });
+
       inputFieldValue.update(shadowRoot, 'query_string');
+      inputFieldValue.updateOnEvent(shadowRoot, 'query_string', 'portal.search');
     });
   }
 </script>
