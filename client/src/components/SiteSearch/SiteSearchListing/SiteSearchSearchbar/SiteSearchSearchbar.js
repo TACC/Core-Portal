@@ -10,6 +10,7 @@ const SiteSearchSearchbar = () => {
   const history = useHistory();
   const { filter } = useParams();
   const [query, setQuery] = useState('');
+  const urlQueryParam = (queryString.parse(window.location.href)).query_string;
 
   const baseUrl = filter ? `/search/${filter}` : '/search';
   const routeSearch = () => {
@@ -38,7 +39,7 @@ const SiteSearchSearchbar = () => {
         <input
           type="search"
           onChange={onChange}
-          value={query}
+          value={query || urlQueryParam}
           name="query"
           aria-label="Search"
           styleName="input"
