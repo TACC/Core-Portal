@@ -806,10 +806,6 @@ const getExtractParams = (file, latestExtract) => {
 };
 
 export function* extractFiles(action) {
-  const extractErrorAction = {
-    type: 'DATA_FILES_SET_OPERATION_STATUS',
-    payload: { status: 'ERROR', operation: 'extract' }
-  };
   try {
     const latestExtract = yield call(getLatestApp, 'extract-frontera');
     const params = getExtractParams(action.payload.file, latestExtract);
@@ -828,7 +824,10 @@ export function* extractFiles(action) {
           props: {
             onSuccess: action,
             system: submission.execSys,
-            onCancel: extractErrorAction
+            onCancel: {
+              type: 'DATA_FILES_SET_OPERATION_STATUS',
+              payload: { status: 'ERROR', operation: 'extract' }
+            }
           }
         }
       });
@@ -841,7 +840,10 @@ export function* extractFiles(action) {
       throw new Error('Unable to extract files');
     }
   } catch (error) {
-    yield put(extractErrorAction);
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'ERROR', operation: 'extract' }
+    });
   }
 }
 export function* watchExtract() {

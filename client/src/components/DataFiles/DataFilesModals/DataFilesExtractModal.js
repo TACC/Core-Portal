@@ -3,7 +3,6 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
-import { isString } from 'lodash';
 import './DataFilesCompressModal.module.scss';
 
 const DataFilesExtractModal = () => {
@@ -43,7 +42,7 @@ const DataFilesExtractModal = () => {
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
-    if (isString(status)) {
+    if (status) {
       dispatch({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: {}, operation: 'extract' }

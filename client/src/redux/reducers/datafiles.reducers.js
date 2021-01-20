@@ -76,8 +76,8 @@ export const initialFilesState = {
     select: {},
     upload: {},
     trash: {},
-    compress: {},
-    extract: {},
+    compress: null,
+    extract: null,
     link: {
       method: null,
       url: '',
