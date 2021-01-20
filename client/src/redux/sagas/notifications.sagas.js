@@ -32,7 +32,10 @@ export function* handleSocket(action) {
       const jobIds = jobsList.map(job => job.id);
       if (jobIds.includes(event.id)) {
         // if event is in current state, update
-        yield put({ type: 'UPDATE_JOB_FROM_NOTIFICATION', payload: action });
+        yield put({
+          type: 'UPDATE_JOBS_FROM_NOTIFICATIONS',
+          payload: [action]
+        });
       } else {
         // otherwise, refresh job list
         yield put({ type: 'GET_JOBS', params: { offset: 0 } });
@@ -68,6 +71,7 @@ export function* fetchNotifications(action) {
     if (onSuccess) {
       yield put(onSuccess);
     }
+    yield put({ type: 'UPDATE_JOBS_FROM_NOTIFICATIONS', payload: res.notifs });
   } catch (error) {
     yield put({
       type: 'NOTIFICATIONS_LIST_FETCH_ERROR',
