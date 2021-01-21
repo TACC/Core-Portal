@@ -13,6 +13,7 @@ import DataFilesManageProjectModal from './DataFilesManageProjectModal';
 import DataFilesProjectEditDescriptionModal from './DataFilesProjectEditDescriptionModal';
 import DataFilesLinkModal from './DataFilesLinkModal';
 import DataFilesShowPathModal from './DataFilesShowPathModal';
+import DataFilesMakePublicModal from './DataFilesMakePublicModal';
 import './DataFilesModals.scss';
 
 export default function DataFilesModals() {
@@ -32,6 +33,7 @@ export default function DataFilesModals() {
       <DataFilesAddProjectModal />
       <DataFilesManageProjectModal />
       <DataFilesProjectEditDescriptionModal />
+      <DataFilesMakePublicModal />
     </>
   );
 }

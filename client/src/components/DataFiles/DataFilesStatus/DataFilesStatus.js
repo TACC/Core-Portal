@@ -8,11 +8,14 @@ const OPERATION_MAP = {
   move: 'moved',
   copy: 'copied',
   trash: 'moved',
+  makepublic: 'copied',
   toastMap(operation, status, systemList, { response }) {
     if (status !== 'SUCCESS') {
       switch (operation) {
         case 'mkdir':
           return 'Add folder failed';
+        case 'makepublic':
+          return 'Copy to Public Data failed';
         default:
           return `${operation.charAt(0).toUpperCase() +
             operation.slice(1)} failed`;
@@ -44,6 +47,8 @@ const OPERATION_MAP = {
             : destPath;
         return `${type} ${mappedOp} to ${truncateMiddle(dest, 20)}`;
       }
+      case 'makepublic':
+        return `${type} ${mappedOp} to Public Data`;
       default:
         return `${mappedOp}`;
     }

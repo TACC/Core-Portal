@@ -4,6 +4,7 @@ import DataFilesToolbar, { ToolbarButton } from './DataFilesToolbar';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import renderComponent from 'utils/testing';
+import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
 expect.extend({ toHaveClass });
@@ -24,9 +25,13 @@ describe('ToolbarButton', () => {
 
 describe('DataFilesToolbar', () => {
   it('render necessary buttons', () => {
-    const { getByText } = renderComponent(
-      <DataFilesToolbar scheme="private" api="tapis"/>,
-      mockStore({files: {selected: { FilesListing: []}}, listing: {selected: {FilesListing: []}}}),
+    const { getByText, queryByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        files: { selected: { FilesListing: [] } },
+        listing: { selected: { FilesListing: [] } },
+        systems: systemsFixture
+      }),
       createMemoryHistory()
     );
 
@@ -35,5 +40,33 @@ describe('DataFilesToolbar', () => {
     expect(getByText(/Copy/)).toBeDefined();
     expect(getByText(/Download/)).toBeDefined();
     expect(getByText(/Trash/)).toBeDefined();
+    expect(queryByText(/Make Public/)).toBeFalsy();
+  });
+});
+
+describe('DataFilesToolbar', () => {
+  it('render Make Public button', () => {
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        files: { selected: { FilesListing: [] } },
+        listing: { selected: { FilesListing: [] } },
+        systems: {
+          ...systemsFixture,
+          systemList: [
+            ...systemsFixture.systemList,
+            {
+              name: 'Public Data',
+              scheme: 'public',
+              publishable: true,
+              api: 'tapis'
+            }
+          ]
+        }
+      }),
+      createMemoryHistory()
+    );
+
+    expect(getByText(/Make Public/)).toBeDefined();
   });
 });

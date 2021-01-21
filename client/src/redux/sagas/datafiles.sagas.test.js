@@ -11,7 +11,9 @@ import {
   scrollFiles,
   copyFileUtil,
   fileLinkUtil,
-  fileLink
+  fileLink,
+  makePublicUtil,
+  doMakePublic
 } from './datafiles.sagas';
 //import fetchMock from "fetch-mock";
 import { expectSaga } from 'redux-saga-test-plan';
@@ -31,7 +33,7 @@ describe('fetchSystems', () => {
 
   afterEach(() => {
     fetchMock.reset();
-  })
+  });
 
   it('runs saga', async () => {
     return expectSaga(fetchSystems)
@@ -82,7 +84,7 @@ describe('fetchFiles', () => {
 
   afterEach(() => {
     fetchMock.reset();
-  })
+  });
 
   it('runs fetchFiles saga with success', () => {
     return expectSaga(fetchFiles, {
@@ -258,7 +260,6 @@ describe('scrollFiles', () => {
   });
 });
 
-
 describe('copyFiles', () => {
   beforeEach(() => {
     const fm = fetchMock
@@ -276,7 +277,7 @@ describe('copyFiles', () => {
 
   afterEach(() => {
     fetchMock.reset();
-  })
+  });
 
   it('copy util works when src/dest APIs match', () => {
     const apiResult = copyFileUtil(
@@ -342,19 +343,19 @@ describe('removeDuplicateSlashes', () => {
   });
 });
 
-describe("Preview Files", () => {
-  it.todo("should fetch and set previews");
-  it.todo("should be dispatched by an effect creator");
+describe('Preview Files', () => {
+  it.todo('should fetch and set previews');
+  it.todo('should be dispatched by an effect creator');
 });
 
-describe("fileLink", () => {
-  it("performs a fileLink operation", () => {
+describe('fileLink', () => {
+  it('performs a fileLink operation', () => {
     return expectSaga(fileLink, {
       payload: {
-        scheme: "private",
+        scheme: 'private',
         file: {
-          system: "test.system",
-          path: "path/to/file"
+          system: 'test.system',
+          path: 'path/to/file'
         },
         method: 'get'
       }
@@ -368,7 +369,7 @@ describe("fileLink", () => {
         ]
       ])
       .put({
-        type: "DATA_FILES_SET_OPERATION_STATUS",
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: {
           status: {
             method: 'get',
@@ -379,15 +380,9 @@ describe("fileLink", () => {
           operation: 'link'
         }
       })
-      .call(
-        fileLinkUtil,
-        "get",
-        "private",
-        "test.system",
-        "path/to/file",
-      )
+      .call(fileLinkUtil, 'get', 'private', 'test.system', 'path/to/file')
       .put({
-        type: "DATA_FILES_SET_OPERATION_STATUS",
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: {
           status: {
             method: null,
@@ -399,5 +394,46 @@ describe("fileLink", () => {
         }
       })
       .run();
+  });
+});
+
+describe('makePublic', () => {
+  beforeEach(() => {
+    const fm = fetchMock
+      .sandbox()
+      .mock(
+        `/api/datafiles/tapis/makepublic/private/test.system/path/to/file/`,
+        {
+          status: 200
+        }
+      );
+    fetch.mockImplementation(fm);
+  });
+
+  afterEach(() => {
+    fetchMock.reset();
+  });
+
+  it('runs saga', async () => {
+    return expectSaga(doMakePublic, {
+      type: 'DATA_FILES_MAKE_PUBLIC',
+      payload: { system: 'test.system', path: '/path/to/file' }
+    })
+      .provide([[matchers.call.fn(makePublicUtil), {}]])
+      .call(makePublicUtil, 'tapis', 'private', 'test.system', '/path/to/file')
+      .run();
+  });
+
+  it('runs fetch', () => {
+    makePublicUtil('tapis', 'private', 'test.system', '/path/to/file');
+    expect(fetch).toBeCalledWith(
+      `/api/datafiles/tapis/makepublic/private/test.system/path/to/file/`,
+      {
+        body: '{}',
+        credentials: 'same-origin',
+        headers: { 'X-CSRFToken': undefined },
+        method: 'PUT'
+      }
+    );
   });
 });

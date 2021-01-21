@@ -126,7 +126,8 @@ export const initialFilesState = {
     pushKeys: false,
     trash: false,
     manageproject: false,
-    editproject: false
+    editproject: false,
+    makePublic: false
   },
   modalProps: {
     preview: {},
@@ -138,7 +139,8 @@ export const initialFilesState = {
     rename: {},
     pushKeys: {},
     link: {},
-    showpath: {}
+    showpath: {},
+    makePublic: {}
   },
   preview: {
     href: '',

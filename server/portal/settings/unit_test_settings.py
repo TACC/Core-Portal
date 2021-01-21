@@ -445,6 +445,13 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'scheme': 'community',
         'api': 'tapis',
         'icon': None
+    },
+    {
+        'name': 'Public Data',
+        'system': 'portal.storage.public',
+        'scheme': 'public',
+        'api': 'tapis',
+        'icon': None
     }
 ]
 

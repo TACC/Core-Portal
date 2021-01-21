@@ -43,6 +43,12 @@ const DataFilesToolbar = ({ scheme, api }) => {
       state.workbench && state.workbench.config.makeLink && api === 'tapis'
   );
 
+  const showMakePublic = useSelector(state =>
+    state.systems.systemList.find(
+      sys => sys.publishable && sys.scheme === 'public'
+    )
+  );
+
   const toggleRenameModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -82,6 +88,16 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
 
+  const toggleMakePublicModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'makePublic',
+        props: { selectedFile: selectedFiles[0] }
+      }
+    });
+  };
+
   const download = () => {
     dispatch({
       type: 'DATA_FILES_DOWNLOAD',
@@ -99,6 +115,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const isPrivate = ['projects', 'private'].includes(scheme);
   const canRename =
     selectedFiles.length === 1 && isPrivate && api !== 'googledrive';
+  const canMakePublic =
+    showMakePublic &&
+    selectedFiles.length === 1 &&
+    isPrivate &&
+    api !== 'googledrive';
   const canMove =
     selectedFiles.length > 0 && isPrivate && api !== 'googledrive';
   const canCopy = selectedFiles.length > 0 && isPrivate;
@@ -142,6 +163,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
             iconName="link"
             onClick={toggleLinkModal}
             disabled={!canDownload}
+          />
+        )}
+        {showMakePublic && (
+          <ToolbarButton
+            text="Make Public"
+            iconName="conversation"
+            onClick={toggleMakePublicModal}
+            disabled={!canMakePublic}
           />
         )}
         <ToolbarButton

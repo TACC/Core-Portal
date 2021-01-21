@@ -756,3 +756,29 @@ export function* trashFile(system, path, id) {
     });
   }
 }
+
+export async function makePublicUtil(api, scheme, system, path) {
+  const url = removeDuplicateSlashes(
+    `/api/datafiles/${api}/makepublic/${scheme}/${system}${path}/`
+  );
+  const request = await fetch(url, {
+    method: 'PUT',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    credentials: 'same-origin',
+    body: JSON.stringify({})
+  });
+
+  if (!request.ok) {
+    throw new Error(request.status);
+  }
+  return request;
+}
+
+export function* doMakePublic(action) {
+  const { system, path } = action.payload;
+  yield call(makePublicUtil, 'tapis', 'private', system, path);
+}
+
+export function* watchMakePublic() {
+  yield takeLeading('DATA_FILES_MAKE_PUBLIC', doMakePublic);
+}
