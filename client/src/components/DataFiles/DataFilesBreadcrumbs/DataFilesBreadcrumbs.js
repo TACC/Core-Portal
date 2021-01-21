@@ -89,7 +89,7 @@ const DataFilesBreadcrumbs = ({
     if (matching) {
       return matching.description;
     }
-    return 'Shared Workspaces';
+    return '';
   };
 
   path
