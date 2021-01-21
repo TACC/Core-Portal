@@ -8,7 +8,8 @@ import {
   ModalFooter,
   Form,
   FormGroup,
-  Label
+  Label,
+  FormText
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { LoadingSpinner, Message, TextCopyField, InlineMessage } from '_common';
@@ -91,9 +92,9 @@ const DataFilesLinkStatus = ({ status }) => {
     <FormGroup>
       <Label>Link</Label>
       <TextCopyField value={status.url} />
-      <div styleName="help-text">
+      <FormText className="form-field__help" color="muted">
         This link downloads the file without requiring login or an account.
-      </div>
+      </FormText>
     </FormGroup>
   );
 };
@@ -193,9 +194,15 @@ const DataFilesLinkModal = () => {
           {confirming ? (
             <>
               <span styleName="warning">
-                The original link will be disabled
+                The original link will be disabled.
               </span>
-              <Button onClick={onConfirm}>Confirm</Button>
+              <Button
+                className="data-files-btn"
+                color="secondary"
+                onClick={onConfirm}
+              >
+                Confirm
+              </Button>
               <Button color="link" onClick={onCancel}>
                 Cancel
               </Button>

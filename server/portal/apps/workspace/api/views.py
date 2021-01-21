@@ -467,6 +467,7 @@ class AppsTrayView(BaseApiView):
                             "id": app.htmlId,
                             "label": app.label,
                             "shortDescription": app.shortDescription,
+                            "appType": "html"
                         }
                     elif str(app.appType).lower() == 'agave':
                         # If this is an agave app, retrieve the definition
