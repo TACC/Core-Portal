@@ -25,7 +25,7 @@ const FeedbackForm = () => {
   );
 
   if (authenticatedUser == null) {
-    return <Spinner />;
+    return <Spinner data-testid="loading-spinner" />;
   }
 
   const defaultValues = useMemo(
@@ -62,8 +62,6 @@ const FeedbackForm = () => {
         return (
           <Form styleName="container">
             <FormGroup>
-              <FormField name="name" label="Full Name" required disabled />
-              <FormField name="email" label="Email" required disabled />
               <FormField
                 name="problem_description"
                 label="Feedback"
