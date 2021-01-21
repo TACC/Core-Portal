@@ -85,6 +85,7 @@ const FeedbackForm = () => {
                   <Spinner
                     size="sm"
                     color="white"
+                    styleName="submit-spinner"
                     data-testid="creating-spinner"
                   />
                 )}
