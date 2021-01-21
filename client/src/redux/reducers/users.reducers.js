@@ -35,6 +35,11 @@ export function users(state = initialState, action) {
           error: null
         }
       };
+    case 'USERS_CLEAR_SEARCH':
+      return {
+        ...state,
+        ...initialState
+      };
     default:
       return state;
   }
