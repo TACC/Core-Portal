@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { InfiniteScrollTable, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,6 +20,8 @@ const DataFilesProjectMembers = ({
 
   const [selectedUser, setSelectedUser] = useState('');
 
+  const [inputUser, setInputUser] = useState('');
+
   const [transferUser, setTransferUser] = useState(null);
 
   /* eslint-disable */
@@ -30,6 +32,7 @@ const DataFilesProjectMembers = ({
 
   const userSearch = e => {
     if (!e.target.value || e.target.value.trim().length < 1) return;
+    setInputUser(e.target.value);
     // Try to set the selectedUser to something matching current search results
     setSelectedUser(
       userSearchResults.find(user => formatUser(user) === e.target.value)
@@ -49,14 +52,12 @@ const DataFilesProjectMembers = ({
     setTransferUser(null);
   }, [transferUser, setTransferUser]);
 
-  const formRef = useRef();
-
   const onAddCallback = useCallback(
     user => {
       onAdd(user);
-      formRef.current.reset();
+      setInputUser('');
     },
-    [formRef, onAdd]
+    [setInputUser, onAdd]
   );
 
   const alreadyMember = user => {
@@ -171,46 +172,45 @@ const DataFilesProjectMembers = ({
         Add Member
       </Label>
       <div styleName="user-search">
-        <form ref={formRef}>
-          <div className="input-group" styleName="member-search-group">
-            <div className="input-group-prepend">
-              <Button
-                styleName="add-button member-search"
-                onClick={() =>
-                  onAddCallback({ user: selectedUser, access: 'edit' })
-                }
-                disabled={
-                  !selectedUser ||
-                  loading ||
-                  alreadyMember(selectedUser) ||
-                  mode === 'transfer'
-                }
-              >
-                Add
-              </Button>
-            </div>
-            <Input
-              list="user-search-list"
-              type="text"
-              onChange={e => userSearch(e)}
-              placeholder="Search by name"
-              styleName="member-search"
-              disabled={loading || mode === 'transfer'}
-              autoComplete="false"
-            />
-            <datalist id="user-search-list">
-              {/* eslint-disable */
-              // Need to replace this component with a generalized solution from FP-743
-              userSearchResults
-                .filter(user => !alreadyMember(user))
-                .map(user => (
-                <option value={formatUser(user)} key={user.username} />
-              ))
-              /* eslint-enable */
+        <div className="input-group" styleName="member-search-group">
+          <div className="input-group-prepend">
+            <Button
+              styleName="add-button member-search"
+              onClick={() =>
+                onAddCallback({ user: selectedUser, access: 'edit' })
               }
-            </datalist>
+              disabled={
+                !selectedUser ||
+                loading ||
+                alreadyMember(selectedUser) ||
+                mode === 'transfer'
+              }
+            >
+              Add
+            </Button>
           </div>
-        </form>
+          <Input
+            list="user-search-list"
+            type="text"
+            onChange={e => userSearch(e)}
+            placeholder="Search by name"
+            styleName="member-search"
+            disabled={loading || mode === 'transfer'}
+            autoComplete="false"
+            value={inputUser}
+          />
+          <datalist id="user-search-list">
+            {/* eslint-disable */
+            // Need to replace this component with a generalized solution from FP-743
+            userSearchResults
+              .filter(user => !alreadyMember(user))
+              .map(user => (
+              <option value={formatUser(user)} key={user.username} />
+            ))
+            /* eslint-enable */
+            }
+          </datalist>
+        </div>
       </div>
       <InfiniteScrollTable
         tableColumns={isTransferring ? transferColumns : columns}
