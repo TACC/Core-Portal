@@ -64,6 +64,6 @@ describe('Data Files Preview Modal', () => {
     const { getByText } = renderComponent(<DataFilesPreviewModal />, store);
     expect(getByText(/File Preview:/)).toBeDefined();
     expect(getByText(/test\.txt/)).toBeDefined();
-    expect(getByText('Unable to show preview\.')).toBeDefined();
+    expect(getByText('Unable to show preview.')).toBeDefined();
   });
 });

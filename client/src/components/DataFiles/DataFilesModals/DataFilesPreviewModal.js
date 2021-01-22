@@ -21,8 +21,9 @@ const DataFilesPreviewModal = () => {
     isLoading
   } = useSelector(state => state.files.preview);
   const hasError = previewError !== null;
-  const previewUsingTextContent = !hasError && previewTextContent !== null;
-  const previewUsingHref = !hasError && !previewUsingTextContent;
+  const previewUsingTextContent =
+    !isLoading && !hasError && previewTextContent !== null;
+  const previewUsingHref = !isLoading && !hasError && !previewUsingTextContent;
 
   const toggle = () =>
     dispatch({
@@ -60,7 +61,7 @@ const DataFilesPreviewModal = () => {
         className="dataFilesModal"
       >
         <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
-        <ModalBody>
+        <ModalBody styleName="root">
           {isLoading && <PreviewModalSpinner />}
           {previewUsingTextContent && (
             <div>
@@ -79,7 +80,11 @@ const DataFilesPreviewModal = () => {
               />
             </div>
           )}
-          {hasError && <Message type="warning">{previewError}</Message>}
+          {hasError && (
+            <Message type="warning" styleName="error">
+              {previewError}
+            </Message>
+          )}
         </ModalBody>
       </Modal>
     </>
