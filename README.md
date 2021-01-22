@@ -60,6 +60,7 @@ OR
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
+    python manage.py import-apps # Populate local portal with a set of Frontera apps (optional)
 
 #### Initialize the CMS in the `frontera_prtl_cms` container:
 First, copy the sample secrets:
