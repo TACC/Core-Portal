@@ -79,7 +79,7 @@ const DataFilesPreviewModal = () => {
               />
             </div>
           )}
-          {hasError && <Message type="warn">{previewError}</Message>}
+          {hasError && <Message type="warning">{previewError}</Message>}
         </ModalBody>
       </Modal>
     </>
