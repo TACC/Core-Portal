@@ -43,10 +43,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
       state.workbench && state.workbench.config.makeLink && api === 'tapis'
   );
 
-  const showMakePublic = useSelector(state =>
-    state.systems.systemList.find(
-      sys => sys.publishable && sys.scheme === 'public'
-    )
+  const showMakePublic = useSelector(
+    state =>
+      state.workbench && state.workbench.config.makePublic && api === 'tapis'
   );
 
   const toggleRenameModal = () =>

@@ -51,18 +51,8 @@ describe('DataFilesToolbar', () => {
       mockStore({
         files: { selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
-        systems: {
-          ...systemsFixture,
-          systemList: [
-            ...systemsFixture.systemList,
-            {
-              name: 'Public Data',
-              scheme: 'public',
-              publishable: true,
-              api: 'tapis'
-            }
-          ]
-        }
+        systems: systemsFixture,
+        workbench: { config: { makePublic: true } }
       }),
       createMemoryHistory()
     );
