@@ -75,6 +75,7 @@ const NotificationToast = () => {
 
 const ToastMessage = ({ notification }) => {
   const systemList = useSelector(state => state.systems.systemList);
+  const projectsList = useSelector(state => state.projects.listing.projects);
   return (
     <>
       {notification && (
@@ -88,7 +89,9 @@ const ToastMessage = ({ notification }) => {
             />
           </div>
           <div className="notification-toast-content">
-            <span>{getToastMessage(notification, systemList)}</span>
+            <span>
+              {getToastMessage(notification, systemList, projectsList)}
+            </span>
           </div>
         </>
       )}
@@ -116,6 +119,7 @@ ToastMessage.defaultProps = {
  * @param {string} notification.status - The status of the notification event
  * @param {string} notification.operation - The notification operation type
  * @param {string} systemList - List of storage systems available to the user in Data Files
+ * @param {string} projectsList - List of share workspaces available to the user in Data Files
  * @return {string} Message
  *
  * @example
@@ -124,7 +128,8 @@ ToastMessage.defaultProps = {
  */
 export const getToastMessage = (
   { extra, event_type: eventType, message, status, operation },
-  systemList
+  systemList,
+  projectsList
 ) => {
   switch (eventType) {
     case 'job':
@@ -136,7 +141,13 @@ export const getToastMessage = (
         message ? message.toLowerCase() : 'session ready to view.'
       }`;
     case 'data_files': {
-      return OPERATION_MAP.toastMap(operation, status, systemList, extra);
+      return OPERATION_MAP.toastMap(
+        operation,
+        status,
+        systemList,
+        projectsList,
+        extra
+      );
     }
     default:
       return message;
@@ -151,7 +162,8 @@ getToastMessage.propTypes = {
   message: PropTypes.string,
   status: PropTypes.string,
   operation: PropTypes.string,
-  systemList: PropTypes.list
+  systemList: PropTypes.list,
+  projectsList: PropTypes.list
 };
 getToastMessage.defaultProps = {
   extra: {},

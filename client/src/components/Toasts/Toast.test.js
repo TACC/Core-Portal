@@ -6,6 +6,7 @@ import '@testing-library/jest-dom/extend-expect';
 import NotificationToast, { getToastMessage } from './Toast';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialSystemState } from '../../redux/reducers/datafiles.reducers';
+import { initialState as projects } from '../../redux/reducers/projects.reducers';
 import { dataFilesRename, dataFilesError } from '../../redux/sagas/fixtures/notificationsDataFilesEvents.fixture';
 import { jobStatusUpdatePending, jobInteractiveSessionReady } from '../../redux/sagas/fixtures/notificationsJobsEvents.fixture';
 
@@ -43,7 +44,7 @@ function renderToastComponent(store) {
 describe('Notification Toast', () => {
   it('shows no toast on init', () => {
     const { queryByRole } = renderToastComponent(
-      mockStore({ notifications: notifications, systems: initialSystemState })
+      mockStore({ notifications: notifications, systems: initialSystemState, projects: projects })
     );
     expect(queryByRole('alert')).toBeNull();
   });
@@ -51,6 +52,7 @@ describe('Notification Toast', () => {
   it('shows first toast in array', () => {
     const { queryByRole } = renderToastComponent(
       mockStore({
+        projects: projects,
         systems: initialSystemState,
         notifications: {
           ...notifications,

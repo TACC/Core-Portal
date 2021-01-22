@@ -1,4 +1,4 @@
-import { findSystemDisplayName } from 'utils/systems';
+import { findSystemOrProjectDisplayName } from 'utils/systems';
 import truncateMiddle from 'utils/truncateMiddle';
 
 const OPERATION_MAP = {
@@ -8,7 +8,7 @@ const OPERATION_MAP = {
   move: 'moved',
   copy: 'copied',
   trash: 'moved',
-  toastMap(operation, status, systemList, { response }) {
+  toastMap(operation, status, systemList, projectsList, { response }) {
     if (status !== 'SUCCESS') {
       switch (operation) {
         case 'mkdir':
@@ -40,7 +40,13 @@ const OPERATION_MAP = {
           .join('/');
         const dest =
           destPath === '/' || destPath === ''
-            ? `${findSystemDisplayName(systemList, response.systemId)}/`
+            ? `${findSystemOrProjectDisplayName(
+                // need to get file listing scheme here...
+                response.systemId.includes('.project.') ? 'projects' : '',
+                systemList,
+                projectsList,
+                response.systemId
+              )}/`
             : destPath;
         return `${type} ${mappedOp} to ${truncateMiddle(dest, 20)}`;
       }
