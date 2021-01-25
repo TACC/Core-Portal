@@ -7,7 +7,7 @@ import {
   ModalBody,
   ModalFooter,
   Input,
-  FormGroup
+  InputGroupAddon
 } from 'reactstrap';
 import { LoadingSpinner, FormField, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -119,18 +119,26 @@ const DataFilesCompressModal = () => {
                   name="filenameDisplay"
                   disabled={isDisabled}
                 />
-                <FormGroup>
-                  <Input
-                    type="select"
-                    name="filetype"
-                    bsSize="sm"
-                    onChange={handleSelectChange}
-                    disabled={isDisabled}
-                  >
-                    <option value=".zip">.zip</option>
-                    <option value=".tar.gz">.tar.gz</option>
-                  </Input>
-                </FormGroup>
+                <FormField
+                  label="Filename"
+                  name="filenameDisplay"
+                  disabled={isDisabled}
+                  addonType="append"
+                  addon={
+                    <InputGroupAddon addonType="append">
+                      <Input
+                        type="select"
+                        name="filetype"
+                        bsSize="sm"
+                        onChange={handleSelectChange}
+                        disabled={isDisabled}
+                      >
+                        <option value=".zip">.zip</option>
+                        <option value=".tar.gz">.tar.gz</option>
+                      </Input>
+                    </InputGroupAddon>
+                  }
+                />
                 <p>
                   A job to compress your files will be submitted on your behalf.
                   You can check the status of this job on your Dashboard, and
