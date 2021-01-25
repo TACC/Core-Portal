@@ -38,10 +38,7 @@ const OPERATION_MAP = {
           .split('/')
           .slice(0, -1)
           .join('/');
-        const projectName = findProjectTitle(
-          projectList,
-          response.systemId
-        );
+        const projectName = findProjectTitle(projectList, response.systemId);
         if (projectName) {
           return `${type} ${mappedOp} to ${truncateMiddle(
             `${projectName}/`,
