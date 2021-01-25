@@ -1,0 +1,40 @@
+{# @var className #}
+
+{# Encapsulate search bar as custom element, so styles do not bleed out #}
+{# IDEA: Should CMS use React component or Portal's React use custom element #}
+{# WARNING: Some markup is duplicated in other repositories #}
+{# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
+<tacc-search-bar class="s-search-bar  {{className}}" id="s-search-bar">
+  <!-- The search bar is populated here (from an external template). -->
+  {# FAQ: Content populated via JavaScript, below #}
+</tacc-search-bar>
+
+<!-- Populate search field value from matching URL query parameter -->
+{# FP-858: Instead use `{{request.GET.query_string}}` in CMS Django template #}
+<script>
+  function populateSearchFieldValueFromURLParams() {
+    import('/static/site_cms/js/modules/inputFieldValue.js').then((inputFieldValue) => {
+      const shadowRoot = document.getElementById('s-search-bar').shadowRoot;
+
+      inputFieldValue.update(shadowRoot, 'query_string');
+      inputFieldValue.updateOnEvent(shadowRoot, 'query_string', 'portal.search');
+    });
+  }
+</script>
+
+<script type="module">
+  import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
+  import * as registerCustomElement from '/static/site_cms/js/modules/registerCustomElement.js';
+
+  importHTML.getFromURL('/cms/nav/search/markup/').then(markup => {
+    /* Load necessary Bootstrap outside raw markup so CMS */
+    /* FAQ: CMS, Portal, User Guide each use a different Bootstrap file */
+    /* TODO: After CMS redesign, use only one Bootstrap version (Portal's) */
+    markup = document.getElementById('css-bootstrap').outerHTML + markup;
+
+    registerCustomElement.fromHTMLString(markup, 'tacc-search-bar');
+
+    // Populate search field value
+    populateSearchFieldValueFromURLParams();
+  });
+</script>

@@ -14,8 +14,7 @@ class AllocationStep(AbstractStep):
         return "Retrieving Allocations"
 
     def description(self):
-        return """This retrieves a list of allocations on TACC HPC systems. After
-               we retrieve this information, we will set up access to these systems."""
+        return """Accessing your allocations. No action required."""
 
     def prepare(self):
         self.state = SetupState.PENDING
