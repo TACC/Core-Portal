@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import {
   Button,
@@ -17,7 +17,12 @@ import PropTypes from 'prop-types';
 import * as yup from 'yup';
 import './DataFilesCompressModal.module.scss';
 
-const DataFilesCompressForm = ({ singleFile, formRef, isDisabled }) => {
+const DataFilesCompressForm = ({
+  singleFile,
+  formRef,
+  isDisabled,
+  validator
+}) => {
   const initialValues = {
     filenameDisplay: `${singleFile || ''}`,
     filetype: '.zip'
@@ -36,7 +41,8 @@ const DataFilesCompressForm = ({ singleFile, formRef, isDisabled }) => {
       initialValues={initialValues}
       validationSchema={validationSchema}
     >
-      {({ values, setFieldValue }) => {
+      {({ values, setFieldValue, isValid }) => {
+        validator(isValid);
         const handleSelectChange = e => {
           setFieldValue('filetype', e.target.value);
         };
@@ -71,7 +77,8 @@ DataFilesCompressForm.propTypes = {
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Object) })
   ]),
-  isDisabled: PropTypes.bool.isRequired
+  isDisabled: PropTypes.bool.isRequired,
+  validator: PropTypes.func.isRequired
 };
 DataFilesCompressForm.defaultProps = {
   formRef: null,
@@ -81,6 +88,7 @@ DataFilesCompressForm.defaultProps = {
 const DataFilesCompressModal = () => {
   const history = useHistory();
   const location = useLocation();
+  const [valid, setValid] = useState(false);
   const dispatch = useDispatch();
   const status = useSelector(
     state => state.files.operationStatus.compress,
@@ -127,6 +135,7 @@ const DataFilesCompressModal = () => {
   };
 
   const compressCallback = () => {
+    if (!valid) return;
     const { filenameDisplay, filetype } = formRef.current.values;
     const filename = `${filenameDisplay.replace(' ', '')}${filetype}`;
     dispatch({
@@ -158,6 +167,7 @@ const DataFilesCompressModal = () => {
           formRef={formRef}
           singleFile={selectedFiles.length > 1 ? null : firstFile}
           isDisabled={status === 'RUNNING' || status === 'SUCCESS'}
+          validator={setValid}
         />
         <p>
           A job to compress your files will be submitted on your behalf. You can
