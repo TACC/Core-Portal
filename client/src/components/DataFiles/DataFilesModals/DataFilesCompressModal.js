@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import {
   Button,
@@ -6,89 +6,18 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Form,
   Input,
   FormGroup
 } from 'reactstrap';
 import { LoadingSpinner, FormField, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Formik } from 'formik';
-import PropTypes from 'prop-types';
+import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import './DataFilesCompressModal.module.scss';
-
-const DataFilesCompressForm = ({
-  singleFile,
-  formRef,
-  isDisabled,
-  validator
-}) => {
-  const initialValues = {
-    filenameDisplay: `${singleFile || ''}`,
-    filetype: '.zip'
-  };
-  const validationSchema = yup.object().shape({
-    filenameDisplay: yup
-      .string()
-      .trim('The filename cannot include leading and trailing spaces')
-      .strict(true)
-      .required('The filename is required')
-  });
-
-  return (
-    <Formik
-      innerRef={formRef}
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-    >
-      {({ values, setFieldValue, isValid }) => {
-        validator(isValid);
-        const handleSelectChange = e => {
-          setFieldValue('filetype', e.target.value);
-        };
-        return (
-          <Form>
-            <FormField
-              label="Filename"
-              name="filenameDisplay"
-              disabled={isDisabled}
-            />
-            <FormGroup>
-              <Input
-                type="select"
-                name="filetype"
-                bsSize="sm"
-                onChange={handleSelectChange}
-                disabled={isDisabled}
-              >
-                <option value=".zip">.zip</option>
-                <option value=".tar.gz">.tar.gz</option>
-              </Input>
-            </FormGroup>
-          </Form>
-        );
-      }}
-    </Formik>
-  );
-};
-DataFilesCompressForm.propTypes = {
-  singleFile: PropTypes.string,
-  formRef: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({ current: PropTypes.instanceOf(Object) })
-  ]),
-  isDisabled: PropTypes.bool.isRequired,
-  validator: PropTypes.func.isRequired
-};
-DataFilesCompressForm.defaultProps = {
-  formRef: null,
-  singleFile: null
-};
 
 const DataFilesCompressModal = () => {
   const history = useHistory();
   const location = useLocation();
-  const [valid, setValid] = useState(false);
   const dispatch = useDispatch();
   const status = useSelector(
     state => state.files.operationStatus.compress,
@@ -135,7 +64,6 @@ const DataFilesCompressModal = () => {
   };
 
   const compressCallback = () => {
-    if (!valid) return;
     const { filenameDisplay, filetype } = formRef.current.values;
     const filename = `${filenameDisplay.replace(' ', '')}${filetype}`;
     dispatch({
@@ -152,7 +80,17 @@ const DataFilesCompressModal = () => {
   } else {
     buttonIcon = null;
   }
-  const firstFile = selectedFiles[0] ? selectedFiles[0].name : '';
+  const initialValues = {
+    filenameDisplay: selectedFiles[0] ? selectedFiles[0].name : '',
+    filetype: '.zip'
+  };
+  const validationSchema = yup.object().shape({
+    filenameDisplay: yup
+      .string()
+      .trim('The filename cannot include leading and trailing spaces')
+      .strict(true)
+      .required('The filename is required')
+  });
   return (
     <Modal
       isOpen={isOpen}
@@ -162,33 +100,63 @@ const DataFilesCompressModal = () => {
       className="dataFilesModal"
     >
       <ModalHeader toggle={toggle}>Compress Files</ModalHeader>
-      <ModalBody>
-        <DataFilesCompressForm
-          formRef={formRef}
-          singleFile={selectedFiles.length > 1 ? null : firstFile}
-          isDisabled={status === 'RUNNING' || status === 'SUCCESS'}
-          validator={setValid}
-        />
-        <p>
-          A job to compress your files will be submitted on your behalf. You can
-          check the status of this job on your Dashboard, and your compressed
-          file will appear in this directory.
-        </p>
-      </ModalBody>
-      <ModalFooter>
-        <InlineMessage isVisible={status === 'SUCCESS'} type="success">
-          Successfully started compress job
-        </InlineMessage>
-        <Button
-          onClick={compressCallback}
-          className="data-files-btn"
-          disabled={status === 'RUNNING' || status === 'SUCCESS'}
-          styleName="submit-button"
-        >
-          {buttonIcon}
-          <span styleName={buttonIcon ? 'with-icon' : ''}>Compress</span>
-        </Button>
-      </ModalFooter>
+      <Formik
+        innerRef={formRef}
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={compressCallback}
+      >
+        {({ setFieldValue, values }) => {
+          const handleSelectChange = e => {
+            setFieldValue('filetype', e.target.value);
+          };
+          const isDisabled = status === 'RUNNING' || status === 'SUCCESS';
+          return (
+            <Form>
+              <ModalBody>
+                <FormField
+                  label="Filename"
+                  name="filenameDisplay"
+                  disabled={isDisabled}
+                />
+                <FormGroup>
+                  <Input
+                    type="select"
+                    name="filetype"
+                    bsSize="sm"
+                    onChange={handleSelectChange}
+                    disabled={isDisabled}
+                  >
+                    <option value=".zip">.zip</option>
+                    <option value=".tar.gz">.tar.gz</option>
+                  </Input>
+                </FormGroup>
+                <p>
+                  A job to compress your files will be submitted on your behalf.
+                  You can check the status of this job on your Dashboard, and
+                  your compressed file will appear in this directory.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <InlineMessage isVisible={status === 'SUCCESS'} type="success">
+                  Successfully started compress job
+                </InlineMessage>
+                <Button
+                  className="data-files-btn"
+                  disabled={isDisabled}
+                  styleName="submit-button"
+                  type="submit"
+                >
+                  {buttonIcon}
+                  <span styleName={buttonIcon ? 'with-icon' : ''}>
+                    Compress
+                  </span>
+                </Button>
+              </ModalFooter>
+            </Form>
+          );
+        }}
+      </Formik>
     </Modal>
   );
 };

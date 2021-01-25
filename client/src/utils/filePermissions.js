@@ -8,9 +8,10 @@
  */
 export default function getFilePermissions(name, { files, scheme, api }) {
   const isPrivate = ['projects', 'private'].includes(scheme);
-  const isArchive = files[0]
-    ? files[0].name.endsWith('.zip') || files[0].name.endsWith('.tar.gz')
-    : false;
+  const isArchive =
+    files.length === 1
+      ? files[0].name.endsWith('.zip') || files[0].name.endsWith('.tar.gz')
+      : false;
   switch (name) {
     case 'rename':
       return files.length === 1 && isPrivate && api !== 'googledrive';
