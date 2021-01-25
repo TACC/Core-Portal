@@ -7,7 +7,9 @@ from celery import shared_task
 from portal.libs.agave.utils import service_account
 from portal.libs.elasticsearch.utils import index_listing
 from portal.apps.users.utils import get_tas_allocations
-from portal.libs.elasticsearch.docs.base import IndexedAllocation
+from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.libs.elasticsearch.docs.base import (IndexedAllocation,
+                                                 IndexedProject)
 from portal.libs.elasticsearch.utils import get_sha256_hash
 logger = logging.getLogger(__name__)
 
@@ -128,3 +130,12 @@ def index_allocations(self, username):
             doc = IndexedAllocation(username=username, value=allocations)
             doc.save()
     """
+
+
+@shared_task(bind=True, max_retries=3, queue='indexing')
+def index_project(self, project_id):
+    project = ProjectMetadata.objects.get(project_id=project_id)
+    project_dict = project.to_dict()
+    project_doc = IndexedProject(**project_dict)
+    project_doc.meta.id = project_id
+    project_doc.save()

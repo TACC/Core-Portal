@@ -89,10 +89,9 @@ class ProjectsApiView(BaseApiView):
         mgr = ProjectsManager(request.user)
 
         if query_string is not None:
-            # search_mgr = ProjectSearchManager(username=request.user.username, query_string=query_string)
-            # search_mgr.search(offset=offset, limit=limit)
-            # res = search_mgr.list(mgr=mgr)
-            return
+            res = mgr.search(query_string=query_string,
+                             offset=offset,
+                             limit=limit)
         else:
             res = mgr.list(
                 offset=offset,

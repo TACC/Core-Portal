@@ -8,6 +8,7 @@ import json
 @pytest.fixture
 def mock_project_mgr(mocker):
     mocker.patch('portal.apps.projects.views.ProjectsManager.list')
+    mocker.patch('portal.apps.projects.views.ProjectsManager.search')
     mocker.patch('portal.apps.projects.views.ProjectsManager.get_project')
     mocker.patch('portal.apps.projects.views.ProjectsManager.create')
     mocker.patch('portal.apps.projects.views.ProjectsManager.update_prj')
@@ -23,6 +24,20 @@ def test_projects_get(regular_user, client, mock_project_mgr):
     response = client.get('/api/projects/')
 
     mock_project_mgr.list.assert_called_with(offset=0, limit=100)
+    assert response.status_code == 200
+    assert response.json() == {
+        'status': 200,
+        'response': {'projectId': 'PRJ-123'}
+    }
+
+
+def test_projects_search(regular_user, client, mock_project_mgr):
+    mock_project_mgr.search.return_value = {'projectId': 'PRJ-123'}
+    client.force_login(regular_user)
+
+    response = client.get('/api/projects/?query_string=testsearch')
+
+    mock_project_mgr.search.assert_called_with(query_string='testsearch', offset=0, limit=100)
     assert response.status_code == 200
     assert response.json() == {
         'status': 200,
