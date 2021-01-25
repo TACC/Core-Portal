@@ -14,7 +14,7 @@ from portal.libs.elasticsearch.utils import file_uuid_sha256, get_sha256_hash
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
 
-"""
+
 class IndexedProject(Document):
     title = Text(fields={'_exact': Keyword()})
     description = Text()
@@ -50,26 +50,10 @@ class IndexedProject(Document):
 
     @classmethod
     def from_id(cls, projectId):
-        search = cls.search()
-        search = search.query('term', **{'projectId': projectId})
-        try:
-            res = search.execute()
-        except TransportError as exc:
-            if exc.status_code == 404:
-                raise
-            res = search.execute()
-        if res.hits.total.value > 1:
-            for doc in res[1:int(res.hits.total.value)]:
-                cls.get(doc.meta.id).delete()
-            return cls.get(res[0].meta.id)
-        elif res.hits.total.value == 1:
-            return cls.get(res[0].meta.id)
-        else:
-            raise DocumentNotFound("No document found for project ID {}.".format(projectId))
+        return cls.get(projectId)
 
     class Index:
         name = settings.ES_INDEX_PREFIX.format('projects')
-"""
 
 
 class IndexedFile(Document):
