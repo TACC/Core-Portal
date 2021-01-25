@@ -41,7 +41,10 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const showMakeLink = useSelector(
     state =>
-      state.workbench && state.workbench.config.makeLink && api === 'tapis'
+      state.workbench &&
+      state.workbench.config.makeLink &&
+      api === 'tapis' &&
+      (scheme === 'private' || scheme === 'projects')
   );
 
   const toggleRenameModal = () =>
