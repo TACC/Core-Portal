@@ -50,13 +50,11 @@ function TicketCreateModal() {
       contentClassName="ticket-create-modal-content"
     >
       <ModalHeader toggle={close}>Add Ticket</ModalHeader>
-      <ModalBody className="ticket-create-modal-body">
-        <TicketCreateForm
-          authenticatedUser={authenticatedUser}
-          provideDashBoardLinkOnSuccess={provideDashBoardLinkOnSuccess}
-          initialSubject={subject}
-        />
-      </ModalBody>
+      <TicketCreateForm
+        authenticatedUser={authenticatedUser}
+        provideDashBoardLinkOnSuccess={provideDashBoardLinkOnSuccess}
+        initialSubject={subject}
+      />
     </Modal>
   );
 }
