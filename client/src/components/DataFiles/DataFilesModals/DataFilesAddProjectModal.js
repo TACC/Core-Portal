@@ -7,7 +7,6 @@ import { LoadingSpinner, InlineMessage } from '_common';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
-import './DataFilesAddProjectModal.module.scss';
 
 const DataFilesAddProjectModal = () => {
   const history = useHistory();
@@ -90,7 +89,6 @@ const DataFilesAddProjectModal = () => {
         isOpen={isOpen}
         toggle={toggle}
         className="dataFilesModal"
-        styleName="root"
       >
         {' '}
         <Formik
@@ -118,7 +116,6 @@ const DataFilesAddProjectModal = () => {
                 type="submit"
                 className="data-files-btn"
                 disabled={isCreating}
-                styleName="add-workspace-btn"
               >
                 {isCreating ? <LoadingSpinner placement="inline" /> : null} Add
                 Workspace
