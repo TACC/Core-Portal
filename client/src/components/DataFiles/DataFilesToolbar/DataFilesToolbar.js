@@ -99,7 +99,13 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
 
-  const protectedFiles = ['.bash_profile', '.bashrc', '.bash_history'];
+  const protectedFiles = [
+    '.bash_profile',
+    '.bashrc',
+    '.bash_history',
+    '.ssh',
+    'authorized_keys'
+  ];
   const isProtected = selectedFiles.some(file =>
     protectedFiles.some(protectedFile => protectedFile === file.name)
   );
