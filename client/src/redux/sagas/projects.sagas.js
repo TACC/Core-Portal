@@ -1,19 +1,24 @@
 import { put, takeLatest, call } from 'redux-saga/effects';
+import queryStringParser from 'query-string';
 import { fetchUtil } from 'utils/fetchUtil';
 
-export async function fetchProjectsListing() {
+export async function fetchProjectsListing(queryString) {
+  const q = queryStringParser.stringify({ query_string: queryString });
   const result = await fetchUtil({
-    url: `/api/projects/`
+    url: queryString ? `/api/projects/?${q}` : `/api/projects/`
   });
   return result.response;
 }
 
-export function* getProjectsListing() {
+export function* getProjectsListing(action) {
   yield put({
     type: 'PROJECTS_GET_LISTING_STARTED'
   });
   try {
-    const projects = yield call(fetchProjectsListing);
+    const projects = yield call(
+      fetchProjectsListing,
+      action.payload.queryString
+    );
 
     yield put({
       type: 'PROJECTS_GET_LISTING_SUCCESS',
@@ -27,14 +32,17 @@ export function* getProjectsListing() {
   }
 }
 
-export function* showSharedWorkspaces() {
+export function* showSharedWorkspaces(action) {
   // Clear FileListing params to reset breadcrumbs
   yield put({
     type: 'DATA_FILES_CLEAR_PROJECT_SELECTION'
   });
   // Load projects list
   yield put({
-    type: 'PROJECTS_GET_LISTING'
+    type: 'PROJECTS_GET_LISTING',
+    payload: {
+      queryString: action.payload.queryString
+    }
   });
 }
 

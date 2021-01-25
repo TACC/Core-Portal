@@ -4,7 +4,7 @@
 version: "3"
 services:
   cms:
-    image: taccwma/frontera-cms:c0173cc
+    image: taccwma/frontera-cms:9877f12
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
@@ -125,7 +125,7 @@ services:
     container_name: frontera_prtl_workers
 
   docs:
-    image: taccwma/frontera-docs:8849bc2
+    image: taccwma/frontera-docs:9fcfac4
     volumes:
       - ../../docs:/docs/site
     command: ["mkdocs", "build"]
