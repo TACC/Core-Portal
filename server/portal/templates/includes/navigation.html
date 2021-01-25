@@ -1,43 +1,15 @@
-{# NOTE: Template paths are static (compared to CMS) #}
+{# NOTE: Unlike the CMS, we can limit context to includes via `only` #}
 {# WARNING: Some markup is duplicated in other repositories #}
 {# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
 {# FAQ: Extra lines exist to ease CMS/Portal/Guide template comparison #}
 
-
 <!-- Sponsor Logos -->
-<div class="branding-header">
-
-
-
-        <a href="https://www.nsf.gov/" target="">
-          <img class="branding-logo branding-nsf" src="/static/site_cms/img/org_logos/nsf-white.png" crossorigin="anonymous" alt="NSF Logo">
-        </a>
-        <span class="branding-seperator"></span>
-        <a href="https://www.tacc.utexas.edu/" target="">
-          <img class="branding-logo branding-tacc" src="/static/site_cms/img/org_logos/tacc-white.png" crossorigin="anonymous" alt="TACC Logo">
-        </a>
-        <span class="branding-seperator"></span>
-        <a href="https://www.utexas.edu/" target="">
-          <img class="branding-logo branding-utaustin" src="/static/site_cms/img/org_logos/utaustin-white.png" crossorigin="anonymous" alt="University of Texas at Austin Logo">
-        </a>
-
-
-
-
-</div>
-
-
+{% include "includes/header_branding.html" %}
 
 <!-- Navigation Bar -->
 <nav id="s-header" class="s-header  navbar navbar-expand-xl navbar-dark">
   <!-- Portal Logo -->
-
-
-    <a class="navbar-brand" href="/" target="">
-    <img class="portal-logo " src="/static/frontera-cms/img/org_logos/frontera-white-solo.png" crossorigin="anonymous" alt="Frontera Logo">
-    </a>
-
-
+  {% include "includes/header_logo.html" %}
 
   <!-- Navbar Accordian Toggle on Small Screens  -->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,12 +21,12 @@
     {# GL-6: Remove need for different `className` values #}
 
 
-      {# FAQ: Here can limit context via use `only`, but CMS can not #}
+
       {% include "includes/nav_cms.html" with className="navbar-nav" only %}
 
-
+      {# NOTE: As of 2020-12, search is only available with a Portal #}
       {% include "includes/nav_search.html" with className="form-inline  ml-auto" only %}
-      {# FAQ: Here must pass `user`, but CMS and User Guide do not #}
+      {# FAQ: Unlike CMS and User Guide, we must pass `user` #}
       {% include "includes/nav_portal.html" with className="navbar-nav" user=user only %}
 
 
