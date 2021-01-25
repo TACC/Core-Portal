@@ -69,7 +69,6 @@ const DataFilesProjectMembers = ({
   const memberColumn = {
     Header: 'Members',
     headerStyle: { textAlign: 'left' },
-    headerClassName: 'project-members__member-header',
     accessor: 'user',
     className: 'project-members__cell',
     Cell: el => (
@@ -84,7 +83,6 @@ const DataFilesProjectMembers = ({
     memberColumn,
     {
       Header: 'Access',
-      headerClassName: 'project-members__member-header',
       accessor: 'access',
       className: 'project-members__cell',
       Cell: el => <span styleName="access">{el.value}</span>
@@ -99,7 +97,6 @@ const DataFilesProjectMembers = ({
         ''
       ),
       accessor: 'username',
-      headerClassName: 'project-members__loading-header',
       className: 'project-members__cell',
       Cell: el => (
         <>
@@ -140,7 +137,6 @@ const DataFilesProjectMembers = ({
         ''
       ),
       accessor: 'username',
-      headerClassName: 'project-members__loading-header',
       className: 'project-members__cell',
       Cell: el =>
         mode === 'transfer' && el.row.original === transferUser ? (
