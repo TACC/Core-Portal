@@ -9,7 +9,7 @@
 export default function getFilePermissions(name, { files, scheme, api }) {
   const isPrivate = ['projects', 'private'].includes(scheme);
   const isArchive = files[0]
-    ? files[0].name.includes('.zip') || files[0].name.includes('.tar.gz')
+    ? files[0].name.endsWith('.zip') || files[0].name.endsWith('.tar.gz')
     : false;
   switch (name) {
     case 'rename':

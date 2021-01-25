@@ -17,13 +17,17 @@ import PropTypes from 'prop-types';
 import * as yup from 'yup';
 import './DataFilesCompressModal.module.scss';
 
-const DataFilesCompressForm = ({ singleFile, formRef }) => {
+const DataFilesCompressForm = ({ singleFile, formRef, isDisabled }) => {
   const initialValues = {
     filenameDisplay: `${singleFile || ''}`,
     filetype: '.zip'
   };
   const validationSchema = yup.object().shape({
-    filenameDisplay: yup.string().required('The filename is required')
+    filenameDisplay: yup
+      .string()
+      .trim('The filename cannot include leading and trailing spaces')
+      .strict(true)
+      .required('The filename is required')
   });
 
   return (
@@ -38,13 +42,18 @@ const DataFilesCompressForm = ({ singleFile, formRef }) => {
         };
         return (
           <Form>
-            <FormField label="Filename" name="filenameDisplay" />
+            <FormField
+              label="Filename"
+              name="filenameDisplay"
+              disabled={isDisabled}
+            />
             <FormGroup>
               <Input
                 type="select"
                 name="filetype"
                 bsSize="sm"
                 onChange={handleSelectChange}
+                disabled={isDisabled}
               >
                 <option value=".zip">.zip</option>
                 <option value=".tar.gz">.tar.gz</option>
@@ -61,7 +70,8 @@ DataFilesCompressForm.propTypes = {
   formRef: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Object) })
-  ])
+  ]),
+  isDisabled: PropTypes.bool.isRequired
 };
 DataFilesCompressForm.defaultProps = {
   formRef: null,
@@ -118,7 +128,7 @@ const DataFilesCompressModal = () => {
 
   const compressCallback = () => {
     const { filenameDisplay, filetype } = formRef.current.values;
-    const filename = `${filenameDisplay.split(' ').join('')}${filetype}`;
+    const filename = `${filenameDisplay.replace(' ', '')}${filetype}`;
     dispatch({
       type: 'DATA_FILES_COMPRESS',
       payload: { filename, files: selected }
@@ -133,7 +143,7 @@ const DataFilesCompressModal = () => {
   } else {
     buttonIcon = null;
   }
-  const firstFile = selectedFiles[0] ? selectedFiles.name : '';
+  const firstFile = selectedFiles[0] ? selectedFiles[0].name : '';
   return (
     <Modal
       isOpen={isOpen}
@@ -147,6 +157,7 @@ const DataFilesCompressModal = () => {
         <DataFilesCompressForm
           formRef={formRef}
           singleFile={selectedFiles.length > 1 ? null : firstFile}
+          isDisabled={status === 'RUNNING' || status === 'SUCCESS'}
         />
         <p>
           A job to compress your files will be submitted on your behalf. You can
