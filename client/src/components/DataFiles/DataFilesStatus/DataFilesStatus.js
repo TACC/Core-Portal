@@ -1,4 +1,4 @@
-import { findSystemDisplayName, findProjectDisplayName } from 'utils/systems';
+import { findSystemDisplayName, findProjectTitle } from 'utils/systems';
 import truncateMiddle from 'utils/truncateMiddle';
 
 const OPERATION_MAP = {
@@ -38,7 +38,7 @@ const OPERATION_MAP = {
           .split('/')
           .slice(0, -1)
           .join('/');
-        const projectName = findProjectDisplayName(
+        const projectName = findProjectTitle(
           projectList,
           response.systemId
         );
