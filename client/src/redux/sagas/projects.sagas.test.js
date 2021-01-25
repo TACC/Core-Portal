@@ -22,13 +22,13 @@ jest.mock('cross-fetch');
 
 describe('Projects Sagas', () => {
   it('should get a listing of projects', () => {
-    return expectSaga(getProjectsListing)
+    return expectSaga(getProjectsListing, {payload: {queryString: null}})
       .withReducer(projectsReducer)
       .provide([
         [matchers.call.fn(fetchProjectsListing), projectsListingFixture]
       ])
       .put({ type: 'PROJECTS_GET_LISTING_STARTED' })
-      .call(fetchProjectsListing)
+      .call(fetchProjectsListing, null)
       .put({
         type: 'PROJECTS_GET_LISTING_SUCCESS',
         payload: projectsListingFixture

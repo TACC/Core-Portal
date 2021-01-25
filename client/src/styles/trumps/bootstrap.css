@@ -1,8 +1,0 @@
-/* TRUMPS: Bootstrap */
-
-/* Align wrapped button text in buttons that have icons */
-/* HACK: Placeholder style until UI is finalized and componetized */
-.btn .icon + span,
-.btn .loading-icon + span {
-  vertical-align: middle;
-}

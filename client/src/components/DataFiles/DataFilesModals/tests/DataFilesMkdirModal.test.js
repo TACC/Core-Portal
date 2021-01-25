@@ -4,6 +4,7 @@ import DataFilesMkdirModal from '../DataFilesMkdirModal';
 import configureStore from 'redux-mock-store';
 import DataFilesMkdirModalFixture from './DataFilesMkdirModal.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
+import { projectsFixture } from '../../../../redux/sagas/fixtures/projects.fixture';
 import renderComponent from 'utils/testing';
 import { fireEvent, wait } from '@testing-library/react';
 
@@ -12,6 +13,7 @@ const mockStore = configureStore();
 const initialMockState = {
   files: DataFilesMkdirModalFixture,
   systems: systemsFixture,
+  projects: projectsFixture,
   pushKeys: {
     modalProps: {
       pushKeys: false

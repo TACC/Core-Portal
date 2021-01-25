@@ -69,11 +69,12 @@ export function jobs(state = initialState, action) {
         ...state,
         submit: { ...state.submit, response: action.payload, error: true }
       };
-    case 'UPDATE_JOB_FROM_NOTIFICATION': {
-      const event = action.payload.extra;
-      const list = state.list.map(job =>
-        job.id === event.id ? updateJobFromNotification(job, event) : job
-      );
+    case 'UPDATE_JOBS_FROM_NOTIFICATIONS': {
+      const events = action.payload;
+      const list = state.list.map(job => {
+        const event = events.find(e => e.extra.id === job.id);
+        return event ? updateJobFromNotification(job, event.extra) : job;
+      });
       return {
         ...state,
         list
