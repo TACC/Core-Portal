@@ -5,6 +5,13 @@
  * @return {string} system name
  */
 export function getSystemName(host) {
+  if (
+    host.startsWith('data.tacc') ||
+    host.startsWith('cloud.corral') ||
+    host.startsWith('secure.corral')
+  ) {
+    return 'Corral';
+  }
   const systemName = host.split('.')[0];
   return systemName.substring(0, 1).toUpperCase() + systemName.slice(1);
 }
