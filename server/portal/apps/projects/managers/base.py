@@ -10,9 +10,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from portal.libs.agave.utils import service_account
 from portal.libs.agave.models.systems.storage import StorageSystem
+from portal.libs.elasticsearch.docs.base import IndexedProject
 from portal.apps.projects.models import Project, ProjectId, ProjectSystemSerializer
 from portal.apps.projects.serializers import MetadataJSONSerializer
-from portal.apps.search.tasks import project_indexer
 
 
 # pylint: disable=invalid-name
@@ -166,8 +166,6 @@ class ProjectsManager(object):
         )
         METRICS.info('user:{} created project: id={}, title:{}'.format(self.user.username, project_id, title))
 
-        project_indexer.apply_async(args=[project_id])
-
         return prj
 
     def list(self, offset=0, limit=100):
@@ -178,11 +176,26 @@ class ProjectsManager(object):
             limit=limit
         )]
 
+    def search(self, query_string, offset=0, limit=100):
+        """Search projects by query string"""
+        search_result = IndexedProject.search()
+        search_result = search_result.query("query_string",
+                                            query=query_string,
+                                            minimum_should_match="80%")
+
+        search_result = search_result.execute()
+        result_ids = map(lambda hit: hit.projectId, search_result)
+
+        project_list = self.list()
+        filtered_list = filter(lambda prj: prj.name in result_ids,
+                               project_list)
+
+        return list(filtered_list)
+
     def apply_permissions(self, project, username, acl):
         """Index project and update acls
         """
         project_id = project.project_id
-        project_indexer.apply_async(args=[project_id])
         project_root = project.storage.storage.root_dir
         if acl == 'add':
             self._add_acls(username, project_id, project_root)
@@ -200,7 +213,6 @@ class ProjectsManager(object):
             project_id
         )
         prj.transfer_pi(old_pi, new_pi)
-        project_indexer.apply_async(args=[prj.project_id])
         return prj
 
     def add_member(self, project_id, member_type, username):
@@ -303,5 +315,4 @@ class ProjectsManager(object):
         prj = self.get_project(project_id, system_id)
         self._update_meta(prj, **data)
         self._update_storage(prj, **data)
-        project_indexer.apply_async(args=[project_id])
         return prj
