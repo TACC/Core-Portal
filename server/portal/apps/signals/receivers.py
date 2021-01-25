@@ -3,6 +3,8 @@ from portal.apps.signals.signals import portal_event
 from django.db.models.signals import post_save
 from portal.apps.notifications.models import Notification
 from portal.apps.onboarding.models import SetupEvent
+from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.search.tasks import index_project
 from django.contrib.auth import get_user_model
 import logging
 import copy
@@ -62,6 +64,11 @@ def send_notification_ws(sender, instance, created, **kwargs):
             'Exception sending message to channel: portal_notification',
             extra=instance.to_dict())
     return
+
+
+@receiver(post_save, sender=ProjectMetadata, dispatch_uid='index_project')
+def index_project_on_save(sender, instance, created, **kwargs):
+    index_project.apply_async(args=[instance.project_id])
 
 
 @receiver(post_save, sender=SetupEvent, dispatch_uid='setup_event')
