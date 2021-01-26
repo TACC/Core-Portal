@@ -14,7 +14,7 @@ build:
 .PHONY: build-full
 build-full:
 	docker build -t $(DOCKER_IMAGE) --target production -f ./server/conf/docker/Dockerfile .
-	# docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_BRANCH)
+	# docker tag $(DOCKER_IMAGE) $(DOCKER_IMAGE_BRANCH) # Note: Currently broken for branches with slashes
 
 .PHONY: publish
 publish:
