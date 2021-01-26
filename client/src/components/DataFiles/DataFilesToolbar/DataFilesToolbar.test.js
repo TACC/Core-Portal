@@ -25,8 +25,15 @@ describe('ToolbarButton', () => {
 describe('DataFilesToolbar', () => {
   it('render necessary buttons', () => {
     const { getByText } = renderComponent(
-      <DataFilesToolbar scheme="private" api="tapis"/>,
-      mockStore({files: {selected: { FilesListing: []}}, listing: {selected: {FilesListing: []}}}),
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: { config: {
+          extract: '',
+          compress: ''
+        } },
+        files: { selected: { FilesListing: [] } },
+        listing: { selected: { FilesListing: [] } },
+      }),
       createMemoryHistory()
     );
 

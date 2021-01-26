@@ -13,8 +13,11 @@ import {
   jobHelper,
   fileLinkUtil,
   fileLink,
-  copyFileUtil
+  copyFileUtil,
+  extractAppSelector,
+  compressAppSelector,
 } from './datafiles.sagas';
+import {select} from 'redux-saga/effects'
 import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
@@ -286,6 +289,7 @@ describe("extractFiles", () => {
   it("runs extractFiles saga with success", () => {
    return expectSaga(extractFiles, action)
       .provide([
+        [ select(extractAppSelector), 'extract-frontera'],
         [ matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1' ],
         [ matchers.call.fn(jobHelper), { status: 'ACCEPTED' } ]
       ])
@@ -306,6 +310,7 @@ describe("extractFiles", () => {
   it("runs extractFiles saga with push keys modal", () => {
     return expectSaga(extractFiles, action)
       .provide([
+        [ select(extractAppSelector), 'extract-frontera' ],
         [ matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1' ],
         [ matchers.call.fn(jobHelper), { execSys: 'test.cli.system' } ]
       ])
@@ -376,6 +381,7 @@ describe("compressFiles", () => {
   it("runs compressFiles saga with success", () => {
     return expectSaga(compressFiles, action)
       .provide([
+        [ select(compressAppSelector), 'zippy-frontera'],
         [ matchers.call.fn(getLatestApp), 'zippy-frontera-0.1u1' ],
         [ matchers.call.fn(jobHelper), { status: 'ACCEPTED' } ]
       ])
@@ -395,6 +401,7 @@ describe("compressFiles", () => {
   it("runs compressFiles saga with push keys modal", () => {
     return expectSaga(compressFiles, action)
       .provide([
+        [ select(compressAppSelector), 'zippy-frontera'],
         [ matchers.call.fn(getLatestApp), 'zippy-frontera-0.1u1' ],
         [ matchers.call.fn(jobHelper), { execSys: 'test.cli.system' } ]
       ])

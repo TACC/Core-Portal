@@ -806,9 +806,11 @@ const getExtractParams = (file, latestExtract) => {
   });
 };
 
+export const extractAppSelector = state => state.workbench.config.extractApp;
+
 export function* extractFiles(action) {
   try {
-    const extractApp = yield select(state => state.workbench.config.extractApp);
+    const extractApp = yield select(extractAppSelector);
     const latestExtract = yield call(getLatestApp, extractApp);
     const params = getExtractParams(action.payload.file, latestExtract);
     yield put({
@@ -884,15 +886,15 @@ const getCompressParams = (files, zipfileName, latestZippy) => {
   });
 };
 
+export const compressAppSelector = state => state.workbench.config.compressApp;
+
 export function* compressFiles(action) {
   const compressErrorAction = {
     type: 'DATA_FILES_SET_OPERATION_STATUS',
     payload: { status: 'ERROR', operation: 'compress' }
   };
   try {
-    const compressApp = yield select(
-      state => state.workbench.config.compressApp
-    );
+    const compressApp = yield select(compressAppSelector);
     const latestZippy = yield call(getLatestApp, compressApp);
     const params = getCompressParams(
       action.payload.files,
