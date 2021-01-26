@@ -106,7 +106,7 @@ const DataFilesCompressModal = () => {
         validationSchema={validationSchema}
         onSubmit={compressCallback}
       >
-        {({ setFieldValue, values }) => {
+        {({ setFieldValue, values, isValid }) => {
           const handleSelectChange = e => {
             setFieldValue('filetype', e.target.value);
           };
@@ -145,7 +145,7 @@ const DataFilesCompressModal = () => {
                 </InlineMessage>
                 <Button
                   className="data-files-btn"
-                  disabled={isDisabled}
+                  disabled={isDisabled || !isValid}
                   styleName="submit-button"
                   type="submit"
                 >
