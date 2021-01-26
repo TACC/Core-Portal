@@ -8,7 +8,8 @@ import {
   call,
   all,
   race,
-  take
+  take,
+  select
 } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
 
@@ -807,7 +808,8 @@ const getExtractParams = (file, latestExtract) => {
 
 export function* extractFiles(action) {
   try {
-    const latestExtract = yield call(getLatestApp, 'extract-frontera');
+    const extractApp = yield select(state => state.workbench.config.extractApp);
+    const latestExtract = yield call(getLatestApp, extractApp);
     const params = getExtractParams(action.payload.file, latestExtract);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -888,7 +890,10 @@ export function* compressFiles(action) {
     payload: { status: 'ERROR', operation: 'compress' }
   };
   try {
-    const latestZippy = yield call(getLatestApp, 'zippy-frontera');
+    const compressApp = yield select(
+      state => state.workbench.config.compressApp
+    );
+    const latestZippy = yield call(getLatestApp, compressApp);
     const params = getCompressParams(
       action.payload.files,
       action.payload.filename,

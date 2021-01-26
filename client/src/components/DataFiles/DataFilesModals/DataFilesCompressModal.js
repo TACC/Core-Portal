@@ -115,12 +115,7 @@ const DataFilesCompressModal = () => {
             <Form>
               <ModalBody>
                 <FormField
-                  label="Filename"
-                  name="filenameDisplay"
-                  disabled={isDisabled}
-                />
-                <FormField
-                  label="Filename"
+                  label="Compressed File Name"
                   name="filenameDisplay"
                   disabled={isDisabled}
                   addonType="append"
@@ -140,9 +135,8 @@ const DataFilesCompressModal = () => {
                   }
                 />
                 <p>
-                  A job to compress your files will be submitted on your behalf.
-                  You can check the status of this job on your Dashboard, and
-                  your compressed file will appear in this directory.
+                  A job to compress these files will be submitted. The
+                  compressed file will appear in this directory.
                 </p>
               </ModalBody>
               <ModalFooter>

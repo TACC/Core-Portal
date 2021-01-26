@@ -34,7 +34,7 @@ FormFieldWrapper.propTypes = {
   /** The content for the wrapper */
   children: PropTypes.node.isRequired,
   /** Which wrapper to use */
-  type: PropTypes.oneOf(['InputGroup', 'FormGroup'])
+  type: PropTypes.oneOf(['InputGroup', 'FormGroup', ''])
 };
 FormFieldWrapper.defaultProps = {
   type: 'FormGroup'

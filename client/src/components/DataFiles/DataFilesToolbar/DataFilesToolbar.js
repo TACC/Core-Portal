@@ -47,6 +47,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
       (scheme === 'private' || scheme === 'projects')
   );
 
+  const showCompress = !!useSelector(
+    state => state.workbench.config.extractApp
+  );
+
+  const showExtract = !!useSelector(
+    state => state.workbench.config.compressApp
+  );
+
   const toggleRenameModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -129,18 +137,22 @@ const DataFilesToolbar = ({ scheme, api }) => {
   return (
     <>
       <div id="data-files-toolbar-button-row">
-        <ToolbarButton
-          text="Extract"
-          onClick={toggleExtractModal}
-          iconName="extract"
-          disabled={!canExtract}
-        />
-        <ToolbarButton
-          text="Compress"
-          onClick={toggleCompressModal}
-          iconName="compress"
-          disabled={!canCompress}
-        />
+        {showExtract && (
+          <ToolbarButton
+            text="Extract"
+            onClick={toggleExtractModal}
+            iconName="extract"
+            disabled={!canExtract}
+          />
+        )}
+        {showCompress && (
+          <ToolbarButton
+            text="Compress"
+            onClick={toggleCompressModal}
+            iconName="compress"
+            disabled={!canCompress}
+          />
+        )}
         <ToolbarButton
           text="Rename"
           onClick={toggleRenameModal}
