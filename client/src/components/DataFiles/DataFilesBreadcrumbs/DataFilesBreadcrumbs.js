@@ -104,6 +104,17 @@ const DataFilesBreadcrumbs = ({
 
   return (
     <div className={`breadcrumbs ${className}`}>
+      {scheme === 'projects' && (
+        <>
+          <Link
+            className="breadcrumb-link"
+            to={`/workbench/data/${api}/${scheme}/`}
+          >
+            Shared Workspaces
+          </Link>{' '}
+          /{' '}
+        </>
+      )}
       <BreadcrumbLink
         api={api}
         scheme={scheme}
