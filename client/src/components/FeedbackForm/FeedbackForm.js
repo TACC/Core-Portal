@@ -30,7 +30,7 @@ const FeedbackForm = () => {
 
   const defaultValues = useMemo(
     () => ({
-      subject: 'Feedback for the Frontera Portal',
+      subject: 'Feedback for the portal',
       problem_description: '',
       name: authenticatedUser
         ? `${authenticatedUser.first_name} ${authenticatedUser.last_name}`

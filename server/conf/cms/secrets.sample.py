@@ -34,7 +34,7 @@ if _USING_CONTAINERS:
             'NAME': 'taccsite',
             'USER': 'postgresadmin',
             'PASSWORD': 'taccforever', # Change before live deployment.
-            'HOST': 'frontera_cms_postgres'
+            'HOST': 'core_cms_postgres'
         }
     }
 else:
@@ -60,8 +60,8 @@ _CMS_TEMPLATES = (
     # Customize this
     # FAQ: First template is default template
     # REF: http://docs.django-cms.org/en/latest/how_to/install.html#templates
-    ('frontera-cms/templates/fullwidth.html', 'Fullwidth'),
-    ('fullwidth.html', 'DEPRECATED Fullwidth'),
+    ('fullwidth.html', 'Fullwidth'),
+    ('example-cms/templates/fullwidth.html', 'Fullwidth (Custom Example)')
 )
 
 ########################
@@ -88,7 +88,7 @@ _DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = ""
 
 _ES_AUTH = 'username:password'
 _ES_HOSTS = 'http://elasticsearch:9200'
-_ES_INDEX_PREFIX = 'frontera-dev-{}'
+_ES_INDEX_PREFIX = 'cep-dev-{}'
 _ES_DOMAIN = 'http://localhost:8000'
 
 ########################
@@ -230,19 +230,19 @@ _NSF_BRANDING = [
     "True"
 ]
 
-# _BRANDING = [ _TACC_BRANDING, _UTEXAS_BRANDING ]        # Default TACC Portal.
-_BRANDING = [ _NSF_BRANDING, _TACC_BRANDING, _UTEXAS_BRANDING ]       # NSF Funded TACC Portal.
+_BRANDING = [ _TACC_BRANDING, _UTEXAS_BRANDING ]        # Default TACC Portal.
+# _BRANDING = [ _NSF_BRANDING, _TACC_BRANDING, _UTEXAS_BRANDING ]       # NSF Funded TACC Portal.
 
 ########################
 # LOGOS
 
-_PORTAL_LOGO =  [
-    "frontera",
-    "frontera-cms/img/org_logos/frontera-white-solo.png",
+_PORTAL_LOGO = [
+    "portal",
+    "site_cms/img/org_logos/portal.png",
     "",
     "/",
     "_self",
-    "Frontera Logo",
+    "Portal Logo",
     "anonymous",
     "True"
 ]

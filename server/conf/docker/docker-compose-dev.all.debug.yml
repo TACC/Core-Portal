@@ -4,31 +4,31 @@
 version: "3.8"
 services:
   cms:
-    image: taccwma/frontera-cms:9877f12
+    image: taccwma/core-cms:latest
     volumes:
       - ../cms/secrets.py:/code/taccsite_cms/secrets.py
       - ../cms/uwsgi/uwsgi.ini:/code/uwsgi.ini
       - ../../cms/static:/code/static
       - ../../cms/media:/code/media
     command: python manage.py runserver 0.0.0.0:8000
-    container_name: frontera_prtl_cms
+    container_name: core_prtl_cms
 
   redis:
     image: redis:5.0
     volumes:
-      - frontera_prtl_redis_data:/data
-    container_name: frontera_prtl_redis
+      - core_prtl_redis_data:/data
+    container_name: core_prtl_redis
 
   rabbitmq:
     image: rabbitmq:3.7.17-management
     volumes:
-      - frontera_prtl_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@frontera_prtl_rabbitmq
+      - core_prtl_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@core_prtl_rabbitmq
     env_file: ../env_files/rabbitmq.env
-    container_name: frontera_prtl_rabbitmq
+    container_name: core_prtl_rabbitmq
 
   memcached:
     image: memcached:latest
-    container_name: frontera_prtl_memcached
+    container_name: core_prtl_memcached
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
@@ -39,16 +39,16 @@ services:
       - discovery.type=single-node
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - frontera_prtl_es_data:/usr/share/elasticsearch/data
-    container_name: frontera_prtl_elasticsearch
+      - core_prtl_es_data:/usr/share/elasticsearch/data
+    container_name: core_prtl_elasticsearch
     ports:
       - 9200:9200
 
   postgres:
     image: postgres:11.5
     volumes:
-      - frontera_prtl_postgres_data:/var/lib/postgresql/data/portal
-    container_name: frontera_prtl_postgres
+      - core_prtl_postgres_data:/var/lib/postgresql/data/portal
+    container_name: core_prtl_postgres
     environment:
       - POSTGRES_PASSWORD=dev
       - POSTGRES_USER=dev
@@ -58,8 +58,8 @@ services:
   postgrescms:
     image: postgres:11.5
     volumes:
-      - frontera_cms_postgres_data:/var/lib/postgresql/data/portal
-    container_name: frontera_cms_postgres
+      - core_cms_postgres_data:/var/lib/postgresql/data/portal
+    container_name: core_cms_postgres
     environment:
       - POSTGRES_PASSWORD=taccforever
       - POSTGRES_USER=postgresadmin
@@ -72,30 +72,30 @@ services:
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf
       - ../uwsgi/uwsgi_params:/etc/nginx/uwsgi_params
       - ../nginx/gzip.conf:/etc/nginx/gzip.conf
-      - ../nginx/certificates/frontera.dev.crt:/etc/ssl/frontera.dev.crt
-      - ../nginx/certificates/frontera.dev.key:/etc/ssl/frontera.dev.key
+      - ../nginx/certificates/cep.dev.crt:/etc/ssl/cep.dev.crt
+      - ../nginx/certificates/cep.dev.key:/etc/ssl/cep.dev.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
       - ../../../.:/srv/www/portal
     ports:
       - 80:80
       - 443:443
-    container_name: frontera_prtl_nginx
+    container_name: core_prtl_nginx
 
   websockets:
-    image: taccwma/frontera-portal:local
+    image: taccwma/core-portal:local
     volumes:
       - ../../../.:/srv/www/portal
-      - ../nginx/certificates/frontera.dev.crt:/etc/ssl/frontera.dev.crt
-      - ../nginx/certificates/frontera.dev.key:/etc/ssl/frontera.dev.key
-    container_name: frontera_prtl_websockets
+      - ../nginx/certificates/cep.dev.crt:/etc/ssl/cep.dev.crt
+      - ../nginx/certificates/cep.dev.key:/etc/ssl/cep.dev.key
+    container_name: core_prtl_websockets
     # ** NOTE: Run this daphne command below to run a production-ready daphne server,
     # ** matching deployed configurations. Be aware there is no autoreload for local
     # ** development with this enabled.
-    # command: 'daphne -b 0.0.0.0 -p 9000 -e ssl:443:privateKey=/etc/ssl/frontera.dev.key:certKey=/etc/ssl/frontera.dev.crt --root-path=/srv/www/portal/server --access-log - --proxy-headers portal.asgi:application'
+    # command: 'daphne -b 0.0.0.0 -p 9000 -e ssl:443:privateKey=/etc/ssl/cep.dev.key:certKey=/etc/ssl/cep.dev.crt --root-path=/srv/www/portal/server --access-log - --proxy-headers portal.asgi:application'
     command: 'python manage.py runserver 0.0.0.0:9000'
 
   django:
-    image: taccwma/frontera-portal:local
+    image: taccwma/core-portal:local
     volumes:
       - ../../../.:/srv/www/portal
       - ../../static:/var/www/portal/server/static
@@ -110,10 +110,10 @@ services:
     # ** is no autoreload for local development with this enabled.
     # command: uwsgi --ini /srv/www/portal/server/conf/uwsgi/uwsgi_core.ini
     command: python manage.py runserver --noasgi 0.0.0.0:6000
-    container_name: frontera_prtl_django
+    container_name: core_prtl_django
 
   workers:
-    image: taccwma/frontera-portal:local
+    image: taccwma/core-portal:local
     volumes:
       - ../../../.:/srv/www/portal
       - ../../static:/var/www/portal/server/static
@@ -122,7 +122,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     command: "celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
-    container_name: frontera_prtl_workers
+    container_name: core_prtl_workers
 
   docs:
     image: taccwma/frontera-docs:9fcfac4
@@ -132,8 +132,8 @@ services:
     container_name: frontera_docs
 
 volumes:
-  frontera_prtl_redis_data:
-  frontera_prtl_es_data:
-  frontera_prtl_rabbitmq_data:
-  frontera_prtl_postgres_data:
-  frontera_cms_postgres_data:
+  core_prtl_redis_data:
+  core_prtl_es_data:
+  core_prtl_rabbitmq_data:
+  core_prtl_postgres_data:
+  core_cms_postgres_data:
