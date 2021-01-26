@@ -31,8 +31,8 @@ const DataFilesProjectMembers = ({
   /* eslint-enable */
 
   const userSearch = e => {
-    if (!e.target.value || e.target.value.trim().length < 1) return;
     setInputUser(e.target.value);
+    if (!e.target.value || e.target.value.trim().length < 1) return;
     // Try to set the selectedUser to something matching current search results
     setSelectedUser(
       userSearchResults.find(user => formatUser(user) === e.target.value)
