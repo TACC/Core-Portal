@@ -20,7 +20,10 @@ import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
 
 const PrivateDataRedirect = () => {
-  const systems = useSelector(state => state.systems.systemList, shallowEqual);
+  const systems = useSelector(
+    state => state.systems.datafiles.list,
+    shallowEqual
+  );
   const history = useHistory();
   useEffect(() => {
     if (systems.length === 0) return;

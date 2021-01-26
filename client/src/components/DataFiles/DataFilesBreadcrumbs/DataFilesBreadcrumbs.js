@@ -82,7 +82,7 @@ const DataFilesBreadcrumbs = ({
 }) => {
   const paths = [];
   const pathComps = [];
-  const systemList = useSelector(state => state.systems.systemList);
+  const systemList = useSelector(state => state.systems.datafiles.list);
   const projectsList = useSelector(state => state.projects.listing.projects);
 
   path

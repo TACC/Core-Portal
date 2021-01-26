@@ -13,7 +13,7 @@ const DataFilesSystemSelector = ({
   showProjects
 }) => {
   const dispatch = useDispatch();
-  const systemList = useSelector(state => state.systems.systemList);
+  const systemList = useSelector(state => state.systems.datafiles.list);
   const findSystem = id => systemList.find(system => system.system === id);
   const [selectedSystem, setSelectedSystem] = useState(systemId);
 

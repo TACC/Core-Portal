@@ -38,7 +38,10 @@ const DataFilesCopyModal = React.memo(() => {
     shallowEqual
   );
   const [disabled, setDisabled] = useState(false);
-  const systems = useSelector(state => state.systems.systemList, shallowEqual);
+  const systems = useSelector(
+    state => state.systems.datafiles.list,
+    shallowEqual
+  );
 
   const selectedFiles = useSelector(
     state =>

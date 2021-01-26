@@ -1,10 +1,17 @@
 export const initialSystemState = {
-  defaultHost: '',
-  systemList: [],
-  error: false,
-  errorMessage: null,
-  loading: false,
-  definitions: []
+  datafiles: {
+    list: [],
+    error: false,
+    errorMessage: null,
+    loading: false,
+    defaultHost: ''
+  },
+  definitions: {
+    list: [],
+    error: false,
+    errorMessage: null,
+    loading: true
+  }
 };
 
 export const addSystemDefinition = (system, definitionList) => {
@@ -19,45 +26,63 @@ export function systems(state = initialSystemState, action) {
     case 'FETCH_SYSTEMS_STARTED':
       return {
         ...state,
-        error: false,
-        errorMessage: null,
-        loading: true
+        datafiles: {
+          ...state.datafiles,
+          error: false,
+          errorMessage: null,
+          loading: true
+        }
       };
     case 'FETCH_SYSTEMS_SUCCESS':
       return {
         ...state,
-        systemList: action.payload.system_list,
-        defaultHost: action.payload.default_host,
-        loading: false
+        datafiles: {
+          ...state.datafiles,
+          list: action.payload.system_list,
+          defaultHost: action.payload.default_host,
+          loading: false
+        }
       };
     case 'FETCH_SYSTEMS_ERROR':
       return {
         ...state,
-        error: true,
-        errorMessage: action.payload,
-        loading: false
+        datafiles: {
+          ...state.datafiles,
+          error: true,
+          errorMessage: action.payload,
+          loading: false
+        }
       };
     case 'FETCH_SYSTEM_DEFINITION_STARTED':
       return {
         ...state,
-        error: false,
-        errorMessage: null,
-        loading: true
+        definitions: {
+          ...state.datafiles,
+          error: false,
+          errorMessage: null,
+          loading: true
+        }
       };
     case 'FETCH_SYSTEM_DEFINITION_SUCCESS':
       return {
         ...state,
-        definitions: addSystemDefinition(action.payload, state.definitions),
-        error: false,
-        errorMessage: null,
-        loading: false
+        definitions: {
+          ...state.datafiles,
+          list: addSystemDefinition(action.payload, state.definitions),
+          error: false,
+          errorMessage: null,
+          loading: false
+        }
       };
     case 'FETCH_SYSTEM_DEFINITION_ERROR':
       return {
         ...state,
-        error: true,
-        errorMessage: action.payload,
-        loading: false
+        definitions: {
+          ...state.datafiles,
+          error: true,
+          errorMessage: action.payload,
+          loading: false
+        }
       };
     default:
       return state;
