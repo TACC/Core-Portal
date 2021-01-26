@@ -40,10 +40,9 @@ const OPERATION_MAP = {
           .join('/');
         const projectName = findProjectTitle(projectList, response.systemId);
         if (projectName) {
-          return `${type} ${mappedOp} to ${truncateMiddle(
-            `${projectName}/`,
-            20
-          )}`;
+          const dest =
+            destPath === '/' || destPath === '' ? `${projectName}/` : destPath;
+          return `${type} ${mappedOp} to ${truncateMiddle(dest, 20)}`;
         }
         const dest =
           destPath === '/' || destPath === ''
