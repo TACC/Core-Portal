@@ -3,10 +3,24 @@
 {# RFE: Use a custom element or React component whose code exists in one repo #}
 {# WARNING: Some markup is duplicated in other repositories #}
 {# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
-<ul class="s-cms-nav  {{ className }}" id="cms-nav-pages" data-cms-nav-endpoint="/cms/nav/pages/markup/">
+<ul class="s-cms-nav  {{ className }}" id="s-cms-nav">
 
   <!-- All top-level CMS controlled nav elements handled here. -->
   {# FAQ: Content populated via JavaScript, below #}
 
 </ul>
-<script src="/static/site_cms/js/nav_cms.js"></script>
+<script type="module">
+  import flagLinkActive from '/static/site_cms/js/modules/flagLinkActive.js';
+  import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
+
+  const container = document.getElementById('s-cms-nav');
+
+  importHTML.insertFromURL('/cms/nav/pages/markup/', container).then(container => {
+    flagLinkActive({
+      activeClassname: 'active',
+      linkSelector: 'a',
+      scopeElement: container,
+      ancestorActiveElementSelector: 'li'
+    });
+  });
+</script>
