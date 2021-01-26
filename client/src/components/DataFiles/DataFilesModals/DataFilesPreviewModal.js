@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { LoadingSpinner } from '_common';
@@ -17,6 +17,7 @@ const DataFilesPreviewModal = () => {
   const previewHref = useSelector(state => state.files.preview.href);
   const previewContent = useSelector(state => state.files.preview.content);
   const isLoading = useSelector(state => state.files.preview.isLoading);
+  const [isFrameLoading, setIsFrameLoading] = useState(true);
 
   const toggle = () =>
     dispatch({
@@ -44,6 +45,11 @@ const DataFilesPreviewModal = () => {
       payload: { content: '', href: '', isLoading: true }
     });
   };
+
+  const onFrameLoad = useCallback(() => {
+    setIsFrameLoading(false);
+  }, [setIsFrameLoading]);
+
   return (
     <>
       <Modal
@@ -56,7 +62,7 @@ const DataFilesPreviewModal = () => {
       >
         <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
         <ModalBody>
-          {isLoading && <PreviewModalSpinner />}
+          {(isLoading || isFrameLoading) && <PreviewModalSpinner />}
           {previewContent ? (
             <div>
               <code>
@@ -69,6 +75,7 @@ const DataFilesPreviewModal = () => {
                 title="preview"
                 frameBorder="0"
                 className="embed-responsive-item"
+                onLoad={onFrameLoad}
                 src={previewHref}
               />
             </div>
