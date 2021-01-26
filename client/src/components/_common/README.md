@@ -1,4 +1,4 @@
-# TACC Frontera Web Portal - Common Components
+# TACC Core Portal - Common Components
 
 These components are available to all components (including each other).
 
