@@ -88,6 +88,7 @@ const FeedbackForm = () => {
                     size="sm"
                     color="white"
                     data-testid="creating-spinner"
+                    className="ticket-create-spinner"
                   />
                 )}
                 Submit
