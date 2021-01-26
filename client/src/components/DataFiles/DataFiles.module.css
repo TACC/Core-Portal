@@ -49,3 +49,12 @@
   padding-left: 20px;
   display: flex;
 }
+
+/* Messaging */
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #9d85ef;
+  padding: 30px;
+}

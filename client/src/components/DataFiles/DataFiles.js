@@ -11,6 +11,7 @@ import { parse } from 'query-string';
 
 import './DataFiles.module.css';
 
+import { Message, LoadingSpinner } from '_common';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
@@ -95,10 +96,25 @@ const DataFiles = () => {
     state => state.files.params.FilesListing,
     shallowEqual
   );
+  const loading = useSelector(state => state.systems.datafiles.loading);
+  const error = useSelector(state => state.systems.datafiles.error);
 
   const readOnly =
     listingParams.scheme === 'projects' &&
     (listingParams.system === '' || !listingParams.system);
+
+  if (error) {
+    return (
+      <Message type="warn" styleName="error">
+        There was a problem retrieving your systems
+      </Message>
+    );
+  }
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <div styleName="container">
       {/* row containing breadcrumbs and toolbar */}
