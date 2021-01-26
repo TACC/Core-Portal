@@ -40,7 +40,7 @@ export function findProjectTitle(projectsList, projectSystem) {
   if (matching) {
     return matching.description;
   }
-  return 'Shared Workspaces';
+  return '';
 }
 
 /**

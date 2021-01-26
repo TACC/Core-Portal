@@ -19,7 +19,7 @@ describe('systems utility functions', () => {
   });
   it('get project title from host', () => {
     expect(findProjectTitle(projectsListingFixture, 'test.site.project.FRONTERA-3')).toEqual('Test Project Title');
-    expect(findProjectTitle(projectsListingFixture, 'test.site.project.FRONTERA-X')).toEqual('Shared Workspaces');
+    expect(findProjectTitle(projectsListingFixture, 'test.site.project.FRONTERA-X')).toEqual('');
   });
   it('get project title based on resource', () => {
     const systemList = systemsFixture.systemList;
@@ -34,7 +34,7 @@ describe('systems utility functions', () => {
       systemList,
       projectsListingFixture,
       'test.site.project.FRONTERA-X'
-    )).toEqual('Shared Workspaces');
+    )).toEqual('');
   });
   it('get system display name based on resource', () => {
     const systemList = systemsFixture.systemList;
