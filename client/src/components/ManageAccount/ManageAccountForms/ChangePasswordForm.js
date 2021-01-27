@@ -24,11 +24,7 @@ const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
     </div>
   );
   return (
-    <Form
-      ref={formRef}
-      className="change-password-form"
-      aria-label="change-password-form"
-    >
+    <Form ref={formRef} aria-label="change-password-form">
       <ManageAccountInput
         label="Current Password"
         name="currentPW"
@@ -141,7 +137,7 @@ export default function() {
   const hasErrors = errors => isEmpty(Object.keys(errors));
   return (
     <>
-      <Message type="warn" className="password-warning">
+      <Message type="warn">
         <p>
           <strong>Please Note:</strong> This form requests a reset to your TACC
           Account password. Changes to this password will affect your TACC

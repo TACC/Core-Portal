@@ -27,7 +27,18 @@
 }
 .btn-link {
   color: #9d85ef;
-  padding: 2px 0px 2px 0px;
+  border: 0;
+  vertical-align: baseline;
+}
+
+.modal-body {
+  font-size: 14px;
+  .btn-link {
+    padding: 0;
+  }
+  .manage-account-submit-button {
+    margin-left: auto;
+  }
 }
 
 /*
@@ -46,6 +57,7 @@
   }
 }
 .manage-account-modal {
+  font-size: 14px;
   .modal-content {
     border-radius: 0 !important;
   }
@@ -128,7 +140,10 @@
 }
 // Buttons and Forms
 .manage-account-submit-button {
-  float: right;
+  // float: right;
+  display: flex;
+  width: fit-content;
+  margin-left: auto;
   border-radius: 0;
   font: bold 12px Roboto, sans-serif;
   padding: 0.5rem 1rem;
@@ -145,13 +160,6 @@
 .license-button {
   background-color: transparent !important;
   font-weight: bold;
-}
-.change-password-form {
-  font-size: 14px;
-  flex-direction: column;
-}
-.password-warning {
-  font-size: 14px;
 }
 
 .welcomeMessageGeneral {
