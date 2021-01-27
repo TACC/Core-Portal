@@ -138,9 +138,10 @@ export const AppSchemaForm = ({ app }) => {
       allocations: matchingHost ? state.allocations.hosts[matchingHost] : [],
       portalAlloc: state.allocations.portal_alloc,
       jobSubmission: state.jobs.submit,
-      hasDefaultAllocation: !state.allocations.loading
-        ? state.allocations.hosts[state.systems.datafiles.defaultHost]
-        : true,
+      hasDefaultAllocation:
+        state.allocations.loading || state.systems.datafiles.loading
+          ? true
+          : state.allocations.hosts[state.systems.datafiles.defaultHost],
       defaultHost: state.systems.datafiles.defaultHost
     };
   }, shallowEqual);

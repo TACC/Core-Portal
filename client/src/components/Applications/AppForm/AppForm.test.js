@@ -14,7 +14,7 @@ const mockStore = configureStore();
 const initialMockState = {
   allocations: allocationsFixture,
   jobs: jobsFixture,
-  systems: { ...systemsFixture, defaultHost: 'frontera.tacc.utexas.edu' },
+  systems: systemsFixture,
   files: {
     listing: {
       modal: []
