@@ -23,7 +23,9 @@ const PublicData = () => {
 
   const publicDataSystem = useSelector(
     state =>
-      state.systems.datafiles.list.find(sys => sys.scheme === 'public') || {}
+      state.systems.storage.configuration.find(
+        sys => sys.scheme === 'public'
+      ) || {}
   );
   const selectedFiles = useSelector(state =>
     state.files.selected.FilesListing.map(

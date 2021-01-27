@@ -140,9 +140,9 @@ export const AppSchemaForm = ({ app }) => {
       jobSubmission: state.jobs.submit,
       hasDefaultAllocation:
         state.allocations.loading ||
-        state.systems.datafiles.loading ||
-        state.allocations.hosts[state.systems.datafiles.defaultHost],
-      defaultHost: state.systems.datafiles.defaultHost
+        state.systems.storage.loading ||
+        state.allocations.hosts[state.systems.storage.defaultHost],
+      defaultHost: state.systems.storage.defaultHost
     };
   }, shallowEqual);
 

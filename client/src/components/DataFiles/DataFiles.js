@@ -22,7 +22,7 @@ import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFiles
 
 const PrivateDataRedirect = () => {
   const systems = useSelector(
-    state => state.systems.datafiles.list,
+    state => state.systems.storage.configuration,
     shallowEqual
   );
   const history = useHistory();
@@ -96,8 +96,8 @@ const DataFiles = () => {
     state => state.files.params.FilesListing,
     shallowEqual
   );
-  const loading = useSelector(state => state.systems.datafiles.loading);
-  const error = useSelector(state => state.systems.datafiles.error);
+  const loading = useSelector(state => state.systems.storage.loading);
+  const error = useSelector(state => state.systems.storage.error);
 
   const readOnly =
     listingParams.scheme === 'projects' &&

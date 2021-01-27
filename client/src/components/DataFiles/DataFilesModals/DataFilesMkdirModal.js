@@ -9,7 +9,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const DataFilesMkdirModal = () => {
   const dispatch = useDispatch();
-  const systemList = useSelector(state => state.systems.datafiles.list);
+  const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
   const isOpen = useSelector(state => state.files.modals.mkdir);
   const params = useSelector(

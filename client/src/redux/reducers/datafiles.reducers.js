@@ -1,6 +1,6 @@
 export const initialSystemState = {
-  datafiles: {
-    list: [],
+  storage: {
+    configuration: [],
     error: false,
     errorMessage: null,
     loading: false,
@@ -26,8 +26,9 @@ export function systems(state = initialSystemState, action) {
     case 'FETCH_SYSTEMS_STARTED':
       return {
         ...state,
-        datafiles: {
-          ...state.datafiles,
+        storage: {
+          ...state.storage,
+          configuration: [],
           error: false,
           errorMessage: null,
           loading: true
@@ -36,9 +37,9 @@ export function systems(state = initialSystemState, action) {
     case 'FETCH_SYSTEMS_SUCCESS':
       return {
         ...state,
-        datafiles: {
-          ...state.datafiles,
-          list: action.payload.system_list,
+        storage: {
+          ...state.storage,
+          configuration: action.payload.system_list,
           defaultHost: action.payload.default_host,
           loading: false
         }
@@ -46,8 +47,8 @@ export function systems(state = initialSystemState, action) {
     case 'FETCH_SYSTEMS_ERROR':
       return {
         ...state,
-        datafiles: {
-          ...state.datafiles,
+        storage: {
+          ...state.storage,
           error: true,
           errorMessage: action.payload,
           loading: false
@@ -57,7 +58,7 @@ export function systems(state = initialSystemState, action) {
       return {
         ...state,
         definitions: {
-          ...state.datafiles,
+          ...state.definitions,
           error: false,
           errorMessage: null,
           loading: true
@@ -67,7 +68,7 @@ export function systems(state = initialSystemState, action) {
       return {
         ...state,
         definitions: {
-          ...state.datafiles,
+          ...state.definitions,
           list: addSystemDefinition(action.payload, state.definitions),
           error: false,
           errorMessage: null,

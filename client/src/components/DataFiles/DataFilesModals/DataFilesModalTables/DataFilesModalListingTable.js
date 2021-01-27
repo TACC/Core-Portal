@@ -157,7 +157,7 @@ const DataFilesModalListingTable = ({
   const loading = useSelector(state => state.files.loading.modal);
   const error = useSelector(state => state.files.error.modal);
   const params = useSelector(state => state.files.params.modal, shallowEqual);
-  const systemList = useSelector(state => state.systems.datafiles.list);
+  const systemList = useSelector(state => state.systems.storage.configuration);
   const isNotRoot = params.path.length > 0;
 
   const alteredData = useMemo(() => {

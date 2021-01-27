@@ -10,10 +10,9 @@ const mockStore = configureStore();
 
 const systems = {
   ...systemsFixture,
-  defaultHost: 'frontera.tacc.utexas.edu',
-  datafiles: {
-    ...systemsFixture.datafiles,
-    list: [
+  storage: {
+    ...systemsFixture.storage,
+    configuration: [
       {
         name: 'Public Data',
         system: 'cep.storage.public',

@@ -39,7 +39,7 @@ const DataFilesCopyModal = React.memo(() => {
   );
   const [disabled, setDisabled] = useState(false);
   const systems = useSelector(
-    state => state.systems.datafiles.list,
+    state => state.systems.storage.configuration,
     shallowEqual
   );
 

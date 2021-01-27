@@ -1,7 +1,7 @@
 const systemsFixture = {
-  datafiles: {
+  storage: {
     defaultHost: 'frontera.tacc.utexas.edu',
-    list: [
+    configuration: [
       {
         name: 'My Data (Frontera)',
         system: 'frontera.home.username',

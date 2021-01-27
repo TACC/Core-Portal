@@ -9,7 +9,7 @@ import DataFilesProjectsList from '../DataFilesProjectsList/DataFilesProjectsLis
 
 const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
   const systems = useSelector(
-    state => state.systems.datafiles.list,
+    state => state.systems.storage.configuration,
     shallowEqual
   );
   const files = useSelector(state => state.files.listing.modal, shallowEqual);

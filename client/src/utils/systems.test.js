@@ -12,7 +12,7 @@ describe('systems utility functions', () => {
     expect(getSystemName('stampede2.tacc.utexas.edu')).toEqual('Stampede2');
   });
   it('get system display name from host', () => {
-    const { list: systemList } = systemsFixture.datafiles;
+    const { configuration: systemList } = systemsFixture.storage;
     expect(findSystemDisplayName(systemList, 'frontera.home.username')).toEqual(
       'My Data (Frontera)'
     );
@@ -29,11 +29,11 @@ describe('systems utility functions', () => {
     ).toEqual('Shared Workspaces');
   });
   it('get project title based on resource', () => {
-    const { list: systemList } = systemsFixture.datafiles;
+    const { configuration: systemList } = systemsFixture.storage;
     expect(
       findSystemOrProjectDisplayName(
         'projects',
-        systemList.datafiles,
+        systemList,
         projectsListingFixture,
         'test.site.project.FRONTERA-3'
       )
@@ -48,7 +48,7 @@ describe('systems utility functions', () => {
     ).toEqual('Shared Workspaces');
   });
   it('get system display name based on resource', () => {
-    const { list: systemList } = systemsFixture.datafiles;
+    const { configuration: systemList } = systemsFixture.storage;
     expect(
       findSystemOrProjectDisplayName(
         'private',

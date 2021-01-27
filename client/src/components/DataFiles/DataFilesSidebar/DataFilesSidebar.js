@@ -29,7 +29,7 @@ const DataFilesSidebar = ({ readOnly }) => {
   const err = useSelector(state => state.files.error.FilesListing);
   const { api, scheme } = useSelector(state => state.files.params.FilesListing);
   const systems = useSelector(
-    state => state.systems.datafiles.list,
+    state => state.systems.storage.configuration,
     shallowEqual
   );
   const { user } = useSelector(state => state.authenticatedUser);
