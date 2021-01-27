@@ -337,7 +337,6 @@ export function files(state = initialFilesState, action) {
           [action.payload.operation]: action.payload.props
         }
       };
-<<<<<<< HEAD
     case 'STORE_SELECTOR_REF':
       return {
         ...state,
@@ -348,7 +347,6 @@ export function files(state = initialFilesState, action) {
       };
     case 'CLEAR_REFS':
       return { ...state, refs: {} };
-=======
     case 'DATA_FILES_SET_MODAL_PROPS':
       return {
         ...state,
@@ -374,7 +372,6 @@ export function files(state = initialFilesState, action) {
           }
         }
       };
->>>>>>> a21d8ec763c080575afd4b15673fbf56a887d6b3
     default:
       return state;
   }
