@@ -103,7 +103,6 @@ class AppsView(BaseApiView):
                 list_kwargs['query'] = {
                     "name": name
                 }
-            print(list_kwargs)
             data = agave.apps.list(**list_kwargs)
         return JsonResponse({"response": data})
 
