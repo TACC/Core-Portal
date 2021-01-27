@@ -17,6 +17,7 @@ import {
   watchPreview,
   watchMkdir,
   watchDownload,
+  watchLink,
   watchTrash
 } from './datafiles.sagas';
 import watchAllocations from './allocations.sagas';
@@ -28,7 +29,9 @@ import {
   watchTicketDetailedViewFetchHistory,
   watchTicketDetailedViewFetchSubject,
   watchPostTicketReply,
-  watchPostTicketCreate
+  watchPostTicketCreate,
+  watchTicketCreateOpenModal,
+  watchTicketCreateCloseModal
 } from './tickets.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
 import { watchWorkbench } from './workbench.sagas';
@@ -36,6 +39,11 @@ import {
   watchFetchWelcomeMessages,
   watchSaveWelcomeMessages
 } from './welcome.sagas';
+import {
+  watchOnboardingAdminList,
+  watchOnboardingAdminIndividualUser,
+  watchOnboardingAction
+} from './onboarding.sagas';
 
 export default function* rootSaga() {
   yield all([
@@ -53,6 +61,7 @@ export default function* rootSaga() {
     watchPreview(),
     watchMkdir(),
     watchDownload(),
+    watchLink(),
     watchTrash(),
     ...watchAllocations,
     watchApps(),
@@ -65,11 +74,16 @@ export default function* rootSaga() {
     watchTicketDetailedViewFetchSubject(),
     watchPostTicketReply(),
     watchPostTicketCreate(),
+    watchTicketCreateOpenModal(),
+    watchTicketCreateCloseModal(),
     watchAuthenticatedUser(),
     watchSocket(),
     watchFetchNotifications(),
     watchWorkbench(),
     watchFetchWelcomeMessages(),
-    watchSaveWelcomeMessages()
+    watchSaveWelcomeMessages(),
+    watchOnboardingAdminList(),
+    watchOnboardingAdminIndividualUser(),
+    watchOnboardingAction()
   ]);
 }

@@ -20,8 +20,6 @@ logger = logging.getLogger(__name__)
 class TestAgaveFile(TestCase):
     """Test Agave File"""
 
-    fixtures = ['users', 'auth', 'accounts']
-
     @classmethod
     def setUpClass(cls):
         super(TestAgaveFile, cls).setUpClass()
@@ -138,8 +136,6 @@ class TestAgaveFile(TestCase):
 
 class TestAgaveMetadata(TestCase):
     """Test Agave File"""
-
-    fixtures = ['users', 'auth', 'accounts']
 
     @classmethod
     def setUpClass(cls):

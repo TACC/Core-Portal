@@ -110,7 +110,7 @@ def get_tas_allocations(username):
     }
 
 
-def get_allocations(username):
+def get_allocations(username, force=False):
     """
     Returns indexed allocation data cached in Elasticsearch, or fetches
     allocations from TAS and indexes them if not cached yet.
@@ -123,6 +123,9 @@ def get_allocations(username):
         dict
     """
     try:
+        if force:
+            logger.debug("Forcing TAS allocation retrieval")
+            raise NotFoundError
         result = {
             'hosts': {},
             'portal_alloc': None,

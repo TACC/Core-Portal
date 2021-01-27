@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
-import { Button, FormGroup, Alert } from 'reactstrap';
+import React from 'react';
+import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { AppIcon, FormField, Icon, LoadingSpinner, Message } from '_common';
+import {
+  AppIcon,
+  FormField,
+  Icon,
+  LoadingSpinner,
+  SectionMessage
+} from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
 import './AppForm.scss';
@@ -57,25 +63,30 @@ const AppDetail = () => {
     shallowEqual
   );
 
+  const categoryDict = useSelector(state => state.apps.categoryDict);
+  const hasApps = Object.keys(categoryDict).some(
+    category => categoryDict[category] && categoryDict[category].length > 0
+  );
+
   if (error.isError) {
     const errorText = error.message ? error.message : 'Something went wrong.';
 
     return (
-      <Message type="warn" className="appDetail-error">
-        {errorText}
-      </Message>
+      <div className="appDetail-error">
+        <SectionMessage type="warning">{errorText}</SectionMessage>
+      </div>
     );
   }
 
-  if (loading || !app.name || allocationsLoading) {
+  if (loading || allocationsLoading) {
     return <LoadingSpinner />;
   }
 
   return (
     <div id="appDetail-wrapper">
-      {!app.name && <AppPlaceholder />}
-      {app.value && app.value.type === 'html' ? (
-        parse(app.value.definition.html)
+      {!app && <AppPlaceholder apps={hasApps} />}
+      {app.appType === 'html' ? (
+        parse(app.html)
       ) : (
         <>
           <AppInfo app={app} />
@@ -187,38 +198,41 @@ export const AppSchemaForm = ({ app }) => {
     initialValues.allocation = app.scheduler;
   }
 
-  // local state for alerts
-  const [visible, setVisible] = useState(true);
-  const onDismiss = () => setVisible(false);
-
   return (
     <div id="appForm-wrapper">
       {jobSubmission.response && (
         <div id="appForm-alerts">
           {jobSubmission.error ? (
-            <Alert color="warning" isOpen={visible} toggle={onDismiss}>
-              Error: {jobSubmission.response.message}
-              {missingAllocation && (
-                <>
-                  &nbsp;Please click&nbsp;
-                  <Link to="/workbench/allocations/manage" className="wb-link">
-                    here
-                  </Link>
-                  &nbsp;to request access.
-                </>
-              )}
-            </Alert>
+            <div className="appDetail-error">
+              <SectionMessage type="warning">
+                Error: {jobSubmission.response.message}
+                {missingAllocation && (
+                  <>
+                    &nbsp;Please click&nbsp;
+                    <Link
+                      to="/workbench/allocations/manage"
+                      className="wb-link"
+                    >
+                      here
+                    </Link>
+                    &nbsp;to request access.
+                  </>
+                )}
+              </SectionMessage>
+            </div>
           ) : (
-            <Alert color="info" isOpen={visible} toggle={onDismiss}>
-              Your job has submitted successfully. See details in{' '}
-              <Link
-                to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
-                className="wb-link"
-              >
-                History &gt; Jobs
-              </Link>
-              .
-            </Alert>
+            <div className="appDetail-error">
+              <SectionMessage type="success">
+                Your job has submitted successfully. See details in{' '}
+                <Link
+                  to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
+                  className="wb-link"
+                >
+                  History &gt; Jobs
+                </Link>
+                .
+              </SectionMessage>
+            </div>
           )}
         </div>
       )}

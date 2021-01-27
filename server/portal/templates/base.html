@@ -1,11 +1,11 @@
-{% load cms_tags staticfiles sekizai_tags menu_tags %}
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
   <head>
     {% include 'includes/analytics.html' %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{% block title %}{% page_attribute "page_title" %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="{{ site.description }}">
     {% if settings.PORTAL_ICON_FILENAME %}
@@ -17,15 +17,14 @@
     <base href="/">
     {% block head_extra %}{% endblock %}
     <!-- styles -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-    <link id="header-css-font-icons" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css">
-    <link id="header-css" rel="stylesheet" href="/static/site_cms/css/site.header.css" />
+    <link id="css-site-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link id="css-site-header" rel="stylesheet" href="/static/site_cms/css/build/site.header.css" />
     <!-- Vendor CSS -->
-    <link href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" rel="stylesheet" crossorigin="anonymous">
+    {# FP-526: Stop using Font Awesome icons; start using Cortal icons #}
+    <link id="css-portal-font" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     {% block styles %}{% endblock %}
-    {% render_block "css" %}
   </head>
   <body>
     <div class="content">
@@ -35,7 +34,7 @@
       {% block content %}{% endblock %}
     </div>
     {% include 'includes/footer.html' %}
-    {% render_block "js" %}
+    {% block scripts %}{% endblock %}
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

@@ -3,7 +3,7 @@ import { Button, Container, Row, Col } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 import JobsView from '../Jobs';
-import Tickets, { TicketModal, TicketCreateModal } from '../Tickets';
+import Tickets, { TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
 import BrowserChecker from '../_common/BrowserChecker';
 import * as ROUTES from '../../constants/routes';
@@ -17,7 +17,7 @@ function Dashboard() {
       <BrowserChecker />
       <div className="dashboard-header">
         <h5>Dashboard</h5>
-        <Link to="/accounts/profile" className="wb-link">
+        <Link to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`} className="wb-link">
           <h6>Manage Account</h6>
         </Link>
       </div>
@@ -69,9 +69,8 @@ function Dashboard() {
           path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
           render={() => {
             dispatch({
-              type: 'TICKETS_CREATE_INIT'
+              type: 'TICKET_CREATE_OPEN_MODAL'
             });
-            return <TicketCreateModal />;
           }}
         />
         <Route

@@ -43,6 +43,7 @@ describe('Jobs View', () => {
 
     const { getByText } = renderJobsComponent(store);
     expect(getByText(/test-job-name-1/)).toBeDefined();
+    expect(getByText("05/01/2020 09:44")).toBeDefined();
   });
 
   it('renders errors when jobs cannot be retrieved', () => {
