@@ -104,7 +104,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
     '.bashrc',
     '.bash_history',
     '.ssh',
-    'authorized_keys'
+    'authorized_keys',
+    '.APPDATA',
+    '.Trash'
   ];
   const isProtected = selectedFiles.some(file =>
     protectedFiles.some(protectedFile => protectedFile === file.name)
