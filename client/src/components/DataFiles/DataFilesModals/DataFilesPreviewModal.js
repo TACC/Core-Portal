@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { LoadingSpinner } from '_common';
@@ -18,6 +18,16 @@ const DataFilesPreviewModal = () => {
   const previewContent = useSelector(state => state.files.preview.content);
   const isLoading = useSelector(state => state.files.preview.isLoading);
   const [isFrameLoading, setIsFrameLoading] = useState(true);
+
+  /* 
+    Force effect on every modal load
+
+    params as a dependency means that when the object identify
+    changes open modal open, this effect will be re-run
+  */
+  useEffect(() => {
+    setIsFrameLoading(true);
+  }, [setIsFrameLoading, params]);
 
   const toggle = () =>
     dispatch({
@@ -62,7 +72,9 @@ const DataFilesPreviewModal = () => {
       >
         <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
         <ModalBody>
-          {(isLoading || isFrameLoading) && <PreviewModalSpinner />}
+          {(isLoading || (!previewContent && isFrameLoading)) && (
+            <PreviewModalSpinner />
+          )}
           {previewContent ? (
             <div>
               <code>
