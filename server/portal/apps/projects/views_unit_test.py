@@ -46,7 +46,7 @@ def test_projects_search(regular_user, client, mock_project_mgr):
 
 
 def test_projects_post(authenticated_user, client, mock_project_mgr):
-    mock_project = MagicMock(storage={'name': 'PRJ-123'})
+    mock_project = MagicMock(storage={'name': 'PRJ-123'}, project_id='PRJ-123')
     mock_project_mgr.create.return_value = mock_project
 
     response = client.post(
@@ -65,6 +65,7 @@ def test_projects_post(authenticated_user, client, mock_project_mgr):
 
     mock_project_mgr.create.assert_called_with('Test Title')
     mock_project.add_pi.assert_called_with(authenticated_user)
+    mock_project_mgr.add_member.assert_called_with('PRJ-123', 'pi', 'username')
     assert response.status_code == 200
     assert response.json() == {
         'status': 200,
