@@ -8,6 +8,7 @@ import json
 @pytest.fixture
 def mock_project_mgr(mocker):
     mocker.patch('portal.apps.projects.views.ProjectsManager.list')
+    mocker.patch('portal.apps.projects.views.ProjectsManager.search')
     mocker.patch('portal.apps.projects.views.ProjectsManager.get_project')
     mocker.patch('portal.apps.projects.views.ProjectsManager.create')
     mocker.patch('portal.apps.projects.views.ProjectsManager.update_prj')
@@ -30,13 +31,41 @@ def test_projects_get(regular_user, client, mock_project_mgr):
     }
 
 
-def test_projects_post(regular_user, client, mock_project_mgr):
-    mock_project_mgr.create.return_value = MagicMock(storage={'name': 'PRJ-123'})
+def test_projects_search(regular_user, client, mock_project_mgr):
+    mock_project_mgr.search.return_value = {'projectId': 'PRJ-123'}
     client.force_login(regular_user)
 
-    response = client.post('/api/projects/', {'title': 'Test Title'})
+    response = client.get('/api/projects/?query_string=testsearch')
+
+    mock_project_mgr.search.assert_called_with(query_string='testsearch', offset=0, limit=100)
+    assert response.status_code == 200
+    assert response.json() == {
+        'status': 200,
+        'response': {'projectId': 'PRJ-123'}
+    }
+
+
+def test_projects_post(authenticated_user, client, mock_project_mgr):
+    mock_project = MagicMock(storage={'name': 'PRJ-123'}, project_id='PRJ-123')
+    mock_project_mgr.create.return_value = mock_project
+
+    response = client.post(
+        '/api/projects/',
+        {
+            'title': 'Test Title',
+            'members': [
+                {
+                    'username': 'username',
+                    'access': 'owner'
+                }
+            ]
+        },
+        content_type='application/json'
+    )
 
     mock_project_mgr.create.assert_called_with('Test Title')
+    mock_project.add_pi.assert_called_with(authenticated_user)
+    mock_project_mgr.add_member.assert_called_with('PRJ-123', 'pi', 'username')
     assert response.status_code == 200
     assert response.json() == {
         'status': 200,
@@ -86,11 +115,14 @@ def test_project_instance_patch(regular_user, client, mock_project_mgr):
 def test_members_view_add(regular_user, client, mock_project_mgr):
     mock_project_mgr.add_member.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
     client.force_login(regular_user)
-    patch_body = {'action': 'add_member', 'username': 'test_user', 'memberType': 'pi'}
+    patch_body = {'action': 'add_member', 'username': 'test_user'}
 
     response = client.patch('/api/projects/PRJ-123/members/', json.dumps(patch_body))
 
-    mock_project_mgr.add_member.assert_called_with('PRJ-123', 'pi', 'test_user')
+    # All new members now have co_pi status since we no longer have distinctions
+    # between members and co_pis, and an individual may not become a pi
+    # until they have "edit" access (co_pi status)
+    mock_project_mgr.add_member.assert_called_with('PRJ-123', 'co_pi', 'test_user')
     assert response.json() == {
         'status': 200,
         'response': {'projectId': 'PRJ-123'}
@@ -100,12 +132,12 @@ def test_members_view_add(regular_user, client, mock_project_mgr):
 def test_members_view_remove(regular_user, client, mock_project_mgr):
     mock_project_mgr.remove_member.return_value = MagicMock(metadata={'projectId': 'PRJ-123'})
     client.force_login(regular_user)
-    patch_body = {'action': 'remove_member', 'username': 'test_user', 'memberType': 'pi'}
+    patch_body = {'action': 'remove_member', 'username': 'test_user'}
 
     response = client.patch('/api/projects/PRJ-123/members/', json.dumps(patch_body))
 
     mock_project_mgr.remove_member.assert_called_with(project_id='PRJ-123',
-                                                      member_type='pi',
+                                                      member_type='co_pi',
                                                       username='test_user')
     assert response.json() == {
         'status': 200,

@@ -12,6 +12,15 @@ import {
 } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
 
+/**
+ * Utility function to replace instances of 2 or more slashes in a URL with
+ * a single slash.
+ * @param {string} url
+ */
+export const removeDuplicateSlashes = url => {
+  return url.replace(/\/{2,}/g, '/');
+};
+
 export async function fetchSystemsUtil() {
   const response = await fetch('/api/datafiles/systems/list/');
   if (!response.ok) {
@@ -22,6 +31,7 @@ export async function fetchSystemsUtil() {
 }
 
 export function* fetchSystems() {
+  yield put({ type: 'FETCH_SYSTEMS_STARTED' });
   try {
     const systemsJson = yield call(fetchSystemsUtil);
     yield put({ type: 'FETCH_SYSTEMS_SUCCESS', payload: systemsJson });
@@ -30,10 +40,35 @@ export function* fetchSystems() {
   }
 }
 
+export async function fetchSystemDefinitionUtil(systemId) {
+  const response = await fetch(
+    `/api/datafiles/systems/definition/${systemId}/`
+  );
+  if (!response.ok) {
+    throw new Error(response.status);
+  }
+  const responseJson = await response.json();
+  return responseJson;
+}
+
+export function* fetchSystemDefinition(action) {
+  yield put({ type: 'FETCH_SYSTEM_DEFINITION_STARTED' });
+  try {
+    const systemJson = yield call(fetchSystemDefinitionUtil, action.payload);
+    yield put({
+      type: 'FETCH_SYSTEM_DEFINITION_SUCCESS',
+      payload: systemJson
+    });
+  } catch (e) {
+    yield put({ type: 'FETCH_SYSTEM_DEFINITION_ERROR', payload: e.message });
+  }
+}
+
 export function* watchFetchSystems() {
   // The result of the systems call shouldn't change so we only care about
   // the first result.
   yield takeLeading('FETCH_SYSTEMS', fetchSystems);
+  yield takeLeading('FETCH_SYSTEM_DEFINITION', fetchSystemDefinition);
 }
 
 export async function pushKeysUtil(system, form) {
@@ -86,11 +121,19 @@ export async function fetchFilesUtil(
   path,
   offset = 0,
   limit = 100,
-  queryString = ''
+  queryString = '',
+  nextPageToken = null
 ) {
   const operation = queryString ? 'search' : 'listing';
-  const q = stringify({ limit, offset, query_string: queryString });
-  const url = `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`;
+  const q = stringify({
+    limit,
+    offset,
+    query_string: queryString,
+    nextPageToken
+  });
+  const url = removeDuplicateSlashes(
+    `/api/datafiles/${api}/${operation}/${scheme}/${system}/${path}?${q}`
+  );
   const response = await fetch(url);
 
   const responseJson = await response.json();
@@ -134,6 +177,7 @@ export function* fetchFiles(action) {
       payload: {
         files: listingResponse.listing,
         reachedEnd: listingResponse.reachedEnd,
+        nextPageToken: listingResponse.nextPageToken,
         section: action.payload.section
       }
     });
@@ -176,13 +220,15 @@ export function* scrollFiles(action) {
     action.payload.path || '',
     action.payload.offset,
     action.payload.limit,
-    action.payload.queryString
+    action.payload.queryString,
+    action.payload.nextPageToken
   );
   yield put({
     type: 'SCROLL_FILES_SUCCESS',
     payload: {
       files: listingResponse.listing,
       reachedEnd: listingResponse.reachedEnd,
+      nextPageToken: listingResponse.nextPageToken,
       section: action.payload.section
     }
   });
@@ -307,15 +353,44 @@ export async function copyFileUtil(
   scheme,
   system,
   path,
+  filename,
+  filetype,
+  destApi,
   destSystem,
-  destPath
+  destPath,
+  destPathName
 ) {
-  const url = `/api/datafiles/${api}/copy/${scheme}/${system}${path}/`;
+  let url, body;
+  if (api === destApi) {
+    url = removeDuplicateSlashes(
+      `/api/datafiles/${api}/copy/${scheme}/${system}/${path}/`
+    );
+    body = {
+      dest_system: destSystem,
+      dest_path: destPath,
+      file_name: filename,
+      filetype,
+      dest_path_name: destPathName
+    };
+  } else {
+    url = removeDuplicateSlashes(`/api/datafiles/transfer/${filetype}/`);
+    body = {
+      src_api: api,
+      dest_api: destApi,
+      src_system: system,
+      dest_system: destSystem,
+      src_path: path,
+      dest_path: destPath,
+      dest_path_name: destPathName,
+      dirname: filename
+    };
+  }
+
   const request = await fetch(url, {
     method: 'PUT',
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     credentials: 'same-origin',
-    body: JSON.stringify({ dest_system: destSystem, dest_path: destPath })
+    body: JSON.stringify(body)
   });
   if (!request.ok) {
     throw new Error(request.status);
@@ -328,6 +403,7 @@ export function* watchCopy() {
 }
 
 export function* copyFile(src, dest, index) {
+  const filetype = src.type === 'dir' ? 'dir' : 'file';
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'RUNNING', key: index, operation: 'copy' }
@@ -335,12 +411,16 @@ export function* copyFile(src, dest, index) {
   try {
     yield call(
       copyFileUtil,
-      'tapis',
+      src.api,
       'private',
       src.system,
       src.path,
+      src.name,
+      filetype,
+      dest.api,
       dest.system,
       dest.path,
+      dest.name,
       index
     );
     yield put({
@@ -437,36 +517,44 @@ export function* watchPreview() {
 
 export function* preview(action) {
   yield put({
-    type: 'DATA_FILES_SET_PREVIEW_HREF',
-    payload: { href: null }
+    type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+    payload: { href: '', content: '', isLoading: true }
   });
-
-  const href = yield call(
-    previewUtil,
-    action.payload.api,
-    action.payload.scheme,
-    action.payload.system,
-    action.payload.path,
-    action.payload.href
-  );
-
-  yield put({
-    type: 'DATA_FILES_SET_PREVIEW_HREF',
-    payload: { href }
-  });
+  try {
+    if (action.payload.api !== 'tapis')
+      throw new Error('Previewable files must use TAPIS');
+    const response = yield call(
+      previewUtil,
+      action.payload.api,
+      action.payload.scheme,
+      action.payload.system,
+      action.payload.path,
+      action.payload.href,
+      action.payload.length
+    );
+    const { content, href } = response;
+    yield put({
+      type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+      payload: { content, href, isLoading: false }
+    });
+  } catch (e) {
+    yield put({
+      type: 'DATA_FILES_SET_PREVIEW_CONTENT',
+      payload: {
+        content: 'Unable to show preview.',
+        href: '',
+        isLoading: false
+      }
+    });
+  }
 }
 
-export async function previewUtil(api, scheme, system, path, href) {
-  const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/`;
-  const request = await fetch(url, {
-    method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    credentials: 'same-origin',
-    body: JSON.stringify({ href })
-  });
-
+export async function previewUtil(api, scheme, system, path, href, length) {
+  const q = stringify({ href, length });
+  const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/?${q}`;
+  const request = await fetch(url);
   const requestJson = await request.json();
-  return requestJson.data.href;
+  return requestJson.data;
 }
 
 export async function mkdirUtil(api, scheme, system, path, dirname) {
@@ -585,13 +673,9 @@ export function* fileLink(action) {
 }
 
 export async function downloadUtil(api, scheme, system, path, href) {
-  const url = `/api/datafiles/${api}/download/${scheme}/${system}${path}/`;
-  const request = await fetch(url, {
-    method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    credentials: 'same-origin',
-    body: JSON.stringify({ href })
-  });
+  const q = stringify({ href });
+  const url = `/api/datafiles/${api}/download/${scheme}/${system}${path}/?${q}`;
+  const request = await fetch(url);
 
   const requestJson = await request.json();
   const postitUrl = requestJson.data;

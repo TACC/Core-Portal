@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
 
 import './DescriptionList.module.scss';
 
@@ -29,14 +30,22 @@ const DescriptionList = ({ className, data, density, direction }) => {
       className={className}
       data-testid="list"
     >
-      {Object.keys(data).map(key => (
+      {Object.entries(data).map(([key, value]) => (
         <React.Fragment key={key}>
           <dt styleName="key" data-testid="key">
             {key}
           </dt>
-          <dd styleName="value" data-testid="value">
-            {data[key]}
-          </dd>
+          {Array.isArray(value) ? (
+            value.map(val => (
+              <dd styleName="value" data-testid="value" key={uuidv4()}>
+                {val}
+              </dd>
+            ))
+          ) : (
+            <dd styleName="value" data-testid="value">
+              {value}
+            </dd>
+          )}
         </React.Fragment>
       ))}
     </dl>

@@ -19,7 +19,7 @@ class SystemCreationStep(AbstractStep):
         return "Creating Storage Systems"
 
     def description(self):
-        return """We are setting up access for your data files."""
+        return """	Setting up access to the storage systems. No action required."""
 
     def prepare(self):
         self.state = SetupState.PENDING

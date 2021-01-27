@@ -14,6 +14,7 @@ from portal.utils.decorators import agave_jwt_login
 from portal.exceptions.api import ApiException
 from portal.views.base import BaseApiView
 from portal.apps.projects.managers.base import ProjectsManager
+from django.contrib.auth import get_user_model
 # from portal.apps.search.api.managers.project_search import ProjectSearchManager
 
 
@@ -88,10 +89,9 @@ class ProjectsApiView(BaseApiView):
         mgr = ProjectsManager(request.user)
 
         if query_string is not None:
-            # search_mgr = ProjectSearchManager(username=request.user.username, query_string=query_string)
-            # search_mgr.search(offset=offset, limit=limit)
-            # res = search_mgr.list(mgr=mgr)
-            return
+            res = mgr.search(query_string=query_string,
+                             offset=offset,
+                             limit=limit)
         else:
             res = mgr.list(
                 offset=offset,
@@ -107,9 +107,32 @@ class ProjectsApiView(BaseApiView):
 
     def post(self, request):  # pylint: disable=no-self-use
         """POST handler."""
-        title = request.POST.get('title')
+        data = json.loads(request.body)
+        title = data['title']
+        members = data['members']
         mgr = ProjectsManager(request.user)
         prj = mgr.create(title)
+        project_id = prj.project_id
+        for member in members:
+            try:
+                user = get_user_model().objects.get(username=member['username'])
+                if member['access'] == 'owner':
+                    prj.add_pi(user)
+                    access = 'pi'
+                elif member['access'] == 'edit':
+                    prj.add_co_pi(user)
+                    access = 'co_pi'
+                else:
+                    raise ApiException("Unsupported access level")
+                mgr.add_member(
+                    project_id,
+                    access,
+                    member['username']
+                )
+            except Exception:
+                LOGGER.exception(
+                    "Project was created, but could not add {username}", username=member['username']
+                )
         return JsonResponse(
             {
                 'status': 200,
@@ -223,14 +246,32 @@ class ProjectMembersApiView(BaseApiView):
             )
         return operation(request, project_id, **data)
 
+    def transfer_ownership(self, request, project_id, **data):
+        old_pi = data.get('oldOwner')
+        new_pi = data.get('newOwner')
+        res = ProjectsManager(request.user).transfer_ownership(
+            project_id,
+            old_pi,
+            new_pi
+        )
+        return JsonResponse(
+            {
+                'status': 200,
+                'response': res.metadata
+            },
+            encoder=ProjectsManager.meta_serializer_cls
+        )
+
     # pylint: disable=no-self-use
     def add_member(self, request, project_id, **data):
-        """Add member to a project."""
+        """Add member to a project.
+        In Shared Workspaces (CEPv2) members can only
+        be added with "edit" access, which translates to co_pi
+        """
         username = data.get('username')
-        member_type = data.get('memberType')
         res = ProjectsManager(request.user).add_member(
             project_id,
-            member_type,
+            'co_pi',
             username
         )
         return JsonResponse(
@@ -249,10 +290,9 @@ class ProjectMembersApiView(BaseApiView):
         :param dict data: Data.
         """
         username = data.get('username')
-        member_type = data.get('memberType')
         prj = ProjectsManager(request.user).remove_member(
             project_id=project_id,
-            member_type=member_type,
+            member_type='co_pi',
             username=username
         )
         return JsonResponse(

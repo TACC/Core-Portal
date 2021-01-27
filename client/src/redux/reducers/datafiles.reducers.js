@@ -2,25 +2,69 @@ export const initialSystemState = {
   defaultHost: '',
   systemList: [],
   error: false,
-  errorMessage: null
+  errorMessage: null,
+  loading: false,
+  definitions: []
+};
+
+export const addSystemDefinition = (system, definitionList) => {
+  return [
+    ...definitionList.filter(existing => existing.id !== system.id),
+    system
+  ];
 };
 
 export function systems(state = initialSystemState, action) {
   switch (action.type) {
+    case 'FETCH_SYSTEMS_STARTED':
+      return {
+        ...state,
+        error: false,
+        errorMessage: null,
+        loading: true
+      };
     case 'FETCH_SYSTEMS_SUCCESS':
       return {
         ...state,
         systemList: action.payload.system_list,
-        defaultHost: action.payload.default_host
+        defaultHost: action.payload.default_host,
+        loading: false
       };
     case 'FETCH_SYSTEMS_ERROR':
-      return { ...state, error: true, errorMessage: action.payload };
+      return {
+        ...state,
+        error: true,
+        errorMessage: action.payload,
+        loading: false
+      };
+    case 'FETCH_SYSTEM_DEFINITION_STARTED':
+      return {
+        ...state,
+        error: false,
+        errorMessage: null,
+        loading: true
+      };
+    case 'FETCH_SYSTEM_DEFINITION_SUCCESS':
+      return {
+        ...state,
+        definitions: addSystemDefinition(action.payload, state.definitions),
+        error: false,
+        errorMessage: null,
+        loading: false
+      };
+    case 'FETCH_SYSTEM_DEFINITION_ERROR':
+      return {
+        ...state,
+        error: true,
+        errorMessage: action.payload,
+        loading: false
+      };
     default:
       return state;
   }
 }
 
-const initialFilesState = {
+export const initialFilesState = {
   loading: {
     FilesListing: false,
     modal: false
@@ -65,7 +109,12 @@ const initialFilesState = {
     FilesListing: true,
     modal: true
   },
+  nextPageToken: {
+    FilesListing: null,
+    modal: null
+  },
   modals: {
+    addproject: false,
     preview: false,
     move: false,
     copy: false,
@@ -75,7 +124,9 @@ const initialFilesState = {
     rename: false,
     link: false,
     pushKeys: false,
-    trash: false
+    trash: false,
+    manageproject: false,
+    editproject: false
   },
   modalProps: {
     preview: {},
@@ -90,7 +141,11 @@ const initialFilesState = {
     showpath: {}
   },
   refs: {},
-  previewHref: ''
+  preview: {
+    href: '',
+    content: '',
+    isLoading: true
+  }
 };
 
 let selectedSet, enabled, setValue;
@@ -114,6 +169,10 @@ export function files(state = initialFilesState, action) {
         selectAll: {
           ...state.selectAll,
           [action.payload.section]: false
+        },
+        nextPageToken: {
+          ...state.nextPageToken,
+          [action.payload.section]: null
         }
       };
     case 'FETCH_FILES_SUCCESS':
@@ -128,6 +187,10 @@ export function files(state = initialFilesState, action) {
         reachedEnd: {
           ...state.reachedEnd,
           [action.payload.section]: action.payload.reachedEnd
+        },
+        nextPageToken: {
+          ...state.nextPageToken,
+          [action.payload.section]: action.payload.nextPageToken
         }
       };
     case 'FETCH_FILES_ERROR':
@@ -169,6 +232,10 @@ export function files(state = initialFilesState, action) {
         reachedEnd: {
           ...state.reachedEnd,
           [action.payload.section]: action.payload.reachedEnd
+        },
+        nextPageToken: {
+          ...state.nextPageToken,
+          [action.payload.section]: action.payload.nextPageToken
         }
       };
     case 'SCROLL_FILES_ERR':
@@ -249,12 +316,15 @@ export function files(state = initialFilesState, action) {
           }
         }
       };
-    case 'DATA_FILES_SET_PREVIEW_HREF':
+    case 'DATA_FILES_SET_PREVIEW_CONTENT':
       return {
         ...state,
-        previewHref: action.payload.href
+        preview: {
+          href: action.payload.href,
+          content: action.payload.content,
+          isLoading: action.payload.isLoading
+        }
       };
-
     case 'DATA_FILES_TOGGLE_MODAL':
       return {
         ...state,
@@ -267,6 +337,7 @@ export function files(state = initialFilesState, action) {
           [action.payload.operation]: action.payload.props
         }
       };
+<<<<<<< HEAD
     case 'STORE_SELECTOR_REF':
       return {
         ...state,
@@ -277,6 +348,33 @@ export function files(state = initialFilesState, action) {
       };
     case 'CLEAR_REFS':
       return { ...state, refs: {} };
+=======
+    case 'DATA_FILES_SET_MODAL_PROPS':
+      return {
+        ...state,
+        modalProps: {
+          ...state.modalProps,
+          [action.payload.operation]: action.payload.props
+        }
+      };
+    case 'DATA_FILES_CLEAR_PROJECT_SELECTION':
+      return {
+        ...state,
+        error: {
+          ...state.error,
+          FilesListing: false
+        },
+        params: {
+          ...state.params,
+          FilesListing: {
+            api: 'tapis',
+            scheme: 'projects',
+            system: '',
+            path: ''
+          }
+        }
+      };
+>>>>>>> a21d8ec763c080575afd4b15673fbf56a887d6b3
     default:
       return state;
   }
