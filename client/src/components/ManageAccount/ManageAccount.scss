@@ -128,9 +128,7 @@
 }
 // Buttons and Forms
 .manage-account-submit-button {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  float: right;
   border-radius: 0;
   font: bold 12px Roboto, sans-serif;
   padding: 0.5rem 1rem;
@@ -150,7 +148,6 @@
 }
 .change-password-form {
   font-size: 14px;
-  display: flex;
   flex-direction: column;
 }
 .password-warning {

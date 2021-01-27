@@ -52,7 +52,6 @@ const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
         className="manage-account-submit-button"
         type="submit"
         data-testid="submit-button"
-        style={{ alignSelf: 'flex-end' }}
         disabled={!canSubmit}
       >
         {isChecking && <LoadingSpinner placement="inline" />}
