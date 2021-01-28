@@ -34,6 +34,9 @@ describe('PublicData', () => {
       projects: {
         listing: {
           projects: []
+        },
+        metadata: {
+          title: ''
         }
       },
       pushKeys: { target: {} }
