@@ -1,0 +1,16 @@
+{# @var className #}
+
+{# RFE: Use a custom element or React component whose code exists in one repo #}
+{# WARNING: Some markup is duplicated in other repositories #}
+{# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
+<span id="header-logo" class="{{className}}">
+  <!-- The header branding replaces this (from external markup). -->
+  {# FAQ: Content populated via JavaScript, below #}
+</span>
+<script type="module">
+  import * as importHTML from '/static/site_cms/js/modules/importHTML.js';
+
+  const placeholder = document.getElementById('header-logo');
+
+  importHTML.replaceFromURL('/cms/header/logo/markup/', placeholder);
+</script>
