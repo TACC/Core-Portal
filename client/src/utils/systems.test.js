@@ -40,6 +40,19 @@ describe('systems utility functions', () => {
       'projects',
       systemList,
       projectsListingFixture,
+      'test.site.project.FRONTERA-X'
+    )).toEqual('');
+    expect(findSystemOrProjectDisplayName(
+      'projects',
+      systemList,
+      projectsListingFixture,
+      '',
+      'Test Project Title'
+    )).toEqual('');
+    expect(findSystemOrProjectDisplayName(
+      'projects',
+      systemList,
+      projectsListingFixture,
       'test.site.project.FRONTERA-X',
       null
     )).toEqual('');

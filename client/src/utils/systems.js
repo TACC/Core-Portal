@@ -47,7 +47,7 @@ export function findProjectTitle(projectsList, projectSystem, projectTitle) {
   if (matching) {
     return matching.description;
   }
-  return projectSystem ? projectTitle : '';
+  return projectSystem && projectTitle ? projectTitle : '';
 }
 
 /**
