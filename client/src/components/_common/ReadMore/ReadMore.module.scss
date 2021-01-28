@@ -1,0 +1,6 @@
+@import '../../../styles/tools/mixins.scss';
+
+.text-container {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
