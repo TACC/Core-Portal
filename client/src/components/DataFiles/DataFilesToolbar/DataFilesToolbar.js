@@ -109,7 +109,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
     '.Trash'
   ];
   const isProtected = selectedFiles.some(file =>
-    protectedFiles.some(protectedFile => protectedFile === file.name)
+    protectedFiles.includes(file.name)
   );
   const isPrivate = ['projects', 'private'].includes(scheme);
   const canRename =
