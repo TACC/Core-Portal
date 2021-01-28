@@ -81,7 +81,10 @@ const DataFilesCompressModal = () => {
     buttonIcon = null;
   }
   const initialValues = {
-    filenameDisplay: selectedFiles[0] ? selectedFiles[0].name : '',
+    filenameDisplay:
+      selectedFiles[0] && selectedFiles.length === 1
+        ? selectedFiles[0].name
+        : '',
     filetype: '.zip'
   };
   const validationSchema = yup.object().shape({
