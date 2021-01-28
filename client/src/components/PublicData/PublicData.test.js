@@ -32,11 +32,13 @@ describe('PublicData', () => {
       projects: {
         listing: {
           projects: []
+        },
+        metadata: {
+          title: ''
         }
       },
       pushKeys: { target: {} }
     });
-    console.log(filesFixture);
     const { getByText, getAllByText, debug } = renderComponent(
       <PublicData />,
       store,
