@@ -126,7 +126,10 @@ export function* setMember(action) {
       payload: metadata
     });
     yield put({
-      type: 'PROJECTS_GET_LISTING'
+      type: 'PROJECTS_GET_LISTING',
+      payload: {
+        queryString: null
+      }
     });
   } catch (error) {
     yield put({
