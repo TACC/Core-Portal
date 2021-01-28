@@ -74,7 +74,7 @@ const NotificationToast = () => {
 };
 
 const ToastMessage = ({ notification }) => {
-  const systemList = useSelector(state => state.systems.systemList);
+  const systemList = useSelector(state => state.systems.storage.configuration);
   return (
     <>
       {notification && (

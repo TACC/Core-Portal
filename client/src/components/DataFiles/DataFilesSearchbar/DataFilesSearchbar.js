@@ -15,7 +15,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
       state.files.loading.FilesListing === true ||
       state.files.error.FilesListing !== false
   );
-  const systemList = useSelector(state => state.systems.systemList);
+  const systemList = useSelector(state => state.systems.storage.configuration);
   const [query, setQuery] = useState('');
   const history = useHistory();
   const hasQuery = queryString.parse(useLocation().search).query_string;
