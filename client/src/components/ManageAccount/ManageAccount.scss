@@ -31,16 +31,6 @@
   vertical-align: baseline;
 }
 
-.modal-body {
-  font-size: 14px;
-  .btn-link {
-    padding: 0;
-  }
-  .manage-account-submit-button {
-    margin-left: auto;
-  }
-}
-
 /*
   Components
 */
@@ -148,6 +138,16 @@
   border: 0 !important; /* override `.workbench-content .btn-secondary` */
   background-color: #9d85ef !important; /* override `.workbench-content .btn-secondary` */
   color: white !important; /* override `.workbench-content .btn-secondary` */
+}
+
+.modal-body {
+  font-size: 14px;
+  .btn-link {
+    padding: 0;
+  }
+  .manage-account-submit-button {
+    margin-left: auto;
+  }
 }
 
 .form-button {
