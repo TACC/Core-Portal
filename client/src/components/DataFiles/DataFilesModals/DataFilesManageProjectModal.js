@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Message } from '_common';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
@@ -7,6 +8,7 @@ import './DataFilesManageProject.module.scss';
 
 const DataFilesManageProjectModal = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [transferMode, setTransferMode] = useState(false);
   const isOpen = useSelector(state => state.files.modals.manageproject);
   const { members, projectId } = useSelector(state => state.projects.metadata);
@@ -60,8 +62,12 @@ const DataFilesManageProjectModal = () => {
           }
         }
       });
+      if (removedUser.user.username === user.username) {
+        toggle();
+        history.push('/workbench/data/tapis/projects');
+      }
     },
-    [projectId, dispatch]
+    [projectId, dispatch, history, toggle]
   );
 
   const onTransfer = useCallback(
