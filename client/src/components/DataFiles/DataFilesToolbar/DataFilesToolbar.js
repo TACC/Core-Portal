@@ -130,7 +130,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const canRename =
     selectedFiles.length === 1 &&
     isPrivate &&
-    api !== 'googledrive' &&
+    api === 'tapis' &&
     !isProtected;
   const canMakePublic =
     showMakePublic &&
