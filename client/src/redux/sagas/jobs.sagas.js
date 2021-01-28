@@ -36,6 +36,9 @@ export function* getJobs(action) {
       payload: { list: jobs, reachedEnd: jobs.length < LIMIT }
     });
     yield put({ type: 'JOBS_LIST_FINISH' });
+
+    const notifs = yield select(state => state.notifications.list.notifs);
+    yield put({ type: 'UPDATE_JOBS_FROM_NOTIFICATIONS', payload: notifs });
   } catch {
     yield put({ type: 'JOBS_LIST_ERROR', payload: 'error' });
     yield put({ type: 'JOBS_LIST_FINISH' });

@@ -114,23 +114,45 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
 
+  const protectedFiles = [
+    '.bash_profile',
+    '.bashrc',
+    '.bash_history',
+    '.ssh',
+    'authorized_keys',
+    '.APPDATA',
+    '.Trash'
+  ];
+  const isProtected = selectedFiles.some(file =>
+    protectedFiles.includes(file.name)
+  );
   const isPrivate = ['projects', 'private'].includes(scheme);
   const canRename =
-    selectedFiles.length === 1 && isPrivate && api !== 'googledrive';
+    selectedFiles.length === 1 &&
+    isPrivate &&
+    api !== 'googledrive' &&
+    !isProtected;
   const canMakePublic =
     showMakePublic &&
+    !isProtected &&
     selectedFiles.length === 1 &&
     isPrivate &&
     api !== 'googledrive';
   const canMove =
-    selectedFiles.length > 0 && isPrivate && api !== 'googledrive';
+    !isProtected &&
+    selectedFiles.length > 0 &&
+    isPrivate &&
+    api !== 'googledrive';
   const canCopy = selectedFiles.length > 0 && isPrivate;
   const canDownload =
     selectedFiles.length === 1 &&
     selectedFiles[0].format !== 'folder' &&
     api !== 'googledrive';
   const canTrash =
-    selectedFiles.length > 0 && isPrivate && api !== 'googledrive';
+    !isProtected &&
+    selectedFiles.length > 0 &&
+    isPrivate &&
+    api !== 'googledrive';
 
   return (
     <>

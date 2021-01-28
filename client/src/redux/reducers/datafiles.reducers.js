@@ -244,7 +244,7 @@ export function files(state = initialFilesState, action) {
         ...state,
         loading: { ...state.loading, [action.payload.section]: false },
         error: { ...state.error, [action.payload.section]: true },
-        listing: { ...state.posts, [action.payload.section]: [] }
+        listing: { ...state.listing, [action.payload.section]: [] }
       };
 
     // Cases for selecting files.

@@ -5,6 +5,13 @@
  * @return {string} system name
  */
 export function getSystemName(host) {
+  if (
+    host.startsWith('data.tacc') ||
+    host.startsWith('cloud.corral') ||
+    host.startsWith('secure.corral')
+  ) {
+    return 'Corral';
+  }
   const systemName = host.split('.')[0];
   return systemName.substring(0, 1).toUpperCase() + systemName.slice(1);
 }
@@ -25,4 +32,43 @@ export function findSystemDisplayName(systemList, system, isRoot) {
     return '/';
   }
   return getSystemName(system);
+}
+
+/**
+ * Returns a project title.
+ *
+ * @param {string} projectsList list of projects
+ * @param {string} projectSystem the system for the project
+ * @return {string} project title
+ */
+
+export function findProjectTitle(projectsList, projectSystem) {
+  const matching = projectsList.find(project => project.id === projectSystem);
+  if (matching) {
+    return matching.description;
+  }
+  return 'Shared Workspaces';
+}
+
+/**
+ * Returns display name for system or project
+ *
+ * @param {string} scheme
+ * @param {Array} systemList
+ * @param {Array} projectsList
+ * @param {string} system
+ * @return {string} display name of system or project
+ */
+export function findSystemOrProjectDisplayName(
+  scheme,
+  systemList,
+  projectsList,
+  system
+) {
+  switch (scheme) {
+    case 'projects':
+      return findProjectTitle(projectsList, system);
+    default:
+      return findSystemDisplayName(systemList, system);
+  }
 }

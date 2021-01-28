@@ -28,7 +28,12 @@ def mock_owner(django_user_model):
                                                  password='password')
 
 
-def test_create_metadata_pytest(mock_owner):
+@pytest.fixture()
+def mock_signal(mocker):
+    yield mocker.patch('portal.apps.signals.receivers.index_project')
+
+
+def test_create_metadata(mock_owner, mock_signal):
     project_id = 'PRJ-123'
     defaults = {
         'title': 'Project Title',
@@ -47,7 +52,7 @@ def test_create_metadata_pytest(mock_owner):
     assert meta.team_members.count() == 0
 
 
-def test_metadata_str(mock_owner):
+def test_metadata_str(mock_owner, mock_signal):
     project_id = 'PRJ-123'
     defaults = {
         'title': 'Project Title',
@@ -60,19 +65,19 @@ def test_metadata_str(mock_owner):
     assert meta_str == '(<ProjectMetadata: PRJ-123 - Project Title>, True)'
 
 
-def test_project_create(mock_owner, portal_project, agave_client):
+def test_project_create(mock_owner, portal_project, agave_client, mock_signal):
     Project.create(agave_client, "my_project", "mock_project_id", mock_owner)
     assert ProjectMetadata.objects.all().count() == 1
 
 
-def test_project_create_dir_failure(mock_owner, portal_project, agave_client):
+def test_project_create_dir_failure(mock_owner, portal_project, agave_client, mock_signal):
     portal_project._create_dir.side_effect = Exception()
     with pytest.raises(Exception):
         Project.create(agave_client, "my_project", "mock_project_id", mock_owner)
     assert ProjectMetadata.objects.all().count() == 0
 
 
-def test_project_create_storage_failure(mock_owner, portal_project, agave_client):
+def test_project_create_storage_failure(mock_owner, portal_project, agave_client, mock_signal):
     portal_project._create_storage.side_effect = Exception()
     with pytest.raises(Exception):
         Project.create(agave_client, "my_project", "mock_project_id", mock_owner)

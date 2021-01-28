@@ -61,11 +61,13 @@ describe('DataFilesCopyModal', () => {
     const projectLink = getByText(/Test Project Title/);
 
     expect(projectLink).toBeDefined();
-    expect(store.getActions()).toEqual([{ type: 'PROJECTS_GET_LISTING' }]);
+    expect(store.getActions()).toEqual([
+      { type: 'PROJECTS_GET_LISTING', payload: { queryString: null } }
+    ]);
     fireEvent.click(projectLink);
 
     expect(store.getActions()).toEqual([
-      { type: 'PROJECTS_GET_LISTING' },
+      { type: 'PROJECTS_GET_LISTING', payload: { queryString: null } },
       {
         type: 'FETCH_FILES',
         payload: {
@@ -101,7 +103,8 @@ describe('DataFilesCopyModal', () => {
 
     expect(store.getActions()).toEqual([
       {
-        type: 'PROJECTS_GET_LISTING'
+        type: 'PROJECTS_GET_LISTING',
+        payload: { queryString: null }
       },
       {
         type: 'DATA_FILES_SET_MODAL_PROPS',
