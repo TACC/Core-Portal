@@ -192,7 +192,7 @@ Client-side javascript testing is run through Jest. Run `npm run test`* from the
 
 #### Test Coverage
 
-Coverage is sent to codecov on commits to the repo (see github actions for branch to see branch coverage). Ideally we only merge positive code coverage changes to master.
+Coverage is sent to codecov on commits to the repo (see Github Actions for branch to see branch coverage). Ideally we only merge positive code coverage changes to master.
 
 
 #### Production Deployment
