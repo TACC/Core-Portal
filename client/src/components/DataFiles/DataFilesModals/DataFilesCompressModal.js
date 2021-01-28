@@ -65,7 +65,7 @@ const DataFilesCompressModal = () => {
 
   const compressCallback = () => {
     const { filenameDisplay, filetype } = formRef.current.values;
-    const filename = `${filenameDisplay.replace(' ', '')}${filetype}`;
+    const filename = `${filenameDisplay}${filetype}`;
     dispatch({
       type: 'DATA_FILES_COMPRESS',
       payload: { filename, files: selected }

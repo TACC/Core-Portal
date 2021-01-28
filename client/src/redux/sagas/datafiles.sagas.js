@@ -761,10 +761,12 @@ export function* trashFile(system, path, id) {
 export const getLatestApp = async name => {
   const res = await fetchUtil({
     url: '/api/workspace/apps',
-    params: { publicOnly: true }
+    params: {
+      publicOnly: true,
+      name
+    }
   });
   const apps = res.response;
-
   const latestApp = apps
     .filter(app => app.id.includes(name))
     .reduce(
