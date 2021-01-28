@@ -36,6 +36,13 @@ describe('systems utility functions', () => {
       'test.site.project.FRONTERA-X',
       'Test Project Title'
     )).toEqual('Test Project Title');
+    expect(findSystemOrProjectDisplayName(
+      'projects',
+      systemList,
+      projectsListingFixture,
+      'test.site.project.FRONTERA-X',
+      null
+    )).toEqual('');
   });
   it('get system display name based on resource', () => {
     const systemList = systemsFixture.systemList;
