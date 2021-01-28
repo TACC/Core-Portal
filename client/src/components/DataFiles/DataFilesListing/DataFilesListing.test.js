@@ -4,6 +4,7 @@ import  DataFilesListing  from "./DataFilesListing";
 import { CheckboxCell, FileNavCell } from "./DataFilesListingCells";
 import configureStore from "redux-mock-store";
 import renderComponent from 'utils/testing';
+import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -39,9 +40,7 @@ const initialMockState = {
       FilesListing: true
     }
   },
-  systems: {
-    systemList: []
-  }
+  systems: systemsFixture
 };
 
 describe("CheckBoxCell", () => {

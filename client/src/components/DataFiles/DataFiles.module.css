@@ -49,3 +49,10 @@
   padding-left: 20px;
   display: flex;
 }
+
+/* Error message */
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
