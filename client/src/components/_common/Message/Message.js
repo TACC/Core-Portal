@@ -7,9 +7,9 @@ import './Message.module.scss';
 
 export const ERROR_TEXT = {
   mismatchCanDismissScope:
-    'For a <Message> to use `canDismiss`, `scope` must equal `section`.',
+    'For a <(Section)Message> to use `canDismiss`, `scope` must equal `section`.',
   deprecatedType:
-    'In a <Message> `type="warn"` is deprecated. Use `type="warning"` instead.',
+    'In a <(Section|Inline)Message> `type="warn"` is deprecated. Use `type="warning"` instead.',
   missingScope:
     'A <Message> without a `scope` should become an <InlineMessage>. (If <Message> must be used, then explicitely set `scope="inline"`.)'
 };
