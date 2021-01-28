@@ -213,26 +213,35 @@ export function* scrollFiles(action) {
     }
   });
 
-  const listingResponse = yield call(
-    fetchFilesUtil,
-    action.payload.api,
-    action.payload.scheme,
-    action.payload.system,
-    action.payload.path || '',
-    action.payload.offset,
-    action.payload.limit,
-    action.payload.queryString,
-    action.payload.nextPageToken
-  );
-  yield put({
-    type: 'SCROLL_FILES_SUCCESS',
-    payload: {
-      files: listingResponse.listing,
-      reachedEnd: listingResponse.reachedEnd,
-      nextPageToken: listingResponse.nextPageToken,
-      section: action.payload.section
-    }
-  });
+  try {
+    const listingResponse = yield call(
+      fetchFilesUtil,
+      action.payload.api,
+      action.payload.scheme,
+      action.payload.system,
+      action.payload.path || '',
+      action.payload.offset,
+      action.payload.limit,
+      action.payload.queryString,
+      action.payload.nextPageToken
+    );
+    yield put({
+      type: 'SCROLL_FILES_SUCCESS',
+      payload: {
+        files: listingResponse.listing,
+        reachedEnd: listingResponse.reachedEnd,
+        nextPageToken: listingResponse.nextPageToken,
+        section: action.payload.section
+      }
+    });
+  } catch (e) {
+    yield put({
+      type: 'SCROLL_FILES_ERR',
+      payload: {
+        section: action.payload.section
+      }
+    });
+  }
 }
 
 export async function renameFileUtil(api, scheme, system, path, newName) {
