@@ -11,7 +11,7 @@ import { parse } from 'query-string';
 
 import './DataFiles.module.css';
 
-import { Message, LoadingSpinner } from '_common';
+import { SectionMessage, LoadingSpinner } from '_common';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
@@ -105,9 +105,11 @@ const DataFiles = () => {
 
   if (error) {
     return (
-      <Message type="warn" styleName="error">
-        There was a problem retrieving your systems
-      </Message>
+      <div styleName="error">
+        <SectionMessage type="warning">
+          There was a problem retrieving your systems
+        </SectionMessage>
+      </div>
     );
   }
 
