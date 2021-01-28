@@ -1,39 +1,48 @@
-import React, { useState, useLayoutEffect, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
-import { Link } from 'reactstrap';
+import { Button } from 'reactstrap';
 import './ReadMore.module.scss';
 
-const ReadMore = ({ className, text }) => {
+const ReadMore = ({ className, children }) => {
   const [expanded, setExpanded] = useState(false);
-  const [hasOverflow, setHasOverflow] = useState(false);
-  const containerRef = useRef();
 
   const toggleCallback = useCallback(() => {
-    setExpanded(!isOpen);
+    setExpanded(!expanded);
   }, [expanded, setExpanded]);
 
-  useLayoutEffect(
-    () => {
-      if (!hasOverflow && containerRef.current.scrollHeight > containerRef.current.offsetHeight) {
-        setHasOverflow(true);
-        return;
-      }
-      if (hasOverflow && containerRef.current.scrollHeight <= containerRef.current.offsetHeight) {
-        setHasOverflow(false);
-        return;
-      }
-    },
-    [hasOverflow, setHasOverflow, containerRef]
-  );
+  const { height, ref } = useResizeDetector();
+
+  const hasOverflow =
+    ref && ref.current ? ref.current.scrollHeight > height : false;
 
   return (
     <>
-      <div styleName="text-container" className={className} ref={containerRef}>
-        {text}
-      </div>
-      {hasOverflow && <div>Read more</div>}
+      {
+        <div
+          styleName={expanded ? 'expanded' : 'clamped'}
+          className={className}
+          ref={ref}
+        >
+          {children}
+        </div>
+      }
+      {(hasOverflow || expanded) && (
+        <Button className="btn btn-link" onClick={toggleCallback}>
+          <h6>{expanded ? 'Read Less' : 'Read More'}</h6>
+        </Button>
+      )}
     </>
   );
+};
+
+ReadMore.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired
+};
+
+ReadMore.defaultProps = {
+  className: ''
 };
 
 export default ReadMore;

@@ -2,10 +2,9 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { LoadingSpinner, Message, ReadMore } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import './DataFilesProjectFileListing.module.scss';
-import './DataFilesProjectListing.scss';
 
 const DataFilesProjectFileListing = ({ system, path }) => {
   const dispatch = useDispatch();
@@ -61,7 +60,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
           </Button>
         </div>
       </div>
-      <ReadMore className="shared-workspace__description" text={metadata.description} />
+      <div styleName="description">{metadata.description}</div>
       <DataFilesListing
         api="tapis"
         scheme="projects"
