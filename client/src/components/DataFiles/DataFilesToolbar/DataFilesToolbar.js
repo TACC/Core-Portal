@@ -128,10 +128,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
   const isPrivate = ['projects', 'private'].includes(scheme);
   const canRename =
-    selectedFiles.length === 1 &&
-    isPrivate &&
-    api === 'tapis' &&
-    !isProtected;
+    selectedFiles.length === 1 && isPrivate && api === 'tapis' && !isProtected;
   const canMakePublic =
     showMakePublic &&
     !isProtected &&
