@@ -54,46 +54,44 @@ const DataFilesPreviewModal = () => {
   }, [setIsFrameLoading]);
 
   return (
-    <>
-      <Modal
-        size="lg"
-        isOpen={isOpen}
-        onOpened={onOpen}
-        onClosed={onClosed}
-        toggle={toggle}
-        className="dataFilesModal"
-      >
-        <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
-        <ModalBody styleName="root">
-          {(isLoading || (previewUsingHref && isFrameLoading)) && (
-            <PreviewModalSpinner />
-          )}
-          {previewUsingTextContent && (
-            <div>
-              <code>
-                <pre styleName="text-preview">{content}</pre>
-              </code>
-            </div>
-          )}
-          {previewUsingHref && (
-            <div className="embed-responsive embed-responsive-4by3">
-              <iframe
-                title="preview"
-                frameBorder="0"
-                className="embed-responsive-item"
-                onLoad={onFrameLoad}
-                src={href}
-              />
-            </div>
-          )}
-          {hasError && (
-            <Message type="warning" styleName="error">
-              {error}
-            </Message>
-          )}
-        </ModalBody>
-      </Modal>
-    </>
+    <Modal
+      size="lg"
+      isOpen={isOpen}
+      onOpened={onOpen}
+      onClosed={onClosed}
+      toggle={toggle}
+      className="dataFilesModal"
+    >
+      <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
+      <ModalBody styleName="root">
+        {(isLoading || (previewUsingHref && isFrameLoading)) && (
+          <PreviewModalSpinner />
+        )}
+        {previewUsingTextContent && (
+          <div>
+            <code>
+              <pre styleName="text-preview">{content}</pre>
+            </code>
+          </div>
+        )}
+        {previewUsingHref && (
+          <div className="embed-responsive embed-responsive-4by3">
+            <iframe
+              title="preview"
+              frameBorder="0"
+              className="embed-responsive-item"
+              onLoad={onFrameLoad}
+              src={href}
+            />
+          </div>
+        )}
+        {hasError && (
+          <Message type="warning" styleName="error">
+            {error}
+          </Message>
+        )}
+      </ModalBody>
+    </Modal>
   );
 };
 
