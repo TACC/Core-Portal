@@ -5,7 +5,7 @@ import { LoadingSpinner, Message } from '_common';
 import './DataFilesPreviewModal.module.scss';
 
 const PreviewModalSpinner = () => (
-  <div className="h-100 listing-placeholder">
+  <div styleName="loading-container">
     <LoadingSpinner />
   </div>
 );
