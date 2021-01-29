@@ -51,7 +51,7 @@ const DataFilesUploadModal = () => {
   const isOpen = useSelector(state => state.files.modals.upload);
   const params = useSelector(state => state.files.params.FilesListing);
   const status = useSelector(state => state.files.operationStatus.upload);
-  const systemList = useSelector(state => state.systems.systemList);
+  const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const dispatch = useDispatch();
