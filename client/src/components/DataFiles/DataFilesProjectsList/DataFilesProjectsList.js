@@ -1,8 +1,10 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import queryStringParser from 'query-string';
 import { InfiniteScrollTable, Message } from '_common';
+import DataFilesProjectsSearchbar from './DataFilesProjectsSearchbar/DataFilesProjectsSearchbar';
 import './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 
@@ -10,6 +12,8 @@ const DataFilesProjectsList = ({ modal }) => {
   const { error, loading, projects } = useSelector(
     state => state.projects.listing
   );
+
+  const query = queryStringParser.parse(useLocation().search);
 
   const infiniteScrollCallback = useCallback(() => {});
   const dispatch = useDispatch();
@@ -19,9 +23,12 @@ const DataFilesProjectsList = ({ modal }) => {
       ? 'PROJECTS_GET_LISTING'
       : 'PROJECTS_SHOW_SHARED_WORKSPACES';
     dispatch({
-      type: actionType
+      type: actionType,
+      payload: {
+        queryString: modal ? null : query.query_string
+      }
     });
-  }, [dispatch]);
+  }, [dispatch, query.query_string]);
 
   const listingCallback = (e, el) => {
     if (!modal) return;
@@ -77,7 +84,9 @@ const DataFilesProjectsList = ({ modal }) => {
     }
   ];
 
-  const noDataText = "You don't have any Shared Workspaces.";
+  const noDataText = query.query_string
+    ? 'No Shared Workspaces match your search term.'
+    : "You don't have any Shared Workspaces.";
 
   if (error) {
     return (
@@ -89,6 +98,7 @@ const DataFilesProjectsList = ({ modal }) => {
 
   return (
     <div styleName="root">
+      {!modal && <DataFilesProjectsSearchbar />}
       <InfiniteScrollTable
         tableColumns={columns}
         tableData={projects}

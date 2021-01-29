@@ -1,25 +1,21 @@
 import React, { useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import queryString from 'query-string';
 import { Icon } from '_common';
 
-import './SiteSearchSearchbar.module.css';
+import './DataFilesProjectsSearchbar.module.css';
 
-const SiteSearchSearchbar = () => {
+const DataFilesProjectsSearchbar = () => {
   const history = useHistory();
-  const { filter } = useParams();
   const [query, setQuery] = useState('');
-  const urlQueryParam = queryString.parse(window.location.search).query_string;
 
-  const baseUrl = filter ? `/search/${filter}` : '/search';
+  const baseUrl = '/workbench/data/tapis/projects';
   const routeSearch = () => {
     const qs = query
-      ? `?${queryString.stringify({ query_string: query, page: 1 })}`
+      ? `?${queryString.stringify({ query_string: query })}`
       : '';
     history.push(`${baseUrl}/${qs}`);
-
-    window.dispatchEvent(new Event('portal.search'));
   };
 
   const onSubmit = e => {
@@ -41,7 +37,7 @@ const SiteSearchSearchbar = () => {
         <input
           type="search"
           onChange={onChange}
-          value={query || urlQueryParam || ''}
+          value={query}
           name="query"
           aria-label="Search"
           styleName="input"
@@ -55,4 +51,4 @@ const SiteSearchSearchbar = () => {
   );
 };
 
-export default SiteSearchSearchbar;
+export default DataFilesProjectsSearchbar;
