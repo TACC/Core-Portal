@@ -113,14 +113,16 @@ const DataFilesCompressModal = () => {
           const handleSelectChange = e => {
             setFieldValue('filetype', e.target.value);
           };
-          const isDisabled = status === 'RUNNING' || status === 'SUCCESS';
+          const formDisabled = status === 'RUNNING' || status === 'SUCCESS';
+          const buttonDisabled =
+            formDisabled || !isValid || values.filenameDisplay === '';
           return (
             <Form>
               <ModalBody>
                 <FormField
                   label="Compressed File Name"
                   name="filenameDisplay"
-                  disabled={isDisabled}
+                  disabled={formDisabled}
                   addonType="append"
                   addon={
                     <InputGroupAddon addonType="append">
@@ -129,7 +131,7 @@ const DataFilesCompressModal = () => {
                         name="filetype"
                         bsSize="sm"
                         onChange={handleSelectChange}
-                        disabled={isDisabled}
+                        disabled={formDisabled}
                       >
                         <option value=".zip">.zip</option>
                         <option value=".tar.gz">.tar.gz</option>
@@ -148,7 +150,7 @@ const DataFilesCompressModal = () => {
                 </InlineMessage>
                 <Button
                   className="data-files-btn"
-                  disabled={isDisabled || !isValid}
+                  disabled={buttonDisabled}
                   styleName="submit-button"
                   type="submit"
                 >
