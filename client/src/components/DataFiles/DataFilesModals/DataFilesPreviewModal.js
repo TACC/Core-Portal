@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { LoadingSpinner, Message } from '_common';
@@ -14,26 +14,13 @@ const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.preview);
   const params = useSelector(state => state.files.modalProps.preview);
-  const {
-    href,
-    content,
-    error,
-    isLoading
-  } = useSelector(state => state.files.preview);
+  const { href, content, error, isLoading } = useSelector(
+    state => state.files.preview
+  );
   const hasError = error !== null;
   const previewUsingTextContent = !isLoading && !hasError && content !== null;
   const previewUsingHref = !isLoading && !hasError && !previewUsingTextContent;
   const [isFrameLoading, setIsFrameLoading] = useState(true);
-
-  /* 
-    Force effect on every modal load
-
-    params as a dependency means that when the object identify
-    changes open modal open, this effect will be re-run
-  */
-  useEffect(() => {
-    setIsFrameLoading(true);
-  }, [setIsFrameLoading, params]);
 
   const toggle = () =>
     dispatch({
@@ -42,6 +29,7 @@ const DataFilesPreviewModal = () => {
     });
 
   const onOpen = () => {
+    setIsFrameLoading(true);
     dispatch({
       type: 'DATA_FILES_PREVIEW',
       payload: {
