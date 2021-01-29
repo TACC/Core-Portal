@@ -16,16 +16,11 @@ const defaultValues = {
 
 const FeedbackForm = () => {
   const dispatch = useDispatch();
-  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
   const creating = useSelector(state => state.ticketCreate.creating);
   const creatingError = useSelector(state => state.ticketCreate.creatingError);
   const creatingErrorMessage = useSelector(
     state => state.ticketCreate.creatingErrorMessage
   );
-
-  if (authenticatedUser == null) {
-    return <Spinner data-testid="loading-spinner" />;
-  }
 
   return (
     <Formik
@@ -35,11 +30,6 @@ const FeedbackForm = () => {
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach(key => formData.append(key, values[key]));
-        formData.append(
-          'name',
-          `${authenticatedUser.first_name} ${authenticatedUser.last_name}`
-        );
-        formData.append('email', authenticatedUser.email);
         formData.append('subject', 'Feedback for the Frontera Portal');
         dispatch({
           type: 'TICKET_CREATE',
