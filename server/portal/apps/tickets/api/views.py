@@ -42,13 +42,9 @@ class TicketsView(BaseApiView):
         rt = rtUtil.DjangoRt()
 
         data = request.POST.copy()
+        email = request.user.email if request.user.is_authenticated else data.get('email')
         subject = data.get('subject')
         problem_description = data.get('problem_description')
-        if request.user.is_authenticated:
-            email = request.user.email
-        else:
-            email = data.get('email')
-
         cc = data.get('cc', '')
 
         attachments = [(f.name, ContentFile(f.read()), f.content_type) for f in request.FILES.getlist('attachments')]
