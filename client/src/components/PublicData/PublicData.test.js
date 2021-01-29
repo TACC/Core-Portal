@@ -3,23 +3,25 @@ import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import PublicData from './PublicData';
 import filesFixture from '../DataFiles/fixtures/DataFiles.files.fixture';
+import systemsFixture from '../DataFiles/fixtures/DataFiles.systems.fixture';
 import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 
-const systemsFixture = {
-  defaultHost: 'frontera.tacc.utexas.edu',
-  systemList: [
-    {
-      name: 'Public Data',
-      system: 'cep.storage.public',
-      scheme: 'public',
-      api: 'tapis',
-      icon: null
-    }
-  ],
-  error: false,
-  errorMessage: null
+const systems = {
+  ...systemsFixture,
+  storage: {
+    ...systemsFixture.storage,
+    configuration: [
+      {
+        name: 'Public Data',
+        system: 'cep.storage.public',
+        scheme: 'public',
+        api: 'tapis',
+        icon: null
+      }
+    ]
+  }
 };
 
 describe('PublicData', () => {
@@ -27,21 +29,19 @@ describe('PublicData', () => {
     const history = createMemoryHistory();
     history.push('/public-data');
     const store = mockStore({
-      systems: systemsFixture,
+      systems,
       files: filesFixture,
       projects: {
         listing: {
           projects: []
+        },
+        metadata: {
+          title: ''
         }
       },
       pushKeys: { target: {} }
     });
-    console.log(filesFixture);
-    const { getByText, getAllByText, debug } = renderComponent(
-      <PublicData />,
-      store,
-      history
-    );
+    const { getByText } = renderComponent(<PublicData />, store, history);
 
     expect(getByText(/Public Data/)).toBeDefined();
     expect(history.location.pathname).toEqual(

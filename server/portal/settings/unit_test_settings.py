@@ -41,8 +41,6 @@ ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = 'path/to/icon.ico'
-PORTAL_LOGO_FILENAME = 'path/to/logo.png'
-PORTAL_NAVBAR_BACKGROUND_FILENAME = 'path/to/background.png'
 PORTAL_DOMAIN = 'test.portal'
 PORTAL_ADMIN_USERNAME = 'wma_prtl'
 
