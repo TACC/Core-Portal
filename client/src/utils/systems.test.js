@@ -26,7 +26,7 @@ describe('systems utility functions', () => {
     ).toEqual('Test Project Title');
     expect(
       findProjectTitle(projectsListingFixture, 'test.site.project.FRONTERA-X')
-    ).toEqual('Shared Workspaces');
+    ).toEqual('');
   });
   it('get project title based on resource', () => {
     const { configuration: systemList } = systemsFixture.storage;
@@ -45,7 +45,7 @@ describe('systems utility functions', () => {
         projectsListingFixture,
         'test.site.project.FRONTERA-X'
       )
-    ).toEqual('Shared Workspaces');
+    ).toEqual('');
   });
   it('get system display name based on resource', () => {
     const { configuration: systemList } = systemsFixture.storage;

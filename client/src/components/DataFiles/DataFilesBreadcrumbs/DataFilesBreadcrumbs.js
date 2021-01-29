@@ -84,6 +84,7 @@ const DataFilesBreadcrumbs = ({
   const pathComps = [];
   const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
+  const projectTitle = useSelector(state => state.projects.metadata.title);
 
   path
     .split('/')
@@ -99,11 +100,23 @@ const DataFilesBreadcrumbs = ({
     scheme,
     systemList,
     projectsList,
-    system
+    system,
+    projectTitle
   );
 
   return (
     <div className={`breadcrumbs ${className}`}>
+      {scheme === 'projects' && (
+        <>
+          <Link
+            className="breadcrumb-link"
+            to={`/workbench/data/${api}/${scheme}/`}
+          >
+            Shared Workspaces
+          </Link>{' '}
+          {system && `/ `}
+        </>
+      )}
       <BreadcrumbLink
         api={api}
         scheme={scheme}

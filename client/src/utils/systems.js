@@ -42,12 +42,12 @@ export function findSystemDisplayName(systemList, system, isRoot) {
  * @return {string} project title
  */
 
-export function findProjectTitle(projectsList, projectSystem) {
+export function findProjectTitle(projectsList, projectSystem, projectTitle) {
   const matching = projectsList.find(project => project.id === projectSystem);
   if (matching) {
     return matching.description;
   }
-  return 'Shared Workspaces';
+  return projectSystem && projectTitle ? projectTitle : '';
 }
 
 /**
@@ -63,11 +63,12 @@ export function findSystemOrProjectDisplayName(
   scheme,
   systemList,
   projectsList,
-  system
+  system,
+  projectTitle
 ) {
   switch (scheme) {
     case 'projects':
-      return findProjectTitle(projectsList, system);
+      return findProjectTitle(projectsList, system, projectTitle);
     default:
       return findSystemDisplayName(systemList, system);
   }
