@@ -52,6 +52,28 @@ def test_tickets_get(client, authenticated_user, mock_rtutil):
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_tickets_create_missing_required_description_or_subject(client, authenticated_user, mock_rtutil):
+    # missing subject
+    response = client.post('/api/tickets/',
+                           data={"problem_description": "problem_description"})
+    assert response.status_code == 400
+
+    # missing problem_description
+    response = client.post('/api/tickets/',
+                           data={"subject": "subject"})
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_tickets_create_missing_required_description_or_subject(client, regular_user, mock_rtutil):
+    # missing user email for unauthenticated user
+    response = client.post('/api/tickets/',
+                           data={"problem_description": "problem_description",
+                                 "subject": "subject"})
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_tickets_create(client, authenticated_user, mock_rtutil):
     response = client.post('/api/tickets/',
                            data={"problem_description": "problem_description",
