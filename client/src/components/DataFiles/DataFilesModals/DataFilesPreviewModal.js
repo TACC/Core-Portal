@@ -77,7 +77,7 @@ const DataFilesPreviewModal = () => {
       >
         <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
         <ModalBody styleName="root">
-          {(isLoading || (!previewUsingTextContent && isFrameLoading)) && (
+          {(isLoading || (previewUsingHref && isFrameLoading)) && (
             <PreviewModalSpinner />
           )}
           {previewUsingTextContent && (
