@@ -11,6 +11,7 @@ import { parse } from 'query-string';
 
 import './DataFiles.module.css';
 
+import { SectionMessage, LoadingSpinner } from '_common';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
@@ -20,7 +21,10 @@ import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
 
 const PrivateDataRedirect = () => {
-  const systems = useSelector(state => state.systems.systemList, shallowEqual);
+  const systems = useSelector(
+    state => state.systems.storage.configuration,
+    shallowEqual
+  );
   const history = useHistory();
   useEffect(() => {
     if (systems.length === 0) return;
@@ -92,10 +96,27 @@ const DataFiles = () => {
     state => state.files.params.FilesListing,
     shallowEqual
   );
+  const loading = useSelector(state => state.systems.storage.loading);
+  const error = useSelector(state => state.systems.storage.error);
 
   const readOnly =
     listingParams.scheme === 'projects' &&
     (listingParams.system === '' || !listingParams.system);
+
+  if (error) {
+    return (
+      <div styleName="error">
+        <SectionMessage type="warning">
+          There was a problem retrieving your systems
+        </SectionMessage>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <div styleName="container">
       {/* row containing breadcrumbs and toolbar */}
