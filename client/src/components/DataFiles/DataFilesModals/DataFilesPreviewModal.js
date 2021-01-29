@@ -15,14 +15,13 @@ const DataFilesPreviewModal = () => {
   const isOpen = useSelector(state => state.files.modals.preview);
   const params = useSelector(state => state.files.modalProps.preview);
   const {
-    href: previewHref,
-    content: previewTextContent,
-    error: previewError,
+    href,
+    content,
+    error,
     isLoading
   } = useSelector(state => state.files.preview);
-  const hasError = previewError !== null;
-  const previewUsingTextContent =
-    !isLoading && !hasError && previewTextContent !== null;
+  const hasError = error !== null;
+  const previewUsingTextContent = !isLoading && !hasError && content !== null;
   const previewUsingHref = !isLoading && !hasError && !previewUsingTextContent;
   const [isFrameLoading, setIsFrameLoading] = useState(true);
 
@@ -84,7 +83,7 @@ const DataFilesPreviewModal = () => {
           {previewUsingTextContent && (
             <div>
               <code>
-                <pre styleName="text-preview">{previewTextContent}</pre>
+                <pre styleName="text-preview">{content}</pre>
               </code>
             </div>
           )}
@@ -95,13 +94,13 @@ const DataFilesPreviewModal = () => {
                 frameBorder="0"
                 className="embed-responsive-item"
                 onLoad={onFrameLoad}
-                src={previewHref}
+                src={href}
               />
             </div>
           )}
           {hasError && (
             <Message type="warning" styleName="error">
-              {previewError}
+              {error}
             </Message>
           )}
         </ModalBody>
