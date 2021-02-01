@@ -9,4 +9,4 @@ services:
         target: development
       image: taccwma/core-portal:local
       command: /bin/bash
-      container_name: core_prtl_django
+      container_name: core_portal_django

@@ -53,21 +53,21 @@ OR
 -  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 12.x and not an earlier version. You will also need the port 8080 available locally._
 
 
-#### Initialize the application in the `core_prtl_django` container:
+#### Initialize the application in the `core_portal_django` container:
 
-    docker exec -it core_prtl_django /bin/bash
+    docker exec -it core_portal_django /bin/bash
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
 
-#### Initialize the CMS in the `core_prtl_cms` container:
+#### Initialize the CMS in the `core_portal_cms` container:
 First, copy the sample secrets:
 
     cp server/conf/cms/secrets.sample.py server/conf/cms/secrets.py
 
 Then, run migrations and `collectstatic`:
 ```
-    docker exec -it core_prtl_cms /bin/bash
+    docker exec -it core_portal_cms /bin/bash
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser
@@ -78,7 +78,7 @@ Finally, create a home page in the CMS.
 
 ### Setting up notifications locally:
 
-1. Run an [ngrok](https://ngrok.com/download) session to route webhooks to `core_prtl_nginx`:
+1. Run an [ngrok](https://ngrok.com/download) session to route webhooks to `core_portal_nginx`:
 ```
 ngrok http 443
 ```
@@ -227,3 +227,9 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 * [Tapis Project (Formerly Agave)](https://tacc-cloud.readthedocs.io/projects/agave/en/latest/)
+
+
+<!-- Link Aliases -->
+
+[Core-CMS]: https://github.com/TACC/Core-CMS "Core CMS"
+[Camino]: https://github.com/TACC/Camino "Camino (Deployment)"

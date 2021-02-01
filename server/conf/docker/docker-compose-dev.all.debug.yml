@@ -11,24 +11,24 @@ services:
       - ../../cms/static:/code/static
       - ../../cms/media:/code/media
     command: python manage.py runserver 0.0.0.0:8000
-    container_name: core_prtl_cms
+    container_name: core_portal_cms
 
   redis:
     image: redis:5.0
     volumes:
-      - core_prtl_redis_data:/data
-    container_name: core_prtl_redis
+      - core_portal_redis_data:/data
+    container_name: core_portal_redis
 
   rabbitmq:
     image: rabbitmq:3.7.17-management
     volumes:
-      - core_prtl_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@core_prtl_rabbitmq
+      - core_portal_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@core_portal_rabbitmq
     env_file: ../env_files/rabbitmq.env
-    container_name: core_prtl_rabbitmq
+    container_name: core_portal_rabbitmq
 
   memcached:
     image: memcached:latest
-    container_name: core_prtl_memcached
+    container_name: core_portal_memcached
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
@@ -39,16 +39,16 @@ services:
       - discovery.type=single-node
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - core_prtl_es_data:/usr/share/elasticsearch/data
-    container_name: core_prtl_elasticsearch
+      - core_portal_es_data:/usr/share/elasticsearch/data
+    container_name: core_portal_elasticsearch
     ports:
       - 9200:9200
 
   postgres:
     image: postgres:11.5
     volumes:
-      - core_prtl_postgres_data:/var/lib/postgresql/data/portal
-    container_name: core_prtl_postgres
+      - core_portal_postgres_data:/var/lib/postgresql/data/portal
+    container_name: core_portal_postgres
     environment:
       - POSTGRES_PASSWORD=dev
       - POSTGRES_USER=dev
@@ -79,7 +79,7 @@ services:
     ports:
       - 80:80
       - 443:443
-    container_name: core_prtl_nginx
+    container_name: core_portal_nginx
 
   websockets:
     image: taccwma/core-portal:local
@@ -87,7 +87,7 @@ services:
       - ../../../.:/srv/www/portal
       - ../nginx/certificates/cep.dev.crt:/etc/ssl/cep.dev.crt
       - ../nginx/certificates/cep.dev.key:/etc/ssl/cep.dev.key
-    container_name: core_prtl_websockets
+    container_name: core_portal_websockets
     # ** NOTE: Run this daphne command below to run a production-ready daphne server,
     # ** matching deployed configurations. Be aware there is no autoreload for local
     # ** development with this enabled.
@@ -110,7 +110,7 @@ services:
     # ** is no autoreload for local development with this enabled.
     # command: uwsgi --ini /srv/www/portal/server/conf/uwsgi/uwsgi_core.ini
     command: python manage.py runserver --noasgi 0.0.0.0:6000
-    container_name: core_prtl_django
+    container_name: core_portal_django
 
   workers:
     image: taccwma/core-portal:local
@@ -122,7 +122,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     command: "celery -A portal worker -Q default,indexing,files,api,onboard --concurrency=2"
-    container_name: core_prtl_workers
+    container_name: core_portal_workers
 
   docs:
     image: taccwma/frontera-docs:7af12ae
@@ -132,8 +132,8 @@ services:
     container_name: frontera_docs
 
 volumes:
-  core_prtl_redis_data:
-  core_prtl_es_data:
-  core_prtl_rabbitmq_data:
-  core_prtl_postgres_data:
+  core_portal_redis_data:
+  core_portal_es_data:
+  core_portal_rabbitmq_data:
+  core_portal_postgres_data:
   core_cms_postgres_data:
