@@ -205,19 +205,8 @@ ALLOCATION_SYSTEMS = []
 PORTAL_NAMESPACE = 'test'
 PORTAL_ALLOCATION = 'test'
 
-PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/path/to/home_dirs'
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'stampede2'
-# Relative path from the default sotrage system where home directories
-# should be created.
-# Use only if all home directories are under one parent directory.
-PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
-PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home.{}'
-PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
-
 PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'test.project'
 
-PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
 
@@ -401,9 +390,9 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'name': 'My Data (Frontera)',
         'description': 'My Data on Frontera for {username}',
         'site': 'frontera',
-        'systemId': 'frontera.home.{username}',                       # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
-        'host': 'frontera.tacc.utexas.edu',                         # PORTAL_DATA_DEPOT_STORAGE_HOST
-        'rootDir': '/home1/{tasdir}',                              # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+        'systemId': 'frontera.home.{username}',
+        'host': 'frontera.tacc.utexas.edu',
+        'rootDir': '/home1/{tasdir}',
         'port': 22,
         'icon': None,
     },

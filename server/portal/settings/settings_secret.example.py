@@ -118,20 +118,7 @@ _WH_BASE_URL = ''
 # DJANGO APP: DATA DEPOT
 ########################
 
-# Absolute path where home directories should be created.
-# Absolute with respect to the host
-# Use only if all home directories are under one parent directory.
-_PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/corral-repl/tacc/aci/CEP/home_dirs/'
-# Relative path from the default sotrage system where home directories
-# should be created.
-# Use only if all home directories are under one parent directory.
-# NOTE: Replace PORTAL_NAME with name of project (e.g. - cep).
-_PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
-_PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.dev.home.{}'
-_PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
-_PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
-_PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'EXECUTION_SYSTEM'
 _PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
 _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cep.home.{username}": "/tacc-work",
@@ -227,7 +214,7 @@ _PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projecs'
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = '{}.root'.format(
     _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
 )
-_PORTAL_PROJECTS_ROOT_HOST = _PORTAL_DATA_DEPOT_STORAGE_HOST
+_PORTAL_PROJECTS_ROOT_HOST = 'cloud.corral.tacc.utexas.edu'
 _PORTAL_PROJECTS_PRIVATE_KEY = ''
 _PORTAL_PROJECTS_PUBLIC_KEY = ''
 _PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = ''
