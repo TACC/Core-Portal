@@ -4,6 +4,7 @@ import DataFilesBreadcrumbs from "./DataFilesBreadcrumbs";
 import configureStore from "redux-mock-store";
 import systemsFixture from '../fixtures/DataFiles.systems.fixture'
 import { initialSystemState } from '../../../redux/reducers/datafiles.reducers';
+import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
@@ -11,7 +12,8 @@ const mockStore = configureStore();
 describe("DataFilesBreadcrumbs", () => {
   it("render breadcrumbs", () => {
     const store = mockStore({
-      systems: systemsFixture
+      systems: systemsFixture,
+      projects: projectsFixture
     });
     const history = createMemoryHistory();
     const { getByText, debug } = renderComponent(
@@ -44,7 +46,10 @@ describe("DataFilesBreadcrumbs", () => {
   });
 
   it("render breadcrumbs with initial empty systems", () => {
-    const store = mockStore({systems: initialSystemState});
+    const store = mockStore({
+      systems: initialSystemState,
+      projects: projectsFixture
+    });
     const history = createMemoryHistory();
     const {getByText, debug} = renderComponent(
       <DataFilesBreadcrumbs

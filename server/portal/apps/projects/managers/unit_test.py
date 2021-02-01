@@ -19,6 +19,11 @@ def agave_client(mocker):
 
 
 @pytest.fixture()
+def mock_index(mocker):
+    yield mocker.patch('portal.apps.projects.managers.base.IndexedProject')
+
+
+@pytest.fixture()
 def service_account(mocker):
     yield mocker.patch('portal.apps.projects.managers.base.service_account')
 
@@ -27,13 +32,9 @@ def service_account(mocker):
 def project_manager(mocker, mock_owner):
     mocker.patch('portal.apps.projects.managers.base.ProjectsManager.get_project')
     project = ProjectsManager(mock_owner)
+    project.get_project().project_id = "PRJ-123"
     project.get_project().storage.storage.root_dir = os.path.join(settings.PORTAL_PROJECTS_ROOT_DIR, "PRJ-123")
     return project
-
-
-@pytest.fixture()
-def mock_project_indexer(mocker):
-    yield mocker.patch('portal.apps.projects.managers.base.project_indexer')
 
 
 @pytest.fixture()
@@ -42,7 +43,18 @@ def mock_owner(django_user_model):
                                                  password='password')
 
 
-def test_add_member_pi(mock_owner, project_manager, service_account, mock_project_indexer):
+def test_search(mocker, mock_owner, project_manager, mock_index):
+    mock_listing = mocker.patch('portal.apps.projects.managers.base.ProjectsManager.list')
+    mock_listing.return_value = []
+    mock_index.search().query().execute().return_value = []
+    project_manager.search('testquery')
+    assert mock_listing.call_count == 1
+    mock_index.search().query.assert_called_with('query_string',
+                                                 query='testquery',
+                                                 minimum_should_match="80%")
+
+
+def test_add_member_pi(mock_owner, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.add_member('PRJ-123', 'pi', 'username')
     project_manager.get_project().add_member.assert_not_called()
@@ -62,10 +74,9 @@ def test_add_member_pi(mock_owner, project_manager, service_account, mock_projec
             }
         }
     )
-    mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])
 
 
-def test_add_member_co_pi(mock_owner, project_manager, service_account, mock_project_indexer):
+def test_add_member_co_pi(mock_owner, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.add_member('PRJ-123', 'co_pi', 'username')
     project_manager.get_project().add_member.assert_not_called()
@@ -85,10 +96,9 @@ def test_add_member_co_pi(mock_owner, project_manager, service_account, mock_pro
             }
         }
     )
-    mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])
 
 
-def test_add_member(mock_owner, project_manager, service_account, mock_project_indexer):
+def test_add_member(mock_owner, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.add_member('PRJ-123', 'team_member', 'username')
 
@@ -109,10 +119,9 @@ def test_add_member(mock_owner, project_manager, service_account, mock_project_i
             }
         }
     )
-    mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])
 
 
-def test_remove_member_pi(mock_owner, project_manager, service_account, mock_project_indexer):
+def test_remove_member_pi(mock_owner, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.remove_member('PRJ-123', 'pi', 'username')
     project_manager.get_project().remove_member.assert_not_called()
@@ -132,10 +141,9 @@ def test_remove_member_pi(mock_owner, project_manager, service_account, mock_pro
             }
         }
     )
-    mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])
 
 
-def test_remove_member_co_pi(mock_owner, project_manager, service_account, mock_project_indexer):
+def test_remove_member_co_pi(mock_owner, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.remove_member('PRJ-123', 'co_pi', 'username')
     project_manager.get_project().remove_member.assert_not_called()
@@ -155,10 +163,9 @@ def test_remove_member_co_pi(mock_owner, project_manager, service_account, mock_
             }
         }
     )
-    mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])
 
 
-def test_remove_member(mock_owner, project_manager, service_account, mock_project_indexer):
+def test_remove_member(mock_owner, project_manager, service_account):
     """Test add a PI to a project."""
     project_manager.remove_member('PRJ-123', 'team_member', 'username')
 
@@ -179,4 +186,3 @@ def test_remove_member(mock_owner, project_manager, service_account, mock_projec
             }
         }
     )
-    mock_project_indexer.apply_async.assert_called_with(args=['PRJ-123'])

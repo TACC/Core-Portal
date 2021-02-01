@@ -23,10 +23,9 @@ def _seralize_user(user):
     :param user: User model instance.
     """
     return {
-        'fullName': '{last_name}, {first_name}'.format(
-            last_name=user.last_name,
-            first_name=user.first_name
-        ),
+        'last_name': user.last_name,
+        'first_name': user.first_name,
+        'email': user.email,
         'username': user.username
     }
 
@@ -56,7 +55,10 @@ class MetadataJSONSerializer(json.JSONEncoder):
                     if related is not None:
                         ret[attname] = _seralize_user(related)
                 else:
-                    ret[attname] = field.value_to_string(obj)
+                    if val == None:
+                        ret[attname] = None
+                    else:
+                        ret[attname] = field.value_to_string(obj)
             for field in obj._meta.many_to_many:
                 if not field.serialize:
                     continue

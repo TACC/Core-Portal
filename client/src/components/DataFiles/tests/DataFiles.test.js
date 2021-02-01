@@ -5,6 +5,7 @@ import DataFiles from '../DataFiles';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture'
 import filesFixture from '../fixtures/DataFiles.files.fixture';
 import renderComponent from 'utils/testing';
+import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 
 const mockStore = configureStore();
 
@@ -21,6 +22,15 @@ describe('DataFiles', () => {
         },
         modalProps: {
           pushKeys: {}
+        }
+      },
+      projects: projectsFixture,
+      authenticatedUser: {
+        user: {
+          username: "username",
+          first_name: "User",
+          last_name: "Name",
+          email: "user@name.com"
         }
       }
     });

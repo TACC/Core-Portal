@@ -68,26 +68,35 @@ CheckboxCell.propTypes = {
 };
 
 export const FileNavCell = React.memo(
-  ({ system, path, name, format, api, scheme, href }) => {
+  ({ system, path, name, format, api, scheme, href, isPublic, length }) => {
     const dispatch = useDispatch();
     const previewCallback = e => {
       e.stopPropagation();
       e.preventDefault();
+      if (api === 'googledrive') {
+        window.open(href, '_blank');
+        return;
+      }
       dispatch({
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'preview',
-          props: { api, scheme, system, path, name, href }
+          props: { api, scheme, system, path, name, href, length }
         }
       });
     };
+
+    const basePath = isPublic ? '/public-data' : '/workbench/data';
 
     return (
       <>
         <span className="data-files-name">
           <Link
             className="data-files-nav-link"
-            to={`/workbench/data/${api}/${scheme}/${system}${path}/`}
+            to={`${basePath}/${api}/${scheme}/${system}/${path}/`.replace(
+              /\/{2,}/g, // Replace duplicate slashes with single slash
+              '/'
+            )}
             onClick={format !== 'folder' ? previewCallback : null}
           >
             {name}
@@ -104,7 +113,12 @@ FileNavCell.propTypes = {
   format: PropTypes.string.isRequired,
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
-  href: PropTypes.string.isRequired
+  href: PropTypes.string.isRequired,
+  isPublic: PropTypes.bool,
+  length: PropTypes.number.isRequired
+};
+FileNavCell.defaultProps = {
+  isPublic: false
 };
 
 export const FileLengthCell = ({ cell }) => {
@@ -165,7 +179,9 @@ FileIconCell.propTypes = {
 
 export const ViewPathCell = ({ file }) => {
   const dispatch = useDispatch();
-  const onClick = () => {
+  const onClick = e => {
+    e.stopPropagation();
+    e.preventDefault();
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'showpath', props: { file } }

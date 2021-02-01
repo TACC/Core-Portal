@@ -1,0 +1,100 @@
+.root {
+  display: block;
+  margin-bottom: 1em;
+}
+
+.access {
+  text-transform: capitalize;
+}
+
+.user-search {
+  margin-bottom: 1em;
+}
+
+.member-action {
+  display: flex;
+  align-items: center;
+  h6 {
+    margin-bottom: 0;
+    font-size: 12px;
+  }
+}
+
+.printed-name {
+  font-weight: bold;
+}
+
+.member-search-group {
+  width: 70%;
+}
+
+.member-search {
+  margin-bottom: 1em;
+  font-size: 12px !important;
+}
+
+.member-list {
+  th:last-child,
+  td:last-child {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.addremove-list {
+  /* title */
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 60%;
+  }
+  /* owner */
+  th:nth-child(2),
+  td:nth-child(2) {
+    min-width: 10%;
+  }
+  /* id */
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 30%;
+  }
+}
+
+.transfer-list {
+  /* owner */
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 60%;
+  }
+  /* confirmation */
+  th:nth-child(2),
+  td:nth-child(2) {
+    min-width: 40%;
+  }
+}
+
+.confirm-controls {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.confirm-controls > * {
+  margin-left: 1em;
+}
+
+.ownership-button {
+  height: 18.88px;
+  border-radius: 0;
+  background-color: #F4F4F4;
+  color: #707070;
+  border: 1px solid #AFAFAF;
+  padding: 2px 8px 2px 8px;
+  font-size: 12px !important;
+  display: flex;
+  align-items: center;
+}
+
+.add-button {
+  composes: c-button--secondary from '../../../styles/components/c-button.css';
+}

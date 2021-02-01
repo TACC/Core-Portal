@@ -48,8 +48,6 @@ ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = settings_secret._PORTAL_ICON_FILENAME
-PORTAL_LOGO_FILENAME = settings_secret._PORTAL_LOGO_FILENAME
-PORTAL_NAVBAR_BACKGROUND_FILENAME = settings_secret._PORTAL_NAVBAR_BACKGROUND_FILENAME
 
 ROOT_URLCONF = 'portal.urls'
 
@@ -89,8 +87,11 @@ INSTALLED_APPS = [
     'portal.apps.workspace',
     'portal.apps.datafiles',
     'portal.apps.system_monitor',
+    'portal.apps.googledrive_integration',
     'portal.apps.projects',
     'portal.apps.system_creation',
+    'portal.apps.public_data',
+    'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
 ]
 
@@ -278,10 +279,8 @@ LOGGING = {
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(levelname)s %(asctime)s UTC %(module)s %(name)s.'
-                      '%(funcName)s:%(lineno)s: %(message)s '
-                      'user=%(user)s sessionId=%(sessionId)s '
-                      'op=%(operation)s info=%(info)s'
+            'format': '[METRICS] %(levelname)s %(asctime)s UTC %(module)s '
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
     },
     'handlers': {
@@ -299,7 +298,7 @@ LOGGING = {
             'formatter': 'default',
         },
         'metrics_console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'metrics',
         },
@@ -324,7 +323,7 @@ LOGGING = {
         },
         'metrics': {
             'handlers': ['metrics_console', 'metrics_file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
         },
         'paramiko': {
             'handlers': ['console'],
@@ -656,8 +655,6 @@ SETTINGS: EXPORTS
 
 SETTINGS_EXPORT = [
     'PORTAL_ICON_FILENAME',
-    'PORTAL_LOGO_FILENAME',
-    'PORTAL_NAVBAR_BACKGROUND_FILENAME',
     'DEBUG',
     'GOOGLE_ANALYTICS_PRELOAD',
     'GOOGLE_ANALYTICS_PROPERTY_ID',

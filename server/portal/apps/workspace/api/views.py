@@ -46,7 +46,6 @@ def _app_license_type(app_id):
 
 
 def _get_app(app_id, user):
-    METRICS.debug("User " + user.username + " is requesting app id " + app_id)
     agave = user.agave_oauth.client
     data = agave.apps.get(appId=app_id)
 
@@ -89,9 +88,10 @@ class AppsView(BaseApiView):
         agave = request.user.agave_oauth.client
         app_id = request.GET.get('app_id')
         if app_id:
+            METRICS.debug("user:{} is requesting app id:{}".format(request.user.username, app_id))
             data = _get_app(app_id, request.user)
         else:
-            METRICS.debug("User " + request.user.username + " is requesting all public apps")
+            METRICS.debug("user:{} is requesting all public apps".format(request.user.username))
             public_only = request.GET.get('publicOnly')
             if public_only == 'true':
                 data = agave.apps.list(publicOnly='true')
@@ -233,7 +233,7 @@ class JobsView(BaseApiView):
     def delete(self, request, *args, **kwargs):
         agave = request.user.agave_oauth.client
         job_id = request.GET.get('job_id')
-        # METRICS.debug("User " + request.user.username + " is deleting job id " + job_id)
+        METRICS.info("user:{} is deleting job id:{}".format(request.user.username, job_id))
         data = agave.jobs.delete(jobId=job_id)
         return JsonResponse({"response": data})
 
@@ -245,10 +245,12 @@ class JobsView(BaseApiView):
 
         # cancel job / stop job
         if job_id and job_action:
+            METRICS.info("user:{} is canceling/stopping job id:{}".format(request.user.username, job_id))
             data = agave.jobs.manage(jobId=job_id, body={"action": job_action})
             return JsonResponse({"response": data})
         # submit job
         elif job_post:
+            METRICS.info("user:{} is submitting job:{}".format(request.user.username, job_post))
             default_sys = UserSystemsManager(
                 request.user,
                 settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
@@ -341,23 +343,11 @@ class SystemsView(BaseApiView):
         user_role = request.GET.get('user_role')
         system_id = request.GET.get('system_id')
         if roles:
-            METRICS.info('agave.systems.listRoles', extra={
-                'operation': 'agave.systems.listRoles',
-                'user': request.user.username,
-                'info': {
-                    'system_id': system_id
-                }
-            })
+            METRICS.info("user:{} agave.systems.listRoles system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.listRoles(systemId=system_id)
         elif user_role:
-            METRICS.info('agave.systems.getRoleForUser', extra={
-                'operation': 'agave.systems.getRoleForUser',
-                'user': request.user.username,
-                'info': {
-                    'system_id': system_id
-                }
-            })
+            METRICS.info("user:{} agave.systems.getRoleForUser system_id:{}".format(request.user.username, system_id))
             agc = service_account()
             data = agc.systems.getRoleForUser(systemId=system_id, username=request.user.username)
         return JsonResponse({"response": data})
@@ -366,13 +356,7 @@ class SystemsView(BaseApiView):
         body = json.loads(request.body)
         role = body['role']
         system_id = body['system_id']
-        METRICS.info('agave.systems.updateRole', extra={
-            'operation': 'agave.systems.updateRole',
-            'user': request.user.username,
-            'info': {
-                'system_id': system_id
-            }
-        })
+        METRICS.info("user:{} agave.systems.updateRole system_id:{}".format(request.user.username, system_id))
         role_body = {
             'username': request.user.username,
             'role': role
@@ -483,6 +467,7 @@ class AppsTrayView(BaseApiView):
                             "id": app.htmlId,
                             "label": app.label,
                             "shortDescription": app.shortDescription,
+                            "appType": "html"
                         }
                     elif str(app.appType).lower() == 'agave':
                         # If this is an agave app, retrieve the definition

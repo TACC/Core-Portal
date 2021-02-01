@@ -111,12 +111,13 @@ const DataFilesModalButtonCell = ({
   system,
   path,
   format,
+  name,
   operationName,
   operationCallback,
   operationOnlyForFolders,
   disabled
 }) => {
-  const onClick = () => operationCallback(system, path);
+  const onClick = () => operationCallback(system, path, name);
   const formatSupportsOperation =
     !operationOnlyForFolders || format === 'folder';
   return (
@@ -137,6 +138,7 @@ DataFilesModalButtonCell.propTypes = {
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   format: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   operationName: PropTypes.string.isRequired,
   operationCallback: PropTypes.func.isRequired,
   operationOnlyForFolders: PropTypes.bool.isRequired,
@@ -155,7 +157,7 @@ const DataFilesModalListingTable = ({
   const loading = useSelector(state => state.files.loading.modal);
   const error = useSelector(state => state.files.error.modal);
   const params = useSelector(state => state.files.params.modal, shallowEqual);
-  const systemList = useSelector(state => state.systems.systemList);
+  const systemList = useSelector(state => state.systems.storage.configuration);
   const isNotRoot = params.path.length > 0;
 
   const alteredData = useMemo(() => {
@@ -170,7 +172,7 @@ const DataFilesModalListingTable = ({
       const currentFolderEntry = {
         name: isNotRoot
           ? getCurrentDirectory(params.path)
-          : findSystemDisplayName(systemList, params.system),
+          : findSystemDisplayName(systemList, params.system, !isNotRoot),
         format: 'folder',
         system: params.system,
         path: params.path,
@@ -204,7 +206,7 @@ const DataFilesModalListingTable = ({
   const ButtonCell = useCallback(
     ({
       row: {
-        original: { system, path, format }
+        original: { system, path, format, name }
       }
     }) => (
       <DataFilesModalButtonCell
@@ -212,6 +214,7 @@ const DataFilesModalListingTable = ({
         scheme={params.scheme}
         system={system}
         path={path}
+        name={name}
         format={format}
         operationName={operationName}
         operationCallback={operationCallback}
