@@ -2,10 +2,10 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { InlineMessage } from '_common';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormField from '../Form/FormField';
+import InlineMessage from '../InlineMessage';
 import LoadingSpinner from '../LoadingSpinner';
 
 const SystemsPushKeysModal = () => {
