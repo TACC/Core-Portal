@@ -6,6 +6,7 @@ import { AppSchemaForm } from './AppForm';
 import { default as allocationsFixture } from './fixtures/AppForm.allocations.fixture';
 import { default as jobsFixture } from './fixtures/AppForm.jobs.fixture';
 import { default as namdFixture } from './fixtures/AppForm.app.fixture';
+import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -13,10 +14,7 @@ const mockStore = configureStore();
 const initialMockState = {
   allocations: allocationsFixture,
   jobs: jobsFixture,
-  systems: {
-    defaultHost: 'frontera.tacc.utexas.edu',
-    systemsList: []
-  },
+  systems: systemsFixture,
   files: {
     listing: {
       modal: []
@@ -28,7 +26,8 @@ const initialMockState = {
         scheme: '',
         system: ''
       }
-    }
+    },
+    modalProps: { select: {} }
   }
 };
 

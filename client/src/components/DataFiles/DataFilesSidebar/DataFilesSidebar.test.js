@@ -1,26 +1,39 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import DataFilesSidebar from './DataFilesSidebar';
 import configureStore from 'redux-mock-store';
-import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import renderComponent from 'utils/testing';
+import DataFilesSidebar from './DataFilesSidebar';
+import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
+
+const store = mockStore({
+  files: {
+    error: {
+      FilesListing: false
+    },
+    params: {
+      FilesListing: {}
+    }
+  },
+  systems: systemsFixture,
+  authenticatedUser: {
+    user: {
+      username: 'username',
+      first_name: 'User',
+      last_name: 'Name',
+      email: 'user@username.com'
+    }
+  }
+});
 
 describe('DataFilesSidebar', () => {
   it('contains an Add button and a link', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/');
-    const store = mockStore({
-      files: {
-        error: {
-          FilesListing: false
-        }
-      },
-      systems: systemsFixture
-    });
-    const { getByText, debug } = renderComponent(
+
+    const { getByText } = renderComponent(
       <Route path="/workbench/data">
         <DataFilesSidebar />
       </Route>,
@@ -40,6 +53,6 @@ describe('DataFilesSidebar', () => {
       getByText(/My Data \(Longhorn\)/)
         .closest('a')
         .getAttribute('href')
-    ).toEqual('/workbench/data/tapis/private/longhorn.home.username/');    
+    ).toEqual('/workbench/data/tapis/private/longhorn.home.username/');
   });
 });

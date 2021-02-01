@@ -1,0 +1,33 @@
+{# WARNING: Some markup is duplicated in other repositories #}
+{# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
+{# FAQ: Extra lines exist to ease CMS/Portal/Guide template comparison #}
+
+<!-- Sponsor Logos -->
+{% include "includes/header_branding.html" %}
+
+<!-- Navigation Bar -->
+<nav id="s-header" class="s-header  navbar navbar-expand-xl navbar-dark">
+  <!-- Portal Logo -->
+  {% include "includes/header_logo.html" %}
+
+  <!-- Navbar Accordian Toggle on Small Screens  -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Navbar Links -->
+  <div class="collapse navbar-collapse" id="navbarsExpandTarget">
+    {# GL-6: Remove need for different `className` values #}
+
+
+
+      {% include "includes/nav_cms.html" with className="navbar-nav" only %}
+
+      {# NOTE: As of 2020-12, search is only available with a Portal #}
+      {% include "includes/nav_search.html" with className="form-inline  ml-auto" only %}
+      {# FAQ: Unlike CMS and User Guide, we must pass `user` #}
+      {% include "includes/nav_portal.html" with className="navbar-nav" user=user only %}
+
+
+  </div>
+</nav>

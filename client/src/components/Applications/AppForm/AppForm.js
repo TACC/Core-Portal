@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
-import { Button, FormGroup, Alert } from 'reactstrap';
+import React from 'react';
+import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
-import { AppIcon, FormField, Icon, LoadingSpinner, Message } from '_common';
+import {
+  AppIcon,
+  FormField,
+  Icon,
+  LoadingSpinner,
+  SectionMessage
+} from '_common';
 import * as Yup from 'yup';
 import parse from 'html-react-parser';
 import './AppForm.scss';
@@ -66,9 +72,9 @@ const AppDetail = () => {
     const errorText = error.message ? error.message : 'Something went wrong.';
 
     return (
-      <Message type="warn" className="appDetail-error">
-        {errorText}
-      </Message>
+      <div className="appDetail-error">
+        <SectionMessage type="warning">{errorText}</SectionMessage>
+      </div>
     );
   }
 
@@ -132,10 +138,11 @@ export const AppSchemaForm = ({ app }) => {
       allocations: matchingHost ? state.allocations.hosts[matchingHost] : [],
       portalAlloc: state.allocations.portal_alloc,
       jobSubmission: state.jobs.submit,
-      hasDefaultAllocation: !state.allocations.loading
-        ? state.allocations.hosts[state.systems.defaultHost]
-        : true,
-      defaultHost: state.systems.defaultHost
+      hasDefaultAllocation:
+        state.allocations.loading ||
+        state.systems.storage.loading ||
+        state.allocations.hosts[state.systems.storage.defaultHost],
+      defaultHost: state.systems.storage.defaultHost
     };
   }, shallowEqual);
 
@@ -192,38 +199,41 @@ export const AppSchemaForm = ({ app }) => {
     initialValues.allocation = app.scheduler;
   }
 
-  // local state for alerts
-  const [visible, setVisible] = useState(true);
-  const onDismiss = () => setVisible(false);
-
   return (
     <div id="appForm-wrapper">
       {jobSubmission.response && (
         <div id="appForm-alerts">
           {jobSubmission.error ? (
-            <Alert color="warning" isOpen={visible} toggle={onDismiss}>
-              Error: {jobSubmission.response.message}
-              {missingAllocation && (
-                <>
-                  &nbsp;Please click&nbsp;
-                  <Link to="/workbench/allocations/manage" className="wb-link">
-                    here
-                  </Link>
-                  &nbsp;to request access.
-                </>
-              )}
-            </Alert>
+            <div className="appDetail-error">
+              <SectionMessage type="warning">
+                Error: {jobSubmission.response.message}
+                {missingAllocation && (
+                  <>
+                    &nbsp;Please click&nbsp;
+                    <Link
+                      to="/workbench/allocations/manage"
+                      className="wb-link"
+                    >
+                      here
+                    </Link>
+                    &nbsp;to request access.
+                  </>
+                )}
+              </SectionMessage>
+            </div>
           ) : (
-            <Alert color="info" isOpen={visible} toggle={onDismiss}>
-              Your job has submitted successfully. See details in{' '}
-              <Link
-                to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
-                className="wb-link"
-              >
-                History &gt; Jobs
-              </Link>
-              .
-            </Alert>
+            <div className="appDetail-error">
+              <SectionMessage type="success">
+                Your job has submitted successfully. See details in{' '}
+                <Link
+                  to={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs`}
+                  className="wb-link"
+                >
+                  History &gt; Jobs
+                </Link>
+                .
+              </SectionMessage>
+            </div>
           )}
         </div>
       )}

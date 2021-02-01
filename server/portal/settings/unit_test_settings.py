@@ -41,8 +41,6 @@ ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = 'path/to/icon.ico'
-PORTAL_LOGO_FILENAME = 'path/to/logo.png'
-PORTAL_NAVBAR_BACKGROUND_FILENAME = 'path/to/background.png'
 PORTAL_DOMAIN = 'test.portal'
 PORTAL_ADMIN_USERNAME = 'wma_prtl'
 
@@ -84,6 +82,7 @@ INSTALLED_APPS = [
     'portal.apps.workbench',
     'portal.apps.workspace',
     'portal.apps.system_monitor',
+    'portal.apps.googledrive_integration',
     'portal.apps.datafiles',
     'portal.apps.projects',
 
@@ -333,10 +332,6 @@ LOGGING = {
     'formatters': {
         'default': {
             'format': '[DJANGO-TEST] %(levelname)s %(asctime)s %(module)s '
-                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
-        },
-        'agave': {
-            'format': '[AGAVE-TEST] %(levelname)s %(asctime)s %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
