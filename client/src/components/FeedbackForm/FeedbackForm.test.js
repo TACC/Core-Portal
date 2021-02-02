@@ -3,40 +3,20 @@ import renderComponent from 'utils/testing';
 import configureStore from 'redux-mock-store';
 import FeedbackForm from './FeedbackForm';
 import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
+
 import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
 
-const exampleAuthenticatedUser = {
-  user: {
-    first_name: 'Max',
-    username: 'mmunstermann',
-    last_name: 'Munstermann',
-    email: 'max@munster.mann',
-    oauth: {
-      expires_in: 14400,
-      scope: 'default'
-    },
-    isStaff: false
-  }
-};
-
 describe('FeedbackForm', () => {
-  it('renders form with authenticated user information', () => {
+  it('renders form', () => {
     const store = mockStore({
-      ticketCreate: {
-        ...ticketCreate
-      },
-      authenticatedUser: exampleAuthenticatedUser
+      ticketCreate
     });
 
-    const { getAllByText, getByDisplayValue } = renderComponent(
-      <FeedbackForm />,
-      store
-    );
-    expect(getByDisplayValue(/Max/)).toBeInTheDocument();
-    expect(getByDisplayValue(/Munstermann/)).toBeInTheDocument();
-    expect(getByDisplayValue(/max@munster.mann/)).toBeInTheDocument();
+    const { getByText } = renderComponent(<FeedbackForm />, store);
+    expect(getByText(/Feedback/)).toBeInTheDocument();
+    expect(getByText(/Submit/)).toBeInTheDocument();
   });
 
   it('renders spinner when creating a feedback', () => {
@@ -44,8 +24,7 @@ describe('FeedbackForm', () => {
       ticketCreate: {
         ...ticketCreate,
         creating: true
-      },
-      authenticatedUser: exampleAuthenticatedUser
+      }
     });
 
     const { getByTestId } = renderComponent(<FeedbackForm />, store);
