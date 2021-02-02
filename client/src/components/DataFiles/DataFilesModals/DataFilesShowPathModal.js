@@ -26,7 +26,7 @@ const DataFilesShowPathModal = React.memo(() => {
     if (!file) {
       return null;
     }
-    const matching = state.systems.definitions.find(
+    const matching = state.systems.definitions.list.find(
       sys => sys.id === file.system
     );
     return matching;

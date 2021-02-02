@@ -20,6 +20,11 @@ def agave_client(mocker):
 
 
 @pytest.fixture()
+def mock_signal(mocker):
+    yield mocker.patch('portal.apps.signals.receivers.index_project')
+
+
+@pytest.fixture()
 def service_account(mocker):
     yield mocker.patch('portal.apps.projects.models.base.service_account')
 
@@ -43,7 +48,7 @@ def mock_owner(django_user_model):
 
 
 @pytest.mark.django_db
-def test_project_init(mock_agave_client, mock_storage_system, project_model):
+def test_project_init(mock_agave_client, mock_storage_system, project_model, mock_signal):
     'Test project model init.'
     mock_storage_system.return_value.description = 'my title'
 
@@ -62,7 +67,7 @@ def test_project_init(mock_agave_client, mock_storage_system, project_model):
     assert ProjectMetadata.objects.get(project_id='PRJ-123', title='my title')
 
 
-def test_project_create(mock_owner, mock_agave_client, service_account, mock_storage_system, project_model):
+def test_project_create(mock_owner, mock_agave_client, service_account, mock_storage_system, project_model, mock_signal):
     prj = project_model.create(mock_agave_client, 'Test Title', 'PRJ-123', mock_owner)
     project_model._create_dir.assert_called_with('PRJ-123')
     mock_storage_system.assert_called_with(client=service_account(),
@@ -82,7 +87,7 @@ def test_project_create(mock_owner, mock_agave_client, service_account, mock_sto
                                                     '-----END RSA PRIVATE KEY-----')
 
 
-def test_listing(mock_owner, service_account, mock_agave_client, mock_storage_system, project_model):
+def test_listing(mock_owner, service_account, mock_agave_client, mock_storage_system, project_model, mock_signal):
     'Test projects listing.'
     prj1 = project_model.create(mock_agave_client, 'First Project', 'PRJ-123', mock_owner)
     prj1.storage.name = 'PRJ-123'
@@ -106,7 +111,7 @@ def test_listing(mock_owner, service_account, mock_agave_client, mock_storage_sy
     assert len(lst) == 2
 
 
-def test_add_member(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model):
+def test_add_member(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model, mock_signal):
     'Test add member.'
 
     prj = project_model.create(mock_agave_client, 'Test Title', 'PRJ-123', mock_owner)
@@ -125,7 +130,7 @@ def test_add_member(mock_owner, django_user_model, mock_agave_client, mock_stora
         prj.metadata.team_members.get(username='teamMember')
 
 
-def test_add_member_unauthorized(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model):
+def test_add_member_unauthorized(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model, mock_signal):
     'Test add member.'
 
     prj = project_model.create(mock_agave_client, 'Test Title', 'PRJ-123', mock_owner)
@@ -142,7 +147,7 @@ def test_add_member_unauthorized(mock_owner, django_user_model, mock_agave_clien
     assert prj.metadata.team_members.all().count() == 0
 
 
-def test_add_copi(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model):
+def test_add_copi(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model, mock_signal):
 
     prj = project_model.create(mock_agave_client, 'Test Title', 'PRJ-123', mock_owner)
     prj.storage.roles.for_user.return_value = MagicMock(role='ADMIN', ADMIN='ADMIN')
@@ -160,7 +165,7 @@ def test_add_copi(mock_owner, django_user_model, mock_agave_client, mock_storage
         prj.metadata.team_members.get(username='teamMember')
 
 
-def test_add_copi_unauthorized(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model):
+def test_add_copi_unauthorized(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model, mock_signal):
     'Test add member.'
 
     prj = project_model.create(mock_agave_client, 'Test Title', 'PRJ-123', mock_owner)
@@ -177,7 +182,7 @@ def test_add_copi_unauthorized(mock_owner, django_user_model, mock_agave_client,
     assert prj.metadata.co_pis.all().count() == 0
 
 
-def test_add_pi(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model):
+def test_add_pi(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model, mock_signal):
 
     prj = project_model.create(mock_agave_client, 'Test Title', 'PRJ-123', mock_owner)
     prj.storage.roles.for_user.return_value = MagicMock(role='ADMIN', ADMIN='ADMIN')
@@ -194,7 +199,7 @@ def test_add_pi(mock_owner, django_user_model, mock_agave_client, mock_storage_s
     assert not prj.metadata.pi
 
 
-def test_add_pi_unauthorized(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model):
+def test_add_pi_unauthorized(mock_owner, django_user_model, mock_agave_client, mock_storage_system, project_model, mock_signal):
     'Test add member.'
 
     prj = project_model.create(mock_agave_client, 'Test Title', 'PRJ-123', mock_owner)
@@ -211,7 +216,7 @@ def test_add_pi_unauthorized(mock_owner, django_user_model, mock_agave_client, m
     assert not prj.metadata.pi
 
 
-def test_create_metadata(mock_owner, mock_agave_client, mock_storage_system, project_model):
+def test_create_metadata(mock_owner, mock_agave_client, mock_storage_system, project_model, mock_signal):
         # Test creating metadata with no owner
         project_model._create_metadata("Project Title", "PRJ-123")
         assert ProjectMetadata.objects.get(project_id="PRJ-123").owner is None
