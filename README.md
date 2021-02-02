@@ -2,7 +2,7 @@
 
 * Working Design: https://xd.adobe.com/view/db2660cc-1011-4f26-5d31-019ce87c1fe8-ad17/
 
-[![codecov](https://codecov.io/gh/TACC/Core-Portal/branch/master/graph/badge.svg?token=TM9CH1AHJ1)](https://codecov.io/gh/TACC/Core-Portal)
+[![codecov](https://codecov.io/gh/TACC/Core-Portal/branch/main/graph/badge.svg?token=TM9CH1AHJ1)](https://codecov.io/gh/TACC/Core-Portal)
 
 ## Prequisites for running the portal application
 
@@ -173,7 +173,7 @@ You may auto-fix your linting errors to conform with configured standards, for s
 - `npm run lint:js -- --fix`
 - `npm run lint:js -- --fix`
 
-Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 master | flake8 --diff` from the command line.
+Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 main | flake8 --diff` from the command line.
 This requires that you have a local python virtual environemnt setup with this project's dependencies installed:
 
 ```
@@ -192,7 +192,7 @@ Client-side javascript testing is run through Jest. Run `npm run test`* from the
 
 #### Test Coverage
 
-Coverage is sent to codecov on commits to the repo (see Github Actions for branch to see branch coverage). Ideally we only merge positive code coverage changes to master.
+Coverage is sent to codecov on commits to the repo (see Github Actions for branch to see branch coverage). Ideally we only merge positive code coverage changes to `main`.
 
 
 #### Production Deployment
@@ -214,7 +214,7 @@ Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/W
 ### Contributing
 
 #### Development Workflow
-We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/IntroducingGitFlow.html) as our development workflow. Our [development site](https://dev.cep.tacc.utexas.edu) (accessible behind the TACC Network) is always up-to-date with `master`, while the [production site](https://prod.cep.tacc.utexas.edu) is built to a hashed commit tag.
+We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/IntroducingGitFlow.html) as our development workflow. Our [development site](https://dev.cep.tacc.utexas.edu) (accessible behind the TACC Network) is always up-to-date with `main`, while the [production site](https://prod.cep.tacc.utexas.edu) is built to a hashed commit tag.
 - Feature branches contain major updates, bug fixes, and hot fixes with respective branch prefixes:
     - `task/` for features and updates
     - `bug/` for bugfixes

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalHeader } from 'reactstrap';
 import TicketCreateForm from './TicketCreateForm';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateModal.scss';
@@ -50,13 +50,11 @@ function TicketCreateModal() {
       contentClassName="ticket-create-modal-content"
     >
       <ModalHeader toggle={close}>Add Ticket</ModalHeader>
-      <ModalBody className="ticket-create-modal-body">
-        <TicketCreateForm
-          authenticatedUser={authenticatedUser}
-          provideDashBoardLinkOnSuccess={provideDashBoardLinkOnSuccess}
-          initialSubject={subject}
-        />
-      </ModalBody>
+      <TicketCreateForm
+        authenticatedUser={authenticatedUser}
+        provideDashBoardLinkOnSuccess={provideDashBoardLinkOnSuccess}
+        initialSubject={subject}
+      />
     </Modal>
   );
 }
