@@ -84,15 +84,12 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
       });
   };
 
-<<<<<<< HEAD
   const showListing =
     uploadedFiles.length > 0 ||
     (density === DEFAULT_DENSITY && direction === DEFAULT_DIRECTION);
   const isCompactView =
     uploadedFiles.length > 0 &&
     !(density === DEFAULT_DENSITY && direction === DEFAULT_DIRECTION);
-=======
->>>>>>> origin/master
   const systemDisplayName = findSystemOrProjectDisplayName(
     params.scheme,
     systemList,
@@ -146,7 +143,6 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
       <ModalHeader toggle={toggle}>
         Upload Files in {systemDisplayName}/{params.path}
       </ModalHeader>
-<<<<<<< HEAD
       <ModalBody styleName={containerStyleNames}>
         <div styleName={isCompactView ? 'compact-view' : ''}>
           <FileInputDropZone
@@ -156,16 +152,6 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
             maxSizeMessage="Max File Size: 500MB"
           />
         </div>
-=======
-      <ModalBody>
-        <FileInputDropZone
-          onSetFiles={selectFiles}
-          onRejectedFiles={onRejectedFiles}
-          maxSize={524288000}
-          maxSizeMessage="Max File Size: 500MB"
-        />
-
->>>>>>> origin/master
         <div hidden={uploadedFiles.length === 0} style={{ marginTop: '10px' }}>
           <span style={{ fontSize: '20px' }}>
             Uploading to {systemDisplayName}/{params.path}
