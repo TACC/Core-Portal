@@ -1,9 +1,8 @@
-# TACC Frontera Web Portal
+# TACC Core Portal
 
-* v2.0.0
 * Working Design: https://xd.adobe.com/view/db2660cc-1011-4f26-5d31-019ce87c1fe8-ad17/
 
-[![codecov](https://codecov.io/gh/TACC/Frontera-Portal/branch/master/graph/badge.svg?token=TM9CH1AHJ1)](https://codecov.io/gh/TACC/Frontera-Portal)
+[![codecov](https://codecov.io/gh/TACC/Core-Portal/branch/main/graph/badge.svg?token=TM9CH1AHJ1)](https://codecov.io/gh/TACC/Core-Portal)
 
 ## Prequisites for running the portal application
 
@@ -12,7 +11,7 @@
 * Python 3.6.8
 * Nodejs 12.x (LTS)
 
-The Frontera Web Portal can be run using [Docker][1] and [Docker Compose][2]. You will
+The Core Portal can be run using [Docker][1] and [Docker Compose][2]. You will
 need both Docker and Docker Compose pre-installed on the system you wish to run the portal
 on.
 
@@ -27,7 +26,7 @@ After you clone the repository locally, there are several configuration steps re
 
 #### Create settings_secret.py and secrets.py
 
-Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Frontera Web Settings Secret` entry secured on [UT Stache](https://stache.security.utexas.edu)
+Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.security.utexas.edu)
 
 Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
 
@@ -54,21 +53,21 @@ OR
 -  _Note: During local development you can also use `npm run dev` to set a livereload watch on your local system that will update the portal code in real-time. Again, make sure that you are using NodeJS 12.x and not an earlier version. You will also need the port 8080 available locally._
 
 
-#### Initialize the application in the `frontera_prtl_django` container:
+#### Initialize the application in the `core_portal_django` container:
 
-    docker exec -it frontera_prtl_django /bin/bash
+    docker exec -it core_portal_django /bin/bash
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
 
-#### Initialize the CMS in the `frontera_prtl_cms` container:
+#### Initialize the CMS in the `core_portal_cms` container:
 First, copy the sample secrets:
 
     cp server/conf/cms/secrets.sample.py server/conf/cms/secrets.py
 
 Then, run migrations and `collectstatic`:
 ```
-    docker exec -it frontera_prtl_cms /bin/bash
+    docker exec -it core_portal_cms /bin/bash
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser
@@ -79,7 +78,7 @@ Finally, create a home page in the CMS.
 
 ### Setting up notifications locally:
 
-1. Run an [ngrok](https://ngrok.com/download) session to route webhooks to `frontera_prtl_nginx`:
+1. Run an [ngrok](https://ngrok.com/download) session to route webhooks to `core_portal_nginx`:
 ```
 ngrok http 443
 ```
@@ -174,7 +173,7 @@ You may auto-fix your linting errors to conform with configured standards, for s
 - `npm run lint:js -- --fix`
 - `npm run lint:js -- --fix`
 
-Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 master | flake8 --diff` from the command line.
+Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 main | flake8 --diff` from the command line.
 This requires that you have a local python virtual environemnt setup with this project's dependencies installed:
 
 ```
@@ -193,29 +192,29 @@ Client-side javascript testing is run through Jest. Run `npm run test`* from the
 
 #### Test Coverage
 
-Coverage is sent to codecov on commits to the repo (see bitbucket pipeline for branch to see branch coverage). Ideally we only merge positive code coverage changes to master.
+Coverage is sent to codecov on commits to the repo (see Github Actions for branch to see branch coverage). Ideally we only merge positive code coverage changes to `main`.
 
 
 #### Production Deployment
 
 The Core Portal runs in a Docker container as part of a set of services managed with Docker Compose.
 
-Portal images are built by [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Portal/) and published to the [Docker Hub repo](https://hub.docker.com/repository/docker/taccwma/frontera-portal).
+Portal images are built by [Jenkins](https://jenkins01.tacc.utexas.edu/view/WMA%20CEP/job/Core_Portal_Build/) and published to the [Docker Hub repo](https://hub.docker.com/repository/docker/taccwma/core-portal).
 
-To update the portal in production or dev, the corresponding [Camino](https://bitbucket.org/taccaci/camino/) compose file should be updated with a tag matching an image previously built and published to the taccwma/frontera-portal repo.
+To update the portal in production or dev, the corresponding [Core Portal Deployments](https://github.com/TACC/Core-Portal-Deployments) env file should be updated with a tag matching an image previously built and published to the taccwma/core-portal repo.
 
-Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Deployments/) and orchestrated, tracked, and directed by [Camino](https://bitbucket.org/taccaci/camino/) on the target server.
+Deployments are initiated via [Jenkins](https://jenkins01.tacc.utexas.edu/view/WMA%20CEP/job/Core_Portal_Deploy/) and orchestrated, tracked, and directed by [Camino](https://github.com/TACC/Camino) on the target server.
 
 ### Deployment Steps
 
-1. Build and publish portal image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Portal/)
-2. Update compose file in [Camino](https://bitbucket.org/taccaci/camino/) with new tag name
-3. Deploy new image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/Frontera%20Web/job/Frontera_Deployments/)
+1. Build and publish portal image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/WMA%20CEP/job/Core_Portal_Build/)
+2. Update deployment settings, particularly the `PORTAL_TAG` environment variable in [Core Portal Deployments](https://github.com/TACC/Core-Portal-Deployments) with new tag name
+3. Deploy new image with [Jenkins](https://jenkins01.tacc.utexas.edu/view/WMA%20CEP/job/Core_Portal_Deploy/)
 
 ### Contributing
 
 #### Development Workflow
-We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/IntroducingGitFlow.html) as our development workflow. Our [development site](https://dev.fronteraweb.tacc.utexas.edu) (accessible behind the TACC Network) is always up-to-date with `master`, while the [production site](https://frontera-portal.tacc.utexas.edu) is built to a hashed commit tag.
+We use a modifed version of [GitFlow](https://datasift.github.io/gitflow/IntroducingGitFlow.html) as our development workflow. Our [development site](https://dev.cep.tacc.utexas.edu) (accessible behind the TACC Network) is always up-to-date with `main`, while the [production site](https://prod.cep.tacc.utexas.edu) is built to a hashed commit tag.
 - Feature branches contain major updates, bug fixes, and hot fixes with respective branch prefixes:
     - `task/` for features and updates
     - `bug/` for bugfixes
@@ -228,3 +227,9 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 * [Tapis Project (Formerly Agave)](https://tacc-cloud.readthedocs.io/projects/agave/en/latest/)
+
+
+<!-- Link Aliases -->
+
+[Core-CMS]: https://github.com/TACC/Core-CMS "Core CMS"
+[Camino]: https://github.com/TACC/Camino "Camino (Deployment)"
