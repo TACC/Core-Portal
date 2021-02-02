@@ -143,8 +143,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-REQUEST_ACCESS = True
-
 IMPERSONATE_REQUIRE_SUPERUSER = True
 
 LOGIN_REDIRECT_URL = '/index/'
@@ -205,15 +203,12 @@ PORTAL_ALLOCATION = 'test'
 
 PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/path/to/home_dirs'
 PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'stampede2'
 # Relative path from the default sotrage system where home directories
 # should be created.
 # Use only if all home directories are under one parent directory.
 PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
 PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home.{}'
 PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
-
-PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'test.project'
 
 PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'

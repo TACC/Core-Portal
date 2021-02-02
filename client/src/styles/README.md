@@ -1,4 +1,4 @@
-# TACC Frontera Web Portal - Styles
+# TACC Core Portal - Styles
 
 These files are all regular native CSS (not CSS modules, not SCSS).
 

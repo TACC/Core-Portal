@@ -146,7 +146,7 @@ export default function() {
         <p>
           <strong>Please Note:</strong> This form requests a reset to your TACC
           Account password. Changes to this password will affect your TACC
-          Account <em>as a whole</em>, not just the Frontera Portal.
+          Account <em>as a whole</em>, not just the Portal.
         </p>
       </Message>
       <Formik
