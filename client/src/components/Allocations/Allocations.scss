@@ -141,15 +141,6 @@
 #pending {
     @extend .allocations-table;
 }
-.allocations-modal-header {
-    background-color: #F4F4F4;
-    padding: 1rem;
-    span {
-        color: #484848;
-        font-size: 1.1rem;
-        margin: 0;
-    }
-}
 /* HACK: The loading icon should not need height set, but it fixes Safari here */
 /* FP-426: Do not use `height: 100%` or isolate usage pending solution to bigger problem */
 #allocations-wrapper .loading-icon {
