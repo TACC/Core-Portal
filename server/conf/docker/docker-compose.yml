@@ -1,12 +1,12 @@
 # This compose file is useful for testing https
 ---
-version: "3"
+version: "3.8"
 services:
     django:
       build:
         context: ../../../.
         dockerfile: server/conf/docker/Dockerfile
         target: development
-      image: taccwma/frontera-portal:local
+      image: taccwma/core-portal:local
       command: /bin/bash
-      container_name: frontera_prtl_django
+      container_name: core_portal_django
