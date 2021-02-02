@@ -24,12 +24,8 @@ module.exports = merge.smart(common, {
     hot: true,
     host: 'cep.dev',
     https: {
-      key: fs.readFileSync(
-        '../server/conf/nginx/certificates/frontera.dev.key'
-      ),
-      cert: fs.readFileSync(
-        '../server/conf/nginx/certificates/frontera.dev.crt'
-      )
+      key: fs.readFileSync('../server/conf/nginx/certificates/cep.dev.key'),
+      cert: fs.readFileSync('../server/conf/nginx/certificates/cep.dev.crt')
     },
     open: false
   },
