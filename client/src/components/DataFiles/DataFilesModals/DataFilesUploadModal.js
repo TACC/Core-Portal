@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner, FileInputDropZone } from '_common';
+import { findSystemOrProjectDisplayName } from 'utils/systems';
+import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
 
 import './DataFilesUploadModal.module.scss';
@@ -64,6 +66,8 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
   const isOpen = useSelector(state => state.files.modals.upload);
   const params = useSelector(state => state.files.params.FilesListing);
   const status = useSelector(state => state.files.operationStatus.upload);
+  const systemList = useSelector(state => state.systems.storage.configuration);
+  const projectsList = useSelector(state => state.projects.listing.projects);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
@@ -86,6 +90,16 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
   const isCompactView =
     uploadedFiles.length > 0 &&
     !(density === DEFAULT_DENSITY && direction === DEFAULT_DIRECTION);
+  const systemDisplayName = findSystemOrProjectDisplayName(
+    params.scheme,
+    systemList,
+    projectsList,
+    params.system
+  );
+
+  const removeFile = id => {
+    setUploadedFiles(uploadedFiles.filter(f => f.id !== id));
+  };
   const onClosed = () => {
     setUploadedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
@@ -126,7 +140,9 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
       size="xl"
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        Upload Files in {systemDisplayName}/{params.path}
+      </ModalHeader>
       <ModalBody styleName={containerStyleNames}>
         <div styleName={isCompactView ? 'compact-view' : ''}>
           <FileInputDropZone
@@ -136,7 +152,11 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
             maxSizeMessage="Max File Size: 500MB"
           />
         </div>
-
+        <div hidden={uploadedFiles.length === 0} style={{ marginTop: '10px' }}>
+          <span style={{ fontSize: '20px' }}>
+            Uploading to {systemDisplayName}/{params.path}
+          </span>
+        </div>
         <div hidden={!showListing} styleName="dataFilesListing">
           <DataFilesUploadModalListingTable
             uploadedFiles={uploadedFiles}
