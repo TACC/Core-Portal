@@ -4,7 +4,6 @@
 """
 
 import logging
-# from django.conf import settings
 import paramiko
 from portal.apps.accounts.managers.abstract import AbstractKeysManager
 
