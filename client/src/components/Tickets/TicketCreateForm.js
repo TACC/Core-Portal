@@ -47,7 +47,7 @@ function CreatedTicketInformation({ provideDashBoardLinkOnSuccess, ticketId }) {
 
   if (provideDashBoardLinkOnSuccess) {
     return (
-      <Alert color="success">
+      <Alert color="success" className="ticket-create-info-alert">
         <Link
           className="ticket-link"
           to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/${ticketId}`}
@@ -59,7 +59,7 @@ function CreatedTicketInformation({ provideDashBoardLinkOnSuccess, ticketId }) {
     );
   }
   return (
-    <Alert color="success">
+    <Alert color="success" className="ticket-creation-info-alert">
       Ticket (#{ticketId}) was created. Support staff will contact you via email
       regarding your problem.
     </Alert>
@@ -211,6 +211,7 @@ function TicketCreateForm({
                     size="sm"
                     color="white"
                     data-testid="creating-spinner"
+                    className="ticket-create-spinner"
                   />
                 )}
                 Add Ticket

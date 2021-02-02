@@ -37,11 +37,8 @@ class ProjectMembershipStep(AbstractStep):
         return self.get_tas_client().project(self.settings['project_sql_id'])
 
     def description(self):
-        return """Thank you for using TACC. In order to access this portal, it will
-            require access to the {project} project. If you do not have access,
-            please click the <b>Request Project Access</b> button. A request will
-            be sent on your behalf for TACC staff to add you.
-        """.format(project=self.project['title'])
+        return """This confirms if you have access to the project. If not, request access and
+                  wait for the system administrator’s approval."""
 
     def display_name(self):
         return "Checking Project Membership"

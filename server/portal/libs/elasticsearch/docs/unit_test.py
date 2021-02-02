@@ -1,6 +1,6 @@
 from mock import patch, MagicMock
 from django.test import TestCase
-from portal.libs.elasticsearch.docs.base import IndexedFile, IndexedAllocation
+from portal.libs.elasticsearch.docs.base import IndexedFile, IndexedAllocation, IndexedProject
 
 
 class TestIndexedFile(TestCase):
@@ -68,3 +68,11 @@ class TestIndexedAllocation(TestCase):
     def test_from_username(self, mock_get):
         IndexedAllocation.from_username('testuser')
         mock_get.assert_called_once_with('ae5deb822e0d71992900471a7199d0d95b8e7c9d05c40a8245a281fd2c1d6684')
+
+
+class TestIndexedProject(TestCase):
+
+    @patch('portal.libs.elasticsearch.docs.base.IndexedProject.get')
+    def test_from_id(self, mock_get):
+        IndexedProject.from_id('cep.test-2')
+        mock_get.assert_called_once_with('cep.test-2')
