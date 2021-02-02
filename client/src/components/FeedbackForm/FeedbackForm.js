@@ -30,7 +30,7 @@ const FeedbackForm = () => {
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach(key => formData.append(key, values[key]));
-        formData.append('subject', 'Feedback for the Frontera Portal');
+        formData.append('subject', 'Feedback for the Portal');
         dispatch({
           type: 'TICKET_CREATE',
           payload: {

@@ -247,8 +247,6 @@ TAS_URL = settings_secret._TAS_URL
 TAS_CLIENT_KEY = settings_secret._TAS_CLIENT_KEY
 TAS_CLIENT_SECRET = settings_secret._TAS_CLIENT_SECRET
 
-REQUEST_ACCESS = getattr(settings_secret, "_REQUEST_ACCESS", True)
-
 # Redmine Tracker Authentication.
 RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
@@ -259,7 +257,6 @@ RT_TAG = getattr(settings_secret, '_RT_TAG', "")
 
 # Google Analytics.
 GOOGLE_ANALYTICS_PROPERTY_ID = settings_secret._GOOGLE_ANALYTICS_PROPERTY_ID
-GOOGLE_ANALYTICS_PRELOAD = settings_secret._GOOGLE_ANALYTICS_PRELOAD
 
 
 """
@@ -600,9 +597,6 @@ PORTAL_PROJECTS_SYSTEM_PORT = getattr(settings_secret, '_PORTAL_PROJECTS_SYSTEM_
 PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = settings_secret.\
     _PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
 
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
-    _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM
-
 PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
 PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '')
@@ -656,7 +650,6 @@ SETTINGS: EXPORTS
 SETTINGS_EXPORT = [
     'PORTAL_ICON_FILENAME',
     'DEBUG',
-    'GOOGLE_ANALYTICS_PRELOAD',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
     'PORTAL_NAMESPACE'
 ]

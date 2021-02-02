@@ -48,7 +48,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./server/coverage.xml
         flags: unittests
-        name: frontera-server-side
+        name: cep-server-side
         fail_ci_if_error: true
 
   Server_Side_Linting:
