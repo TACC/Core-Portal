@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner, FileInputDropZone } from '_common';
 import { findSystemOrProjectDisplayName } from 'utils/systems';
-import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
 
 import './DataFilesUploadModal.module.scss';
@@ -96,10 +95,6 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
     projectsList,
     params.system
   );
-
-  const removeFile = id => {
-    setUploadedFiles(uploadedFiles.filter(f => f.id !== id));
-  };
   const onClosed = () => {
     setUploadedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
