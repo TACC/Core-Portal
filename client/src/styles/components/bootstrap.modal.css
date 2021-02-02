@@ -13,8 +13,17 @@ Styleguide Components.Bootstrap.Modal
 .modal-header,
 .modal-body,
 .modal-footer {
-  border: none;
   border-radius: 0;
+}
+.modal-content,
+.modal-header,
+.modal-body {
+  border: none;
+}
+.modal-footer {
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
 }
 
 .modal-header {
