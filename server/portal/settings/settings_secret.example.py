@@ -12,8 +12,8 @@ _DEBUG = True
 _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 
 # Namespace for portal
-_PORTAL_NAMESPACE = 'Frontera'
-_PORTAL_DOMAIN = 'Frontera Portal'
+_PORTAL_NAMESPACE = 'CEP'
+_PORTAL_DOMAIN = 'Core Portal'
 
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
@@ -26,7 +26,7 @@ _SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utex
 
 # Database.
 _DJANGO_DB_ENGINE = 'django.db.backends.postgresql'
-_DJANGO_DB_HOST = 'frontera_prtl_postgres'
+_DJANGO_DB_HOST = 'core_portal_postgres'
 _DJANGO_DB_PORT = '5432'
 _DJANGO_DB_NAME = 'dev'
 _DJANGO_DB_USER = 'dev'
@@ -43,14 +43,6 @@ _RT_UN = 'username'
 _RT_PW = 'password'
 _RT_QUEUE = 'QUEUE'
 _RT_TAG = 'CEP_portal'
-
-# Recaptcha Authentication.
-_RECAPTCHA_PUBLIC_KEY = 'public_key'
-_RECAPTCHA_PRIVATE_KEY = 'private_key'
-_RECAPTCHA_USE_SSL = 'True'
-_NOCAPTCHA = 'True'
-
-_REQUEST_ACCESS = False
 
 ########################
 # AGAVE SETTINGS
@@ -75,13 +67,13 @@ _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
 
 _BROKER_URL_USERNAME = 'dev'
 _BROKER_URL_PWD = 'dev'
-_BROKER_URL_HOST = 'frontera_prtl_rabbitmq'
+_BROKER_URL_HOST = 'core_portal_rabbitmq'
 _BROKER_URL_PORT = '5672'
 _BROKER_URL_VHOST = 'dev'
 
 _RESULT_BACKEND_USERNAME = 'dev'
 _RESULT_BACKEND_PWD = 'dev'
-_RESULT_BACKEND_HOST = 'frontera_prtl_redis'
+_RESULT_BACKEND_HOST = 'core_portal_redis'
 _RESULT_BACKEND_PORT = '6379'
 _RESULT_BACKEND_DB = '0'
 
@@ -89,7 +81,7 @@ _RESULT_BACKEND_DB = '0'
 # ELASTICSEARCH SETTINGS
 ########################
 
-_ES_HOSTS = 'frontera_prtl_elasticsearch'
+_ES_HOSTS = 'core_portal_elasticsearch'
 
 ########################
 # CELERY SETTINGS
@@ -124,13 +116,19 @@ _PORTAL_JUPYTER_SYSTEM_MAP = {
     "cep.home.{username}": "/tacc-work",
 }
 
-_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'frontera'
+_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'stockyard'
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
+    'stockyard': {
+        'name': 'My Data (Work)',
+        'systemId': 'local.cloud.home.{username}',
+        'host': 'cloud.corral.tacc.utexas.edu',
+        'rootDir': '/work/{tasdir}',
+        'port': 2222,
+        'icon': None,
+    },
     'frontera': {
         'name': 'My Data (Frontera)',
-        'description': 'My Data on Frontera for {username}',
-        'site': 'frontera',
-        'systemId': 'frontera.home.{username}',
+        'systemId': 'local.frontera.home.{username}',
         'host': 'frontera.tacc.utexas.edu',
         'rootDir': '/home1/{tasdir}',
         'port': 22,
@@ -138,9 +136,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'description': 'My Data on Longhorn for {username}',
-        'site': 'frontera',
-        'systemId': 'longhorn.home.{username}',
+        'systemId': 'local.longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
         'rootDir': '/home/{tasdir}',
         'port': 22,
@@ -152,8 +148,15 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
 _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
     {
         'name': 'Community Data',
-        'system': 'frontera.storage.community',
+        'system': 'cep.storage.community',
         'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Public Data',
+        'system': 'cep.storage.public',
+        'scheme': 'public',
         'api': 'tapis',
         'icon': None
     },
@@ -161,6 +164,13 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Google Drive',
+        'system': 'googledrive',
+        'scheme': 'private',
+        'api': 'googledrive',
         'icon': None
     }
 ]
@@ -254,7 +264,7 @@ _SITE_ID = 1
 _HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'frontera_prtl_elasticsearch:9200/',
+        'URL': 'core_portal_elasticsearch:9200/',
         'INDEX_NAME': 'cms',
     }
 }
@@ -268,8 +278,6 @@ _COMMUNITY_INDEX_SCHEDULE = None
 ########################
 
 _PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
-_PORTAL_NAVBAR_BACKGROUND_FILENAME = ''
-_PORTAL_LOGO_FILENAME = ''
 
 ########################
 # GOOGLE ANALYTICS
@@ -280,14 +288,13 @@ _PORTAL_LOGO_FILENAME = ''
 # Need to setup an admin account to aggregate tracking properties for portals.
 # NOTE: Use the _AGAVE_TENANT_ID URL value when setting up the tracking property.
 _GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-XXXXX-Y'
-_GOOGLE_ANALYTICS_PRELOAD = True
 
 ########################
 # Elasticsearch
 ########################
-_ES_HOSTS = 'frontera_prtl_elasticsearch:9200'
+_ES_HOSTS = 'core_portal_elasticsearch:9200'
 _ES_AUTH = 'username:password'
-_ES_INDEX_PREFIX = 'frontera-dev-{}'
+_ES_INDEX_PREFIX = 'cep-dev-{}'
 
 ########################
 # WORKBENCH SETTINGS

@@ -256,8 +256,50 @@ describe('scrollFiles', () => {
       })
       .run();
   });
+  it('runs scrollFiles saga with error', () => {
+    return expectSaga(scrollFiles, {
+      payload: {
+        section: 'FilesListing',
+        api: 'tapis',
+        scheme: 'private',
+        system: 'test.system',
+        path: 'path/to/file',
+        offset: 0,
+        limit: 100
+      }
+    })
+      .provide([
+        [
+          matchers.call.fn(fetchFilesUtil),
+          throwError("Failed!")
+        ]
+      ])
+      .put({
+        type: 'SCROLL_FILES_START',
+        payload: {
+          section: 'FilesListing'
+        }
+      })
+      .call(
+        fetchFilesUtil,
+        'tapis',
+        'private',
+        'test.system',
+        'path/to/file',
+        0,
+        100,
+        undefined,
+        undefined
+      )
+      .put({
+        type: 'SCROLL_FILES_ERR',
+        payload: {
+          section: 'FilesListing',
+        }
+      })
+      .run();
+  });
 });
-
 
 describe('copyFiles', () => {
   beforeEach(() => {

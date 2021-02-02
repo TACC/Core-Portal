@@ -41,8 +41,6 @@ ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = 'path/to/icon.ico'
-PORTAL_LOGO_FILENAME = 'path/to/logo.png'
-PORTAL_NAVBAR_BACKGROUND_FILENAME = 'path/to/background.png'
 PORTAL_DOMAIN = 'test.portal'
 PORTAL_ADMIN_USERNAME = 'wma_prtl'
 
@@ -145,8 +143,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-REQUEST_ACCESS = True
-
 IMPERSONATE_REQUIRE_SUPERUSER = True
 
 LOGIN_REDIRECT_URL = '/index/'
@@ -205,7 +201,6 @@ ALLOCATION_SYSTEMS = []
 PORTAL_NAMESPACE = 'test'
 PORTAL_ALLOCATION = 'test'
 
-PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'test.project'
 
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
