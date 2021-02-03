@@ -120,7 +120,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'stockyard'
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'stockyard': {
         'name': 'My Data (Work)',
-        'systemId': 'local.cloud.home.{username}',
+        'systemId': 'corral.home.{username}',
         'host': 'cloud.corral.tacc.utexas.edu',
         'rootDir': '/work/{tasdir}',
         'port': 2222,
@@ -128,7 +128,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     },
     'frontera': {
         'name': 'My Data (Frontera)',
-        'systemId': 'local.frontera.home.{username}',
+        'systemId': 'frontera.home.{username}',
         'host': 'frontera.tacc.utexas.edu',
         'rootDir': '/home1/{tasdir}',
         'port': 22,
@@ -136,7 +136,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'systemId': 'local.longhorn.home.{username}',
+        'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
         'rootDir': '/home/{tasdir}',
         'port': 22,
