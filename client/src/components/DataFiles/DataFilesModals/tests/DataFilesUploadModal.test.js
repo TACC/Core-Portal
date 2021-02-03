@@ -1,6 +1,7 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
+import { projectsListingFixture } from '../../../../redux/sagas/fixtures/projects.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 import DataFilesUploadModal from '../DataFilesUploadModal';
 
@@ -26,6 +27,13 @@ const initialMockState = {
     },
     operationStatus: {
       upload: true
+    }
+  },
+  projects: {
+    listing: {
+      project: projectsListingFixture,
+      loading: false,
+      error: null
     }
   },
   systems: systemsFixture
