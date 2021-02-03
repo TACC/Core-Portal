@@ -878,7 +878,8 @@ const getCompressParams = (files, zipfileName, latestZippy) => {
   };
   const parameters = {
     filenames: files.reduce((names, file) => `${names}"${file.name}" `, ''),
-    zipfileName
+    zipfileName,
+    compression_type: zipfileName.endsWith('.tar.gz') ? 'tgz' : '.zip'
   };
   const archivePath = `agave://${files[0].system}${files[0].path.substring(
     0,
