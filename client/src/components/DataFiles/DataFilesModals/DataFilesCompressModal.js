@@ -59,7 +59,6 @@ const DataFilesCompressModal = () => {
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: {}, operation: 'compress' }
       });
-      dispatch({ type: 'GET_JOBS', params: { offset: 0 } });
       history.push(location.pathname);
     }
   };
