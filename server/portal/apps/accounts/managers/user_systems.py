@@ -3,9 +3,7 @@
    :synopsis: Manager handling anything pertaining to user's home directory and systems
 """
 
-import os
 import logging
-# import requests
 from django.conf import settings
 from portal.apps.accounts.models import SSHKeys
 from portal.libs.agave.models.systems.storage import StorageSystem

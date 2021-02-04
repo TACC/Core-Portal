@@ -1,4 +1,4 @@
-# TACC Frontera Web Portal - Server
+# TACC Core Portal - Server
 
 ## Directories
 
