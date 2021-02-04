@@ -417,7 +417,8 @@ describe("compressFiles", () => {
     },
     parameters: {
       filenames: '"test1.txt" "test2.txt" ',
-      zipfileName: 'test.zip'
+      zipfileName: 'test.zip',
+      compression_type: 'zip'
     }
   });
 
