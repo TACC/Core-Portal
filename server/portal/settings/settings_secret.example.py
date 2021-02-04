@@ -241,10 +241,6 @@ _PORTAL_PROJECTS_PUBLIC_KEY = ''
 # Asset path root is static files output dir.
 # {% static %} won't work in conjunction with {{ VARIABLE }} so use full paths.
 ########################
-
-# No Art.
-# _PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
-
 # Default Art.
 _PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
 
