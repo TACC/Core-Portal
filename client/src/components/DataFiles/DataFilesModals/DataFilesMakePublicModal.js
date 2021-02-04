@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { SectionMessage } from '_common';
 
 const DataFilesMakePublicModal = () => {
   const isOpen = useSelector(state => state.files.modals.makePublic);
@@ -45,12 +46,12 @@ const DataFilesMakePublicModal = () => {
     >
       <ModalHeader toggle={toggle}>Publish {selected.name}</ModalHeader>
       <ModalBody>
-        <p className="alert alert-danger">
+        <SectionMessage type="warning">
           Publishing this file will copy it to the Public Data directory and
           make it available to the general public.{' '}
           <b>THIS ACTION CANNOT BE REVERSED.</b> Click &quot;Proceed&quot; to
           continue.
-        </p>
+        </SectionMessage>
       </ModalBody>
       <ModalFooter>
         <Button onClick={makePublic} className="data-files-btn">
