@@ -9,23 +9,19 @@ All secret values (eg. configurable per project) - usually stored in UT stache.
 _SECRET_KEY = 'CHANGE ME !'
 _DEBUG = True
 
-_WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
+_WSGI_APPLICATION = 'portal.wsgi.application'
 
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
 _PORTAL_DOMAIN = 'Core Portal'
-_LOGIN_REDIRECT_URL = '/workbench/dashboard'
 
 # NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
 _WH_BASE_URL = ''
 
-# Admin account
-_PORTAL_ADMIN_USERNAME = 'portal_admin'
-
 # Unorganized
 _LOGIN_REDIRECT_URL = '/workbench/dashboard'
-_PORTAL_JOB_NOTIFICATION_STATES: ["PENDING", "RUNNING", "FAILED", "STOPPED", "FINISHED", "KILLED"]
-_SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utexas.edu', 'lonestar5.tacc.utexas.edu']
+_SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utexas.edu',
+                                'lonestar5.tacc.utexas.edu', 'maverick2.tacc.utexas.edu', 'wrangler.tacc.utexas.edu']
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -55,6 +51,9 @@ _RT_TAG = 'CEP_portal'
 # AGAVE SETTINGS
 ########################
 
+# Admin account
+_PORTAL_ADMIN_USERNAME = 'portal_admin'
+
 # Agave Tenant.
 _AGAVE_TENANT_ID = 'tenant_name'
 _AGAVE_TENANT_BASEURL = 'https://agave.mytenant.org'
@@ -64,8 +63,6 @@ _AGAVE_CLIENT_KEY = 'TH1$_!$-MY=K3Y!~'
 _AGAVE_CLIENT_SECRET = 'TH1$_!$-My=S3cr3t!~'
 _AGAVE_SUPER_TOKEN = 'S0m3T0k3n_tHaT-N3v3r=3xp1R35'
 _AGAVE_STORAGE_SYSTEM = 'cep.storage.default'
-_AGAVE_PUBLIC_DATA_SYSTEM = 'cep.storage.public'
-_AGAVE_COMMUNITY_DATA_SYSTEM = 'cep.storage.community'
 _AGAVE_DEFAULT_TRASH_NAME = 'Trash'
 
 _AGAVE_JWT_HEADER = 'HTTP_X_JWT_ASSERTION_PORTALS'
@@ -88,7 +85,7 @@ _ES_HOSTS = 'core_portal_elasticsearch:9200'
 _ES_AUTH = 'username:password'
 _ES_INDEX_PREFIX = 'cep-dev-{}'
 
-_COMMUNITY_INDEX_SCHEDULE = None
+_COMMUNITY_INDEX_SCHEDULE = {}
 
 ########################
 # CELERY SETTINGS
@@ -97,12 +94,6 @@ _COMMUNITY_INDEX_SCHEDULE = None
 _RESULT_BACKEND_HOST = 'core_portal_redis'
 _RESULT_BACKEND_PORT = '6379'
 _RESULT_BACKEND_DB = '0'
-
-########################
-# LOGGING SETTINGS
-########################
-
-# TBD.
 
 ########################
 # DJANGO APP: WORKSPACE
@@ -117,16 +108,20 @@ _PORTAL_APPS_DEFAULT_TAB = 'Data Processing'
 ########################
 
 _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
+
 _PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
 _PORTAL_JUPYTER_SYSTEM_MAP = {
-    "cep.home.{username}": "/tacc-work",
+    "cloud.corral.home.{username}": "/tacc-work",
 }
 
+_PORTAL_KEY_SERVICE_ACTOR_ID = ""
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = 'stockyard'
 _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     'stockyard': {
         'name': 'My Data (Work)',
-        'systemId': 'local.cloud.home.{username}',
+        'description': 'My Data on Stockyard for {username}',
+        'site': 'cep',
+        'systemId': 'cloud.corral.home.{username}',
         'host': 'cloud.corral.tacc.utexas.edu',
         'rootDir': '/work/{tasdir}',
         'port': 2222,
@@ -134,7 +129,9 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     },
     'frontera': {
         'name': 'My Data (Frontera)',
-        'systemId': 'local.frontera.home.{username}',
+        'description': 'My Data on Frontera for {username}',
+        'site': 'cep',
+        'systemId': 'frontera.home.{username}',
         'host': 'frontera.tacc.utexas.edu',
         'rootDir': '/home1/{tasdir}',
         'port': 22,
@@ -142,7 +139,9 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'systemId': 'local.longhorn.home.{username}',
+        'description': 'My Data on Longhorn for {username}',
+        'site': 'cep',
+        'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
         'rootDir': '/home/{tasdir}',
         'port': 22,
@@ -234,10 +233,32 @@ _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = '{}.root'.format(
     _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
 )
 _PORTAL_PROJECTS_ROOT_HOST = 'cloud.corral.tacc.utexas.edu'
-_PORTAL_PROJECTS_PRIVATE_KEY = ''
-_PORTAL_PROJECTS_PUBLIC_KEY = ''
 _PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = ''
 _PORTAL_PROJECTS_PEMS_APP_ID = ''
+_PORTAL_PROJECTS_PRIVATE_KEY = ''
+_PORTAL_PROJECTS_PUBLIC_KEY = ''
+
+########################
+# Custom Portal Template Assets
+# Asset path root is static files output dir.
+# {% static %} won't work in conjunction with {{ VARIABLE }} so use full paths.
+########################
+
+# No Art.
+# _PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
+
+# Default Art.
+_PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
+
+########################
+# GOOGLE ANALYTICS
+########################
+
+# Using test account under personal email.
+# To use during dev, Tracking Protection in browser needs to be turned OFF.
+# Need to setup an admin account to aggregate tracking properties for portals.
+# NOTE: Use the _AGAVE_TENANT_ID URL value when setting up the tracking property.
+_GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-XXXXX-Y'
 
 ########################
 # EXTERNAL DATA RESOURCES SETTINGS
@@ -262,25 +283,6 @@ _EXTERNAL_RESOURCE_SECRETS = {
 }
 
 ########################
-# Custom Portal Template Assets
-# Asset path root is static files output dir.
-# {% static %} won't work in conjunction with {{ VARIABLE }} so use full paths.
-########################
-
-# Default Art.
-_PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
-
-########################
-# GOOGLE ANALYTICS
-########################
-
-# Using test account under personal email.
-# To use during dev, Tracking Protection in browser needs to be turned OFF.
-# Need to setup an admin account to aggregate tracking properties for portals.
-# NOTE: Use the _AGAVE_TENANT_ID URL value when setting up the tracking property.
-_GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-XXXXX-Y'
-
-########################
 # WORKBENCH SETTINGS
 ########################
 """
@@ -290,6 +292,9 @@ components to render.
 """
 _WORKBENCH_SETTINGS = {
     "debug": _DEBUG,
+    "makeLink": True,
     "viewPath": True,
-    "makeLink": True
+    "compressApp": 'zippy',
+    "extractApp": 'extract',
+    "makePublic": True
 }
