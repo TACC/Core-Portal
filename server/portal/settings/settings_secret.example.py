@@ -14,6 +14,10 @@ _WSGI_APPLICATION = 'portal.wsgi.application'  # PROD
 # Namespace for portal
 _PORTAL_NAMESPACE = 'CEP'
 _PORTAL_DOMAIN = 'Core Portal'
+_LOGIN_REDIRECT_URL = '/workbench/dashboard'
+
+# NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
+_WH_BASE_URL = ''
 
 # Admin account
 _PORTAL_ADMIN_USERNAME = 'portal_admin'
@@ -76,23 +80,23 @@ _BROKER_URL_HOST = 'core_portal_rabbitmq'
 _BROKER_URL_PORT = '5672'
 _BROKER_URL_VHOST = 'dev'
 
-_RESULT_BACKEND_USERNAME = 'dev'
-_RESULT_BACKEND_PWD = 'dev'
-_RESULT_BACKEND_HOST = 'core_portal_redis'
-_RESULT_BACKEND_PORT = '6379'
-_RESULT_BACKEND_DB = '0'
-
 ########################
 # ELASTICSEARCH SETTINGS
 ########################
 
-_ES_HOSTS = 'core_portal_elasticsearch'
+_ES_HOSTS = 'core_portal_elasticsearch:9200'
+_ES_AUTH = 'username:password'
+_ES_INDEX_PREFIX = 'cep-dev-{}'
+
+_COMMUNITY_INDEX_SCHEDULE = None
 
 ########################
 # CELERY SETTINGS
 ########################
 
-# TBD.
+_RESULT_BACKEND_HOST = 'core_portal_redis'
+_RESULT_BACKEND_PORT = '6379'
+_RESULT_BACKEND_DB = '0'
 
 ########################
 # LOGGING SETTINGS
@@ -107,9 +111,6 @@ _ES_HOSTS = 'core_portal_elasticsearch'
 _PORTAL_APPS_METADATA_NAMES = ['portal_apps']
 _PORTAL_ALLOCATION = 'TACC-ACI'
 _PORTAL_APPS_DEFAULT_TAB = 'Data Processing'
-
-# NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
-_WH_BASE_URL = ''
 
 ########################
 # DJANGO APP: DATA DEPOT
@@ -237,7 +238,6 @@ _PORTAL_PROJECTS_PRIVATE_KEY = ''
 _PORTAL_PROJECTS_PUBLIC_KEY = ''
 _PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = ''
 _PORTAL_PROJECTS_PEMS_APP_ID = ''
-_PORTAL_USER_ACCOUNT_SETUP_WEBHOOK_PWD = '123'
 
 ########################
 # EXTERNAL DATA RESOURCES SETTINGS
@@ -261,43 +261,14 @@ _EXTERNAL_RESOURCE_SECRETS = {
     }
 }
 
-
-########################
-# DJANGO CMS SETTINGS
-########################
-
-# CMS Site (allows for multiple sites on a single CMS)
-_SITE_ID = 1
-
-_HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'core_portal_elasticsearch:9200/',
-        'INDEX_NAME': 'cms',
-    }
-}
-
-# !!!: Should we use `{}` or `None` (see other instance)
-_COMMUNITY_INDEX_SCHEDULE = None
-
 ########################
 # Custom Portal Template Assets
 # Asset path root is static files output dir.
 # {% static %} won't work in conjunction with {{ VARIABLE }} so use full paths.
 ########################
 
-# No Art.
-# _PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
-_PORTAL_LOGO_FILENAME = ''                  # Empty string yields text 'CEP'.
-# _PORTAL_NAVBAR_BACKGROUND_FILENAME=''    # Empty string yields NO bg art.
-
 # Default Art.
 _PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
-
-# Custom Art (example using old CEP art).
-# _PORTAL_ICON_FILENAME='/static/img/favicon.cep.png'
-# _PORTAL_LOGO_FILENAME='/static/img/logo.cep.png'
-# _PORTAL_NAVBAR_BACKGROUND_FILENAME='/static/img/network-Header.jpg'
 
 ########################
 # GOOGLE ANALYTICS
@@ -308,13 +279,6 @@ _PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
 # Need to setup an admin account to aggregate tracking properties for portals.
 # NOTE: Use the _AGAVE_TENANT_ID URL value when setting up the tracking property.
 _GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-XXXXX-Y'
-
-########################
-# Elasticsearch
-########################
-_ES_HOSTS = 'core_portal_elasticsearch:9200'
-_ES_AUTH = 'username:password'
-_ES_INDEX_PREFIX = 'cep-dev-{}'
 
 ########################
 # WORKBENCH SETTINGS
