@@ -33,7 +33,7 @@ const DataFilesProjectEditDescriptionModal = () => {
   const initialValues = useMemo(
     () => ({
       title,
-      description
+      description: description || ''
     }),
     [title, description]
   );
@@ -53,7 +53,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           projectId,
           data: {
             title: values.title,
-            description: values.description
+            description: values.description || ''
           }
         }
       });

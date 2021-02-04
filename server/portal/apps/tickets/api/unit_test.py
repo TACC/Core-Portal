@@ -52,7 +52,48 @@ def test_tickets_get(client, authenticated_user, mock_rtutil):
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_tickets_create_missing_required_description_or_subject(client, authenticated_user, mock_rtutil):
+    # missing subject
+    response = client.post('/api/tickets/',
+                           data={"problem_description": "problem_description"})
+    assert response.status_code == 400
+
+    # missing problem_description
+    response = client.post('/api/tickets/',
+                           data={"subject": "subject"})
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_tickets_create_missing_required_description_or_subject(client, regular_user, mock_rtutil):
+    # missing user email for unauthenticated user
+    response = client.post('/api/tickets/',
+                           data={"problem_description": "problem_description",
+                                 "subject": "subject"})
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_tickets_create(client, authenticated_user, mock_rtutil):
+    response = client.post('/api/tickets/',
+                           data={"problem_description": "problem_description",
+                                 "subject": "subject"})
+    assert response.status_code == 200
+    result = json.loads(response.content)
+    assert result['ticket_id'] == 1
+    _, kwargs = mock_rtutil.create_ticket.call_args
+    assert len(kwargs['attachments']) == 0
+    assert kwargs['problem_description'].startswith("problem_description")
+    assert kwargs['requestor'] == authenticated_user.email
+    assert kwargs['subject'] == "subject"
+    # check that some user info is added to metadata in problem_description
+    assert authenticated_user.first_name in kwargs['problem_description']
+    assert authenticated_user.last_name in kwargs['problem_description']
+    assert authenticated_user.username in kwargs['problem_description']
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_tickets_create_unauthencated(client, regular_user, mock_rtutil):
     response = client.post('/api/tickets/',
                            data={"problem_description": "problem_description",
                                  "email": "email@test.com",
@@ -62,6 +103,14 @@ def test_tickets_create(client, authenticated_user, mock_rtutil):
     assert response.status_code == 200
     result = json.loads(response.content)
     assert result['ticket_id'] == 1
+    _, kwargs = mock_rtutil.create_ticket.call_args
+    assert len(kwargs['attachments']) == 0
+    assert kwargs['problem_description'].startswith("problem_description")
+    assert kwargs['requestor'] == "email@test.com"
+    assert kwargs['subject'] == "subject"
+    # check that some user info is added to metadata in problem_description
+    assert "first_name" in kwargs['problem_description']
+    assert "last_name" in kwargs['problem_description']
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
@@ -82,9 +131,10 @@ def test_tickets_create_with_attachments(client, authenticated_user, mock_rtutil
     _, kwargs = mock_rtutil.create_ticket.call_args
     assert len(kwargs['attachments']) == 1
     assert kwargs['problem_description'].startswith("problem_description")
-    assert kwargs['requestor'] == "email@test.com"
+    assert kwargs['requestor'] == authenticated_user.email
     assert kwargs['subject'] == "subject"
     assert kwargs['cc'] == "cc@test.com"
+    # check that some user info is added to metadata in problem_description
     assert authenticated_user.first_name in kwargs['problem_description']
     assert authenticated_user.last_name in kwargs['problem_description']
 

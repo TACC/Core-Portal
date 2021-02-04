@@ -42,12 +42,11 @@ class TicketsView(BaseApiView):
         rt = rtUtil.DjangoRt()
 
         data = request.POST.copy()
+        email = request.user.email if request.user.is_authenticated else data.get('email')
         subject = data.get('subject')
         problem_description = data.get('problem_description')
-        email = data.get('email')
         cc = data.get('cc', '')
-        first_name = data.get('first_name')
-        last_name = data.get('last_name')
+
         attachments = [(f.name, ContentFile(f.read()), f.content_type) for f in request.FILES.getlist('attachments')]
 
         if subject is None or email is None or problem_description is None:
@@ -65,8 +64,8 @@ class TicketsView(BaseApiView):
             metadata += "authenticated_user_first_name:\n{}\n\n".format(request.user.first_name)
             metadata += "authenticated_user_last_name:\n{}\n\n".format(request.user.last_name)
         else:
-            metadata += "user_first_name:\n{}\n\n".format(first_name)
-            metadata += "user_last_name:\n{}\n\n".format(last_name)
+            metadata += "user_first_name:\n{}\n\n".format(data.get('first_name'))
+            metadata += "user_last_name:\n{}\n\n".format(data.get('last_name'))
 
         problem_description += "\n\n" + metadata
 

@@ -27,8 +27,11 @@ const DataFilesSidebar = ({ readOnly }) => {
     });
   };
   const err = useSelector(state => state.files.error.FilesListing);
-  const { api } = useSelector(state => state.files.params.FilesListing);
-  const systems = useSelector(state => state.systems.systemList, shallowEqual);
+  const { api, scheme } = useSelector(state => state.files.params.FilesListing);
+  const systems = useSelector(
+    state => state.systems.storage.configuration,
+    shallowEqual
+  );
   const { user } = useSelector(state => state.authenticatedUser);
 
   const toggleMkdirModal = () => {
@@ -39,6 +42,12 @@ const DataFilesSidebar = ({ readOnly }) => {
   };
 
   const toggleAddProjectModal = () => {
+    dispatch({
+      type: 'USERS_CLEAR_SEARCH'
+    });
+    dispatch({
+      type: 'PROJECTS_CLEAR_OPERATION'
+    });
     dispatch({
       type: 'PROJECTS_MEMBER_LIST_SET',
       payload: [{ user, access: 'owner' }]
@@ -52,6 +61,13 @@ const DataFilesSidebar = ({ readOnly }) => {
   const writeItemStyle = readOnly ? 'read-only' : '';
 
   const match = useRouteMatch();
+
+  const disabled =
+    readOnly ||
+    err !== false ||
+    api !== 'tapis' ||
+    (scheme !== 'private' && scheme !== 'projects');
+
   return (
     <div styleName="root">
       <div className="data-files-sidebar">
@@ -61,12 +77,11 @@ const DataFilesSidebar = ({ readOnly }) => {
               color="primary"
               id="data-files-add"
               className="data-files-btn"
-              disabled={err !== false || api === 'googledrive'}
             >
               + Add
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={toggleMkdirModal} disabled={readOnly}>
+              <DropdownItem onClick={toggleMkdirModal} disabled={disabled}>
                 <span styleName={writeItemStyle}>
                   <i className="icon-folder" /> Folder
                 </span>
@@ -79,7 +94,7 @@ const DataFilesSidebar = ({ readOnly }) => {
               <DropdownItem
                 className="complex-dropdown-item"
                 onClick={toggleUploadModal}
-                disabled={readOnly}
+                disabled={disabled}
               >
                 <i className="icon-upload" styleName={writeItemStyle} />
                 <span className="multiline-menu-item-wrapper">

@@ -212,26 +212,35 @@ export function* scrollFiles(action) {
     }
   });
 
-  const listingResponse = yield call(
-    fetchFilesUtil,
-    action.payload.api,
-    action.payload.scheme,
-    action.payload.system,
-    action.payload.path || '',
-    action.payload.offset,
-    action.payload.limit,
-    action.payload.queryString,
-    action.payload.nextPageToken
-  );
-  yield put({
-    type: 'SCROLL_FILES_SUCCESS',
-    payload: {
-      files: listingResponse.listing,
-      reachedEnd: listingResponse.reachedEnd,
-      nextPageToken: listingResponse.nextPageToken,
-      section: action.payload.section
-    }
-  });
+  try {
+    const listingResponse = yield call(
+      fetchFilesUtil,
+      action.payload.api,
+      action.payload.scheme,
+      action.payload.system,
+      action.payload.path || '',
+      action.payload.offset,
+      action.payload.limit,
+      action.payload.queryString,
+      action.payload.nextPageToken
+    );
+    yield put({
+      type: 'SCROLL_FILES_SUCCESS',
+      payload: {
+        files: listingResponse.listing,
+        reachedEnd: listingResponse.reachedEnd,
+        nextPageToken: listingResponse.nextPageToken,
+        section: action.payload.section
+      }
+    });
+  } catch (e) {
+    yield put({
+      type: 'SCROLL_FILES_ERR',
+      payload: {
+        section: action.payload.section
+      }
+    });
+  }
 }
 
 export async function renameFileUtil(api, scheme, system, path, newName) {
@@ -550,13 +559,9 @@ export function* preview(action) {
 }
 
 export async function previewUtil(api, scheme, system, path, href, length) {
-  const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/`;
-  const request = await fetch(url, {
-    method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    credentials: 'same-origin',
-    body: JSON.stringify({ href, length })
-  });
+  const q = stringify({ href, length });
+  const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/?${q}`;
+  const request = await fetch(url);
   const requestJson = await request.json();
   return requestJson.data;
 }
@@ -677,13 +682,9 @@ export function* fileLink(action) {
 }
 
 export async function downloadUtil(api, scheme, system, path, href) {
-  const url = `/api/datafiles/${api}/download/${scheme}/${system}${path}/`;
-  const request = await fetch(url, {
-    method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
-    credentials: 'same-origin',
-    body: JSON.stringify({ href })
-  });
+  const q = stringify({ href });
+  const url = `/api/datafiles/${api}/download/${scheme}/${system}${path}/?${q}`;
+  const request = await fetch(url);
 
   const requestJson = await request.json();
   const postitUrl = requestJson.data;

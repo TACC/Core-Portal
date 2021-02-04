@@ -9,6 +9,8 @@ import {
   Col,
   Container,
   FormGroup,
+  ModalBody,
+  ModalFooter,
   Row,
   Spinner
 } from 'reactstrap';
@@ -47,7 +49,7 @@ function CreatedTicketInformation({ provideDashBoardLinkOnSuccess, ticketId }) {
 
   if (provideDashBoardLinkOnSuccess) {
     return (
-      <Alert color="success">
+      <Alert color="success" className="ticket-create-info-alert">
         <Link
           className="ticket-link"
           to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/${ticketId}`}
@@ -59,7 +61,7 @@ function CreatedTicketInformation({ provideDashBoardLinkOnSuccess, ticketId }) {
     );
   }
   return (
-    <Alert color="success">
+    <Alert color="success" className="ticket-creation-info-alert">
       Ticket (#{ticketId}) was created. Support staff will contact you via email
       regarding your problem.
     </Alert>
@@ -131,91 +133,96 @@ function TicketCreateForm({
       {({ isSubmitting, isValid }) => {
         return (
           <Form className="ticket-create-form">
-            <FormGroup>
-              <FormField name="subject" label="Subject" required />
-              <FormField
-                name="problem_description"
-                label="Problem Description"
-                className="ticket-description-text-area"
-                type="textarea"
-                required
-                description="Explain your steps leading up to the problem and include any error
-          reports"
-              />
-              <FileInputDropZoneFormField
-                id="attachments"
-                isSubmitted={isSubmitting}
-                description="Error reports and screenshots can be helpful for diagnostics"
-                maxSizeMessage="Max File Size: 3MB"
-                maxSize={3145728}
-              />
-              <Container>
-                <Row>
-                  <Col lg="6">
-                    <FormField
-                      name="first_name"
-                      label="First Name"
-                      required
-                      disabled={isAuthenticated}
-                    />
-                  </Col>
-                  <Col lg="6">
-                    <FormField
-                      name="last_name"
-                      label="Last Name"
-                      required
-                      disabled={isAuthenticated}
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col lg="6">
-                    <FormField
-                      name="email"
-                      label="Email"
-                      required
-                      disabled={isAuthenticated}
-                    />
-                  </Col>
-                  <Col lg="6">
-                    <FormField
-                      name="cc"
-                      label="Cc"
-                      description="Separate emails with commas"
-                    />
-                  </Col>
-                </Row>
-              </Container>
-            </FormGroup>
-            <div className="ticket-create-button-row">
-              {creatingSuccess && (
-                <CreatedTicketInformation
-                  ticketId={createdTicketId}
-                  provideDashBoardLinkOnSuccess={
-                    isAuthenticated && provideDashBoardLinkOnSuccess
-                  }
+            <ModalBody className="ticket-create-modal-body">
+              <FormGroup>
+                <FormField name="subject" label="Subject" required />
+                <FormField
+                  name="problem_description"
+                  label="Problem Description"
+                  className="ticket-description-text-area"
+                  type="textarea"
+                  required
+                  description="Explain your steps leading up to the problem and include any error
+            reports"
                 />
-              )}
-              {creatingError && (
-                <Alert color="warning">
-                  Ticket creating error: {creatingErrorMessage}
-                </Alert>
-              )}
-              <Button
-                type="submit"
-                color="primary"
-                disabled={!isValid || isSubmitting || creating}
-              >
-                {creating && (
-                  <Spinner
-                    size="sm"
-                    color="white"
-                    data-testid="creating-spinner"
+                <FileInputDropZoneFormField
+                  id="attachments"
+                  isSubmitted={isSubmitting}
+                  description="Error reports and screenshots can be helpful for diagnostics"
+                  maxSizeMessage="Max File Size: 3MB"
+                  maxSize={3145728}
+                />
+                <Container>
+                  <Row>
+                    <Col lg="6">
+                      <FormField
+                        name="first_name"
+                        label="First Name"
+                        required
+                        disabled={isAuthenticated}
+                      />
+                    </Col>
+                    <Col lg="6">
+                      <FormField
+                        name="last_name"
+                        label="Last Name"
+                        required
+                        disabled={isAuthenticated}
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col lg="6">
+                      <FormField
+                        name="email"
+                        label="Email"
+                        required
+                        disabled={isAuthenticated}
+                      />
+                    </Col>
+                    <Col lg="6">
+                      <FormField
+                        name="cc"
+                        label="Cc"
+                        description="Separate emails with commas"
+                      />
+                    </Col>
+                  </Row>
+                </Container>
+              </FormGroup>
+            </ModalBody>
+            <ModalFooter>
+              <div className="ticket-create-button-row">
+                {creatingSuccess && (
+                  <CreatedTicketInformation
+                    ticketId={createdTicketId}
+                    provideDashBoardLinkOnSuccess={
+                      isAuthenticated && provideDashBoardLinkOnSuccess
+                    }
                   />
                 )}
-                Add Ticket
-              </Button>
-            </div>
+                {creatingError && (
+                  <Alert color="warning">
+                    Ticket creating error: {creatingErrorMessage}
+                  </Alert>
+                )}
+                <Button
+                  type="submit"
+                  color="primary"
+                  disabled={!isValid || isSubmitting || creating}
+                >
+                  {creating && (
+                    <Spinner
+                      size="sm"
+                      color="white"
+                      data-testid="creating-spinner"
+                      className="ticket-create-spinner"
+                    />
+                  )}
+                  Add Ticket
+                </Button>
+              </div>
+            </ModalFooter>
           </Form>
         );
       }}
