@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { InlineMessage, LoadingSpinner } from '_common';
 import renderHtml from 'utils/renderHtml';
 import SiteSearchSearchbar from './SiteSearchSearchbar/SiteSearchSearchbar';
@@ -29,9 +30,10 @@ CMSListingItem.propTypes = {
   }).isRequired
 };
 
-export const FileListingItem = ({ name, size, lastModified, path }) => (
+export const FileListingItem = ({ name, size, lastModified, system, path }) => (
   <div styleName="sitesearch-cms-item">
     <h5>{name}</h5>
+    <Link to="/workbench/data/tapis/community/cep.storage.community/">Link</Link>
     <div>{path}</div>
   </div>
 );
