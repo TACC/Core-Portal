@@ -145,7 +145,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = settings_secret._WSGI_APPLICATION
+WSGI_APPLICATION = 'portal.wsgi.application'
 
 AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
                            'django.contrib.auth.backends.ModelBackend']
