@@ -59,6 +59,11 @@ describe('Notification Toast', () => {
             toasts: exampleToasts,
           },
         },
+        projects: {
+          listing: {
+            projects: []
+          }
+        }
       })
     );
     expect(queryByRole('alert')).toBeDefined();

@@ -4,6 +4,7 @@ import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { shape, string, arrayOf, bool } from 'prop-types';
 import { GoogleDriveModal } from './ManageAccountModals';
+import './ManageAccount.scss';
 
 export const TableTemplate = ({ attributes }) => {
   const { getTableProps, rows, prepareRow } = useTable(attributes);
@@ -144,7 +145,7 @@ const LicenseCell = ({ cell: { value } }) => {
             color="link"
           >
             here
-          </Button>
+          </Button>{' '}
           to open a ticket.
         </ModalBody>
       </Modal>

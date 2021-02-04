@@ -89,10 +89,9 @@ class ProjectsApiView(BaseApiView):
         mgr = ProjectsManager(request.user)
 
         if query_string is not None:
-            # search_mgr = ProjectSearchManager(username=request.user.username, query_string=query_string)
-            # search_mgr.search(offset=offset, limit=limit)
-            # res = search_mgr.list(mgr=mgr)
-            return
+            res = mgr.search(query_string=query_string,
+                             offset=offset,
+                             limit=limit)
         else:
             res = mgr.list(
                 offset=offset,
@@ -113,15 +112,23 @@ class ProjectsApiView(BaseApiView):
         members = data['members']
         mgr = ProjectsManager(request.user)
         prj = mgr.create(title)
+        project_id = prj.project_id
         for member in members:
             try:
                 user = get_user_model().objects.get(username=member['username'])
                 if member['access'] == 'owner':
                     prj.add_pi(user)
+                    access = 'pi'
                 elif member['access'] == 'edit':
                     prj.add_co_pi(user)
+                    access = 'co_pi'
                 else:
                     raise ApiException("Unsupported access level")
+                mgr.add_member(
+                    project_id,
+                    access,
+                    member['username']
+                )
             except Exception:
                 LOGGER.exception(
                     "Project was created, but could not add {username}", username=member['username']

@@ -29,4 +29,3 @@
 /* TRUMPS */
 /* Usually, allow React component CSS modules to explicitely import as needed */
 @import url('./trumps/icon.css');
-@import url('./trumps/bootstrap.css');

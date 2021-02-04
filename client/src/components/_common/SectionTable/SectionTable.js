@@ -68,7 +68,7 @@ import './SectionTable.module.css';
  * // manually build content (alternate method)
  * // WARNING: This component's styles are NOT applied to manual sub-components
  * // FAQ: The `o-flex-item-table-wrap` mirrors auto-built content layout fixes
- * <SectionTable
+ * <SectionTable manualContent>
  *   <div class="o-flex-item-table-wrap">
  *     <AnyTableComponent {…} >
  *   </div>

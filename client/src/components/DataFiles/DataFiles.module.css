@@ -16,3 +16,10 @@
 .searchbar {
   padding-bottom: 15px;
 }
+
+/* Error message */
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

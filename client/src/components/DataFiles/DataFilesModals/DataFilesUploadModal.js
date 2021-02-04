@@ -12,7 +12,7 @@ import {
   Table
 } from 'reactstrap';
 import { LoadingSpinner, FileInputDropZone } from '_common';
-import { findSystemDisplayName } from 'utils/systems';
+import { findSystemOrProjectDisplayName } from 'utils/systems';
 import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
 
 const DataFilesUploadStatus = ({ i, removeCallback }) => {
@@ -51,7 +51,8 @@ const DataFilesUploadModal = () => {
   const isOpen = useSelector(state => state.files.modals.upload);
   const params = useSelector(state => state.files.params.FilesListing);
   const status = useSelector(state => state.files.operationStatus.upload);
-  const systemList = useSelector(state => state.systems.systemList);
+  const systemList = useSelector(state => state.systems.storage.configuration);
+  const projectsList = useSelector(state => state.projects.listing.projects);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
@@ -68,7 +69,12 @@ const DataFilesUploadModal = () => {
       });
   };
 
-  const systemDisplayName = findSystemDisplayName(systemList, params.system);
+  const systemDisplayName = findSystemOrProjectDisplayName(
+    params.scheme,
+    systemList,
+    projectsList,
+    params.system
+  );
 
   const removeFile = id => {
     setUploadedFiles(uploadedFiles.filter(f => f.id !== id));
@@ -114,7 +120,9 @@ const DataFilesUploadModal = () => {
       size="xl"
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        Upload Files in {systemDisplayName}/{params.path}
+      </ModalHeader>
       <ModalBody>
         <FileInputDropZone
           onSetFiles={selectFiles}

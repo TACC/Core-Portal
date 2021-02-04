@@ -1,4 +1,4 @@
-$frontera-portal-color-primary: #9d85ef;
+$core-portal-color-primary: #9d85ef;
 
 /* TODO: Convert to CSS module */
 /* NOTE: `data-files-sidebar` is redundant (`DataFiles` gives `sidebar`), but it houses variabels conveniently, just like a CSS Moduels `.root` will do */
@@ -50,7 +50,7 @@ $frontera-portal-color-primary: #9d85ef;
 /* HACK: Quick solution to prevent styles from cascading into header dropdown */
 .data-files-sidebar {
   .dropdown-menu {
-    border-color: $frontera-portal-color-primary;
+    border-color: $core-portal-color-primary;
     border-radius: 0;
     margin-top: 11px;
     padding: 0;
@@ -62,7 +62,7 @@ $frontera-portal-color-primary: #9d85ef;
     top: -10px;
     left: 65px;
     border-right: 10px solid transparent;
-    border-bottom: 10px solid $frontera-portal-color-primary;
+    border-bottom: 10px solid $core-portal-color-primary;
     border-left: 10px solid transparent;
     content: '';
   }

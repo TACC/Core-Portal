@@ -13,11 +13,17 @@
     }
   }
 }
+/* XXX: The color for `btn-link` was migrated out of this file in PR #236… should I migrate this new stuff (from PR #331) out for the same reason? DO NOT MERGE! RESOLVE FIRST! */
+.btn-link {
+  border: 0;
+  vertical-align: baseline;
+}
 
 /*
   Components
 */
 .manage-account-modal {
+  font-size: 14px;
   .modal-content {
     border-radius: 0 !important;
   }
@@ -101,14 +107,28 @@
 // Buttons and Forms
 .manage-account-submit-button {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  width: fit-content;
   border-radius: 0;
   font: bold 12px Roboto, sans-serif;
   padding: 0.5rem 1rem;
   border: 0 !important; /* override `.workbench-content .btn-secondary` */
   background-color: #9d85ef !important; /* override `.workbench-content .btn-secondary` */
   color: white !important; /* override `.workbench-content .btn-secondary` */
+}
+
+.modal-body {
+  /* WARNING: Applies globally so MAY be appropriate for global styles */
+  /* SEE: client/src/styles/components/bootstrap.modal.css */
+  font-size: 14px;
+
+  .btn-link {
+    /* WARNING: Applies globally but NOT appropriate for component stylesheet */
+    /* SEE: client/src/styles/components/bootstrap.modal.css */
+    padding: 0;
+  }
+  .manage-account-submit-button {
+    margin-left: auto;
+  }
 }
 
 .form-button {
@@ -119,12 +139,4 @@
 .license-button {
   background-color: transparent !important;
   font-weight: bold;
-}
-.change-password-form {
-  font-size: 14px;
-  display: flex;
-  flex-direction: column;
-}
-.password-warning {
-  font-size: 14px;
 }

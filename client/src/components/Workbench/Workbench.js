@@ -48,6 +48,7 @@ function Workbench() {
       dispatch({ type: 'GET_APPS' });
       dispatch({ type: 'GET_APP_START' });
       dispatch({ type: 'GET_JOBS', params: { offset: 0 } });
+      dispatch({ type: 'PROJECTS_GET_LISTING' });
     }
   }, [setupComplete]);
 
