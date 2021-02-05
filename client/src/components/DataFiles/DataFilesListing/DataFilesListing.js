@@ -68,7 +68,6 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           format={row.original.format}
           api={api}
           scheme={scheme}
-          length={row.original.length}
           href={row.original._links.self.href}
           isPublic={isPublic}
         />
