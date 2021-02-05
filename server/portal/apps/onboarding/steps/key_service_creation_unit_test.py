@@ -46,6 +46,8 @@ def test_process(regular_user, mock_call_reactor):
         'wma-storage',
         {
             'name': 'My Data (Frontera)',
+            'site': 'frontera',
+            'description': 'My Data on Frontera for username',
             'systemId': 'frontera.home.username',
             'host': 'frontera.tacc.utexas.edu',
             'rootDir': '/home1/12345/username',
@@ -63,6 +65,8 @@ def test_process(regular_user, mock_call_reactor):
         'wma-storage',
         {
             'name': 'My Data (Longhorn)',
+            'site': 'frontera',
+            'description': 'My Data on Longhorn for username',
             'systemId': 'longhorn.home.username',
             'host': 'longhorn.tacc.utexas.edu',
             'rootDir': '/home/12345/username',
