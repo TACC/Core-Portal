@@ -44,15 +44,7 @@ const systemsFixture = {
     error: false,
     errorMessage: null,
     loading: true
-  },
-  systemList: [
-    {
-      name: 'My Data (Frontera)',
-      system: 'frontera.home.username',
-      scheme: 'private',
-      api: 'tapis'
-    }
-  ]
+  }
 };
 
 export default systemsFixture;
