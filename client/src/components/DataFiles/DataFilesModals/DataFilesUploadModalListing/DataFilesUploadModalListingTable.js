@@ -34,7 +34,7 @@ DataFilesUploadStatus.propTypes = {
 
 function DataFilesUploadModalListingTable({ uploadedFiles, setUploadedFiles }) {
   const params = useSelector(state => state.files.params.FilesListing);
-  const systemList = useSelector(state => state.systems.systemList);
+  const systemList = useSelector(state => state.systems.storage.configuration);
   const systemDisplayName = findSystemDisplayName(systemList, params.system);
 
   const removeFile = id => {
