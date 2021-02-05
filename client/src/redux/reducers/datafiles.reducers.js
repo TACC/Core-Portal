@@ -69,7 +69,7 @@ export function systems(state = initialSystemState, action) {
         ...state,
         definitions: {
           ...state.definitions,
-          list: addSystemDefinition(action.payload, state.definitions),
+          list: addSystemDefinition(action.payload, state.definitions.list),
           error: false,
           errorMessage: null,
           loading: false
@@ -79,7 +79,7 @@ export function systems(state = initialSystemState, action) {
       return {
         ...state,
         definitions: {
-          ...state.datafiles,
+          ...state.definitions,
           error: true,
           errorMessage: action.payload,
           loading: false
@@ -167,8 +167,9 @@ export const initialFilesState = {
     showpath: {}
   },
   preview: {
-    href: '',
-    content: '',
+    href: null,
+    content: null,
+    error: null,
     isLoading: true
   }
 };
@@ -345,9 +346,8 @@ export function files(state = initialFilesState, action) {
       return {
         ...state,
         preview: {
-          href: action.payload.href,
-          content: action.payload.content,
-          isLoading: action.payload.isLoading
+          ...state.preview,
+          ...action.payload
         }
       };
     case 'DATA_FILES_TOGGLE_MODAL':

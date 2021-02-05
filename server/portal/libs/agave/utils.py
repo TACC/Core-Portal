@@ -201,25 +201,37 @@ def service_account():
 
 
 def text_preview(url):
-    """Generate a text preview
+    """Generate a text preview content
     Args:
     ------
         url (str): postit url from Agave
     Returns:
     ------
-        str: text content to preview. If there are non-ascii characters, the text content is a message to display on the front-end.
+        str: text content to preview.
+    Raises:
+        ValueError if there are non-ascii characters
     """
-    output = {'content': '', 'error': False}
     try:
         resp = requests.get(url)
-        if (resp.encoding == 'UTF-8'):
-            output['content'] = resp.text
-
+        if (resp.encoding.lower() == 'utf-8'):
+            content = resp.text
             # Raises UnicodeDecodeError for files with non-ascii characters
-            output['content'].encode('ascii', 'strict')
-    except Exception as e:
-        if e is UnicodeDecodeError:
-            logger.debug("Unable to decode file/contains non-ascii characters")
-        output['error'] = True
-        output['content'] = 'Unable to show preview for this file.'
-    return output
+            content.encode('ascii', 'strict')
+            return content
+        else:
+            raise ValueError("File does not contain text")
+    except UnicodeDecodeError as e:
+        logger.debug("Unable to decode file/contains non-ascii characters")
+        raise ValueError("File does not contain text")
+
+
+def get_file_size(client, system, path):
+    """ Get file size
+    :param client: an Agave client
+    :param system: system of file
+    :param path: path of file
+    :return: file size in bytes
+    """
+    file_response = client.files.list(systemId=system,
+                                      filePath=urllib.parse.quote(path))
+    return int(file_response[0]["length"])
