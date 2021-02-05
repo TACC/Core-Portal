@@ -171,8 +171,9 @@ export const initialFilesState = {
     showpath: {}
   },
   preview: {
-    href: '',
-    content: '',
+    href: null,
+    content: null,
+    error: null,
     isLoading: true
   }
 };
@@ -349,9 +350,8 @@ export function files(state = initialFilesState, action) {
       return {
         ...state,
         preview: {
-          href: action.payload.href,
-          content: action.payload.content,
-          isLoading: action.payload.isLoading
+          ...state.preview,
+          ...action.payload
         }
       };
     case 'DATA_FILES_TOGGLE_MODAL':

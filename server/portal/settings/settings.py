@@ -639,6 +639,10 @@ SETTINGS_EXPORT = [
     'PORTAL_NAMESPACE'
 ]
 
+"""
+SETTINGS: SUPPORTED FILE PREVIEW TYPES
+"""
+
 SUPPORTED_MS_WORD = [
     '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',
 ]
