@@ -25,7 +25,7 @@ describe('ToolbarButton', () => {
 
 describe('DataFilesToolbar', () => {
   it('render necessary buttons', () => {
-    const { getByText } = renderComponent(
+    const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
         workbench: { config: {

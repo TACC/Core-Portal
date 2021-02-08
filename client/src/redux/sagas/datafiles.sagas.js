@@ -950,6 +950,8 @@ export async function jobHelper(body) {
 }
 export function* watchCompress() {
   yield takeLeading('DATA_FILES_COMPRESS', compressFiles);
+}
+
 export async function makePublicUtil(api, scheme, system, path) {
   const url = removeDuplicateSlashes(
     `/api/datafiles/${api}/makepublic/${scheme}/${system}${path}/`
