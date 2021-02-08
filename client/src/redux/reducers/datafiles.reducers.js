@@ -69,7 +69,7 @@ export function systems(state = initialSystemState, action) {
         ...state,
         definitions: {
           ...state.definitions,
-          list: addSystemDefinition(action.payload, state.definitions),
+          list: addSystemDefinition(action.payload, state.definitions.list),
           error: false,
           errorMessage: null,
           loading: false
@@ -79,7 +79,7 @@ export function systems(state = initialSystemState, action) {
       return {
         ...state,
         definitions: {
-          ...state.datafiles,
+          ...state.definitions,
           error: true,
           errorMessage: action.payload,
           loading: false
@@ -156,7 +156,8 @@ export const initialFilesState = {
     compress: false,
     extract: false,
     manageproject: false,
-    editproject: false
+    editproject: false,
+    makePublic: false
   },
   modalProps: {
     preview: {},
@@ -168,7 +169,8 @@ export const initialFilesState = {
     rename: {},
     pushKeys: {},
     link: {},
-    showpath: {}
+    showpath: {},
+    makePublic: {}
   },
   preview: {
     href: null,

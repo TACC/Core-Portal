@@ -46,6 +46,10 @@ export default function getFilePermissions(name, { files, scheme, api }) {
       );
     case 'trash':
       return !isProtected && files.length > 0 && isPrivate && api === 'tapis';
+    case 'public':
+      return (
+        !isProtected && files.length === 1 && isPrivate && api !== 'googledrive'
+      );
     default:
       throw new RangeError('Unknown File Operation');
   }
