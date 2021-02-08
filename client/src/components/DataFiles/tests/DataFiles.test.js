@@ -14,6 +14,10 @@ describe('DataFiles', () => {
   it('should render Data Files with multiple private systems', () => {
     const history = createMemoryHistory();
     const store = mockStore({
+      workbench: { config: {
+        extract: '',
+        compress: ''
+      } },
       systems: systemsFixture,
       files: filesFixture,
       pushKeys: {

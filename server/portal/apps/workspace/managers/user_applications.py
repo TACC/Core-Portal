@@ -40,8 +40,8 @@ class UserApplicationsManager(AbstractApplicationsManager):
         :rtype: str
         """
 
-        id = self.user_systems_mgr.get_system_id()
-        return id
+        sys_id = self.user_systems_mgr.get_system_id()
+        return sys_id
 
     def get_application(self, appId):
         """Gets an application
@@ -93,6 +93,23 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
         return update_required
 
+    def get_or_create_cloned_app_exec_system(self, host_exec_id, allocation):
+        host_exec = ExecutionSystem(self.client, host_exec_id)
+        host_exec_user_role = host_exec.roles.for_user(username=self.user.username)
+        if host_exec_user_role and host_exec_user_role.role == 'OWNER':
+            cloned_exec_sys = host_exec
+            logger.debug('Using current execution system {}'.format(cloned_exec_sys.id))
+        else:
+            cloned_exec_id = '{username}.{allocation}.exec.{resource}.{execType}'.format(
+                username=self.user.username,
+                allocation=allocation,
+                resource=host_exec.login.host.replace('.tacc.utexas.edu', ''),
+                execType=host_exec.execution_type
+            )
+            logger.debug('Getting cloned execution system: {}'.format(cloned_exec_id))
+            cloned_exec_sys = self.get_or_create_exec_system(cloned_exec_id, host_exec.id, allocation)
+        return cloned_exec_sys
+
     def clone_application(self, allocation, cloned_app_name, host_app_id=None, host_app=None):
         """Clones an application given a host app, allocation, and target name.
 
@@ -114,21 +131,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
             cloned_app_name,
             host_app.revision))
 
-        host_exec = ExecutionSystem(self.client, host_app.execution_system)
-
-        host_exec_user_role = host_exec.roles.for_user(username=self.user.username)
-        if host_exec_user_role and host_exec_user_role.role == 'OWNER':
-            cloned_exec_sys = host_exec
-            logger.debug('Using current execution system {}'.format(cloned_exec_sys.id))
-        else:
-            cloned_exec_id = '{username}.{allocation}.exec.{resource}.{execType}'.format(
-                username=self.user.username,
-                allocation=allocation,
-                resource=host_exec.login.host.replace('.tacc.utexas.edu', ''),
-                execType=host_exec.execution_type
-            )
-            logger.debug('Getting cloned execution system: {}'.format(cloned_exec_id))
-            cloned_exec_sys = self.get_or_create_exec_system(cloned_exec_id, host_exec.id, allocation)
+        cloned_exec_sys = self.get_or_create_cloned_app_exec_system(host_app.execution_system, allocation)
 
         cloned_depl_path = '.APPDATA/{appName}-{rev}.0'.format(
             username=self.user.username,
@@ -192,6 +195,12 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
             logger.debug('Cloned app {} found. Checking for updates...'.format(cloned_app_id))
 
+            if not cloned_app.available:
+                logger.info('Cloned app {} is unavailable. Recreating...'.format(cloned_app_id))
+                cloned_app.delete()
+                cloned_app = self.clone_application(allocation, cloned_app_name, host_app=host_app)
+                return cloned_app
+
             if not host_app.is_public:
                 update_required = self.check_app_for_updates(cloned_app, host_app=host_app)
                 if update_required:
@@ -209,6 +218,8 @@ class UserApplicationsManager(AbstractApplicationsManager):
                 logger.debug('No app found with id {}. Cloning app...'.format(cloned_app_id))
                 cloned_app = self.clone_application(allocation, cloned_app_name, host_app=host_app)
                 return cloned_app
+            else:
+                raise
 
     def get_or_create_app(self, appId, allocation):
         """Gets or creates application for user.
@@ -226,18 +237,20 @@ class UserApplicationsManager(AbstractApplicationsManager):
         :rtype: class Application
         """
 
-        app = self.get_application(appId)
+        host_app = self.get_application(appId)
 
         # if app is owned by user, no need to clone
-        if app.owner == self.user.username:
+        if host_app.owner == self.user.username:
             logger.info('User is app owner, no need to clone. Returning original app.')
+            app = host_app
+            exec_sys = ExecutionSystem(self.client, app.execution_system, ignore_error=None)
 
         else:
-            app = self.get_or_create_cloned_app(app, allocation)
+            app = self.get_or_create_cloned_app(host_app, allocation)
+            exec_sys = self.get_or_create_cloned_app_exec_system(host_app.execution_system, allocation)
 
         # Check if app's execution system needs keys reset and pushed
         if not app.exec_sys:
-            exec_sys = ExecutionSystem(self.client, app.execution_system, ignore_error=None)
             sys_ok, res = exec_sys.test()
             if not sys_ok and (exec_sys.owner == self.user.username):
                 logger.debug(res)
@@ -286,12 +299,18 @@ class UserApplicationsManager(AbstractApplicationsManager):
         if not system.available:
             system.enable()
 
-        settings_key = system.login.host.split('.')[0]
-        exec_settings = settings.PORTAL_EXEC_SYSTEMS.get(settings_key, {})
+        storage_settings = {}
+        exec_settings = {}
+        for host, val in settings.PORTAL_EXEC_SYSTEMS.items():
+            if host in system.storage.host:
+                storage_settings = val
+            if host in system.login.host:
+                exec_settings = val
 
         system.site = settings.PORTAL_DOMAIN
         system.name = "Execution system for user {}".format(self.user.username)
-        system.storage.home_dir = self.user_systems_mgr.get_sys_tas_user_dir()
+        system.storage.home_dir = storage_settings['home_dir'].format(
+            self.user_systems_mgr.get_private_directory()) if 'home_dir' in storage_settings else ''
         system.storage.port = system.login.port
         system.storage.root_dir = '/'
         system.storage.auth.username = self.user.username

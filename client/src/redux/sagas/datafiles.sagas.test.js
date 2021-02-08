@@ -1,7 +1,5 @@
 import fetch from 'cross-fetch';
 import fetchMock from 'fetch-mock';
-import { runSaga } from 'redux-saga';
-import { put, call, takeLatest } from 'redux-saga/effects';
 import {
   removeDuplicateSlashes,
   fetchFiles,
@@ -9,13 +7,19 @@ import {
   fetchSystemsUtil,
   fetchFilesUtil,
   scrollFiles,
-  copyFileUtil,
+  getLatestApp,
+  extractFiles,
+  compressFiles,
+  jobHelper,
   fileLinkUtil,
   fileLink,
+  copyFileUtil,
+  extractAppSelector,
+  compressAppSelector,
   makePublicUtil,
   doMakePublic
 } from './datafiles.sagas';
-//import fetchMock from "fetch-mock";
+import {select} from 'redux-saga/effects'
 import { expectSaga } from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 import * as matchers from 'redux-saga-test-plan/matchers';
@@ -297,6 +301,174 @@ describe('scrollFiles', () => {
         type: 'SCROLL_FILES_ERR',
         payload: {
           section: 'FilesListing',
+        }
+      })
+      .run();
+  });
+});
+
+describe("extractFiles", () => {
+  const jobHelperExpected = JSON.stringify({
+    allocation: 'FORK',
+    appId: 'extract-frontera-0.1u1',
+    archive: true,
+    archivePath: 'agave://test.system/dir/',
+    inputs: {
+      inputFile: 'agave://test.system/dir/test.zip'
+    },
+    maxRunTime: '02:00:00',
+    name: 'Extracting Compressed File',
+    parameters: {}
+  });
+
+  const action = {
+    type: 'DATA_FILES_EXTRACT',
+    payload: {
+      file: {
+        system: 'test.system',
+        path: '/dir/test.zip'
+      }
+    }
+  }
+
+  it("runs extractFiles saga with success", () => {
+   return expectSaga(extractFiles, action)
+      .provide([
+        [ select(extractAppSelector), 'extract-frontera'],
+        [ matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1' ],
+        [ matchers.call.fn(jobHelper), { status: 'ACCEPTED' } ]
+      ])
+      .call(getLatestApp, 'extract-frontera')
+      .put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'RUNNING', operation: 'extract' }
+      })
+
+      .call(jobHelper, jobHelperExpected)
+      .put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'SUCCESS', operation: 'extract' }
+      })
+      .run();
+  });
+
+  it("runs extractFiles saga with push keys modal", () => {
+    return expectSaga(extractFiles, action)
+      .provide([
+        [ select(extractAppSelector), 'extract-frontera' ],
+        [ matchers.call.fn(getLatestApp), 'extract-frontera-0.1u1' ],
+        [ matchers.call.fn(jobHelper), { execSys: 'test.cli.system' } ]
+      ])
+      .call(getLatestApp, 'extract-frontera')
+      .put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'RUNNING', operation: 'extract' }
+      })
+
+      .call(jobHelper, jobHelperExpected)
+      .put({
+        type: 'SYSTEMS_TOGGLE_MODAL',
+        payload: {
+          operation: 'pushKeys',
+          props: {
+            onSuccess: action,
+            system: 'test.cli.system',
+            onCancel: {
+              type: 'DATA_FILES_SET_OPERATION_STATUS',
+              payload: { status: 'ERROR', operation: 'extract' }
+            }
+          }
+        }
+      })
+      .run();
+  });
+});
+
+describe("compressFiles", () => {
+  const action = {
+    type: 'DATA_FILES_COMPRESS',
+    payload: {
+      filename: 'test.zip',
+      files: [
+        {
+          system: 'test.system',
+          path: '/test1.txt',
+          name: 'test1.txt'
+        },
+        {
+          system: 'test.system',
+          path: '/test2.txt',
+          name: 'test2.txt'
+        }
+      ]
+    }
+  }
+
+  const jobHelperExpected = JSON.stringify({
+    allocation: 'FORK',
+    appId: 'zippy-frontera-0.1u1',
+    archive: true,
+    archivePath: 'agave://test.system/',
+    maxRunTime: '02:00:00',
+    name: 'Compressing Files',
+    inputs: {
+      inputFiles: [
+        "agave://test.system/test1.txt",
+        "agave://test.system/test2.txt"
+      ]
+    },
+    parameters: {
+      filenames: '"test1.txt" "test2.txt" ',
+      zipfileName: 'test.zip',
+      compression_type: 'zip'
+    }
+  });
+
+  it("runs compressFiles saga with success", () => {
+    return expectSaga(compressFiles, action)
+      .provide([
+        [ select(compressAppSelector), 'zippy-frontera'],
+        [ matchers.call.fn(getLatestApp), 'zippy-frontera-0.1u1' ],
+        [ matchers.call.fn(jobHelper), { status: 'ACCEPTED' } ]
+      ])
+      .call(getLatestApp, 'zippy-frontera')
+      .put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'RUNNING', operation: 'compress' }
+      })
+      .call(jobHelper, jobHelperExpected)
+      .put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'SUCCESS', operation: 'compress' }
+      })
+      .run();
+  });
+
+  it("runs compressFiles saga with push keys modal", () => {
+    return expectSaga(compressFiles, action)
+      .provide([
+        [ select(compressAppSelector), 'zippy-frontera'],
+        [ matchers.call.fn(getLatestApp), 'zippy-frontera-0.1u1' ],
+        [ matchers.call.fn(jobHelper), { execSys: 'test.cli.system' } ]
+      ])
+      .call(getLatestApp, 'zippy-frontera')
+      .put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'RUNNING', operation: 'compress' }
+      })
+      .call(jobHelper, jobHelperExpected)
+      .put({
+        type: 'SYSTEMS_TOGGLE_MODAL',
+        payload: {
+          operation: 'pushKeys',
+          props: {
+            onSuccess: action,
+            system: 'test.cli.system',
+            onCancel: {
+              type: 'DATA_FILES_SET_OPERATION_STATUS',
+              payload: { status: 'ERROR', operation: 'compress' }
+            }
+          }
         }
       })
       .run();
