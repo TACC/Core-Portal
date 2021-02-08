@@ -527,7 +527,7 @@ export function* watchPreview() {
 export function* preview(action) {
   yield put({
     type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-    payload: { href: '', content: '', isLoading: true }
+    payload: { href: null, content: null, error: null, isLoading: true }
   });
   try {
     if (action.payload.api !== 'tapis')
@@ -538,28 +538,27 @@ export function* preview(action) {
       action.payload.scheme,
       action.payload.system,
       action.payload.path,
-      action.payload.href,
-      action.payload.length
+      action.payload.href
     );
-    const { content, href } = response;
     yield put({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-      payload: { content, href, isLoading: false }
+      payload: { ...response, isLoading: false }
     });
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
       payload: {
-        content: 'Unable to show preview.',
-        href: '',
+        content: null,
+        href: null,
+        error: 'Unable to show preview.',
         isLoading: false
       }
     });
   }
 }
 
-export async function previewUtil(api, scheme, system, path, href, length) {
-  const q = stringify({ href, length });
+export async function previewUtil(api, scheme, system, path, href) {
+  const q = stringify({ href });
   const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/?${q}`;
   const request = await fetch(url);
   const requestJson = await request.json();

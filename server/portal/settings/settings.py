@@ -145,7 +145,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = settings_secret._WSGI_APPLICATION
+WSGI_APPLICATION = 'portal.wsgi.application'
 
 AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
                            'django.contrib.auth.backends.ModelBackend']
@@ -388,8 +388,6 @@ CELERY_BROKER_URL = ''.join(
 )
 
 _RESULT_BACKEND_PROTOCOL = 'redis://'
-_RESULT_BACKEND_USERNAME = settings_secret._RESULT_BACKEND_USERNAME
-_RESULT_BACKEND_PWD = settings_secret._RESULT_BACKEND_PWD
 _RESULT_BACKEND_HOST = settings_secret._RESULT_BACKEND_HOST
 _RESULT_BACKEND_PORT = settings_secret._RESULT_BACKEND_PORT
 _RESULT_BACKEND_DB = settings_secret._RESULT_BACKEND_DB
@@ -635,6 +633,10 @@ SETTINGS_EXPORT = [
     'GOOGLE_ANALYTICS_PROPERTY_ID',
     'PORTAL_NAMESPACE'
 ]
+
+"""
+SETTINGS: SUPPORTED FILE PREVIEW TYPES
+"""
 
 SUPPORTED_MS_WORD = [
     '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',
