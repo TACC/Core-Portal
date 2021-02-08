@@ -66,7 +66,12 @@ def test_search_with_auth(regular_user, client, mock_cms_search,
                       'listing': [{'name': 'testfile',
                                            'path': '/path/to/testfile'}],
                       'type': 'file',
-                      'include': True}}
+                      'include': True},
+        'public': {'count': 1,
+                   'listing': [{'name': 'testfile',
+                                'path': '/path/to/testfile'}],
+                   'type': 'file',
+                   'include': True}}
 
 
 def test_search_no_auth(client, mock_cms_search, mock_files_search):
@@ -77,7 +82,12 @@ def test_search_no_auth(client, mock_cms_search, mock_files_search):
                 'listing': [{'title': 'test res',
                              'highlight': []}],
                 'type': 'cms',
-                'include': True}}
+                'include': True},
+        'public': {'count': 1,
+                   'listing': [{'name': 'testfile',
+                                        'path': '/path/to/testfile'}],
+                   'type': 'file',
+                           'include': True}}
 
 
 def test_search_public(client, configure_public, mock_cms_search,
