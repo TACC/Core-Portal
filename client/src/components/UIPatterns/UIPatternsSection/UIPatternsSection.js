@@ -63,17 +63,27 @@ function UIPatternsDropdownSelector() {
       <dd>
         <Section
           styleName="is-resizable"
+          contentStyleName="content-that-illustrates-scrolling"
           header="Header"
           content={
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
+            <>
+              <p>
+                Resize this <code>&lt;Section&gt;</code> to confirm that its
+                content <strong>both</strong> stretches vertically and
+                horizontally <strong>and</strong> supports scrolling. Close the
+                <code>&lt;WelcomeMessage&gt;</code> to confirm that the
+                stretching and scrolling is not dependent on its presence.
+              </p>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
+                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+                sunt in culpa qui officia deserunt mollit anim id est laborum.
+              </p>
+            </>
           }
           contentLayoutName="oneColumn"
           headerActions={
