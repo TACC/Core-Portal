@@ -35,11 +35,9 @@ function UIPatterns() {
             <h6>Pills</h6>
             <UIPatternsPill />
           </div>
-          <div styleName="items">
-            <div styleName="grid-item">
-              <h6>Read More</h6>
-              <UIPatternsReadMore />
-            </div>
+          <div styleName="list-item">
+            <h6>Read More</h6>
+            <UIPatternsReadMore />
           </div>
         </>
       }
