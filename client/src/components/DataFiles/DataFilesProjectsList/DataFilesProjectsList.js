@@ -99,7 +99,6 @@ const DataFilesProjectsList = ({ modal }) => {
   }
 
   return (
-
     <SectionTable styleName="root" contentShouldScroll manualContent>
       <>
         {!modal && <DataFilesProjectsSearchbar />}
