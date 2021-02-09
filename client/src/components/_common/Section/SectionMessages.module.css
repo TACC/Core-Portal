@@ -1,0 +1,5 @@
+/* Elements */
+
+.root > * {
+  margin: var(--global-space--section-top) 0;
+}

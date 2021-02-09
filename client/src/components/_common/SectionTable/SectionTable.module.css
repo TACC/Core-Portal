@@ -1,0 +1,33 @@
+/* Block */
+
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Elements */
+
+.table-wrap {
+  composes: o-flex-item-table-wrap from '../../../styles/objects/o-flex-item-table-wrap.css';
+}
+
+/* Elements: Sub-Components */
+/* CAVEAT: These are only applied to automatically-built sub-components */
+.header {
+  flex-shrink: 0;
+}
+
+/* Modifiers */
+
+/* NOTE: Similar on: SectionContent, SectionTable */
+.should-scroll .table-wrap {
+  /* We want to permit vertical scrolling, without forcing it */
+  /* FAQ: Did not set `overflow: auto`, because that would certainly hide negative-margined sidebar links */
+  /* CAVEAT: Setting `overflow-y` still hides the negative-margined sidebar links because `overflow-x: visible` (default) is re-intepreted as `auto` */
+  /* SEE: https://stackoverflow.com/a/6433475/11817077 */
+  overflow-y: auto;
+}
+.root:not(.should-scroll) .table-wrap {
+  /* We want to disable vertical and horizontal scrolling */
+  overflow: hidden;
+}

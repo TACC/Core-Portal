@@ -1,0 +1,30 @@
+/*
+Fixed Header Table
+
+A table with a header that does not move, and a body that scrolls.
+
+Markup:
+<table class="o-fixed-header-table">
+    <thead>
+      <tr>
+        <th>A</th>
+        <th>B</th>
+        <th>C</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>A</td>
+        <td>B</td>
+        <td>C</td>
+      </tr>
+    </thead>
+</table>
+
+Styleguide Objects.FixedHeaderTable
+*/
+/* SEE: https://css-tricks.com/position-sticky-and-table-headers/ */
+.o-fixed-header-table th {
+  position: sticky;
+  top: 0;
+}
