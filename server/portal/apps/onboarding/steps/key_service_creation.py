@@ -53,14 +53,21 @@ class KeyServiceCreationStep(AbstractStep):
         self.logger.debug("KeyService variables substituted: {}".format(systems))
 
         # Create only storage systems that are not currently accessible
-        systemList = filter(
-            lambda systemId: not StorageSystem(self.user.agave_oauth.client, id=systemId).test()[0],
-            systems.keys()
-        )
+        systemList = []
+        for systemId in systems.keys():
+            success, result = StorageSystem(self.user.agave_oauth.client, id=systemId).test()
+            if success:
+                self.loggger.info(
+                    "{username} has valid configuration for {systemId}, skipping creation".format(
+                        username=self.user.username, systemId=systemId
+                    )
+                )
+            else:
+                systemList.append(systemId)
 
         # Store requested systemIds
         data = {
-            'requested': list(systemList),
+            'requested': systemList,
             'failed': [],
             'successful': []
         }
