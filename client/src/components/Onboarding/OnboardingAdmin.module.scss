@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+  flex-direction: column;
+
+  padding: 20px 40px 0 20px;
+}
+
+.container-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid #707070;
+}
