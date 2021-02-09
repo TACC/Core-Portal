@@ -25,6 +25,7 @@
 /* COMPONENTS */
 /* Usually, allow React component CSS modules to explicitely import as needed */
 @import url('./components/bootstrap.form.css');
+@import url('./components/bootstrap.modal.css');
 
 /* TRUMPS */
 /* Usually, allow React component CSS modules to explicitely import as needed */
