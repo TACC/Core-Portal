@@ -1,6 +1,14 @@
 .is-resizable {
-  resize: vertical;
-  overflow: hidden;
+  resize: both;
+  overflow: scroll;
+  max-width: 100%;
+
+  /* Avoid horizontal scrolling of `.content-that-illustrates-scrolling` */
+  /* FAQ: A <Section>'s padding-left causes offset horizontal scrollbar */
+  min-width: 300px;
+}
+.content-that-illustrates-scrolling {
+  overflow-y: scroll;
 }
 
 .is-scrollable {
