@@ -507,11 +507,19 @@ class AppsTrayView(BaseApiView):
         """
         tabs, definitions = self.getPublicApps(request.user)
         my_apps = self.getPrivateApps(request.user)
-        tabs.append(
+        tabs.insert(
+            0,
             {
                 "title": "My Apps",
                 "apps": my_apps
             }
+        )
+        # Only return tabs that are non-empty
+        tabs = list(
+            filter(
+                lambda tab: len(tab["apps"]) > 0,
+                tabs
+            )
         )
 
         return JsonResponse({"tabs": tabs, "definitions": definitions})
