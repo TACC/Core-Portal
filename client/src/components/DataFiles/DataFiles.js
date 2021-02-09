@@ -9,12 +9,11 @@ import {
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
 
-import { Section, SectionTable } from '_common';
+import { Section, SectionTable, SectionMessage, LoadingSpinner } from '_common';
 
 import './DataFiles.module.css';
 import './DataFiles.css';
 
-import { SectionMessage, LoadingSpinner } from '_common';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
