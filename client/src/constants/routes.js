@@ -10,5 +10,6 @@ export const UI = '/ui-patterns';
 export const WORKBENCH = '/workbench';
 export const USER_GUIDE = '/user-guide';
 export const ONBOARDING = '/onboarding';
+export const ONBOARDINGADMIN = '/onboarding/admin';
 export const ACCOUNT = '/account';
 export const SEARCH = '/workbench/search';
