@@ -11,3 +11,5 @@ export const PROFILE =
   'This page allows you to manage your account profile, change your password and view software licenses.';
 export const TICKETS =
   'This page allows you to submit a help request via an RT Ticket.';
+export const UI =
+  'This hidden page allows developers to review UI components in isolation.';
