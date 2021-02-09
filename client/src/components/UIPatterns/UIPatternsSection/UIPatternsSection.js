@@ -67,13 +67,22 @@ function UIPatternsDropdownSelector() {
           header="Header"
           content={
             <>
-              <p>
-                Resize this <code>&lt;Section&gt;</code> to confirm that its
-                content <strong>both</strong> stretches vertically and
-                horizontally <strong>and</strong> supports scrolling. Close the
-                <code>&lt;WelcomeMessage&gt;</code> to confirm that the
-                stretching and scrolling is not dependent on its presence.
-              </p>
+              <ol>
+                <li>
+                  Resize this <code>&lt;Section&gt;</code> to confirm that its
+                  content <strong>both</strong> stretches vertically and
+                  horizontally <strong>and</strong> supports scrolling.
+                </li>
+                <li>
+                  Close the <code>&lt;WelcomeMessage&gt;</code> to confirm that
+                  the stretching and scrolling is not dependent on its presence.
+                </li>
+                <li>
+                  Open the modal to test that section do not break that feature.
+                  The page redirects is a fault of how Wes no knowing how to
+                  properly add a modal.
+                </li>
+              </ol>
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
@@ -83,19 +92,13 @@ function UIPatternsDropdownSelector() {
                 nulla pariatur. Excepteur sint occaecat cupidatat non proident,
                 sunt in culpa qui officia deserunt mollit anim id est laborum.
               </p>
-            </>
-          }
-          contentLayoutName="oneColumn"
-          headerActions={
-            <>
-              <Link to={modalPath}>Open Modal</Link>
               <Switch>
                 <Route
                   exact
                   path={modalPath}
                   render={() => {
                     dispatch({
-                      type: 'TICKETS_CREATE_INIT'
+                      type: 'TICKET_CREATE_OPEN_MODAL'
                     });
                     return <TicketCreateModal />;
                   }}
@@ -103,6 +106,8 @@ function UIPatternsDropdownSelector() {
               </Switch>
             </>
           }
+          contentLayoutName="oneColumn"
+          headerActions={<Link to={modalPath}>Open Modal</Link>}
           messages={
             <UncontrolledAlert color="secondary">Message</UncontrolledAlert>
           }
