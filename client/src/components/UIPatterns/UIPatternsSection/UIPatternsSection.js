@@ -5,9 +5,9 @@ import {
   SectionTable,
   DescriptionList,
   InfiniteScrollTable,
-  InlineMessage
+  InlineMessage,
+  SectionMessage
 } from '_common';
-import { UncontrolledAlert } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 
@@ -140,7 +140,7 @@ function UIPatternsSection() {
               </>
             ),
             headerActions: '(a link to a modal)',
-            messages: '(an <UncontrolledAlert>)'
+            messages: '(an <SectionMessage>)'
           }}
         />
       </dt>
@@ -194,9 +194,7 @@ function UIPatternsSection() {
           }
           contentLayoutName="oneColumn"
           headerActions={<Link to={modalPath}>Open Modal</Link>}
-          messages={
-            <UncontrolledAlert color="secondary">Message</UncontrolledAlert>
-          }
+          messages={<SectionMessage type="info">Some message…</SectionMessage>}
           contentShouldScroll
         />
       </dd>
