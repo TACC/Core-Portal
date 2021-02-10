@@ -4,7 +4,8 @@ import {
   Section,
   SectionTable,
   DescriptionList,
-  InfiniteScrollTable
+  InfiniteScrollTable,
+  InlineMessage
 } from '_common';
 import { UncontrolledAlert } from 'reactstrap';
 import { useDispatch } from 'react-redux';
@@ -99,9 +100,16 @@ function UIPatternsSection() {
             </>
           }
           content={
-            <SectionTable styleName="table" contentShouldScroll>
-              <UIPatternsSectionTableInfinite />
-            </SectionTable>
+            <>
+              <InlineMessage type="info" styleName="notice">
+                The header will not be sticky until the branch &nbsp;
+                <code>task/FP-385-section-comp-welcome-msg--sections</code>
+                &nbsp;refactors <code>InfiniteScrollTable</code>.
+              </InlineMessage>
+              <SectionTable styleName="table" contentShouldScroll>
+                <UIPatternsSectionTableInfinite />
+              </SectionTable>
+            </>
           }
           headerActions={
             <button type="button" onClick={performAction}>

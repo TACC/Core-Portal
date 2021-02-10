@@ -6,7 +6,8 @@
   font-family: var(--global-font-family--mono);
 }
 
-.table {
+.table,
+.notice {
   margin-bottom: 1em;
 }
 
