@@ -83,8 +83,8 @@ function UIPatternsSection() {
           contentStyleName="has-infinite-scroll-table"
           header={
             <>
-              Section with <code>&lt;SectionTable&gt;</code> and &nbsp;
-              <code>&lt;InfiniteScrollTable&gt;</code>
+              Section with <code>{`<SectionTable>`}</code> and &nbsp;
+              <code>{`<InfiniteScrollTable>`}</code>
             </>
           }
           content={
@@ -108,7 +108,12 @@ function UIPatternsSection() {
           direction="horizontal"
           data={{
             header: 'Header',
-            content: '(instruction list and a paragraph)',
+            content: (
+              <>
+                (instruction list, table <strong>sans</strong>
+                &nbsp;<code>{`<SectionTable>`}</code>, and a paragraph)
+              </>
+            ),
             contentLayoutName: 'oneColumn',
             contentShouldScroll: (
               <>
@@ -130,12 +135,12 @@ function UIPatternsSection() {
               <p>Test Instructions:</p>
               <ol>
                 <li>
-                  Resize this <code>&lt;Section&gt;</code> to confirm that its
+                  Resize this <code>{`<Section>`}</code> to confirm that its
                   content <strong>both</strong> stretches vertically and
                   horizontally <strong>and</strong> supports scrolling.
                 </li>
                 <li>
-                  Close the <code>&lt;WelcomeMessage&gt;</code> to confirm that
+                  Close the <code>{`<WelcomeMessage>`}</code> to confirm that
                   the stretching and scrolling is not dependent on its presence.
                 </li>
                 <li>
@@ -144,9 +149,7 @@ function UIPatternsSection() {
                   properly add a modal.
                 </li>
               </ol>
-              <SectionTable styleName="table" manualContent>
-                <UIPatternsSectionTablePlain />
-              </SectionTable>
+              <UIPatternsSectionTablePlain styleName="table" />
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
@@ -188,7 +191,7 @@ function UIPatternsSection() {
 
 export default UIPatternsSection;
 
-function UIPatternsSectionTableInfinite({ hasInfiniteScroll }) {
+function UIPatternsSectionTableInfinite({ className }) {
   const tableData = [
     {
       col1: 'Hello',
@@ -216,20 +219,24 @@ function UIPatternsSectionTableInfinite({ hasInfiniteScroll }) {
   ];
 
   return (
-    <InfiniteScrollTable tableColumns={tableColumns} tableData={tableData} />
+    <InfiniteScrollTable
+      className={className}
+      tableColumns={tableColumns}
+      tableData={tableData}
+    />
   );
 }
 UIPatternsSectionTableInfinite.propTypes = {
-  /** Whether to use an <InfiniteScrollTable> */
-  hasInfiniteScroll: PropTypes.bool
+  /** Additional className for the root element */
+  className: PropTypes.string
 };
 UIPatternsSectionTableInfinite.defaultProps = {
-  hasInfiniteScroll: false
+  className: ''
 };
 
-function UIPatternsSectionTablePlain() {
+function UIPatternsSectionTablePlain({ className }) {
   return (
-    <table>
+    <table className={className}>
       <thead>
         <tr>
           <th>Column 1</th>
@@ -253,3 +260,10 @@ function UIPatternsSectionTablePlain() {
     </table>
   );
 }
+UIPatternsSectionTablePlain.propTypes = {
+  /** Additional className for the root element */
+  className: PropTypes.string
+};
+UIPatternsSectionTablePlain.defaultProps = {
+  className: ''
+};
