@@ -10,7 +10,7 @@ import './UIPatternsSection.module.css';
 
 const modalPath = `${ROUTES.WORKBENCH}${ROUTES.UI}/modal`;
 
-function UIPatternsDropdownSelector() {
+function UIPatternsSection() {
   const dispatch = useDispatch();
 
   return (
@@ -140,4 +140,4 @@ function UIPatternsDropdownSelector() {
   );
 }
 
-export default UIPatternsDropdownSelector;
+export default UIPatternsSection;
