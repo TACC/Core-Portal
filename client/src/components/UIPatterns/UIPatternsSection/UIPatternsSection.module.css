@@ -1,3 +1,11 @@
+.term-details {
+  font-weight: normal;
+  font-style: italic;
+}
+.term-details dt {
+  font-family: var(--global-font-family--mono);
+}
+
 .is-resizable {
   resize: both;
   overflow: scroll;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Section } from '_common';
+import { Section, DescriptionList } from '_common';
 import { UncontrolledAlert } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
@@ -17,9 +17,15 @@ function UIPatternsDropdownSelector() {
     <dl>
       <dt>
         Minimal
-        <small>
-          Header (<code>header</code>), Content (<code>content</code>)
-        </small>
+        <DescriptionList
+          className="small"
+          density="compact"
+          direction="horizontal"
+          data={{
+            header: 'Header',
+            content: 'Content'
+          }}
+        />
       </dt>
       <dd>
         <Section
@@ -30,11 +36,16 @@ function UIPatternsDropdownSelector() {
       </dd>
       <dt>
         Scrollable
-        <small>
-          Header (<code>header</code>), Content (<code>content</code>, forced
-          scroll), Should Scroll Content (<code>contentShouldScroll</code>, and
-          scroll has been forced),
-        </small>
+        <DescriptionList
+          className="small"
+          density="compact"
+          direction="horizontal"
+          data={{
+            header: 'Milk',
+            content: 'Cow, Soy, Nut',
+            contentShouldScroll: <code>true</code>
+          }}
+        />
       </dt>
       <dd>
         <Section
@@ -52,13 +63,23 @@ function UIPatternsDropdownSelector() {
       </dd>
       <dt>
         All Properties
-        <small>
-          Header (<code>header</code>), Content (<code>content</code>), Content
-          Layout (<code>contentLayoutName</code>, default), Should Scroll
-          Content (<code>contentShouldScroll</code>, and must resize to scroll),
-          Actions (<code>headerActions</code>, a link to a modal), Messages (
-          <code>messages</code>)
-        </small>
+        <DescriptionList
+          className="small"
+          density="compact"
+          direction="horizontal"
+          data={{
+            header: 'Header',
+            content: '(instruction list and a paragraph)',
+            contentLayoutName: 'oneColumn (default value)',
+            contentShouldScroll: (
+              <>
+                <code>true</code> (must resize to scroll)
+              </>
+            ),
+            headerActions: '(a link to a modal)',
+            messages: '(an <UncontrolledAlert>)'
+          }}
+        />
       </dt>
       <dd>
         <Section
@@ -67,6 +88,7 @@ function UIPatternsDropdownSelector() {
           header="Header"
           content={
             <>
+              <p>Test Instructions:</p>
               <ol>
                 <li>
                   Resize this <code>&lt;Section&gt;</code> to confirm that its
