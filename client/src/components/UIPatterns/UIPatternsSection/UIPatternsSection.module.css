@@ -1,3 +1,15 @@
+.term-details {
+  font-weight: normal;
+  font-style: italic;
+}
+.term-details dt {
+  font-family: var(--global-font-family--mono);
+}
+
+.table {
+  margin-bottom: 1em;
+}
+
 .is-resizable {
   resize: both;
   overflow: scroll;
@@ -16,4 +28,8 @@
   --max-lines: 2;
 
   height: calc(var(--line-height) * var(--max-lines));
+}
+
+.has-infinite-scroll-table {
+  height: 110px;
 }
