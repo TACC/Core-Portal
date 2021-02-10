@@ -27,8 +27,8 @@ describe('SectionTable', () => {
     });
   });
 
-  describe('content and classses', () => {
-    it('renders all passed content and classes', () => {
+  describe('content and classs names', () => {
+    it('renders all passed content and class names', () => {
       const { container, getByText } = render(
         <SectionTable
           className="root-test"
@@ -43,6 +43,14 @@ describe('SectionTable', () => {
       expect(getByText('Header')).not.toEqual(null);
       expect(getByText('Header Actions')).not.toEqual(null);
       expect(container.getElementsByClassName('header-test')).not.toEqual(null);
+    });
+    it('renders conditional class names', () => {
+      const { container } = render(
+        <SectionTable>
+          {TABLE_MARKUP}
+        </SectionTable>
+      );
+      expect(container.querySelector('[class*="has-wrap"]')).not.toEqual(null);
     });
   });
 

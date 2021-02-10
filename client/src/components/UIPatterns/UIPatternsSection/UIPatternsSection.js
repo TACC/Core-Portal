@@ -94,21 +94,13 @@ function UIPatternsSection() {
           contentStyleName="has-infinite-scroll-table"
           header={
             <>
-              Section with <code>&lt;SectionTable&gt;</code> and
-              &nbsp;<code>&lt;InfiniteScrollTable&gt;</code>
+              Section with <code>&lt;SectionTable&gt;</code> and &nbsp;
+              <code>&lt;InfiniteScrollTable&gt;</code>
             </>
           }
           content={
-            <SectionTable styleName="table" manualContent>
-              <p>
-                A UI element can appear <em>above</em> the table.
-              </p>
-              <div className="o-flex-item-table-wrap">
-                <UIPatternsSectionTableInfinite />
-              </div>
-              <p>
-                A UI element can appear <em>below</em> the table.
-              </p>
+            <SectionTable styleName="table" contentShouldScroll>
+              <UIPatternsSectionTableInfinite />
             </SectionTable>
           }
           headerActions={
