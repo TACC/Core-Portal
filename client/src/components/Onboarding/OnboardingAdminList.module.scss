@@ -1,0 +1,4 @@
+// Override .InfiniteScrollTable tbody tr:not([class=-status])
+.cell-table tr:last-child {
+  border-bottom: 0 !important;
+}
