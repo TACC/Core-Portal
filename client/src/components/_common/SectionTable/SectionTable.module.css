@@ -19,6 +19,11 @@
 
 /* Modifiers */
 
+/* Ensure table has height so `.table-wrap` can stretch to fill that height */
+.has-wrap {
+  flex-grow: 1;
+}
+
 /* NOTE: Similar on: SectionContent, SectionTable */
 .should-scroll .table-wrap {
   /* We want to permit vertical scrolling, without forcing it */

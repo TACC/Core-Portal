@@ -93,6 +93,7 @@ function SectionTable({
   const shouldBuildHeader = header || headerClassName || headerActions;
 
   if (contentShouldScroll) styleNameList.push('should-scroll');
+  if (!manualContent) styleNameList.push('has-wrap');
 
   // Do not join inside JSX (otherwise arcane styleName error occurs)
   styleName = styleNameList.join(' ');
@@ -110,7 +111,9 @@ function SectionTable({
   }
 
   return (
-    <TagName styleName={styleName} className={className}>
+    /* FAQ: Using {styleName} will cause unit test to unexpectedly fail */
+    /* SEE: https://github.com/gajus/babel-plugin-react-css-modules/issues/72 */
+    <TagName styleName={`${styleName}`} className={className}>
       {manualHeader ? (
         <>{manualHeader}</>
       ) : (
