@@ -1,4 +1,20 @@
-// Override .InfiniteScrollTable tbody tr:not([class=-status])
-.cell-table tr:last-child {
-  border-bottom: 0 !important;
+.root > tbody > tr {
+  vertical-align: top;
+}
+
+.root > tbody > tr > td {
+  padding: 0 0 0 0;
+}
+
+.step-list > div {
+  border-bottom: 1px solid black;
+}
+
+.step-list button {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.step-list button h6 {
+  margin-bottom: 0;
 }
