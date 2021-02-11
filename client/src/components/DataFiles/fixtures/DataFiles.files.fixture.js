@@ -133,7 +133,8 @@ const filesFixture = {
     mkdir: {},
     rename: {},
     pushKeys: {},
-    showpath: {}
+    showpath: {},
+    makePublic: {}
   },
   preview: {
     href: '',
