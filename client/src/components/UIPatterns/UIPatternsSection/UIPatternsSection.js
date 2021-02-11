@@ -47,7 +47,6 @@ function UIPatternsSection() {
         <Section
           header="Header"
           content={<p>Content</p>}
-          contentLayoutName="oneColumn"
         />
       </dd>
       <dt>
@@ -57,6 +56,7 @@ function UIPatternsSection() {
           density="compact"
           direction="horizontal"
           data={{
+            contentStyleName: 'content--has-list-to-illustrate-scrolling',
             header: 'Milk',
             content: 'Cow, Soy, Nut',
             contentShouldScroll: <code>true</code>
@@ -65,8 +65,8 @@ function UIPatternsSection() {
       </dt>
       <dd>
         <Section
-          header="Milk"
           contentStyleName="content--has-list-to-illustrate-scrolling"
+          header="Milk"
           content={
             <ul>
               <li>Cow</li>
@@ -84,9 +84,11 @@ function UIPatternsSection() {
           density="compact"
           direction="horizontal"
           data={{
+            contentStyleName: 'content--has-table-to-illustrate-scrolling',
             header: 'Section with <SectionTable> and <InfiniteScrollTable>',
             content: '(paragraph, table, paragraph)',
-            headerActions: '(a button to trigger sample action)'
+            headerActions: '(a button to trigger sample action)',
+            contentLayoutName: 'oneColumn'
           }}
         />
       </dt>
@@ -126,6 +128,8 @@ function UIPatternsSection() {
           density="compact"
           direction="horizontal"
           data={{
+            styleName: 'is-resizable',
+            contentStyleName: 'content--should-always-show-scrollbar',
             header: 'Header',
             content: (
               <>
@@ -134,13 +138,13 @@ function UIPatternsSection() {
               </>
             ),
             contentLayoutName: 'oneColumn',
+            headerActions: '(a link to a modal)',
+            messages: '(a <SectionMessage>)',
             contentShouldScroll: (
               <>
                 <code>true</code> (must resize to scroll)
               </>
-            ),
-            headerActions: '(a link to a modal)',
-            messages: '(a <SectionMessage>)'
+            )
           }}
         />
       </dt>
