@@ -13,7 +13,10 @@ import './SectionMessages.css';
 /**
  * A list for section messages that supports:
  *
- * - messages (can automatically load welcome message)
+ * - manual messages
+ * - manual welcome message
+ * - automatic welcome message
+ * - automatic welcome message with custom text
  *
  * @example
  * // an automatic welcome message (if found), but no additional messages
