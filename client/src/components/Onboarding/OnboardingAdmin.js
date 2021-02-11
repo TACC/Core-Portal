@@ -39,6 +39,7 @@ const OnboardingResetLinks = ({ callback }) => {
 const OnboardingAdminListUser = ({ user }) => {
   const dispatch = useDispatch();
   const actionCallback = useCallback((step, username, action) => {
+    /*
     dispatch({
       type: 'POST_ONBOARDING_ACTION',
       payload: {
@@ -47,6 +48,7 @@ const OnboardingAdminListUser = ({ user }) => {
         username
       }
     });
+    */
   }, [dispatch]);
   return (
     <tr styleName="user">
@@ -78,7 +80,7 @@ const OnboardingAdminListUser = ({ user }) => {
           step => (
             <div key={uuidv4()}>
               {
-                step.state === 'staff_wait' &&
+                /*step.state === 'staff_wait' &&*/
                 <OnboardingApproveActions 
                   callback={(action) => actionCallback(step, user.username, action)}
                 />
