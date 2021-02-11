@@ -19,6 +19,14 @@ import './SectionMessages.css';
  * // an automatic welcome message (if found), but no additional messages
  * <SectionMessages routeName="DASHBOARD" />
  * @example
+ * // overwrite text of an automatic welcome message, but no additional messages
+ * <SectionMessages
+ *   routeName="DASHBOARD"
+ *   welcomeText={`We welcome you to the dashboard, ${givenName}`} />
+ * @example
+ * // define text for a manual welcome message, but no additional messages
+ * <SectionMessages welcomeText={`We welcome you to this page, ${givenName}`} />
+ * @example
  * // an automatic welcome message (if found), and some additional messages
  * <SectionMessages routeName="DASHBOARD">
  *   <Alert color="success">You win!</Alert>
@@ -35,10 +43,14 @@ import './SectionMessages.css';
  *   </Alert>
  * </SectionMessages>
  */
-function SectionMessages({ children, className, routeName }) {
-  const messageText = MESSAGES[routeName];
-  const welcomeMessage = messageText && (
-    <WelcomeMessage messageName={routeName}>{messageText}</WelcomeMessage>
+function SectionMessages({ children, className, routeName, welcomeText }) {
+  const welcomeMessageText = welcomeText || MESSAGES[routeName];
+  /* FAQ: An alternate message name allows tracking custom message dismissal */
+  const welcomeMessageName = routeName || welcomeMessageText;
+  const welcomeMessage = welcomeMessageText && (
+    <WelcomeMessage messageName={welcomeMessageName}>
+      {welcomeMessageText}
+    </WelcomeMessage>
   );
   const hasMessage = shouldShowWelcomeMessage(routeName) || children.length > 0;
   const hasMessageClass = 'has-message';
@@ -64,12 +76,15 @@ SectionMessages.propTypes = {
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
   /** The name of the route section (to search for required welcome message) */
-  routeName: PropTypes.string
+  routeName: PropTypes.string,
+  /** Text either for a custom message or to overwrite standard message text */
+  welcomeText: PropTypes.string
 };
 SectionMessages.defaultProps = {
   children: '',
   className: '',
-  routeName: ''
+  routeName: '',
+  welcomeText: ''
 };
 
 export default SectionMessages;

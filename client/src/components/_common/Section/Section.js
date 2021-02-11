@@ -78,7 +78,8 @@ function Section({
   // sidebarClassName,
   messages,
   messagesClassName,
-  routeName
+  routeName,
+  welcomeMessageText
 }) {
   const shouldBuildHeader = header || headerClassName || headerActions;
 
@@ -116,6 +117,7 @@ function Section({
         styleName="messages"
         routeName={routeName}
         className={messagesClassName}
+        welcomeText={welcomeMessageText}
       >
         {messages}
       </SectionMessages>
@@ -196,8 +198,10 @@ Section.propTypes = {
   messagesClassName: PropTypes.string,
   /** The name of the route section (to search for a welcome message) */
   routeName: PropTypes.string,
-  /** Any additional className(s) for the sidebar */
-  // sidebarClassName: ''
+  /** Any additional className(s) for the sidebar list */
+  // sidebarClassName: '',
+  /** Text that should overwrite any standard welcome message text */
+  welcomeMessageText: PropTypes.string,
 };
 Section.defaultProps = {
   bodyClassName: '',
@@ -214,8 +218,9 @@ Section.defaultProps = {
   manualHeader: undefined,
   messages: '',
   messagesClassName: '',
-  routeName: ''
-  // sidebarClassName: ''
+  routeName: '',
+  // sidebarClassName: '',
+  welcomeMessageText: ''
 };
 
 export default Section;

@@ -37,5 +37,24 @@ describe('SectionMessages', () => {
       );
       expect(getByText(MESSAGES['DASHBOARD'])).not.toEqual(null);
     });
+
+    it('renders known welcome message but with custom message', () => {
+      const { getByText } = render(
+        <Provider store={store}>
+          <SectionMessages routeName="DASHBOARD" welcomeText="Hello" />
+        </Provider>
+      );
+      expect(getByText(MESSAGES['DASHBOARD'])).toEqual(null);
+      expect(getByText(Hello)).not.toEqual(null);
+    });
+
+    it('renders custom welcome message', () => {
+      const { getByText } = render(
+        <Provider store={store}>
+          <SectionMessages welcomeText="Hello" />
+        </Provider>
+      );
+      expect(getByText(Hello)).not.toEqual(null);
+    });
   });
 });
