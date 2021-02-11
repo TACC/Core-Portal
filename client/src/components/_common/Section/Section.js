@@ -195,7 +195,9 @@ Section.propTypes = {
   /** Any additional className(s) for the message list */
   messagesClassName: PropTypes.string,
   /** The name of the route section (to search for a welcome message) */
-  routeName: PropTypes.string
+  routeName: PropTypes.string,
+  /** Any additional className(s) for the sidebar */
+  // sidebarClassName: ''
 };
 Section.defaultProps = {
   bodyClassName: '',
