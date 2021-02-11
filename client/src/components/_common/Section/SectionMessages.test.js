@@ -24,7 +24,7 @@ describe('SectionMessages', () => {
 
       expect(getByText('Message 1')).not.toEqual(null);
       expect(getByText('Message 2')).not.toEqual(null);
-      expect(container.getElementsByClassName('root-test')).not.toEqual(null);
+      expect(container.getElementsByClassName('root-test').length).toEqual(1);
     });
   });
 
@@ -39,13 +39,13 @@ describe('SectionMessages', () => {
     });
 
     it('renders known welcome message but with custom message', () => {
-      const { getByText } = render(
+      const { getByText, queryByText } = render(
         <Provider store={store}>
           <SectionMessages routeName="DASHBOARD" welcomeText="Hello" />
         </Provider>
       );
-      expect(getByText(MESSAGES['DASHBOARD'])).toEqual(null);
-      expect(getByText(Hello)).not.toEqual(null);
+      expect(queryByText(MESSAGES['DASHBOARD'])).toEqual(null);
+      expect(getByText('Hello')).not.toEqual(null);
     });
 
     it('renders custom welcome message', () => {
@@ -54,7 +54,7 @@ describe('SectionMessages', () => {
           <SectionMessages welcomeText="Hello" />
         </Provider>
       );
-      expect(getByText(Hello)).not.toEqual(null);
+      expect(getByText('Hello')).not.toEqual(null);
     });
   });
 });

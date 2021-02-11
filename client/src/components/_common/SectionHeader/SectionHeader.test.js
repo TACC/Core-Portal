@@ -37,7 +37,7 @@ describe('SectionHeader', () => {
       );
       expect(getByText('Heading')).not.toEqual(null);
       expect(getByText('Button')).not.toEqual(null);
-      expect(container.getElementsByClassName('root-test')).not.toEqual(null);
+      expect(container.getElementsByClassName('root-test').length).toEqual(1);
     });
     it('renders JSX header text', () => {
       const { getByText } = render(
