@@ -102,15 +102,3 @@ body > .content {
   top: 0;
   bottom: 0;
 }
-
-/* FP-546: If this style has become unnecessary, then remove it */
-.btn-link,
-.btn-link:hover {
-  color: var(--global-color-accent--normal);
-}
-
-/* FP-546: If this style has become unnecessary, then remove it */
-.btn-link,
-.btn-link:hover {
-  color: var(--global-color-accent--normal);
-}
