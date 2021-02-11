@@ -44,10 +44,7 @@ function UIPatternsSection() {
         />
       </dt>
       <dd>
-        <Section
-          header="Header"
-          content={<p>Content</p>}
-        />
+        <Section header="Header" content={<p>Content</p>} />
       </dd>
       <dt>
         Scrollable
@@ -174,8 +171,8 @@ function UIPatternsSection() {
               </ol>
               <p className="small">
                 The scroll area being always present—even if there is no
-                scrollbar—is a one-off style here <em>only</em> to visually
-                show that the section stretches.
+                scrollbar—is a one-off style here <em>only</em> to visually show
+                that the section stretches.
               </p>
               <UIPatternsSectionTablePlain styleName="table" />
               <Switch>

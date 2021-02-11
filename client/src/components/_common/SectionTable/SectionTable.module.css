@@ -12,6 +12,7 @@
 }
 
 /* Elements: Sub-Components */
+
 /* CAVEAT: These are only applied to automatically-built sub-components */
 .header {
   flex-shrink: 0;
