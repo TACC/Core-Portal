@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button } from 'reactstrap';
@@ -31,6 +31,11 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
 
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
+
+  // Reset form field on route change
+  useEffect(() => {
+    !hasQuery && setQuery('');
+  }, [hasQuery]);
 
   const onSubmit = e => {
     routeSearch();
