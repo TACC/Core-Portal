@@ -57,13 +57,18 @@ class KeyServiceCreationStep(AbstractStep):
         for systemId in systems.keys():
             success, result = StorageSystem(self.user.agave_oauth.client, id=systemId).test()
             if success:
-                self.loggger.info(
+                self.logger.info(
                     "{username} has valid configuration for {systemId}, skipping creation".format(
                         username=self.user.username, systemId=systemId
                     )
                 )
             else:
                 systemList.append(systemId)
+
+        # If all required systems already exist, mark this step complete
+        if len(systemList) == 0:
+            self.complete("Found existing storage systems")
+            return
 
         # Store requested systemIds
         data = {

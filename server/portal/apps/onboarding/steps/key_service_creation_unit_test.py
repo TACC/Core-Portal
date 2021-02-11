@@ -38,6 +38,14 @@ def mock_fail(mocker):
     yield mocker.patch.object(KeyServiceCreationStep, 'fail')
 
 
+def test_process_skip(regular_user, mock_call_reactor, mocker, mock_complete):
+    mock_storage_system = mocker.patch.object(StorageSystem, 'test')
+    mock_storage_system.return_value = (True, None)
+    step = KeyServiceCreationStep(regular_user)
+    step.process()
+    mock_complete.assert_called_with("Found existing storage systems")
+
+
 def test_process(regular_user, mock_call_reactor, mocker):
     mock_storage_system = mocker.patch.object(StorageSystem, 'test')
     mock_storage_system.return_value = (False, None)
