@@ -77,7 +77,7 @@ SectionMessages.propTypes = {
   className: PropTypes.string,
   /** The name of the route section (to search for required welcome message) */
   routeName: PropTypes.string,
-  /** Text either for a custom message or to overwrite standard message text */
+  /** Custom welcome text (can overwrite `routeName`-based welcome message) */
   welcomeText: PropTypes.string
 };
 SectionMessages.defaultProps = {
