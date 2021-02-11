@@ -66,7 +66,7 @@ function UIPatternsSection() {
       <dd>
         <Section
           header="Milk"
-          contentStyleName="is-scrollable"
+          contentStyleName="content--has-list-to-illustrate-scrolling"
           content={
             <ul>
               <li>Cow</li>
@@ -92,7 +92,7 @@ function UIPatternsSection() {
       </dt>
       <dd>
         <Section
-          contentStyleName="has-infinite-scroll-table"
+          contentStyleName="content--has-table-to-illustrate-scrolling"
           header={
             <>
               Section with <code>{`<SectionTable>`}</code> and &nbsp;
@@ -147,7 +147,7 @@ function UIPatternsSection() {
       <dd>
         <Section
           styleName="is-resizable"
-          contentStyleName="content-that-illustrates-scrolling"
+          contentStyleName="content--should-always-show-scrollbar"
           header="Header"
           content={
             <>
