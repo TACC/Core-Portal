@@ -140,7 +140,7 @@ function UIPatternsSection() {
               </>
             ),
             headerActions: '(a link to a modal)',
-            messages: '(an <SectionMessage>)'
+            messages: '(a <SectionMessage>)'
           }}
         />
       </dt>
@@ -159,7 +159,7 @@ function UIPatternsSection() {
                   horizontally <strong>and</strong> supports scrolling.
                 </li>
                 <li>
-                  Close the <code>{`<WelcomeMessage>`}</code> to confirm that
+                  Close the <code>{`<SectionMessage>`}</code> to confirm that
                   the stretching and scrolling is not dependent on its presence.
                 </li>
                 <li>
@@ -169,15 +169,6 @@ function UIPatternsSection() {
                 </li>
               </ol>
               <UIPatternsSectionTablePlain styleName="table" />
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
               <Switch>
                 <Route
                   exact
@@ -194,7 +185,11 @@ function UIPatternsSection() {
           }
           contentLayoutName="oneColumn"
           headerActions={<Link to={modalPath}>Open Modal</Link>}
-          messages={<SectionMessage type="info">Some message…</SectionMessage>}
+          messages={
+            <SectionMessage type="info" canDismiss>
+              If you close me, the content below will fill the space I occupied.
+            </SectionMessage>
+          }
           contentShouldScroll
         />
       </dd>

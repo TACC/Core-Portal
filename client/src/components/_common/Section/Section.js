@@ -201,7 +201,7 @@ Section.propTypes = {
   /** Any additional className(s) for the sidebar list */
   // sidebarClassName: '',
   /** Custom welcome text (can overwrite `routeName`-based welcome message) */
-  welcomeMessageText: PropTypes.string,
+  welcomeMessageText: PropTypes.string
 };
 Section.defaultProps = {
   bodyClassName: '',
