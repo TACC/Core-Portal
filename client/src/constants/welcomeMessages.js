@@ -1,3 +1,10 @@
+/**
+ * Standard welcome message texts
+ *
+ * Notes:
+ * - Each of these is expected to correspond to a route (see `./routes.js`).
+ * - To customize message text (example: dynamic content) use `<Section>`.
+ */
 export const DASHBOARD =
   'This page allows you to monitor your job status, get help with tickets, and view the status of the High Performance Computing (HPC) systems.';
 export const DATA = 'This page allows you to upload and manage your files.';

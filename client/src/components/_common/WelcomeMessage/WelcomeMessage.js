@@ -13,7 +13,6 @@ export function shouldShowMessage(messageName) {
   return welcomeMessages && welcomeMessages[messageName];
 }
 
-/* TODO: Determine whether to couple this less or more to welcome messages */
 /**
  * A message which, when dismissed, will not appear again unless browser storage is cleared
  *
