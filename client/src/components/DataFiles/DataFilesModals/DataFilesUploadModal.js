@@ -152,12 +152,14 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
             Uploading to {systemDisplayName}/{params.path}
           </span>
         </div>
-        <div hidden={!showListing} styleName="dataFilesListing">
-          <DataFilesUploadModalListingTable
-            uploadedFiles={uploadedFiles}
-            setUploadedFiles={setUploadedFiles}
-          />
-        </div>
+        {showListing && (
+          <div styleName="dataFilesListing">
+            <DataFilesUploadModalListingTable
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+            />
+          </div>
+        )}
       </ModalBody>
       <ModalFooter>
         <Button className="data-files-btn" onClick={uploadStart}>
