@@ -27,7 +27,7 @@ describe('SectionTable', () => {
     });
   });
 
-  describe('content and classs names', () => {
+  describe('content and class names', () => {
     it('renders all passed content and class names', () => {
       const { container, getByText } = render(
         <SectionTable

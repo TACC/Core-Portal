@@ -27,7 +27,7 @@ describe('Section', () => {
     });
   });
 
-  describe('content and classses', () => {
+  describe('content and classes', () => {
     it('renders all passed content and classes', () => {
       const { container, getByText } = render(
         <Provider store={store}>
