@@ -168,6 +168,11 @@ function UIPatternsSection() {
                   properly add a modal.
                 </li>
               </ol>
+              <p className="small">
+                The scroll area being always present—even if there is no
+                scrollbar—is a one-off style here <em>only</em> to visually
+                show that the section stretches.
+              </p>
               <UIPatternsSectionTablePlain styleName="table" />
               <Switch>
                 <Route
