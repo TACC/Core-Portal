@@ -1,8 +1,0 @@
-// Prevent hover highlight from .InfiniteScrollTable tbody tr:hover:not([class=-status])
-.onboarding-admin-list > tbody > tr:hover {
-  background-color: inherit !important;
-}
-
-.onboarding-admin-list > tbody > tr > td {
-  padding: 0 0 0 0;
-}

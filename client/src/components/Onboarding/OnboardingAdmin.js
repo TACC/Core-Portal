@@ -9,12 +9,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 const OnboardingApproveActions = ({ callback }) => {
   return (
-    <div>
-      <Button styleName="approve" onClick={() => callback('staff_approve')}>
+    <div styleName="approve-container">
+      <Button className="c-button--secondary" styleName="approve" onClick={() => callback('staff_approve')}>
         <FontAwesomeIcon icon={faCheck} />
         <>Approve</>
       </Button>
-      <Button styleName="approve" onClick={() => callback('staff_deny')}>
+      <Button className="c-button--secondary" styleName="approve" onClick={() => callback('staff_deny')}>
         <FontAwesomeIcon icon={faTimes} />
         <>Deny</>
       </Button>
