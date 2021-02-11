@@ -4,7 +4,7 @@ import { Paginator } from '_common';
 
 function UIPatternsPaginator() {
   return (
-    <Paginator />
+    <Paginator pages={20} current={5}/>
   );
 }
 
