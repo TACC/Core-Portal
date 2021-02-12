@@ -1,45 +1,63 @@
 import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { LoadingSpinner, Message } from '_common';
 import './OnboardingAdmin.module.scss';
-import { Button } from 'reactstrap'
-import OnboardingStatus from './OnboardingStatus';
+import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from 'uuid';
+import OnboardingStatus from './OnboardingStatus';
 
 const OnboardingApproveActions = ({ callback }) => {
   return (
     <div styleName="approve-container">
-      <Button className="c-button--secondary" styleName="approve" onClick={() => callback('staff_approve')}>
+      <Button
+        className="c-button--secondary"
+        styleName="approve"
+        onClick={() => callback('staff_approve')}
+      >
         <FontAwesomeIcon icon={faCheck} />
         <>Approve</>
       </Button>
-      <Button className="c-button--secondary" styleName="approve" onClick={() => callback('staff_deny')}>
+      <Button
+        className="c-button--secondary"
+        styleName="approve"
+        onClick={() => callback('staff_deny')}
+      >
         <FontAwesomeIcon icon={faTimes} />
         <>Deny</>
       </Button>
     </div>
-  )
-}
+  );
+};
 
 const OnboardingResetLinks = ({ callback }) => {
   return (
     <div styleName="reset">
-      <Button color="link" styleName="action-link" onClick={() => callback('reset')}>
+      <Button
+        color="link"
+        styleName="action-link"
+        onClick={() => callback('reset')}
+      >
         Reset
       </Button>
       <>|</>
-      <Button color="link" styleName="action-link" onClick={() => callback('complete')}>
+      <Button
+        color="link"
+        styleName="action-link"
+        onClick={() => callback('complete')}
+      >
         Skip
       </Button>
     </div>
-  )
-}
+  );
+};
 
 const OnboardingAdminListUser = ({ user }) => {
   const dispatch = useDispatch();
-  const actionCallback = useCallback((step, username, action) => {
-    /*
+  const actionCallback = useCallback(
+    (step, username, action) => {
+      /*
     dispatch({
       type: 'POST_ONBOARDING_ACTION',
       payload: {
@@ -49,69 +67,56 @@ const OnboardingAdminListUser = ({ user }) => {
       }
     });
     */
-  }, [dispatch]);
+    },
+    [dispatch]
+  );
   return (
     <tr styleName="user">
       <td>
-        <div styleName="name">
-          {`${user.firstName} ${user.lastName}`}
-        </div>
+        <div styleName="name">{`${user.firstName} ${user.lastName}`}</div>
       </td>
       <td>
-        {user.steps.map(
-          step => (
-            <div key={uuidv4()}>
-              {step.displayName}
-            </div>
-          )
-        )}
+        {user.steps.map(step => (
+          <div key={uuidv4()}>{step.displayName}</div>
+        ))}
       </td>
       <td>
-        {user.steps.map(
-          step => (
-            <div key={uuidv4()} styleName="status">
-              <OnboardingStatus step={step} />
-            </div>
-          )
-        )}
+        {user.steps.map(step => (
+          <div key={uuidv4()} styleName="status">
+            <OnboardingStatus step={step} />
+          </div>
+        ))}
       </td>
       <td>
-        {user.steps.map(
-          step => (
-            <div key={uuidv4()}>
-              {
-                /*step.state === 'staff_wait' &&*/
-                <OnboardingApproveActions 
-                  callback={(action) => actionCallback(step, user.username, action)}
-                />
-              }
-            </div>
-          )
-        )}
+        {user.steps.map(step => (
+          <div key={uuidv4()}>
+            <OnboardingApproveActions
+              callback={action => actionCallback(step, user.username, action)}
+            />
+          </div>
+        ))}
       </td>
       <td>
-        {user.steps.map(
-          step => (
-            <div key={uuidv4()}>
-              <OnboardingResetLinks
-                callback={(action) => actionCallback(step, user.username, action)}
-              />
-            </div>
-          )
-        )}
+        {user.steps.map(step => (
+          <div key={uuidv4()}>
+            <OnboardingResetLinks
+              callback={action => actionCallback(step, user.username, action)}
+            />
+          </div>
+        ))}
       </td>
       <td>
-        {user.steps.map(
-          step => (
-            <div key={uuidv4()}>
-              <Button color="link" styleName="action-link">View Log</Button>
-            </div>            
-          )
-        )}
+        {user.steps.map(step => (
+          <div key={uuidv4()}>
+            <Button color="link" styleName="action-link">
+              View Log
+            </Button>
+          </div>
+        ))}
       </td>
     </tr>
-  )
-}
+  );
+};
 
 const OnboardingAdminList = ({ users }) => {
   return (
@@ -122,13 +127,13 @@ const OnboardingAdminList = ({ users }) => {
           <th>Step</th>
           <th>Status</th>
           <th>Administrative Actions</th>
-          <th></th>
+          <th />
           <th>Log</th>
         </tr>
       </thead>
       <tbody>
         {users.map(user => (
-          <OnboardingAdminListUser user={user} key={user.username}/>
+          <OnboardingAdminListUser user={user} key={user.username} />
         ))}
       </tbody>
     </table>
@@ -138,17 +143,35 @@ const OnboardingAdminList = ({ users }) => {
 const OnboardingAdmin = () => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch({ type: 'FETCH_ONBOARDING_ADMIN_LIST' });
-  }, [dispatch]);
+  const { users, offset, limit, loading, error } = useSelector(
+    state => state.onboarding.admin
+  );
 
-  const users = useSelector(state => state.onboarding.admin.users);
+  useEffect(() => {
+    dispatch({
+      type: 'FETCH_ONBOARDING_ADMIN_LIST',
+      payload: { offset, limit }
+    });
+  }, [dispatch, offset, limit]);
+
   return (
     <div styleName="container">
       <div styleName="container-header">
         <h5>Administrator Controls</h5>
       </div>
-      <OnboardingAdminList users={users} />
+      {loading && (
+        <div>
+          <LoadingSpinner />
+        </div>
+      )}
+      {error && (
+        <div>
+          <Message type="warn">
+            Unable to access Onboarding administration
+          </Message>
+        </div>
+      )}
+      {!loading && !error && <OnboardingAdminList users={users} />}
     </div>
   );
 };
