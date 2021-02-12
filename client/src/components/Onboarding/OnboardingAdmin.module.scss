@@ -1,0 +1,122 @@
+.container {
+  display: flex;
+  flex-direction: column;
+
+  padding: 20px 40px 0 20px;
+}
+
+.container-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid #707070;
+    margin-bottom: 1.5em;
+}
+
+.root {
+  --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
+  /* TODO: After, FP-103, use `composes:` not `@extend` */
+
+  position: relative;
+  align-items: stretch;
+  width: 100%;
+  overflow: scroll;
+  max-height: inherit; /* inherit max-height from parent wrapper */
+  font-size: 12px;
+
+  thead {
+    user-select: none;
+    color: var(--global-color-primary--x-dark);
+    border-bottom: 1px solid #707070;
+
+    .-sort-asc,
+    .sort-desc {
+      color: #484848;
+    }
+
+    /* Match horizontal padding of `td` elements in table to align properly */
+    th {
+      padding-left: var(--cell-horizontal-padding);
+      padding-right: var(--cell-horizontal-padding);
+    }
+  }
+}
+
+tbody {
+  line-height: 32px;
+}
+
+.root > tbody > tr {
+  vertical-align: top;
+}
+
+.root > tbody > tr > td {
+  padding: 0 0 0 0;
+}
+
+.name {
+  padding-left: var(--cell-horizontal-padding);
+}
+
+.user > td > div {
+  height: 32px;
+  padding-left: var(--cell-horizontal-padding);
+  display: flex;
+  align-items: center;
+}
+
+.user > td > div:nth-child(even):not(.staffwait) {
+  background-color: #C6C6C61A;
+}
+
+.status {
+  line-height: 19px;
+}
+
+.reset > * {
+  padding-left: 12px;
+}
+
+.approve-container {
+  display: flex;
+}
+
+.approve {
+  font-size: 12px;
+  height: 19px;
+  border-radius: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-right: 1em;
+}
+
+.approve > *:nth-child(1) {
+  margin-right: 0.5em;
+}
+
+.action-link {
+  font-size: 12px;
+}
+
+.staffwait {
+  background-color: var(--global-color-accent--light);
+}
+
+.root {
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 15%;
+  }
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 20%;
+  }
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 15%;
+  }
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 20%;
+  }
+}
