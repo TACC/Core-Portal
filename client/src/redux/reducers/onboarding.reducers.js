@@ -25,6 +25,15 @@ export const initialState = {
   }
 };
 
+export function updateAdminUsersFromEvent(adminUsers, event) {
+  const result = [ ...adminUsers ];
+  const matchingIndex = adminUsers.findIndex(user => user.username === event.username);
+  if (matchingIndex > -1) {
+    result[matchingIndex] = updateUserFromEvent(result[matchingIndex], event);
+  }
+  return result;
+}
+
 export function updateUserFromEvent(user, event) {
   const result = { ...user };
   if (result.username === event.username) {
@@ -99,6 +108,10 @@ export function onboarding(state = initialState, action) {
     case 'ONBOARDING_EVENT':
       return {
         ...state,
+        admin: {
+          ...state.admin,
+          users: updateAdminUsersFromEvent(state.admin.users, action.payload.setup_event)
+        },
         user: updateUserFromEvent(state.user, action.payload.setup_event)
       };
     case 'POST_ONBOARDING_ACTION_PROCESSING':

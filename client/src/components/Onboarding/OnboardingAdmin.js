@@ -57,16 +57,14 @@ const OnboardingAdminListUser = ({ user }) => {
   const dispatch = useDispatch();
   const actionCallback = useCallback(
     (step, username, action) => {
-      /*
-    dispatch({
-      type: 'POST_ONBOARDING_ACTION',
-      payload: {
-        step,
-        action,
-        username
-      }
-    });
-    */
+      dispatch({
+        type: 'POST_ONBOARDING_ACTION',
+        payload: {
+          step,
+          action,
+          username
+        }
+      });
     },
     [dispatch]
   );
@@ -90,9 +88,9 @@ const OnboardingAdminListUser = ({ user }) => {
       <td>
         {user.steps.map(step => (
           <div key={uuidv4()}>
-            <OnboardingApproveActions
-              callback={action => actionCallback(step, user.username, action)}
-            />
+            {step.status === 'staff_wait' && <OnboardingApproveActions
+              callback={action => actionCallback(step.step, user.username, action)}
+            />}
           </div>
         ))}
       </td>
@@ -100,7 +98,7 @@ const OnboardingAdminListUser = ({ user }) => {
         {user.steps.map(step => (
           <div key={uuidv4()}>
             <OnboardingResetLinks
-              callback={action => actionCallback(step, user.username, action)}
+              callback={action => actionCallback(step.step, user.username, action)}
             />
           </div>
         ))}
