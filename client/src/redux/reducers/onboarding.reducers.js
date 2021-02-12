@@ -1,6 +1,9 @@
 export const initialState = {
   admin: {
     users: [],
+    offset: 0,
+    limit: 10,
+    total: 0,
     loading: false,
     error: null
   },
@@ -52,8 +55,9 @@ export function onboarding(state = initialState, action) {
         ...state,
         admin: {
           ...state.admin,
-          users: action.payload.users,
-          loading: false
+          ...action.payload,
+          loading: false,
+          error: null
         }
       };
     case 'FETCH_ONBOARDING_ADMIN_LIST_ERROR':
