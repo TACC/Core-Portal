@@ -68,6 +68,7 @@ const OnboardingAdminListUser = ({ user }) => {
     },
     [dispatch]
   );
+  console.log(user.steps);
   return (
     <tr styleName="user">
       <td>
@@ -75,20 +76,22 @@ const OnboardingAdminListUser = ({ user }) => {
       </td>
       <td>
         {user.steps.map(step => (
-          <div key={uuidv4()}>{step.displayName}</div>
+          <div key={uuidv4()} styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
+            {step.displayName}
+          </div>
         ))}
       </td>
       <td>
         {user.steps.map(step => (
-          <div key={uuidv4()} styleName="status">
+          <div key={uuidv4()} styleName={`status ${step.state === 'staffwait' ? 'staffwait': ''}`}>
             <OnboardingStatus step={step} />
           </div>
         ))}
       </td>
       <td>
         {user.steps.map(step => (
-          <div key={uuidv4()}>
-            {step.status === 'staff_wait' && <OnboardingApproveActions
+          <div key={uuidv4()} styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
+            {step.state === 'staffwait' && <OnboardingApproveActions
               callback={action => actionCallback(step.step, user.username, action)}
             />}
           </div>
@@ -96,7 +99,7 @@ const OnboardingAdminListUser = ({ user }) => {
       </td>
       <td>
         {user.steps.map(step => (
-          <div key={uuidv4()}>
+          <div key={uuidv4()} styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
             <OnboardingResetLinks
               callback={action => actionCallback(step.step, user.username, action)}
             />
@@ -105,7 +108,7 @@ const OnboardingAdminListUser = ({ user }) => {
       </td>
       <td>
         {user.steps.map(step => (
-          <div key={uuidv4()}>
+          <div key={uuidv4()} styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
             <Button color="link" styleName="action-link">
               View Log
             </Button>

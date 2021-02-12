@@ -65,7 +65,7 @@ tbody {
   align-items: center;
 }
 
-.user > td > div:nth-child(even) {
+.user > td > div:nth-child(even):not(.staffwait) {
   background-color: #C6C6C61A;
 }
 
@@ -96,6 +96,10 @@ tbody {
 
 .action-link {
   font-size: 12px;
+}
+
+.staffwait {
+  background-color: var(--global-color-accent--light);
 }
 
 .root {
