@@ -8,19 +8,39 @@ import './OnboardingAdminSearchbar.module.scss';
 
 const OnboardingAdminSearchbar = ({ className, disabled }) => {
   const [query, setQuery] = useState('');
+  const [searched, setSearched] = useState(false);
+  const dispatch = useDispatch();
 
   const onSubmit = e => {
-    // do search
     e.preventDefault();
+    dispatch({
+      type: 'FETCH_ONBOARDING_ADMIN_LIST',
+      payload: {
+        limit: 10,
+        offset: 0,
+        q: query
+      }
+    });
+    setSearched(true);
   };
   const onClear = e => {
     e.preventDefault();
-    // clear search
+    setQuery('');
+    dispatch({
+      type: 'FETCH_ONBOARDING_ADMIN_LIST',
+      payload: {
+        limit: 10,
+        offset: 0
+      }
+    });
+    setSearched(false);
   };
   const onChange = e => {
-    // do search
+    setQuery(e.target.value);
+    if (!e.target.value && searched) {
+      onClear(e);
+    }
   };
-  const hasQuery = query.length > 0;
 
   return (
     <form
@@ -50,17 +70,6 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
           disabled={disabled}
         />
       </div>
-      {hasQuery && (
-        <Button
-          type="reset"
-          color="link"
-          styleName="clear-button"
-          onClick={onClear}
-          data-testid="reset"
-        >
-          Back to All Files
-        </Button>
-      )}
     </form>
   );
 };
