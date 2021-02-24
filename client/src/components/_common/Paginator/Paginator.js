@@ -1,10 +1,5 @@
 import React from 'react';
 import { Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faChevronLeft,
-  faChevronRight
-} from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import './Paginator.module.scss';
 
@@ -60,8 +55,7 @@ const Paginator = ({ pages, current, callback }) => {
         onClick={() => callback(current - 1)} // eslint-disable-line
         disabled={current === 1}
       >
-        <FontAwesomeIcon icon={faChevronLeft} />
-        <span>Previous</span>
+        <span>&lt; Previous</span>
       </Button>
       <PaginatorPage number={1} callback={callback} current={current} />
       {middlePages[0] > 2 && <span>...</span>}
@@ -85,8 +79,7 @@ const Paginator = ({ pages, current, callback }) => {
         onClick={() => callback(current + 1)} // eslint-disable-line
         disabled={current === pages}
       >
-        <span>Next</span>
-        <FontAwesomeIcon icon={faChevronRight} />
+        <span>Next &gt;</span>
       </Button>
     </div>
   );
