@@ -4,10 +4,15 @@
   /* HELP: How to assign this spacing when Quick Links is added? */
   padding-top: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
 }
+/* Limit height of all dashboard panels */
 .dashboard-items > * {
   /* CAVEAT: This is a dev value that just "looked good" */
   min-height: 160px; /* approx. "My Tickets/Jobs" height with about 1.25 rows */
 }
+/* WARNING: This assumes a markup structure which is beyond Dashboard control */
+/* NOTE: 1. Applying border to `… table` fails (because ReactTable's scroll) */
+/*       2. Design has borders only for Dashboard, so can't apply to panel */
+/*       3. Reconsider #2 if panels should have border in any future context */
 .dashboard-items > * > div {
   border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
 }

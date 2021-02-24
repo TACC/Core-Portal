@@ -8,6 +8,7 @@ import Tickets, { TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
 import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
+import './Dashboard.module.css';
 
 function Dashboard() {
   return (
@@ -21,7 +22,7 @@ function Dashboard() {
           Manage Account
         </Link>
       }
-      contentClassName="dashboard-items"
+      contentStyleName="dashboard-items"
       contentLayoutName="twoColumn"
       contentShouldScroll
       content={
