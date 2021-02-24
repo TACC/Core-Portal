@@ -1,37 +1,9 @@
 .root {
-  /* title */
-  th:nth-child(1),
-  td:nth-child(1) {
-    width: 13%;
-  }
-  /* pi */
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 24%;
-  }
-  /* team */
-  th:nth-child(3),
-  td:nth-child(3) {
-    width: 14%;
-  }
-  /* systems */
-  th:nth-child(4),
-  td:nth-child(4) {
-    width: 12%;
-  }
-  /* awarded */
-  th:nth-child(5),
-  td:nth-child(5) {
-    width: 12%;
-  }
-  /* remaining */
-  th:nth-child(6),
-  td:nth-child(6) {
-    width: 12%;
-  }
-  /* expires */
-  th:nth-child(7),
-  td:nth-child(7) {
-    width: 12%;
-  }
+  /* title */     tr > *:nth-child(1) { width: 13%; }
+  /* pi */        tr > *:nth-child(2) { width: 24%; }
+  /* team */      tr > *:nth-child(3) { width: 14%; }
+  /* systems */   tr > *:nth-child(4) { width: 12%; }
+  /* awarded */   tr > *:nth-child(5) { width: 12%; }
+  /* remaining */ tr > *:nth-child(6) { width: 12%; }
+  /* expires */   tr > *:nth-child(7) { width: 12%; }
 }
