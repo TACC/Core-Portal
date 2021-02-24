@@ -27,7 +27,7 @@ describe('SectionTable', () => {
     });
   });
 
-  describe('content and classs names', () => {
+  describe('content and class names', () => {
     it('renders all passed content and class names', () => {
       const { container, getByText } = render(
         <SectionTable
@@ -39,10 +39,10 @@ describe('SectionTable', () => {
           {TABLE_MARKUP}
         </SectionTable>
       );
-      expect(container.getElementsByClassName('root-test')).not.toEqual(null);
+      expect(container.getElementsByClassName('root-test').length).toEqual(1);
       expect(getByText('Header')).not.toEqual(null);
       expect(getByText('Header Actions')).not.toEqual(null);
-      expect(container.getElementsByClassName('header-test')).not.toEqual(null);
+      expect(container.getElementsByClassName('header-test').length).toEqual(1);
     });
     it('renders conditional class names', () => {
       const { container } = render(

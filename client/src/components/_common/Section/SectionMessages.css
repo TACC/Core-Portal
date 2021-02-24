@@ -1,6 +1,6 @@
 /* Increase minimum height for at least one message */
 /* FAQ: Edit global style based on local state side effect */
-/* SEE: index.css, Dashboard.(s)css, DataFiles.css */
+/* TODO: Update Dashboard.(s)css, DataFiles.css to use this */
 body.has-message {
   --section-messages-base-height: 100px; /* approx. 1 section message height */
 

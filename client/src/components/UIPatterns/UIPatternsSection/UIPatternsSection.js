@@ -44,11 +44,7 @@ function UIPatternsSection() {
         />
       </dt>
       <dd>
-        <Section
-          header="Header"
-          content={<p>Content</p>}
-          contentLayoutName="oneColumn"
-        />
+        <Section header="Header" content={<p>Content</p>} />
       </dd>
       <dt>
         Scrollable
@@ -57,6 +53,7 @@ function UIPatternsSection() {
           density="compact"
           direction="horizontal"
           data={{
+            contentStyleName: 'content--has-list-to-illustrate-scrolling',
             header: 'Milk',
             content: 'Cow, Soy, Nut',
             contentShouldScroll: <code>true</code>
@@ -65,8 +62,8 @@ function UIPatternsSection() {
       </dt>
       <dd>
         <Section
+          contentStyleName="content--has-list-to-illustrate-scrolling"
           header="Milk"
-          contentStyleName="is-scrollable"
           content={
             <ul>
               <li>Cow</li>
@@ -84,15 +81,17 @@ function UIPatternsSection() {
           density="compact"
           direction="horizontal"
           data={{
+            contentStyleName: 'content--has-table-to-illustrate-scrolling',
             header: 'Section with <SectionTable> and <InfiniteScrollTable>',
             content: '(paragraph, table, paragraph)',
-            headerActions: '(a button to trigger sample action)'
+            headerActions: '(a button to trigger sample action)',
+            contentLayoutName: 'oneColumn'
           }}
         />
       </dt>
       <dd>
         <Section
-          contentStyleName="has-infinite-scroll-table"
+          contentStyleName="content--has-table-to-illustrate-scrolling"
           header={
             <>
               Section with <code>{`<SectionTable>`}</code> and &nbsp;
@@ -126,6 +125,8 @@ function UIPatternsSection() {
           density="compact"
           direction="horizontal"
           data={{
+            styleName: 'is-resizable',
+            contentStyleName: 'content--should-always-show-scrollbar',
             header: 'Header',
             content: (
               <>
@@ -134,20 +135,20 @@ function UIPatternsSection() {
               </>
             ),
             contentLayoutName: 'oneColumn',
+            headerActions: '(a link to a modal)',
+            messages: '(a <SectionMessage>)',
             contentShouldScroll: (
               <>
                 <code>true</code> (must resize to scroll)
               </>
-            ),
-            headerActions: '(a link to a modal)',
-            messages: '(an <SectionMessage>)'
+            )
           }}
         />
       </dt>
       <dd>
         <Section
           styleName="is-resizable"
-          contentStyleName="content-that-illustrates-scrolling"
+          contentStyleName="content--should-always-show-scrollbar"
           header="Header"
           content={
             <>
@@ -159,7 +160,7 @@ function UIPatternsSection() {
                   horizontally <strong>and</strong> supports scrolling.
                 </li>
                 <li>
-                  Close the <code>{`<WelcomeMessage>`}</code> to confirm that
+                  Close the <code>{`<SectionMessage>`}</code> to confirm that
                   the stretching and scrolling is not dependent on its presence.
                 </li>
                 <li>
@@ -168,16 +169,12 @@ function UIPatternsSection() {
                   properly add a modal.
                 </li>
               </ol>
-              <UIPatternsSectionTablePlain styleName="table" />
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
+              <p className="small">
+                The scroll area being always present—even if there is no
+                scrollbar—is a one-off style here <em>only</em> to visually show
+                that the section stretches.
               </p>
+              <UIPatternsSectionTablePlain styleName="table" />
               <Switch>
                 <Route
                   exact
@@ -194,7 +191,11 @@ function UIPatternsSection() {
           }
           contentLayoutName="oneColumn"
           headerActions={<Link to={modalPath}>Open Modal</Link>}
-          messages={<SectionMessage type="info">Some message…</SectionMessage>}
+          messages={
+            <SectionMessage type="info" canDismiss>
+              If you close me, the content below will fill the space I occupied.
+            </SectionMessage>
+          }
           contentShouldScroll
         />
       </dd>

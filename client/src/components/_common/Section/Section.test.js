@@ -27,7 +27,7 @@ describe('Section', () => {
     });
   });
 
-  describe('content and classses', () => {
+  describe('content and classes', () => {
     it('renders all passed content and classes', () => {
       const { container, getByText } = render(
         <Provider store={store}>
@@ -45,16 +45,16 @@ describe('Section', () => {
           />
         </Provider>
       );
-      expect(container.getElementsByClassName('root-test')).not.toEqual(null);
+      expect(container.getElementsByClassName('root-test').length).toEqual(1);
       expect(getByText('Header')).not.toEqual(null);
       expect(getByText('Header Actions')).not.toEqual(null);
-      expect(container.getElementsByClassName('header-test')).not.toEqual(null);
+      expect(container.getElementsByClassName('header-test').length).toEqual(1);
       expect(getByText('Content')).not.toEqual(null);
-      expect(container.getElementsByClassName('content-test')).not.toEqual(null);
+      expect(container.getElementsByClassName('content-test').length).toEqual(1);
       // expect(getByText('Sidebar')).not.toEqual(null);
-      // expect(container.getElementsByClassName('sidebar-test')).not.toEqual(null);
+      // expect(container.getElementsByClassName('sidebar-test').length).toEqual(1);
       expect(container.querySelector(`[class*="messages"]`)).not.toEqual(null);
-      expect(container.getElementsByClassName('messages-test')).not.toEqual(null);
+      expect(container.getElementsByClassName('messages-test').length).toEqual(1);
     });
   });
 });

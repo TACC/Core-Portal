@@ -12,8 +12,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* FAQ: Use variable to allow min-height change w/out overwriting styles */
-  /* WARNING: Must NOT use keyword; must use unit; or use in `calc` will fail */
+  /* Allow components to overwrite minimum width and height of body */
+  /* FAQ: Use variable to isolate value from application of value */
+  /* WARNING: Must use a unit, NOT a keyword (which would break any `calc()`) */
   /* stylelint-disable length-zero-no-unit */
   --min-height: 0px;
   --min-width: 0px;
@@ -100,16 +101,4 @@ body > .content {
   right: 0;
   top: 0;
   bottom: 0;
-}
-
-/* FP-546: If this style has become unnecessary, then remove it */
-.btn-link,
-.btn-link:hover {
-  color: var(--global-color-accent--normal);
-}
-
-/* FP-546: If this style has become unnecessary, then remove it */
-.btn-link,
-.btn-link:hover {
-  color: var(--global-color-accent--normal);
 }

@@ -22,6 +22,14 @@ import './Section.module.css';
  *   messages={<>…</>}
  * />
  * @example
+ * // add class to <body>, automatically build sub-components
+ * // FAQ: class on <body> + `Bob.global.css` + `body.global-bob-class`
+ * //      = unlimited, explicit, isolated CSS side effects
+ * <Section
+ *   bodyClassName="has-loaded-some_section"
+ *   content={…}
+ * />
+ * @example
  * // automatically build sub-components, with some customization
  * <Section
  *   header="Dashboard"
@@ -78,7 +86,8 @@ function Section({
   // sidebarClassName,
   messages,
   messagesClassName,
-  routeName
+  routeName,
+  welcomeMessageText
 }) {
   const shouldBuildHeader = header || headerClassName || headerActions;
 
@@ -116,6 +125,7 @@ function Section({
         styleName="messages"
         routeName={routeName}
         className={messagesClassName}
+        welcomeText={welcomeMessageText}
       >
         {messages}
       </SectionMessages>
@@ -195,7 +205,11 @@ Section.propTypes = {
   /** Any additional className(s) for the message list */
   messagesClassName: PropTypes.string,
   /** The name of the route section (to search for a welcome message) */
-  routeName: PropTypes.string
+  routeName: PropTypes.string,
+  /** Any additional className(s) for the sidebar list */
+  // sidebarClassName: '',
+  /** Custom welcome text (can overwrite `routeName`-based welcome message) */
+  welcomeMessageText: PropTypes.string
 };
 Section.defaultProps = {
   bodyClassName: '',
@@ -212,8 +226,9 @@ Section.defaultProps = {
   manualHeader: undefined,
   messages: '',
   messagesClassName: '',
-  routeName: ''
-  // sidebarClassName: ''
+  routeName: '',
+  // sidebarClassName: '',
+  welcomeMessageText: ''
 };
 
 export default Section;

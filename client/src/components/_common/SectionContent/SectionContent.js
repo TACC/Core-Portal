@@ -81,7 +81,7 @@ SectionContent.propTypes = {
   layoutName: PropTypes.oneOf(LAYOUTS).isRequired,
   /** Whether to allow root element to scroll */
   shouldScroll: PropTypes.bool,
-  /** Whether to allow component debugging */
+  /** Whether to allow panel debugging (highlight each panel with unique hue) */
   shouldDebug: PropTypes.bool,
   /** Override tag of the root element */
   tagName: PropTypes.string

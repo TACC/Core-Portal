@@ -1,3 +1,5 @@
+/* Elements */
+
 .term-details {
   font-weight: normal;
   font-style: italic;
@@ -11,26 +13,30 @@
   margin-bottom: 1em;
 }
 
-.is-resizable {
-  resize: both;
-  overflow: scroll;
-  max-width: 100%;
+/* Elements: Modifiers */
 
-  /* Avoid horizontal scrolling of `.content-that-illustrates-scrolling` */
-  /* FAQ: A <Section>'s padding-left causes offset horizontal scrollbar */
-  min-width: 300px;
-}
-.content-that-illustrates-scrolling {
+.content--should-always-show-scrollbar {
   overflow-y: scroll;
 }
-
-.is-scrollable {
+.content--has-table-to-illustrate-scrolling {
+  height: 110px;
+}
+.content--has-list-to-illustrate-scrolling {
   --line-height: 1.5em; /* Bootstrap `_reboot` `body { line-height: 1.5 }` */
   --max-lines: 2;
 
   height: calc(var(--line-height) * var(--max-lines));
 }
 
-.has-infinite-scroll-table {
-  height: 110px;
+
+/* Modifiers */
+
+.is-resizable {
+  resize: both;
+  overflow: scroll;
+  max-width: 100%;
+
+  /* Avoid horizontal scrolling of `.content--should-always-show-scrollbar` */
+  /* FAQ: A <Section>'s padding-left causes offset horizontal scrollbar */
+  min-width: 300px;
 }

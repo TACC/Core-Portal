@@ -1,12 +1,19 @@
-/* FAQ: Ancestor of `.dashboard-items` */
-/* RFC: Class name `.dashboard-item` (to coincide with `.dashboard-items`) */
+/* Block */
+
 .container {
-  /* … */
+  /* FAQ: Only defined so "Elements: Tags" can be styled */
 }
-.container dt > small {
-  display: block;
-}
+
+
+/* Elements */
+
 .list-item {
   font-size: 14px;
   margin-top: 20px;
+}
+
+/* Elements: Tags */
+
+.container dt > small {
+  display: block;
 }

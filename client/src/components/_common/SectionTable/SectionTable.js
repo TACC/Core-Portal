@@ -99,9 +99,10 @@ function SectionTable({
   styleName = styleNameList.join(' ');
 
   // Allowing ineffectual prop combinations would lead to confusion
-  if (manualContent && (content || contentClassName || contentShouldScroll)) {
+  // Unlike <Section>, prop `contentShouldScroll` IS allowed for <SectionTable>
+  if (manualContent && (content || contentClassName)) {
     throw new Error(
-      'When passing `manualContent`, the following props are ineffectual: `content`, `contentClassName`, `contentShouldScroll`'
+      'When passing `manualContent`, the following props are ineffectual: `content`, `contentClassName`'
     );
   }
   if (manualHeader && (header || headerClassName || headerActions)) {
@@ -138,7 +139,7 @@ function SectionTable({
         // WARNING: When using `manualContent`, user must implement this feature
         // FAQ: A table can NOT be a flex item; <div> wrap is safest solution
         // SEE: https://stackoverflow.com/q/41421512/11817077
-        <div styleName="table-wrap" className={contentClassName}>
+        <div className={`o-flex-item-table-wrap ${contentClassName}`}>
           {content}
           {children}
         </div>
@@ -150,7 +151,7 @@ SectionTable.propTypes = {
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
   /** Alternate way to pass `manualContent` and `content` */
-  children: PropTypes.element.isRequired,
+  children: PropTypes.node,
   /** The table content itself (content wrapper built automatically) */
   /* RFE: Ideally, limit this to one `InfiniteScrollTable` or `OtherTable` */
   /* SEE: https://github.com/facebook/react/issues/2979 */
@@ -175,6 +176,7 @@ SectionTable.propTypes = {
   tagName: PropTypes.string
 };
 SectionTable.defaultProps = {
+  children: '',
   className: '',
   content: '',
   contentClassName: '',
