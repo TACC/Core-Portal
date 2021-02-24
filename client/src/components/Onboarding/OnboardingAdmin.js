@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import { onboardingUserPropType } from './OnboardingPropTypes';
 import OnboardingEventLogModal from './OnboardingEventLogModal';
 import OnboardingStatus from './OnboardingStatus';
+import OnboardingAdminSearchbar from './OnboardingAdminSearchbar';
 
 const OnboardingApproveActions = ({ callback }) => {
   return (
@@ -227,6 +228,7 @@ const OnboardingAdmin = () => {
     <div styleName="container">
       <div styleName="container-header">
         <h5>Administrator Controls</h5>
+        <OnboardingAdminSearchbar />
       </div>
       {loading && (
         <div>

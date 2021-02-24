@@ -1,8 +1,8 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import PropTypes from 'prop-types';
-import { onboardingUserPropType, stepPropType } from './OnboardingPropTypes';
 import { formatDateTime } from 'utils/timeFormat';
+import { onboardingUserPropType, stepPropType } from './OnboardingPropTypes';
 import './OnboardingEventLogModal.module.scss';
 
 const OnboardingEventLogModal = ({ toggle, params }) => {
