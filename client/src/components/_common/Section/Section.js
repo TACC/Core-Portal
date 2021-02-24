@@ -22,6 +22,14 @@ import './Section.module.css';
  *   messages={<>…</>}
  * />
  * @example
+ * // add class to <body>, automatically build sub-components
+ * // FAQ: class on <body> + `Bob.global.css` + `body.global-bob-class`
+ * //      = unlimited, explicit, isolated CSS side effects
+ * <Section
+ *   bodyClassName="has-loaded-some_section"
+ *   content={…}
+ * />
+ * @example
  * // automatically build sub-components, with some customization
  * <Section
  *   header="Dashboard"
