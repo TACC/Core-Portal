@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Section } from '_common';
 import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import OnboardingStep from './OnboardingStep';
@@ -43,15 +43,19 @@ const OnboardingUser = () => {
   }
 
   return (
-    <div styleName="root">
-      <div styleName="title">
-        <h2>
+    /* !!!: Temporary bad indentation to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
+    <Section
+      routeName="ONBOARDING"
+      header=
           {isStaff
             ? `Onboarding Administration for ${user.username} - ${user.lastName}, ${user.firstName}`
             : 'The following steps must be completed before accessing the portal'}
-        </h2>
-      </div>
-      <div styleName="container">
+      contentStyleName="content"
+      contentLayoutName="oneColumn"
+      contentShouldScroll
+      content={
+        <>
         {user.steps.map(step => (
           <OnboardingStep step={step} key={uuidv4()} />
         ))}
@@ -81,8 +85,10 @@ const OnboardingUser = () => {
             Access Dashboard
           </Button>
         </div>
-      </div>
-    </div>
+        </>
+      }
+    />
+    /* eslint-enable prettier/prettier */
   );
 };
 

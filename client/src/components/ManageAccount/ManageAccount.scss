@@ -1,23 +1,7 @@
 /*
   Wrappers
 */
-.manage-account-wrapper {
-  display: flex;
-  .container-fluid {
-    padding: 20px 40px 0 25px !important; /* overwrite Bootstrap */ /* NOTE: The `!important` may not be necessary */
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-  }
-}
-.manage-account-content {
-  a {
-    color: #9d85ef;
-  }
-}
 .user-profile {
-  flex-grow: 1;
-
   @media (min-width: 992px) {
     /* Hide Border when tables stack on one another */
     .user-profile-main {
@@ -25,8 +9,8 @@
     }
   }
 }
+/* FP-546: Consider migrating these styles out of this file */
 .btn-link {
-  color: #9d85ef;
   border: 0;
   vertical-align: baseline;
 }
@@ -34,18 +18,6 @@
 /*
   Components
 */
-.manage-account-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #707070;
-  margin-left: -15px !important;
-  margin-right: -15px !important;
-  h5 {
-    font-weight: 400;
-    color: #484848;
-  }
-}
 // Tables
 .manage-account-table {
   font-size: 14px;
@@ -125,8 +97,13 @@
 }
 
 .modal-body {
+  /* NOTE: Applies globally so MAY be appropriate for button component styles */
+  /* SEE: client/src/styles/components/bootstrap.modal.css */
   font-size: 14px;
+
   .btn-link {
+    /* NOTE: Applies globally but NOT appropriate for button component styles */
+    /* SEE: client/src/styles/components/bootstrap.modal.css */
     padding: 0;
   }
   .manage-account-submit-button {
@@ -142,9 +119,4 @@
 .license-button {
   background-color: transparent !important;
   font-weight: bold;
-}
-
-.welcomeMessageGeneral {
-  margin: 0 0 20px 0;
-  flex-grow: 0;
 }

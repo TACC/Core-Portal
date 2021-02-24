@@ -8,18 +8,20 @@ import {
 } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
-import { string } from 'prop-types';
 import queryString from 'query-string';
 
+import { Section } from '_common';
 import JobHistory from './HistoryViews';
 import JobHistoryModal from './HistoryViews/JobHistoryModal';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
+
+import './History.global.css';
 import './History.module.scss';
 
 const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
 
-const Header = ({ title }) => {
+const Actions = () => {
   // Only display "Mark All as Viewed" button if there are purple (unread) notifs
   const unread = useSelector(
     state => state.notifications.list.notifs.filter(n => !n.read).length
@@ -27,8 +29,8 @@ const Header = ({ title }) => {
   const dispatch = useDispatch();
 
   return (
-    <div styleName="header">
-      <span styleName="header-text"> History / {title} </span>
+    /* !!!: Temporary extra markup to make simpler PR diff */
+    <>
       <Button
         color="link"
         onClick={() => {
@@ -43,10 +45,9 @@ const Header = ({ title }) => {
       >
         Mark All as Viewed
       </Button>
-    </div>
+    </>
   );
 };
-Header.propTypes = { title: string.isRequired };
 
 const Sidebar = () => {
   const { unreadJobs } = useSelector(state => state.notifications.list);
@@ -73,7 +74,8 @@ export const Routes = () => {
   const dispatch = useDispatch();
 
   return (
-    <div styleName="content" data-testid="history-router">
+    /* !!!: Temporary extra markup to make simpler PR diff */
+    <>
       <Switch>
         <Route
           path={`${root}${ROUTES.JOBS}`}
@@ -108,7 +110,7 @@ export const Routes = () => {
             }
             return (
               <>
-                <JobHistory />
+                <JobHistory styleName="content" />
                 <Route
                   path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
                   render={({
@@ -133,7 +135,7 @@ export const Routes = () => {
         {/* Redirect from an unmatched path in /workbench/history/* to /workbench/history/jobs */}
         <Redirect from={path} to={`${root}/jobs`} />
       </Switch>
-    </div>
+    </>
   );
 };
 
@@ -145,13 +147,19 @@ const Layout = () => {
     : '';
 
   return (
-    <div styleName="root">
-      <Header title={historyType} />
-      <div styleName="container">
-        <Sidebar />
-        <Routes />
-      </div>
-    </div>
+    <Section
+      bodyClassName="has-loaded-history"
+      routeName="HISTORY"
+      header={`History / ${historyType}`}
+      headerStyleName="header"
+      headerActions={<Actions />}
+      content={
+        <>
+          <Sidebar />
+          <Routes />
+        </>
+      }
+    />
   );
 };
 

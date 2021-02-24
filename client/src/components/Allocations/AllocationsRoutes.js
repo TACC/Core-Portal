@@ -12,7 +12,9 @@ const AllocationsRoutes = () => {
     dispatch({ type: 'GET_ALLOCATIONS' });
   }, [dispatch]);
   return (
-    <div id="allocations-wrapper" data-testid="allocations-router">
+    /* !!!: Temporary extra markup to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
+    <>
       <Switch>
         <Route path={`${root}/approved`}>
           <Layout page="approved" />
@@ -23,7 +25,7 @@ const AllocationsRoutes = () => {
         <Redirect from={`${root}/manage`} to={`${root}/approved/manage`} />
         <Redirect from={root} to={`${root}/approved`} />
       </Switch>
-    </div>
+    </>
   );
 };
 

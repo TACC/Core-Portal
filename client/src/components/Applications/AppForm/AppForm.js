@@ -41,10 +41,12 @@ const appShape = PropTypes.shape({
 
 export const AppPlaceholder = ({ apps }) => {
   return (
-    <div className="apps-placeholder">
-      {apps
-        ? `Select an app from the tray above to submit a job.`
-        : `No apps to show.`}
+    <div id="appDetail-wrapper" className="has-message">
+      <span className="appDetail-placeholder-message">
+        {apps
+          ? `Select an app from the tray above to submit a job.`
+          : `No apps to show.`}
+      </span>
     </div>
   );
 };
@@ -72,28 +74,34 @@ const AppDetail = () => {
     const errorText = error.message ? error.message : 'Something went wrong.';
 
     return (
-      <div className="appDetail-error">
+      <div id="appDetail-wrapper" className="has-message  appDetail-error">
         <SectionMessage type="warning">{errorText}</SectionMessage>
       </div>
     );
   }
 
   if (loading || allocationsLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div id="appDetail-wrapper" className="is-loading  appDetail-error">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (
-    <div id="appDetail-wrapper">
+    <>
       {!app && <AppPlaceholder apps={hasApps} />}
       {app.appType === 'html' ? (
-        parse(app.html)
+        <div id="appDetail-wrapper" className="has-external-app">
+          {parse(app.html)}
+        </div>
       ) : (
-        <>
+        <div id="appDetail-wrapper" className="has-internal-app">
           <AppInfo app={app} />
           <AppSchemaForm app={app} />
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
@@ -202,7 +210,8 @@ export const AppSchemaForm = ({ app }) => {
   return (
     <div id="appForm-wrapper">
       {jobSubmission.response && (
-        <div id="appForm-alerts">
+        /* !!!: Temporary extra markup to make simpler PR diff */
+        <>
           {jobSubmission.error ? (
             <div className="appDetail-error">
               <SectionMessage type="warning">
@@ -235,7 +244,7 @@ export const AppSchemaForm = ({ app }) => {
               </SectionMessage>
             </div>
           )}
-        </div>
+        </>
       )}
       <Formik
         initialValues={initialValues}

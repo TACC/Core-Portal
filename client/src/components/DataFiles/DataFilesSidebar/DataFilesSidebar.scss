@@ -1,7 +1,8 @@
-$data-files-wrapper-horizontal-padding: 20px;
 $core-portal-color-primary: #9d85ef;
 
 .data-files-sidebar {
+  --horizontal-buffer: var(--global-space--section-left);
+
   width: 165px;
   background: #ffffff;
   padding-top: 10px;
@@ -10,7 +11,7 @@ $core-portal-color-primary: #9d85ef;
 }
 
 .data-files-sidebar .nav-link {
-  padding-left: $data-files-wrapper-horizontal-padding;
+  padding-left: var(--horizontal-buffer);
   color: #707070;
 }
 
@@ -42,7 +43,7 @@ $core-portal-color-primary: #9d85ef;
   padding-top: 20px;
   /* Pull back sidebar to the left, so it can use (as UI design dictactes)
       the negative space created from `data-files-wrapper`'s `padding` */
-  margin-left: -$data-files-wrapper-horizontal-padding;
+  margin-left: calc(var(--horizontal-buffer) * -1);
 }
 
 /* HACK: Quick solution to prevent styles from cascading into header dropdown */

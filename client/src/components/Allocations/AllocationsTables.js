@@ -6,6 +6,8 @@ import { Message } from '_common';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
+import './AllocationsTables.module.scss';
+
 export const useAllocations = page => {
   const allocations = useSelector(state => {
     if (page === 'expired') return state.allocations.inactive;
@@ -105,8 +107,15 @@ export const AllocationsTable = ({ page }) => {
     prepareRow
   } = useTable(...tableAttributes);
   return (
-    <div className="allocations-table">
-      <table {...getTableProps()}>
+    /* !!!: Temporary extra markup to make simpler PR diff */
+    <>
+      <table
+        {...getTableProps()}
+        // Emulate <InfiniteScrollTable>'s use of `o-fixed-header-table`
+        // TODO: Instead, update <AllocationsTable> to use <InfiniteScrollTable>
+        className="allocations-table o-fixed-header-table"
+        styleName="root"
+      >
         <thead>
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -155,7 +164,7 @@ export const AllocationsTable = ({ page }) => {
           )}
         </tbody>
       </table>
-    </div>
+    </>
   );
 };
 AllocationsTable.propTypes = {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import queryStringParser from 'query-string';
-import { InfiniteScrollTable, Message } from '_common';
+import { InfiniteScrollTable, SectionMessage, SectionTable } from '_common';
 import DataFilesProjectsSearchbar from './DataFilesProjectsSearchbar/DataFilesProjectsSearchbar';
 import './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
@@ -90,15 +90,21 @@ const DataFilesProjectsList = ({ modal }) => {
 
   if (error) {
     return (
-      <Message type="error">
-        There was a problem retrieving your Shared Workspaces
-      </Message>
+      <div styleName="root-placeholder">
+        <SectionMessage type="error">
+          There was a problem retrieving your Shared Workspaces.
+        </SectionMessage>
+      </div>
     );
   }
 
   return (
-    <div styleName="root">
-      {!modal && <DataFilesProjectsSearchbar />}
+    /* !!!: Temporary bad indentation to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
+    <SectionTable styleName="root" contentShouldScroll manualContent>
+      <>
+        {!modal && <DataFilesProjectsSearchbar />}
+        <div className="o-flex-item-table-wrap">
       <InfiniteScrollTable
         tableColumns={columns}
         tableData={projects}
@@ -107,7 +113,10 @@ const DataFilesProjectsList = ({ modal }) => {
         noDataText={noDataText}
         className="projects-listing"
       />
-    </div>
+        </div>
+      </>
+    </SectionTable>
+    /* eslint-enable prettier/prettier */
   );
 };
 DataFilesProjectsList.propTypes = {

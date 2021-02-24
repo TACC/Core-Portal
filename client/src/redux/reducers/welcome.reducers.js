@@ -1,11 +1,11 @@
 export const initialWelcomeMessages = {
-  dashboard: true,
-  applications: true,
-  datafiles: true,
-  allocations: true,
-  history: true,
-  profile: true,
-  tickets: true
+  DASHBOARD: true,
+  APPLICATIONS: true,
+  DATA: true,
+  ALLOCATIONS: true,
+  HISTORY: true,
+  PROFILE: true,
+  TICKETS: true
 };
 
 function welcomeMessages(state = initialWelcomeMessages, action) {

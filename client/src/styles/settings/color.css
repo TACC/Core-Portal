@@ -38,4 +38,7 @@
         --global-color-warning--alt-weak: var(--global-color-accent--weak);
     --global-color-danger--normal: #EB6E6E;
         --global-color-danger--weak: #EB6E6E20;
+
+    /* Common */
+    --global-color-background--app: var(--global-color-primary--xx-light);
 }

@@ -33,14 +33,6 @@
   font-size: 12px !important;
 }
 
-.member-list {
-  th:last-child,
-  td:last-child {
-    display: flex;
-    justify-content: flex-end;
-  }
-}
-
 .addremove-list {
   /* title */
   th:nth-child(1),
@@ -50,7 +42,7 @@
   /* owner */
   th:nth-child(2),
   td:nth-child(2) {
-    min-width: 10%;
+    width: 10%;
   }
   /* id */
   th:nth-child(3),
@@ -68,7 +60,7 @@
   /* confirmation */
   th:nth-child(2),
   td:nth-child(2) {
-    min-width: 40%;
+    width: 40%;
   }
 }
 

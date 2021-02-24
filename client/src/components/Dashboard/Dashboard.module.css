@@ -1,0 +1,13 @@
+/* Elements */
+
+.dashboard-items {
+  /* HELP: How to assign this spacing when Quick Links is added? */
+  padding-top: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
+}
+.dashboard-items > * {
+  /* CAVEAT: This is a dev value that just "looked good" */
+  min-height: 160px; /* approx. "My Tickets/Jobs" height with about 1.25 rows */
+}
+.dashboard-items > * > div {
+  border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
+}

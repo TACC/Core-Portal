@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { LoadingSpinner, Message } from '_common';
+import { LoadingSpinner, SectionMessage, SectionTable } from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
+import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({ system, path }) => {
@@ -35,32 +36,51 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   };
 
   if (metadata.loading) {
-    return <LoadingSpinner />;
+    return (
+      <div styleName="root-placeholder">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (metadata.error) {
     return (
-      <Message type="warn">
-        We were unable to retrieve this shared workspace.
-      </Message>
+      <div styleName="root-placeholder">
+        <SectionMessage type="warning">
+          We were unable to retrieve this shared workspace.
+        </SectionMessage>
+      </div>
     );
   }
 
   return (
-    <div styleName="root">
-      <div styleName="title-bar">
-        <h6>{metadata.title}</h6>
+    /* !!!: Temporary bad indentation to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
+    <SectionTable
+      styleName="root"
+      header={metadata.title}
+      headerActions={
         <div styleName="controls">
           <Button color="link" styleName="edit" onClick={onEdit}>
-            <h6>Edit Descriptions</h6>
+            Edit Descriptions
           </Button>
           <span styleName="separator">|</span>
           <Button color="link" styleName="edit" onClick={onManage}>
-            <h6>Manage Team</h6>
+            Manage Team
           </Button>
         </div>
-      </div>
-      <div styleName="description">{metadata.description}</div>
+      }
+      manualContent
+    >
+  <>
+    {/* RFE: This unique description element could become (A) part of the <SectionTable>'s header (thus becoming part of the <SectionHeader>), (B) an independent component <SectionDescription>, or (C) both "A" and "B" */}
+    <div styleName="description">{metadata.description}</div>
+    <DataFilesSearchbar
+      api="tapis"
+      scheme="projects"
+      system={system}
+    />
+    <div className="o-flex-item-table-wrap">
       <DataFilesListing
         api="tapis"
         scheme="projects"
@@ -68,6 +88,9 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         path={path || '/'}
       />
     </div>
+  </>
+    </SectionTable>
+    /* eslint-enable prettier/prettier */
   );
 };
 

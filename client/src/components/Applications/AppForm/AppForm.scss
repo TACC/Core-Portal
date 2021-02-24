@@ -1,19 +1,49 @@
 #appDetail-wrapper {
+    --space-top: 1.25rem; /* 20px (~17px design * 1.2 design-to-app ratio) */
+    --space-bottom: 2.25rem; /* 36px (~30px design * 1.2 design-to-app ratio) */
+
+    /* As a flex item */
     flex-grow: 1;
+
+    /* As a flex container */
     display: flex;
     flex-direction: row;
-    height: 100%; /* Be consistent with `#appDetail-error`/`.app-placeholder` (which can exist at the same location),
-                     so that `appBrowser-wrapper` height does not change based on sibling content */
-    padding-top: 15px;
-    /* Match bottom space found in UI design at `Core Portal > Applications` */
-    padding-bottom: 30px;
+
+    height: 100%;
+    overflow: auto;
+}
+#appDetail-wrapper.has-message,
+#appDetail-wrapper.is-loading,
+#appDetail-wrapper.has-external-app {
+    justify-content: center;
+    align-items: center;
 }
 
-/* Overwrite independent opinion of Bootstrap styles */
-/* ???: Is `.jumbotron` used without Design review? */
-/* ???: From where does `.jumbotron` originate? */
+/* Add space to top and bottom of `.appInfo-wrapper` and `#appForm-wrapper` */
+/* HACK: Use padding on flex item children, instead of directly on flex items */
+/* FAQ: Flex items do not respect padding on the main axis */
+/* NOTE: UI design reference scroll bounds are unclear */
+.appInfo-wrapper > *:first-child,
+#appForm-wrapper > *:first-child {
+    padding-top: var(--space-top);
+}
+.appInfo-wrapper > *:last-child,
+#appForm-wrapper > *:last-child {
+    padding-bottom: var(--space-bottom);
+}
+
+/* HACK: Overwrite untamed Jumbotron */
+/* FAQ: The `.jumbotron` originates from external injected HTML */
 #appDetail-wrapper .jumbotron {
+    /* Radius clashes with app design, because border is flush with container */
+    border-radius: 0;
+
+    /* Prevent extra space beneath `#appDetail-wrapper` */
     margin-bottom: 0;
+
+    /* Ensure `.jumbotron` scrolls within `#appDetail-wrapper` */
+    height: 100%;
+    overflow: auto;
 }
 
 #appForm-wrapper {
@@ -26,6 +56,7 @@
 }
 
 .appInfo-wrapper {
+    overflow-y: auto;
     flex: 0.5 1 0;
     max-width: 400px;
     border-right: 1px solid #989898;
@@ -73,10 +104,13 @@
     padding: 5px 0 0 20px;
 }
 
+/* !!!: Reminder for PR of `task/FP-385-section-comp-welcome-msg--sections`
+        This is the only remaining style of defunct `.apps-placeholder` */
+.appDetail-placeholder-message {
+    font-size: 1.4rem;
+}
+
+/* WARNING: This class is used by other components */
 .appDetail-error {
-    display: flex; /* overwrite `Message` */
-    justify-content: center;
-    height: 100%; /* Be consistent with `#appDetail-wrapper`/`.app-placeholder` (which can exist at the same location),
-                     so that `appBrowser-wrapper` height does not change based on sibling content */
     padding: 30px 0;
 }

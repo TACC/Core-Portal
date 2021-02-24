@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Alert, Col, Row, Container } from 'reactstrap';
+import { Alert, Col, Row } from 'reactstrap';
 import { isEmpty } from 'lodash';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Section } from '_common';
 import {
   RequiredInformation,
   ChangePassword,
@@ -25,35 +25,24 @@ const ManageAccountView = () => {
     data: { licenses, integrations }
   } = useSelector(state => state.profile);
   const dispatch = useDispatch();
-  const welcomeMessages = useSelector(state => state.welcomeMessages);
-  const onDismissWelcome = section => {
-    const newMessagesState = {
-      ...welcomeMessages,
-      [section]: false
-    };
-    dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState });
-  };
   useEffect(() => {
     dispatch({ type: 'GET_PROFILE_DATA' });
   }, [dispatch, isLoading]);
   return (
-    <Container fluid className="manage-account-wrapper">
-      <Container fluid className="manage-account-content">
-        <Alert
-          isOpen={welcomeMessages.profile}
-          toggle={() => onDismissWelcome('profile')}
-          color="secondary"
-          className="welcomeMessageGeneral"
-        >
-          This page allows you to manage your account profile, change your
-          password and view software licenses.
-        </Alert>
-        <Row className="manage-account-header">
-          <h5>Manage Account</h5>
-          <Link to="/workbench/dashboard" style={{ fontWeight: '500' }}>
-            Back to Dashboard
-          </Link>
-        </Row>
+    /* !!!: Temporary bad indentation to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
+    <Section
+      routeName="PROFILE"
+      header="Manage Account"
+      headerActions={
+        <Link to="/workbench/dashboard" className="wb-link">
+          Back to Dashboard
+        </Link>
+      }
+      content={
+        // HACK: <Container fluid> output replicated via `contentClassName`
+        // TODO: Support Account layout via `contentLayoutName`
+        <>
         <Row className="user-profile">
           <Col lg="8" className="user-profile-main">
             {isLoading ? (
@@ -86,8 +75,13 @@ const ManageAccountView = () => {
             )}
           </Col>
         </Row>
-      </Container>
-    </Container>
+        </>
+      }
+      contentClassName="manage-account-content container-fluid"
+      contentLayoutName="oneColumn"
+      contentShouldScroll
+    />
+    /* eslint-enable prettier/prettier */
   );
 };
 

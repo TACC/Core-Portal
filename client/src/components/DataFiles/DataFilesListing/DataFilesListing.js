@@ -12,9 +12,7 @@ import {
   FileIconCell,
   ViewPathCell
 } from './DataFilesListingCells';
-import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
-import './DataFilesListing.module.scss';
 
 const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   // Redux hooks
@@ -123,16 +121,8 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   }, [api, showViewPath]);
 
   return (
-    <div styleName="root">
-      {!isPublic && (
-        <DataFilesSearchbar
-          api={api}
-          scheme={scheme}
-          system={system}
-          styleName="searchbar"
-        />
-      )}
-      <div styleName="file-container">
+    /* !!!: Temporary bad indentation to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
         <DataFilesTable
           data={files}
           columns={columns}
@@ -140,8 +130,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           scrollBottomCallback={scrollBottomCallback}
           section="FilesListing"
         />
-      </div>
-    </div>
+    /* eslint-enable prettier/prettier */
   );
 };
 DataFilesListing.propTypes = {
