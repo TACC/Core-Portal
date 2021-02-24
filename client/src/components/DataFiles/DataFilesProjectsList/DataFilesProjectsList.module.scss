@@ -14,6 +14,4 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* XXX: Jake adds in PR #316, but I add `center` stuff in PR #236. Solves same problem different way? Untested. DO NOT MERGE! RESOLVE FIRST! */
-  flex-direction: column;
 }
