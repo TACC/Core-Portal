@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { LoadingSpinner, Message } from '_common';
 import './OnboardingAdmin.module.scss';
@@ -8,6 +8,7 @@ import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import { onboardingUserPropType } from './OnboardingPropTypes';
+import OnboardingEventLogModal from './OnboardingEventLogModal';
 import OnboardingStatus from './OnboardingStatus';
 
 const OnboardingApproveActions = ({ callback }) => {
@@ -67,7 +68,7 @@ OnboardingResetLinks.propTypes = {
   callback: PropTypes.func.isRequired
 };
 
-const OnboardingAdminListUser = ({ user }) => {
+const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   const dispatch = useDispatch();
   const actionCallback = useCallback(
     (step, username, action) => {
@@ -82,6 +83,7 @@ const OnboardingAdminListUser = ({ user }) => {
     },
     [dispatch]
   );
+
   return (
     <tr styleName="user">
       <td>
@@ -145,7 +147,11 @@ const OnboardingAdminListUser = ({ user }) => {
             key={uuidv4()}
             styleName={step.state === 'staffwait' ? 'staffwait' : ''}
           >
-            <Button color="link" styleName="action-link">
+            <Button
+              color="link"
+              styleName="action-link"
+              onClick={() => viewLogCallback(user, step)}
+            >
               View Log
             </Button>
           </div>
@@ -156,10 +162,11 @@ const OnboardingAdminListUser = ({ user }) => {
 };
 
 OnboardingAdminListUser.propTypes = {
-  user: onboardingUserPropType.isRequired
+  user: onboardingUserPropType.isRequired,
+  viewLogCallback: PropTypes.func.isRequired
 };
 
-const OnboardingAdminList = ({ users }) => {
+const OnboardingAdminList = ({ users, viewLogCallback }) => {
   return (
     <table styleName="root">
       <thead>
@@ -174,7 +181,11 @@ const OnboardingAdminList = ({ users }) => {
       </thead>
       <tbody>
         {users.map(user => (
-          <OnboardingAdminListUser user={user} key={user.username} />
+          <OnboardingAdminListUser
+            user={user}
+            key={user.username}
+            viewLogCallback={viewLogCallback}
+          />
         ))}
       </tbody>
     </table>
@@ -182,15 +193,28 @@ const OnboardingAdminList = ({ users }) => {
 };
 
 OnboardingAdminList.propTypes = {
-  users: PropTypes.arrayOf(onboardingUserPropType).isRequired
+  users: PropTypes.arrayOf(onboardingUserPropType).isRequired,
+  viewLogCallback: PropTypes.func.isRequired
 };
 
 const OnboardingAdmin = () => {
   const dispatch = useDispatch();
+  const [eventLogModalParams, setEventLogModalParams] = useState(null);
 
   const { users, offset, limit, loading, error } = useSelector(
     state => state.onboarding.admin
   );
+
+  const viewLogCallback = useCallback(
+    (user, step) => {
+      setEventLogModalParams({ user, step });
+    },
+    [setEventLogModalParams]
+  );
+
+  const toggleViewLogModal = useCallback(() => {
+    setEventLogModalParams();
+  }, [setEventLogModalParams]);
 
   useEffect(() => {
     dispatch({
@@ -216,7 +240,15 @@ const OnboardingAdmin = () => {
           </Message>
         </div>
       )}
-      {!loading && !error && <OnboardingAdminList users={users} />}
+      {!loading && !error && (
+        <OnboardingAdminList users={users} viewLogCallback={viewLogCallback} />
+      )}
+      {eventLogModalParams && (
+        <OnboardingEventLogModal
+          params={eventLogModalParams}
+          toggle={toggleViewLogModal}
+        />
+      )}
     </div>
   );
 };
