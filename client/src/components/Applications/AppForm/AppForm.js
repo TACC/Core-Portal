@@ -41,12 +41,13 @@ const appShape = PropTypes.shape({
 
 export const AppPlaceholder = ({ apps }) => {
   return (
-    <div id="appDetail-wrapper" className="has-message">
-      <span className="appDetail-placeholder-message">
-        {apps
-          ? `Select an app from the tray above to submit a job.`
-          : `No apps to show.`}
-      </span>
+    <div
+      id="appDetail-wrapper"
+      className="has-message appDetail-placeholder-message"
+    >
+      {apps
+        ? `Select an app from the tray above to submit a job.`
+        : `No apps to show.`}
     </div>
   );
 };
