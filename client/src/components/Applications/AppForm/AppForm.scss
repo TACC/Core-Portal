@@ -20,9 +20,9 @@
 }
 
 /* Add space to top and bottom of `.appInfo-wrapper` and `#appForm-wrapper` */
-/* HACK: Use padding on flex item children, instead of directly on flex items */
+/* CLEVER: Use padding on flex item children, not directly on flex items */
 /* FAQ: Flex items do not respect padding on the main axis */
-/* NOTE: UI design reference scroll bounds are unclear */
+/* NOTE: UI design is not clear about scroll bounds with top & bottom space */
 .appInfo-wrapper > *:first-child,
 #appForm-wrapper > *:first-child {
     padding-top: var(--space-top);
@@ -32,7 +32,7 @@
     padding-bottom: var(--space-bottom);
 }
 
-/* HACK: Overwrite untamed Jumbotron */
+/* Overwrite external Jumbotron component */
 /* FAQ: The `.jumbotron` originates from external injected HTML */
 #appDetail-wrapper .jumbotron {
     /* Radius clashes with app design, because border is flush with container */
@@ -104,8 +104,6 @@
     padding: 5px 0 0 20px;
 }
 
-/* !!!: Reminder for PR of `task/FP-385-section-comp-welcome-msg--sections`
-        This is the only remaining style of defunct `.apps-placeholder` */
 .appDetail-placeholder-message {
     font-size: 1.4rem;
 }
