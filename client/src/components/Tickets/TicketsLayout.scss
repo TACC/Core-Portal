@@ -10,26 +10,26 @@
 /* SEE: https://confluence.tacc.utexas.edu/x/b4AZCg */
 @media only screen and (min-width: 1680px) {
   .tickets-view {
-    /* Number */  tr > *:nth-child(1) { width: 7.5%; }
-    /* Subject */ tr > *:nth-child(2) { width: 75%; }
-    /* Date */    tr > *:nth-child(3) { width: 10%; }
-    /* Status */  tr > *:nth-child(4) { width: 12.5%; }
+    /* number */  tr > *:nth-child(1) { width: 7.5%; }
+    /* subject */ tr > *:nth-child(2) { width: 75%; }
+    /* date */    tr > *:nth-child(3) { width: 10%; }
+    /* status */  tr > *:nth-child(4) { width: 12.5%; }
   }
 }
 @media only screen and (min-width: 992px) and (max-width: 1679px) {
   .tickets-view {
-    /* Number */  tr > *:nth-child(1) { width: 12.5%; }
-    /* Subject */ tr > *:nth-child(2) { width: 52.5%; }
-    /* Date */    tr > *:nth-child(3) { width: 20%; }
-    /* Status */  tr > *:nth-child(4) { width: 15%; }
+    /* number */  tr > *:nth-child(1) { width: 12.5%; }
+    /* subject */ tr > *:nth-child(2) { width: 52.5%; }
+    /* date */    tr > *:nth-child(3) { width: 20%; }
+    /* status */  tr > *:nth-child(4) { width: 15%; }
   }
 }
 @media only screen and (max-width: 991px) {
   .tickets-view {
-    /* Number */  tr > *:nth-child(1) { width: 10%; }
-    /* Subject */ tr > *:nth-child(2) { width: 55%; }
-    /* Date */    tr > *:nth-child(3) { width: 20%; }
-    /* Status */  tr > *:nth-child(4) { width: 15%; }
+    /* number */  tr > *:nth-child(1) { width: 10%; }
+    /* subject */ tr > *:nth-child(2) { width: 55%; }
+    /* date */    tr > *:nth-child(3) { width: 20%; }
+    /* status */  tr > *:nth-child(4) { width: 15%; }
   }
 }
 
