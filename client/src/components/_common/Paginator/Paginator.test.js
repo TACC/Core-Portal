@@ -5,13 +5,13 @@ import Paginator from './Paginator';
 describe('Paginator', () => {
   it('renders pages', () => {
     const { getAllByText } = render(<Paginator pages={20} current={11} />);
-    expect(getAllByText('1')).toBeDefined();
-    expect(getAllByText('9')).toBeDefined();
-    expect(getAllByText('10')).toBeDefined();
-    expect(getAllByText('11')).toBeDefined();
-    expect(getAllByText('12')).toBeDefined();
-    expect(getAllByText('13')).toBeDefined();
-    expect(getAllByText('...')).toBeDefined();
-    expect(getAllByText('20')).toBeDefined();
+    expect(getAllByText('1').length).toEqual(1);
+    expect(getAllByText('9').length).toEqual(1);
+    expect(getAllByText('10').length).toEqual(1);
+    expect(getAllByText('11').length).toEqual(1);
+    expect(getAllByText('12').length).toEqual(1);
+    expect(getAllByText('13').length).toEqual(1);
+    expect(getAllByText('...').length).toEqual(1);
+    expect(getAllByText('20').length).toEqual(1);
   });
 });
