@@ -21,6 +21,7 @@ from portal.apps.onboarding.execute import (
     execute_setup_steps
 )
 from portal.apps.onboarding.state import SetupState
+from portal.apps.users.utils import q_to_model_queries
 import json
 
 logger = logging.getLogger(__name__)
@@ -72,6 +73,7 @@ def get_user_onboarding(user):
         result['steps'].append(step_data)
 
     return result
+
 
 @method_decorator(login_required, name='dispatch')
 class SetupStepView(BaseApiView):
@@ -246,9 +248,13 @@ class SetupAdminView(BaseApiView):
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 10))
         users = []
-        model = get_user_model()
+        results = get_user_model().objects.all()
+        q = request.GET.get('q', None)
+        if q:
+            query = q_to_model_queries(q)
+            results = results.filter(query)
         # Get users, with users that do not have setup_complete, first
-        results = model.objects.all().order_by('profile__setup_complete', 'last_name', 'first_name')
+        results = results.order_by('profile__setup_complete', 'last_name', 'first_name')
         total = len(results)
         page = results[offset:offset + limit]
 

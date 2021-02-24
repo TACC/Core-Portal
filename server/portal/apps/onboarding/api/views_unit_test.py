@@ -1,16 +1,10 @@
 from mock import MagicMock
-from django.core.exceptions import PermissionDenied
-from django.http import (
-    Http404,
-    JsonResponse,
-    HttpResponseBadRequest
-)
+from django.http import JsonResponse
 import json
 from portal.apps.onboarding.models import SetupEvent
 from portal.apps.onboarding.state import SetupState
 from portal.apps.onboarding.api.views import (
     SetupStepView,
-    SetupAdminView,
     get_user_onboarding
 )
 import pytest
@@ -154,7 +148,7 @@ def test_reset(rf, staff_user, regular_user, mocked_log_setup_state):
     mock_step.prepare.assert_called()
     mock_step.log.assert_called()
     mocked_log_setup_state.assert_called()
-    assert mock_step.user.profile.setup_complete == False
+    assert not mock_step.user.profile.setup_complete
 
 
 def test_complete_not_staff(client, authenticated_user, regular_user2):
@@ -203,8 +197,6 @@ def test_admin_route_is_protected(authenticated_user, client):
 
 
 def test_get_user_onboarding(mock_steps, regular_user):
-    view = SetupAdminView()
-
     # Test retrieving a user's events
     result = get_user_onboarding(regular_user)
     assert result["steps"][0]["step"] == "portal.apps.onboarding.steps.test_steps.MockStep"
@@ -242,3 +234,19 @@ def test_get(client, authenticated_staff, regular_user, mock_steps):
 
     # There should be two users returned
     assert len(users) == 2
+
+
+def test_get_search(client, authenticated_staff, regular_user, mock_steps):
+    response = client.get("/api/onboarding/admin/?q=Firstname")
+    result = json.loads(response.content)
+
+    users = result["users"]
+
+    # The first result should be the regular_user, since they have not completed setup
+    assert users[0]["username"] == regular_user.username
+
+    # User regular_user's last event should be MockStep
+    assert users[0]['steps'][0]['step'] == "portal.apps.onboarding.steps.test_steps.MockStep"
+
+    # There should be two users returned
+    assert len(users) == 1
