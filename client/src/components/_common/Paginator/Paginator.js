@@ -10,12 +10,14 @@ import './Paginator.module.scss';
 
 const PaginatorPage = ({ number, callback, current }) => {
   return (
-    <Button
-      styleName={`page ${number === current ? 'current' : ''}`}
-      onClick={() => callback(number)}
-    >
-      {number}
-    </Button>
+    <div styleName="page-root">
+      <Button
+        styleName={`page ${number === current ? 'current' : ''}`}
+        onClick={() => callback(number)}
+      >
+        {number}
+      </Button>
+    </div>
   );
 };
 
@@ -51,7 +53,7 @@ const Paginator = ({ pages, current, callback }) => {
           .map((_, index) => start + index)
       : [];
   return (
-    <div>
+    <div styleName="root">
       <Button
         color="link"
         styleName="endcap"
