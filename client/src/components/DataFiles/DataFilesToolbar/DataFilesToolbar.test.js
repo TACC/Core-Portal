@@ -28,6 +28,10 @@ describe('DataFilesToolbar', () => {
     const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
+        workbench: { config: {
+          extract: '',
+          compress: ''
+        } },
         files: { selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture
