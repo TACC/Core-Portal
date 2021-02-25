@@ -22,6 +22,17 @@ import './Section.module.css';
  *   messages={<>…</>}
  * />
  * @example
+ * // overwrite text of an automatic welcome message, no additional messages
+ * <Section
+ *   routeName="DASHBOARD"
+ *   welcomeMessageText={`We welcome you to the dashboard, ${givenName}`}
+ * />
+ * @example
+ * // define text for a manual welcome message, no additional messages
+ * <Section
+ *   welcomeMessageText={`We welcome you to this page, ${givenName}`}
+ * />
+ * @example
  * // add class to <body>, automatically build sub-components
  * // FAQ: class on <body> + `Bob.global.css` + `body.global-bob-class`
  * //      = unlimited, explicit, isolated CSS side effects
