@@ -4,7 +4,7 @@ export const initialWelcomeMessages = {
   DATA: true,
   ALLOCATIONS: true,
   HISTORY: true,
-  PROFILE: true,
+  ACCOUNT: true,
   TICKETS: true
 };
 

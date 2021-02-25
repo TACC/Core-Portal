@@ -32,7 +32,7 @@ const ManageAccountView = () => {
     /* !!!: Temporary bad indentation to make simpler PR diff */
     /* eslint-disable prettier/prettier */
     <Section
-      routeName="PROFILE"
+      routeName="ACCOUNT"
       header="Manage Account"
       headerActions={
         <Link to="/workbench/dashboard" className="wb-link">
