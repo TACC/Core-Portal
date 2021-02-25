@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { LoadingSpinner } from '_common';
+import { Section, SectionTable, LoadingSpinner } from '_common';
 import DataFilesBreadcrumbs from '../DataFiles/DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesListing from '../DataFiles/DataFilesListing/DataFilesListing';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
@@ -53,7 +53,7 @@ const PublicData = () => {
   }, [publicDataSystem.system]);
 
   return (
-    <div>
+    <>
       <Switch>
         <Route path="/public-data/:api/:scheme/:system/:path*">
           {publicDataSystem.system ? (
@@ -69,7 +69,7 @@ const PublicData = () => {
         </Route>
       </Switch>
       <DataFilesPreviewModal />
-    </div>
+    </>
   );
 };
 
@@ -90,10 +90,14 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
   }, [path]);
 
   return (
-    <div styleName="container">
-      <div styleName="header">
+    /* !!!: Temporary bad indentation to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
+    <Section
+      // HACK: Replicate wrapper class gives button correct global style
+      // WARNING: Applies unused and redundant `.workbench-content` styles
+      className="workbench-content"
+      header={
         <DataFilesBreadcrumbs
-          styleName="header-title"
           api={api}
           scheme={scheme}
           system={system}
@@ -101,13 +105,25 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
           section="FilesListing"
           isPublic
         />
+      }
+      headerActions={
         <ToolbarButton
           text="Download"
           iconName="download"
           onClick={downloadCallback}
           disabled={!canDownload}
         />
-      </div>
+      }
+    >
+      <SectionTable styleName="content" manualContent>
+        {/* FP-889: Add searchbar here (this is why `manualContent` is used) */}
+        {/* SEE: client/src/components/DataFiles/DataFiles.js */}
+        {/* <DataFilesSearchbar
+          api={api}
+          scheme={scheme}
+          system={system}
+        /> */}
+        <div className="o-flex-item-table-wrap">
       <DataFilesListing
         api={api}
         scheme={scheme}
@@ -115,7 +131,10 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
         path={path || '/'}
         isPublic
       />
-    </div>
+        </div>
+      </SectionTable>
+    </Section>
+    /* eslint-enable prettier/prettier */
   );
 };
 PublicDataListing.propTypes = {
