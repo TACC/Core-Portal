@@ -17,6 +17,8 @@ import { initialState as systemMonitor } from '../../redux/reducers/systemMonito
 import { initialWelcomeMessages as welcomeMessages } from '../../redux/reducers/welcome.reducers';
 import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
 
+import * as welcomeMessageText from '../../constants/welcomeMessages';
+
 /* state required to render workbench/dashboard */
 const state = {
   authenticatedUser,
@@ -61,10 +63,6 @@ describe('workbench', () => {
     });
 
     const { getByText } = renderComponent(<Workbench />, store, history);
-    expect(
-      getByText(
-        /This page allows you to monitor your job status, get help with/
-      )
-    ).toBeDefined();
+    expect(getByText(welcomeMessageText.DASHBOARD)).toBeDefined();
   });
 });
