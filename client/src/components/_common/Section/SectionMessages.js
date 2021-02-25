@@ -19,18 +19,18 @@ import './SectionMessages.css';
  * - automatic welcome message with custom text
  *
  * @example
- * // an automatic welcome message (if found), but no additional messages
+ * // an automatic welcome message (if found), no additional messages
  * <SectionMessages routeName="DASHBOARD" />
  * @example
- * // overwrite text of an automatic welcome message, but no additional messages
+ * // overwrite text of an automatic welcome message, no additional messages
  * <SectionMessages
  *   routeName="DASHBOARD"
  *   welcomeText={`We welcome you to the dashboard, ${givenName}`} />
  * @example
- * // define text for a manual welcome message, but no additional messages
+ * // define text for a manual welcome message, no additional messages
  * <SectionMessages welcomeText={`We welcome you to this page, ${givenName}`} />
  * @example
- * // an automatic welcome message (if found), and some additional messages
+ * // an automatic welcome message (if found), some additional messages
  * <SectionMessages routeName="DASHBOARD">
  *   <Alert color="success">You win!</Alert>
  *   <Alert color="secondary">
@@ -38,7 +38,7 @@ import './SectionMessages.css';
  *   </Alert>
  * </SectionMessages>
  * @example
- * // no automatic welcome message; only some additional messages
+ * // no automatic welcome message, some additional messages
  * <SectionMessages>
  *   <Alert color="success">You win!</Alert>
  *   <Alert color="secondary">
