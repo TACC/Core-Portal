@@ -31,7 +31,6 @@
     /* FAQ: Design is inconsistent across sections, but averages about `10.5px` */
     --vertical-buffer: 0.75rem; /* ~12px (avg. 10.5px design * 1.2 design-to-app ratio */
 
-    /* FP-404: All Portal section sidebars should use this value. */
     --min-width: 200px;
 
     margin-left: calc(var(--horizontal-buffer) * -1);

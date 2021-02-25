@@ -43,7 +43,6 @@ ul#appBrowser-sidebar {
 
 #appBrowser-sidebar .nav-link,
 #appBrowser-tray .nav-link {
-  /* FP-404: All Portal section sidebars should use this value. */
   --min-width: 200px;
 
   min-width: var(--min-width);

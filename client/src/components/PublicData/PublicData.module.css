@@ -38,7 +38,6 @@
 
 /* Children (of `items`) */
 .sidebar {
-  /* FP-404: All Portal section sidebars should use this value. */
   --min-width: 200px;
 
   width: var(--min-width);
