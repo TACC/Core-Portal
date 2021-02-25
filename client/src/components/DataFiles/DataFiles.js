@@ -77,21 +77,19 @@ const DataFilesSwitch = React.memo(() => {
             /* !!!: Temporary bad indentation to make simpler PR diff */
             /* eslint-disable prettier/prettier */
             <SectionTable styleName="content" manualContent>
-              <>
-                <DataFilesSearchbar
-                  api={params.api}
-                  scheme={params.scheme}
-                  system={params.system}
-                />
-                <div className="o-flex-item-table-wrap">
+              <DataFilesSearchbar
+                api={params.api}
+                scheme={params.scheme}
+                system={params.system}
+              />
+              <div className="o-flex-item-table-wrap">
             <DataFilesListing
               api={params.api}
               scheme={params.scheme}
               system={params.system}
               path={params.path || '/'}
             />
-                </div>
-              </>
+              </div>
             </SectionTable>
             /* eslint-enable prettier/prettier */
           );

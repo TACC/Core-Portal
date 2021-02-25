@@ -102,9 +102,8 @@ const DataFilesProjectsList = ({ modal }) => {
     /* !!!: Temporary bad indentation to make simpler PR diff */
     /* eslint-disable prettier/prettier */
     <SectionTable styleName="root" contentShouldScroll manualContent>
-      <>
-        {!modal && <DataFilesProjectsSearchbar />}
-        <div className="o-flex-item-table-wrap">
+      {!modal && <DataFilesProjectsSearchbar />}
+      <div className="o-flex-item-table-wrap">
       <InfiniteScrollTable
         tableColumns={columns}
         tableData={projects}
@@ -113,8 +112,7 @@ const DataFilesProjectsList = ({ modal }) => {
         noDataText={noDataText}
         className="projects-listing"
       />
-        </div>
-      </>
+      </div>
     </SectionTable>
     /* eslint-enable prettier/prettier */
   );
