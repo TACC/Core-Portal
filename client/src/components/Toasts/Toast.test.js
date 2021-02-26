@@ -5,9 +5,12 @@ import renderComponent from 'utils/testing';
 import NotificationToast, { ToastMessage, getToastMessage } from './Toast';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialSystemState } from '../../redux/reducers/datafiles.reducers';
+import systemsFixture from '../DataFiles/fixtures/DataFiles.systems.fixture';
+import { projectsFixture } from '../../redux/sagas/fixtures/projects.fixture';
 import {
   dataFilesRename,
-  dataFilesError
+  dataFilesError,
+  dataFilesUpload
 } from '../../redux/sagas/fixtures/notificationsDataFilesEvents.fixture';
 import {
   jobStatusUpdatePending,
@@ -90,6 +93,16 @@ describe('Toast Message', () => {
       })
     );
     expect(getByText('Move failed')).toBeDefined();
+  });
+  it('shows upload message including system information', () => {
+    const { getByText } = renderComponent(
+      <ToastMessage notification={dataFilesUpload} />,
+      mockStore({
+        systems: systemsFixture,
+        projects: projectsFixture
+      })
+    );
+    expect(getByText('File uploaded to My Data (Frontera)/')).toBeDefined();
   });
 });
 
