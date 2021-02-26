@@ -10,7 +10,8 @@ import { projectsFixture } from '../../redux/sagas/fixtures/projects.fixture';
 import {
   dataFilesRename,
   dataFilesError,
-  dataFilesUpload
+  dataFilesUpload,
+  dataFilesUploadToSharedWorkSpace
 } from '../../redux/sagas/fixtures/notificationsDataFilesEvents.fixture';
 import {
   jobStatusUpdatePending,
@@ -78,7 +79,6 @@ describe('Notification Toast', () => {
   });
 });
 
-
 describe('Toast Message', () => {
   it('shows data file error toast message', () => {
     const { getByText } = renderComponent(
@@ -103,6 +103,16 @@ describe('Toast Message', () => {
       })
     );
     expect(getByText('File uploaded to My Data (Frontera)/')).toBeDefined();
+  });
+  it('shows upload message including system information for shared workspace', () => {
+    const { getByText } = renderComponent(
+      <ToastMessage notification={dataFilesUploadToSharedWorkSpace} />,
+      mockStore({
+        systems: systemsFixture,
+        projects: projectsFixture
+      })
+    );
+    expect(getByText('File uploaded to Test Project Title/')).toBeDefined();
   });
 });
 
