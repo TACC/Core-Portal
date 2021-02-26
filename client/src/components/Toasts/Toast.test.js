@@ -1,8 +1,7 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
+import renderComponent from 'utils/testing';
 import NotificationToast, { getToastMessage } from './Toast';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialSystemState } from '../../redux/reducers/datafiles.reducers';
@@ -38,24 +37,18 @@ const exampleToasts = [
   }
 ];
 
-function renderToastComponent(store) {
-  return render(
-    <Provider store={store}>
-      <NotificationToast />
-    </Provider>
-  );
-}
-
 describe('Notification Toast', () => {
   it('shows no toast on init', () => {
-    const { queryByRole } = renderToastComponent(
+    const { queryByRole } = renderComponent(
+      <NotificationToast />,
       mockStore({ notifications, systems: initialSystemState })
     );
     expect(queryByRole('alert')).toBeNull();
   });
 
   it('shows first toast in array', () => {
-    const { queryByRole } = renderToastComponent(
+    const { queryByRole } = renderComponent(
+      <NotificationToast />,
       mockStore({
         systems: initialSystemState,
         notifications: {
