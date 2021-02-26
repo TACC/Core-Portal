@@ -6,8 +6,14 @@ import '@testing-library/jest-dom/extend-expect';
 import NotificationToast, { getToastMessage } from './Toast';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialSystemState } from '../../redux/reducers/datafiles.reducers';
-import { dataFilesRename, dataFilesError } from '../../redux/sagas/fixtures/notificationsDataFilesEvents.fixture';
-import { jobStatusUpdatePending, jobInteractiveSessionReady } from '../../redux/sagas/fixtures/notificationsJobsEvents.fixture';
+import {
+  dataFilesRename,
+  dataFilesError
+} from '../../redux/sagas/fixtures/notificationsDataFilesEvents.fixture';
+import {
+  jobStatusUpdatePending,
+  jobInteractiveSessionReady
+} from '../../redux/sagas/fixtures/notificationsJobsEvents.fixture';
 
 const mockStore = configureStore();
 
@@ -18,8 +24,8 @@ const exampleToasts = [
     message: 'This is a test message',
     extra: {
       name: 'RStudio-Stampede2-1.1.423u4_2020-08-04T22:55:35-dcvserver',
-      status: 'RUNNING',
-    },
+      status: 'RUNNING'
+    }
   },
   {
     pk: '2',
@@ -27,9 +33,9 @@ const exampleToasts = [
     message: 'This is another test message',
     extra: {
       name: 'RStudio-Stampede2-1.1.423u4_2020-08-04T22:55:35-dcvserver',
-      status: 'FINISHED',
-    },
-  },
+      status: 'FINISHED'
+    }
+  }
 ];
 
 function renderToastComponent(store) {
@@ -43,7 +49,7 @@ function renderToastComponent(store) {
 describe('Notification Toast', () => {
   it('shows no toast on init', () => {
     const { queryByRole } = renderToastComponent(
-      mockStore({ notifications: notifications, systems: initialSystemState })
+      mockStore({ notifications, systems: initialSystemState })
     );
     expect(queryByRole('alert')).toBeNull();
   });
@@ -56,8 +62,8 @@ describe('Notification Toast', () => {
           ...notifications,
           list: {
             ...notifications.list,
-            toasts: exampleToasts,
-          },
+            toasts: exampleToasts
+          }
         },
         projects: {
           listing: {
@@ -67,23 +73,32 @@ describe('Notification Toast', () => {
       })
     );
     expect(queryByRole('alert')).toBeDefined();
-    expect(queryByRole('alert')).toHaveTextContent(/RStudio-S...cvserver is now running/);
-    expect(queryByRole('alert')).not.toHaveTextContent(/RStudio-S...cvserver finished successfully/);
+    expect(queryByRole('alert')).toHaveTextContent(
+      /RStudio-S...cvserver is now running/
+    );
+    expect(queryByRole('alert')).not.toHaveTextContent(
+      /RStudio-S...cvserver finished successfully/
+    );
   });
 });
 
 describe('getToastMessage', () => {
   it('returns expected job response', () => {
-    expect(getToastMessage(jobStatusUpdatePending)).toEqual('RStudio-S...cvserver is processing');
+    expect(getToastMessage(jobStatusUpdatePending)).toEqual(
+      'RStudio-S...cvserver is processing'
+    );
   });
 
   it('returns expected interactive_session_ready response', () => {
-    expect(getToastMessage(jobInteractiveSessionReady)).toEqual('RStudio-S...cvserver ready to view.');
+    expect(getToastMessage(jobInteractiveSessionReady)).toEqual(
+      'RStudio-S...cvserver ready to view.'
+    );
   });
 
   it('returns expected data_files responses', () => {
-    expect(getToastMessage(dataFilesRename)).toEqual('File renamed to test2.png');
+    expect(getToastMessage(dataFilesRename)).toEqual(
+      'File renamed to test2.png'
+    );
     expect(getToastMessage(dataFilesError)).toEqual('Move failed');
   });
-
 });
