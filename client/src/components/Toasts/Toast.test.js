@@ -2,7 +2,7 @@ import React from 'react';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
-import NotificationToast, { getToastMessage } from './Toast';
+import NotificationToast, { ToastMessage, getToastMessage } from './Toast';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialSystemState } from '../../redux/reducers/datafiles.reducers';
 import {
@@ -72,6 +72,24 @@ describe('Notification Toast', () => {
     expect(queryByRole('alert')).not.toHaveTextContent(
       /RStudio-S...cvserver finished successfully/
     );
+  });
+});
+
+
+describe('Toast Message', () => {
+  it('shows data file error toast message', () => {
+    const { getByText } = renderComponent(
+      <ToastMessage notification={dataFilesError} />,
+      mockStore({
+        systems: initialSystemState,
+        projects: {
+          listing: {
+            projects: []
+          }
+        }
+      })
+    );
+    expect(getByText('Move failed')).toBeDefined();
   });
 });
 
