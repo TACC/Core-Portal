@@ -255,6 +255,8 @@ class SetupAdminView(BaseApiView):
             results = results.filter(query)
         # Get users, with users that do not have setup_complete, first
         results = results.order_by('profile__setup_complete', 'last_name', 'first_name')
+        # Uncomment this line to simulate many user results
+        # results = list(results) * 105
         total = len(results)
         page = results[offset:offset + limit]
 
