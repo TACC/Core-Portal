@@ -2,7 +2,6 @@ import React from 'react';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
-import truncateMiddle from 'utils/truncateMiddle';
 import NotificationToast, { ToastMessage, getToastMessage } from './Toast';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialSystemState } from '../../redux/reducers/datafiles.reducers';
@@ -120,16 +119,13 @@ describe('Toast Message', () => {
 describe('getToastMessage', () => {
   it('returns expected job response', () => {
     expect(getToastMessage(jobStatusUpdatePending)).toEqual(
-      `${truncateMiddle(jobStatusUpdatePending.extra.name, 20)} is processing`
+      'RStudio-S...cvserver is processing'
     );
   });
 
   it('returns expected interactive_session_ready response', () => {
     expect(getToastMessage(jobInteractiveSessionReady)).toEqual(
-      `${truncateMiddle(
-        jobInteractiveSessionReady.extra.name,
-        20
-      )} ready to view.`
+      'RStudio-S...cvserver ready to view.'
     );
   });
 
