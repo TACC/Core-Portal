@@ -1,6 +1,12 @@
 /* Elements */
 
 .term-details {
+  max-height: 100px;
+  overflow: auto;
+  padding: 0.25em 0.5em;
+  margin-right: var(--global-space--section-left);
+  border: var(--global-border--normal);
+
   font-weight: normal;
   font-style: italic;
 }

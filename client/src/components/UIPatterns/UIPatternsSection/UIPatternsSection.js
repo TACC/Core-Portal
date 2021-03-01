@@ -34,6 +34,7 @@ function UIPatternsSection() {
       <dt>
         Minimal
         <DescriptionList
+          styleName="term-details"
           className="small"
           density="compact"
           direction="horizontal"
@@ -49,6 +50,7 @@ function UIPatternsSection() {
       <dt>
         Scrollable
         <DescriptionList
+          styleName="term-details"
           className="small"
           density="compact"
           direction="horizontal"
@@ -77,9 +79,9 @@ function UIPatternsSection() {
       <dt>
         With a Complex Table
         <DescriptionList
+          styleName="term-details"
           className="small"
-          density="compact"
-          direction="horizontal"
+          direction="vertical"
           data={{
             contentStyleName: 'content--has-table-to-illustrate-scrolling',
             header: 'Section with <SectionTable> and <InfiniteScrollTable>',
@@ -121,9 +123,9 @@ function UIPatternsSection() {
       <dt>
         All Properties
         <DescriptionList
+          styleName="term-details"
           className="small"
-          density="compact"
-          direction="horizontal"
+          direction="vertical"
           data={{
             styleName: 'is-resizable',
             contentStyleName: 'content--should-always-show-scrollbar',
