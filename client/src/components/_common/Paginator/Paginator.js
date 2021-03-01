@@ -22,23 +22,24 @@ PaginatorPage.propTypes = {
   current: PropTypes.number.isRequired
 };
 
-const Paginator = ({ pages, current, callback }) => {
+const Paginator = ({ pages, current, callback, spread }) => {
   let start, end;
   if (pages === 1) {
     end = 0;
     start = 1;
-  } else if (pages > 2 && pages < 7) {
+  } else if (pages > 2 && pages < spread) {
     start = 2;
     end = pages - 1;
-  } else if (pages > 7 && current <= 4) {
+  } else if (pages > spread && current <= 4) {
     start = 2;
-    end = 6;
-  } else if (pages > 7 && current > pages - 5) {
-    start = pages - 5;
+    end = spread - 1;
+  } else if (pages > spread && current > pages - (spread - 2)) {
+    start = pages - (spread - 2);
     end = pages - 1;
   } else {
-    start = current - 2;
-    end = current + 2;
+    const delta = Math.floor((spread - 2) / 2);
+    start = current - delta;
+    end = current + delta;
   }
   const middle = end - start + 1;
   const middlePages =
@@ -88,7 +89,12 @@ const Paginator = ({ pages, current, callback }) => {
 Paginator.propTypes = {
   pages: PropTypes.number.isRequired,
   current: PropTypes.number.isRequired,
-  callback: PropTypes.func.isRequired
+  callback: PropTypes.func.isRequired,
+  spread: PropTypes.number // Number of page buttons to show
+};
+
+Paginator.defaultProps = {
+  spread: 11
 };
 
 export default Paginator;

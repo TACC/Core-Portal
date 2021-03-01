@@ -31,6 +31,10 @@ function UIPatternsPaginator() {
       <dd>
         <Paginator pages={20} current={18} />
       </dd>
+      <dd>Paginator with a custom spread value</dd>
+      <dt>
+        <Paginator pages={20} current={11} spread={7} />
+      </dt>
     </dl>
   );
 }
