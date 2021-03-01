@@ -77,42 +77,65 @@ describe('Notification Toast', () => {
       /RStudio-S...cvserver finished successfully/
     );
   });
-});
 
-describe('Toast Message', () => {
-  it('shows data file error toast message', () => {
-    const { getByText } = renderComponent(
-      <ToastMessage notification={dataFilesError} />,
+  it('shows toast including system information', () => {
+    const { queryByRole } = renderComponent(
+      <NotificationToast />,
       mockStore({
-        systems: initialSystemState,
-        projects: {
-          listing: {
-            projects: []
+        systems: systemsFixture,
+        projects: projectsFixture,
+        notifications: {
+          ...notifications,
+          list: {
+            ...notifications.list,
+            toasts: [dataFilesUpload]
           }
         }
       })
     );
-    expect(getByText('Move failed')).toBeDefined();
+    expect(queryByRole('alert')).toHaveTextContent(
+      'File uploaded to My Data (Frontera)/'
+    );
   });
-  it('shows upload message including system information', () => {
-    const { getByText } = renderComponent(
-      <ToastMessage notification={dataFilesUpload} />,
+
+  it('shows toast including system information for shared workspace', () => {
+    const { queryByRole } = renderComponent(
+      <NotificationToast />,
       mockStore({
         systems: systemsFixture,
-        projects: projectsFixture
+        projects: projectsFixture,
+        notifications: {
+          ...notifications,
+          list: {
+            ...notifications.list,
+            toasts: [dataFilesUploadToSharedWorkSpace]
+          }
+        }
       })
     );
-    expect(getByText('File uploaded to My Data (Frontera)/')).toBeDefined();
+    expect(queryByRole('alert')).toHaveTextContent(
+      /File uploaded to Test Project Title\//
+    );
   });
-  it('shows upload message including system information for shared workspace', () => {
-    const { getByText } = renderComponent(
-      <ToastMessage notification={dataFilesUploadToSharedWorkSpace} />,
+
+  it('shows toast for data file error', () => {
+    const { queryByRole } = renderComponent(
+      <NotificationToast />,
       mockStore({
         systems: systemsFixture,
-        projects: projectsFixture
+        projects: projectsFixture,
+        notifications: {
+          ...notifications,
+          list: {
+            ...notifications.list,
+            toasts: [dataFilesError]
+          }
+        }
       })
     );
-    expect(getByText('File uploaded to Test Project Title/')).toBeDefined();
+    expect(queryByRole('alert')).toHaveTextContent(
+      /Move failed/
+    );
   });
 });
 
