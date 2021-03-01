@@ -4,6 +4,7 @@ export const initialState = {
     offset: 0,
     limit: 10,
     total: 0,
+    query: null,
     loading: false,
     error: null
   },
@@ -65,7 +66,6 @@ export function onboarding(state = initialState, action) {
       return {
         ...state,
         admin: {
-          ...state.admin,
           ...action.payload,
           loading: false,
           error: null

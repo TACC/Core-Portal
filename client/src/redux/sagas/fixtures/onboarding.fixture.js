@@ -188,6 +188,7 @@ export const onboardingAdminState = {
     offset: 0,
     limit: 10,
     total: 1,
+    query: null,
     loading: false,
     error: null
   },
@@ -209,6 +210,7 @@ export const onboardingUserState = {
     offset: 0,
     limit: 10,
     total: 0,
+    query: null,
     loading: false,
     error: null
   },
@@ -226,6 +228,7 @@ export const onboardingActionState = {
     offset: 0,
     limit: 10,
     total: 0,
+    query: null,
     loading: false,
     error: null
   },
