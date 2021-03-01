@@ -2,7 +2,7 @@ import React from 'react';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
-import NotificationToast, { ToastMessage, getToastMessage } from './Toast';
+import NotificationToast, { getToastMessage } from './Toast';
 import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialSystemState } from '../../redux/reducers/datafiles.reducers';
 import systemsFixture from '../DataFiles/fixtures/DataFiles.systems.fixture';
@@ -41,6 +41,20 @@ const exampleToasts = [
   }
 ];
 
+const getToastStore = eventToasts => {
+  return {
+    systems: systemsFixture,
+    projects: projectsFixture,
+    notifications: {
+      ...notifications,
+      list: {
+        ...notifications.list,
+        toasts: eventToasts
+      }
+    }
+  };
+};
+
 describe('Notification Toast', () => {
   it('shows no toast on init', () => {
     const { queryByRole } = renderComponent(
@@ -53,21 +67,7 @@ describe('Notification Toast', () => {
   it('shows first toast in array', () => {
     const { queryByRole } = renderComponent(
       <NotificationToast />,
-      mockStore({
-        systems: initialSystemState,
-        notifications: {
-          ...notifications,
-          list: {
-            ...notifications.list,
-            toasts: exampleToasts
-          }
-        },
-        projects: {
-          listing: {
-            projects: []
-          }
-        }
-      })
+      mockStore(getToastStore(exampleToasts))
     );
     expect(queryByRole('alert')).toBeDefined();
     expect(queryByRole('alert')).toHaveTextContent(
@@ -81,17 +81,7 @@ describe('Notification Toast', () => {
   it('shows toast including system information', () => {
     const { queryByRole } = renderComponent(
       <NotificationToast />,
-      mockStore({
-        systems: systemsFixture,
-        projects: projectsFixture,
-        notifications: {
-          ...notifications,
-          list: {
-            ...notifications.list,
-            toasts: [dataFilesUpload]
-          }
-        }
-      })
+      mockStore(getToastStore([dataFilesUpload]))
     );
     expect(queryByRole('alert')).toHaveTextContent(
       'File uploaded to My Data (Frontera)/'
@@ -101,17 +91,7 @@ describe('Notification Toast', () => {
   it('shows toast including system information for shared workspace', () => {
     const { queryByRole } = renderComponent(
       <NotificationToast />,
-      mockStore({
-        systems: systemsFixture,
-        projects: projectsFixture,
-        notifications: {
-          ...notifications,
-          list: {
-            ...notifications.list,
-            toasts: [dataFilesUploadToSharedWorkSpace]
-          }
-        }
-      })
+      mockStore(getToastStore([dataFilesUploadToSharedWorkSpace]))
     );
     expect(queryByRole('alert')).toHaveTextContent(
       /File uploaded to Test Project Title\//
@@ -121,21 +101,9 @@ describe('Notification Toast', () => {
   it('shows toast for data file error', () => {
     const { queryByRole } = renderComponent(
       <NotificationToast />,
-      mockStore({
-        systems: systemsFixture,
-        projects: projectsFixture,
-        notifications: {
-          ...notifications,
-          list: {
-            ...notifications.list,
-            toasts: [dataFilesError]
-          }
-        }
-      })
+      mockStore(getToastStore([dataFilesError]))
     );
-    expect(queryByRole('alert')).toHaveTextContent(
-      /Move failed/
-    );
+    expect(queryByRole('alert')).toHaveTextContent(/Move failed/);
   });
 });
 
