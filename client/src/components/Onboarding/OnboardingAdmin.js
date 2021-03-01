@@ -262,7 +262,9 @@ const OnboardingAdmin = () => {
       {!loading && !error && (
         <>
           <OnboardingAdminList users={users} viewLogCallback={viewLogCallback} />
-          <Paginator current={current} pages={pages} callback={paginationCallback} />
+          <div styleName="paginator-container">
+            <Paginator current={current} pages={pages} callback={paginationCallback} />
+          </div>          
         </>
       )}
       {eventLogModalParams && (

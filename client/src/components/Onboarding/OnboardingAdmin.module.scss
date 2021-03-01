@@ -12,6 +12,13 @@
     margin-bottom: 1.5em;
 }
 
+.paginator-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1em;
+}
+
 .users {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
   /* TODO: After, FP-103, use `composes:` not `@extend` */
@@ -20,7 +27,6 @@
   align-items: stretch;
   width: 100%;
   overflow-y: scroll;
-  max-height: inherit; /* inherit max-height from parent wrapper */
   font-size: 12px;
 
   thead {
