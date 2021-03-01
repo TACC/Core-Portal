@@ -1,7 +1,6 @@
 .container {
   display: flex;
   flex-direction: column;
-
   padding: 20px 40px 0 20px;
 }
 
@@ -13,14 +12,14 @@
     margin-bottom: 1.5em;
 }
 
-.root {
+.users {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
   /* TODO: After, FP-103, use `composes:` not `@extend` */
 
   position: relative;
   align-items: stretch;
   width: 100%;
-  overflow: scroll;
+  overflow-y: scroll;
   max-height: inherit; /* inherit max-height from parent wrapper */
   font-size: 12px;
 

@@ -2,7 +2,7 @@ export const initialState = {
   admin: {
     users: [],
     offset: 0,
-    limit: 10,
+    limit: 25,
     total: 0,
     query: null,
     loading: false,

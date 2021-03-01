@@ -22,19 +22,19 @@ jest.mock('cross-fetch');
 
 describe('getOnboardingAdminList Saga', () => {
   it('should fetch list of onboarding users and transform state', () =>
-    expectSaga(getOnboardingAdminList, { payload: { offset: 0, limit: 10, query: null } })
+    expectSaga(getOnboardingAdminList, { payload: { offset: 0, limit: 25, query: null } })
       .withReducer(onboarding)
       .provide([
         [matchers.call.fn(fetchOnboardingAdminList), onboardingAdminFixture]
       ])
       .put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING' })
-      .call(fetchOnboardingAdminList, 0, 10, null)
+      .call(fetchOnboardingAdminList, 0, 25, null)
       .put({
         type: 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS',
         payload: {
           users: onboardingAdminFixture.users,
           offset: 0,
-          limit: 10,
+          limit: 25,
           query: null,
           total: 1
         }

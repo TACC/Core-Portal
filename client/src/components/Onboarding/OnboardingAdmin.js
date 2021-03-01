@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoadingSpinner, Message } from '_common';
+import { LoadingSpinner, Message, Paginator } from '_common';
 import './OnboardingAdmin.module.scss';
 import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -169,7 +169,7 @@ OnboardingAdminListUser.propTypes = {
 
 const OnboardingAdminList = ({ users, viewLogCallback }) => {
   return (
-    <table styleName="root">
+    <table styleName="users">
       <thead>
         <tr>
           <th>User</th>
@@ -202,8 +202,22 @@ const OnboardingAdmin = () => {
   const dispatch = useDispatch();
   const [eventLogModalParams, setEventLogModalParams] = useState(null);
 
-  const { users, offset, limit, loading, error } = useSelector(
+  const { users, offset, limit, total, query, loading, error } = useSelector(
     state => state.onboarding.admin
+  );
+
+  const paginationCallback = useCallback(
+    (page) => {
+      dispatch({
+        type: 'FETCH_ONBOARDING_ADMIN_LIST',
+        payload: {
+          offset: (page - 1) * limit,
+          limit,
+          query
+        }
+      })
+    },
+    [offset, limit, query]
   );
 
   const viewLogCallback = useCallback(
@@ -220,9 +234,12 @@ const OnboardingAdmin = () => {
   useEffect(() => {
     dispatch({
       type: 'FETCH_ONBOARDING_ADMIN_LIST',
-      payload: { offset, limit }
+      payload: { offset, limit, query: null }
     });
   }, [dispatch, offset, limit]);
+
+  const current = Math.floor(offset / limit) + 1;
+  const pages = Math.ceil(total / limit);
 
   return (
     <div styleName="container">
@@ -243,7 +260,10 @@ const OnboardingAdmin = () => {
         </div>
       )}
       {!loading && !error && (
-        <OnboardingAdminList users={users} viewLogCallback={viewLogCallback} />
+        <>
+          <OnboardingAdminList users={users} viewLogCallback={viewLogCallback} />
+          <Paginator current={current} pages={pages} callback={paginationCallback} />
+        </>
       )}
       {eventLogModalParams && (
         <OnboardingEventLogModal
