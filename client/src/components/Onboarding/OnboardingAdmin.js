@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoadingSpinner, Message, Paginator } from '_common';
+import { LoadingSpinner, Message, SectionMessage, Paginator } from '_common';
 import './OnboardingAdmin.module.scss';
 import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -207,7 +207,7 @@ const OnboardingAdmin = () => {
   );
 
   const paginationCallback = useCallback(
-    (page) => {
+    page => {
       dispatch({
         type: 'FETCH_ONBOARDING_ADMIN_LIST',
         payload: {
@@ -215,7 +215,7 @@ const OnboardingAdmin = () => {
           limit,
           query
         }
-      })
+      });
     },
     [offset, limit, query]
   );
@@ -240,39 +240,50 @@ const OnboardingAdmin = () => {
 
   const current = Math.floor(offset / limit) + 1;
   const pages = Math.ceil(total / limit);
-
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+  if (error) {
+    return (
+      <Message type="warn">Unable to access Onboarding administration</Message>
+    );
+  }
   return (
-    <div styleName="container">
-      <div styleName="container-header">
-        <h5>Administrator Controls</h5>
-        <OnboardingAdminSearchbar />
-      </div>
-      {loading && (
-        <div>
-          <LoadingSpinner />
+    <div styleName="root">
+      <div styleName="container">
+        <div styleName="container-header">
+          <h5>Administrator Controls</h5>
+          <OnboardingAdminSearchbar />
         </div>
-      )}
-      {error && (
-        <div>
-          <Message type="warn">
-            Unable to access Onboarding administration
-          </Message>
+        {users.length === 0 && (
+          <div styleName="no-users-placeholder">
+            <SectionMessage type="warn">No users to show.</SectionMessage>
+          </div>
+        )}
+        <div styleName="user-container">
+          {users.length > 0 && (
+            <OnboardingAdminList
+              users={users}
+              viewLogCallback={viewLogCallback}
+            />
+          )}
         </div>
-      )}
-      {!loading && !error && (
-        <>
-          <OnboardingAdminList users={users} viewLogCallback={viewLogCallback} />
+        {users.length > 0 && (
           <div styleName="paginator-container">
-            <Paginator current={current} pages={pages} callback={paginationCallback} />
-          </div>          
-        </>
-      )}
-      {eventLogModalParams && (
-        <OnboardingEventLogModal
-          params={eventLogModalParams}
-          toggle={toggleViewLogModal}
-        />
-      )}
+            <Paginator
+              current={current}
+              pages={pages}
+              callback={paginationCallback}
+            />
+          </div>
+        )}
+        {eventLogModalParams && (
+          <OnboardingEventLogModal
+            params={eventLogModalParams}
+            toggle={toggleViewLogModal}
+          />
+        )}
+      </div>
     </div>
   );
 };
