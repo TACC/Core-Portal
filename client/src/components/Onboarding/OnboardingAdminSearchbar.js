@@ -16,9 +16,9 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
     dispatch({
       type: 'FETCH_ONBOARDING_ADMIN_LIST',
       payload: {
-        limit: 10,
+        limit: 25,
         offset: 0,
-        q: query
+        query
       }
     });
     setSearched(true);
@@ -29,8 +29,9 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
     dispatch({
       type: 'FETCH_ONBOARDING_ADMIN_LIST',
       payload: {
-        limit: 10,
-        offset: 0
+        limit: 25,
+        offset: 0,
+        query: null
       }
     });
     setSearched(false);

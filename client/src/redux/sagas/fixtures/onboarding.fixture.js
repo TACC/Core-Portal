@@ -170,7 +170,7 @@ export const onboardingUserFixture = {
 export const onboardingAdminFixture = {
   users: [{ ...onboardingUserFixture }],
   offset: 0,
-  limit: 10,
+  limit: 25,
   total: 1
 };
 
@@ -186,8 +186,9 @@ export const onboardingAdminState = {
   admin: {
     users: onboardingAdminFixture.users,
     offset: 0,
-    limit: 10,
+    limit: 25,
     total: 1,
+    query: null,
     loading: false,
     error: null
   },
@@ -207,8 +208,9 @@ export const onboardingUserState = {
   admin: {
     users: [],
     offset: 0,
-    limit: 10,
+    limit: 25,
     total: 0,
+    query: null,
     loading: false,
     error: null
   },
@@ -224,8 +226,9 @@ export const onboardingActionState = {
   admin: {
     users: [],
     offset: 0,
-    limit: 10,
+    limit: 25,
     total: 0,
+    query: null,
     loading: false,
     error: null
   },

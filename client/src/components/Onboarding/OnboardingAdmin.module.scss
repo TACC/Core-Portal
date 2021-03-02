@@ -1,8 +1,17 @@
+// Required to constrain table within flex box
+.root {
+  position: relative;
+}
+
 .container {
   display: flex;
   flex-direction: column;
-
-  padding: 20px 40px 0 20px;
+  padding: 20px 40px 20px 20px;
+  position: absolute;
+  max-height: 100%;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
 }
 
 .container-header {
@@ -13,15 +22,26 @@
     margin-bottom: 1.5em;
 }
 
-.root {
+.paginator-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1em;
+}
+
+.user-container {
+  flex-grow: 0;
+  overflow-y: scroll;
+  position: relative;
+}
+
+.users {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
   /* TODO: After, FP-103, use `composes:` not `@extend` */
-
-  position: relative;
+  height: 100%;
   align-items: stretch;
   width: 100%;
-  overflow: scroll;
-  max-height: inherit; /* inherit max-height from parent wrapper */
+  overflow-y: scroll;
   font-size: 12px;
 
   thead {
@@ -119,4 +139,10 @@ tbody {
   td:nth-child(4) {
     width: 20%;
   }
+}
+
+.no-users-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

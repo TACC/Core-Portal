@@ -18,11 +18,14 @@ export async function fetchOnboardingAdminList(offset, limit, q) {
 export function* getOnboardingAdminList(action) {
   yield put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING' });
   try {
-    const { offset, limit, q } = action.payload;
-    const adminList = yield call(fetchOnboardingAdminList, offset, limit, q);
+    const { offset, limit, query } = action.payload;
+    const result = yield call(fetchOnboardingAdminList, offset, limit, query);
     yield put({
       type: 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS',
-      payload: adminList
+      payload: {
+        ...result,
+        query: query || null
+      }
     });
   } catch (error) {
     yield put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_ERROR', payload: error });
