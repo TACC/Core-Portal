@@ -91,10 +91,10 @@ def setup(username, system):
                 username=username, systemId=systemId
             )
         )
-        return home_dir, success
+        return home_dir
     home_sys = mgr.setup_private_system(user)
 
-    return home_dir, home_sys
+    return home_dir
 
 
 def reset_system_keys(username, system_id):
