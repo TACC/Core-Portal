@@ -37,11 +37,22 @@ jobs:
         cd server
         poetry install
 
-    - uses: ./.github/workflows/actions/install-client-dependencies
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
 
     - name: Build client for template generation
       run: |
         cd client
+        npm ci
         npm run build
 
     - name: Run Server-side unit tests and generate coverage report
@@ -96,11 +107,27 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - uses: ./.github/workflows/actions/install-client-dependencies
+    - name: Setup Node.js for use with actions
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: npm ci
+      run: |
+        cd client
+        npm ci
     - name: Client Side Unit Tests
       run: |
         cd client
         npm run test
+
     - name: Upload coverage to Codecov
       run: bash <(curl -s https://codecov.io/bash) -Z -t ${{ secrets.CODECOV_TOKEN }} -cF javascript
 
@@ -108,7 +135,22 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - uses: ./.github/workflows/actions/install-client-dependencies
+    - name: Setup Node.js for use with actions
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: npm ci
+      run: |
+        cd client
+        npm ci
     - name: Client Side Linting
       run: |
         cd client
