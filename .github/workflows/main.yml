@@ -37,7 +37,7 @@ jobs:
         cd server
         poetry install
 
-    - uses: ./.github/actions/install-client-dependencies.yml
+    - uses: ./.github/workflows/actions/install-client-dependencies
 
     - name: Build client for template generation
       run: |
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - uses: ./.github/actions/install-client-dependencies.yml
+    - uses: ./.github/workflows/actions/install-client-dependencies
     - name: Client Side Unit Tests
       run: |
         cd client
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - uses: ./.github/actions/install-client-dependencies.yml
+    - uses: ./.github/workflows/actions/install-client-dependencies
     - name: Client Side Linting
       run: |
         cd client
