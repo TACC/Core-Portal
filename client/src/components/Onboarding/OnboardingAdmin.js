@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoadingSpinner, Message, SectionMessage, Paginator } from '_common';
+import { LoadingSpinner, Message, Paginator } from '_common';
 import './OnboardingAdmin.module.scss';
 import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -257,7 +257,7 @@ const OnboardingAdmin = () => {
         </div>
         {users.length === 0 && (
           <div styleName="no-users-placeholder">
-            <SectionMessage type="warn">No users to show.</SectionMessage>
+            <Message type="warn">No users to show.</Message>
           </div>
         )}
         <div styleName="user-container">
