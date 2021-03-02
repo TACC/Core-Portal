@@ -333,6 +333,19 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
     return copy_result
 
 
+def makepublic(client, src_system, src_path, dest_path='/', *args, **kwargs):
+    dest_system = next((sys['system']
+                        for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
+                        if sys['scheme'] == 'public'))
+
+    return copy(client,
+                src_system,
+                src_path,
+                dest_system,
+                dest_path,
+                *args, **kwargs)
+
+
 def delete(client, system, path):
     return client.files.delete(systemId=system,
                                filePath=urllib.parse.quote(path))

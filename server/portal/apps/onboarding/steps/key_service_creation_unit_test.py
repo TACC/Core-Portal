@@ -76,13 +76,11 @@ def test_process(regular_user, mock_call_reactor, mocker):
         'wma-storage',
         {
             'name': 'My Data (Longhorn)',
-            'site': 'frontera',
-            'description': 'My Data on Longhorn for username',
-            'systemId': 'longhorn.home.username',
             'host': 'longhorn.tacc.utexas.edu',
             'rootDir': '/home/12345/username',
             'port': 22,
             'requires_allocation': 'longhorn3',
+            'systemId': 'longhorn.home.username',
             'icon': None
         },
         callback='portal.apps.onboarding.steps.key_service_creation.KeyServiceCreationCallback',

@@ -1,6 +1,12 @@
 from portal.apps.notifications.models import Notification
 
-NOTIFY_ACTIONS = ['move', 'copy', 'rename', 'trash', 'mkdir', 'upload']
+NOTIFY_ACTIONS = ['move',
+                  'copy',
+                  'rename',
+                  'trash',
+                  'mkdir',
+                  'upload',
+                  'makepublic']
 
 
 def notify(username, operation, status, extra):

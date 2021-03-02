@@ -102,6 +102,8 @@ export const initialFilesState = {
     select: {},
     upload: {},
     trash: {},
+    compress: null,
+    extract: null,
     link: {
       method: null,
       url: '',
@@ -151,8 +153,11 @@ export const initialFilesState = {
     link: false,
     pushKeys: false,
     trash: false,
+    compress: false,
+    extract: false,
     manageproject: false,
-    editproject: false
+    editproject: false,
+    makePublic: false
   },
   modalProps: {
     preview: {},
@@ -164,7 +169,8 @@ export const initialFilesState = {
     rename: {},
     pushKeys: {},
     link: {},
-    showpath: {}
+    showpath: {},
+    makePublic: {}
   },
   preview: {
     href: null,
