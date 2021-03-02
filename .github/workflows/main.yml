@@ -37,7 +37,7 @@ jobs:
         cd server
         poetry install
 
-    - name: Setup Node.js for template generation
+    - name: Setup Node.js
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
@@ -49,10 +49,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
 
-    - name: npm ci 
+    - name: Build client for template generation
       run: |
         cd client
         npm ci
+        npm run build
 
     - name: Run Server-side unit tests and generate coverage report
       run: |
