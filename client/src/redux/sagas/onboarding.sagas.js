@@ -19,12 +19,12 @@ export function* getOnboardingAdminList(action) {
   yield put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING' });
   try {
     const { offset, limit, query } = action.payload;
-    const result = yield call(fetchOnboardingAdminList, offset, limit, query );
+    const result = yield call(fetchOnboardingAdminList, offset, limit, query);
     yield put({
       type: 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS',
       payload: {
         ...result,
-        query: query ? query : null
+        query: query || null
       }
     });
   } catch (error) {
