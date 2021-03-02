@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import { Icon } from '_common';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import './OnboardingAdminSearchbar.module.scss';
 
 const OnboardingAdminSearchbar = ({ className, disabled }) => {
-  const [query, setQuery] = useState('');
-  const [searched, setSearched] = useState(false);
+  const { query } = useSelector(state => state.onboarding.admin);
+  const [search, setSearch] = useState(query);
   const dispatch = useDispatch();
 
   const onSubmit = e => {
@@ -18,14 +18,13 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
       payload: {
         limit: 25,
         offset: 0,
-        query
+        query: search
       }
     });
-    setSearched(true);
   };
   const onClear = e => {
     e.preventDefault();
-    setQuery('');
+    setSearch('');
     dispatch({
       type: 'FETCH_ONBOARDING_ADMIN_LIST',
       payload: {
@@ -34,11 +33,10 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
         query: null
       }
     });
-    setSearched(false);
   };
   const onChange = e => {
-    setQuery(e.target.value);
-    if (!e.target.value && searched) {
+    setSearch(e.target.value);
+    if (!e.target.value) {
       onClear(e);
     }
   };
@@ -60,7 +58,7 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
         <input
           type="search"
           onChange={onChange}
-          value={query}
+          value={search}
           name="query"
           aria-label="Search for users"
           styleName="input"
