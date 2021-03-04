@@ -11,7 +11,7 @@ const files = {
     preview: {
       api: 'tapis',
       scheme: 'projects',
-      system: 'test.site.project.FRONTERA-3',
+      system: 'test.site.project.PROJECT-3',
       path: 'something/test.txt',
       href: 'href',
       name: 'test.txt'
