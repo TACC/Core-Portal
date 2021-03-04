@@ -73,7 +73,7 @@ const NotificationToast = () => {
   );
 };
 
-const ToastMessage = ({ notification }) => {
+export const ToastMessage = ({ notification }) => {
   const systemList = useSelector(state => state.systems.storage.configuration);
   const projectList = useSelector(state => state.projects.listing.projects);
   return (

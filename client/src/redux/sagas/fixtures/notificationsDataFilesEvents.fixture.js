@@ -277,3 +277,48 @@ export const dataFilesUpload = {
   status: 'SUCCESS',
   user: 'username'
 };
+
+export const dataFilesUploadToSharedWorkSpace = {
+  event_type: 'data_files',
+  datetime: '1614377685',
+  status: 'SUCCESS',
+  operation: 'upload',
+  message: '',
+  extra: {
+    response: {
+      name: 'test.txt',
+      uuid: '610361652746916331-242ac112-0001-002',
+      owner: 'username',
+      internalUsername: null,
+      lastModified: '2021-02-26T16:14:45.881-06:00',
+      source: 'http://129.114.97.130/test7.txt',
+      path: 'test7.txt',
+      status: 'STAGING_QUEUED',
+      systemId: 'test.site.project.PROJECT-3',
+      nativeFormat: 'raw',
+      _links: {
+        self: {
+          href:
+            'https://portals-api.tacc.utexas.edu/files/v2/media/system/test.site.project.PROJECT-3//test7.txt'
+        },
+        system: {
+          href:
+            'https://portals-api.tacc.utexas.edu/systems/v2/test.site.project.PROJECT-3'
+        },
+        profile: {
+          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+        },
+        history: {
+          href:
+            'https://portals-api.tacc.utexas.edu/files/v2/history/system/test.site.project.PROJECT-3//test7.txt'
+        },
+        notification: []
+      }
+    }
+  },
+  pk: 1,
+  action_link: '',
+  user: 'username',
+  read: true,
+  deleted: false
+};
