@@ -39,7 +39,7 @@ describe('DataFilesMakePublicModal', () => {
     history.push('/workbench/data/tapis/private/test.system/');
     const store = mockStore(initialMockState);
 
-    const { getByText, getAllByRole } = renderComponent(
+    const { getByText } = renderComponent(
       <DataFilesMakePublicModal />,
       store,
       history
