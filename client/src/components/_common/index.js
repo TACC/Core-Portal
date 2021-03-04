@@ -16,3 +16,4 @@ export { default as BrowserChecker } from './BrowserChecker';
 export { default as Pill } from './Pill';
 export { default as TextCopyField } from './TextCopyField';
 export { default as ReadMore } from './ReadMore';
+export { default as Paginator } from './Paginator';
