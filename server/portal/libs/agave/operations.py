@@ -9,7 +9,7 @@ from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
 from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 from portal.exceptions.api import ApiException
-from portal.libs.agave.utils import text_preview, get_file_size
+from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 logger = logging.getLogger(__name__)
 
 
@@ -227,18 +227,8 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
     try:
         # list the directory and check if file_name exists
         file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
+        file_name = increment_file_name(listing=file_listing, file_name=file_name)
 
-        if len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
-            inc = 1
-            _ext = os.path.splitext(file_name)[1].lower()
-            _name = os.path.splitext(file_name)[0]
-            _inc = "({})".format(inc)
-            file_name = '{}{}{}'.format(_name, _inc, _ext)
-
-            while len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
-                inc += 1
-                _inc = "({})".format(inc)
-                file_name = '{}{}{}'.format(_name, _inc, _ext)
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
@@ -297,18 +287,8 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
     try:
         # list the directory and check if file_name exists
         file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
+        file_name = increment_file_name(listing=file_listing, file_name=file_name)
 
-        if len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
-            inc = 1
-            _ext = os.path.splitext(file_name)[1].lower()
-            _name = os.path.splitext(file_name)[0]
-            _inc = "({})".format(inc)
-            file_name = '{}{}{}'.format(_name, _inc, _ext)
-
-            while len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
-                inc += 1
-                _inc = "({})".format(inc)
-                file_name = '{}{}{}'.format(_name, _inc, _ext)
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
@@ -421,18 +401,8 @@ def trash(client, system, path):
         # list the defaul trash directory and check if file_name exists
         file_listing = client.files.list(systemId=system,
                                          filePath=os.path.join(settings.AGAVE_DEFAULT_TRASH_NAME, file_name))
+        file_name = increment_file_name(listing=file_listing, file_name=file_name)
 
-        if len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
-            inc = 1
-            _ext = os.path.splitext(file_name)[1].lower()
-            _name = os.path.splitext(file_name)[0]
-            _inc = "({})".format(inc)
-            file_name = '{}{}{}'.format(_name, _inc, _ext)
-
-            while len([x['name'] for x in file_listing if x['name'] == file_name]) > 0:
-                inc += 1
-                _inc = "({})".format(inc)
-                file_name = '{}{}{}'.format(_name, _inc, _ext)
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
