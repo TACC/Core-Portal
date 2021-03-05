@@ -48,7 +48,7 @@ class UserSystemsManager():
         """Initialize Manager
 
         :param user: Django user instance
-        :param system_name: name of system to manage otherwise default system will be used
+        :param system_name: Name of system to manage, otherwise default system will be used
         """
         self.user = user
         self.tas_user = get_user_data(username=self.user.username)
