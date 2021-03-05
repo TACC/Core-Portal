@@ -8,7 +8,7 @@ const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
 
 export const PARAMETER_CLASS_MAP = {
   shouldScroll: 'should-scroll',
-  shouldDebug: 'should-debug'
+  shouldDebugLayout: 'should-debug-layout'
 };
 export const PARAMETERS = [...Object.keys(PARAMETER_CLASS_MAP)];
 
