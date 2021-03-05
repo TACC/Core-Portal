@@ -28,6 +28,18 @@ function* getApp(action) {
   }
 }
 
+function* reloadApp(action) {
+  const { appId } = action.payload;
+  yield put({ type: 'FLUSH_SUBMIT' });
+  yield put({ type: 'GET_APP_START' });
+  try {
+    const app = yield call(fetchAppDefinitionUtil, appId);
+    yield put({ type: 'LOAD_APP', payload: app });
+  } catch (error) {
+    yield put({ type: 'GET_APP_ERROR', payload: error });
+  }
+}
+
 export async function fetchAppTrayUtil() {
   const result = await fetchUtil({
     url: '/api/workspace/tray'
@@ -48,4 +60,5 @@ export function* getAppTray(action) {
 export default function* watchApps() {
   yield takeLatest('GET_APPS', getAppTray);
   yield takeLatest('GET_APP', getApp);
+  yield takeLatest('RELOAD_APP', reloadApp);
 }

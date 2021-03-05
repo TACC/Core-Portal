@@ -20,6 +20,7 @@ from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from agavepy.agave import Agave
 from portal.libs.agave.models.systems.execution import ExecutionSystem
+from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
@@ -104,6 +105,17 @@ class AppsView(BaseApiView):
                     "name": name
                 }
             data = agave.apps.list(**list_kwargs)
+
+        # check if default system needs keys pushed
+        default_sys = UserSystemsManager(
+            request.user,
+            settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+        )
+        storage_sys = StorageSystem(agave, default_sys.get_system_id())
+        success, result = storage_sys.test()
+        data['systemHasKeys'] = success
+        data['pushKeysSystem'] = storage_sys.to_dict()
+
         return JsonResponse({"response": data})
 
 

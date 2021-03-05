@@ -31,6 +31,38 @@ const namdFixture = {
   lastModified: '2020-07-06T10:26:21-05:00',
   modules: ['load namd/2.13'],
   available: true,
+  systemHasKeys: false,
+  pushKeysSystem: {
+    owner: 'wma_prtl',
+    available: true,
+    description: 'My Data on Frontera for cep_user',
+    type: 'STORAGE',
+    uuid: '6719017087916839402-242ac118-0001-006',
+    revision: 2,
+    site: 'cep',
+    default: false,
+    public: false,
+    globalDefault: false,
+    name: 'My Data (Frontera)',
+    id: 'frontera.home.cep_user',
+    status: 'UP',
+    storage: {
+      proxy: null,
+      protocol: 'SFTP',
+      mirror: false,
+      port: 22,
+      publicAppsDir: null,
+      host: 'frontera.tacc.utexas.edu',
+      rootDir: '/home1/01234/cep_user',
+      homeDir: '/',
+      auth: {
+        type: 'SSHKEYS',
+        username: '',
+        publicKey: '',
+        privateKey: ''
+      }
+    },
+    'absolutePath': null},
   inputs: [
     {
       id: 'inputDirectory',
