@@ -41,7 +41,7 @@ OnboardingApproveActions.propTypes = {
   callback: PropTypes.func.isRequired
 };
 
-const OnboardingResetLinks = ({ callback }) => {
+const OnboardingResetLinks = ({ callback, disableSkip }) => {
   return (
     <div styleName="reset">
       <Button
@@ -56,6 +56,7 @@ const OnboardingResetLinks = ({ callback }) => {
       <Button
         color="link"
         styleName="action-link"
+        disabled={disableSkip}
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('complete')}
       >
@@ -66,8 +67,13 @@ const OnboardingResetLinks = ({ callback }) => {
 };
 
 OnboardingResetLinks.propTypes = {
-  callback: PropTypes.func.isRequired
+  callback: PropTypes.func.isRequired,
+  disableSkip: PropTypes.bool
 };
+
+OnboardingResetLinks.defaultProps = {
+  disableSkip: false
+}
 
 const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   const dispatch = useDispatch();
@@ -138,6 +144,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               callback={action =>
                 actionCallback(step.step, user.username, action)
               }
+              disableSkip={step.state === 'completed'}
             />
           </div>
         ))}
