@@ -4,7 +4,7 @@ export const initialState = {
     offset: 0,
     limit: 25,
     total: 0,
-    query: '',
+    query: null,
     loading: false,
     error: null
   },

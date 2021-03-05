@@ -24,7 +24,7 @@ export function* getOnboardingAdminList(action) {
       type: 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS',
       payload: {
         ...result,
-        query: query || null
+        query: (query && query.length > 0) || null
       }
     });
   } catch (error) {
