@@ -73,7 +73,7 @@ OnboardingResetLinks.propTypes = {
 
 OnboardingResetLinks.defaultProps = {
   disableSkip: false
-}
+};
 
 const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   const dispatch = useDispatch();
