@@ -31,6 +31,8 @@ const appShape = PropTypes.shape({
   exec_sys: PropTypes.shape({
     queues: PropTypes.arrayOf(PropTypes.shape({}))
   }),
+  systemHasKeys: PropTypes.bool,
+  pushKeysSystem: PropTypes.shape({}),
   defaultNodeCount: PropTypes.number,
   parallelism: PropTypes.string,
   defaultProcessorsPerNode: PropTypes.number,
@@ -154,6 +156,25 @@ export const AppSchemaForm = ({ app }) => {
     };
   }, shallowEqual);
 
+  const { systemHasKeys, pushKeysSystem } = app;
+
+  const pushKeys = e => {
+    e.preventDefault();
+    dispatch({
+      type: 'SYSTEMS_TOGGLE_MODAL',
+      payload: {
+        operation: 'pushKeys',
+        props: {
+          onSuccess: {
+            type: 'RELOAD_APP',
+            payload: { appId: app.id }
+          },
+          system: pushKeysSystem
+        }
+      }
+    });
+  };
+
   const appFields = FormSchema(app);
 
   // initial form values
@@ -208,6 +229,23 @@ export const AppSchemaForm = ({ app }) => {
 
   return (
     <div id="appForm-wrapper">
+      {!systemHasKeys && (
+        <div className="appDetail-error">
+          <SectionMessage type="warning">
+            There was a problem accessing this file system. If this is your
+            first time logging in, you may need to &nbsp;
+            <a
+              className="data-files-nav-link"
+              type="button"
+              href="#"
+              onClick={pushKeys}
+            >
+              push your keys
+            </a>
+            .
+          </SectionMessage>
+        </div>
+      )}
       {jobSubmission.response && (
         <div id="appForm-alerts">
           {jobSubmission.error ? (
@@ -332,7 +370,7 @@ export const AppSchemaForm = ({ app }) => {
             (app.scheduler === 'SLURM' && missingAllocation);
           return (
             <Form>
-              <FormGroup tag="fieldset" disabled={readOnly}>
+              <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
                 <div className="appSchema-section">
                   <div className="appSchema-header">
                     <span>Inputs</span>

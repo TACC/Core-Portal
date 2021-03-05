@@ -86,4 +86,14 @@ describe('AppSchemaForm', () => {
     });
     expect(getByText(/You need an allocation on Frontera/)).toBeDefined();
   });
+
+  it('brings up the push keys message if there is an error listing frontera.tacc', () => {
+    const store = mockStore({
+      ...initialMockState,
+    });
+    const { getByText } = renderAppSchemaFormComponent(store, {
+      ...namdFixture
+    });
+    expect(getByText(/There was a problem accessing this file system/)).toBeDefined();
+  });
 });
