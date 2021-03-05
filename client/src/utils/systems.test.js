@@ -22,10 +22,10 @@ describe('systems utility functions', () => {
   });
   it('get project title from host', () => {
     expect(
-      findProjectTitle(projectsListingFixture, 'test.site.project.FRONTERA-3')
+      findProjectTitle(projectsListingFixture, 'test.site.project.PROJECT-3')
     ).toEqual('Test Project Title');
     expect(
-      findProjectTitle(projectsListingFixture, 'test.site.project.FRONTERA-X')
+      findProjectTitle(projectsListingFixture, 'test.site.project.PROJECT-X')
     ).toEqual('');
   });
   it('get project title based on resource', () => {
@@ -35,7 +35,7 @@ describe('systems utility functions', () => {
         'projects',
         systemList,
         projectsListingFixture,
-        'test.site.project.FRONTERA-3'
+        'test.site.project.PROJECT-3'
       )
     ).toEqual('Test Project Title');
     expect(
@@ -43,7 +43,7 @@ describe('systems utility functions', () => {
         'projects',
         systemList,
         projectsListingFixture,
-        'test.site.project.FRONTERA-X'
+        'test.site.project.PROJECT-X'
       )
     ).toEqual('');
   });
