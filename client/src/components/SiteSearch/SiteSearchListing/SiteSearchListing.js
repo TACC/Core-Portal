@@ -64,9 +64,13 @@ export const SiteSearchFileListing = ({ listing, filter }) => {
     {
       accessor: 'name',
       Cell: fileNavCellCallback,
-      className: 'td-width-100'
+      className: 'site-search__full-width-result'
     },
-    { accessor: 'length', Cell: FileLengthCell, className: 'td-no-overflow' }
+    {
+      accessor: 'length',
+      Cell: FileLengthCell,
+      className: 'site-search__no-overflow'
+    }
   ];
 
   return (
