@@ -124,17 +124,15 @@
   color: white !important; /* override `.workbench-content .btn-secondary` */
 }
 
-.googledrive-submit-button-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .modal-body {
   font-size: 14px;
   .btn-link {
     padding: 0;
   }
+  .manage-account-submit-button {
+    margin-left: auto;
+  }
+
 }
 
 .form-button {

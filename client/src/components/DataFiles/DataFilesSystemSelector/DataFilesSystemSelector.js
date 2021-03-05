@@ -11,7 +11,7 @@ const DataFilesSystemSelector = ({
   disabled,
   operation,
   showProjects,
-  excludedSystems
+  excludedSystems // System names to exclude (as in cep.home.xxx).
 }) => {
   const dispatch = useDispatch();
   const systemList = useSelector(state => state.systems.storage.configuration);

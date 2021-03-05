@@ -167,14 +167,12 @@ export const GoogleDriveModal = ({ active, toggle }) => {
             limited to mimeType, name, id, modifiedTime, fileExtension, size,
             and parents.
           </p>
-          <div className="google-drive-submit-button-container">
-            <Button
-              href="/accounts/applications/googledrive/initialize/"
-              className="manage-account-submit-button"
-            >
-              <span>Agree and Connect to Google Drive</span>
-            </Button>
-          </div>
+          <Button
+            href="/accounts/applications/googledrive/initialize/"
+            className="manage-account-submit-button"
+          >
+            <span>Agree and Connect to Google Drive</span>
+          </Button>
         </div>
       </ModalBody>
     </Modal>
