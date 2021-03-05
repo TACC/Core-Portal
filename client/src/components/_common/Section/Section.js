@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { SectionHeader, SectionContent } from '_common';
@@ -102,6 +103,14 @@ function Section({
 }) {
   const shouldBuildHeader = header || headerClassName || headerActions;
 
+  // Let portal setting determine whether to debug content layout
+  const { shouldDebugLayout } = useSelector(
+    state => ({
+      shouldDebugLayout: state.workbench.config.debug
+    }),
+    shallowEqual
+  );
+
   // Allowing ineffectual prop combinations would lead to confusion
   if (
     manualContent &&
@@ -172,6 +181,7 @@ function Section({
           className={contentClassName}
           layoutName={contentLayoutName || DEFAULT_LAYOUT}
           shouldScroll={contentShouldScroll}
+          shouldDebugLayout={shouldDebugLayout}
         >
           {content}
           {children}

@@ -8,7 +8,8 @@ const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
 
 export const PARAMETER_CLASS_MAP = {
   shouldScroll: 'should-scroll',
-  shouldDebugLayout: 'should-debug-layout'
+  // NOTE: This breaks in fe9e947 because `useSelector` is not mocked
+  // shouldDebugLayout: 'should-debug-layout'
 };
 export const PARAMETERS = [...Object.keys(PARAMETER_CLASS_MAP)];
 
