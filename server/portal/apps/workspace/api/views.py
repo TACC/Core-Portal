@@ -521,5 +521,12 @@ class AppsTrayView(BaseApiView):
                 "apps": my_apps
             }
         )
+        # Only return tabs that are non-empty
+        tabs = list(
+            filter(
+                lambda tab: len(tab["apps"]) > 0,
+                tabs
+            )
+        )
 
         return JsonResponse({"tabs": tabs, "definitions": definitions})
