@@ -58,7 +58,7 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
         <input
           type="search"
           onChange={onChange}
-          value={search}
+          value={search || ''}
           name="query"
           aria-label="Search for users"
           styleName="input"
