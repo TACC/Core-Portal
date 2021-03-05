@@ -9,13 +9,13 @@ const OnboardingEventLogModal = ({ toggle, params }) => {
   return (
     <Modal isOpen={params !== null} toggle={toggle}>
       <ModalHeader toggle={toggle}>View Log</ModalHeader>
-      <ModalBody>
+      <ModalBody styleName="event-container">
         <h6 styleName="log-detail">
           {`${params.user.firstName} ${params.user.lastName} - ${params.step.displayName}`}
         </h6>
         <div styleName="event-list">
           {params.step.events.map(event => (
-            <div>
+            <div key={event.time}>
               <div>{formatDateTime(new Date(event.time))}</div>
               <div>{event.message}</div>
             </div>

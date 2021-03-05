@@ -8,6 +8,11 @@
   margin-left: 1em;
 }
 
+.event-container {
+  max-height: 30em;
+  overflow-y: scroll;
+}
+
 .event-list > div:nth-child(even) {
   background-color: var(--global-color-primary--x-light);
 }
