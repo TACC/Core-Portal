@@ -8,16 +8,10 @@ import {
   InlineMessage,
   SectionMessage
 } from '_common';
+import { Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
-import { Link, Route, Switch } from 'react-router-dom';
-
-import * as ROUTES from '../../../constants/routes';
-
-import { TicketCreateModal } from '../../Tickets';
 
 import './UIPatternsSection.module.css';
-
-const modalPath = `${ROUTES.WORKBENCH}${ROUTES.UI}/modal`;
 
 function UIPatternsSection() {
   const dispatch = useDispatch();
@@ -35,7 +29,6 @@ function UIPatternsSection() {
         Minimal
         <DescriptionList
           styleName="term-details"
-          className="small"
           density="compact"
           direction="horizontal"
           data={{
@@ -51,7 +44,6 @@ function UIPatternsSection() {
         Scrollable
         <DescriptionList
           styleName="term-details"
-          className="small"
           density="compact"
           direction="horizontal"
           data={{
@@ -80,7 +72,6 @@ function UIPatternsSection() {
         With a Complex Table
         <DescriptionList
           styleName="term-details"
-          className="small"
           direction="vertical"
           data={{
             contentStyleName: 'content--has-table-to-illustrate-scrolling',
@@ -124,7 +115,6 @@ function UIPatternsSection() {
         All Properties
         <DescriptionList
           styleName="term-details"
-          className="small"
           direction="vertical"
           data={{
             styleName: 'is-resizable',
@@ -171,28 +161,33 @@ function UIPatternsSection() {
                   properly add a modal.
                 </li>
               </ol>
-              <p className="small">
-                The scroll area being always present—even if there is no
-                scrollbar—is a one-off style here <em>only</em> to visually show
-                that the section stretches.
+              <p>
+                <small>
+                  The scroll area being always present—even if there is no
+                  scrollbar—is a one-off style here <em>only</em> to visually
+                  show that the section stretches.
+                </small>
               </p>
               <UIPatternsSectionTablePlain styleName="table" />
-              <Switch>
-                <Route
-                  exact
-                  path={modalPath}
-                  render={() => {
-                    dispatch({
-                      type: 'TICKET_CREATE_OPEN_MODAL'
-                    });
-                    return <TicketCreateModal />;
-                  }}
-                />
-              </Switch>
             </>
           }
           contentLayoutName="oneColumn"
-          headerActions={<Link to={modalPath}>Open Modal</Link>}
+          headerActions={
+            <Button
+              color="link"
+              onClick={() =>
+                dispatch({
+                  type: 'TICKET_CREATE_OPEN_MODAL',
+                  payload: {
+                    provideDashBoardLinkOnSuccess: false,
+                    showAsModalOnDashboard: false
+                  }
+                })
+              }
+            >
+              Open Modal
+            </Button>
+          }
           messages={
             <SectionMessage type="info" canDismiss>
               If you close me, the content below will fill the space I occupied.

@@ -128,11 +128,24 @@ class TestUserSetup(TestCase):
         self.mock_systems_manager_patcher = patch('portal.apps.accounts.managers.accounts.UserSystemsManager')
         self.mock_systems_manager = self.mock_systems_manager_patcher.start()
 
+        # Mock StorageSystem
+        self.mock_storage_system_patcher = patch('portal.apps.accounts.managers.accounts.StorageSystem')
+        self.mock_storage_system = self.mock_storage_system_patcher.start()
+
         self.addCleanup(self.mock_check_user_patcher.stop)
         self.addCleanup(self.mock_systems_manager_patcher.stop)
+        self.addCleanup(self.mock_storage_system.stop)
 
     @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
-    def test_setup(self):
+    def test_setup_no_preexisting(self):
+        self.mock_storage_system.return_value.test.return_value = (False, None)
         setup("username", "system")
         self.mock_systems_manager.return_value.get_private_directory.assert_called_with(self.mock_user)
         self.mock_systems_manager.return_value.setup_private_system.assert_called_with(self.mock_user)
+
+    @override_settings(PORTAL_USER_ACCOUNT_SETUP_STEPS=[])
+    def test_setup_preexisting(self):
+        self.mock_storage_system.return_value.test.return_value = (True, None)
+        setup("username", "system")
+        self.mock_systems_manager.return_value.get_private_directory.assert_called_with(self.mock_user)
+        self.mock_systems_manager.return_value.setup_private_system.assert_not_called()

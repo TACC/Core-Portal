@@ -39,7 +39,7 @@ export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
  *   layoutName="oneColumn"
  *   tagName="main",
  *   shouldScroll,
- *   shouldDebug
+ *   shouldDebugLayout
  * >
  *   <div>Thing 1</div>
  *   <div>Thing 2</div>
@@ -51,7 +51,7 @@ function SectionContent({
   children,
   layoutName,
   shouldScroll,
-  shouldDebug,
+  shouldDebugLayout,
   tagName
 }) {
   let styleName = '';
@@ -60,7 +60,7 @@ function SectionContent({
   const TagName = tagName;
 
   if (shouldScroll) styleNameList.push('styles.should-scroll');
-  if (shouldDebug) styleNameList.push('styles.should-debug');
+  if (shouldDebugLayout) styleNameList.push('styles.should-debug-layout');
   if (layoutClass) styleNameList.push(`layoutStyles.${layoutClass}`);
 
   // Do not join inside JSX (otherwise arcane styleName error occurs)
@@ -82,14 +82,14 @@ SectionContent.propTypes = {
   /** Whether to allow root element to scroll */
   shouldScroll: PropTypes.bool,
   /** Whether to allow panel debugging (highlight each panel with unique hue) */
-  shouldDebug: PropTypes.bool,
+  shouldDebugLayout: PropTypes.bool,
   /** Override tag of the root element */
   tagName: PropTypes.string
 };
 SectionContent.defaultProps = {
   className: '',
   shouldScroll: false,
-  shouldDebug: false,
+  shouldDebugLayout: false,
   tagName: 'div'
 };
 

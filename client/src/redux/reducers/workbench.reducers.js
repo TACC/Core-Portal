@@ -8,7 +8,7 @@ export default function workbench(state = initialState, action) {
   switch (action.type) {
     case 'WORKBENCH_INIT':
       return {
-        ...initialState,
+        ...state,
         loading: true
       };
     case 'WORKBENCH_SUCCESS':

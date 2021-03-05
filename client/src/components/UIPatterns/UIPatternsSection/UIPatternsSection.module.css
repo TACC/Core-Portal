@@ -9,6 +9,7 @@
 
   font-weight: normal;
   font-style: italic;
+  font-size: 80%; /* Mimic Bootstrap `small, .small` */
 }
 .term-details dt {
   font-family: var(--global-font-family--mono);
