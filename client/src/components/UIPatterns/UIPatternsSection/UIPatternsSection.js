@@ -35,7 +35,6 @@ function UIPatternsSection() {
         Minimal
         <DescriptionList
           styleName="term-details"
-          className="small"
           density="compact"
           direction="horizontal"
           data={{
@@ -51,7 +50,6 @@ function UIPatternsSection() {
         Scrollable
         <DescriptionList
           styleName="term-details"
-          className="small"
           density="compact"
           direction="horizontal"
           data={{
@@ -80,7 +78,6 @@ function UIPatternsSection() {
         With a Complex Table
         <DescriptionList
           styleName="term-details"
-          className="small"
           direction="vertical"
           data={{
             contentStyleName: 'content--has-table-to-illustrate-scrolling',
@@ -124,7 +121,6 @@ function UIPatternsSection() {
         All Properties
         <DescriptionList
           styleName="term-details"
-          className="small"
           direction="vertical"
           data={{
             styleName: 'is-resizable',
@@ -171,10 +167,12 @@ function UIPatternsSection() {
                   properly add a modal.
                 </li>
               </ol>
-              <p className="small">
-                The scroll area being always present—even if there is no
-                scrollbar—is a one-off style here <em>only</em> to visually show
-                that the section stretches.
+              <p>
+                <small>
+                  The scroll area being always present—even if there is no
+                  scrollbar—is a one-off style here <em>only</em> to visually
+                  show that the section stretches.
+                </small>
               </p>
               <UIPatternsSectionTablePlain styleName="table" />
               <Switch>
