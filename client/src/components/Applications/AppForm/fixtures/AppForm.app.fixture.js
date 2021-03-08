@@ -62,7 +62,7 @@ const namdFixture = {
         privateKey: ''
       }
     },
-    'absolutePath': null},
+    absolutePath: null},
   inputs: [
     {
       id: 'inputDirectory',
