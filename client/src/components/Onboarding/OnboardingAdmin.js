@@ -243,7 +243,7 @@ const OnboardingAdmin = () => {
       type: 'FETCH_ONBOARDING_ADMIN_LIST',
       payload: { offset, limit, query: null }
     });
-  }, [dispatch, offset, limit]);
+  }, [dispatch]);
 
   const current = Math.floor(offset / limit) + 1;
   const pages = Math.ceil(total / limit);
