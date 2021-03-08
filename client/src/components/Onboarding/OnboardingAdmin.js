@@ -279,6 +279,7 @@ const OnboardingAdmin = () => {
               current={current}
               pages={pages}
               callback={paginationCallback}
+              spread={5}
             />
           </div>
         )}
