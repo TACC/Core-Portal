@@ -4,6 +4,7 @@ import UIPatternsDescriptionList from './UIPatternsDescriptionList';
 import UIPatternsDropdownSelector from './UIPatternsDropdownSelector';
 import UIPatternsPill from './UIPatternsPill';
 import UIPatternsReadMore from './UIPatternsReadMore';
+import UIPatternsPaginator from './UIPatternsPaginator';
 import './UIPatterns.module.scss';
 
 function UIPatterns() {
@@ -38,6 +39,12 @@ function UIPatterns() {
         <div styleName="grid-item">
           <h6>Read More</h6>
           <UIPatternsReadMore />
+        </div>
+      </div>
+      <div styleName="items">
+        <div styleName="grid-item">
+          <h6>Paginator</h6>
+          <UIPatternsPaginator />
         </div>
       </div>
     </div>
