@@ -91,8 +91,8 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
 
   return (
     <tr styleName="user">
-      <td>
-        <div styleName="name">{`${user.firstName} ${user.lastName}`}</div>
+      <td styleName="name">
+        <div>{`${user.firstName} ${user.lastName}`}</div>
       </td>
       <td>
         {user.steps.map(step => (
