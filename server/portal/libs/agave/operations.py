@@ -385,9 +385,8 @@ def trash(client, system, path):
     """
 
     file_name = path.strip('/').split('/')[-1]
-    trash_name = file_name
 
-    # Create a trash path if none exists
+    # Create a .Trash path if none exists
     try:
         client.files.list(systemId=system,
                           filePath=settings.AGAVE_DEFAULT_TRASH_NAME)
@@ -397,18 +396,8 @@ def trash(client, system, path):
             raise
         mkdir(client, system, '/', settings.AGAVE_DEFAULT_TRASH_NAME)
 
-    try:
-        # list the defaul trash directory and check if file_name exists
-        file_listing = client.files.list(systemId=system,
-                                         filePath=os.path.join(settings.AGAVE_DEFAULT_TRASH_NAME, file_name))
-        file_name = increment_file_name(listing=file_listing, file_name=file_name)
-
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            raise
-
     resp = move(client, system, path, system,
-                settings.AGAVE_DEFAULT_TRASH_NAME, trash_name)
+                settings.AGAVE_DEFAULT_TRASH_NAME, file_name)
 
     return resp
 
