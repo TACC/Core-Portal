@@ -1,16 +1,14 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoadingSpinner, Message, Paginator } from '_common';
-import './OnboardingAdmin.module.scss';
+import { Icon, LoadingSpinner, Message, Paginator } from '_common';
 import { Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import { onboardingUserPropType } from './OnboardingPropTypes';
 import OnboardingEventLogModal from './OnboardingEventLogModal';
 import OnboardingStatus from './OnboardingStatus';
 import OnboardingAdminSearchbar from './OnboardingAdminSearchbar';
+import './OnboardingAdmin.module.scss';
 
 const OnboardingApproveActions = ({ callback }) => {
   return (
@@ -21,7 +19,7 @@ const OnboardingApproveActions = ({ callback }) => {
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_approve')}
       >
-        <FontAwesomeIcon icon={faCheck} />
+        <Icon name="approved-reverse" />
         <>Approve</>
       </Button>
       <Button
@@ -30,7 +28,7 @@ const OnboardingApproveActions = ({ callback }) => {
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_deny')}
       >
-        <FontAwesomeIcon icon={faTimes} />
+        <Icon name="denied-reverse" />
         <>Deny</>
       </Button>
     </div>
