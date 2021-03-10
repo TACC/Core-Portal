@@ -159,7 +159,7 @@ const DataFilesCopyModal = React.memo(() => {
               Destination
               <DataFilesSystemSelector
                 operation="copy"
-                systemId={params.system}
+                systemId={(systems[0] || params).system}
                 section="modal"
                 disabled={disabled}
                 showProjects={showProjects}

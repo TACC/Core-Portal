@@ -123,8 +123,6 @@ def disconnect(request):
         googledrive_user_token.delete()
 
         if status_code == 200:
-            messages.success(request, 'Your Google Drive account has been disconnected from {}.'.format(
-                settings.PORTAL_NAMESPACE))
             return HttpResponseRedirect('/accounts/profile')
 
         else:
@@ -142,7 +140,5 @@ def disconnect(request):
         logger.error('Disconnect Google Drive; GoogleDriveUserToken delete error.',
                      extra={'user': request.user})
         logger.exception('google drive delete error: {}'.format(e))
-
-    messages.success(request, 'Your Google Drive account has been disconnected from {}.'.format(settings.PORTAL_NAMESPACE))
 
     return HttpResponseRedirect('/accounts/profile')
