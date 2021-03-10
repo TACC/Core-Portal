@@ -62,8 +62,9 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               Select Input
               <DataFilesSystemSelector
                 operation="select"
-                systemId={modalParams.system}
+                systemId={(systems[0] || modalParams).system}
                 section="modal"
+                excludedSystems={['googledrive']}
               />
             </div>
             <div>
