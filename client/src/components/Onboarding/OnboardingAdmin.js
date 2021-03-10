@@ -9,8 +9,9 @@ import OnboardingEventLogModal from './OnboardingEventLogModal';
 import OnboardingStatus from './OnboardingStatus';
 import OnboardingAdminSearchbar from './OnboardingAdminSearchbar';
 import './OnboardingAdmin.module.scss';
+import './OnboardingAdmin.scss';
 
-const OnboardingApproveActions = ({ callback }) => {
+const OnboardingApproveActions = ({ callback, disabled, action }) => {
   return (
     <div styleName="approve-container">
       <Button
@@ -18,8 +19,16 @@ const OnboardingApproveActions = ({ callback }) => {
         styleName="approve"
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_approve')}
+        disabled={disabled}
       >
-        <Icon name="approved-reverse" />
+        {action === 'staff_approve' ? (
+          <LoadingSpinner
+            placement="inline"
+            className="onboarding-admin__action-spinner"
+          />
+        ) : (
+          <Icon name="approved-reverse" />
+        )}
         <>Approve</>
       </Button>
       <Button
@@ -27,8 +36,16 @@ const OnboardingApproveActions = ({ callback }) => {
         styleName="approve"
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_deny')}
+        disabled={disabled}
       >
-        <Icon name="denied-reverse" />
+        {action === 'staff_approve' ? (
+          <LoadingSpinner
+            placement="inline"
+            className="onboarding-admin__action-spinner"
+          />
+        ) : (
+          <Icon name="approved-reverse" />
+        )}
         <>Deny</>
       </Button>
     </div>
@@ -36,10 +53,17 @@ const OnboardingApproveActions = ({ callback }) => {
 };
 
 OnboardingApproveActions.propTypes = {
-  callback: PropTypes.func.isRequired
+  callback: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  action: PropTypes.string
 };
 
-const OnboardingResetLinks = ({ callback, disableSkip }) => {
+OnboardingApproveActions.defaultProps = {
+  disabled: false,
+  action: null
+};
+
+const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
   return (
     <div styleName="reset">
       <Button
@@ -47,17 +71,30 @@ const OnboardingResetLinks = ({ callback, disableSkip }) => {
         styleName="action-link"
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('reset')}
+        disabled={disabled}
       >
+        {action === 'reset' && (
+          <LoadingSpinner
+            placement="inline"
+            className="onboarding-admin__action-spinner"
+          />
+        )}
         Reset
       </Button>
       <>|</>
       <Button
         color="link"
         styleName="action-link"
-        disabled={disableSkip}
+        disabled={disabled || disableSkip}
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('complete')}
       >
+        {action === 'complete' && (
+          <LoadingSpinner
+            placement="inline"
+            className="onboarding-admin__action-spinner"
+          />
+        )}
         Skip
       </Button>
     </div>
@@ -66,11 +103,15 @@ const OnboardingResetLinks = ({ callback, disableSkip }) => {
 
 OnboardingResetLinks.propTypes = {
   callback: PropTypes.func.isRequired,
-  disableSkip: PropTypes.bool
+  disabled: PropTypes.bool,
+  disableSkip: PropTypes.bool,
+  action: PropTypes.string
 };
 
 OnboardingResetLinks.defaultProps = {
-  disableSkip: false
+  disabled: false,
+  disableSkip: false,
+  action: null
 };
 
 const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
@@ -88,6 +129,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
     },
     [dispatch]
   );
+  const adminAction = useSelector(state => state.onboarding.action);
 
   return (
     <tr styleName="user">
@@ -127,6 +169,17 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
                 callback={action =>
                   actionCallback(step.step, user.username, action)
                 }
+                disabled={
+                  // Disable all admin actions while any action is being performed
+                  adminAction.loading
+                }
+                action={
+                  // If this user and step currently is running an admin action, pass down the action
+                  adminAction.username === user.username &&
+                  adminAction.step === step.step
+                    ? adminAction.action
+                    : null
+                }
               />
             )}
           </div>
@@ -142,7 +195,14 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               callback={action =>
                 actionCallback(step.step, user.username, action)
               }
+              disabled={adminAction.loading}
               disableSkip={step.state === 'completed'}
+              sentAction={
+                adminAction.username === user.username &&
+                adminAction.step === step.step
+                  ? adminAction.action
+                  : null
+              }
             />
           </div>
         ))}
