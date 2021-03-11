@@ -98,9 +98,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
   return (
     <div styleName="container">
         <SiteSearchSearchbar />
-      <div styleName={`header ${filter === 'cms' ? 'cms-header' : ''}`}>
-        <h5>{FILTER_MAPPING[filter]}</h5>
-      </div>
+      <h5 styleName="header">{FILTER_MAPPING[filter]}</h5>
 
       {loading && (
         <div styleName="placeholder">

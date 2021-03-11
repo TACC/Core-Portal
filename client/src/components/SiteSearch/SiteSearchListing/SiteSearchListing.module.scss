@@ -6,13 +6,10 @@
   color: #9d85ef;
 }
 
-.cms-header {
+.header {
   border-bottom: 1px solid #707070;
-  margin-bottom: 20px;
-}
-
-.header h5 {
-  font-weight: 400;
+  padding-bottom: 15px; /* 12.5px design * 1.2 design-to-app ratio */
+  font-size: 14px; /* 12px design * 1.2 design-to-app ratio */
 }
 
 .container {
@@ -21,6 +18,9 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+}
+.container thead {
+  display: none;
 }
 
 .placeholder {
