@@ -21,7 +21,8 @@
   margin-bottom: 30px; /* 24.5 design * 1.2 design-to-app ratio */
 }
 .for-public .header,
-.for-community .header {
+.for-community .header,
+.is-empty .header {
   margin-bottom: 0; /* Overwrite Bootstrap */
 }
 
@@ -40,10 +41,7 @@
 }
 
 .placeholder {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin: 25px var(--space--listing-horz);
 }
 
 .paginator-container {

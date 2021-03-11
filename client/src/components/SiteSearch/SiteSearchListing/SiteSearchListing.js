@@ -91,7 +91,11 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
     community: 'Community Data'
   };
 
-  const containerStyleNames = ['container', `for-${filter}`].join(' ');
+  const hasNoResults = !loading && !error && results.count === 0;
+
+  let containerStyleNames = ['container', `for-${filter}`];
+  if (hasNoResults) containerStyleNames.push('is-empty');
+  containerStyleNames = containerStyleNames.join(' ');
 
   const lastPageIndex = Math.ceil(results.count / 10);
   return (
@@ -104,9 +108,9 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
           <LoadingSpinner />
         </div>
       )}
-      {!loading && !error && results.count === 0 && (
+      {hasNoResults && (
         <div styleName="placeholder">
-          <InlineMessage type="warning">
+          <InlineMessage type="info" className="small">
             No results found in {FILTER_MAPPING[filter]}.
           </InlineMessage>
         </div>
