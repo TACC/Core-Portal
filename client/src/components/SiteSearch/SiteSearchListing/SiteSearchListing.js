@@ -14,18 +14,14 @@ import './SiteSearchListing.module.scss';
 import './SiteSearchListing.css';
 
 export const CMSListingItem = ({ title, url, highlight }) => (
-  <div styleName="sitesearch-cms-item" data-testid="sitesearch-cms-item">
-    <div>
-      <a href={url} styleName="wb-link">
-        <b>{title}</b>
-      </a>
-    </div>
+  <article styleName="sitesearch-cms-item" data-testid="sitesearch-cms-item">
+    <a href={url}>{title}</a>
     {/* eslint-disable react/no-array-index-key */}
     {(highlight.body || highlight.title).map((h, i) => (
-      <div key={i}> {renderHtml(h)}</div>
+      <p key={i}> {renderHtml(h)}</p>
     ))}
     {/* eslint-disable react/no-array-index-key */}
-  </div>
+  </article>
 );
 CMSListingItem.propTypes = {
   title: PropTypes.string.isRequired,
@@ -94,9 +90,12 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
     public: 'Public Files',
     community: 'Community Data'
   };
+
+  const containerStyleNames = ['container', `for-${filter}`].join(' ');
+
   const lastPageIndex = Math.ceil(results.count / 10);
   return (
-    <div styleName="container">
+    <div styleName={containerStyleNames}>
       <SiteSearchSearchbar />
       <h5 styleName="header">{FILTER_MAPPING[filter]}</h5>
 
