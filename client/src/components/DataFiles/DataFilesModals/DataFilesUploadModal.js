@@ -24,32 +24,6 @@ export const DENSITY_CLASS_MAP = {
 export const DEFAULT_DENSITY = 'default';
 export const DENSITIES = ['', ...Object.keys(DENSITY_CLASS_MAP)];
 
-const DataFilesUploadStatus = ({ i, removeCallback }) => {
-  const status = useSelector(state => state.files.operationStatus.upload[i]);
-  switch (status) {
-    case 'UPLOADING':
-      return <LoadingSpinner placement="inline" />;
-    case 'SUCCESS':
-      return <span className="badge badge-success">SUCCESS</span>;
-    case 'ERROR':
-      return <span className="badge badge-danger">ERROR</span>;
-    default:
-      return (
-        <button
-          type="button"
-          className="btn btn-link"
-          onClick={() => removeCallback(i)}
-        >
-          Remove
-        </button>
-      );
-  }
-};
-DataFilesUploadStatus.propTypes = {
-  i: PropTypes.string.isRequired,
-  removeCallback: PropTypes.func.isRequired
-};
-
 const DataFilesUploadModal = ({ className, density, direction }) => {
   const modifierClasses = [];
   modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
