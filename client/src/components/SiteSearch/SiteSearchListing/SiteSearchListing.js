@@ -75,7 +75,6 @@ export const SiteSearchFileListing = ({ listing, filter }) => {
 
   return (
     <>
-      {filter}
       <InfiniteScrollTable
         tableColumns={tableColumns}
         tableData={listing}
@@ -98,9 +97,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
   const lastPageIndex = Math.ceil(results.count / 10);
   return (
     <div styleName="container">
-      <div>
         <SiteSearchSearchbar />
-      </div>
       <div styleName={`header ${filter === 'cms' ? 'cms-header' : ''}`}>
         <h5>{FILTER_MAPPING[filter]}</h5>
       </div>
