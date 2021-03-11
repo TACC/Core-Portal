@@ -97,7 +97,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
   const lastPageIndex = Math.ceil(results.count / 10);
   return (
     <div styleName="container">
-        <SiteSearchSearchbar />
+      <SiteSearchSearchbar />
       <h5 styleName="header">{FILTER_MAPPING[filter]}</h5>
 
       {loading && (
