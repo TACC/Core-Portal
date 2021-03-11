@@ -19,6 +19,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
   const history = useHistory();
   const hasQuery = queryString.parse(useLocation().search).query_string;
+  const location = useLocation();
   const sectionName =
     scheme === 'projects'
       ? 'Workspace'
@@ -35,7 +36,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   // Reset form field on route change
   useEffect(() => {
     !hasQuery && setQuery('');
-  }, [hasQuery]);
+  }, [hasQuery, location]);
 
   const onSubmit = e => {
     routeSearch();
