@@ -5,7 +5,7 @@
   &.is-horz {
     &.is-wide,
     &.is-narrow {
-      .dataFilesListing {
+      .data-files-listing {
         order: -1;
       }
       .compact-view {
@@ -22,7 +22,7 @@
   }
   &.is-vert {
     &.is-narrow {
-      .dataFilesListing {
+      .data-files-listing {
         order: -1;
       }
       .compact-view {
@@ -36,5 +36,9 @@
         }
       }
     }
+  }
+  .listing-header {
+    margin-top: 10px;
+    font-size: 20px;
   }
 }

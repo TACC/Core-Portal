@@ -135,9 +135,7 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
       size="xl"
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>
-        Upload Files in {systemDisplayName}/{params.path}
-      </ModalHeader>
+      <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
       <ModalBody styleName={containerStyleNames}>
         <div styleName={isCompactView ? 'compact-view' : ''}>
           <FileInputDropZone
@@ -147,13 +145,11 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
             maxSizeMessage="Max File Size: 500MB"
           />
         </div>
-        <div hidden={uploadedFiles.length === 0} style={{ marginTop: '10px' }}>
-          <span style={{ fontSize: '20px' }}>
-            Uploading to {systemDisplayName}/{params.path}
-          </span>
-        </div>
         {showListing && (
-          <div styleName="dataFilesListing">
+          <div styleName="data-files-listing">
+            <span styleName="listing-header">
+              Uploading to {systemDisplayName}/{params.path}
+            </span>
             <DataFilesUploadModalListingTable
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
