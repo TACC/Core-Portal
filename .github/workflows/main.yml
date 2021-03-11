@@ -23,7 +23,7 @@ jobs:
     - name: Setup Poetry
       uses: abatilo/actions-poetry@v2.0.0
       with:
-        poetry-version: 1.0.0
+        poetry-version: 1.1.0
 
     - uses: actions/cache@v1
       with:
@@ -40,6 +40,7 @@ jobs:
     - name: Run Server-side unit tests and generate coverage report
       run: |
         cd server
+        cp portal/apps/workbench/templates/portal/apps/workbench/index.j2 portal/apps/workbench/templates/portal/apps/workbench/index.html
         poetry run pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
 
     - name: Upload coverage to Codecov
@@ -64,7 +65,7 @@ jobs:
     - name: Setup Poetry
       uses: abatilo/actions-poetry@v2.0.0
       with:
-        poetry-version: 1.0.0
+        poetry-version: 1.1.0
 
     - uses: actions/cache@v1
       with:
