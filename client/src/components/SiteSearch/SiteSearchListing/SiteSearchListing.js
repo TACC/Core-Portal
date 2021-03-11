@@ -16,11 +16,11 @@ import './SiteSearchListing.css';
 export const CMSListingItem = ({ title, url, highlight }) => (
   <article styleName="sitesearch-cms-item" data-testid="sitesearch-cms-item">
     <a href={url}>{title}</a>
-    {/* eslint-disable react/no-array-index-key */}
-    {(highlight.body || highlight.title).map((h, i) => (
-      <p key={i}> {renderHtml(h)}</p>
-    ))}
-    {/* eslint-disable react/no-array-index-key */}
+    {(highlight.body || highlight.title).map(function renderCMSItem(h, i) {
+      const key = `${title}-${i}`;
+
+      return <p key={key}> {renderHtml(h)}</p>;
+    })}
   </article>
 );
 CMSListingItem.propTypes = {
