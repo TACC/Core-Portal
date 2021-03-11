@@ -162,6 +162,8 @@ const DataFilesProjectMembers = ({
     isTransferring ? 'transfer-list' : 'addremove-list'
   }`;
 
+  const existingMembers = members.filter(member => member.user);
+
   return (
     <div styleName="root">
       <Label className="form-field__label" size="sm">
@@ -210,7 +212,7 @@ const DataFilesProjectMembers = ({
       </div>
       <InfiniteScrollTable
         tableColumns={isTransferring ? transferColumns : columns}
-        tableData={members}
+        tableData={existingMembers}
         styleName={listStyle}
         columnMemoProps={[loading, mode, transferUser]}
       />

@@ -40,6 +40,7 @@ jobs:
     - name: Run Server-side unit tests and generate coverage report
       run: |
         cd server
+        cp portal/apps/workbench/templates/portal/apps/workbench/index.j2 portal/apps/workbench/templates/portal/apps/workbench/index.html
         poetry run pytest --cov-config=.coveragerc --cov=portal --cov-report=xml -ra
 
     - name: Upload coverage to Codecov

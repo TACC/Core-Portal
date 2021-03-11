@@ -82,9 +82,19 @@ def setup(username, system):
     user = check_user(username)
     mgr = UserSystemsManager(user, system)
     home_dir = mgr.get_private_directory(user)
+    systemId = mgr.get_system_id()
+    system = StorageSystem(user.agave_oauth.client, id=systemId)
+    success, result = system.test()
+    if success:
+        logger.info(
+            "{username} has valid configuration for {systemId}, skipping creation".format(
+                username=username, systemId=systemId
+            )
+        )
+        return home_dir
     home_sys = mgr.setup_private_system(user)
 
-    return home_dir, home_sys
+    return home_dir
 
 
 def reset_system_keys(username, system_id):
