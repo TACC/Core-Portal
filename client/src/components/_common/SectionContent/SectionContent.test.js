@@ -7,8 +7,7 @@ import SectionContent, { LAYOUT_CLASS_MAP } from './SectionContent';
 const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
 
 export const PARAMETER_CLASS_MAP = {
-  shouldScroll: 'should-scroll',
-  shouldDebugLayout: 'should-debug-layout'
+  shouldScroll: 'should-scroll'
 };
 export const PARAMETERS = [...Object.keys(PARAMETER_CLASS_MAP)];
 

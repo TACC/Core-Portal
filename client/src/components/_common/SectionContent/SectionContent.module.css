@@ -18,11 +18,3 @@
 .root:not(.should-scroll) {
   overflow: hidden;
 }
-
-/* Color-code panels to easily track movement of multiple panels */
-.should-debug-layout::before          { background-color: tomato; }
-.should-debug-layout > *:nth-child(1) { background-color: orchid; }
-.should-debug-layout > *:nth-child(2) { background-color: dodgerblue; }
-.should-debug-layout > *:nth-child(3) { background-color: yellow; }
-.should-debug-layout > *:nth-child(4) { background-color: mediumseagreen; }
-.should-debug-layout::after           { background-color: gray; }
