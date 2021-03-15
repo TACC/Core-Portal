@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pill, LoadingSpinner } from '_common';
-import { stepPropType } from './OnboardingPropTypes';
+import { classNamePropType, stepPropType } from './OnboardingPropTypes';
 import './OnboardingStatus.module.scss';
 import './OnboardingStatus.scss';
 
@@ -58,18 +58,25 @@ const getContents = step => {
   }
 };
 
-const OnboardingStatus = ({ step }) => {
+const OnboardingStatus = ({ className, step }) => {
   const contents = getContents(step);
   if (!contents) {
     return null;
   }
-  return <span styleName="root">{getContents(step)}</span>;
+  return (
+    <span styleName="root" className={className}>
+      {getContents(step)}
+    </span>
+  );
 };
 
 OnboardingStatus.propTypes = {
+  className: classNamePropType,
   step: stepPropType.isRequired
 };
 
-OnboardingStatus.defaultProps = {};
+OnboardingStatus.defaultProps = {
+  className: ''
+};
 
 export default OnboardingStatus;

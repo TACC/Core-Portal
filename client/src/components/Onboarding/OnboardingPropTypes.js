@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 
+export const classNamePropType = PropTypes.string;
+
 export const eventPropType = PropTypes.shape({
   time: PropTypes.string,
   message: PropTypes.string

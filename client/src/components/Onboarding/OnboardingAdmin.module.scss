@@ -95,6 +95,12 @@ tbody {
 .status {
   line-height: 19px;
 }
+/* HACK: This selector has knowledge of sibling component's internal markup */
+/* FAQ: Because we cannot pass `className`to <Pill> via <OnboardingStatus> */
+/* FAQ: Because <OnboardingStatus> has a superfluous root element */
+/* i.e. <OnboardingStatus>'s <Pill> */ .status-text > * {
+  white-space: nowrap;
+}
 
 .reset > * {
   padding-left: 8px;
