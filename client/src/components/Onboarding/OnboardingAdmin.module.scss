@@ -129,7 +129,9 @@ tbody {
   background-color: var(--global-color-accent--light);
 }
 
-.root {
+.users {
+  table-layout: fixed;
+
   th:nth-child(1),
   td:nth-child(1) {
     width: 15%;
