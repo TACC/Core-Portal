@@ -35,7 +35,8 @@ def reindex_uuids(scan_generator, limit=1000):
         }
 
     for group in grouper(scan_generator, limit):
-        ops = map(hit_to_op, group)
+        filtered_group = filter(lambda hit: hit is not None, group)
+        ops = map(hit_to_op, filtered_group)
         bulk(client, ops)
         _count += limit
         print(_count)
