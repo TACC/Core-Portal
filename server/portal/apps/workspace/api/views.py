@@ -93,10 +93,17 @@ class AppsView(BaseApiView):
         else:
             METRICS.debug("user:{} is requesting all public apps".format(request.user.username))
             public_only = request.GET.get('publicOnly')
+            name = request.GET.get('name', None)
+            list_kwargs = {}
             if public_only == 'true':
-                data = agave.apps.list(publicOnly='true')
+                list_kwargs['publicOnly'] = 'true'
             else:
-                data = agave.apps.list(privateOnly=True)
+                list_kwargs['privateOnly'] = True
+            if name:
+                list_kwargs['query'] = {
+                    "name": name
+                }
+            data = agave.apps.list(**list_kwargs)
         return JsonResponse({"response": data})
 
 
@@ -467,6 +474,7 @@ class AppsTrayView(BaseApiView):
                             "id": app.htmlId,
                             "label": app.label,
                             "shortDescription": app.shortDescription,
+                            "appType": "html"
                         }
                     elif str(app.appType).lower() == 'agave':
                         # If this is an agave app, retrieve the definition
@@ -512,6 +520,13 @@ class AppsTrayView(BaseApiView):
                 "title": "My Apps",
                 "apps": my_apps
             }
+        )
+        # Only return tabs that are non-empty
+        tabs = list(
+            filter(
+                lambda tab: len(tab["apps"]) > 0,
+                tabs
+            )
         )
 
         return JsonResponse({"tabs": tabs, "definitions": definitions})

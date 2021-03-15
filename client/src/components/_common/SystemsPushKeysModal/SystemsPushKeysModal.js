@@ -5,15 +5,14 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormField from '../Form/FormField';
-import Message from '../Message';
+import InlineMessage from '../InlineMessage';
 import LoadingSpinner from '../LoadingSpinner';
-import Icon from '../Icon';
 
 const SystemsPushKeysModal = () => {
   const dispatch = useDispatch();
   const onOpen = () => {};
   const isOpen = useSelector(state => state.pushKeys.modals.pushKeys);
-  const { error, onSuccess, system, submitting } = useSelector(
+  const { error, onSuccess, system, submitting, onCancel } = useSelector(
     state => state.pushKeys.modalProps.pushKeys
   );
 
@@ -30,6 +29,9 @@ const SystemsPushKeysModal = () => {
       type: 'SYSTEMS_TOGGLE_MODAL',
       payload: { operation: 'pushKeys', props: {} }
     });
+    if (onCancel) {
+      dispatch(onCancel);
+    }
   };
 
   const pushKeys = ({ password, token }) => {
@@ -69,8 +71,6 @@ const SystemsPushKeysModal = () => {
   let buttonIcon;
   if (submitting) {
     buttonIcon = <LoadingSpinner placement="inline" />;
-  } else if (error) {
-    buttonIcon = <Icon name="alert">Warning</Icon>;
   }
 
   return (
@@ -94,9 +94,6 @@ const SystemsPushKeysModal = () => {
                 Authenticate with TACC Token
               </ModalHeader>
               <ModalBody>
-                {error && !submitting && (
-                  <Message type="error">{error.message}</Message>
-                )}
                 <p>
                   To proceed, you must authenticate to this system with a
                   six-digit one time passcode from the TACC Token mobile app at
@@ -145,6 +142,9 @@ const SystemsPushKeysModal = () => {
                 />
               </ModalBody>
               <ModalFooter>
+                {error && !submitting && (
+                  <InlineMessage type="error">{error.message}</InlineMessage>
+                )}
                 <Button
                   type="submit"
                   className="data-files-btn"

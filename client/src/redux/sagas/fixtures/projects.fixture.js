@@ -10,8 +10,8 @@ export const projectsListingFixture = [
     default: false,
     public: false,
     globalDefault: false,
-    name: 'FRONTERA-3',
-    id: 'test.site.project.FRONTERA-3',
+    name: 'PROJECT-3',
+    id: 'test.site.project.PROJECT-3',
     status: 'UP',
     storage: {
       proxy: null,
@@ -29,7 +29,7 @@ export const projectsListingFixture = [
         privateKey: ''
       }
     },
-    absolutePath: '/corral-repl/tacc/aci/CEP/projects/FRONTERA-3'
+    absolutePath: '/corral-repl/tacc/aci/CEP/projects/PROJECT-3'
   }
 ];
 

@@ -15,7 +15,7 @@ def setup_user(self, username, system):
         :param dict systems: dict of systems from settings
     """
     from portal.apps.accounts.managers.accounts import setup
-    logger.info("Async setup task for {username} launched on {system}".format(username=username, system=system))
+    logger.info("Setup task for {username} launched on {system}".format(username=username, system=system))
     setup(username, system)
 
 
@@ -31,6 +31,8 @@ def get_user_storage_systems(username, systems):
         :param obj systems: systems object from portal settings
         :returns: filtered object of systems to setup for user
     """
+    if not username:
+        return {}
     try:
         user_allocations = get_allocations(username)
     except Exception:

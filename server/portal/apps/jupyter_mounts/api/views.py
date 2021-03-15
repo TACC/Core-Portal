@@ -25,7 +25,7 @@ class JupyterMountsApiView(BaseApiView):
     def getDatafilesStorageSystems(self):
         agave = service_account()
         result = []
-        for system in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
+        for system in (sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if sys['api'] == 'tapis'):
             try:
                 sys_def = agave.systems.get(systemId=system['system'])
                 result.append(

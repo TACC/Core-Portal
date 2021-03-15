@@ -8,7 +8,10 @@ import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemS
 import DataFilesProjectsList from '../DataFilesProjectsList/DataFilesProjectsList';
 
 const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
-  const systems = useSelector(state => state.systems.systemList, shallowEqual);
+  const systems = useSelector(
+    state => state.systems.storage.configuration,
+    shallowEqual
+  );
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
   const { showProjects } = useSelector(state => state.files.modalProps.select);
   const dispatch = useDispatch();
@@ -59,8 +62,9 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
               Select Input
               <DataFilesSystemSelector
                 operation="select"
-                systemId={modalParams.system}
+                systemId={(systems[0] || modalParams).system}
                 section="modal"
+                excludedSystems={['googledrive']}
               />
             </div>
             <div>

@@ -3,7 +3,7 @@ from django.test import TestCase
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.response.hit import Hit
 
-from portal.libs.elasticsearch.indexes import setup_files_index, setup_indexes
+from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_indexes
 from portal.libs.elasticsearch.utils import index_listing, index_level, file_uuid_sha256, walk_children, grouper, delete_recursive
 
 
@@ -40,14 +40,12 @@ class TestESSetupMethods(TestCase):
         setup_files_index()
         mock_setup.assert_called_with('files', False, False)
 
-    """
     @patch('portal.libs.elasticsearch.indexes.setup_indexes')
     @patch('portal.libs.elasticsearch.indexes.index_time_string')
     def test_projects_setup(self, mock_timestring, mock_setup):
-        mock_timestring.return_value = 'TIME_NOW'
+
         setup_projects_index()
         mock_setup.assert_called_with('projects', False, False)
-    """
 
 
 class TestESUtils(TestCase):

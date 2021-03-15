@@ -10,10 +10,11 @@ const DataFilesSystemSelector = ({
   section,
   disabled,
   operation,
-  showProjects
+  showProjects,
+  excludedSystems // System names to exclude (as in cep.home.xxx).
 }) => {
   const dispatch = useDispatch();
-  const systemList = useSelector(state => state.systems.systemList);
+  const systemList = useSelector(state => state.systems.storage.configuration);
   const findSystem = id => systemList.find(system => system.system === id);
   const [selectedSystem, setSelectedSystem] = useState(systemId);
 
@@ -74,7 +75,9 @@ const DataFilesSystemSelector = ({
         disabled={disabled}
       >
         {systemList
-          .filter(s => s.scheme !== 'projects')
+          .filter(
+            s => s.scheme !== 'projects' && !excludedSystems.includes(s.system)
+          )
           .map(system => (
             <option key={uuidv4()} value={system.system}>
               {system.name}
@@ -105,13 +108,15 @@ DataFilesSystemSelector.propTypes = {
   section: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
   operation: PropTypes.string.isRequired,
-  showProjects: PropTypes.bool
+  showProjects: PropTypes.bool,
+  excludedSystems: PropTypes.arrayOf(PropTypes.string)
 };
 
 DataFilesSystemSelector.defaultProps = {
   systemId: '',
   disabled: false,
-  showProjects: false
+  showProjects: false,
+  excludedSystems: []
 };
 
 export default DataFilesSystemSelector;

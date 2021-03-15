@@ -48,8 +48,6 @@ ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = settings_secret._PORTAL_ICON_FILENAME
-PORTAL_LOGO_FILENAME = settings_secret._PORTAL_LOGO_FILENAME
-PORTAL_NAVBAR_BACKGROUND_FILENAME = settings_secret._PORTAL_NAVBAR_BACKGROUND_FILENAME
 
 ROOT_URLCONF = 'portal.urls'
 
@@ -92,6 +90,7 @@ INSTALLED_APPS = [
     'portal.apps.googledrive_integration',
     'portal.apps.projects',
     'portal.apps.system_creation',
+    'portal.apps.public_data',
     'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
 ]
@@ -146,7 +145,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = settings_secret._WSGI_APPLICATION
+WSGI_APPLICATION = 'portal.wsgi.application'
 
 AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
                            'django.contrib.auth.backends.ModelBackend']
@@ -248,8 +247,6 @@ TAS_URL = settings_secret._TAS_URL
 TAS_CLIENT_KEY = settings_secret._TAS_CLIENT_KEY
 TAS_CLIENT_SECRET = settings_secret._TAS_CLIENT_SECRET
 
-REQUEST_ACCESS = getattr(settings_secret, "_REQUEST_ACCESS", True)
-
 # Redmine Tracker Authentication.
 RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
@@ -260,7 +257,6 @@ RT_TAG = getattr(settings_secret, '_RT_TAG', "")
 
 # Google Analytics.
 GOOGLE_ANALYTICS_PROPERTY_ID = settings_secret._GOOGLE_ANALYTICS_PROPERTY_ID
-GOOGLE_ANALYTICS_PRELOAD = settings_secret._GOOGLE_ANALYTICS_PRELOAD
 
 
 """
@@ -392,8 +388,6 @@ CELERY_BROKER_URL = ''.join(
 )
 
 _RESULT_BACKEND_PROTOCOL = 'redis://'
-_RESULT_BACKEND_USERNAME = settings_secret._RESULT_BACKEND_USERNAME
-_RESULT_BACKEND_PWD = settings_secret._RESULT_BACKEND_PWD
 _RESULT_BACKEND_HOST = settings_secret._RESULT_BACKEND_HOST
 _RESULT_BACKEND_PORT = settings_secret._RESULT_BACKEND_PORT
 _RESULT_BACKEND_DB = settings_secret._RESULT_BACKEND_DB
@@ -469,20 +463,25 @@ CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 SETTINGS: EXECUTION SYSTEMS
 """
 PORTAL_EXEC_SYSTEMS = {
-    'data': {
-        'scratch_dir': '/scratch/{}'
+    'data.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'stampede2': {
-        'scratch_dir': '/scratch/{}'
+    'stampede2.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'lonestar5': {
-        'scratch_dir': '/scratch/{}'
+    'lonestar5.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'longhorn': {
-        'scratch_dir': '/scratch/{}'
+    'longhorn.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'frontera': {
-        'scratch_dir': '/scratch1/{}'
+    'frontera.tacc.utexas.edu': {
+        'scratch_dir': '/scratch1/{}',
+        'home_dir': '/home1/{}'
     }
 }
 
@@ -533,18 +532,6 @@ TOOLBAR_OPTIONS = {
 
 AGAVE_DEFAULT_TRASH_NAME = '.Trash'
 
-PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = settings_secret.\
-    _PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
-
-PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = settings_secret.\
-    _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH
-
-PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = settings_secret.\
-    _PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH
-
-PORTAL_DATA_DEPOT_STORAGE_HOST = settings_secret.\
-    _PORTAL_DATA_DEPOT_STORAGE_HOST
-
 PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = settings_secret.\
     _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
 
@@ -585,9 +572,6 @@ PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = settings_secret.\
 PORTAL_PROJECTS_PEMS_APP_ID = settings_secret.\
     _PORTAL_PROJECTS_PEMS_APP_ID
 
-PORTAL_USER_HOME_MANAGER = settings_secret.\
-    _PORTAL_USER_HOME_MANAGER
-
 PORTAL_KEYS_MANAGER = settings_secret.\
     _PORTAL_KEYS_MANAGER
 
@@ -597,12 +581,6 @@ PORTAL_NAMESPACE = settings_secret.\
     _PORTAL_NAMESPACE
 
 PORTAL_PROJECTS_SYSTEM_PORT = getattr(settings_secret, '_PORTAL_PROJECTS_SYSTEM_PORT', 22)
-
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = settings_secret.\
-    _PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
-
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = settings_secret.\
-    _PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM
 
 PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
 
@@ -656,13 +634,14 @@ SETTINGS: EXPORTS
 
 SETTINGS_EXPORT = [
     'PORTAL_ICON_FILENAME',
-    'PORTAL_LOGO_FILENAME',
-    'PORTAL_NAVBAR_BACKGROUND_FILENAME',
     'DEBUG',
-    'GOOGLE_ANALYTICS_PRELOAD',
     'GOOGLE_ANALYTICS_PROPERTY_ID',
     'PORTAL_NAMESPACE'
 ]
+
+"""
+SETTINGS: SUPPORTED FILE PREVIEW TYPES
+"""
 
 SUPPORTED_MS_WORD = [
     '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',

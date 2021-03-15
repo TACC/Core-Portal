@@ -1,10 +1,17 @@
 export const initialSystemState = {
-  defaultHost: '',
-  systemList: [],
-  error: false,
-  errorMessage: null,
-  loading: false,
-  definitions: []
+  storage: {
+    configuration: [],
+    error: false,
+    errorMessage: null,
+    loading: false,
+    defaultHost: ''
+  },
+  definitions: {
+    list: [],
+    error: false,
+    errorMessage: null,
+    loading: true
+  }
 };
 
 export const addSystemDefinition = (system, definitionList) => {
@@ -19,45 +26,64 @@ export function systems(state = initialSystemState, action) {
     case 'FETCH_SYSTEMS_STARTED':
       return {
         ...state,
-        error: false,
-        errorMessage: null,
-        loading: true
+        storage: {
+          ...state.storage,
+          configuration: [],
+          error: false,
+          errorMessage: null,
+          loading: true
+        }
       };
     case 'FETCH_SYSTEMS_SUCCESS':
       return {
         ...state,
-        systemList: action.payload.system_list,
-        defaultHost: action.payload.default_host,
-        loading: false
+        storage: {
+          ...state.storage,
+          configuration: action.payload.system_list,
+          defaultHost: action.payload.default_host,
+          loading: false
+        }
       };
     case 'FETCH_SYSTEMS_ERROR':
       return {
         ...state,
-        error: true,
-        errorMessage: action.payload,
-        loading: false
+        storage: {
+          ...state.storage,
+          error: true,
+          errorMessage: action.payload,
+          loading: false
+        }
       };
     case 'FETCH_SYSTEM_DEFINITION_STARTED':
       return {
         ...state,
-        error: false,
-        errorMessage: null,
-        loading: true
+        definitions: {
+          ...state.definitions,
+          error: false,
+          errorMessage: null,
+          loading: true
+        }
       };
     case 'FETCH_SYSTEM_DEFINITION_SUCCESS':
       return {
         ...state,
-        definitions: addSystemDefinition(action.payload, state.definitions),
-        error: false,
-        errorMessage: null,
-        loading: false
+        definitions: {
+          ...state.definitions,
+          list: addSystemDefinition(action.payload, state.definitions.list),
+          error: false,
+          errorMessage: null,
+          loading: false
+        }
       };
     case 'FETCH_SYSTEM_DEFINITION_ERROR':
       return {
         ...state,
-        error: true,
-        errorMessage: action.payload,
-        loading: false
+        definitions: {
+          ...state.definitions,
+          error: true,
+          errorMessage: action.payload,
+          loading: false
+        }
       };
     default:
       return state;
@@ -76,6 +102,8 @@ export const initialFilesState = {
     select: {},
     upload: {},
     trash: {},
+    compress: null,
+    extract: null,
     link: {
       method: null,
       url: '',
@@ -125,8 +153,11 @@ export const initialFilesState = {
     link: false,
     pushKeys: false,
     trash: false,
+    compress: false,
+    extract: false,
     manageproject: false,
-    editproject: false
+    editproject: false,
+    makePublic: false
   },
   modalProps: {
     preview: {},
@@ -138,11 +169,13 @@ export const initialFilesState = {
     rename: {},
     pushKeys: {},
     link: {},
-    showpath: {}
+    showpath: {},
+    makePublic: {}
   },
   preview: {
-    href: '',
-    content: '',
+    href: null,
+    content: null,
+    error: null,
     isLoading: true
   }
 };
@@ -242,7 +275,7 @@ export function files(state = initialFilesState, action) {
         ...state,
         loading: { ...state.loading, [action.payload.section]: false },
         error: { ...state.error, [action.payload.section]: true },
-        listing: { ...state.posts, [action.payload.section]: [] }
+        listing: { ...state.listing, [action.payload.section]: [] }
       };
 
     // Cases for selecting files.
@@ -319,9 +352,8 @@ export function files(state = initialFilesState, action) {
       return {
         ...state,
         preview: {
-          href: action.payload.href,
-          content: action.payload.content,
-          isLoading: action.payload.isLoading
+          ...state.preview,
+          ...action.payload
         }
       };
     case 'DATA_FILES_TOGGLE_MODAL':

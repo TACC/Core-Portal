@@ -1,17 +1,10 @@
 .ticket-create-modal-body {
-  display: flex;
-  flex-direction: column;
   overflow: auto;
+  max-height: 60vh;
 }
-
 .ticket-create-modal {
   color: #484848;
   font-size: 0.75rem;
-  min-height: 755px;
-
-  .modal-header {
-    background-color: #F4F4F4;
-  }
 
   /* make bootstrap dialog wider */
   @media (min-width: 1200px) {
@@ -19,8 +12,4 @@
       max-width: 650px;
     }
   }
-}
-
-.ticket-create-modal-content {
-  height: 90vh;
 }

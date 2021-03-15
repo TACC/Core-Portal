@@ -20,6 +20,8 @@ const DataFilesProjectMembers = ({
 
   const [selectedUser, setSelectedUser] = useState('');
 
+  const [inputUser, setInputUser] = useState('');
+
   const [transferUser, setTransferUser] = useState(null);
 
   /* eslint-disable */
@@ -29,6 +31,8 @@ const DataFilesProjectMembers = ({
   /* eslint-enable */
 
   const userSearch = e => {
+    setInputUser(e.target.value);
+    if (!e.target.value || e.target.value.trim().length < 1) return;
     // Try to set the selectedUser to something matching current search results
     setSelectedUser(
       userSearchResults.find(user => formatUser(user) === e.target.value)
@@ -48,6 +52,14 @@ const DataFilesProjectMembers = ({
     setTransferUser(null);
   }, [transferUser, setTransferUser]);
 
+  const onAddCallback = useCallback(
+    user => {
+      onAdd(user);
+      setInputUser('');
+    },
+    [setInputUser, onAdd]
+  );
+
   const alreadyMember = user => {
     return members.some(
       existingMember => existingMember.user.username === user.username
@@ -56,7 +68,7 @@ const DataFilesProjectMembers = ({
 
   const memberColumn = {
     Header: 'Members',
-    headerStyle: { textAlign: 'left', color: '#484848' },
+    headerStyle: { textAlign: 'left' },
     accessor: 'user',
     className: 'project-members__cell',
     Cell: el => (
@@ -71,7 +83,6 @@ const DataFilesProjectMembers = ({
     memberColumn,
     {
       Header: 'Access',
-      headerStyle: { color: '#484848' },
       accessor: 'access',
       className: 'project-members__cell',
       Cell: el => <span styleName="access">{el.value}</span>
@@ -86,7 +97,6 @@ const DataFilesProjectMembers = ({
         ''
       ),
       accessor: 'username',
-      headerClassName: 'project-members__loading-header',
       className: 'project-members__cell',
       Cell: el => (
         <>
@@ -127,7 +137,6 @@ const DataFilesProjectMembers = ({
         ''
       ),
       accessor: 'username',
-      headerClassName: 'project-members__loading-header',
       className: 'project-members__cell',
       Cell: el =>
         mode === 'transfer' && el.row.original === transferUser ? (
@@ -153,17 +162,21 @@ const DataFilesProjectMembers = ({
     isTransferring ? 'transfer-list' : 'addremove-list'
   }`;
 
+  const existingMembers = members.filter(member => member.user);
+
   return (
     <div styleName="root">
       <Label className="form-field__label" size="sm">
         Add Member
       </Label>
       <div styleName="user-search">
-        <div className="input-group">
+        <div className="input-group" styleName="member-search-group">
           <div className="input-group-prepend">
             <Button
               styleName="add-button member-search"
-              onClick={() => onAdd({ user: selectedUser, access: 'edit' })}
+              onClick={() =>
+                onAddCallback({ user: selectedUser, access: 'edit' })
+              }
               disabled={
                 !selectedUser ||
                 loading ||
@@ -181,23 +194,25 @@ const DataFilesProjectMembers = ({
             placeholder="Search by name"
             styleName="member-search"
             disabled={loading || mode === 'transfer'}
+            autoComplete="false"
+            value={inputUser}
           />
           <datalist id="user-search-list">
             {/* eslint-disable */
-              // Need to replace this component with a generalized solution from FP-743
-              userSearchResults
-                .filter(user => !alreadyMember(user))
-                .map(user => (
-                <option value={formatUser(user)} key={user.username} />
-              ))
-              /* eslint-enable */
+            // Need to replace this component with a generalized solution from FP-743
+            userSearchResults
+              .filter(user => !alreadyMember(user))
+              .map(user => (
+              <option value={formatUser(user)} key={user.username} />
+            ))
+            /* eslint-enable */
             }
           </datalist>
         </div>
       </div>
       <InfiniteScrollTable
         tableColumns={isTransferring ? transferColumns : columns}
-        tableData={members}
+        tableData={existingMembers}
         styleName={listStyle}
         columnMemoProps={[loading, mode, transferUser]}
       />

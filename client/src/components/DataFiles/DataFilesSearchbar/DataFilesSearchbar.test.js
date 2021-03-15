@@ -1,8 +1,8 @@
 import React from 'react';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, wait } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import DataFilesSearchbar from './DataFilesSearchbar';
-import systemsFixture from '../fixtures/DataFiles.systems.fixture'
+import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 
@@ -13,7 +13,13 @@ describe('DataFilesSearchbar', () => {
     // Render the searchbar, enter a query string, and submit form
     const history = createMemoryHistory();
     history.push('/workbench/data/api/scheme/system/path');
-    const store = mockStore({systems: systemsFixture});
+    const store = mockStore({
+      systems: systemsFixture,
+      files: {
+        error: {},
+        loading: {}
+      }
+    });
     const { getByRole } = renderComponent(
       <DataFilesSearchbar
         api="test-api"
@@ -34,10 +40,51 @@ describe('DataFilesSearchbar', () => {
     );
     expect(history.location.search).toEqual(`?query_string=querystring`);
   });
+
+  it('clears field on route change', async () => {
+    // Render the searchbar with a query string in the URL, then navigate away.
+    const history = createMemoryHistory();
+    history.push(
+      '/workbench/data/api/scheme/system/path/?query_string=testquery'
+    );
+    const store = mockStore({
+      systems: systemsFixture,
+      files: {
+        error: {},
+        loading: {}
+      }
+    });
+    const { getByRole, getByText, queryByText, debug } = renderComponent(
+      <DataFilesSearchbar
+        api="test-api"
+        scheme="test-scheme"
+        system="test-system"
+      />,
+      store,
+      history
+    );
+    let input = getByRole('searchbox');
+    fireEvent.change(input, { target: { value: 'testquery' } });
+    expect(input.value).toBe('testquery');
+
+    await wait(() => history.push('/workbench/data/api/scheme/system2/path/'));
+
+    input = getByRole('searchbox');
+    expect(input.value).toBe('');
+  });
+
   it('has expected elements', () => {
     const history = createMemoryHistory();
-    history.push('/workbench/data/api/scheme/system/path?query_string=testquery');
-    const store = mockStore({systems: systemsFixture});
+    history.push(
+      '/workbench/data/api/scheme/system/path?query_string=testquery'
+    );
+    const store = mockStore({
+      systems: systemsFixture,
+      files: {
+        error: {},
+        loading: {}
+      }
+    });
     const { getByRole, getByTestId, getByPlaceholderText } = renderComponent(
       <DataFilesSearchbar
         api="tapis"

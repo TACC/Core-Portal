@@ -236,10 +236,8 @@ function TicketModal({ history }) {
       size="lg"
     >
       <ModalHeader toggle={close}>
-        <span className="modal-header-title d-inline-block text-truncate">
-          <span className="ticket-id">Ticket {ticketId}</span>
-          <span className="ticket-subject">{ticketSubject}</span>
-        </span>
+        <span className="ticket-id">Ticket {ticketId}</span>
+        <span className="ticket-subject">{ticketSubject}</span>
       </ModalHeader>
       <ModalBody>
         <Container className="ticket-detailed-view-container">

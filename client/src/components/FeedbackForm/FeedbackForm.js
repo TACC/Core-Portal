@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
 import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
@@ -7,37 +7,19 @@ import * as Yup from 'yup';
 import './FeedbackForm.module.scss';
 
 const formSchema = Yup.object().shape({
-  subject: Yup.string().required('Required'),
-  name: Yup.string().required('Required'),
-  email: Yup.string()
-    .email('Invalid email')
-    .required('Required'),
   problem_description: Yup.string().required('Required')
 });
 
+const defaultValues = {
+  problem_description: ''
+};
+
 const FeedbackForm = () => {
   const dispatch = useDispatch();
-  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
   const creating = useSelector(state => state.ticketCreate.creating);
   const creatingError = useSelector(state => state.ticketCreate.creatingError);
   const creatingErrorMessage = useSelector(
     state => state.ticketCreate.creatingErrorMessage
-  );
-
-  if (authenticatedUser == null) {
-    return <Spinner />;
-  }
-
-  const defaultValues = useMemo(
-    () => ({
-      subject: 'Feedback for the Frontera Portal',
-      problem_description: '',
-      name: authenticatedUser
-        ? `${authenticatedUser.first_name} ${authenticatedUser.last_name}`
-        : '',
-      email: authenticatedUser ? authenticatedUser.email : ''
-    }),
-    [authenticatedUser]
   );
 
   return (
@@ -48,6 +30,7 @@ const FeedbackForm = () => {
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach(key => formData.append(key, values[key]));
+        formData.append('subject', 'Feedback for the Portal');
         dispatch({
           type: 'TICKET_CREATE',
           payload: {
@@ -62,8 +45,6 @@ const FeedbackForm = () => {
         return (
           <Form styleName="container">
             <FormGroup>
-              <FormField name="name" label="Full Name" required disabled />
-              <FormField name="email" label="Email" required disabled />
               <FormField
                 name="problem_description"
                 label="Feedback"
@@ -87,6 +68,7 @@ const FeedbackForm = () => {
                   <Spinner
                     size="sm"
                     color="white"
+                    styleName="submit-spinner"
                     data-testid="creating-spinner"
                   />
                 )}
