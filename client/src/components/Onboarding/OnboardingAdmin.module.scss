@@ -99,11 +99,11 @@ tbody {
 }
 
 .name {
-  /* WARNING: Manual value of rendered height of tallest <td> */
-  --td-height--largest: 32px;
+  /* WARNING: Manual value: tallest <td> unwrapped content rendered height */
+  --td-height--tallest: 23px;
 
   vertical-align: top;
-  line-height: var(--td-height--largest);
+  line-height: var(--td-height--tallest);
 }
 .name,
 .step > td:not(.status):not(.actions) {
