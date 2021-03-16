@@ -133,6 +133,11 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   );
   const adminAction = useSelector(state => state.onboarding.action);
 
+  const colElements = [];
+  for (let i = 0; i < stepTableColumnCount; i += 1) {
+    colElements.push(<col />);
+  }
+
   return (
     /* !!!: Temporary extra markup to make simpler PR diff */
     /* eslint-disable prettier/prettier */
@@ -142,6 +147,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
       </td>
       <td colSpan={stepTableColumnCount}>
         <table styleName="steps">
+          <colgroup>{colElements}</colgroup>
           <thead>
             <tr>
               <th>Step</th>

@@ -175,12 +175,12 @@ tbody {
 .steps {
   table-layout: fixed;
 
-  th:nth-child(1) { width: 17%; }
-  th:nth-child(2) { width: 30%; }
+  col:nth-child(1) { width: 17%; }
+  col:nth-child(2) { width: 30%; }
   th:nth-child(3) { width: 36%; }
-  td:nth-child(3) { width: 17%; }
-  td:nth-child(4) { width: 19%; }
-  th:nth-child(5) { width: 17%; }
+    col:nth-child(3) { width: 19%; }
+    col:nth-child(4) { width: 17%; }
+  col:nth-child(5) { width: 17%; }
 }
 
 .no-users-placeholder {
