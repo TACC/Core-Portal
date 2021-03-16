@@ -134,16 +134,16 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   return (
     <tr styleName="user">
       <td styleName="name">
-        <div>{`${user.firstName} ${user.lastName}`}</div>
+        <span>{`${user.firstName} ${user.lastName}`}</span>
       </td>
       <td>
         {user.steps.map(step => (
-          <div
+          <span
             key={uuidv4()}
             styleName={step.state === 'staffwait' ? 'staffwait' : ''}
           >
             {step.displayName}
-          </div>
+          </span>
         ))}
       </td>
       <td>

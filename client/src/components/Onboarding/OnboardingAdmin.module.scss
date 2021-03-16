@@ -81,9 +81,20 @@ tbody {
   vertical-align: top;
 }
 
-.user > td > div {
+.user > td > div,
+.user > td > span {
   height: 32px;
   padding-left: var(--cell-horizontal-padding);
+  padding-right: var(--cell-horizontal-padding);
+}
+.user > td > span {
+  display: block;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.user > td > div {
   display: flex;
   align-items: center;
 }
