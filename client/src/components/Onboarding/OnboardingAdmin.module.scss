@@ -68,10 +68,8 @@
     padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
   }
 }
-.user {
-  /* … */
-}
 
+/* !!!: Temporary unused CSS retained to make simpler PR diff */
 /*
 tbody {
   line-height: 32px;
@@ -86,45 +84,42 @@ tbody {
 }
 */
 
-.step > td {
+.user > td {
   /* Difference between tall unwrapped cell height and basic text cell height */
   --greatest-height-diff: 4.78px; /* value obtained form live render */
   /* FAQ: We want only the top space, not the top & bottom space combined */
   --vertical-offset: calc(var(--greatest-height-diff) / 2);
 }
-.step > td:not(.has-wrappable-content) {
+.user > td:not(.has-wrappable-content) {
   /* Tweak `vertical-align`'s `top` to look like `middle` when nothing wraps */
   padding-top: calc(var(--cell-horizontal-padding) + var(--vertical-offset));
   vertical-align: top;
 }
-.step > td:not(.has-wrappable-content):not(.status) {
+.user > td:not(.has-wrappable-content):not(.status) {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-.step:nth-child(even) > td:not(.staffwait):not(.name) {
+.user:nth-child(even) > td:not(.staffwait):not(.name) {
   background-color: #C6C6C61A;
 }
 
 /* HACK: This selector has knowledge of sibling component's internal markup */
 /* FAQ: Because we cannot pass `className`to <Pill> via <OnboardingStatus> */
 /* FAQ: Because <OnboardingStatus> has a superfluous root element */
-.status-text > * /* i.e. <OnboardingStatus>'s <Pill> */ {
+.status > span > span /* i.e. <OnboardingStatus>'s <Pill> */ {
   white-space: nowrap;
 }
 
-.action-links {
+.reset {
   white-space: nowrap;
 }
-.action-link {
-  padding: 0;
 
-  font-size: 12px;
-}
-.action-link:not(:first-child) { margin-left: 0.25em; }
-.action-link:not(:last-child) { margin-right: 0.25em; }
+.approve-container {
+  i {
+    font-size: 10px;
+  }
 
-.action-buttons {
   --vertical-buffer: 0.125em; /* vertical space between wrapped buttons */
 
   /* Add space above all buttons to match space below each */
@@ -133,24 +128,33 @@ tbody {
   margin-top: calc(-1 * var(--vertical-buffer));
   margin-bottom: calc(-1 * var(--vertical-buffer));
 }
-.action-button {
+
+.approve {
+  display: inline-flex; /* Do not use `inline-block` because value was `flex` */
   /* Add space below each button */
   margin-bottom: var(--vertical-buffer);
-
-  display: inline-flex; /* Do not use `inline-block` because value was `flex` */
 
   font-size: 12px;
   border-radius: 0;
   padding-top: 0;
   padding-bottom: 0;
 }
-.action-button:not(:last-child) {
+
+.approve:not(:last-child) {
   margin-right: 1em;
 }
-.action-button > i {
-  font-size: 10px;
+
+.approve > *:nth-child(1) {
   margin-right: 0.5em;
 }
+
+.action-link {
+  padding: 0;
+
+  font-size: 12px;
+}
+.action-link:not(:first-child) { margin-left: 0.25em; }
+.action-link:not(:last-child) { margin-right: 0.25em; }
 
 .staffwait {
   background-color: var(--global-color-accent--light);

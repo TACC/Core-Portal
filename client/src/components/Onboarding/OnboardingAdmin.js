@@ -12,10 +12,10 @@ import './OnboardingAdmin.scss';
 
 const OnboardingApproveActions = ({ callback, disabled, action }) => {
   return (
-    <div styleName="action-buttons">
+    <div styleName="approve-container">
       <Button
         className="c-button--secondary"
-        styleName="action-button"
+        styleName="approve"
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_approve')}
         disabled={disabled}
@@ -32,7 +32,7 @@ const OnboardingApproveActions = ({ callback, disabled, action }) => {
       </Button>
       <Button
         className="c-button--secondary"
-        styleName="action-button"
+        styleName="approve"
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_deny')}
         disabled={disabled}
@@ -64,7 +64,7 @@ OnboardingApproveActions.defaultProps = {
 
 const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
   return (
-    <div styleName="action-links">
+    <div styleName="reset">
       <Button
         color="link"
         styleName="action-link"
@@ -132,10 +132,11 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
 
   return (
     /* !!!: Temporary extra markup to make simpler PR diff */
+    /* !!!: Temporary bad indentation markup to make simpler PR diff */
     /* eslint-disable prettier/prettier */
     <>
-      {user.steps.map((step, index) => (
-        <tr styleName="step">
+    {user.steps.map((step, index) => (
+    <tr styleName="user">
           {index === 0 && (
           <td rowSpan="5" styleName="name">
             {`${user.firstName} ${user.lastName}`}
@@ -151,7 +152,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               step.state === 'staffwait' ? 'staffwait' : ''
             }`}
           >
-            <OnboardingStatus step={step} styleName="status-text" />
+            <OnboardingStatus step={step} />
           </td>
           <td
             styleName={`has-wrappable-content ${
@@ -193,7 +194,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
                   : null
               }
             />
-          </td>
+      </td>
           <td
             styleName={step.state === 'staffwait' ? 'staffwait' : ''}
           >
@@ -205,8 +206,8 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               View Log
             </Button>
           </td>
-        </tr>
-      ))}
+    </tr>
+    ))}
     </>
     /* eslint-enable prettier/prettier */
   );
