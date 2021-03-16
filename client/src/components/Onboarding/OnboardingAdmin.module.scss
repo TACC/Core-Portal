@@ -92,7 +92,7 @@ tbody {
   /* FAQ: We want only the top space, not the top & bottom space combined */
   --vertical-offset: calc(var(--greatest-height-diff) / 2);
 }
-.step > td:not(.status):not(.actions) {
+.step > td:not(.has-wrappable-content) {
   /* Tweak `vertical-align`'s `top` to look like `middle` when nothing wraps */
   padding-top: calc(var(--cell-horizontal-padding) + var(--vertical-offset));
   vertical-align: top;

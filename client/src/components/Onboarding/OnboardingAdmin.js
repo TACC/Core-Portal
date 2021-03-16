@@ -147,14 +147,12 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             {step.displayName}
           </td>
           <td
-            styleName={`status ${
-              step.state === 'staffwait' ? 'staffwait' : ''
-            }`}
+            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
           >
             <OnboardingStatus step={step} styleName="status-text" />
           </td>
           <td
-            styleName={`actions ${
+            styleName={`has-wrappable-content ${
               step.state === 'staffwait' ? 'staffwait' : ''
             }`}
           >
@@ -178,9 +176,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             )}
           </td>
           <td
-            styleName={`actions ${
-              step.state === 'staffwait' ? 'staffwait' : ''
-            }`}
+            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
           >
             <OnboardingResetLinks
               callback={action =>
