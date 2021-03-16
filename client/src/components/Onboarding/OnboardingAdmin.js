@@ -15,10 +15,10 @@ const stepTableColumnCount = 5;
 
 const OnboardingApproveActions = ({ callback, disabled, action }) => {
   return (
-    <div styleName="approve-container">
+    <div styleName="action-buttons">
       <Button
         className="c-button--secondary"
-        styleName="approve"
+        styleName="action-button"
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_approve')}
         disabled={disabled}
@@ -35,7 +35,7 @@ const OnboardingApproveActions = ({ callback, disabled, action }) => {
       </Button>
       <Button
         className="c-button--secondary"
-        styleName="approve"
+        styleName="action-button"
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_deny')}
         disabled={disabled}
@@ -67,7 +67,7 @@ OnboardingApproveActions.defaultProps = {
 
 const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
   return (
-    <div styleName="reset">
+    <div styleName="action-links">
       <Button
         color="link"
         styleName="action-link"
@@ -166,7 +166,9 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             <OnboardingStatus step={step} styleName="status-text" />
           </td>
           <td
-            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
+            styleName={`actions ${
+              step.state === 'staffwait' ? 'staffwait' : ''
+            }`}
           >
             {step.state === 'staffwait' && (
               <OnboardingApproveActions
@@ -188,7 +190,9 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             )}
           </td>
           <td
-            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
+            styleName={`actions ${
+              step.state === 'staffwait' ? 'staffwait' : ''
+            }`}
           >
             <OnboardingResetLinks
               callback={action =>

@@ -37,6 +37,7 @@
 
 .users {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
+  --cell-vertical-padding: 0.35em;
   /* TODO: After, FP-103, use `composes:` not `@extend` */
   height: 100%;
   align-items: stretch;
@@ -56,8 +57,7 @@
 
     /* Match horizontal padding of `td` elements in table to align properly */
     th {
-      padding-left: var(--cell-horizontal-padding);
-      padding-right: var(--cell-horizontal-padding);
+      padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
 
       overflow: hidden;
       text-overflow: ellipsis;
@@ -65,8 +65,7 @@
     }
   }
   td {
-    padding-left: var(--cell-horizontal-padding);
-    padding-right: var(--cell-horizontal-padding);
+    padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
   }
 }
 .user {
@@ -89,7 +88,7 @@ tbody {
 .steps {
   --border-width: var(--global-border-width--normal);
   /* WARNING: Manual value of rendered height of `.users` <thead> */
-  --thead-height: -22px;
+  --thead-height: -31px;
 
   width: 100%;
 
@@ -107,7 +106,7 @@ tbody {
   line-height: var(--td-height--largest);
 }
 .name,
-.step > td:not(.status) {
+.step > td:not(.status):not(.actions) {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -124,33 +123,43 @@ tbody {
   white-space: nowrap;
 }
 
-.reset > * {
-  padding-left: 8px;
-  padding-right: 8px;
+.action-links {
+  white-space: nowrap;
 }
+.action-link {
+  padding: 0;
 
-.approve-container {
-  display: flex;
-  i {
-    font-size: 10px;
-  }
-}
-
-.approve {
   font-size: 12px;
-  height: 19px;
+}
+.action-link:not(:first-child) { margin-left: 0.25em; }
+.action-link:not(:last-child) { margin-right: 0.25em; }
+
+.action-buttons {
+  --vertical-buffer: 0.125em; /* vertical space between wrapped buttons */
+
+  /* Add space above all buttons to match space below each */
+  padding-top: var(--vertical-buffer);
+  /* Remove space above and bellow buttons */
+  margin-top: calc(-1 * var(--vertical-buffer));
+  margin-bottom: calc(-1 * var(--vertical-buffer));
+}
+.action-button {
+  /* Add space below each button */
+  margin-bottom: var(--vertical-buffer);
+
+  display: inline-flex; /* Do not use `inline-block` because value was `flex` */
+
+  font-size: 12px;
   border-radius: 0;
   padding-top: 0;
   padding-bottom: 0;
+}
+.action-button:not(:last-child) {
   margin-right: 1em;
 }
-
-.approve > *:nth-child(1) {
+.action-button > i {
+  font-size: 10px;
   margin-right: 0.5em;
-}
-
-.action-link {
-  font-size: 12px;
 }
 
 .staffwait {
