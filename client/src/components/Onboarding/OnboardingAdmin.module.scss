@@ -96,7 +96,8 @@ tbody {
   /* Tweak `vertical-align`'s `top` to look like `middle` when nothing wraps */
   padding-top: calc(var(--cell-horizontal-padding) + var(--vertical-offset));
   vertical-align: top;
-
+}
+.step > td:not(.has-wrappable-content):not(.status) {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;

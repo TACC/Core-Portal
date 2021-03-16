@@ -147,7 +147,9 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             {step.displayName}
           </td>
           <td
-            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
+            styleName={`status ${
+              step.state === 'staffwait' ? 'staffwait' : ''
+            }`}
           >
             <OnboardingStatus step={step} styleName="status-text" />
           </td>
