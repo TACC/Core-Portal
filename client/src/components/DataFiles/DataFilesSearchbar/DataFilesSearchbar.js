@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button } from 'reactstrap';
@@ -19,6 +19,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
   const history = useHistory();
   const hasQuery = queryString.parse(useLocation().search).query_string;
+  const location = useLocation();
   const sectionName =
     scheme === 'projects'
       ? 'Workspace'
@@ -31,6 +32,11 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
 
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
+
+  // Reset form field on route change
+  useEffect(() => {
+    !hasQuery && setQuery('');
+  }, [hasQuery, location]);
 
   const onSubmit = e => {
     routeSearch();
