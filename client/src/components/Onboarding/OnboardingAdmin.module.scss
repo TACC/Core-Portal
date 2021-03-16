@@ -1,3 +1,5 @@
+@import '../../styles/tools/mixins.scss';
+
 // Required to constrain table within flex box
 .root {
   position: relative;
@@ -59,9 +61,7 @@
     th {
       padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
 
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      @include truncate-with-ellipsis;
     }
   }
   td {
@@ -96,9 +96,7 @@ tbody {
   vertical-align: top;
 }
 .user > td:not(.has-wrappable-content):not(.status) {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  @include truncate-with-ellipsis;
 }
 .user:nth-child(even) > td:not(.staffwait):not(.name) {
   background-color: #C6C6C61A;
