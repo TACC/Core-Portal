@@ -44,7 +44,7 @@ const OnboardingApproveActions = ({ callback, disabled, action }) => {
             className="onboarding-admin__action-spinner"
           />
         ) : (
-          <Icon name="approved-reverse" />
+          <Icon name="denied-reverse" />
         )}
         <>Deny</>
       </Button>
