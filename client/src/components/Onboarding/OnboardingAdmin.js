@@ -11,6 +11,8 @@ import OnboardingAdminSearchbar from './OnboardingAdminSearchbar';
 import './OnboardingAdmin.module.scss';
 import './OnboardingAdmin.scss';
 
+const stepTableColumnCount = 5;
+
 const OnboardingApproveActions = ({ callback, disabled, action }) => {
   return (
     <div styleName="approve-container">
@@ -132,36 +134,38 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   const adminAction = useSelector(state => state.onboarding.action);
 
   return (
+    /* !!!: Temporary extra markup to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
     <tr styleName="user">
       <td styleName="name">
-        <span>{`${user.firstName} ${user.lastName}`}</span>
+        {`${user.firstName} ${user.lastName}`}
       </td>
-      <td>
+      <td colSpan={stepTableColumnCount}>
+        <table styleName="steps">
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>Status</th>
+              <th colSpan="2">Administrative Actions</th>
+              <th>Log</th>
+            </tr>
+          </thead>
+          <tbody>
         {user.steps.map(step => (
-          <span
-            key={uuidv4()}
+        <tr key={uuidv4()} styleName="step">
+          <td
             styleName={step.state === 'staffwait' ? 'staffwait' : ''}
           >
             {step.displayName}
-          </span>
-        ))}
-      </td>
-      <td>
-        {user.steps.map(step => (
-          <div
-            key={uuidv4()}
+          </td>
+          <td
             styleName={`status ${
               step.state === 'staffwait' ? 'staffwait' : ''
             }`}
           >
             <OnboardingStatus step={step} styleName="status-text" />
-          </div>
-        ))}
-      </td>
-      <td>
-        {user.steps.map(step => (
-          <div
-            key={uuidv4()}
+          </td>
+          <td
             styleName={step.state === 'staffwait' ? 'staffwait' : ''}
           >
             {step.state === 'staffwait' && (
@@ -182,13 +186,8 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
                 }
               />
             )}
-          </div>
-        ))}
-      </td>
-      <td>
-        {user.steps.map(step => (
-          <div
-            key={uuidv4()}
+          </td>
+          <td
             styleName={step.state === 'staffwait' ? 'staffwait' : ''}
           >
             <OnboardingResetLinks
@@ -204,13 +203,8 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
                   : null
               }
             />
-          </div>
-        ))}
-      </td>
-      <td>
-        {user.steps.map(step => (
-          <div
-            key={uuidv4()}
+          </td>
+          <td
             styleName={step.state === 'staffwait' ? 'staffwait' : ''}
           >
             <Button
@@ -220,10 +214,14 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             >
               View Log
             </Button>
-          </div>
+          </td>
+        </tr>
         ))}
+          </tbody>
+        </table>
       </td>
     </tr>
+    /* eslint-enable prettier/prettier */
   );
 };
 
@@ -238,11 +236,7 @@ const OnboardingAdminList = ({ users, viewLogCallback }) => {
       <thead>
         <tr>
           <th>User</th>
-          <th>Step</th>
-          <th>Status</th>
-          <th>Administrative Actions</th>
-          <th>&nbsp;</th>
-          <th>Log</th>
+          <th colSpan={stepTableColumnCount}>&nbsp;</th>
         </tr>
       </thead>
       <tbody>

@@ -58,13 +58,22 @@
     th {
       padding-left: var(--cell-horizontal-padding);
       padding-right: var(--cell-horizontal-padding);
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
   td {
-    padding: 0 0 0 0;
+    padding-left: var(--cell-horizontal-padding);
+    padding-right: var(--cell-horizontal-padding);
   }
 }
+.user {
+  /* … */
+}
 
+/*
 tbody {
   line-height: 32px;
 }
@@ -76,36 +85,38 @@ tbody {
 .root > tbody > tr > td {
   padding: 0 0 0 0;
 }
+*/
+.steps {
+  --border-width: var(--global-border-width--normal);
+  /* WARNING: Manual value of rendered height of `.users` <thead> */
+  --thead-height: -22px;
+
+  width: 100%;
+
+  /* Move the inner table's head up into the outer table's head */
+  position: relative;
+  top: var(--thead-height);
+  margin-bottom: calc(var(--thead-height) + var(--border-width));
+}
 
 .name {
+  /* WARNING: Manual value of rendered height of tallest <td> */
+  --td-height--largest: 32px;
+
   vertical-align: top;
+  line-height: var(--td-height--largest);
 }
-
-.user > td > div,
-.user > td > span {
-  height: 32px;
-  padding-left: var(--cell-horizontal-padding);
-  padding-right: var(--cell-horizontal-padding);
-}
-.user > td > span {
-  display: block;
-
+.name,
+.step > td:not(.status) {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-.user > td > div {
-  display: flex;
-  align-items: center;
-}
 
-.user > td > div:nth-child(even):not(.staffwait) {
+.step:nth-child(even):not(.staffwait) {
   background-color: #C6C6C61A;
 }
 
-.status {
-  line-height: 19px;
-}
 /* HACK: This selector has knowledge of sibling component's internal markup */
 /* FAQ: Because we cannot pass `className`to <Pill> via <OnboardingStatus> */
 /* FAQ: Because <OnboardingStatus> has a superfluous root element */
@@ -149,22 +160,18 @@ tbody {
 .users {
   table-layout: fixed;
 
-  th:nth-child(1),
-  td:nth-child(1) {
-    width: 15%;
-  }
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 20%;
-  }
-  th:nth-child(3),
-  td:nth-child(3) {
-    width: 15%;
-  }
-  th:nth-child(4),
-  td:nth-child(4) {
-    width: 20%;
-  }
+  th:nth-child(1) { width: 15%; }
+  th:nth-child(2) { width: 85%; }
+}
+.steps {
+  table-layout: fixed;
+
+  th:nth-child(1) { width: 17%; }
+  th:nth-child(2) { width: 30%; }
+  th:nth-child(3) { width: 36%; }
+  td:nth-child(3) { width: 17%; }
+  td:nth-child(4) { width: 19%; }
+  th:nth-child(5) { width: 17%; }
 }
 
 .no-users-placeholder {
