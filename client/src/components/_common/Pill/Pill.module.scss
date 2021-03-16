@@ -18,6 +18,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   /* white-space: nowrap; *//* FAQ: Set only as desired (not always desired) */
+
+  /* Keep alignment that is changed by `overflow: hidden;` */
+  /* SEE: https://stackoverflow.com/q/25818199 */
+  vertical-align: bottom;
 }
 
 .is-danger {
