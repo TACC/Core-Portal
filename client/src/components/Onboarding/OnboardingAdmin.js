@@ -2,7 +2,6 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Icon, LoadingSpinner, Message, Paginator } from '_common';
 import { Button } from 'reactstrap';
-import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import { onboardingUserPropType } from './OnboardingPropTypes';
 import OnboardingEventLogModal from './OnboardingEventLogModal';
@@ -10,8 +9,6 @@ import OnboardingStatus from './OnboardingStatus';
 import OnboardingAdminSearchbar from './OnboardingAdminSearchbar';
 import './OnboardingAdmin.module.scss';
 import './OnboardingAdmin.scss';
-
-const stepTableColumnCount = 5;
 
 const OnboardingApproveActions = ({ callback, disabled, action }) => {
   return (
@@ -133,32 +130,17 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   );
   const adminAction = useSelector(state => state.onboarding.action);
 
-  const colElements = [];
-  for (let i = 0; i < stepTableColumnCount; i += 1) {
-    colElements.push(<col />);
-  }
-
   return (
     /* !!!: Temporary extra markup to make simpler PR diff */
     /* eslint-disable prettier/prettier */
-    <tr styleName="user">
-      <td styleName="name">
-        {`${user.firstName} ${user.lastName}`}
-      </td>
-      <td colSpan={stepTableColumnCount}>
-        <table styleName="steps">
-          <colgroup>{colElements}</colgroup>
-          <thead>
-            <tr>
-              <th>Step</th>
-              <th>Status</th>
-              <th colSpan="2">Administrative Actions</th>
-              <th>Log</th>
-            </tr>
-          </thead>
-          <tbody>
-        {user.steps.map(step => (
-        <tr key={uuidv4()} styleName="step">
+    <>
+      {user.steps.map((step, index) => (
+        <tr styleName="step">
+          {index === 0 && (
+          <td rowSpan="5" styleName="name">
+            {`${user.firstName} ${user.lastName}`}
+          </td>
+          )}
           <td
             styleName={step.state === 'staffwait' ? 'staffwait' : ''}
           >
@@ -226,11 +208,8 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             </Button>
           </td>
         </tr>
-        ))}
-          </tbody>
-        </table>
-      </td>
-    </tr>
+      ))}
+    </>
     /* eslint-enable prettier/prettier */
   );
 };
@@ -241,12 +220,22 @@ OnboardingAdminListUser.propTypes = {
 };
 
 const OnboardingAdminList = ({ users, viewLogCallback }) => {
+  const columnCount = 6;
+  const colElements = [];
+  for (let i = 0; i < columnCount; i += 1) {
+    colElements.push(<col />);
+  }
+
   return (
     <table styleName="users">
+      <colgroup>{colElements}</colgroup>
       <thead>
         <tr>
           <th>User</th>
-          <th colSpan={stepTableColumnCount}>&nbsp;</th>
+          <th>Step</th>
+          <th>Status</th>
+          <th colSpan="2">Administrative Actions</th>
+          <th>Log</th>
         </tr>
       </thead>
       <tbody>

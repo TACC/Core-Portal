@@ -85,34 +85,23 @@ tbody {
   padding: 0 0 0 0;
 }
 */
-.steps {
-  --border-width: var(--global-border-width--normal);
-  /* WARNING: Manual value of rendered height of `.users` <thead> */
-  --thead-height: -31px;
 
-  width: 100%;
-
-  /* Move the inner table's head up into the outer table's head */
-  position: relative;
-  top: var(--thead-height);
-  margin-bottom: calc(var(--thead-height) + var(--border-width));
+.step > td {
+  /* Difference between tall unwrapped cell height and basic text cell height */
+  --greatest-height-diff: 4.78px; /* value obtained form live render */
+  /* FAQ: We want only the top space, not the top & bottom space combined */
+  --vertical-offset: calc(var(--greatest-height-diff) / 2);
 }
-
-.name {
-  /* WARNING: Manual value: tallest <td> unwrapped content rendered height */
-  --td-height--tallest: 23px;
-
-  vertical-align: top;
-  line-height: var(--td-height--tallest);
-}
-.name,
 .step > td:not(.status):not(.actions) {
+  /* Tweak `vertical-align`'s `top` to look like `middle` when nothing wraps */
+  padding-top: calc(var(--cell-horizontal-padding) + var(--vertical-offset));
+  vertical-align: top;
+
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-
-.step:nth-child(even):not(.staffwait) {
+.step:nth-child(even) > td:not(.staffwait):not(.name) {
   background-color: #C6C6C61A;
 }
 
@@ -169,18 +158,13 @@ tbody {
 .users {
   table-layout: fixed;
 
-  th:nth-child(1) { width: 15%; }
-  th:nth-child(2) { width: 85%; }
-}
-.steps {
-  table-layout: fixed;
-
-  col:nth-child(1) { width: 17%; }
-  col:nth-child(2) { width: 30%; }
-  th:nth-child(3) { width: 36%; }
-    col:nth-child(3) { width: 19%; }
-    col:nth-child(4) { width: 17%; }
-  col:nth-child(5) { width: 17%; }
+  col:nth-child(1) { width: 12%; }
+  col:nth-child(2) { width: 14%; }
+  col:nth-child(3) { width: 27%; }
+  th:nth-child(4) { width: 33%; }
+    col:nth-child(4) { width: 18%; }
+    col:nth-child(5) { width: 15%; }
+  col:nth-child(6) { width: 14%; }
 }
 
 .no-users-placeholder {
