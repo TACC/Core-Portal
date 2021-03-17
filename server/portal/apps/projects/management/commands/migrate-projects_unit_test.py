@@ -1,14 +1,20 @@
 from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.metadata import ProjectMetadata
 from django.core import management
+from django.db.models import signals
 import pytest
 
 
 pytestmark = pytest.mark.django_db
 
 
+@pytest.fixture(autouse=True)
+def disconnect_signal():
+    yield signals.post_save.disconnect(sender=ProjectMetadata, dispatch_uid="index_project")
+
+
 @pytest.fixture
-def ownerless_project():
+def ownerless_project(django_db_reset_sequences):
     meta = ProjectMetadata.objects.create(
         title="project",
         project_id="CEP-1",
