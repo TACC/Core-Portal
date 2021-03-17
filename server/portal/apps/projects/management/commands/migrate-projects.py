@@ -2,11 +2,8 @@
 
 from django.core.management.base import BaseCommand
 from portal.libs.agave.utils import service_account
-from portal.libs.agave.models.files import BaseFile
 from portal.apps.projects.models.base import Project
-from portal.apps.projects.managers.base import ProjectsManager
 from portal.apps.projects.models.metadata import AbstractProjectMetadata
-from portal.libs.agave.utils import service_account
 from django.contrib.auth import get_user_model
 import logging
 
@@ -35,8 +32,7 @@ class Command(BaseCommand):
                 roles = storage.roles.to_dict().items()
                 admins = list(
                     filter(
-                        lambda role_tuple: role_tuple[0] != 'wma_prtl' and \
-                            (role_tuple[1] == 'ADMIN' or role_tuple[1] == 'OWNER'),
+                        lambda role_tuple: role_tuple[0] != 'wma_prtl' and (role_tuple[1] == 'ADMIN' or role_tuple[1] == 'OWNER'),
                         roles
                     )
                 )
@@ -49,7 +45,7 @@ class Command(BaseCommand):
                     admin=admin.username,
                     project_id=meta.project_id
                 ))
-                
+
             except Exception as e:
                 logger.error("Could not migrate {project_id}".format(project_id=meta.project_id))
                 logger.exception(e)
