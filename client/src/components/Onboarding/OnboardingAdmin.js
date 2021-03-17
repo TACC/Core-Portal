@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Icon, LoadingSpinner, Message, Paginator } from '_common';
 import { Button } from 'reactstrap';
+import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import { onboardingUserPropType } from './OnboardingPropTypes';
 import OnboardingEventLogModal from './OnboardingEventLogModal';
@@ -136,7 +137,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
     /* eslint-disable prettier/prettier */
     <>
     {user.steps.map((step, index) => (
-    <tr styleName="user">
+    <tr styleName="user" key={uuidv4()}>
           {index === 0 && (
           <td rowSpan="5" styleName="name">
             {`${user.firstName} ${user.lastName}`}
