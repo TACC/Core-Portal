@@ -62,7 +62,8 @@ const DataFilesProjectMembers = ({
 
   const alreadyMember = user => {
     return members.some(
-      existingMember => existingMember.user && existingMember.user.username === user.username
+      existingMember =>
+        existingMember.user && existingMember.user.username === user.username
     );
   };
 
