@@ -1,5 +1,5 @@
 from portal.apps.projects.models.base import Project
-from portal.apps.projects.models.metadata import AbstractProjectMetadata
+from portal.apps.projects.models.metadata import ProjectMetadata
 from django.core import management
 import pytest
 
@@ -9,7 +9,7 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def ownerless_project():
-    meta = AbstractProjectMetadata.objects.create(
+    meta = ProjectMetadata.objects.create(
         title="project",
         project_id="CEP-1",
         description=None,
@@ -44,7 +44,7 @@ def test_migrate_projects(regular_user, mock_project_metadata, mock_project_stor
         'username': 'ADMIN'
     }
     management.call_command("migrate-projects")
-    assert AbstractProjectMetadata.objects.all()[0].pi.username == regular_user.username
+    assert ProjectMetadata.objects.all()[0].pi.username == regular_user.username
 
 
 def test_migrate_projects_wrong_admins(regular_user, mock_project_metadata, mock_project_storage):
@@ -54,4 +54,4 @@ def test_migrate_projects_wrong_admins(regular_user, mock_project_metadata, mock
         'username2': 'ADMIN'
     }
     management.call_command("migrate-projects")
-    assert AbstractProjectMetadata.objects.all()[0].pi is None
+    assert ProjectMetadata.objects.all()[0].pi is None

@@ -3,7 +3,7 @@
 from django.core.management.base import BaseCommand
 from portal.libs.agave.utils import service_account
 from portal.apps.projects.models.base import Project
-from portal.apps.projects.models.metadata import AbstractProjectMetadata
+from portal.apps.projects.models.metadata import ProjectMetadata
 from django.contrib.auth import get_user_model
 import logging
 
@@ -23,7 +23,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Handle command."""
         agc = service_account()
-        metadatas = AbstractProjectMetadata.objects.all().filter(pi=None)
+        metadatas = ProjectMetadata.objects.all().filter(pi=None)
         for meta in metadatas:
             try:
 
