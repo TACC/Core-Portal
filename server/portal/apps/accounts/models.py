@@ -57,7 +57,7 @@ class NotificationPreferences(models.Model):
                                 on_delete=models.CASCADE)
     announcements = models.BooleanField(
         default=True,
-        verbose_name=_('Receive occasional announcements from {}'.format(settings.PORTAL_NAMESPACE)))
+        verbose_name=_('Receive occasional announcements'))
 
     class Meta:
         permissions = (
