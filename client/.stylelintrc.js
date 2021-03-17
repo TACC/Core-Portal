@@ -62,7 +62,10 @@ module.exports = {
 
     // SELECTOR
     // Disallow unknown pseudo-class selectors.
-    // 'selector-pseudo-class-no-unknown': null,
+    'selector-pseudo-class-no-unknown': [ true, {
+        ignorePseudoClasses: ['global']
+      }
+    ],
     // Disallow unknown pseudo-element selectors.
     // 'selector-pseudo-element-no-unknown': null,
     // Disallow unknown type selectors.
