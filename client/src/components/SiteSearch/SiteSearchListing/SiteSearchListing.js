@@ -93,9 +93,8 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
 
   const hasNoResults = !loading && !error && results.count === 0;
 
-  let containerStyleNames = ['container', `for-${filter}`];
-  if (hasNoResults) containerStyleNames.push('is-empty');
-  containerStyleNames = containerStyleNames.join(' ');
+  let containerStyleNames = `container for-${filter}`;
+  if (hasNoResults) containerStyleNames += ' is-empty';
 
   const lastPageIndex = Math.ceil(results.count / 10);
   return (
