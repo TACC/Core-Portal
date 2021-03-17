@@ -47,8 +47,6 @@ describe('DataFilesUploadModal', () => {
       store
     );
 
-    // Check that the authenticated user appears as the default owner
-    // for a new project
     expect(getAllByText(/Upload Files/)).toBeDefined();
   });
 
