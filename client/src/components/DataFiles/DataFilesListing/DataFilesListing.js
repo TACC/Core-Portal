@@ -120,7 +120,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       });
     }
     return cells;
-  }, [api, showViewPath]);
+  }, [api, showViewPath, fileNavCellCallback]);
 
   return (
     <div styleName="root">
