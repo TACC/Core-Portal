@@ -226,6 +226,15 @@ class TestAgaveUtils(TestCase):
         ) as _file:
             self.agave_listing = json.load(_file)
 
+        with open(
+            os.path.join(
+                agave_path,
+                'files',
+                'file-listing.json'
+                )
+        ) as _file:
+            self.agave_file_listing = json.load(_file)
+
     def test_to_camel_case(self):
         """Test `to_camel_case` util."""
         attr = 'some_attribute'
@@ -329,3 +338,15 @@ class TestAgaveUtils(TestCase):
                 files,
                 [f['path'] for f in level[2]]
             )
+
+    def test_increment_file_name(self):
+        """Test `increment_file_name` util."""
+        self.magave.reset_mock()
+        file_name = 'some_file_name.txt'
+        res = AgaveUtils.increment_file_name(self.agave_file_listing, file_name)
+        self.assertEqual(res, 'some_file_name.txt')
+
+        file_name = 'file.txt'
+        res = AgaveUtils.increment_file_name(self.agave_file_listing, file_name)
+        self.assertEqual(res, 'file(1).txt')
+
