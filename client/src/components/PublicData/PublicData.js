@@ -21,7 +21,7 @@ import './PublicData.module.css';
 const PublicData = () => {
   const history = useHistory();
   const dispatch = useDispatch();
-
+  const location = useLocation();
   const publicDataSystem = useSelector(
     state =>
       state.systems.storage.configuration.find(
@@ -48,7 +48,8 @@ const PublicData = () => {
   }, []);
 
   useEffect(() => {
-    if (publicDataSystem.system) {
+    const pathLength = location.pathname.split('/').length;
+    if (publicDataSystem.system && pathLength < 6) {
       history.push(`/public-data/tapis/public/${publicDataSystem.system}/`);
     }
   }, [publicDataSystem.system]);
