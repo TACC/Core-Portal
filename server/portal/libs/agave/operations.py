@@ -228,7 +228,6 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         # list the directory and check if file_name exists
         file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
         file_name = increment_file_name(listing=file_listing, file_name=file_name)
-
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
@@ -288,7 +287,6 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
         # list the directory and check if file_name exists
         file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
         file_name = increment_file_name(listing=file_listing, file_name=file_name)
-
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
@@ -419,18 +417,16 @@ def upload(client, system, path, uploaded_file):
     -------
     dict
     """
-    dest_path = os.path.join(path, uploaded_file.name)
     try:
-        file_listing = client.files.list(systemId=system, filePath=dest_path)
+        file_listing = client.files.list(systemId=system, filePath=path)
         uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
-
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
-
+    
+    # the fileName param does not seem to accept a different file name
     resp = client.files.importData(systemId=system,
                                    filePath=urllib.parse.quote(path),
-                                   fileName=str(uploaded_file.name),
                                    fileToUpload=uploaded_file)
 
     agave_indexer.apply_async(kwargs={'systemId': system,
