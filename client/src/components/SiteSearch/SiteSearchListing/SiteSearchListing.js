@@ -14,18 +14,14 @@ import './SiteSearchListing.module.scss';
 import './SiteSearchListing.css';
 
 export const CMSListingItem = ({ title, url, highlight }) => (
-  <div styleName="sitesearch-cms-item" data-testid="sitesearch-cms-item">
-    <div>
-      <a href={url} styleName="wb-link">
-        <b>{title}</b>
-      </a>
-    </div>
-    {/* eslint-disable react/no-array-index-key */}
-    {(highlight.body || highlight.title).map((h, i) => (
-      <div key={i}> {renderHtml(h)}</div>
-    ))}
-    {/* eslint-disable react/no-array-index-key */}
-  </div>
+  <article styleName="sitesearch-cms-item" data-testid="sitesearch-cms-item">
+    <a href={url}>{title}</a>
+    {(highlight.body || highlight.title).map(function renderCMSItem(h, i) {
+      const key = `${title}-${i}`;
+
+      return <p key={key}> {renderHtml(h)}</p>;
+    })}
+  </article>
 );
 CMSListingItem.propTypes = {
   title: PropTypes.string.isRequired,
@@ -94,22 +90,26 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
     public: 'Public Files',
     community: 'Community Data'
   };
+
+  const hasNoResults = !loading && !error && results.count === 0;
+
+  let containerStyleNames = `container for-${filter}`;
+  if (hasNoResults) containerStyleNames += ' is-empty';
+
   const lastPageIndex = Math.ceil(results.count / 10);
   return (
-    <div styleName="container">
+    <div styleName={containerStyleNames}>
       <SiteSearchSearchbar />
-      <div styleName={`header ${filter === 'cms' ? 'cms-header' : ''}`}>
-        <h5>{FILTER_MAPPING[filter]}</h5>
-      </div>
+      <h5 styleName="header">{FILTER_MAPPING[filter]}</h5>
 
       {loading && (
         <div styleName="placeholder">
           <LoadingSpinner />
         </div>
       )}
-      {!loading && !error && results.count === 0 && (
+      {hasNoResults && (
         <div styleName="placeholder">
-          <InlineMessage type="warning">
+          <InlineMessage type="info" className="small">
             No results found in {FILTER_MAPPING[filter]}.
           </InlineMessage>
         </div>
