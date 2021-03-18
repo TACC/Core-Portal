@@ -24,7 +24,6 @@
   padding-bottom: 0.75rem; /* ~10px * design * 1.2 design-to-app ratio */
 
   display: flex;
-  flex-wrap: wrap; /* prevent breadcrumbs and action buttons from colliding */
   justify-content: space-between;
   align-items: flex-end;
 }
@@ -48,4 +47,11 @@
   padding-top: 20px;
   padding-left: 20px;
   display: flex;
+}
+
+/* Error message */
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

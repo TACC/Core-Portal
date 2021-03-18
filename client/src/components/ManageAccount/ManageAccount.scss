@@ -24,9 +24,11 @@
       border-right: 1px solid rgba(112, 112, 112, 0.25);
     }
   }
-  .btn-link {
-    color: #9d85ef;
-  }
+}
+.btn-link {
+  color: #9d85ef;
+  border: 0;
+  vertical-align: baseline;
 }
 
 /*
@@ -42,21 +44,6 @@
   h5 {
     font-weight: 400;
     color: #484848;
-  }
-}
-.manage-account-modal {
-  .modal-content {
-    border-radius: 0 !important;
-  }
-}
-.manage-account-modal-header {
-  background-color: #f4f4f4;
-  color: #484848;
-  padding: 1rem;
-  span {
-    color: #484848;
-    font-size: 1.1rem;
-    margin: 0;
   }
 }
 // Tables
@@ -128,14 +115,23 @@
 // Buttons and Forms
 .manage-account-submit-button {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  width: fit-content;
   border-radius: 0;
   font: bold 12px Roboto, sans-serif;
   padding: 0.5rem 1rem;
   border: 0 !important; /* override `.workbench-content .btn-secondary` */
   background-color: #9d85ef !important; /* override `.workbench-content .btn-secondary` */
   color: white !important; /* override `.workbench-content .btn-secondary` */
+}
+
+.modal-body {
+  font-size: 14px;
+  .btn-link {
+    padding: 0;
+  }
+  .manage-account-submit-button {
+    margin-left: auto;
+  }
 }
 
 .form-button {
@@ -146,14 +142,6 @@
 .license-button {
   background-color: transparent !important;
   font-weight: bold;
-}
-.change-password-form {
-  font-size: 14px;
-  display: flex;
-  flex-direction: column;
-}
-.password-warning {
-  font-size: 14px;
 }
 
 .welcomeMessageGeneral {

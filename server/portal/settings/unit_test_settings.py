@@ -41,8 +41,6 @@ ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
 PORTAL_ICON_FILENAME = 'path/to/icon.ico'
-PORTAL_LOGO_FILENAME = 'path/to/logo.png'
-PORTAL_NAVBAR_BACKGROUND_FILENAME = 'path/to/background.png'
 PORTAL_DOMAIN = 'test.portal'
 PORTAL_ADMIN_USERNAME = 'wma_prtl'
 
@@ -145,8 +143,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-REQUEST_ACCESS = True
-
 IMPERSONATE_REQUIRE_SUPERUSER = True
 
 LOGIN_REDIRECT_URL = '/index/'
@@ -205,19 +201,7 @@ ALLOCATION_SYSTEMS = []
 PORTAL_NAMESPACE = 'test'
 PORTAL_ALLOCATION = 'test'
 
-PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_ABS_PATH = '/path/to/home_dirs'
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS = '/work'
-PORTAL_DATA_DEPOT_WORK_HOME_DIR_EXEC_SYSTEM = 'stampede2'
-# Relative path from the default sotrage system where home directories
-# should be created.
-# Use only if all home directories are under one parent directory.
-PORTAL_DATA_DEPOT_DEFAULT_HOME_DIR_REL_PATH = 'home_dirs'
-PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX = 'cep.home.{}'
-PORTAL_DATA_DEPOT_STORAGE_HOST = 'data.tacc.utexas.edu'
 
-PORTAL_DATA_DEPOT_PROJECT_SYSTEM_PREFIX = 'test.project'
-
-PORTAL_USER_HOME_MANAGER = 'portal.apps.accounts.managers.user_home.UserHomeManager'
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
 
@@ -388,6 +372,55 @@ MIGRATION_MODULES = {
 
 COMMUNITY_INDEX_SCHEDULE = {'hour': 0, 'minute': 0, 'day_of_week': 0}
 
+"""
+SETTINGS: SUPPORTED FILE PREVIEW TYPES
+"""
+
+SUPPORTED_MS_WORD = [
+    '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',
+]
+SUPPORTED_MS_EXCEL = [
+    '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xltx', '.xltm',
+]
+SUPPORTED_MS_POWERPOINT = [
+    '.ppt', '.pot', '.pps', '.pptx', '.pptm',
+    '.potx', '.ppsx', '.ppsm', '.sldx', '.sldm',
+]
+
+SUPPORTED_MS_OFFICE = (
+    SUPPORTED_MS_WORD +
+    SUPPORTED_MS_POWERPOINT +
+    SUPPORTED_MS_EXCEL
+)
+
+SUPPORTED_IMAGE_PREVIEW_EXTS = [
+    '.png', '.gif', '.jpg', '.jpeg',
+]
+
+SUPPORTED_TEXT_PREVIEW_EXTS = [
+    '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp',
+    '.cs', '.css', '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml',
+    '.hh', '.htm', '.html', '.java', '.js', '.less', '.m', '.make', '.md',
+    '.ml', '.mm', '.msg', '.php', '.pl', '.properties', '.py', '.rb',
+    '.sass', '.scala', '.script', '.sh', '.sml', '.sql', '.txt', '.vi',
+    '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl', '.json',
+    '.out', '.err', '.f',
+]
+
+SUPPORTED_OBJECT_PREVIEW_EXTS = [
+    '.pdf',
+]
+
+SUPPORTED_IPYNB_PREVIEW_EXTS = [
+    '.ipynb'
+]
+
+SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
+                                SUPPORTED_TEXT_PREVIEW_EXTS +
+                                SUPPORTED_OBJECT_PREVIEW_EXTS +
+                                SUPPORTED_MS_OFFICE +
+                                SUPPORTED_IPYNB_PREVIEW_EXTS)
+
 # Channels
 ASGI_APPLICATION = 'portal.routing.application'
 CHANNEL_LAYERS = {
@@ -401,40 +434,43 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'name': 'My Data (Frontera)',
         'description': 'My Data on Frontera for {username}',
         'site': 'frontera',
-        'systemId': 'frontera.home.{username}',                       # PORTAL_DATA_DEPOT_USER_SYSTEM_PREFIX
-        'host': 'frontera.tacc.utexas.edu',                         # PORTAL_DATA_DEPOT_STORAGE_HOST
-        'rootDir': '/home1/{tasdir}',                              # PORTAL_DATA_DEPOT_WORK_HOME_DIR_FS
+        'systemId': 'frontera.home.{username}',
+        'host': 'frontera.tacc.utexas.edu',
+        'rootDir': '/home1/{tasdir}',
         'port': 22,
         'icon': None,
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'description': 'My Data on Longhorn for {username}',
-        'site': 'frontera',
         'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
         'rootDir': '/home/{tasdir}',
         'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
-    },
+    }
 }
 
 PORTAL_EXEC_SYSTEMS = {
-    'data': {
-        'scratch_dir': '/scratch/{}'
+    'data.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'stampede2': {
-        'scratch_dir': '/scratch/{}'
+    'stampede2.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'lonestar5': {
-        'scratch_dir': '/scratch/{}'
+    'lonestar5.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'longhorn': {
-        'scratch_dir': '/scratch/{}'
+    'longhorn.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'frontera': {
-        'scratch_dir': '/scratch1/{}'
+    'frontera.tacc.utexas.edu': {
+        'scratch_dir': '/scratch1/{}',
+        'home_dir': '/home1/{}'
     }
 }
 
@@ -443,6 +479,26 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Community Data',
         'system': 'portal.storage.community',
         'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Shared Workspaces',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Google Drive',
+        'system': 'googledrive',
+        'scheme': 'private',
+        'api': 'googledrive',
+        'icon': None
+    },
+    {
+        'name': 'Public Data',
+        'system': 'portal.storage.public',
+        'scheme': 'public',
         'api': 'tapis',
         'icon': None
     }

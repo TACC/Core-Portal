@@ -8,7 +8,8 @@ import {
   call,
   all,
   race,
-  take
+  take,
+  select
 } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
 
@@ -212,26 +213,35 @@ export function* scrollFiles(action) {
     }
   });
 
-  const listingResponse = yield call(
-    fetchFilesUtil,
-    action.payload.api,
-    action.payload.scheme,
-    action.payload.system,
-    action.payload.path || '',
-    action.payload.offset,
-    action.payload.limit,
-    action.payload.queryString,
-    action.payload.nextPageToken
-  );
-  yield put({
-    type: 'SCROLL_FILES_SUCCESS',
-    payload: {
-      files: listingResponse.listing,
-      reachedEnd: listingResponse.reachedEnd,
-      nextPageToken: listingResponse.nextPageToken,
-      section: action.payload.section
-    }
-  });
+  try {
+    const listingResponse = yield call(
+      fetchFilesUtil,
+      action.payload.api,
+      action.payload.scheme,
+      action.payload.system,
+      action.payload.path || '',
+      action.payload.offset,
+      action.payload.limit,
+      action.payload.queryString,
+      action.payload.nextPageToken
+    );
+    yield put({
+      type: 'SCROLL_FILES_SUCCESS',
+      payload: {
+        files: listingResponse.listing,
+        reachedEnd: listingResponse.reachedEnd,
+        nextPageToken: listingResponse.nextPageToken,
+        section: action.payload.section
+      }
+    });
+  } catch (e) {
+    yield put({
+      type: 'SCROLL_FILES_ERR',
+      payload: {
+        section: action.payload.section
+      }
+    });
+  }
 }
 
 export async function renameFileUtil(api, scheme, system, path, newName) {
@@ -518,7 +528,7 @@ export function* watchPreview() {
 export function* preview(action) {
   yield put({
     type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-    payload: { href: '', content: '', isLoading: true }
+    payload: { href: null, content: null, error: null, isLoading: true }
   });
   try {
     if (action.payload.api !== 'tapis')
@@ -529,28 +539,27 @@ export function* preview(action) {
       action.payload.scheme,
       action.payload.system,
       action.payload.path,
-      action.payload.href,
-      action.payload.length
+      action.payload.href
     );
-    const { content, href } = response;
     yield put({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-      payload: { content, href, isLoading: false }
+      payload: { ...response, isLoading: false }
     });
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
       payload: {
-        content: 'Unable to show preview.',
-        href: '',
+        content: null,
+        href: null,
+        error: 'Unable to show preview.',
         isLoading: false
       }
     });
   }
 }
 
-export async function previewUtil(api, scheme, system, path, href, length) {
-  const q = stringify({ href, length });
+export async function previewUtil(api, scheme, system, path, href) {
+  const q = stringify({ href });
   const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/?${q}`;
   const request = await fetch(url);
   const requestJson = await request.json();
@@ -755,4 +764,216 @@ export function* trashFile(system, path, id) {
       payload: { status: 'ERROR', key: id, operation: 'trash' }
     });
   }
+}
+
+export const getLatestApp = async name => {
+  const res = await fetchUtil({
+    url: '/api/workspace/apps',
+    params: {
+      publicOnly: true,
+      name
+    }
+  });
+  const apps = res.response;
+  const latestApp = apps
+    .filter(app => app.id.includes(name))
+    .reduce(
+      (latest, app) => {
+        if (app.version > latest.version) {
+          return app;
+        }
+        if (app.version < latest.version) {
+          return latest;
+        }
+        // Same version of app
+        if (app.revision >= latest.revision) {
+          return app;
+        }
+        return latest;
+      },
+      { revision: null, version: null }
+    );
+  return latestApp.id;
+};
+
+const getExtractParams = (file, latestExtract) => {
+  const inputFile = `agave://${file.system}${file.path}`;
+  const archivePath = `agave://${file.system}${file.path.substring(
+    0,
+    file.path.lastIndexOf('/') + 1
+  )}`;
+  return JSON.stringify({
+    allocation: 'FORK',
+    appId: latestExtract,
+    archive: true,
+    archivePath,
+    inputs: {
+      inputFile
+    },
+    maxRunTime: '02:00:00',
+    name: 'Extracting Compressed File',
+    parameters: {}
+  });
+};
+
+export const extractAppSelector = state => state.workbench.config.extractApp;
+
+export function* extractFiles(action) {
+  try {
+    const extractApp = yield select(extractAppSelector);
+    const latestExtract = yield call(getLatestApp, extractApp);
+    const params = getExtractParams(action.payload.file, latestExtract);
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'RUNNING', operation: 'extract' }
+    });
+    const submission = yield call(jobHelper, params);
+    if (submission.execSys) {
+      // If the execution system requires pushing keys, then
+      // bring up the modal and retry the extract action
+      yield put({
+        type: 'SYSTEMS_TOGGLE_MODAL',
+        payload: {
+          operation: 'pushKeys',
+          props: {
+            onSuccess: action,
+            system: submission.execSys,
+            onCancel: {
+              type: 'DATA_FILES_SET_OPERATION_STATUS',
+              payload: { status: 'ERROR', operation: 'extract' }
+            }
+          }
+        }
+      });
+    } else if (submission.status === 'ACCEPTED') {
+      yield put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'SUCCESS', operation: 'extract' }
+      });
+    } else {
+      throw new Error('Unable to extract files');
+    }
+  } catch (error) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'ERROR', operation: 'extract' }
+    });
+  }
+}
+export function* watchExtract() {
+  yield takeLeading('DATA_FILES_EXTRACT', extractFiles);
+}
+
+/**
+ * Create JSON string of job params
+ * @async
+ * @param {Array<Object>} files
+ * @param {String} zipfileName
+ * @returns {String}
+ */
+const getCompressParams = (files, zipfileName, latestZippy) => {
+  const inputs = {
+    inputFiles: files.map(file => `agave://${file.system}${file.path}`)
+  };
+  const parameters = {
+    filenames: files.reduce((names, file) => `${names}"${file.name}" `, ''),
+    zipfileName,
+    compression_type: zipfileName.endsWith('.tar.gz') ? 'tgz' : 'zip'
+  };
+  const archivePath = `agave://${files[0].system}${files[0].path.substring(
+    0,
+    files[0].path.lastIndexOf('/') + 1
+  )}`;
+
+  return JSON.stringify({
+    allocation: 'FORK',
+    appId: latestZippy,
+    archive: true,
+    archivePath,
+    maxRunTime: '02:00:00',
+    name: 'Compressing Files',
+    inputs,
+    parameters
+  });
+};
+
+export const compressAppSelector = state => state.workbench.config.compressApp;
+
+export function* compressFiles(action) {
+  const compressErrorAction = {
+    type: 'DATA_FILES_SET_OPERATION_STATUS',
+    payload: { status: 'ERROR', operation: 'compress' }
+  };
+  try {
+    const compressApp = yield select(compressAppSelector);
+    const latestZippy = yield call(getLatestApp, compressApp);
+    const params = getCompressParams(
+      action.payload.files,
+      action.payload.filename,
+      latestZippy
+    );
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS',
+      payload: { status: 'RUNNING', operation: 'compress' }
+    });
+    const submission = yield call(jobHelper, params);
+    if (submission.execSys) {
+      // If the execution system requires pushing keys, then
+      // bring up the modal and retry the compress action
+      yield put({
+        type: 'SYSTEMS_TOGGLE_MODAL',
+        payload: {
+          operation: 'pushKeys',
+          props: {
+            onSuccess: action,
+            system: submission.execSys,
+            onCancel: compressErrorAction
+          }
+        }
+      });
+    } else if (submission.status === 'ACCEPTED') {
+      yield put({
+        type: 'DATA_FILES_SET_OPERATION_STATUS',
+        payload: { status: 'SUCCESS', operation: 'compress' }
+      });
+    } else {
+      throw new Error('Unable to compress files');
+    }
+  } catch (error) {
+    yield put(compressErrorAction);
+  }
+}
+export async function jobHelper(body) {
+  const url = '/api/workspace/jobs';
+  const res = await fetchUtil({ url, method: 'POST', body });
+  return res.response;
+}
+export function* watchCompress() {
+  yield takeLeading('DATA_FILES_COMPRESS', compressFiles);
+}
+
+export async function makePublicUtil(api, scheme, system, path) {
+  const url = removeDuplicateSlashes(
+    `/api/datafiles/${api}/makepublic/${scheme}/${system}${path}/`
+  );
+  const request = await fetch(url, {
+    method: 'PUT',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    credentials: 'same-origin',
+    body: JSON.stringify({})
+  });
+
+  if (!request.ok) {
+    throw new Error(request.status);
+  }
+  return request;
+}
+
+export function* doMakePublic(action) {
+  const { system, path } = action.payload;
+  yield call(makePublicUtil, 'tapis', 'private', system, path);
+}
+
+export function* watchMakePublic() {
+  yield takeLeading('DATA_FILES_MAKE_PUBLIC', doMakePublic);
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
+import getFilePermissions from 'utils/filePermissions';
 import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
@@ -46,6 +47,18 @@ const DataFilesToolbar = ({ scheme, api }) => {
       (scheme === 'private' || scheme === 'projects')
   );
 
+  const showCompress = !!useSelector(
+    state => state.workbench.config.extractApp
+  );
+
+  const showExtract = !!useSelector(
+    state => state.workbench.config.compressApp
+  );
+  const showMakePublic = useSelector(
+    state =>
+      state.workbench && state.workbench.config.makePublic && api === 'tapis'
+  );
+
   const toggleRenameModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -67,6 +80,23 @@ const DataFilesToolbar = ({ scheme, api }) => {
       payload: { operation: 'copy', props: { selectedFiles } }
     });
 
+  const toggleCompressModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'compress', props: { selectedFiles } }
+    });
+  };
+
+  const toggleExtractModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'extract',
+        props: { selectedFile: selectedFiles[0] }
+      }
+    });
+  };
+
   const toggleLinkModal = () => {
     dispatch({
       type: 'DATA_FILES_LINK',
@@ -80,6 +110,16 @@ const DataFilesToolbar = ({ scheme, api }) => {
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
         operation: 'link',
+        props: { selectedFile: selectedFiles[0] }
+      }
+    });
+  };
+
+  const toggleMakePublicModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'makePublic',
         props: { selectedFile: selectedFiles[0] }
       }
     });
@@ -99,22 +139,35 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
 
-  const isPrivate = ['projects', 'private'].includes(scheme);
-  const canRename =
-    selectedFiles.length === 1 && isPrivate && api !== 'googledrive';
-  const canMove =
-    selectedFiles.length > 0 && isPrivate && api !== 'googledrive';
-  const canCopy = selectedFiles.length > 0 && isPrivate;
-  const canDownload =
-    selectedFiles.length === 1 &&
-    selectedFiles[0].format !== 'folder' &&
-    api !== 'googledrive';
-  const canTrash =
-    selectedFiles.length > 0 && isPrivate && api !== 'googledrive';
-
+  const permissionParams = { files: selectedFiles, scheme, api };
+  const canRename = getFilePermissions('rename', permissionParams);
+  const canMove = getFilePermissions('move', permissionParams);
+  const canCopy = getFilePermissions('copy', permissionParams);
+  const canDownload = getFilePermissions('download', permissionParams);
+  const canTrash = getFilePermissions('trash', permissionParams);
+  const canCompress = getFilePermissions('compress', permissionParams);
+  const canExtract = getFilePermissions('extract', permissionParams);
+  const canMakePublic =
+    showMakePublic && getFilePermissions('public', permissionParams);
   return (
     <>
       <div id="data-files-toolbar-button-row">
+        {showExtract && (
+          <ToolbarButton
+            text="Extract"
+            onClick={toggleExtractModal}
+            iconName="extract"
+            disabled={!canExtract}
+          />
+        )}
+        {showCompress && (
+          <ToolbarButton
+            text="Compress"
+            onClick={toggleCompressModal}
+            iconName="compress"
+            disabled={!canCompress}
+          />
+        )}
         <ToolbarButton
           text="Rename"
           onClick={toggleRenameModal}
@@ -145,6 +198,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
             iconName="link"
             onClick={toggleLinkModal}
             disabled={!canDownload}
+          />
+        )}
+        {showMakePublic && (
+          <ToolbarButton
+            text="Make Public"
+            iconName="conversation"
+            onClick={toggleMakePublicModal}
+            disabled={!canMakePublic}
           />
         )}
         <ToolbarButton

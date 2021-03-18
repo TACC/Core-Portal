@@ -1,4 +1,5 @@
 from portal.apps.onboarding.steps.key_service_creation import KeyServiceCreationStep
+from portal.libs.agave.models.systems.storage import StorageSystem
 from mock import call, ANY, MagicMock
 import pytest
 
@@ -37,7 +38,17 @@ def mock_fail(mocker):
     yield mocker.patch.object(KeyServiceCreationStep, 'fail')
 
 
-def test_process(regular_user, mock_call_reactor):
+def test_process_skip(regular_user, mock_call_reactor, mocker, mock_complete):
+    mock_storage_system = mocker.patch.object(StorageSystem, 'test')
+    mock_storage_system.return_value = (True, None)
+    step = KeyServiceCreationStep(regular_user)
+    step.process()
+    mock_complete.assert_called_with("Found existing storage systems")
+
+
+def test_process(regular_user, mock_call_reactor, mocker):
+    mock_storage_system = mocker.patch.object(StorageSystem, 'test')
+    mock_storage_system.return_value = (False, None)
     step = KeyServiceCreationStep(regular_user)
     step.process()
     frontera_call = call(
@@ -65,13 +76,11 @@ def test_process(regular_user, mock_call_reactor):
         'wma-storage',
         {
             'name': 'My Data (Longhorn)',
-            'site': 'frontera',
-            'description': 'My Data on Longhorn for username',
-            'systemId': 'longhorn.home.username',
             'host': 'longhorn.tacc.utexas.edu',
             'rootDir': '/home/12345/username',
             'port': 22,
             'requires_allocation': 'longhorn3',
+            'systemId': 'longhorn.home.username',
             'icon': None
         },
         callback='portal.apps.onboarding.steps.key_service_creation.KeyServiceCreationCallback',

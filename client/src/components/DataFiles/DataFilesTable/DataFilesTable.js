@@ -101,8 +101,8 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       return (
         <div className="h-100 listing-placeholder">
           <SectionMessage type="warning">
-            Connect your Google Drive account under the &quot;3rd Party Apps
-            &quot; section in the &nbsp;
+            Connect your Google Drive account under the &quot;3rd Party
+            Apps&quot; section in the&nbsp;
             <Link to="/workbench/account/" className="wb-link">
               Manage Account page
             </Link>

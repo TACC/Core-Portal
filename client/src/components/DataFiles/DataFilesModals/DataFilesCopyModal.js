@@ -38,7 +38,10 @@ const DataFilesCopyModal = React.memo(() => {
     shallowEqual
   );
   const [disabled, setDisabled] = useState(false);
-  const systems = useSelector(state => state.systems.systemList, shallowEqual);
+  const systems = useSelector(
+    state => state.systems.storage.configuration,
+    shallowEqual
+  );
 
   const selectedFiles = useSelector(
     state =>
@@ -156,7 +159,7 @@ const DataFilesCopyModal = React.memo(() => {
               Destination
               <DataFilesSystemSelector
                 operation="copy"
-                systemId={params.system}
+                systemId={(systems[0] || params).system}
                 section="modal"
                 disabled={disabled}
                 showProjects={showProjects}

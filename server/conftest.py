@@ -21,8 +21,12 @@ def mock_googledrive_client(mocker):
 
 @pytest.fixture
 def regular_user(django_user_model, django_db_reset_sequences, mock_agave_client):
-    django_user_model.objects.create_user(username='username', password='password')
-    user = django_user_model.objects.get(username='username')
+    django_user_model.objects.create_user(username="username",
+                                          password="password",
+                                          first_name="Firstname",
+                                          last_name="Lastname",
+                                          email="user@user.com")
+    user = django_user_model.objects.get(username="username")
     token = AgaveOAuthToken.objects.create(
         user=user,
         token_type="bearer",
@@ -40,8 +44,12 @@ def regular_user(django_user_model, django_db_reset_sequences, mock_agave_client
 
 @pytest.fixture
 def regular_user2(django_user_model, django_db_reset_sequences, mock_agave_client):
-    django_user_model.objects.create_user(username='username2', password='password')
-    user = django_user_model.objects.get(username='username2')
+    django_user_model.objects.create_user(username="username2",
+                                          password="password",
+                                          first_name="Firstname2",
+                                          last_name="Lastname2",
+                                          email="user2@user.com")
+    user = django_user_model.objects.get(username="username2")
     token = AgaveOAuthToken.objects.create(
         user=user,
         token_type="bearer",
@@ -117,6 +125,7 @@ def agave_file_listing_mock():
 @pytest.fixture
 def agave_listing_mock():
     yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/agave/files/listing.json')))
+
 
 @pytest.fixture
 def text_file_fixture():

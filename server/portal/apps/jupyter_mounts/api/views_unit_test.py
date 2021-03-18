@@ -62,6 +62,10 @@ def test_get(authenticated_user, client, service_account, mock_manager, mock_pro
             "pems": "ro"
         },
         {
+            "path": "/path/to/community",
+            "mountPath": "/test/Public Data",
+            "pems": "ro"},
+        {
             "path": "/12345/username",
             "mountPath": "/test/mock_name",
             "pems": "rw"

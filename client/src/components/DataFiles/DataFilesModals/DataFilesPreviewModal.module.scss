@@ -1,6 +1,18 @@
+.root {
+  min-height: 30vh;
+}
+
 .text-preview{
   max-height: 75vh;
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+

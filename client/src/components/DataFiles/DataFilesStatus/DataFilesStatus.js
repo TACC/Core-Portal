@@ -1,4 +1,4 @@
-import { findSystemDisplayName } from 'utils/systems';
+import { findSystemDisplayName, findProjectTitle } from 'utils/systems';
 import truncateMiddle from 'utils/truncateMiddle';
 
 const OPERATION_MAP = {
@@ -8,11 +8,14 @@ const OPERATION_MAP = {
   move: 'moved',
   copy: 'copied',
   trash: 'moved',
-  toastMap(operation, status, systemList, { response }) {
+  makepublic: 'copied',
+  toastMap(operation, status, systemList, projectList, { response }) {
     if (status !== 'SUCCESS') {
       switch (operation) {
         case 'mkdir':
           return 'Add folder failed';
+        case 'makepublic':
+          return 'Copy to Public Data failed';
         default:
           return `${operation.charAt(0).toUpperCase() +
             operation.slice(1)} failed`;
@@ -38,12 +41,20 @@ const OPERATION_MAP = {
           .split('/')
           .slice(0, -1)
           .join('/');
+        const projectName = findProjectTitle(projectList, response.systemId);
+        if (projectName) {
+          const dest =
+            destPath === '/' || destPath === '' ? `${projectName}/` : destPath;
+          return `${type} ${mappedOp} to ${truncateMiddle(dest, 20)}`;
+        }
         const dest =
           destPath === '/' || destPath === ''
             ? `${findSystemDisplayName(systemList, response.systemId)}/`
             : destPath;
         return `${type} ${mappedOp} to ${truncateMiddle(dest, 20)}`;
       }
+      case 'makepublic':
+        return `${type} ${mappedOp} to Public Data`;
       default:
         return `${mappedOp}`;
     }
