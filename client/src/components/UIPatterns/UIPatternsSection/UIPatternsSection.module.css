@@ -1,0 +1,49 @@
+/* Elements */
+
+.term-details {
+  max-height: 100px;
+  overflow: auto;
+  padding: 0.25em 0.5em;
+  margin-right: var(--global-space--section-left);
+  border: var(--global-border--normal);
+
+  font-weight: normal;
+  font-style: italic;
+  font-size: 80%; /* Mimic Bootstrap `small, .small` */
+}
+.term-details dt {
+  font-family: var(--global-font-family--mono);
+}
+
+.table,
+.notice {
+  margin-bottom: 1em;
+}
+
+/* Elements: Modifiers */
+
+.content--should-always-show-scrollbar {
+  overflow-y: scroll;
+}
+.content--has-table-to-illustrate-scrolling {
+  height: 110px;
+}
+.content--has-list-to-illustrate-scrolling {
+  --line-height: 1.5em; /* Bootstrap `_reboot` `body { line-height: 1.5 }` */
+  --max-lines: 2;
+
+  height: calc(var(--line-height) * var(--max-lines));
+}
+
+
+/* Modifiers */
+
+.is-resizable {
+  resize: both;
+  overflow: scroll;
+  max-width: 100%;
+
+  /* Avoid horizontal scrolling of `.content--should-always-show-scrollbar` */
+  /* FAQ: A <Section>'s padding-left causes offset horizontal scrollbar */
+  min-width: 300px;
+}
