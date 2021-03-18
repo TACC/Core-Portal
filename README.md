@@ -92,7 +92,7 @@ Then use the django shell in the `core_portal_django` container:
 to run the following code to set up the projects index and initial project id
 ```
 from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_allocations_index
-setup_files_index()
+setup_files_index(force=True)
 setup_projects_index()
 setup_allocations_index()
 
