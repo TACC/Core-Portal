@@ -7,12 +7,23 @@ import siteSearchResults from '../fixtures/siteSearch.fixture.json';
 import '@testing-library/jest-dom';
 
 const mockStore = configureStore();
+const mockState = {
+  files: {
+    modals: {
+      preview: false
+    },
+    modalProps: {
+      preview: {}
+    },
+    preview: {}
+  }
+};
 
 describe('SiteSearchListing', () => {
   it('renders cms content', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({});
+    const store = mockStore(mockState);
     const { getAllByRole, getByText, getAllByTestId } = renderComponent(
       <SiteSearchListing
         filter="cms"
@@ -36,10 +47,28 @@ describe('SiteSearchListing', () => {
     );
   });
 
+  it('renders file listing', () => {
+    const history = createMemoryHistory();
+    history.push('/search/cms/?page=1&query_string=test');
+    const store = mockStore(mockState);
+    const { getAllByRole, getByText, getAllByTestId } = renderComponent(
+      <SiteSearchListing
+        filter="public"
+        loading={false}
+        error={null}
+        results={siteSearchResults.public}
+      />,
+      store,
+      history
+    );
+
+    expect(getByText(/Test data/)).toBeDefined();
+  });
+
   it('renders loading spinner', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({});
+    const store = mockStore(mockState);
     const { getByTestId } = renderComponent(
       <SiteSearchListing
         filter="cms"
@@ -57,7 +86,7 @@ describe('SiteSearchListing', () => {
   it('renders warning when no results', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({});
+    const store = mockStore(mockState);
     const { getByText } = renderComponent(
       <SiteSearchListing
         filter="cms"
@@ -75,7 +104,7 @@ describe('SiteSearchListing', () => {
   it('renders error message', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({});
+    const store = mockStore(mockState);
     const { getByText } = renderComponent(
       <SiteSearchListing
         filter="cms"
