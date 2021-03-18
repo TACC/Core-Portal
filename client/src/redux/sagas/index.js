@@ -3,7 +3,6 @@ import { watchJobs, watchJobDetails } from './jobs.sagas';
 import watchApps from './apps.sagas';
 import watchSystems from './systems.sagas';
 import { watchSocket, watchFetchNotifications } from './notifications.sagas';
-
 import {
   watchFetchSystems,
   watchFetchFiles,
@@ -17,8 +16,11 @@ import {
   watchPreview,
   watchMkdir,
   watchDownload,
+  watchCompress,
+  watchExtract,
   watchLink,
-  watchTrash
+  watchTrash,
+  watchMakePublic
 } from './datafiles.sagas';
 import watchAllocations from './allocations.sagas';
 import watchSystemMonitor from './systemMonitor.sagas';
@@ -66,7 +68,10 @@ export default function* rootSaga() {
     watchDownload(),
     watchLink(),
     watchTrash(),
+    watchMakePublic(),
     ...watchAllocations,
+    watchCompress(),
+    watchExtract(),
     watchApps(),
     watchSystems(),
     watchSystemMonitor(),

@@ -9,6 +9,7 @@ from portal.apps.system_creation.utils import (
 from portal.apps.onboarding.execute import (
     execute_setup_steps,
 )
+from portal.libs.agave.models.systems.storage import StorageSystem
 from django.conf import settings
 import json
 import logging
@@ -51,9 +52,27 @@ class KeyServiceCreationStep(AbstractStep):
         }
         self.logger.debug("KeyService variables substituted: {}".format(systems))
 
+        # Create only storage systems that are not currently accessible
+        systemList = []
+        for systemId in systems.keys():
+            success, result = StorageSystem(self.user.agave_oauth.client, id=systemId).test()
+            if success:
+                self.logger.info(
+                    "{username} has valid configuration for {systemId}, skipping creation".format(
+                        username=self.user.username, systemId=systemId
+                    )
+                )
+            else:
+                systemList.append(systemId)
+
+        # If all required systems already exist, mark this step complete
+        if len(systemList) == 0:
+            self.complete("Found existing storage systems")
+            return
+
         # Store requested systemIds
         data = {
-            'requested': list(systems.keys()),
+            'requested': systemList,
             'failed': [],
             'successful': []
         }

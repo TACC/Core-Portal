@@ -4,7 +4,7 @@ from django.test import TestCase
 from agavepy.agave import AttrDict
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.response import Hit
-from portal.libs.agave.operations import listing, search, mkdir, move, copy, rename
+from portal.libs.agave.operations import listing, search, mkdir, move, copy, rename, makepublic
 from portal.exceptions.api import ApiException
 
 
@@ -109,3 +109,14 @@ class TestOperations(TestCase):
         })
 
         self.assertEqual(mock_indexer.apply_async.call_count, 2)
+
+    @patch('portal.libs.agave.operations.copy')
+    def test_make_public(self, mock_copy):
+        client = MagicMock()
+
+        makepublic(client, 'test.system', '/path/to/src')
+
+        mock_copy.assert_called_with(client,
+                                     'test.system',
+                                     '/path/to/src',
+                                     'portal.storage.public', '/')

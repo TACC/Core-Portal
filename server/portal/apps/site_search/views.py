@@ -1,5 +1,4 @@
 from django.views.generic.base import TemplateView
-from django.utils.decorators import method_decorator
 
 
 class IndexView(TemplateView):
@@ -10,3 +9,8 @@ class IndexView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         return super(IndexView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['setup_complete'] = False if self.request.user.is_anonymous else self.request.user.profile.setup_complete
+        return context

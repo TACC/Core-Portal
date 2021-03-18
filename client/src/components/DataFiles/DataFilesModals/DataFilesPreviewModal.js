@@ -1,33 +1,20 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import './DataFilesPreviewModal.module.scss';
-
-const PreviewModalSpinner = () => (
-  <div className="h-100 listing-placeholder">
-    <LoadingSpinner />
-  </div>
-);
 
 const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.preview);
   const params = useSelector(state => state.files.modalProps.preview);
-  const previewHref = useSelector(state => state.files.preview.href);
-  const previewContent = useSelector(state => state.files.preview.content);
-  const isLoading = useSelector(state => state.files.preview.isLoading);
+  const { href, content, error, isLoading } = useSelector(
+    state => state.files.preview
+  );
+  const hasError = error !== null;
+  const previewUsingTextContent = !isLoading && !hasError && content !== null;
+  const previewUsingHref = !isLoading && !hasError && !previewUsingTextContent;
   const [isFrameLoading, setIsFrameLoading] = useState(true);
-
-  /* 
-    Force effect on every modal load
-
-    params as a dependency means that when the object identify
-    changes open modal open, this effect will be re-run
-  */
-  useEffect(() => {
-    setIsFrameLoading(true);
-  }, [setIsFrameLoading, params]);
 
   const toggle = () =>
     dispatch({
@@ -36,6 +23,7 @@ const DataFilesPreviewModal = () => {
     });
 
   const onOpen = () => {
+    setIsFrameLoading(true);
     dispatch({
       type: 'DATA_FILES_PREVIEW',
       payload: {
@@ -43,8 +31,7 @@ const DataFilesPreviewModal = () => {
         scheme: params.scheme,
         system: params.system,
         path: params.path,
-        href: params.href,
-        length: params.length
+        href: params.href
       }
     });
   };
@@ -52,7 +39,7 @@ const DataFilesPreviewModal = () => {
   const onClosed = () => {
     dispatch({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
-      payload: { content: '', href: '', isLoading: true }
+      payload: { content: null, href: null, error: null, isLoading: true }
     });
   };
 
@@ -61,40 +48,44 @@ const DataFilesPreviewModal = () => {
   }, [setIsFrameLoading]);
 
   return (
-    <>
-      <Modal
-        size="lg"
-        isOpen={isOpen}
-        onOpened={onOpen}
-        onClosed={onClosed}
-        toggle={toggle}
-        className="dataFilesModal"
-      >
-        <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
-        <ModalBody>
-          {(isLoading || (!previewContent && isFrameLoading)) && (
-            <PreviewModalSpinner />
-          )}
-          {previewContent ? (
-            <div>
-              <code>
-                <pre styleName="text-preview">{previewContent}</pre>
-              </code>
-            </div>
-          ) : (
-            <div className="embed-responsive embed-responsive-4by3">
-              <iframe
-                title="preview"
-                frameBorder="0"
-                className="embed-responsive-item"
-                onLoad={onFrameLoad}
-                src={previewHref}
-              />
-            </div>
-          )}
-        </ModalBody>
-      </Modal>
-    </>
+    <Modal
+      size="lg"
+      isOpen={isOpen}
+      onOpened={onOpen}
+      onClosed={onClosed}
+      toggle={toggle}
+      className="dataFilesModal"
+    >
+      <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
+      <ModalBody styleName="root">
+        {(isLoading || (previewUsingHref && isFrameLoading)) && (
+          <LoadingSpinner />
+        )}
+        {previewUsingTextContent && (
+          <div>
+            <code>
+              <pre styleName="text-preview">{content}</pre>
+            </code>
+          </div>
+        )}
+        {previewUsingHref && (
+          <div className="embed-responsive embed-responsive-4by3">
+            <iframe
+              title="preview"
+              frameBorder="0"
+              className="embed-responsive-item"
+              onLoad={onFrameLoad}
+              src={href}
+            />
+          </div>
+        )}
+        {hasError && (
+          <Message type="warning" styleName="error">
+            {error}
+          </Message>
+        )}
+      </ModalBody>
+    </Modal>
   );
 };
 

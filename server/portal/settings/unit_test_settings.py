@@ -372,6 +372,55 @@ MIGRATION_MODULES = {
 
 COMMUNITY_INDEX_SCHEDULE = {'hour': 0, 'minute': 0, 'day_of_week': 0}
 
+"""
+SETTINGS: SUPPORTED FILE PREVIEW TYPES
+"""
+
+SUPPORTED_MS_WORD = [
+    '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',
+]
+SUPPORTED_MS_EXCEL = [
+    '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xltx', '.xltm',
+]
+SUPPORTED_MS_POWERPOINT = [
+    '.ppt', '.pot', '.pps', '.pptx', '.pptm',
+    '.potx', '.ppsx', '.ppsm', '.sldx', '.sldm',
+]
+
+SUPPORTED_MS_OFFICE = (
+    SUPPORTED_MS_WORD +
+    SUPPORTED_MS_POWERPOINT +
+    SUPPORTED_MS_EXCEL
+)
+
+SUPPORTED_IMAGE_PREVIEW_EXTS = [
+    '.png', '.gif', '.jpg', '.jpeg',
+]
+
+SUPPORTED_TEXT_PREVIEW_EXTS = [
+    '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp',
+    '.cs', '.css', '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml',
+    '.hh', '.htm', '.html', '.java', '.js', '.less', '.m', '.make', '.md',
+    '.ml', '.mm', '.msg', '.php', '.pl', '.properties', '.py', '.rb',
+    '.sass', '.scala', '.script', '.sh', '.sml', '.sql', '.txt', '.vi',
+    '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl', '.json',
+    '.out', '.err', '.f',
+]
+
+SUPPORTED_OBJECT_PREVIEW_EXTS = [
+    '.pdf',
+]
+
+SUPPORTED_IPYNB_PREVIEW_EXTS = [
+    '.ipynb'
+]
+
+SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
+                                SUPPORTED_TEXT_PREVIEW_EXTS +
+                                SUPPORTED_OBJECT_PREVIEW_EXTS +
+                                SUPPORTED_MS_OFFICE +
+                                SUPPORTED_IPYNB_PREVIEW_EXTS)
+
 # Channels
 ASGI_APPLICATION = 'portal.routing.application'
 CHANNEL_LAYERS = {
@@ -393,32 +442,35 @@ PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
     },
     'longhorn': {
         'name': 'My Data (Longhorn)',
-        'description': 'My Data on Longhorn for {username}',
-        'site': 'frontera',
         'systemId': 'longhorn.home.{username}',
         'host': 'longhorn.tacc.utexas.edu',
         'rootDir': '/home/{tasdir}',
         'port': 22,
         'requires_allocation': 'longhorn3',
         'icon': None,
-    },
+    }
 }
 
 PORTAL_EXEC_SYSTEMS = {
-    'data': {
-        'scratch_dir': '/scratch/{}'
+    'data.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'stampede2': {
-        'scratch_dir': '/scratch/{}'
+    'stampede2.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'lonestar5': {
-        'scratch_dir': '/scratch/{}'
+    'lonestar5.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'longhorn': {
-        'scratch_dir': '/scratch/{}'
+    'longhorn.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'frontera': {
-        'scratch_dir': '/scratch1/{}'
+    'frontera.tacc.utexas.edu': {
+        'scratch_dir': '/scratch1/{}',
+        'home_dir': '/home1/{}'
     }
 }
 
@@ -427,6 +479,26 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Community Data',
         'system': 'portal.storage.community',
         'scheme': 'community',
+        'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Shared Workspaces',
+        'scheme': 'projects',
+        'api': 'tapis',
+        'icon': None
+    },
+    {
+        'name': 'Google Drive',
+        'system': 'googledrive',
+        'scheme': 'private',
+        'api': 'googledrive',
+        'icon': None
+    },
+    {
+        'name': 'Public Data',
+        'system': 'portal.storage.public',
+        'scheme': 'public',
         'api': 'tapis',
         'icon': None
     }

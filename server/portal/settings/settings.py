@@ -145,7 +145,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = settings_secret._WSGI_APPLICATION
+WSGI_APPLICATION = 'portal.wsgi.application'
 
 AUTHENTICATION_BACKENDS = ['portal.apps.auth.backends.AgaveOAuthBackend',
                            'django.contrib.auth.backends.ModelBackend']
@@ -388,8 +388,6 @@ CELERY_BROKER_URL = ''.join(
 )
 
 _RESULT_BACKEND_PROTOCOL = 'redis://'
-_RESULT_BACKEND_USERNAME = settings_secret._RESULT_BACKEND_USERNAME
-_RESULT_BACKEND_PWD = settings_secret._RESULT_BACKEND_PWD
 _RESULT_BACKEND_HOST = settings_secret._RESULT_BACKEND_HOST
 _RESULT_BACKEND_PORT = settings_secret._RESULT_BACKEND_PORT
 _RESULT_BACKEND_DB = settings_secret._RESULT_BACKEND_DB
@@ -465,20 +463,25 @@ CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 SETTINGS: EXECUTION SYSTEMS
 """
 PORTAL_EXEC_SYSTEMS = {
-    'data': {
-        'scratch_dir': '/scratch/{}'
+    'data.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'stampede2': {
-        'scratch_dir': '/scratch/{}'
+    'stampede2.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'lonestar5': {
-        'scratch_dir': '/scratch/{}'
+    'lonestar5.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'longhorn': {
-        'scratch_dir': '/scratch/{}'
+    'longhorn.tacc.utexas.edu': {
+        'scratch_dir': '/scratch/{}',
+        'home_dir': '/home/{}'
     },
-    'frontera': {
-        'scratch_dir': '/scratch1/{}'
+    'frontera.tacc.utexas.edu': {
+        'scratch_dir': '/scratch1/{}',
+        'home_dir': '/home1/{}'
     }
 }
 
@@ -635,6 +638,10 @@ SETTINGS_EXPORT = [
     'GOOGLE_ANALYTICS_PROPERTY_ID',
     'PORTAL_NAMESPACE'
 ]
+
+"""
+SETTINGS: SUPPORTED FILE PREVIEW TYPES
+"""
 
 SUPPORTED_MS_WORD = [
     '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',
