@@ -419,18 +419,18 @@ def upload(client, system, path, uploaded_file):
     -------
     dict
     """
-
+    dest_path = os.path.join(path, uploaded_file.name)
     try:
-        listing(client, system=system, path=path)
+        file_listing = client.files.list(systemId=system, filePath=dest_path)
+        uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
+
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
 
-    upload_name = os.path.basename(uploaded_file.name)
-
     resp = client.files.importData(systemId=system,
                                    filePath=urllib.parse.quote(path),
-                                   fileName=str(upload_name),
+                                   fileName=str(uploaded_file.name),
                                    fileToUpload=uploaded_file)
 
     agave_indexer.apply_async(kwargs={'systemId': system,
