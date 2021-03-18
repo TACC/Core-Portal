@@ -130,6 +130,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
     [dispatch]
   );
   const adminAction = useSelector(state => state.onboarding.action);
+  const stepCount = user.steps.length;
 
   return (
     /* !!!: Temporary extra markup to make simpler PR diff */
@@ -139,7 +140,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
     {user.steps.map((step, index) => (
     <tr styleName="user" key={uuidv4()}>
           {index === 0 && (
-          <td rowSpan="5" styleName="name">
+          <td rowSpan={stepCount} styleName="name">
             {`${user.firstName} ${user.lastName}`}
           </td>
           )}
