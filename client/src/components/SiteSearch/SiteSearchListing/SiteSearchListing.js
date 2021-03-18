@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { InlineMessage, LoadingSpinner } from '_common';
 import renderHtml from 'utils/renderHtml';
+import { InlineMessage, LoadingSpinner, InfiniteScrollTable } from '_common';
+import {
+  FileNavCell,
+  FileLengthCell,
+  FileIconCell
+} from '../../DataFiles/DataFilesListing/DataFilesListingCells';
 import SiteSearchSearchbar from './SiteSearchSearchbar/SiteSearchSearchbar';
 import SiteSearchPaginator from './SiteSearchPaginator/SiteSearchPaginator';
+import DataFilesPreviewModal from '../../DataFiles/DataFilesModals/DataFilesPreviewModal';
 import './SiteSearchListing.module.scss';
+import './SiteSearchListing.css';
 
 export const CMSListingItem = ({ title, url, highlight }) => (
   <div styleName="sitesearch-cms-item" data-testid="sitesearch-cms-item">
@@ -29,17 +36,56 @@ CMSListingItem.propTypes = {
   }).isRequired
 };
 
-export const FileListingItem = ({ name, size, lastModified, path }) => (
-  <div styleName="sitesearch-cms-item">
-    <h5>{name}</h5>
-    <div>{path}</div>
-  </div>
-);
-FileListingItem.propTypes = {
-  name: PropTypes.string.isRequired,
-  size: PropTypes.number.isRequired,
-  lastModified: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired
+export const SiteSearchFileListing = ({ listing, filter }) => {
+  const fileNavCellCallback = useCallback(
+    ({ row }) => {
+      return (
+        <FileNavCell
+          system={row.original.system}
+          path={row.original.path}
+          name={row.original.name}
+          format={row.original.format}
+          api="tapis"
+          scheme={filter}
+          href={row.original._links.self.href}
+          isPublic={filter === 'public'}
+        />
+      );
+    },
+    [filter]
+  );
+
+  const tableColumns = [
+    {
+      id: 'icon',
+      accessor: 'format',
+      Cell: FileIconCell
+    },
+    {
+      accessor: 'name',
+      Cell: fileNavCellCallback,
+      className: 'site-search__full-width-result'
+    },
+    {
+      accessor: 'length',
+      Cell: FileLengthCell,
+      className: 'site-search__no-overflow'
+    }
+  ];
+
+  return (
+    <>
+      <InfiniteScrollTable
+        tableColumns={tableColumns}
+        tableData={listing}
+        columnMemoProps={[filter]}
+      />
+    </>
+  );
+};
+SiteSearchFileListing.propTypes = {
+  listing: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  filter: PropTypes.string.isRequired
 };
 
 const SiteSearchListing = ({ results, loading, error, filter }) => {
@@ -51,10 +97,8 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
   const lastPageIndex = Math.ceil(results.count / 10);
   return (
     <div styleName="container">
-      <div>
-        <SiteSearchSearchbar />
-      </div>
-      <div styleName="header">
+      <SiteSearchSearchbar />
+      <div styleName={`header ${filter === 'cms' ? 'cms-header' : ''}`}>
         <h5>{FILTER_MAPPING[filter]}</h5>
       </div>
 
@@ -88,22 +132,16 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
           />
         ))}
 
-      {results.type === 'file' &&
-        results.listing.map(item => (
-          <FileListingItem
-            key={`${item.system}_${item.path}`}
-            name={item.name}
-            size={item.length}
-            lastModified={item.lastModified}
-            path={item.path}
-          />
-        ))}
+      {results.type === 'file' && (
+        <SiteSearchFileListing listing={results.listing} filter={filter} />
+      )}
 
       {results.count > 0 && (
         <div styleName="paginator-container">
           <SiteSearchPaginator lastPageIndex={lastPageIndex} />
         </div>
       )}
+      <DataFilesPreviewModal />
     </div>
   );
 };

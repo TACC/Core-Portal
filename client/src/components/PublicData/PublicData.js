@@ -1,11 +1,5 @@
 import React, { useEffect, useLayoutEffect } from 'react';
-import {
-  useLocation,
-  useHistory,
-  Switch,
-  Route,
-  useParams
-} from 'react-router-dom';
+import { useHistory, Switch, Route, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { LoadingSpinner } from '_common';
@@ -17,7 +11,6 @@ import { ToolbarButton } from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 import './PublicData.module.css';
 
 const PublicData = () => {
-  const { pathname } = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -44,7 +37,7 @@ const PublicData = () => {
 
   useLayoutEffect(() => {
     dispatch({ type: 'FETCH_SYSTEMS' });
-  }, [pathname]);
+  }, []);
 
   useEffect(() => {
     if (publicDataSystem.system) {
