@@ -80,7 +80,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className, publicData }) => {
           disabled={disabled}
         />
       </div>
-      {hasQuery && (
+      {hasQuery && !publicData && (
         <Button
           type="reset"
           color="link"
