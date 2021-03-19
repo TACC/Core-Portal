@@ -133,20 +133,15 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   const stepCount = user.steps.length;
 
   return (
-    /* !!!: Temporary extra markup to make simpler PR diff */
-    /* !!!: Temporary bad indentation markup to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <>
-    {user.steps.map((step, index) => (
-    <tr styleName="user" key={uuidv4()}>
+      {user.steps.map((step, index) => (
+        <tr styleName="user" key={uuidv4()}>
           {index === 0 && (
-          <td rowSpan={stepCount} styleName="name">
-            {`${user.firstName} ${user.lastName}`}
-          </td>
+            <td rowSpan={stepCount} styleName="name">
+              {`${user.firstName} ${user.lastName}`}
+            </td>
           )}
-          <td
-            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
-          >
+          <td styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
             {step.displayName}
           </td>
           <td
@@ -180,9 +175,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               />
             )}
           </td>
-          <td
-            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
-          >
+          <td styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
             <OnboardingResetLinks
               callback={action =>
                 actionCallback(step.step, user.username, action)
@@ -196,10 +189,8 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
                   : null
               }
             />
-      </td>
-          <td
-            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
-          >
+          </td>
+          <td styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
             <Button
               color="link"
               styleName="action-link"
@@ -208,10 +199,9 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               View Log
             </Button>
           </td>
-    </tr>
-    ))}
+        </tr>
+      ))}
     </>
-    /* eslint-enable prettier/prettier */
   );
 };
 
