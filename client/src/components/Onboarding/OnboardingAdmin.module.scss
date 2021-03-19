@@ -1,3 +1,5 @@
+@import '../../styles/tools/mixins.scss';
+
 // Required to constrain table within flex box
 .root {
   position: relative;
@@ -37,6 +39,7 @@
 
 .users {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
+  --cell-vertical-padding: 0.35em;
   /* TODO: After, FP-103, use `composes:` not `@extend` */
   height: 100%;
   align-items: stretch;
@@ -56,15 +59,18 @@
 
     /* Match horizontal padding of `td` elements in table to align properly */
     th {
-      padding-left: var(--cell-horizontal-padding);
-      padding-right: var(--cell-horizontal-padding);
+      padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
+
+      @include truncate-with-ellipsis;
     }
   }
   td {
-    padding: 0 0 0 0;
+    padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
   }
 }
 
+/* !!!: Temporary unused CSS retained to make simpler PR diff */
+/*
 tbody {
   line-height: 32px;
 }
@@ -76,44 +82,63 @@ tbody {
 .root > tbody > tr > td {
   padding: 0 0 0 0;
 }
+*/
 
-.name {
+.user > td {
+  /* Difference between tall unwrapped cell height and basic text cell height */
+  --greatest-height-diff: 4.78px; /* value obtained form live render */
+  /* FAQ: We want only the top space, not the top & bottom space combined */
+  --vertical-offset: calc(var(--greatest-height-diff) / 2);
+}
+.user > td:not(.has-wrappable-content) {
+  /* Tweak `vertical-align`'s `top` to look like `middle` when nothing wraps */
+  padding-top: calc(var(--cell-horizontal-padding) + var(--vertical-offset));
   vertical-align: top;
 }
-
-.user > td > div {
-  height: 32px;
-  padding-left: var(--cell-horizontal-padding);
-  display: flex;
-  align-items: center;
+.user > td:not(.has-wrappable-content):not(.status) {
+  @include truncate-with-ellipsis;
 }
-
-.user > td > div:nth-child(even):not(.staffwait) {
+.user:nth-child(even) > td:not(.staffwait):not(.name) {
   background-color: #C6C6C61A;
 }
 
-.status {
-  line-height: 19px;
+/* HACK: This selector has knowledge of sibling component's internal markup */
+/* FAQ: Because we cannot pass `className`to <Pill> via <OnboardingStatus> */
+/* FAQ: Because <OnboardingStatus> has a superfluous root element */
+.status > span > span /* i.e. <OnboardingStatus>'s <Pill> */ {
+  white-space: nowrap;
 }
 
-.reset > * {
-  padding-left: 8px;
-  padding-right: 8px;
+.reset {
+  /* … */
 }
 
 .approve-container {
-  display: flex;
   i {
     font-size: 10px;
   }
+
+  --vertical-buffer: 0.125em; /* vertical space between wrapped buttons */
+
+  /* Add space above all buttons to match space below each */
+  padding-top: var(--vertical-buffer);
+  /* Remove space above and bellow buttons */
+  margin-top: calc(-1 * var(--vertical-buffer));
+  margin-bottom: calc(-1 * var(--vertical-buffer));
 }
 
 .approve {
+  display: inline-flex; /* Do not use `inline-block` because value was `flex` */
+  /* Add space below each button */
+  margin-bottom: var(--vertical-buffer);
+
   font-size: 12px;
-  height: 19px;
   border-radius: 0;
   padding-top: 0;
   padding-bottom: 0;
+}
+
+.approve:not(:last-child) {
   margin-right: 1em;
 }
 
@@ -122,30 +147,27 @@ tbody {
 }
 
 .action-link {
+  padding: 0;
+
   font-size: 12px;
 }
+.action-link:not(:first-child) { margin-left: 0.25em; }
+.action-link:not(:last-child) { margin-right: 0.25em; }
 
 .staffwait {
   background-color: var(--global-color-accent--light);
 }
 
-.root {
-  th:nth-child(1),
-  td:nth-child(1) {
-    width: 15%;
-  }
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 20%;
-  }
-  th:nth-child(3),
-  td:nth-child(3) {
-    width: 15%;
-  }
-  th:nth-child(4),
-  td:nth-child(4) {
-    width: 20%;
-  }
+.users {
+  table-layout: fixed;
+
+  col:nth-child(1) { width: 12%; }
+  col:nth-child(2) { width: 14%; }
+  col:nth-child(3) { width: 27%; }
+  th:nth-child(4) { width: 33%; }
+    col:nth-child(4) { width: 18%; }
+    col:nth-child(5) { width: 15%; }
+  col:nth-child(6) { width: 14%; }
 }
 
 .no-users-placeholder {

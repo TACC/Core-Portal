@@ -130,39 +130,31 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
     [dispatch]
   );
   const adminAction = useSelector(state => state.onboarding.action);
+  const stepCount = user.steps.length;
 
   return (
-    <tr styleName="user">
-      <td styleName="name">
-        <div>{`${user.firstName} ${user.lastName}`}</div>
-      </td>
-      <td>
-        {user.steps.map(step => (
-          <div
-            key={uuidv4()}
-            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
-          >
+    <>
+      {user.steps.map((step, index) => (
+        <tr styleName="user" key={uuidv4()}>
+          {index === 0 && (
+            <td rowSpan={stepCount} styleName="name">
+              {`${user.firstName} ${user.lastName}`}
+            </td>
+          )}
+          <td styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
             {step.displayName}
-          </div>
-        ))}
-      </td>
-      <td>
-        {user.steps.map(step => (
-          <div
-            key={uuidv4()}
+          </td>
+          <td
             styleName={`status ${
               step.state === 'staffwait' ? 'staffwait' : ''
             }`}
           >
             <OnboardingStatus step={step} />
-          </div>
-        ))}
-      </td>
-      <td>
-        {user.steps.map(step => (
-          <div
-            key={uuidv4()}
-            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
+          </td>
+          <td
+            styleName={`has-wrappable-content ${
+              step.state === 'staffwait' ? 'staffwait' : ''
+            }`}
           >
             {step.state === 'staffwait' && (
               <OnboardingApproveActions
@@ -182,15 +174,8 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
                 }
               />
             )}
-          </div>
-        ))}
-      </td>
-      <td>
-        {user.steps.map(step => (
-          <div
-            key={uuidv4()}
-            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
-          >
+          </td>
+          <td styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
             <OnboardingResetLinks
               callback={action =>
                 actionCallback(step.step, user.username, action)
@@ -204,15 +189,8 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
                   : null
               }
             />
-          </div>
-        ))}
-      </td>
-      <td>
-        {user.steps.map(step => (
-          <div
-            key={uuidv4()}
-            styleName={step.state === 'staffwait' ? 'staffwait' : ''}
-          >
+          </td>
+          <td styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
             <Button
               color="link"
               styleName="action-link"
@@ -220,10 +198,10 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
             >
               View Log
             </Button>
-          </div>
-        ))}
-      </td>
-    </tr>
+          </td>
+        </tr>
+      ))}
+    </>
   );
 };
 
@@ -233,15 +211,21 @@ OnboardingAdminListUser.propTypes = {
 };
 
 const OnboardingAdminList = ({ users, viewLogCallback }) => {
+  const columnCount = 6;
+  const colElements = [];
+  for (let i = 0; i < columnCount; i += 1) {
+    colElements.push(<col />);
+  }
+
   return (
     <table styleName="users">
+      <colgroup>{colElements}</colgroup>
       <thead>
         <tr>
           <th>User</th>
           <th>Step</th>
           <th>Status</th>
-          <th>Administrative Actions</th>
-          <th>&nbsp;</th>
+          <th colSpan="2">Administrative Actions</th>
           <th>Log</th>
         </tr>
       </thead>
