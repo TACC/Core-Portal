@@ -214,7 +214,7 @@ const OnboardingAdminList = ({ users, viewLogCallback }) => {
   const columnCount = 6;
   const colElements = [];
   for (let i = 0; i < columnCount; i += 1) {
-    colElements.push(<col />);
+    colElements.push(<col key={i} />);
   }
 
   return (
