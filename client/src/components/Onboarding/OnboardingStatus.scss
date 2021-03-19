@@ -1,5 +1,8 @@
 .onboarding-status__loading {
   display: inline-block;
-  width: inherit;
 }
 
+.onboarding-status__loading .inline {
+  width: 16px;
+  height: 16px;
+}
