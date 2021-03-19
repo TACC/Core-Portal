@@ -15,6 +15,7 @@ import Onboarding from '../Onboarding';
 import * as ROUTES from '../../constants/routes';
 import NotificationToast from '../Toasts';
 import WelcomeMessages from './WelcomeMessages';
+import OnboardingAdmin from '../Onboarding/OnboardingAdmin';
 import './Workbench.scss';
 
 function Workbench() {
@@ -22,11 +23,13 @@ function Workbench() {
   const dispatch = useDispatch();
 
   // showUIPatterns: Show some entries only in local development
-  const { loading, setupComplete, showUIPatterns } = useSelector(
+  const { loading, setupComplete, showUIPatterns, isStaff } = useSelector(
     state => ({
       loading: state.workbench.loading,
       setupComplete: state.workbench.setupComplete,
-      showUIPatterns: state.workbench.config.debug
+      showUIPatterns: state.workbench.config.debug,
+      isStaff:
+        state.authenticatedUser.user && state.authenticatedUser.user.isStaff
     }),
     shallowEqual
   );
@@ -88,6 +91,12 @@ function Workbench() {
                   path={`${path}${ROUTES.ONBOARDING}`}
                   component={Onboarding}
                 />
+                {isStaff && (
+                  <Route
+                    path={`${path}${ROUTES.ONBOARDINGADMIN}`}
+                    component={OnboardingAdmin}
+                  />
+                )}
                 {showUIPatterns && (
                   <Route path={`${path}${ROUTES.UI}`} component={UIPatterns} />
                 )}
