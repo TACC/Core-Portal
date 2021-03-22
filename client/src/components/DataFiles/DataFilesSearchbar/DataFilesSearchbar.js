@@ -48,7 +48,11 @@ const DataFilesSearchbar = ({ api, scheme, system, className, publicData }) => {
   const onClear = e => {
     e.preventDefault();
     setQuery('');
-    history.push(`/workbench/data/${api}/${scheme}/${system}/`);
+    if (publicData) {
+      history.push(`/public-data/${api}/${scheme}/${system}/`);
+    } else {
+      history.push(`/workbench/data/${api}/${scheme}/${system}/`);
+    }
   };
   const onChange = e => setQuery(e.target.value);
 
@@ -80,7 +84,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className, publicData }) => {
           disabled={disabled}
         />
       </div>
-      {hasQuery && !publicData && (
+      {hasQuery && (
         <Button
           type="reset"
           color="link"
