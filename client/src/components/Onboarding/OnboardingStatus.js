@@ -46,6 +46,7 @@ const getContents = step => {
           <Pill type={type}>Processing</Pill>
           <LoadingSpinner
             placement="inline"
+            styleName="loading"
             className="onboarding-status__loading"
           />
         </span>
