@@ -1,11 +1,19 @@
 import React, { useEffect, useLayoutEffect } from 'react';
-import { useHistory, Switch, Route, useParams } from 'react-router-dom';
+import {
+  useHistory,
+  Switch,
+  Route,
+  useParams,
+  useLocation
+} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
+import { parse } from 'query-string';
 import { LoadingSpinner } from '_common';
 import DataFilesBreadcrumbs from '../DataFiles/DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesListing from '../DataFiles/DataFilesListing/DataFilesListing';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
+import DataFilesSearchbar from '../DataFiles/DataFilesSearchbar/DataFilesSearchbar';
 import { ToolbarButton } from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 
 import './PublicData.module.css';
@@ -13,7 +21,7 @@ import './PublicData.module.css';
 const PublicData = () => {
   const history = useHistory();
   const dispatch = useDispatch();
-
+  const location = useLocation();
   const publicDataSystem = useSelector(
     state =>
       state.systems.storage.configuration.find(
@@ -40,7 +48,8 @@ const PublicData = () => {
   }, []);
 
   useEffect(() => {
-    if (publicDataSystem.system) {
+    const pathLength = location.pathname.split('/').length;
+    if (publicDataSystem.system && pathLength < 6) {
       history.push(`/public-data/tapis/public/${publicDataSystem.system}/`);
     }
   }, [publicDataSystem.system]);
@@ -69,6 +78,7 @@ const PublicData = () => {
 const PublicDataListing = ({ canDownload, downloadCallback }) => {
   const { api, scheme, system, path } = useParams();
   const dispatch = useDispatch();
+  const queryString = parse(useLocation().search).query_string;
   useLayoutEffect(() => {
     dispatch({
       type: 'FETCH_FILES',
@@ -77,13 +87,20 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
         system,
         scheme,
         path: path || '',
+        queryString,
         section: 'FilesListing'
       }
     });
-  }, [path]);
+  }, [path, queryString]);
 
   return (
     <div styleName="container">
+      <DataFilesSearchbar
+        api="tapis"
+        scheme="public"
+        system={system}
+        publicData
+      />
       <div styleName="header">
         <DataFilesBreadcrumbs
           styleName="header-title"
