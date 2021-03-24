@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 
 import './DataFilesSearchbar.module.css';
 
-const DataFilesSearchbar = ({ api, scheme, system, className }) => {
+const DataFilesSearchbar = ({ api, scheme, system, className, publicData }) => {
   const disabled = useSelector(
     state =>
       state.files.loading.FilesListing === true ||
@@ -29,7 +29,10 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
     const qs = query
       ? `?${queryString.stringify({ query_string: query })}`
       : '';
-
+    if (publicData) {
+      history.push(`/public-data/${api}/${scheme}/${system}/${qs}`);
+      return;
+    }
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
 
@@ -45,7 +48,11 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const onClear = e => {
     e.preventDefault();
     setQuery('');
-    history.push(`/workbench/data/${api}/${scheme}/${system}/`);
+    if (publicData) {
+      history.push(`/public-data/${api}/${scheme}/${system}/`);
+    } else {
+      history.push(`/workbench/data/${api}/${scheme}/${system}/`);
+    }
   };
   const onChange = e => setQuery(e.target.value);
 
@@ -97,10 +104,12 @@ DataFilesSearchbar.propTypes = {
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
   /** Additional `className` (or transpiled `styleName`) for the root element */
-  className: PropTypes.string
+  className: PropTypes.string,
+  publicData: PropTypes.bool
 };
 DataFilesSearchbar.defaultProps = {
-  className: ''
+  className: '',
+  publicData: false
 };
 
 export default DataFilesSearchbar;
