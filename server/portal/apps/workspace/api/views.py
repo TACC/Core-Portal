@@ -230,8 +230,8 @@ class JobsView(BaseApiView):
             user_job_ids = all_user_job_ids[offset:offset + limit]
             if user_job_ids:
                 data = agave.jobs.list(query={'id.in': ','.join(user_job_ids)})
-                # filter agave jobs response to match our time-ordered jobs
-                data = [job for job in data if job["id"] in user_job_ids]
+                # re-order agave job info to match our time-ordered jobs
+                data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
             else:
                 data = []
 
