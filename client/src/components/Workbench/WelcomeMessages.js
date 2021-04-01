@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Route, Switch, useRouteMatch, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from 'reactstrap';
 import * as ROUTES from '../../constants/routes';
@@ -8,7 +8,10 @@ const WelcomeMessages = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
 
-  const welcomeMessages = useSelector(state => state.welcomeMessages);
+  const { welcomeMessages, showWork2Message } = useSelector(state => ({
+    welcomeMessages: state.welcomeMessages,
+    showWork2Message: state.workbench.config.showWork2Message
+  }));
 
   const onDismissWelcome = section => {
     const newMessagesState = {
@@ -32,14 +35,46 @@ const WelcomeMessages = () => {
         </Alert>
       </Route>
       <Route path={`${path}${ROUTES.DATA}`}>
-        <Alert
-          isOpen={welcomeMessages.datafiles}
-          toggle={() => onDismissWelcome('datafiles')}
-          color="secondary"
-          className="welcomeMessage"
-        >
-          This page allows you to upload and manage your files.
-        </Alert>
+        <div className="welcomeMessage">
+          <Alert
+            isOpen={welcomeMessages.datafiles}
+            toggle={() => onDismissWelcome('datafiles')}
+            color="secondary"
+          >
+            This page allows you to upload and manage your files.
+          </Alert>
+          {showWork2Message && (
+            <Alert
+              isOpen={welcomeMessages.work2}
+              toggle={() => onDismissWelcome('work2')}
+              color="warning"
+            >
+              <>
+                Notice: The Stockyard <code>/work</code> filesystem is being
+                deprecated. A new filesystem <code>/work2</code> is now
+                available and will eventually replace <code>/work</code>. During
+                the transition period, users must migrate any current data they
+                wish to retain. You can read more information about this change
+                in the{' '}
+                <a
+                  href="https://portal.tacc.utexas.edu/tutorials/stockyard-work-migration"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  /work Migration and Transition Guide
+                </a>
+                , or{' '}
+                <Link
+                  className="wb-link"
+                  to={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+                >
+                  submit a ticket
+                </Link>{' '}
+                for help.
+              </>
+            </Alert>
+          )}
+        </div>
       </Route>
       <Route path={`${path}${ROUTES.APPLICATIONS}`}>
         <Alert
