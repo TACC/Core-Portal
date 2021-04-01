@@ -60,6 +60,7 @@ const WelcomeMessages = () => {
                   href="https://portal.tacc.utexas.edu/tutorials/stockyard-work-migration"
                   target="_blank"
                   rel="noreferrer"
+                  className="wb-link"
                 >
                   /work Migration and Transition Guide
                 </a>
