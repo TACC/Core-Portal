@@ -8,5 +8,8 @@ def workbench_state(request):
     data = {
         'setupComplete': request.user.profile.setup_complete
     }
-    data.update({'config': settings.WORKBENCH_SETTINGS})
+    data.update({
+        'config': settings.WORKBENCH_SETTINGS,
+        'portalName': settings.PORTAL_NAMESPACE
+    })
     return JsonResponse({'response': data})
