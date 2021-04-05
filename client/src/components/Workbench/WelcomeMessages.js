@@ -53,9 +53,8 @@ const WelcomeMessages = () => {
                 Notice: The Stockyard <code>/work</code> filesystem is being
                 deprecated. A new filesystem <code>/work2</code> is now
                 available and will eventually replace <code>/work</code>. During
-                the transition period, users must migrate any current data they
-                wish to retain. You can read more information about this change
-                in the{' '}
+                the transition period, migrate any data you wish to retain. Read
+                more information about this change in the{' '}
                 <a
                   href="https://portal.tacc.utexas.edu/tutorials/stockyard-work-migration"
                   target="_blank"
