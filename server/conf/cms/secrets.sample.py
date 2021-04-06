@@ -57,11 +57,10 @@ else:
 # CMS Site (allows for multiple sites on a single CMS)
 _SITE_ID = 1
 _CMS_TEMPLATES = (
-    # Customize this
-    # FAQ: First template is default template
-    # REF: http://docs.django-cms.org/en/latest/how_to/install.html#templates
+    # Default template with standard and custom (per-project) choices
+    # NOTE: To have per-project styles, the custom default template is required
     ('fullwidth.html', 'Fullwidth'),
-    ('example-cms/templates/fullwidth.html', 'Fullwidth (Custom Example)')
+    # ('example-cms/templates/fullwidth.html', 'Fullwidth (Custom Example)'),
 )
 
 ########################
@@ -136,8 +135,9 @@ _FEATURES = {
 }
 
 ########################
-# BRANDING & LOGOS
+# BRANDING & LOGOS & FAVICON
 ########################
+# TODO: GH-59: Use Dict Not Array for Branding Settings
 
 # Branding settings for portal and navigation.
 
@@ -248,6 +248,13 @@ _PORTAL_LOGO = [
 ]
 
 _LOGO = _PORTAL_LOGO                # Default Portal Logo.
+
+########################
+# FAVICON
+
+_FAVICON = {
+    "img_file_src": "site_cms/img/favicons/favicon.ico"
+}
 
 ########################
 # PORTAL
