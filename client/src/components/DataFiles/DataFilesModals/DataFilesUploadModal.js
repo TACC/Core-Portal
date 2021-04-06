@@ -25,6 +25,7 @@ export const DEFAULT_DENSITY = 'default';
 export const DENSITIES = ['', ...Object.keys(DENSITY_CLASS_MAP)];
 
 const DataFilesUploadModal = ({ className, density, direction }) => {
+  const [disabled, setDisabled] = useState(false);
   const modifierClasses = [];
   modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
   modifierClasses.push(DIRECTION_CLASS_MAP[direction || DEFAULT_DIRECTION]);
@@ -32,8 +33,13 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
 
   const history = useHistory();
   const location = useLocation();
+
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+
   const reloadCallback = () => {
     history.push(location.pathname);
+    const errorFiles = uploadedFiles.filter(f => status[f.id] === 'ERROR');
+    errorFiles.length === uploadedFiles.length && setDisabled(false);
   };
 
   const isOpen = useSelector(state => state.files.modals.upload);
@@ -41,9 +47,9 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
   const status = useSelector(state => state.files.operationStatus.upload);
   const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
+    setDisabled(true);
     const filteredFiles = uploadedFiles.filter(f => status[f.id] !== 'SUCCESS');
     filteredFiles.length > 0 &&
       dispatch({
@@ -70,6 +76,7 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
     params.system
   );
   const onClosed = () => {
+    setDisabled(false);
     setUploadedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
@@ -94,6 +101,7 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
   };
 
   const onRejectedFiles = rejectedFiles => {
+    setDisabled(false);
     const newFiles = [];
     rejectedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
@@ -111,7 +119,10 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
     >
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
       <ModalBody styleName={containerStyleNames}>
-        <div styleName={isCompactView ? 'compact-view' : ''}>
+        <div
+          styleName={isCompactView ? 'compact-view' : ''}
+          disabled={disabled}
+        >
           <FileInputDropZone
             onSetFiles={selectFiles}
             onRejectedFiles={onRejectedFiles}
@@ -132,7 +143,11 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
         )}
       </ModalBody>
       <ModalFooter>
-        <Button className="data-files-btn" onClick={uploadStart}>
+        <Button
+          className="data-files-btn"
+          onClick={uploadStart}
+          disabled={disabled}
+        >
           Upload Selected
         </Button>
       </ModalFooter>
