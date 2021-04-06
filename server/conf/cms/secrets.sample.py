@@ -14,8 +14,7 @@ _CONSOLE_LOG_ENABLED = False    # Boolean check to turn on/off console logging s
 _ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '*']   # In development.
 
 # Boolean check to see if ldap is being used by the site.
-# Ensure the django-auth-ldap==2.0.0 package is uncommented
-# in the requirements.txt file or installed if using ldap.
+# Requires django-auth-ldap ≥ 2.0.0
 _LDAP_ENABLED = True
 
 # Boolean check to determine the appropriate database settings when using containers.
@@ -154,18 +153,24 @@ Usage:
     - Any new selectors or css styles (add to /taccsite_cms/static/site_cms/css/src/_imports/branding_logos.css)
     - Image files being references (add to /taccsite_cms/static/site_cms/img/org_logos)
 
-Values to populate:
+Values to populate (for an array):
 
-_SETTING_NAME = [                 # The name of the branding or logo config setting object.
-    "org_name",                         # The name of the organization the branding belongs too.
-    "img_file_src",                      # Path and filename relative to the static files folder.
-    "img_element_classes",        # The list of selectors to apply to the rendered element, these need to exist in the css/scss.
-    "a_target_url",                      # The href link to follow when clicked, use "/" for portal logos.
-    "a_target_type",                    # The target to open the new link in, use _blank for external links, _self for internal links.
-    "alt_text",                             # The text to read or render for web assistance standards.
-    "cors_setting",                      # The CORS setting for the image, set to anonymous by default.
-    "visibility"                             # Toggles wether or not to display the element in the template, use True to render, False to hide.
+_SETTING_NAME = [                # The name of the branding or logo config setting object.
+    "org_name",                    # The name of the organization the branding belongs too.
+    "img_file_src",                # Path and filename relative to the static files folder.
+    "img_element_classes",         # The list of selectors to apply to the rendered element, these need to exist in the css/scss.
+    "a_target_url",                # The href link to follow when clicked, use "/" for portal logos.
+    "a_target_type",               # The target to open the new link in, use _blank for external links, _self for internal links.
+    "alt_text",                    # The text to read or render for web assistance standards.
+    "cors_setting",                # The CORS setting for the image, set to anonymous by default.
+    "visibility"                   # Toggles wether or not to display the element in the template, use True to render, False to hide.
 ]
+
+Values to populate (for a dict):
+
+_SETTING_NAME = {                  # The name of the favicon config setting object.
+    "img_file_src": "…",             # Path and filename relative to the static files folder.
+}
 
 Branding Configuration Example.
 
@@ -192,6 +197,12 @@ _ANORG_LOGO = [
    "anonymous",
    "True"
 ]
+
+Favicon Configuration Example.
+
+_ANORG_FAVICON = {
+    "img_file_src": "site_cms/img/favicons/favicon.ico"
+}
 """
 
 ########################
@@ -208,7 +219,7 @@ _TACC_BRANDING = [
     "True"
 ]
 
-_UTEXAS_BRANDING =  [
+_UTEXAS_BRANDING = [
     "utexas",
     "site_cms/img/org_logos/utaustin-white.png",
     "branding-utaustin",
@@ -269,7 +280,6 @@ Usage:
 
 - For each link used in the templating, add new links values (see example below).
 - New links must be added to the _PORTAL_AUTH_LINKS and _PORTAL_UNAUTH_LINKS lists.
-- The order of the _PORTAL_[…]_LINKS lists determine the rendering order of the elements.
 
 Values to populate:
 
@@ -327,5 +337,5 @@ _LOGIN_UNAUTH_LINK = {
     "icon": "sign-in-alt",
 }
 
-_PORTAL_AUTH_LINKS = [_DASH_AUTH_LINK, _PROFILE_AUTH_LINK, _LOGOUT_AUTH_LINK]       # Default TACC Portal.
-_PORTAL_UNAUTH_LINKS = [_LOGIN_UNAUTH_LINK]                                         # Default TACC Portal.
+_PORTAL_AUTH_LINKS = [ _DASH_AUTH_LINK, _PROFILE_AUTH_LINK, _LOGOUT_AUTH_LINK ]       # Default TACC Portal.
+_PORTAL_UNAUTH_LINKS = [ _LOGIN_UNAUTH_LINK ]                                         # Default TACC Portal.
