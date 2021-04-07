@@ -96,8 +96,9 @@ class TapisFilesView(BaseApiView):
                 system = dict(client.systems.get(systemId=system))
                 allocations = get_allocations(request.user.username)
 
-                # If user is missing an allocation mangle error to a 403
-                if system['storage']['host'] not in allocations['hosts']:
+                # If user is missing a non-corral allocation mangle error to a 403
+                if not any(system['storage']['host'].endswith(ele) for ele in
+                           list(allocations['hosts'].keys()) + ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu']):
                     e.response.status_code = 403
                     raise e
 

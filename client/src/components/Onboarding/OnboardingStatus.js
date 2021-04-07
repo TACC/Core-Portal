@@ -17,7 +17,7 @@ const getContents = step => {
       break;
     case 'staffwait':
     case 'userwait':
-      type = 'alert';
+      type = 'warning';
       break;
     case 'completed':
       type = 'success';
@@ -34,7 +34,7 @@ const getContents = step => {
     case 'staffwait':
       return <Pill type="normal">Waiting for Staff Approval</Pill>;
     case 'userwait':
-      return null;
+      return <Pill type={type}>Waiting for User</Pill>;
     case 'failed':
     case 'error':
       return <Pill type={type}>Unsuccessful</Pill>;
