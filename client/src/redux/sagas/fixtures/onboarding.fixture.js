@@ -188,7 +188,7 @@ export const onboardingAdminState = {
     offset: 0,
     limit: 25,
     total: 1,
-    query: null,
+    query: 'query',
     loading: false,
     error: null
   },
