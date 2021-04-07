@@ -25,7 +25,7 @@ export function formatTime(timeDateValue) {
 }
 
 /**
- * Create a string representation of date/time using internal standard
+ * Create a string representation of date and time using internal standard
  * @param {Date} dateTime - A date object
  * @returns {string}
  */
