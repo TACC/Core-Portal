@@ -1,3 +1,4 @@
+/* FP-993: Create and use a common Uploader component */
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';

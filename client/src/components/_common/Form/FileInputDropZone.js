@@ -1,3 +1,4 @@
+/* FP-993: Allow use by DataFilesUploadModal */
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from 'reactstrap';
