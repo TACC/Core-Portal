@@ -138,20 +138,28 @@ export const AppSchemaForm = ({ app }) => {
     portalAlloc,
     jobSubmission,
     hasDefaultAllocation,
-    defaultHost
+    defaultStorageHost
   } = useSelector(state => {
-    const matchingHost = Object.keys(state.allocations.hosts).find(
+    const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       host => app.resource === host || app.resource.endsWith(`.${host}`)
     );
+    const { defaultHost } = state.systems.storage;
+    const hasCorral = [
+      'cloud.corral.tacc.utexas.edu',
+      'data.tacc.utexas.edu'
+    ].some(s => defaultHost.endsWith(s));
     return {
-      allocations: matchingHost ? state.allocations.hosts[matchingHost] : [],
+      allocations: matchingExecutionHost
+        ? state.allocations.hosts[matchingExecutionHost]
+        : [],
       portalAlloc: state.allocations.portal_alloc,
       jobSubmission: state.jobs.submit,
       hasDefaultAllocation:
         state.allocations.loading ||
         state.systems.storage.loading ||
-        state.allocations.hosts[state.systems.storage.defaultHost],
-      defaultHost: state.systems.storage.defaultHost
+        state.allocations.hosts[defaultHost] ||
+        hasCorral,
+      defaultStorageHost: defaultHost
     };
   }, shallowEqual);
 
@@ -186,12 +194,11 @@ export const AppSchemaForm = ({ app }) => {
     } else {
       initialValues.allocation = allocations.length === 1 ? allocations[0] : '';
     }
-
     if (!hasDefaultAllocation) {
       jobSubmission.error = true;
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
-          defaultHost
+          defaultStorageHost
         )} to run this application.`
       };
       missingAllocation = true;

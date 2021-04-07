@@ -13,6 +13,7 @@ import './DataFiles.global.css';
 import './DataFiles.module.css';
 
 import { Section, SectionTable, SectionMessage, LoadingSpinner } from '_common';
+import Work2Message from './Work2Message';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
@@ -161,6 +162,7 @@ const DataFiles = () => {
         </>
       }
       contentLayoutName="oneRow"
+      messages={<Work2Message />}
     />
     /* eslint-enable prettier/prettier */
   );

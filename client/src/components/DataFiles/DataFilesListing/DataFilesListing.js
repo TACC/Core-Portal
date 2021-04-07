@@ -118,7 +118,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       });
     }
     return cells;
-  }, [api, showViewPath]);
+  }, [api, showViewPath, fileNavCellCallback]);
 
   return (
     /* !!!: Temporary bad indentation to make simpler PR diff */

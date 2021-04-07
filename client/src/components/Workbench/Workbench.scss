@@ -118,4 +118,8 @@
 .welcomeMessage {
   margin: 20px 20px 0 20px;
   flex-grow: 0;
+
+  code {
+      font-weight: bold;
+  }
 }

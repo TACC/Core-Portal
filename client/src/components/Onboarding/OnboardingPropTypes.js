@@ -16,3 +16,11 @@ export const stepPropType = PropTypes.shape({
   customStatus: PropTypes.string,
   events: PropTypes.arrayOf(eventPropType)
 });
+
+export const onboardingUserPropType = PropTypes.shape({
+  firstName: PropTypes.string.isRequired,
+  lastName: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
+  isStaff: PropTypes.bool.isRequired,
+  steps: PropTypes.arrayOf(stepPropType)
+});

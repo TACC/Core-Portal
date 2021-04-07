@@ -1,26 +1,27 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 import {
-  useLocation,
   useHistory,
   Switch,
   Route,
-  useParams
+  useParams,
+  useLocation
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
+import { parse } from 'query-string';
 import { Section, SectionTable, LoadingSpinner } from '_common';
 import DataFilesBreadcrumbs from '../DataFiles/DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesListing from '../DataFiles/DataFilesListing/DataFilesListing';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
+import DataFilesSearchbar from '../DataFiles/DataFilesSearchbar/DataFilesSearchbar';
 import { ToolbarButton } from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 
 import './PublicData.module.css';
 
 const PublicData = () => {
-  const { pathname } = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
-
+  const location = useLocation();
   const publicDataSystem = useSelector(
     state =>
       state.systems.storage.configuration.find(
@@ -44,10 +45,11 @@ const PublicData = () => {
 
   useLayoutEffect(() => {
     dispatch({ type: 'FETCH_SYSTEMS' });
-  }, [pathname]);
+  }, []);
 
   useEffect(() => {
-    if (publicDataSystem.system) {
+    const pathLength = location.pathname.split('/').length;
+    if (publicDataSystem.system && pathLength < 6) {
       history.push(`/public-data/tapis/public/${publicDataSystem.system}/`);
     }
   }, [publicDataSystem.system]);
@@ -76,6 +78,7 @@ const PublicData = () => {
 const PublicDataListing = ({ canDownload, downloadCallback }) => {
   const { api, scheme, system, path } = useParams();
   const dispatch = useDispatch();
+  const queryString = parse(useLocation().search).query_string;
   useLayoutEffect(() => {
     dispatch({
       type: 'FETCH_FILES',
@@ -84,10 +87,11 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
         system,
         scheme,
         path: path || '',
+        queryString,
         section: 'FilesListing'
       }
     });
-  }, [path]);
+  }, [path, queryString]);
 
   return (
     /* !!!: Temporary bad indentation to make simpler PR diff */
@@ -116,13 +120,12 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
       }
     >
       <SectionTable styleName="content" manualContent>
-        {/* FP-889: Add searchbar here (this is why `manualContent` is used) */}
-        {/* SEE: client/src/components/DataFiles/DataFiles.js */}
-        {/* <DataFilesSearchbar
-          api={api}
-          scheme={scheme}
+        <DataFilesSearchbar
+          api="tapis"
+          scheme="public"
           system={system}
-        /> */}
+          publicData
+        />
         <div className="o-flex-item-table-wrap">
       <DataFilesListing
         api={api}
