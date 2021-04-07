@@ -25,7 +25,7 @@ describe('TicketStandaloneCreate', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      welcomeMessages: {...initialWelcomeMessages, tickets: false}
+      welcomeMessages: {...initialWelcomeMessages, TICKETS: false}
     });
 
     const { queryByRole } = renderComponent(<TicketStandaloneCreate />, store);
