@@ -1,44 +1,37 @@
-/* Types */
+/* Base */
+
 .container {
   display: flex;
   flex-direction: column;
-  &.is-horz {
-    &.is-wide,
-    &.is-narrow {
-      .data-files-listing {
-        order: -1;
-      }
-      .compact-view {
-        i,
-        p,
-        strong {
-          display: none;
-        }
-        div {
-          max-height: 80px;
-        }
-      }
-    }
+}
+
+
+
+/* Elements */
+
+.listing-header {
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+
+
+/* Modifiers */
+
+.is-normal {
+  /* … */
+}
+.is-compact .listing {
+  order: -1;
+}
+
+.is-compact.has-entries .dropzone {
+  i,
+  p,
+  strong {
+    display: none;
   }
-  &.is-vert {
-    &.is-narrow {
-      .data-files-listing {
-        order: -1;
-      }
-      .compact-view {
-        i,
-        p,
-        strong {
-          display: none;
-        }
-        div {
-          max-height: 80px;
-        }
-      }
-    }
-  }
-  .listing-header {
-    margin-top: 10px;
-    font-size: 20px;
+  div {
+    max-height: 80px;
   }
 }
