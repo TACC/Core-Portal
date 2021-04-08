@@ -7,6 +7,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2021-03-26: CEPv2 Release
+
+### Added
+
+- FP-889: Add searchbar to Public Data view. (#366)
+- FP-739: Add Make Public button. (#318)
+- FP-688: Unauthenticated Public Data (#281)
+- FP-531: search bar in header (#290)
+- FP-922: updates for CEPv1 project migration (#364)
+- FP-877: Onboarding admin (#349)
+- FP-123: Add incremented file number to files copied into the same directory. (#79)
+- FP-881: unit testing for toast message (#355)
+- FP-802: Paginator component (#348)
+- FP-369: DataFiles Toolbar Compress and Extract buttons (#264)
+- FP-837: add unit tests for file preview and determine file size in back end (#300)
+- FP-874: ReadMore expandable text component proof of concept (#336)
+- FP-862: load branding from cms (#334)
+- FP-828: Prevent write operations on protected files (#321)
+- FP-780: add indexing and searchbar for projects (#316)
+- FP-817: TextCopyField user feedback (#293)
+- FP-838: allow git tags as docker image tags (#303)
+
+### Changed
+
+- Add some intitial steps to README (#367)
+- FP-895: Re-style site search file listing as a table (#353)
+- FP-950: Quick: Remove <Message type="info"> icon (#362)
+- FP-385: section comp welcome msg  patterns (#347)
+- FP-898: onboarding system health checks (#345)
+- FP-908: Hide empty application tabs (#343)
+- Bump poetry version (#356)
+- Quick: Resolve Secrets Delta (#294)
+- FP-884 modal title styles (#339)
+- FP-661: Edit error message in push keys modal (#271)
+- Bump cryptography from 2.7 to 3.2 in /server (#230)
+- FP-827: Assorted Dashboard Fixes (#331)
+- Rename master to main (#340)
+- FP-836: Rename Frontera-Portal repo to Core-Portal (#329)
+- FP-834: feedback modal updates (#319)
+- Quick: Clarify Message prop deprecation warning (#335)
+- FP-866: handle potential delay in systems list retrieval (#330)
+- FP-820: Show loading spinner during iframe load (#324)
+- FP-653: Add explicit mapping for Corral system name (#323)
+- FP-121: Add app browser unit test (#298)
+- FP-867: Fix JWT Auth (#325)
+- FP-664: Add system name to directory creation modal. (#273)
+- FP-832: Update onboarding step description texts (#306)
+- Update readme (#315)
+- Disable codecov annotations; pr template adjustment; branch deploys (#297)
+
+### Removed
+
+- FP-749: remove unused system manager code (#338)
+
+### Fixed
+
+- FP-975: Fix `StopIteration` error for backend Jobs listing (#369)
+- Quick: Fix Onboarding MFA step desc. typo (#371)
+- FP-972: Unsqueeze onboarding status loading icon (#370)
+- FP-970: Make columns depenedent on fileNavCellCallback to handle scheme changes (#365)
+- FP-885: Ignore allocation checks to cloud.corral and data.tacc (#351)
+- FP-960: Fix migration & db export bugs (#361)
+- FP-906: Clear search bar in Data Files when changing systems. (#352)
+- FP-821: Google Drive UI fixes (#354)
+- FP-891: fix external workbench access disrupted by onboarding (#358)
+- FP-880: Skip project members that have no user object (#344)
+- FP-896: Fix add definition to list (#342)
+- FP-800: Fix incorrect path and typo in nginx.conf (#341)
+- FP-824: Combined projects fixes (#326)
+- FP-803: Handle error during data files scrolling (#322)
+- FP-868: Set project ACLs for each member on creation (#328)
+- FP-860: Get job output location from notification info (#317)
+- FP-855: Disable add and upload buttons when user cannot write to system (#314)
+- FP-850: Disable make link on community and public data (#313)
+- FP-835: ticket create modal UI fixes (#305)
+- FP-831: Allow multiple <dd> elements when data is Array in DescriptionList (#299)
+- FP-832: Disable search bar when error in files listing (#304)
+- FP-815: prevent View Path from appearing when browsing Google Drive (#292)
+- FP-825: Fix HTML app loading (#295)
+- FP-814: public url fixes from testing (#291)
+- FP-823: Project add user list shows all users, project creation failure persists (#296)
+
+
 ## [2.3.0] - 2020-12-21: Shared Workspaces, Site Search, Apps Metadata, Google Drive
 
 ### Added
@@ -17,7 +100,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FP-694: Site Metrics
 - FP-698: Jupyter Mounts endpoint
 - FP-695: Data Files Events and Notification Toasts
-
 
 ### Changed
 
@@ -224,7 +306,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.3.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.0
 [2.3.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.3.0
 [2.2.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.2.0
 [2.1.2]: https://github.com/TACC/Core-Portal/releases/tag/v2.1.2
