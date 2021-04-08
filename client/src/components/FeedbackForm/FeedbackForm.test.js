@@ -27,10 +27,7 @@ describe('FeedbackForm', () => {
         ...ticketCreate,
         creating: true
       },
-      workbench: {
-        ...workbench,
-        portalName: 'Portal Name'
-      }
+      workbench
     });
 
     const { getByTestId } = renderComponent(<FeedbackForm />, store);
