@@ -67,3 +67,11 @@ def test_update_using_storage_system_id(mock_iterate_listings, mock_project_list
     call_command("projects_id", "--update-using-storage-system-id", stdout=out)
     output = out.getvalue()
     assert "Updating to value latest storage system id: 0" in output
+
+
+def test_update_using_storage_system_id_with_two_projects(mock_iterate_listings, mock_project_listing_with_projects):
+    out = StringIO()
+    call_command("projects_id", "--update-using-storage-system-id", stdout=out)
+    output = out.getvalue()
+    assert "Latest storage system project id: 124" in output
+    assert "Updating to value latest storage system id: 124" in output
