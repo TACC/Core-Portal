@@ -120,5 +120,6 @@ class Command(BaseCommand):
             self.stdout.write('Updating to user provided value of: {}'.format(options.get('update')))
             ProjectId.update(options.get('update'))
         elif options["update_using_storage_system_id"]:
-            self.stdout.write('Updating to user provided value of: {}'.format(latest_storage_system_id))
+            latest_storage_system_id = 0 if latest_storage_system_id == -1 else latest_storage_system_id
+            self.stdout.write('Updating to value latest storage system id: {}'.format(latest_storage_system_id))
             ProjectId.update(latest_storage_system_id)
