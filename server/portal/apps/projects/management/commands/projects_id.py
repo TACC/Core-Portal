@@ -112,7 +112,7 @@ class Command(BaseCommand):
                 model_project_id = ProjectId.objects.select_for_update().latest('last_updated').value
             self.stdout.write('Latest project id in ProjectId model: {}'.format(model_project_id))
         except ObjectDoesNotExist:
-            self.stdout.write('Latest project id in ProjectId mode: None')
+            self.stdout.write('Latest project id in ProjectId model: None')
             if (options.get('update') or options.get('update_using_storage_system_id')):
                 ProjectId.objects.create(value=1).save()
 
