@@ -285,6 +285,6 @@ const appDetailSlurmFixture = {
   },
   license: { type: null },
   appListing: {}
-}
+};
 
 export default appDetailSlurmFixture;

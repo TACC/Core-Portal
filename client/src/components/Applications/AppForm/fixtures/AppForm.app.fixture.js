@@ -124,14 +124,16 @@ const namdFixture = {
     outputs: [],
     _links: {
       self: {
-        href: 'https://portals-api.tacc.utexas.edu/apps/v2/namd-frontera-2.1.3u2'
+        href:
+          'https://portals-api.tacc.utexas.edu/apps/v2/namd-frontera-2.1.3u2'
       },
       executionSystem: {
         href:
           'https://portals-api.tacc.utexas.edu/systems/v2/frontera.community.exec.frontera'
       },
       storageSystem: {
-        href: 'https://portals-api.tacc.utexas.edu/systems/v2/cep.storage.default'
+        href:
+          'https://portals-api.tacc.utexas.edu/systems/v2/cep.storage.default'
       },
       history: {
         href:
@@ -148,7 +150,7 @@ const namdFixture = {
         href:
           'https://portals-api.tacc.utexas.edu/apps/v2/namd-frontera-2.1.3u2/pems'
       }
-    },
+    }
   },
   systemHasKeys: false,
   pushKeysSystem: {
@@ -308,6 +310,6 @@ const namdFixture = {
   },
   license: { type: null },
   appListing: {}
-}
+};
 
 export default namdFixture;

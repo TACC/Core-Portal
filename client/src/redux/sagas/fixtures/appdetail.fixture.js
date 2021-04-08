@@ -120,7 +120,7 @@ const appDetailFixture = {
       }
     },
     resource: 'stampede2.tacc.utexas.edu',
-    scheduler: 'FORK',
+    scheduler: 'FORK'
   },
   systemHasKeys: false,
   pushKeysSystem: {},
@@ -195,6 +195,6 @@ const appDetailFixture = {
     type: null
   },
   appListing: {}
-}
+};
 
 export default appDetailFixture;
