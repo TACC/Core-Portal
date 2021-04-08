@@ -10,29 +10,17 @@ import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/Data
 
 import './DataFilesUploadModal.module.scss';
 
-export const DIRECTION_CLASS_MAP = {
-  vertical: 'is-vert',
-  horizontal: 'is-horz'
+export const LAYOUT_CLASS_MAP = {
+  compact: 'is-compact',
+  default: 'is-normal'
 };
-export const DEFAULT_DIRECTION = 'vertical';
-export const DIRECTIONS = ['', ...Object.keys(DIRECTION_CLASS_MAP)];
+export const DEFAULT_LAYOUT = 'default';
+export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
 
-export const DENSITY_CLASS_MAP = {
-  compact: 'is-narrow',
-  default: 'is-wide'
-};
-export const DEFAULT_DENSITY = 'default';
-export const DENSITIES = ['', ...Object.keys(DENSITY_CLASS_MAP)];
-
-const DataFilesUploadModal = ({ className, density, direction }) => {
-  const [disabled, setDisabled] = useState(false);
-  const modifierClasses = [];
-  modifierClasses.push(DENSITY_CLASS_MAP[density || DEFAULT_DENSITY]);
-  modifierClasses.push(DIRECTION_CLASS_MAP[direction || DEFAULT_DIRECTION]);
-  const containerStyleNames = ['container', ...modifierClasses].join(' ');
-
+const DataFilesUploadModal = ({ className, layout }) => {
   const history = useHistory();
   const location = useLocation();
+  const [disabled, setDisabled] = useState(false);
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
@@ -63,12 +51,14 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
       });
   };
 
-  const showListing =
-    uploadedFiles.length > 0 ||
-    (density === DEFAULT_DENSITY && direction === DEFAULT_DIRECTION);
-  const isCompactView =
-    uploadedFiles.length > 0 &&
-    !(density === DEFAULT_DENSITY && direction === DEFAULT_DIRECTION);
+  const hasFilesToList = uploadedFiles.length > 0;
+  const showListing = hasFilesToList || layout === 'default';
+
+  const modifierClasses = [];
+  if (hasFilesToList) modifierClasses.push('has-entries');
+  modifierClasses.push(LAYOUT_CLASS_MAP[layout || DEFAULT_LAYOUT]);
+  const containerStyleNames = ['container', ...modifierClasses].join(' ');
+
   const systemDisplayName = findSystemOrProjectDisplayName(
     params.scheme,
     systemList,
@@ -119,10 +109,7 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
     >
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
       <ModalBody styleName={containerStyleNames}>
-        <div
-          styleName={isCompactView ? 'compact-view' : ''}
-          disabled={disabled}
-        >
+        <div styleName="dropzone" disabled={disabled}>
           <FileInputDropZone
             onSetFiles={selectFiles}
             onRejectedFiles={onRejectedFiles}
@@ -131,7 +118,7 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
           />
         </div>
         {showListing && (
-          <div styleName="data-files-listing">
+          <div styleName="listing">
             <span styleName="listing-header">
               Uploading to {systemDisplayName}/{params.path}
             </span>
@@ -158,18 +145,12 @@ const DataFilesUploadModal = ({ className, density, direction }) => {
 DataFilesUploadModal.propTypes = {
   /** Additional className for the root element */
   className: PropTypes.string,
-  /** Selector type */
-  /* FAQ: We can support any values, even a component */
-  // eslint-disable-next-line react/forbid-prop-types
-  /** Layout density */
-  density: PropTypes.oneOf(DENSITIES),
-  /** Layout direction */
-  direction: PropTypes.oneOf(DIRECTIONS)
+  /** Layout */
+  layout: PropTypes.oneOf(LAYOUTS)
 };
 DataFilesUploadModal.defaultProps = {
   className: '',
-  density: DEFAULT_DENSITY,
-  direction: DEFAULT_DIRECTION
+  layout: DEFAULT_LAYOUT
 };
 
 export default DataFilesUploadModal;
