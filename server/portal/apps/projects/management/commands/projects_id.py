@@ -11,9 +11,9 @@ from portal.libs.agave.operations import iterate_listing
 
 class Command(BaseCommand):
     help = (
-        'Manage projects latest project i. By default this command will print '
+        'Manage projects latest project id. By default this command will print '
         'the current latest project id, the last project id used in '
-        'storage systems and the last project id used in folders created.'
+        'storage systems, and the last project id used in folders created.'
     )
 
     @staticmethod
