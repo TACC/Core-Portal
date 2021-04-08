@@ -225,6 +225,21 @@ def text_preview(url):
         raise ValueError("File does not contain text")
 
 
+def increment_file_name(listing, file_name):
+    if any(x['name'] for x in listing if x['name'] == file_name):
+        inc = 1
+        _ext = os.path.splitext(file_name)[1]
+        _name = os.path.splitext(file_name)[0]
+        _inc = "({})".format(inc)
+        file_name = '{}{}{}'.format(_name, _inc, _ext)
+
+        while any(x['name'] for x in listing if x['name'] == file_name):
+            inc += 1
+            _inc = "({})".format(inc)
+            file_name = '{}{}{}'.format(_name, _inc, _ext)
+    return file_name
+
+
 def get_file_size(client, system, path):
     """ Get file size
     :param client: an Agave client

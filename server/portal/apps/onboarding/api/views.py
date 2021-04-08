@@ -21,9 +21,58 @@ from portal.apps.onboarding.execute import (
     execute_setup_steps
 )
 from portal.apps.onboarding.state import SetupState
+from portal.apps.users.utils import q_to_model_queries
 import json
 
 logger = logging.getLogger(__name__)
+
+
+def get_user_onboarding(user):
+    # Result dictionary for user
+    result = {
+        "username": user.username,
+        "lastName": user.last_name,
+        "firstName": user.first_name,
+        "email": user.email,
+        "isStaff": user.is_staff,
+        "steps": [],
+        "setupComplete": user.profile.setup_complete
+    }
+
+    # Populate steps list in result dictionary, in order of
+    # steps as listed in PORTAL_USER_ACCOUNT_SETUP_STEPS
+    account_setup_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
+    for step in account_setup_steps:
+        # Get step events in descending order of time
+        step_events = SetupEvent.objects.all().filter(
+            user=user, step=step['step']
+        ).order_by('-time')
+
+        step_instance = load_setup_step(user, step['step'])
+
+        step_data = {
+            "step": step['step'],
+            "displayName": step_instance.display_name(),
+            "description": step_instance.description(),
+            "userConfirm": step_instance.user_confirm,
+            "staffApprove": step_instance.staff_approve,
+            "staffDeny": step_instance.staff_deny,
+            "state": step_instance.state,
+            "events": [event for event in step_events],
+            "data": None
+        }
+        custom_status = step_instance.custom_status()
+        if custom_status:
+            step_data["customStatus"] = custom_status
+
+        if step_instance.last_event:
+            step_data["data"] = step_instance.last_event.data
+
+        # Append all events. SetupEventEncoder will serialize
+        # SetupEvent objects later
+        result['steps'].append(step_data)
+
+    return result
 
 
 @method_decorator(login_required, name='dispatch')
@@ -78,50 +127,8 @@ class SetupStepView(BaseApiView):
             username = request.user.username
 
         user = self.get_user_parameter(request, username)
-        account_setup_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
 
-        # Result dictionary for user
-        result = {
-            "username": username,
-            "lastName": user.last_name,
-            "firstName": user.first_name,
-            "email": user.email,
-            "isStaff": user.is_staff,
-            "steps": [],
-            "setupComplete": user.profile.setup_complete
-        }
-
-        # Populate steps list in result dictionary, in order of
-        # steps as listed in PORTAL_USER_ACCOUNT_SETUP_STEPS
-        for step in account_setup_steps:
-            # Get step events in descending order of time
-            step_events = SetupEvent.objects.all().filter(
-                user=user, step=step['step']
-            ).order_by('-time')
-
-            step_instance = load_setup_step(user, step['step'])
-
-            step_data = {
-                "step": step['step'],
-                "displayName": step_instance.display_name(),
-                "description": step_instance.description(),
-                "userConfirm": step_instance.user_confirm,
-                "staffApprove": step_instance.staff_approve,
-                "staffDeny": step_instance.staff_deny,
-                "state": step_instance.state,
-                "events": [event for event in step_events],
-                "data": None
-            }
-            custom_status = step_instance.custom_status()
-            if custom_status:
-                step_data["customStatus"] = custom_status
-
-            if step_instance.last_event:
-                step_data["data"] = step_instance.last_event.data
-
-            # Append all events. SetupEventEncoder will serialize
-            # SetupEvent objects later
-            result['steps'].append(step_data)
+        result = get_user_onboarding(user)
 
         # Encode with SetupEventEncoder
         return JsonResponse(result, encoder=SetupEventEncoder)
@@ -237,41 +244,35 @@ class SetupStepView(BaseApiView):
 @method_decorator(login_required, name='dispatch')
 @method_decorator(staff_member_required, name='dispatch')
 class SetupAdminView(BaseApiView):
-    def create_user_result(self, user):
-        user_result = {}
-        user_result['username'] = user.username
-        user_result['lastName'] = user.last_name
-        user_result['firstName'] = user.first_name
-        user_result['dateJoined'] = user.date_joined
-        user_result['email'] = user.email
-        user_result['setupComplete'] = user.profile.setup_complete
-
-        try:
-            last_event = SetupEvent.objects.all().filter(
-                user=user
-            ).latest('time')
-            user_result['lastEvent'] = last_event
-        except SetupEvent.DoesNotExist:
-            pass
-
-        return user_result
-
     def get(self, request):
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 10))
         users = []
-        model = get_user_model()
+        results = get_user_model().objects.all()
+        q = request.GET.get('q', None)
+        if q:
+            query = q_to_model_queries(q)
+            results = results.filter(query)
         # Get users, with users that do not have setup_complete, first
-        result = model.objects.all().order_by('profile__setup_complete', 'last_name', 'first_name')
+        results = results.order_by('profile__setup_complete', 'last_name', 'first_name')
+        # Uncomment this line to simulate many user results
+        # results = list(results) * 105
+        total = len(results)
+        page = results[offset:offset + limit]
 
         # Assemble an array with the User data we care about
-        for user in result:
+        for user in page:
             try:
-                users.append(self.create_user_result(user))
+                users.append(get_user_onboarding(user))
             except ObjectDoesNotExist as err:
                 # If a user does not have a PortalProfile, skip it
                 logger.info(err)
 
         response = {
-            "users": users
+            "users": users,
+            "offset": offset,
+            "limit": limit,
+            "total": total
         }
 
         return JsonResponse(

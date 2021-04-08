@@ -1,0 +1,7 @@
+.site-search__full-width-result{
+    width: 100%;
+}
+
+.site-search__no-overflow {
+    overflow: visible !important;
+}

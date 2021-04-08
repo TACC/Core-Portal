@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button } from 'reactstrap';
@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 
 import './DataFilesSearchbar.module.css';
 
-const DataFilesSearchbar = ({ api, scheme, system, className }) => {
+const DataFilesSearchbar = ({ api, scheme, system, className, publicData }) => {
   const disabled = useSelector(
     state =>
       state.files.loading.FilesListing === true ||
@@ -19,6 +19,7 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const [query, setQuery] = useState('');
   const history = useHistory();
   const hasQuery = queryString.parse(useLocation().search).query_string;
+  const location = useLocation();
   const sectionName =
     scheme === 'projects'
       ? 'Workspace'
@@ -28,9 +29,17 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
     const qs = query
       ? `?${queryString.stringify({ query_string: query })}`
       : '';
-
+    if (publicData) {
+      history.push(`/public-data/${api}/${scheme}/${system}/${qs}`);
+      return;
+    }
     history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
+
+  // Reset form field on route change
+  useEffect(() => {
+    !hasQuery && setQuery('');
+  }, [hasQuery, location]);
 
   const onSubmit = e => {
     routeSearch();
@@ -39,7 +48,11 @@ const DataFilesSearchbar = ({ api, scheme, system, className }) => {
   const onClear = e => {
     e.preventDefault();
     setQuery('');
-    history.push(`/workbench/data/${api}/${scheme}/${system}/`);
+    if (publicData) {
+      history.push(`/public-data/${api}/${scheme}/${system}/`);
+    } else {
+      history.push(`/workbench/data/${api}/${scheme}/${system}/`);
+    }
   };
   const onChange = e => setQuery(e.target.value);
 
@@ -91,10 +104,12 @@ DataFilesSearchbar.propTypes = {
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
   /** Additional `className` (or transpiled `styleName`) for the root element */
-  className: PropTypes.string
+  className: PropTypes.string,
+  publicData: PropTypes.bool
 };
 DataFilesSearchbar.defaultProps = {
-  className: ''
+  className: '',
+  publicData: false
 };
 
 export default DataFilesSearchbar;

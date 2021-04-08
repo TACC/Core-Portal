@@ -59,6 +59,7 @@ OR
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
+    python3 manage.py import-apps # Add set of example apps used in Frontnera portal (optional)
 
 #### Initialize the CMS in the `core_portal_cms` container:
 First, copy the sample secrets:
@@ -75,6 +76,29 @@ Then, run migrations and `collectstatic`:
 Finally, create a home page in the CMS.
 
 *NOTE*: TACC VPN or physical connection to the TACC network is required To log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
+
+### Setting up search index and initial project id locally:
+
+At least one page in CMS is needed (see above), then rebuild the cms search index
+```
+    docker exec -it core_portal_cms /bin/bash
+    python3 manage.py rebuild_index
+```
+Then use the django shell in the `core_portal_django` container:
+```
+    docker exec -it core_portal_django /bin/bash
+    python3 manage.py shell
+```
+to run the following code to set up the projects index and initial project id
+```
+from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_allocations_index
+setup_files_index(force=True)
+setup_projects_index(force=True)
+setup_allocations_index(force=True)
+
+from portal.apps.projects.models.base import ProjectId
+ProjectId.objects.create(value=1).save()
+```
 
 ### Setting up notifications locally:
 
