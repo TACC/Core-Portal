@@ -70,11 +70,11 @@ export function getJobDisplayInformation(job, app) {
         // ignore if there is problem improving the system name
       }
 
-      display.applicationName = app.label;
+      display.applicationName = app.definition.label;
 
       // Improve input/parameters
       display.inputs.forEach(input => {
-        const matchingParameter = app.inputs.find(obj => {
+        const matchingParameter = app.definition.inputs.find(obj => {
           return input.id === obj.id;
         });
         if (matchingParameter) {
@@ -83,7 +83,7 @@ export function getJobDisplayInformation(job, app) {
         }
       });
       display.parameters.forEach(input => {
-        const matchingParameter = app.parameters.find(obj => {
+        const matchingParameter = app.definition.parameters.find(obj => {
           return input.id === obj.id;
         });
         if (matchingParameter) {
@@ -93,7 +93,7 @@ export function getJobDisplayInformation(job, app) {
       });
       // filter non-visible
       display.inputs.filter(input => {
-        const matchingParameter = app.inputs.find(obj => {
+        const matchingParameter = app.definition.inputs.find(obj => {
           return input.id === obj.id;
         });
         if (matchingParameter) {
@@ -102,7 +102,7 @@ export function getJobDisplayInformation(job, app) {
         return true;
       });
       display.parameters.filter(input => {
-        const matchingParameter = app.parameters.find(obj => {
+        const matchingParameter = app.definition.parameters.find(obj => {
           return input.id === obj.id;
         });
         if (matchingParameter) {
@@ -124,7 +124,7 @@ export function getJobDisplayInformation(job, app) {
         display.queue = job.remoteQueue;
       }
 
-      if (app.parallelism === 'PARALLEL') {
+      if (app.definition.parallelism === 'PARALLEL') {
         display.processorsPerNode = job.processorsPerNode;
         display.nodeCount = job.nodeCount;
       }

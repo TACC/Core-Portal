@@ -70,8 +70,8 @@ class TestAppsApiViews(TestCase):
         # If the request is sent successfully, then I expect a response to be returned.
         self.assertEqual(response.status_code, 200)
         self.assertTrue("response" in data)
-        self.assertEqual(len(data["response"]), 2)
-        self.assertTrue(data["response"] == apps)
+        self.assertEqual(len(data["response"]['appListing']), 2)
+        self.assertTrue(data["response"]['appListing'] == apps)
 
     @patch('portal.apps.accounts.managers.user_systems.get_user_data')
     def test_job_submit_notifications(self, tas_mock):
