@@ -35,12 +35,12 @@ export function formatDateTime(dateTime) {
 
 /**
  * A standard-format date string or UNIX timestamp
- * @typedef {string|number} DateTimeString
+ * @typedef {string|number} DateTimeValue
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
  */
 /**
  * Create a string representation of date/time using internal standard
- * @param {DateTimeString} dateTimeValue - A single value date-time representation
+ * @param {DateTimeValue} dateTimeValue - A single value date-time representation
  * @returns {string}
  */
 export function formatDateTimeFromValue(dateTimeValue) {
