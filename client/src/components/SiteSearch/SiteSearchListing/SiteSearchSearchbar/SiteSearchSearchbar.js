@@ -9,8 +9,8 @@ import './SiteSearchSearchbar.module.css';
 const SiteSearchSearchbar = () => {
   const history = useHistory();
   const { filter } = useParams();
-  const [query, setQuery] = useState('');
   const urlQueryParam = queryString.parse(window.location.search).query_string;
+  const [query, setQuery] = useState(urlQueryParam);
 
   const baseUrl = filter ? `/search/${filter}` : '/search';
   const routeSearch = () => {
@@ -41,7 +41,7 @@ const SiteSearchSearchbar = () => {
         <input
           type="search"
           onChange={onChange}
-          value={query || urlQueryParam || ''}
+          value={query || ''}
           name="query"
           aria-label="Search"
           styleName="input"
