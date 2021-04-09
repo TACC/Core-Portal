@@ -12,6 +12,9 @@ import { Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
 
+import formatSize from 'utils/sizeFormat';
+import { formatDateTimeFromValue } from 'utils/timeFormat';
+
 export const CheckboxHeaderCell = () => {
   const selected = useSelector(state => state.files.selectAll.FilesListing);
   const listingLength = useSelector(
@@ -122,37 +125,17 @@ FileNavCell.defaultProps = {
 
 export const FileLengthCell = ({ cell }) => {
   const bytes = cell.value;
-  const units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
-  const number = bytes === 0 ? 0 : Math.floor(Math.log(bytes) / Math.log(1024));
-  const bytesString = (bytes / 1024 ** Math.floor(number)).toFixed(1);
 
-  return (
-    <span>
-      {bytesString} {units[number]}
-    </span>
-  );
+  return <span>{formatSize(bytes)}</span>;
 };
 FileLengthCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.number }).isRequired
 };
 
 export const LastModifiedCell = ({ cell }) => {
-  const date = new Date(cell.value);
-  const dateString = date.toLocaleDateString(undefined, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
-  const timeString = date.toLocaleTimeString(undefined, {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-  return (
-    <span>
-      {dateString} {timeString}
-    </span>
-  );
+  const timeValue = cell.value;
+
+  return <span>{formatDateTimeFromValue(timeValue)}</span>;
 };
 LastModifiedCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired
