@@ -1,3 +1,4 @@
+/* FP-993: Allow use by DataFilesUploadModal */
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from 'reactstrap';
@@ -81,7 +82,7 @@ function FileInputDropZone({
           <strong>or</strong>
           <strong>Drag and Drop</strong>
           <br />
-          {maxSizeMessage}
+          <p>{maxSizeMessage}</p>
         </div>
       )}
       {showFileList && (
