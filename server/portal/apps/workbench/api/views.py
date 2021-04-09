@@ -6,7 +6,8 @@ from django.http import JsonResponse
 @login_required
 def workbench_state(request):
     data = {
-        'setupComplete': request.user.profile.setup_complete
+        'setupComplete': request.user.profile.setup_complete,
+        'config': settings.WORKBENCH_SETTINGS,
+        'portalName': settings.PORTAL_NAMESPACE
     }
-    data.update({'config': settings.WORKBENCH_SETTINGS})
     return JsonResponse({'response': data})
