@@ -24,7 +24,7 @@ export default function DataFilesModals() {
       <DataFilesPreviewModal />
       <DataFilesMoveModal />
       <DataFilesCopyModal />
-      <DataFilesUploadModal />
+      <DataFilesUploadModal layout="default" />
       <DataFilesMkdirModal />
       <DataFilesRenameModal />
       <DataFilesPushKeysModal />
