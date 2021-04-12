@@ -2,6 +2,7 @@ export const initialWelcomeMessages = {
   dashboard: true,
   applications: true,
   datafiles: true,
+  work2: true,
   allocations: true,
   history: true,
   profile: true,

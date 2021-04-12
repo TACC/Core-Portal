@@ -1,3 +1,4 @@
+/* FP-993: Create and use a common Uploader component */
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -105,7 +106,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
       toggle={toggle}
       onClosed={onClosed}
       size="xl"
-      className="dataFilesModal"
+      className={`dataFilesModal ${className}`}
     >
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
       <ModalBody styleName={containerStyleNames}>
