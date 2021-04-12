@@ -21,8 +21,14 @@ export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
 const DataFilesUploadModal = ({ className, layout }) => {
   const history = useHistory();
   const location = useLocation();
+  const [disabled, setDisabled] = useState(false);
+
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+
   const reloadCallback = () => {
     history.push(location.pathname);
+    const errorFiles = uploadedFiles.filter(f => status[f.id] === 'ERROR');
+    errorFiles.length === uploadedFiles.length && setDisabled(false);
   };
 
   const isOpen = useSelector(state => state.files.modals.upload);
@@ -30,9 +36,9 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const status = useSelector(state => state.files.operationStatus.upload);
   const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
+    setDisabled(true);
     const filteredFiles = uploadedFiles.filter(f => status[f.id] !== 'SUCCESS');
     filteredFiles.length > 0 &&
       dispatch({
@@ -61,6 +67,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
     params.system
   );
   const onClosed = () => {
+    setDisabled(false);
     setUploadedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
@@ -85,6 +92,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
   };
 
   const onRejectedFiles = rejectedFiles => {
+    setDisabled(false);
     const newFiles = [];
     rejectedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
@@ -102,7 +110,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
     >
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
       <ModalBody styleName={containerStyleNames}>
-        <div styleName="dropzone">
+        <div styleName="dropzone" disabled={disabled}>
           <FileInputDropZone
             onSetFiles={selectFiles}
             onRejectedFiles={onRejectedFiles}
@@ -123,7 +131,11 @@ const DataFilesUploadModal = ({ className, layout }) => {
         )}
       </ModalBody>
       <ModalFooter>
-        <Button className="data-files-btn" onClick={uploadStart}>
+        <Button
+          className="data-files-btn"
+          onClick={uploadStart}
+          disabled={disabled}
+        >
           Upload Selected
         </Button>
       </ModalFooter>
