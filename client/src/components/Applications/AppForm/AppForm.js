@@ -165,10 +165,6 @@ export const AppSchemaForm = ({ app }) => {
       payload: {
         operation: 'pushKeys',
         props: {
-          onSuccess: {
-            type: 'RELOAD_APP',
-            payload: { appId: app.id }
-          },
           system: pushKeysSystem
         }
       }

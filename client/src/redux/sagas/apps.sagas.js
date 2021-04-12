@@ -15,21 +15,13 @@ const getCurrentApp = state => state.app;
 function* getApp(action) {
   const { appId } = action.payload;
   const currentApp = yield select(getCurrentApp);
-  if (currentApp.definition.id === appId) {
+
+  if (
+    currentApp.definition.id === appId &&
+    currentApp.definition.systemHasKeys
+  ) {
     return;
   }
-  yield put({ type: 'FLUSH_SUBMIT' });
-  yield put({ type: 'GET_APP_START' });
-  try {
-    const app = yield call(fetchAppDefinitionUtil, appId);
-    yield put({ type: 'LOAD_APP', payload: app });
-  } catch (error) {
-    yield put({ type: 'GET_APP_ERROR', payload: error });
-  }
-}
-
-function* reloadApp(action) {
-  const { appId } = action.payload;
   yield put({ type: 'FLUSH_SUBMIT' });
   yield put({ type: 'GET_APP_START' });
   try {
@@ -60,5 +52,4 @@ export function* getAppTray(action) {
 export default function* watchApps() {
   yield takeLatest('GET_APPS', getAppTray);
   yield takeLatest('GET_APP', getApp);
-  yield takeLatest('RELOAD_APP', reloadApp);
 }
