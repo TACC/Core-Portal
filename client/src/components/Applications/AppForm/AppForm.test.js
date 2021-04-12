@@ -94,6 +94,6 @@ describe('AppSchemaForm', () => {
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdFixture
     });
-    expect(getByText(/There was a problem accessing this file system/)).toBeDefined();
+    expect(getByText(/There was a problem accessing your default My Data file system/)).toBeDefined();
   });
 });
