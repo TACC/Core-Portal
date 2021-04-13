@@ -58,24 +58,10 @@ function* submitJob(action) {
       },
       body: JSON.stringify(action.payload)
     });
-    if (res.response.execSys) {
-      yield put({
-        type: 'SYSTEMS_TOGGLE_MODAL',
-        payload: {
-          operation: 'pushKeys',
-          props: {
-            onSuccess: { type: 'SUBMIT_JOB', payload: action.payload },
-            system: res.response.execSys
-          }
-        }
-      });
-      yield put({ type: 'TOGGLE_SUBMITTING' });
-    } else {
-      yield put({
-        type: 'SUBMIT_JOB_SUCCESS',
-        payload: res.response
-      });
-    }
+    yield put({
+      type: 'SUBMIT_JOB_SUCCESS',
+      payload: res.response
+    });
   } catch (error) {
     yield put({
       type: 'SUBMIT_JOB_ERROR',
