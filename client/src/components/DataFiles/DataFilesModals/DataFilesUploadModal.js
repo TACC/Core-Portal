@@ -28,7 +28,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const reloadCallback = () => {
     history.push(location.pathname);
     const errorFiles = uploadedFiles.filter(f => status[f.id] === 'ERROR');
-    errorFiles.length === uploadedFiles.length && setDisabled(false);
+    if (errorFiles.length === uploadedFiles.length) setDisabled(false);
   };
 
   const isOpen = useSelector(state => state.files.modals.upload);
