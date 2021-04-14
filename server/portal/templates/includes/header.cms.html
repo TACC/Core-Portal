@@ -1,0 +1,46 @@
+{# @var className, hasPortal #}
+{# NOTE: Includes assume specific file paths and django template syntax.
+         To support explicit file paths or Jinja template syntax, use blocks. #}
+
+{# WARNING: This markup is duplicated in other repositories #}
+{# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
+<header class="{{className}}" id="core-header">
+
+  {% block header_branding %}
+    {% include "./header_branding.html" %}
+  {% endblock header_branding %}
+
+  <nav id="s-header" class="
+    s-header
+    navbar navbar-dark
+    {% if hasPortal %}navbar-expand-xl{% else %}navbar-expand-lg{% endif %}">
+    <!-- Portal Logo -->
+    {% block header_logo %}
+      {% include "./header_logo.html" %}
+    {% endblock header_logo %}
+
+    <!-- Navbar Accordian Toggle on Small Screens  -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Links -->
+    <div class="collapse navbar-collapse" id="navbarsExpandTarget">
+      {% block nav_cms %}
+        {# FAQ: Must NOT use `only` or else `show_menu` fails to render #}
+        {% include "./nav_cms.html" with className="navbar-nav" hasPortal=hasPortal %}
+      {% endblock nav_cms %}
+
+      {% if hasPortal %}
+        {% block nav_search %}
+          {% include "./nav_search.html" with className="form-inline  ml-auto" only %}
+        {% endblock nav_search %}
+
+        {% block nav_portal %}
+          {% include "./nav_portal.html" with className="navbar-nav" only %}
+        {% endblock nav_portal %}
+      {% endif %}
+    </div>
+  </nav>
+
+</header>
