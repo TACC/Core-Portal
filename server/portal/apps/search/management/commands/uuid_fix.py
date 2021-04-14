@@ -26,10 +26,16 @@ def reindex_uuids(scan_generator, limit=1000):
 
     def hit_to_op(hit):
         uuid = file_uuid_sha256(hit.system, hit.path)
+        doc = hit.to_dict()
+        try:
+            doc['_links']['self'] = doc['_links'].pop('_self')
+        except KeyError:
+            pass
+
         return {
             '_index': idx_name,
             '_id': uuid,
-            'doc': hit.to_dict(),
+            'doc': doc,
             '_op_type': 'update',
             'doc_as_upsert': True
         }
