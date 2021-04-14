@@ -39,7 +39,7 @@ export default function getFilePermissions(name, { files, scheme, api }) {
     case 'compress':
       return !isArchive && files.length > 0 && isPrivate && api === 'tapis';
     case 'copy':
-      return files.length > 0 && isPrivate;
+      return files.length > 0;
     case 'move':
       return (
         !isProtected && files.length > 0 && isPrivate && api !== 'googledrive'
