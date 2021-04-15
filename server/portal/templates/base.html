@@ -16,8 +16,9 @@
     <link rel="canonical" href="{{request.get_full_path}}">
     <base href="/">
     {% block head_extra %}{% endblock %}
-    <!-- styles -->
+    <!-- CMS Assets -->
     <link id="css-site-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <script id="css-site-script" type="module" src="/static/site_cms/js/site.css.js"></script>
     <link id="css-site-header" rel="stylesheet" href="/static/site_cms/css/build/site.header.css" />
     <!-- Vendor CSS -->
     {# FP-526: Stop using Font Awesome icons; start using Cortal icons #}
