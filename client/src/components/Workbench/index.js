@@ -20,14 +20,16 @@ function AppRouter() {
   }, []);
 
   const cmsSettings = getCMSSettings();
-  const bodyClassName = cmsSettings.themeClassName;
+  const { themeClassName } = cmsSettings;
   useEffect(() => {
-    if (bodyClassName) document.body.classList.add(bodyClassName);
+    const root = document.documentElement;
+
+    if (themeClassName) root.classList.add(themeClassName);
 
     return function cleanup() {
-      if (bodyClassName) document.body.classList.remove(bodyClassName);
+      if (themeClassName) root.documentElement.classList.remove(themeClassName);
     };
-  }, [bodyClassName]);
+  }, [themeClassName]);
 
   return (
     <Router>
