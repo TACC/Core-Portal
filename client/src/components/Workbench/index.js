@@ -2,6 +2,9 @@ import { hot } from 'react-hot-loader/root';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
+
+import getCMSSettings from 'utils/cmsSettings';
+
 import Workbench from './Workbench';
 import * as ROUTES from '../../constants/routes';
 import TicketStandaloneCreate from '../Tickets/TicketStandaloneCreate';
@@ -15,6 +18,17 @@ function AppRouter() {
     dispatch({ type: 'FETCH_WELCOME' });
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
   }, []);
+
+  const cmsSettings = getCMSSettings();
+  const bodyClassName = cmsSettings.themeClassName;
+  useEffect(() => {
+    if (bodyClassName) document.body.classList.add(bodyClassName);
+
+    return function cleanup() {
+      if (bodyClassName) document.body.classList.remove(bodyClassName);
+    };
+  }, [bodyClassName]);
+
   return (
     <Router>
       <Route path="/search/:filter?" component={SiteSearch} />
