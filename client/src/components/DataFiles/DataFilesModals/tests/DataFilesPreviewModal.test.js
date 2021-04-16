@@ -1,8 +1,8 @@
 import renderComponent from 'utils/testing';
 import React from 'react';
 import configureStore from 'redux-mock-store';
-import DataFilesPreviewModal from './DataFilesPreviewModal';
-import { initialFilesState } from '../../../redux/reducers/datafiles.reducers';
+import DataFilesPreviewModal from '../DataFilesPreviewModal';
+import { initialFilesState } from '../../../../redux/reducers/datafiles.reducers';
 
 const files = {
   ...initialFilesState,
