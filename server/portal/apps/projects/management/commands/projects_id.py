@@ -25,29 +25,32 @@ class Command(BaseCommand):
         offset = 0
         limit = 1000
         latest = -1
+        all_projects = []
         while True:
-            prjs = Project.listing(
+            prjs = [p for p in Project.listing(
                 service_account(),
                 offset=offset,
                 limit=limit
-            )
-            prjs = [p for p in prjs]
-            for prj in prjs:
-                prj_id = prj.storage.id.replace(
-                    settings.PORTAL_PROJECTS_NAME_PREFIX,
-                    ''
-                )
-                if '-' not in prj_id:
-                    continue
-                _, prj_id = prj_id.rsplit('-')
-                prj_id = int(prj_id)
-
-                if prj_id > latest and (ignore_above_value is None or prj_id < ignore_above_value):
-                    latest = prj_id
-
+            )]
+            all_projects += prjs
             offset += limit
             if len(prjs) < limit:
                 break
+
+        for prj in all_projects:
+            prj_id = prj.storage.id.replace(
+                settings.PORTAL_PROJECTS_NAME_PREFIX,
+                ''
+            )
+            if '-' not in prj_id:
+                continue
+            _, prj_id = prj_id.rsplit('-')
+            prj_id = int(prj_id)
+
+            if prj_id > latest and (ignore_above_value is None or prj_id < ignore_above_value):
+                latest = prj_id
+
+
         return latest
 
     @staticmethod
