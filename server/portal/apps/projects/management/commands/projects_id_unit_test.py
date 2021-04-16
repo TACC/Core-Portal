@@ -1,7 +1,7 @@
 from io import StringIO
 import pytest
 from django.core.management import call_command
-from portal.apps.projects.management.commands.projects_id import Command
+from portal.apps.projects.management.commands.projects_id import get_latest_project_storage, get_latest_project_directory
 
 
 pytestmark = pytest.mark.django_db
@@ -28,11 +28,11 @@ def mock_iterate_listings(mocker):
 
 
 def test_get_latest_project_storage(mock_project_listing):
-    assert Command.get_latest_project_storage() == -1
+    assert get_latest_project_storage() == -1
 
 
 def test_get_latest_project_directory(mock_iterate_listings):
-    assert Command.get_latest_project_directory() == -1
+    assert get_latest_project_directory() == -1
 
 
 def test_default_command_with_no_projects(mock_iterate_listings, mock_project_listing):
