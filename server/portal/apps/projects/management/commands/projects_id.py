@@ -81,9 +81,10 @@ class Command(BaseCommand):
             help='Update project id DB value.'
         )
         parser.add_argument(
-            '--update-using-storage-system-id',
+            '--update-using-max-value-found',
             action='store_true',
-            help='Update project id DB value using value derived from latest storage system project id.'
+            help='Update project id DB value using value derived from latest storage system project id or latest '
+                 'directory project id (whichever is higher).'
         )
         parser.add_argument(
             '--ignore-large-project-ids',
@@ -120,7 +121,7 @@ class Command(BaseCommand):
         if options.get('update'):
             self.stdout.write('Updating to user provided value of: {}'.format(options.get('update')))
             ProjectId.update(options.get('update'))
-        elif options["update_using_storage_system_id"]:
+        elif options["update_using_max_value_found"]:
             latest_storage_system_id = 0 if latest_storage_system_id == -1 else latest_storage_system_id
             self.stdout.write('Updating to value latest storage system id: {}'.format(latest_storage_system_id))
             ProjectId.update(latest_storage_system_id)
