@@ -9,10 +9,10 @@ from portal.apps.projects.models.base import ProjectId, Project
 from portal.libs.agave.operations import iterate_listing
 
 
-def get_latest_project_storage(ignore_above_value=None):
+def get_latest_project_storage(max_project_id=None):
     """Get latest agave project storage.
 
-    :param ignore_above_value: If provided, then ignore projects ids that are greater than or equal to this value.
+    :param max_project_id: If provided, then ignore projects ids that are greater than or equal to this value.
     """
     offset = 0
     limit = 1000
@@ -39,16 +39,16 @@ def get_latest_project_storage(ignore_above_value=None):
         _, prj_id = prj_id.rsplit('-')
         prj_id = int(prj_id)
 
-        if prj_id > latest and (ignore_above_value is None or prj_id < ignore_above_value):
+        if prj_id > latest and (max_project_id is None or prj_id < max_project_id):
             latest = prj_id
 
     return latest
 
 
-def get_latest_project_directory(ignore_above_value=None):
+def get_latest_project_directory(max_project_id=None):
     """Get latest agave project directory.
 
-    :param ignore_above_value: If provided, then ignore projects ids that are greater than or equal to this value.
+    :param max_project_id: If provided, then ignore projects ids that are greater than or equal to this value.
     """
     latest = -1
     for f in iterate_listing(service_account(),
@@ -59,7 +59,7 @@ def get_latest_project_directory(ignore_above_value=None):
             continue
         _, dir_id = name.rsplit('-', 1)
         dir_id = int(dir_id)
-        if dir_id > latest and (ignore_above_value is None or dir_id < ignore_above_value):
+        if dir_id > latest and (max_project_id is None or dir_id < max_project_id):
             latest = dir_id
     return latest
 
@@ -86,7 +86,7 @@ class Command(BaseCommand):
                  'directory project id (whichever is higher).'
         )
         parser.add_argument(
-            '--ignore-large-project-ids',
+            '--max-project-id',
             action='store',
             type=int,
             help='Ignore project ids larger than a certain value'
@@ -94,13 +94,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Handle command."""
-        ignore_large_ids = options["ignore_large_project_ids"]
-        if ignore_large_ids:
+        max_project_id = options["max_project_id"]
+        if max_project_id:
             self.stdout.write('NOTE(!!!!): Ignoring project ids >= {} when '
-                              'processing/updating the storage systems and directories'.format(ignore_large_ids))
+                              'processing/updating the storage systems and directories'.format(max_project_id))
 
-        latest_storage_system_id = get_latest_project_storage(ignore_above_value=ignore_large_ids)
-        latest_project_id = get_latest_project_directory(ignore_above_value=ignore_large_ids)
+        latest_storage_system_id = get_latest_project_storage(max_project_id=max_project_id)
+        latest_project_id = get_latest_project_directory(max_project_id=max_project_id)
 
         if latest_storage_system_id == -1:
             self.stdout.write('There are no project storage systems.')
