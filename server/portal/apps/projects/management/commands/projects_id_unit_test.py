@@ -43,7 +43,7 @@ def test_default_command_with_no_projects(mock_iterate_listings, mock_project_li
     assert "There are no project directories" in output
     assert "Latest storage system project id: -1" in output
     assert "Latest directory project id: -1" in output
-    assert "Latest project id in ProjectId mode: None" in output
+    assert "Latest project id in ProjectId model: None" in output
 
 
 def test_default_command_with_two_projects(mock_iterate_listings, mock_project_listing_with_projects):
@@ -52,7 +52,7 @@ def test_default_command_with_two_projects(mock_iterate_listings, mock_project_l
     output = out.getvalue()
     assert "Latest storage system project id: 124" in output
     assert "Latest directory project id: -1" in output
-    assert "Latest project id in ProjectId mode: None" in output
+    assert "Latest project id in ProjectId model: None" in output
 
 
 def test_update(mock_iterate_listings, mock_project_listing):
