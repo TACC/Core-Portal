@@ -9,15 +9,23 @@ import renderComponent from 'utils/testing';
 const mockStore = configureStore();
 
 describe('DataFilesSystemSelector', () => {
-  it('contains options for all of the systems', () => {
+  it('contains options for non-private systems', () => {
     const history = createMemoryHistory();
     const store = mockStore({ systems: systemsFixture });
-    const { getByText } = renderComponent(
-      <DataFilesSystemSelector section="modal"/>,
+    const { queryByText } = renderComponent(
+      <DataFilesSystemSelector section="modal"
+                excludedSystems={systemsFixture.storage.configuration
+                  .filter(s => s.scheme !== 'private')
+                  .map(s => s.system)}/>,
       store,
       history
     );
-    expect(getByText(/My Data \(Frontera\)/)).toBeDefined();
-    expect(getByText(/My Data \(Longhorn\)/)).toBeDefined();
+    expect(queryByText(/My Data \(Work\)/)).toBeDefined();
+    expect(queryByText(/My Data \(Frontera\)/)).toBeDefined();
+    expect(queryByText(/My Data \(Longhorn\)/)).toBeDefined();
+    expect(queryByText(/Google Drive/)).toBeDefined();
+    expect(queryByText(/Shared Workspaces/)).toBeDefined();
+    expect(queryByText(/Public Data/)).toBeNull();
+    expect(queryByText(/Community Data/)).toBeNull();
   });
 });
