@@ -21,14 +21,10 @@ export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
 const DataFilesUploadModal = ({ className, layout }) => {
   const history = useHistory();
   const location = useLocation();
-  const [disabled, setDisabled] = useState(false);
-
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const reloadCallback = () => {
     history.push(location.pathname);
-    const errorFiles = uploadedFiles.filter(f => status[f.id] === 'ERROR');
-    if (errorFiles.length === uploadedFiles.length) setDisabled(false);
   };
 
   const isOpen = useSelector(state => state.files.modals.upload);
@@ -38,7 +34,6 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const projectsList = useSelector(state => state.projects.listing.projects);
   const dispatch = useDispatch();
   const uploadStart = () => {
-    setDisabled(true);
     const filteredFiles = uploadedFiles.filter(f => status[f.id] !== 'SUCCESS');
     filteredFiles.length > 0 &&
       dispatch({
@@ -51,7 +46,8 @@ const DataFilesUploadModal = ({ className, layout }) => {
         }
       });
   };
-
+  const disabled =
+    Object.values(status).filter(s => s === 'UPLOADING').length > 0;
   const hasFilesToList = uploadedFiles.length > 0;
   const showListing = hasFilesToList || layout === 'default';
 
@@ -67,7 +63,6 @@ const DataFilesUploadModal = ({ className, layout }) => {
     params.system
   );
   const onClosed = () => {
-    setDisabled(false);
     setUploadedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
@@ -92,7 +87,6 @@ const DataFilesUploadModal = ({ className, layout }) => {
   };
 
   const onRejectedFiles = rejectedFiles => {
-    setDisabled(false);
     const newFiles = [];
     rejectedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
