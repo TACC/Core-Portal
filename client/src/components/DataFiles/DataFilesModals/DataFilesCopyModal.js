@@ -163,6 +163,9 @@ const DataFilesCopyModal = React.memo(() => {
                 section="modal"
                 disabled={disabled}
                 showProjects={showProjects}
+                excludedSystems={systems
+                  .filter(s => s.scheme !== 'private')
+                  .map(s => s.system)}
               />
             </div>
             {!showProjects && (
