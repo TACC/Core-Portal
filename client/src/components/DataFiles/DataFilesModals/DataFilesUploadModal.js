@@ -21,7 +21,6 @@ export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
 const DataFilesUploadModal = ({ className, layout }) => {
   const history = useHistory();
   const location = useLocation();
-  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const reloadCallback = () => {
     history.push(location.pathname);
@@ -32,6 +31,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const status = useSelector(state => state.files.operationStatus.upload);
   const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
     const filteredFiles = uploadedFiles.filter(f => status[f.id] !== 'SUCCESS');
