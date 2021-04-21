@@ -73,9 +73,9 @@ class Command(BaseCommand):
 
         >>> ./manage.py projects_id
 
-        Update the project id to a specific nubmer:
+        Update the project id to a specific number:
 
-        >>> ./manage.py project_id --update 42
+        >>> ./manage.py projects_id --update 42
 
         Update the project id to something safe:
 
