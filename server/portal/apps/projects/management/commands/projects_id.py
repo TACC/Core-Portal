@@ -65,6 +65,29 @@ def get_latest_project_directory(max_project_id=None):
 
 
 class Command(BaseCommand):
+    """Manage project latest project id
+
+    Examples:
+
+        Discover what the current latest project ids are:
+
+        >>> ./manage.py projects_id
+
+        Update the project id to a specific nubmer:
+
+        >>> ./manage.py project_id --update 42
+
+        Update the project id to something safe:
+
+        >>> ./manage.py projects_id --update-using-max-value-found
+
+        Update the project id to something safe but don't look for a safe value above 1000000. This could be used if
+        you had previously set the max project id to something super larger (like 1000000) for testing purposes but now
+        want to revert to a safe (but lower) project id.
+
+        >>> ./manage.py projects_id --update-using-max-value-found --max-project-id 1000000
+
+    """
     help = (
         'Manage projects latest project id. By default this command will print '
         'the current latest project id, the last project id used in '
