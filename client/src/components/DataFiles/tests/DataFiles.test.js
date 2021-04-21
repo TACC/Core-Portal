@@ -44,7 +44,7 @@ describe('DataFiles', () => {
       history
     )
     expect(history.location.pathname).toEqual(
-      '/workbench/data/tapis/private/frontera.home.username/'
+      '/workbench/data/tapis/private/corral.home.username/'
     );
     expect(getAllByText(/My Data \(Frontera\)/)).toBeDefined();
     expect(getByText(/My Data \(Longhorn\)/)).toBeDefined();

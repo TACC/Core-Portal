@@ -28,6 +28,10 @@ After you clone the repository locally, there are several configuration steps re
 
 Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.security.utexas.edu)
 
+_Note: Update `__PORTAL_PROJECTS_NAME_PREFIX` (or `_PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX`) in `settings_secret.py`to
+be something unique so that project creation in your local development does not clash with other development work (as
+directories and Tapis storage system names will be created using this prefix)._
+
 Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
 
 #### Build the image for the portal's django container:
@@ -59,6 +63,7 @@ OR
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser  # Unless you will only login with your TACC account
+    python3 manage.py projects_id --update-using-max-value-found # Update projects id counter
     python3 manage.py import-apps # Add set of example apps used in Frontnera portal (optional)
 
 #### Initialize the CMS in the `core_portal_cms` container:
@@ -77,7 +82,7 @@ Finally, create a home page in the CMS.
 
 *NOTE*: TACC VPN or physical connection to the TACC network is required To log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
 
-### Setting up search index and initial project id locally:
+### Setting up search index:
 
 At least one page in CMS is needed (see above), then rebuild the cms search index
 ```
@@ -89,15 +94,12 @@ Then use the django shell in the `core_portal_django` container:
     docker exec -it core_portal_django /bin/bash
     python3 manage.py shell
 ```
-to run the following code to set up the projects index and initial project id
+to run the following code to set up the search index
 ```
 from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_allocations_index
 setup_files_index(force=True)
 setup_projects_index(force=True)
 setup_allocations_index(force=True)
-
-from portal.apps.projects.models.base import ProjectId
-ProjectId.objects.create(value=1).save()
 ```
 
 ### Setting up notifications locally:

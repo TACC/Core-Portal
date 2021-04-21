@@ -487,11 +487,17 @@ class ProjectId(models.Model):
     @classmethod
     @transaction.atomic
     def update(cls, value):
-        """Atomically updates value of next project id."""
-        row = cls.objects.select_for_update().latest('last_updated')
-        row.value = value
-        row.save()
-        return row.value
+        """Atomically updates value of next project id.
+
+        If there is no project id row to update, one is created.
+        """
+        try:
+            row = cls.objects.select_for_update().latest('last_updated')
+            row.value = value
+            row.save()
+        except ObjectDoesNotExist:
+            cls.objects.create(value=value).save()
+        return value
 
     @classmethod
     @transaction.atomic
