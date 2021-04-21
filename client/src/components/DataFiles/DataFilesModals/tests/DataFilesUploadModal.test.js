@@ -40,20 +40,20 @@ const initialMockState = {
 };
 
 describe('DataFilesUploadModal', () => {
-  it('renders the files upload modal full size', () => {
+  it('renders the files upload modal default layout', () => {
     const store = mockStore(initialMockState);
     const { getAllByText } = renderComponent(
-      <DataFilesUploadModal direction="vertical" density="default" />,
+      <DataFilesUploadModal layout="default" />,
       store
     );
 
     expect(getAllByText(/Upload Files/)).toBeDefined();
   });
 
-  it('renders the files upload modal small area', () => {
+  it('renders the files upload modal compact layout', () => {
     const store = mockStore(initialMockState);
     const { getAllByText } = renderComponent(
-      <DataFilesUploadModal direction="vertical" density="compact" />,
+      <DataFilesUploadModal layout="compact" />,
       store
     );
 

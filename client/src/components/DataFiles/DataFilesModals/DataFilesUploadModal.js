@@ -21,6 +21,7 @@ export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
 const DataFilesUploadModal = ({ className, layout }) => {
   const history = useHistory();
   const location = useLocation();
+
   const reloadCallback = () => {
     history.push(location.pathname);
   };
@@ -45,7 +46,8 @@ const DataFilesUploadModal = ({ className, layout }) => {
         }
       });
   };
-
+  const disabled =
+    Object.values(status).filter(s => s === 'UPLOADING').length > 0;
   const hasFilesToList = uploadedFiles.length > 0;
   const showListing = hasFilesToList || layout === 'default';
 
@@ -102,7 +104,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
     >
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
       <ModalBody styleName={containerStyleNames}>
-        <div styleName="dropzone">
+        <div styleName="dropzone" disabled={disabled}>
           <FileInputDropZone
             onSetFiles={selectFiles}
             onRejectedFiles={onRejectedFiles}
@@ -123,7 +125,11 @@ const DataFilesUploadModal = ({ className, layout }) => {
         )}
       </ModalBody>
       <ModalFooter>
-        <Button className="data-files-btn" onClick={uploadStart}>
+        <Button
+          className="data-files-btn"
+          onClick={uploadStart}
+          disabled={disabled}
+        >
           Upload Selected
         </Button>
       </ModalFooter>
