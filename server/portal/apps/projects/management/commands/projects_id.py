@@ -96,13 +96,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         """Add arguments."""
-        parser.add_argument(
+        update_group = parser.add_mutually_exclusive_group()
+        update_group.add_argument(
             '--update',
             action='store',
             type=int,
             help='Update project id DB value.'
         )
-        parser.add_argument(
+        update_group.add_argument(
             '--update-using-max-value-found',
             action='store_true',
             help='Update project id DB value using value derived from latest storage system project id or latest '
