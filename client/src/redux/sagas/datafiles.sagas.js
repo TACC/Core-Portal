@@ -779,24 +779,24 @@ export const getLatestApp = async name => {
   });
   const apps = res.response;
   const latestApp = apps
-    .filter(app => app.id.includes(name))
+    .filter(app => app.definition.id.includes(name))
     .reduce(
       (latest, app) => {
-        if (app.version > latest.version) {
+        if (app.definition.version > latest.version) {
           return app;
         }
-        if (app.version < latest.version) {
+        if (app.definition.version < latest.version) {
           return latest;
         }
         // Same version of app
-        if (app.revision >= latest.revision) {
+        if (app.definition.revision >= latest.revision) {
           return app;
         }
         return latest;
       },
       { revision: null, version: null }
     );
-  return latestApp.id;
+  return latestApp.definition.id;
 };
 
 const getExtractParams = (file, latestExtract) => {
