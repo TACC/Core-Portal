@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.1] - 2021-04-16: Bugfixes; `work2` Message
+
+### Added
+
+- FP-976: Add configurable work2 Alert message (#373)
+
+### Changed
+
+- Quick: Have Data List Cells use Util Functions (#378)
+- Quick: Update Sample CMS Settings (#376)
+- Update local certs (#372)
+- FP-883: Pass PORTAL_NAMESPACE to front end for use in Feedback Form (#374)
+- FP-338: File Uploader UI (#309)
+- FP-630: Notify user to push keys before starting app (#359)
+
+### Fixed
+
+- FP-984: Fix Onboarding Search Query (#379)
+- FP-985: Fix window search overwriting site search query (#380)
+- FP-973: Enable Copy button/operation in Public Data and Community Data (#384)
+- FP-1013: Disable copying to non-private systems in copy modal (#385)
+
 ## [2.4.0] - 2021-03-26: CEPv2 Release
 
 ### Added
@@ -89,7 +111,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FP-814: public url fixes from testing (#291)
 - FP-823: Project add user list shows all users, project creation failure persists (#296)
 
-
 ## [2.3.0] - 2020-12-21: Shared Workspaces, Site Search, Apps Metadata, Google Drive
 
 ### Added
@@ -113,7 +134,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FP-371: Fix File Preview
 - FP-363: Consistent Header Templates
 - FP-601: Correct color of back button in file navigation
-
 
 ## [2.2.0] - 2020-12-01: User Onboarding; Feedback
 
@@ -306,7 +326,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.4.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.4.1...HEAD
+[2.4.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.0
 [2.4.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.0
 [2.3.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.3.0
 [2.2.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.2.0

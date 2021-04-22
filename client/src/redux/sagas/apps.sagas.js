@@ -15,7 +15,11 @@ const getCurrentApp = state => state.app;
 function* getApp(action) {
   const { appId } = action.payload;
   const currentApp = yield select(getCurrentApp);
-  if (currentApp.definition.id === appId) {
+
+  if (
+    currentApp.definition.id === appId &&
+    currentApp.definition.systemHasKeys
+  ) {
     return;
   }
   yield put({ type: 'FLUSH_SUBMIT' });

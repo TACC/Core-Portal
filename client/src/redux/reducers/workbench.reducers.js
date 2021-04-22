@@ -1,6 +1,7 @@
 export const initialState = {
   loading: false,
   config: {},
+  portalName: '',
   setupComplete: window.__INITIAL_SETUP_COMPLETE__
 };
 
