@@ -156,7 +156,7 @@ const DataFiles = () => {
       }
       content={
         <>
-        <DataFilesSidebar styleName="sidebar" readOnly={readOnly} />
+        <DataFilesSidebar readOnly={readOnly} />
           <DataFilesSwitch />
       <DataFilesModals />
         </>
