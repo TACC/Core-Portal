@@ -75,7 +75,7 @@
   & td > a,
   & td > span {
     /* Stretch cell content to fit available space */
-    /* NOTE: This is intentionally ineffectual on inline elements */
+    /* NOTE: Intentionally ineffectual when elements are `display: inline` */
     width: 100%;
   }
 }
