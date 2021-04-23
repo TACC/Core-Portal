@@ -31,7 +31,10 @@
   --horizontal-buffer: var(--global-space--section-left);
 }
 #appBrowser-sidebar {
-    margin-left: calc(var(--horizontal-buffer) * -1);
+  --min-width: 200px;
+
+  margin-left: calc(var(--horizontal-buffer) * -1);
+  border-right: 1px solid rgba(112, 112, 112, 0.25);
 }
 /* Overwrite browser styles */
 /* FAQ: Combining ID and classname is overspecific, but it is accurate,
@@ -43,8 +46,6 @@ ul#appBrowser-sidebar {
 
 #appBrowser-sidebar .nav-link,
 #appBrowser-tray .nav-link {
-  --min-width: 200px;
-
   min-width: var(--min-width);
   padding-left: var(--horizontal-buffer);
   color: #707070;
@@ -72,7 +73,6 @@ ul#appBrowser-sidebar {
   flex-grow: 1;
 
   background-color: #f4f4f4;
-  border-left: 1px solid rgba(112, 112, 112, 0.25);
 }
 
 #appBrowser-sidebar .nav-text,

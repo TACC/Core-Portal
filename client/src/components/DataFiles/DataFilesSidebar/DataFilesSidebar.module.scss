@@ -1,4 +1,10 @@
 .root {
+  /* TODO: Remove suprfluous div, ideally when `_common/Sidebar` is created */
+  /* HACK: Any superfluous div—`.data-files-sidebar`—must meet parent height */
+  > :only-child {
+    height: 100%;
+  }
+
   .read-only {
     color: #AFAFAF;
   }
