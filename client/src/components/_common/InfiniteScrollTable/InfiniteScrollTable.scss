@@ -1,7 +1,8 @@
 .InfiniteScrollTable {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
 
-  /* Force `width: 100%` to have effect in all scenarios */
+  /* Force `width: 100%` to have effect when table width exceeds parent width */
+  /* FAQ: Table width can exceed parent's when content on one row is too wide */
   /* SEE: https://stackoverflow.com/a/6601257 */
   table-layout: fixed;
 
