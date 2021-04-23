@@ -40,4 +40,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  overflow-y: auto; /* to allow content to scroll when window height is short */
 }
