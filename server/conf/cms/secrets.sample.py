@@ -60,6 +60,16 @@ _CMS_TEMPLATES = (
     # NOTE: To have per-project styles, the custom default template is required
     ('fullwidth.html', 'Fullwidth'),
     # ('example-cms/templates/fullwidth.html', 'Fullwidth (Custom Example)'),
+
+    # Any portal whose homepage has NO design must enable and use this template
+    ('home_portal.html', 'Standard Portal Homepage'),
+
+    # All portals should enable all of these templates
+    ('guide.html', 'Guide'),
+    ('guides/getting_started.html', 'Guide: Getting Started'),
+    ('guides/data_transfer.html', 'Guide: Data Transfer'),
+    ('guides/data_transfer.globus.html', 'Guide: Globus Data Transfer'),
+    ('guides/portal_technology.html', 'Guide: Portal Technology Stack')
 )
 
 ########################
