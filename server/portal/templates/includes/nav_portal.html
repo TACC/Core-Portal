@@ -16,6 +16,11 @@
         <a class="dropdown-item" href="{% url 'workbench:dashboard' %}">
           <i class="fas fa-desktop nav-icon"></i> My Dashboard
         </a>
+        {% if user.is_staff %}
+        <a class="dropdown-item" href="{% url 'workbench:onboarding_admin' %}">
+          <i class="fas fa-tasks nav-icon"></i> Onboarding Admin
+        </a>
+        {% endif %}
         <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
           <i class="fas fa-user-circle nav-icon"></i> My Account
         </a>
