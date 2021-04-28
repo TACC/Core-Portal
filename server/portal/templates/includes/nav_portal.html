@@ -17,7 +17,7 @@
           <i class="fas fa-desktop nav-icon"></i> My Dashboard
         </a>
         {% if user.is_staff %}
-        <a class="dropdown-item" href="{% url 'workbench:onboardingadmin' %}">
+        <a class="dropdown-item" href="{% url 'workbench:onboarding_admin' %}">
           <i class="fas fa-tasks nav-icon"></i> Onboarding Admin
         </a>
         {% endif %}
