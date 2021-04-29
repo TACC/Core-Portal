@@ -30,3 +30,4 @@
 /* TRUMPS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
 @import url('./trumps/icon.css');
+@import url('./trumps/table.css');
