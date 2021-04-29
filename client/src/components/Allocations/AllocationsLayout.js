@@ -13,6 +13,8 @@ import { AllocationsTable } from './AllocationsTables';
 import { AllocationsRequestModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
 
+import './Allocations.global.css';
+
 export const Header = ({ page }) => {
   return (
     /* !!!: Temporary extra markup to make simpler PR diff */
@@ -73,6 +75,7 @@ export const Layout = ({ page }) => {
     /* !!!: Temporary bad indentation to make simpler PR diff */
     /* eslint-disable prettier/prettier */
     <Section
+      bodyClassName="has-loaded-allocations"
       routeName="ALLOCATIONS"
       header={
       <Header page={page} />
