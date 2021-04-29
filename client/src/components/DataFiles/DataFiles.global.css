@@ -3,8 +3,8 @@
 /* SEE: index.css */
 body.has-loaded-datafiles {
   /* HACK: Should instead (ask Design) reduce button width on narrow screen */
-  --min-width: 925px; /* approx. Data Files table before table header cut off */
-  /* --min-width: 1152px; /* approx. Data Files table no horz. scrollbar */
+  --min-width: 945px; /* short & narrow Data Files ~before table <th> cut off */
+  /* --min-width: 1020px; /* short & narrow Data Files ~no horz. table scroll */
 
   /* NOTE: This value should account for welcome message and /work2 message */
   --min-height: 370px; /* tall enough to avoid .listing-placeholder scroll */
