@@ -125,7 +125,7 @@ services:
     container_name: core_portal_workers
 
   docs:
-    image: taccwma/frontera-docs:7af12ae
+    image: taccwma/frontera-docs:d4b36ba
     volumes:
       - ../../docs:/docs/site
     command: ["mkdocs", "build"]

@@ -24,6 +24,7 @@ from django.conf.urls.static import static
 from portal.apps.auth.views import agave_oauth as login
 from portal.views.views import project_version as portal_version
 from django.views.generic import RedirectView
+from django.views.generic.base import TemplateView
 from django.urls import path, re_path, include
 admin.autodiscover()
 
@@ -46,6 +47,9 @@ urlpatterns = [
     # auth.
     path('auth/', include('portal.apps.auth.urls', namespace='portal_auth')),
     re_path('login/$', login),
+
+    # markup
+    re_path('core/markup/nav', TemplateView.as_view(template_name='includes/nav_portal.raw.html'), name='portal_nav_markup'),
 
     # api
     path('api/users/', include('portal.apps.users.urls', namespace='users')),
