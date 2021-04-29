@@ -227,7 +227,10 @@ export const GoogleDriveIntegrationCell = ({ activated }) => {
             onClick={toggle}
             className="license-button"
           >
-            Connect to Google Drive
+            Connect{' '}
+            <small className="license-button__extra-text">
+              to Google Drive
+            </small>
           </Button>
         </div>
       )}

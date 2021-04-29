@@ -120,3 +120,14 @@
   background-color: transparent !important;
   font-weight: bold;
 }
+.license-button__extra-text {
+  font-size: inherit;
+  font-weight: inherit;
+}
+/* Hide superfluous text when there is not enough space for it */
+/* WARNING: This code is brittle (the media query relies on independent breakpoint classes in markup) */
+@media (min-width: 990px) and (max-width: 1201px) {
+  .license-button__extra-text {
+    display: none;
+  }
+}
