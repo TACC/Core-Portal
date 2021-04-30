@@ -100,14 +100,14 @@
 
   /* Move first X panels to right column, and shrink column */
   /* FAQ: Within `*:nth-child(-n+x)`, `x` equals number of extra panels */
-  .two-column > *:nth-child(-n+1) {
+  .two-column > *:nth-child(-1n+1) {
     order: var(--side-panel-order);
     max-width: calc(40% - var(--gutter-width));
   }
 
   /* Expand left column */
   /* FAQ: Within `*:nth-child(n+y)`, `y` equals number of extra panels + 1 */
-  .two-column > *:nth-child(n+2) {
+  .two-column > *:nth-child(1n+2) {
     max-width: calc(60% - var(--gutter-width));
   }
 }
