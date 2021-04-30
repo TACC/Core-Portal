@@ -9,7 +9,7 @@ import {
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { parse } from 'query-string';
-import { Section, SectionTable, LoadingSpinner } from '_common';
+import { Section, SectionTableWrapper, LoadingSpinner } from '_common';
 import DataFilesBreadcrumbs from '../DataFiles/DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesListing from '../DataFiles/DataFilesListing/DataFilesListing';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
@@ -119,7 +119,7 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
         />
       }
     >
-      <SectionTable styleName="content" manualContent>
+      <SectionTableWrapper styleName="content" manualContent>
         <DataFilesSearchbar
           api="tapis"
           scheme="public"
@@ -135,7 +135,7 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
         isPublic
       />
         </div>
-      </SectionTable>
+      </SectionTableWrapper>
     </Section>
     /* eslint-enable prettier/prettier */
   );

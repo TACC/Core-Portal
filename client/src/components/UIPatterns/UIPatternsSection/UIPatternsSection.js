@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Section,
-  SectionTable,
+  SectionTableWrapper,
   DescriptionList,
   InfiniteScrollTable,
   InlineMessage,
@@ -75,7 +75,8 @@ function UIPatternsSection() {
           direction="vertical"
           data={{
             contentStyleName: 'content--has-table-to-illustrate-scrolling',
-            header: 'Section with <SectionTable> and <InfiniteScrollTable>',
+            header:
+              'Section with <SectionTableWrapper> and <InfiniteScrollTable>',
             content: '(paragraph, table, paragraph)',
             headerActions: '(a button to trigger sample action)',
             contentLayoutName: 'oneColumn'
@@ -87,7 +88,7 @@ function UIPatternsSection() {
           contentStyleName="content--has-table-to-illustrate-scrolling"
           header={
             <>
-              Section with <code>{`<SectionTable>`}</code> and &nbsp;
+              Section with <code>{`<SectionTableWrapper>`}</code> and &nbsp;
               <code>{`<InfiniteScrollTable>`}</code>
             </>
           }
@@ -98,9 +99,9 @@ function UIPatternsSection() {
                 <code>task/FP-385-section-comp-welcome-msg--sections</code>
                 &nbsp;refactors <code>InfiniteScrollTable</code>.
               </InlineMessage>
-              <SectionTable styleName="table" contentShouldScroll>
+              <SectionTableWrapper styleName="table" contentShouldScroll>
                 <UIPatternsSectionTableInfinite />
-              </SectionTable>
+              </SectionTableWrapper>
             </>
           }
           headerActions={
@@ -123,7 +124,7 @@ function UIPatternsSection() {
             content: (
               <>
                 (instruction list, table <strong>sans</strong>
-                &nbsp;<code>{`<SectionTable>`}</code>, and a paragraph)
+                &nbsp;<code>{`<SectionTableWrapper>`}</code>, and a paragraph)
               </>
             ),
             contentLayoutName: 'oneColumn',

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { SectionHeader } from '_common';
 
-import './SectionTable.module.css';
+import './SectionTableWrapper.module.css';
 
 /**
  * A wrapper required (for a table within a `Section[…]` component) that supports:
@@ -16,39 +16,39 @@ import './SectionTable.module.css';
  *
  * @example
  * // wrap a table (no header)
- * <SectionTable>
+ * <SectionTableWrapper>
  *   <AnyTableComponent {…} >
- * </SectionTable>
+ * </SectionTableWrapper>
  * @example
  * // wrap a table, prepend a header, apply a className
- * <SectionTable
+ * <SectionTableWrapper
  *   styleName="table-wrapper"
  *   header={<SectionHeader>Heading</SectionHeader>}
  * >
  *   <AnyTableComponent {…} >
- * </SectionTable>
+ * </SectionTableWrapper>
  * @example
  * // automatically build sub-components, with some customization
- * <SectionTable
+ * <SectionTableWrapper
  *   header="Dashboard"
  *   headerStyleName="header"
  *   headerActions={…}
  * >
  *   <AnyTableComponent {…} >
- * </SectionTable>
+ * </SectionTableWrapper>
  * @example
  * // alternate syntax to automatically build content
- * <SectionTable
+ * <SectionTableWrapper
  *   content={
  *     <AnyTableComponent {…} >
  *   }
- * </SectionTable>
+ * </SectionTableWrapper>
  * @example
  * // manually build sub-components
  * // WARNING: This component's styles are NOT applied to manual sub-components
  * // FAQ: The <SectionHeader> offers auto-built header's layout styles
  * // FAQ: The `o-flex-item-table-wrap` mirrors auto-built content layout fixes
- * <SectionTable
+ * <SectionTableWrapper
  *   manualHeader={
  *     <SectionHeader
  *       styleName="header"
@@ -68,13 +68,13 @@ import './SectionTable.module.css';
  * // manually build content (alternate method)
  * // WARNING: This component's styles are NOT applied to manual sub-components
  * // FAQ: The `o-flex-item-table-wrap` mirrors auto-built content layout fixes
- * <SectionTable manualContent>
+ * <SectionTableWrapper manualContent>
  *   <div class="o-flex-item-table-wrap">
  *     <AnyTableComponent {…} >
  *   </div>
- * </SectionTable>
+ * </SectionTableWrapper>
  */
-function SectionTable({
+function SectionTableWrapper({
   className,
   children,
   content,
@@ -99,7 +99,7 @@ function SectionTable({
   styleName = styleNameList.join(' ');
 
   // Allowing ineffectual prop combinations would lead to confusion
-  // Unlike <Section>, prop `contentShouldScroll` IS allowed for <SectionTable>
+  // (unlike <Section>, prop `contentShouldScroll` IS allowed here)
   if (manualContent && (content || contentClassName)) {
     throw new Error(
       'When passing `manualContent`, the following props are ineffectual: `content`, `contentClassName`'
@@ -147,7 +147,7 @@ function SectionTable({
     </TagName>
   );
 }
-SectionTable.propTypes = {
+SectionTableWrapper.propTypes = {
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
   /** Alternate way to pass `manualContent` and `content` */
@@ -175,7 +175,7 @@ SectionTable.propTypes = {
   /** Override tag of the root element */
   tagName: PropTypes.string
 };
-SectionTable.defaultProps = {
+SectionTableWrapper.defaultProps = {
   children: '',
   className: '',
   content: '',
@@ -189,4 +189,4 @@ SectionTable.defaultProps = {
   tagName: 'article'
 };
 
-export default SectionTable;
+export default SectionTableWrapper;

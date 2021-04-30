@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 
-import { BrowserChecker, Section, SectionTable } from '_common';
+import { BrowserChecker, Section, SectionTableWrapper } from '_common';
 import JobsView from '../Jobs';
 import Tickets, { TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
@@ -70,19 +70,19 @@ function DashboardRoutes() {
 
 function DashboardSysmon() {
   return (
-    <SectionTable
+    <SectionTableWrapper
       header="System Status"
       className="sysmon-wrapper"
       contentShouldScroll
     >
       <Sysmon />
-    </SectionTable>
+    </SectionTableWrapper>
   );
 }
 
 function DashboardJobs() {
   return (
-    <SectionTable
+    <SectionTableWrapper
       className="jobs-wrapper"
       header="My Recent Jobs"
       headerActions={
@@ -96,13 +96,13 @@ function DashboardJobs() {
       contentShouldScroll
     >
       <JobsView />
-    </SectionTable>
+    </SectionTableWrapper>
   );
 }
 
 function DashboardTickets() {
   return (
-    <SectionTable
+    <SectionTableWrapper
       className="tickets-wrapper"
       header="My Tickets"
       headerActions={
@@ -116,7 +116,7 @@ function DashboardTickets() {
       contentShouldScroll
     >
       <Tickets />
-    </SectionTable>
+    </SectionTableWrapper>
   );
 }
 

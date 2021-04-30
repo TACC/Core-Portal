@@ -7,7 +7,7 @@
 
 /* Modifiers */
 
-/* NOTE: Similar on: SectionContent, SectionTable */
+/* NOTE: Similar on: SectionContent, SectionTableWrapper */
 .should-scroll {
   /* We want to permit vertical scrolling, without forcing it… can we? */
   /* FAQ: Did not set `overflow: auto`, because that would certainly hide negative-margined sidebar links */

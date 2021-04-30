@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { LoadingSpinner, SectionTable } from '_common';
+import { LoadingSpinner, SectionTableWrapper } from '_common';
 import JobsView from '../../Jobs';
 
 import './JobHistory.module.scss';
@@ -28,13 +28,16 @@ const JobHistory = ({ className }) => {
   return (
     /* CLEVER: Using `job-history` class to scope the `unread` className */
     /* FP-936: Use 'unread' class from CSS Modules stylesheet, not global one */
-    <SectionTable className={`job-history ${className}`} contentShouldScroll>
+    <SectionTableWrapper
+      className={`job-history ${className}`}
+      contentShouldScroll
+    >
       {loading ? (
         <LoadingSpinner />
       ) : (
         <JobsView showDetails showFancyStatus rowProps={rowProps} />
       )}
-    </SectionTable>
+    </SectionTableWrapper>
   );
 };
 JobHistory.propTypes = {

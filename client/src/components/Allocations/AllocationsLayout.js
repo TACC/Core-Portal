@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
-import { Icon, LoadingSpinner, Section, SectionTable } from '_common';
+import { Icon, LoadingSpinner, Section, SectionTableWrapper } from '_common';
 import { AllocationsTable } from './AllocationsTables';
 import { AllocationsRequestModal } from './AllocationsModals';
 import * as ROUTES from '../../constants/routes';
@@ -88,9 +88,9 @@ export const Layout = ({ page }) => {
         {loading ? (
           <LoadingSpinner className="allocations-loading-icon" />
         ) : (
-          <SectionTable className="allocations-content" contentShouldScroll>
+          <SectionTableWrapper className="allocations-content" contentShouldScroll>
             <AllocationsTable page={page} />
-          </SectionTable>
+          </SectionTableWrapper>
         )}
         <Route exact path={`${root}/manage`}>
           <AllocationsRequestModal

@@ -12,7 +12,12 @@ import { parse } from 'query-string';
 import './DataFiles.global.css';
 import './DataFiles.module.css';
 
-import { Section, SectionTable, SectionMessage, LoadingSpinner } from '_common';
+import {
+  Section,
+  SectionTableWrapper,
+  SectionMessage,
+  LoadingSpinner
+} from '_common';
 import Work2Message from './Work2Message';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
@@ -77,7 +82,7 @@ const DataFilesSwitch = React.memo(() => {
           return (
             /* !!!: Temporary bad indentation to make simpler PR diff */
             /* eslint-disable prettier/prettier */
-            <SectionTable styleName="content" manualContent>
+            <SectionTableWrapper styleName="content" manualContent>
               <DataFilesSearchbar
                 api={params.api}
                 scheme={params.scheme}
@@ -91,7 +96,7 @@ const DataFilesSwitch = React.memo(() => {
               path={params.path || '/'}
             />
               </div>
-            </SectionTable>
+            </SectionTableWrapper>
             /* eslint-enable prettier/prettier */
           );
         }}

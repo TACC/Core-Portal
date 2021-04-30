@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import queryStringParser from 'query-string';
-import { InfiniteScrollTable, SectionMessage, SectionTable } from '_common';
+import {
+  InfiniteScrollTable,
+  SectionMessage,
+  SectionTableWrapper
+} from '_common';
 import DataFilesProjectsSearchbar from './DataFilesProjectsSearchbar/DataFilesProjectsSearchbar';
 import './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
@@ -101,7 +105,7 @@ const DataFilesProjectsList = ({ modal }) => {
   return (
     /* !!!: Temporary bad indentation to make simpler PR diff */
     /* eslint-disable prettier/prettier */
-    <SectionTable styleName="root" contentShouldScroll manualContent>
+    <SectionTableWrapper styleName="root" contentShouldScroll manualContent>
       {!modal && <DataFilesProjectsSearchbar />}
       <div className="o-flex-item-table-wrap">
       <InfiniteScrollTable
@@ -113,7 +117,7 @@ const DataFilesProjectsList = ({ modal }) => {
         className="projects-listing"
       />
       </div>
-    </SectionTable>
+    </SectionTableWrapper>
     /* eslint-enable prettier/prettier */
   );
 };

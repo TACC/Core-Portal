@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { LoadingSpinner, SectionMessage, SectionTable } from '_common';
+import { LoadingSpinner, SectionMessage, SectionTableWrapper } from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import './DataFilesProjectFileListing.module.scss';
@@ -56,7 +56,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   return (
     /* !!!: Temporary bad indentation to make simpler PR diff */
     /* eslint-disable prettier/prettier */
-    <SectionTable
+    <SectionTableWrapper
       styleName="root"
       header={metadata.title}
       headerActions={
@@ -72,7 +72,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       }
       manualContent
     >
-    {/* RFE: This unique description element could become (A) part of the <SectionTable>'s header (thus becoming part of the <SectionHeader>), (B) an independent component <SectionDescription>, or (C) both "A" and "B" */}
+    {/* RFE: This unique description element could become (A) part of the <SectionTableWrapper>'s header (thus becoming part of the <SectionHeader>), (B) an independent component <SectionDescription>, or (C) both "A" and "B" */}
     <div styleName="description">{metadata.description}</div>
     <DataFilesSearchbar
       api="tapis"
@@ -87,7 +87,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         path={path || '/'}
       />
     </div>
-    </SectionTable>
+    </SectionTableWrapper>
     /* eslint-enable prettier/prettier */
   );
 };
