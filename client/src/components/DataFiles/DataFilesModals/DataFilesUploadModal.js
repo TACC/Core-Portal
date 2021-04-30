@@ -32,9 +32,12 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [rejectedFiles, setUpRejectedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
-    const filteredFiles = uploadedFiles.filter(f => status[f.id] !== 'SUCCESS');
+    const filteredFiles = uploadedFiles.filter(
+      f => status[f.id] !== 'SUCCESS' && !rejectedFiles.includes(f)
+    );
     filteredFiles.length > 0 &&
       dispatch({
         type: 'DATA_FILES_UPLOAD',
@@ -86,12 +89,13 @@ const DataFilesUploadModal = ({ className, layout }) => {
     setUploadedFiles(files => [...files, ...newFiles]);
   };
 
-  const onRejectedFiles = rejectedFiles => {
+  const onRejectedFiles = newRejectedFiles => {
     const newFiles = [];
-    rejectedFiles.forEach(file => {
+    newRejectedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
     });
     setUploadedFiles(files => [...files, ...newFiles]);
+    setUpRejectedFiles(files => [...files, ...newFiles]);
   };
 
   return (
@@ -119,6 +123,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
             </span>
             <DataFilesUploadModalListingTable
               uploadedFiles={uploadedFiles}
+              rejectedFiles={rejectedFiles}
               setUploadedFiles={setUploadedFiles}
             />
           </div>

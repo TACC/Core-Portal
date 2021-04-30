@@ -5,3 +5,10 @@
   height: 300px;
   overflow: auto;
 }
+.error-message {
+  color: red;
+  font-weight: 600;
+  i {
+    padding-right: 5px;
+  }
+}
