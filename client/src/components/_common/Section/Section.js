@@ -192,7 +192,7 @@ Section.propTypes = {
   /** Any additional className(s) for the content element */
   contentClassName: PropTypes.string,
   /** The name of the layout by which to arrange the content children */
-  contentLayoutName: PropTypes.oneOf(LAYOUTS.concat('')),
+  contentLayoutName: PropTypes.oneOf(LAYOUTS),
   /** Whether to allow content to scroll */
   contentShouldScroll: PropTypes.bool,
   /** The section header text (header element built automatically) */
