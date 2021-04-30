@@ -1,3 +1,30 @@
+/* Base */
+
+.root {
+  /* FAQ: No styles necessary, but defining class to avoid build error */
+}
+
+
+
+
+
+/* Debug */
+/* FAQ: To color-code panels, ucncomment the code in this section */
+
+/* Color-code panels to easily track movement of multiple panels */
+/*
+.root::before          { background-color: tomato; }
+.root > *:nth-child(1) { background-color: orchid; }
+.root > *:nth-child(2) { background-color: dodgerblue; }
+.root > *:nth-child(3) { background-color: yellow; }
+.root > *:nth-child(4) { background-color: mediumseagreen; }
+.root::after           { background-color: gray; }
+*/
+
+
+
+
+
 /* 1 Row */
 
 /* TODO: Duplicate this as '.sidebar-and-content' */

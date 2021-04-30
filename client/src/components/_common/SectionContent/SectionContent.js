@@ -37,7 +37,7 @@ export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
  * // features: lay out panels, change tag, allow content scroll, color-coded
  * <SectionContent
  *   layoutName="oneColumn"
- *   tagName="main",
+ *   tagName="main"
  *   shouldScroll
  * >
  *   <div>Thing 1</div>
@@ -53,7 +53,7 @@ function SectionContent({
   tagName
 }) {
   let styleName = '';
-  const styleNameList = ['styles.root'];
+  const styleNameList = ['styles.root', 'layoutStyles.root'];
   const layoutClass = LAYOUT_CLASS_MAP[layoutName];
   const TagName = tagName;
 
