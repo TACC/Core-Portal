@@ -17,19 +17,7 @@ const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
     case 'SUCCESS':
       return <span className="badge badge-success">SUCCESS</span>;
     case 'ERROR':
-      return (
-        <span styleName="error-message">
-          <i className="fa fa-exclamation-triangle" />
-          Upload Failed
-        </span>
-      );
-    case 'MAX_SIZE_ERROR':
-      return (
-        <span styleName="error-message">
-          <i className="fa fa-exclamation-triangle" />
-          Exceeds File Size Limit
-        </span>
-      );
+      return <InlineMessage type="error">Upload Failed</InlineMessage>;
     default:
       return (
         <button
