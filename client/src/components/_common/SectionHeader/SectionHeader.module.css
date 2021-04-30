@@ -38,7 +38,8 @@
 
 /* Modifiers */
 
-.for-form {
+.for-form,
+.for-list {
   /* FAQ: No styles necessary, but this is here for consistency */
 }
 
