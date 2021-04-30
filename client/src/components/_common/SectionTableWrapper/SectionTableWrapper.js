@@ -51,7 +51,7 @@ import './SectionTableWrapper.module.css';
  * <SectionTableWrapper
  *   manualHeader={
  *     <SectionHeader
- *       styleName="header"
+ *       styleName="…"
  *       actions={…}
  *       isForTable
  *     >
