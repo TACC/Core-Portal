@@ -1,0 +1,3 @@
+.panels {
+  padding-top: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
+}

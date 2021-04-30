@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Alert, Col, Row } from 'reactstrap';
+import { Alert } from 'reactstrap';
 import { isEmpty } from 'lodash';
 import { LoadingSpinner, Section } from '_common';
 import {
@@ -16,6 +16,8 @@ import {
   EditOptionalInformationModal,
   EditRequiredInformationModal
 } from './ManageAccountModals';
+
+import './ManageAccount.module.css';
 import './ManageAccount.scss';
 
 const ManageAccountView = () => {
@@ -39,16 +41,16 @@ const ManageAccountView = () => {
           Back to Dashboard
         </Link>
       }
-      content={
-        // HACK: <Container fluid> output replicated via `contentClassName`
-        // TODO: Support Account layout via `contentLayoutName`
-        <>
-        <Row className="user-profile">
-          <Col lg="8" className="user-profile-main">
+      content=
             {isLoading ? (
               <LoadingSpinner />
             ) : (
               <>
+                <div>
+                  {!isEmpty(licenses) && <Licenses />}
+                  {!isEmpty(integrations) && <Integrations />}
+                  <ChangePassword />
+                </div>
                 {errors.data && (
                   <Alert color="danger">Unable to get your profile data</Alert>
                 )}
@@ -62,23 +64,9 @@ const ManageAccountView = () => {
                 <EditRequiredInformationModal />
               </>
             )}
-          </Col>
-          <Col lg="4">
-            {isLoading ? (
-              <LoadingSpinner />
-            ) : (
-              <>
-                {!isEmpty(licenses) && <Licenses />}
-                {!isEmpty(integrations) && <Integrations />}
-                <ChangePassword />
-              </>
-            )}
-          </Col>
-        </Row>
-        </>
-      }
-      contentClassName="manage-account-content container-fluid"
-      contentLayoutName="oneColumn"
+      contentStyleName="panels"
+      contentClassName="manage-account-content"
+      contentLayoutName="twoColumn"
       contentShouldScroll
     />
     /* eslint-enable prettier/prettier */
