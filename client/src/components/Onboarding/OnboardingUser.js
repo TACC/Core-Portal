@@ -46,7 +46,7 @@ const OnboardingUser = () => {
     /* !!!: Temporary bad indentation to make simpler PR diff */
     /* eslint-disable prettier/prettier */
     <Section
-      routeName="ONBOARDING"
+      welcomeMessageName="ONBOARDING"
       header=
           {isStaff
             ? `Onboarding Administration for ${user.username} - ${user.lastName}, ${user.firstName}`

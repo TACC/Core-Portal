@@ -50,7 +50,7 @@ const AppsRoutes = () => {
     /* eslint-disable prettier/prettier */
     <Section
       bodyClassName="has-loaded-applications"
-      routeName="APPLICATIONS"
+      welcomeMessageName="APPLICATIONS"
       header={
       <Route path={`${path}/:appId?`}>
         <AppsHeader appDict={appDict} />

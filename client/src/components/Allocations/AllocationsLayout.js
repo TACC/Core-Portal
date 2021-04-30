@@ -76,7 +76,7 @@ export const Layout = ({ page }) => {
     /* eslint-disable prettier/prettier */
     <Section
       bodyClassName="has-loaded-allocations"
-      routeName="ALLOCATIONS"
+      welcomeMessageName="ALLOCATIONS"
       header={
       <Header page={page} />
       }

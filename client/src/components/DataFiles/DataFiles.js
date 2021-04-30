@@ -142,7 +142,7 @@ const DataFiles = () => {
     /* eslint-disable prettier/prettier */
     <Section
       bodyClassName="has-loaded-datafiles"
-      routeName="DATA"
+      welcomeMessageName="DATA"
       header={
         <DataFilesBreadcrumbs
           api={listingParams.api}

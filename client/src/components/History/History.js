@@ -149,7 +149,7 @@ const Layout = () => {
   return (
     <Section
       bodyClassName="has-loaded-history"
-      routeName="HISTORY"
+      welcomeMessageName="HISTORY"
       header={`History / ${historyType}`}
       headerStyleName="header"
       headerActions={<Actions />}
