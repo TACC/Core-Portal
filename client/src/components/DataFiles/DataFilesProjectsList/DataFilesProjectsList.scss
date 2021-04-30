@@ -10,16 +10,16 @@
   /* title */
   th:nth-child(1),
   td:nth-child(1) {
-    width: 100%;
+    width: 50%;
   }
   /* owner */
   th:nth-child(2),
   td:nth-child(2) {
-    min-width: 15em;
+    width: 25%;
   }
   /* id */
   th:nth-child(3),
   td:nth-child(3) {
-    width: 5em;
+    width: 5%;
   }
 }
