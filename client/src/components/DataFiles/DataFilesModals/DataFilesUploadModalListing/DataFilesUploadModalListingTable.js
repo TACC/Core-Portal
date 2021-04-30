@@ -2,18 +2,13 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Table } from 'reactstrap';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, InlineMessage } from '_common';
 import { FileLengthCell } from '../../DataFilesListing/DataFilesListingCells';
 import './DataFilesUploadModalListingTable.module.scss';
 
 const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
   if (rejectedFiles.filter(f => f.id === i).length > 0) {
-    return (
-      <span styleName="error-message">
-        <i className="fa fa-exclamation-triangle" />
-        Exceeds File Size Limit
-      </span>
-    );
+    return <InlineMessage type="error">Exceeds File Size Limit</InlineMessage>;
   }
   const status = useSelector(state => state.files.operationStatus.upload[i]);
   switch (status) {
