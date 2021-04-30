@@ -80,7 +80,7 @@ const ErrorMessage = () => {
     <Message type="warn">
       Unable to retrieve your allocations.{' '}
       <a
-        href="#"
+        href=""
         style={{ color: '#9d85ef' }}
         onClick={e => {
           e.preventDefault();
