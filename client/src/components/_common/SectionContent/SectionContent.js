@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+/* Used by `styleNameList` implicitely via CSS Modules */
 /* eslint-disable no-unused-vars */
 import styles from './SectionContent.module.css';
 import layoutStyles from './SectionContent.layouts.module.css';
