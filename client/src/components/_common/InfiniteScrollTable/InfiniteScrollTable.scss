@@ -49,6 +49,7 @@
 
     /* !!!: Temporary lint disabling to make simpler PR diff */
     /* stylelint-disable no-descending-specificity */
+    :not(.-status) {
     td {
       vertical-align: middle;
       padding: 0.7em var(--cell-horizontal-padding);
@@ -56,6 +57,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
     }
 
     .-status {
