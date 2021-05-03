@@ -23,7 +23,6 @@ import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
 import DataFilesBreadcrumbs from './DataFilesBreadcrumbs/DataFilesBreadcrumbs';
-import DataFilesSearchbar from './DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesModals from './DataFilesModals/DataFilesModals';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
@@ -83,19 +82,12 @@ const DataFilesSwitch = React.memo(() => {
             /* !!!: Temporary bad indentation to make simpler PR diff */
             /* eslint-disable prettier/prettier */
             <SectionTableWrapper styleName="content" manualContent>
-              <DataFilesSearchbar
-                api={params.api}
-                scheme={params.scheme}
-                system={params.system}
-              />
-              <div className="o-flex-item-table-wrap">
             <DataFilesListing
               api={params.api}
               scheme={params.scheme}
               system={params.system}
               path={params.path || '/'}
             />
-              </div>
             </SectionTableWrapper>
             /* eslint-enable prettier/prettier */
           );

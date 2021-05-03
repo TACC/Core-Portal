@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import { LoadingSpinner, SectionMessage, SectionTableWrapper } from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
-import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({ system, path }) => {
@@ -72,21 +71,19 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       }
       manualContent
     >
-    {/* RFE: This unique description element could become (A) part of the <SectionTableWrapper>'s header (thus becoming part of the <SectionHeader>), (B) an independent component <SectionDescription>, or (C) both "A" and "B" */}
-    <div styleName="description">{metadata.description}</div>
-    <DataFilesSearchbar
-      api="tapis"
-      scheme="projects"
-      system={system}
-    />
-    <div className="o-flex-item-table-wrap">
+      {/* RFE: If this description element is re-used, then it should become:
+               - (A) part of <SectionTableWrapper>
+               - (B) part of <SectionHeader>
+               - (C) an independent component <SectionDescription>
+               - (D) __both__ (A) or (B) __and__ (C)
+      */}
+      <div styleName="description">{metadata.description}</div>
       <DataFilesListing
         api="tapis"
         scheme="projects"
         system={system}
         path={path || '/'}
       />
-    </div>
     </SectionTableWrapper>
     /* eslint-enable prettier/prettier */
   );

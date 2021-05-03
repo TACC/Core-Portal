@@ -126,7 +126,6 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
           system={system}
           publicData
         />
-        <div className="o-flex-item-table-wrap">
       <DataFilesListing
         api={api}
         scheme={scheme}
@@ -134,7 +133,6 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
         path={path || '/'}
         isPublic
       />
-        </div>
       </SectionTableWrapper>
     </Section>
     /* eslint-enable prettier/prettier */

@@ -12,6 +12,7 @@ import {
   FileIconCell,
   ViewPathCell
 } from './DataFilesListingCells';
+import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 
 const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
@@ -121,8 +122,15 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   }, [api, showViewPath, fileNavCellCallback]);
 
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
+    <>
+      {!isPublic && (
+        <DataFilesSearchbar
+          api={api}
+          scheme={scheme}
+          system={system}
+        />
+      )}
+      <div className="o-flex-item-table-wrap">
         <DataFilesTable
           data={files}
           columns={columns}
@@ -130,7 +138,8 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           scrollBottomCallback={scrollBottomCallback}
           section="FilesListing"
         />
-    /* eslint-enable prettier/prettier */
+      </div>
+    </>
   );
 };
 DataFilesListing.propTypes = {
