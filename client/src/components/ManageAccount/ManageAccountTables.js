@@ -301,7 +301,7 @@ export const ChangePassword = () => {
         }}
       >
         <Button onClick={openModal} className="manage-account-submit-button">
-          Change{' '}
+          Change&nbsp;
           <span className="d-none d-md-inline d-lg-inline">Password</span>
         </Button>
         {lastChanged && (
