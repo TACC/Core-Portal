@@ -170,7 +170,7 @@ function Section({
           tagName="main"
           styleName="content"
           className={contentClassName}
-          layoutName={contentLayoutName || DEFAULT_LAYOUT}
+          layoutName={contentLayoutName}
           shouldScroll={contentShouldScroll}
         >
           {content}
@@ -228,7 +228,7 @@ Section.defaultProps = {
   className: '',
   content: '',
   contentClassName: '',
-  contentLayoutName: '',
+  contentLayoutName: DEFAULT_LAYOUT,
   contentShouldScroll: false,
   header: '',
   headerActions: '',

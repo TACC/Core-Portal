@@ -166,7 +166,6 @@ const DataFiles = () => {
       <DataFilesModals />
         </>
       }
-      contentLayoutName="oneRow"
       messages={<Work2Message />}
     />
     /* eslint-enable prettier/prettier */

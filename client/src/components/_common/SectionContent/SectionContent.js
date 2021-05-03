@@ -12,24 +12,31 @@ import layoutStyles from './SectionContent.layouts.module.css';
  * @enum {number}
  */
 export const LAYOUT_CLASS_MAP = {
-  /** One full-height row of flexible blocks */
-  oneRow: 'one-row',
-  /** One full-width column of flexible blocks */
+  /**
+   * Each child element is a full-height column with a flexible width
+   *
+   * CAVEAT: No sidebar styles provided (until a <SectionSidebar> exists)
+   */
+  hasSidebar: 'has-sidebar',
+  /**
+   * Each child element is a flexible block inside one full-height column
+   */
   oneColumn: 'one-column',
   /**
-   * Two left/right columns (wide/narrow) of flexible blocks
-   *
-   * (On narrow screens, this behaves like `oneColumn`)
+   * Each child element is a panel stacked into two full-height columns
+   * (on narrow screens, there is only one column)
+   * @see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns
    */
   twoColumn: 'two-column',
   /**
-   * Columns of panels (the wider the screen, the more columns)
-   *
-   * (On narrow screens, this behaves like `oneColumn`)
+   * Each child element is a panel stacked into two or more full-height columns
+   * (on short wide screens, there are three columns)
+   * (on narrow screens, there is only one column)
+   * @see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns
    */
   multiColumn: 'multi-column'
 };
-export const DEFAULT_LAYOUT = 'oneRow';
+export const DEFAULT_LAYOUT = 'hasSidebar';
 export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
 
 /**

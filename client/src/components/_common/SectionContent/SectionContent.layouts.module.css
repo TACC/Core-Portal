@@ -25,10 +25,10 @@
 
 
 
-/* 1 Row */
+/* Has Sidebar */
 
-/* TODO: Duplicate this as '.sidebar-and-content' */
-.one-row {
+/* CAVEAT: No sidebar styles provided (until a <SectionSidebar> exists) */
+.has-sidebar {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
