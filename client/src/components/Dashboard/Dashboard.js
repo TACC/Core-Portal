@@ -22,14 +22,14 @@ function Dashboard() {
           Manage Account
         </Link>
       }
-      contentStyleName="dashboard-items"
+      contentStyleName="panels"
       contentLayoutName="twoColumn"
       contentShouldScroll
       content={
         <>
-          <DashboardSysmon />
           <DashboardJobs />
           <DashboardTickets />
+          <DashboardSysmon />
           <DashboardRoutes />
         </>
       }
@@ -72,7 +72,7 @@ function DashboardSysmon() {
   return (
     <SectionTableWrapper
       header="System Status"
-      className="sysmon-wrapper"
+      styleName="sysmon-panel"
       contentShouldScroll
     >
       <Sysmon />
@@ -83,7 +83,6 @@ function DashboardSysmon() {
 function DashboardJobs() {
   return (
     <SectionTableWrapper
-      className="jobs-wrapper"
       header="My Recent Jobs"
       headerActions={
         <Link
@@ -103,7 +102,6 @@ function DashboardJobs() {
 function DashboardTickets() {
   return (
     <SectionTableWrapper
-      className="tickets-wrapper"
       header="My Tickets"
       headerActions={
         <Link

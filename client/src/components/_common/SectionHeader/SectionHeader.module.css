@@ -40,7 +40,7 @@
 
 .for-form,
 .for-list {
-  /* FAQ: No styles necessary, but this is here for consistency */
+  /* FAQ: No styles necessary, but defining class to avoid build error */
 }
 
 .for-table {

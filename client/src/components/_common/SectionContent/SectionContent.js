@@ -21,7 +21,13 @@ export const LAYOUT_CLASS_MAP = {
    *
    * (On narrow screens, this behaves like `oneColumn`)
    */
-  twoColumn: 'two-column'
+  twoColumn: 'two-column',
+  /**
+   * Columns of panels (the wider the screen, the more columns)
+   *
+   * (On narrow screens, this behaves like `oneColumn`)
+   */
+  multiColumn: 'multi-column'
 };
 export const DEFAULT_LAYOUT = 'oneRow';
 export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];

@@ -17,8 +17,9 @@ import {
   EditRequiredInformationModal
 } from './ManageAccountModals';
 
-import './ManageAccount.module.css';
 import './ManageAccount.scss';
+import './ManageAccount.global.css';
+import './ManageAccount.module.css';
 
 const ManageAccountView = () => {
   const {
@@ -34,6 +35,7 @@ const ManageAccountView = () => {
     /* !!!: Temporary bad indentation to make simpler PR diff */
     /* eslint-disable prettier/prettier */
     <Section
+      bodyClassName="has-loaded-account"
       welcomeMessageName="ACCOUNT"
       header="Manage Account"
       headerActions={
@@ -46,11 +48,6 @@ const ManageAccountView = () => {
               <LoadingSpinner />
             ) : (
               <>
-                <div>
-                  {!isEmpty(licenses) && <Licenses />}
-                  {!isEmpty(integrations) && <Integrations />}
-                  <ChangePassword />
-                </div>
                 {errors.data && (
                   <Alert color="danger">Unable to get your profile data</Alert>
                 )}
@@ -62,11 +59,14 @@ const ManageAccountView = () => {
                 <ChangePasswordModal />
                 <EditOptionalInformationModal />
                 <EditRequiredInformationModal />
+                {!isEmpty(licenses) && <Licenses />}
+                {!isEmpty(integrations) && <Integrations />}
+                <ChangePassword />
               </>
             )}
       contentStyleName="panels"
       contentClassName="manage-account-content"
-      contentLayoutName="twoColumn"
+      contentLayoutName="multiColumn"
       contentShouldScroll
     />
     /* eslint-enable prettier/prettier */

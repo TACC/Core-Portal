@@ -3,7 +3,7 @@ import { useTable } from 'react-table';
 import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { shape, string, arrayOf, bool } from 'prop-types';
-import { SectionHeader } from '_common';
+import { SectionHeader, SectionTableWrapper } from '_common';
 import { GoogleDriveModal } from './ManageAccountModals';
 import './ManageAccount.scss';
 
@@ -78,10 +78,11 @@ export const RequiredInformation = () => {
     key => !demographics[key]
   );
   return (
-    <section>
+    /* !!!: Temporary bad indentation to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
+    <SectionTableWrapper
+      manualHeader={
       <SectionHeader
-        /* !!!: Temporary bad indentation to make simpler PR diff */
-        /* eslint-disable prettier/prettier */
         actions={
         <Button
           color="link"
@@ -92,11 +93,13 @@ export const RequiredInformation = () => {
           Edit Required Information
         </Button>
         }
-        /* eslint-enable prettier/prettier */
         isForList
       >
         Required Information
       </SectionHeader>
+      }
+      manualContent
+    >
       <TableTemplate
         attributes={{
           columns,
@@ -106,7 +109,8 @@ export const RequiredInformation = () => {
           }
         }}
       />
-    </section>
+    </SectionTableWrapper>
+    /* eslint-enable prettier/prettier */
   );
 };
 /* eslint-disable react/no-danger */
@@ -184,10 +188,17 @@ export const Licenses = () => {
   );
   const data = useMemo(() => licenses, [licenses]);
   return (
-    <section>
+    /* !!!: Temporary bad indentation to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
+    <SectionTableWrapper
+      manualHeader={
       <SectionHeader isForList>Licenses</SectionHeader>
+      }
+      manualContent
+    >
       <TableTemplate attributes={{ columns, data }} />
-    </section>
+    </SectionTableWrapper>
+    /* eslint-enable prettier/prettier */
   );
 };
 
@@ -258,10 +269,17 @@ export const Integrations = () => {
   );
   const data = useMemo(() => integrations, [integrations]);
   return (
-    <section>
+    /* !!!: Temporary bad indentation to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
+    <SectionTableWrapper
+      manualHeader={
       <SectionHeader isForList>3rd Party Apps</SectionHeader>
+      }
+      manualContent
+    >
       <TableTemplate attributes={{ columns, data }} />
-    </section>
+    </SectionTableWrapper>
+    /* eslint-enable prettier/prettier */
   );
 };
 export const ChangePassword = () => {
@@ -273,7 +291,7 @@ export const ChangePassword = () => {
   const openModal = () =>
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { password: true } });
   return (
-    <section>
+    <article>
       <SectionHeader isForList>Change Password</SectionHeader>
       <div
         style={{
@@ -283,17 +301,20 @@ export const ChangePassword = () => {
         }}
       >
         <Button onClick={openModal} className="manage-account-submit-button">
-          Change Password
+          Change{' '}
+          <span className="d-none d-md-inline d-lg-inline">Password</span>
         </Button>
         {lastChanged && (
           <span
-            style={{ fontSize: '14px', marginLeft: '1rem', color: '#707070' }}
+            className="text-truncate"
+            style={{ fontSize: '12px', marginLeft: '1rem', color: '#707070' }}
           >
-            Last Changed {lastChanged}
+            Last Change {lastChanged}
           </span>
         )}
       </div>
-    </section>
+    </article>
+    /* eslint-enable prettier/prettier */
   );
 };
 const WebsiteCell = ({ cell: { value } }) => {
@@ -351,10 +372,11 @@ export const OptionalInformation = () => {
   const openModal = () =>
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { optional: true } });
   return (
-    <section>
+    /* !!!: Temporary bad indentation to make simpler PR diff */
+    /* eslint-disable prettier/prettier */
+    <SectionTableWrapper
+      manualHeader={
       <SectionHeader
-        /* !!!: Temporary bad indentation to make simpler PR diff */
-        /* eslint-disable prettier/prettier */
         actions={
         <Button
           color="link"
@@ -365,12 +387,15 @@ export const OptionalInformation = () => {
           Edit Optional Information
         </Button>
         }
-        /* eslint-enable prettier/prettier */
         isForList
       >
         Optional Information
       </SectionHeader>
+      }
+      manualContent
+    >
       <TableTemplate attributes={{ columns, data }} />
-    </section>
+    </SectionTableWrapper>
+    /* eslint-enable prettier/prettier */
   );
 };

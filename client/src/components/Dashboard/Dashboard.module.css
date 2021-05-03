@@ -1,18 +1,55 @@
 /* Elements */
 
-.dashboard-items {
+.panels {
   /* HELP: How to assign this spacing when Quick Links is added? */
   padding-top: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
 }
-/* Limit height of all dashboard panels */
-.dashboard-items > * {
-  /* CAVEAT: This is a dev value that just "looked good" */
+
+.panels > * {
   min-height: 160px; /* approx. "My Tickets/Jobs" height with about 1.25 rows */
 }
-/* WARNING: This assumes a markup structure which is beyond Dashboard control */
-/* NOTE: 1. Applying border to `… table` fails (because ReactTable's scroll) */
-/*       2. Design has borders only for Dashboard, so can't apply to panel */
-/*       3. Reconsider #2 if panels should have border in any future context */
-.dashboard-items > * > div {
+/* WARNING: This assumes a markup structure which Dashboard does not control */
+/* FAQ: A border on <table> would be hidden unless it is scrolled to bottom */
+/* CAVEAT: Jobs panel border is halfway down section, even its table is empty */
+.panels > * > :global(.o-flex-item-table-wrap) {
   border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
+}
+
+/* Narrow */
+@media only screen and (max-width: 991px) {
+  .panels {
+    /* FAQ: Flex is necessary to allow easy panel re-ordering */
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  .sysmon-panel {
+    order: -1;
+    /* FAQ: Section layout gives none to a `:last-child` but we changed order */
+    margin-bottom: var(--vertical-buffer);
+  }
+}
+
+/* Wide */
+/* FAQ: The variable `--vertical-buffer` is from `.two-column` */
+@media only screen and (min-width: 992px) {
+  .panels > *:not(.sysmon-panel) {
+    height: calc(50% - var(--vertical-buffer));
+  }
+}
+
+
+
+/* System Monitor */
+
+/* HACK: To prevent growing when table has no more rows to fill the height */
+/* FAQ: A <SectionTableWrapper> shrinks, but only to panel min-height */
+.sysmon-panel {
+  flex-grow: 0; /* overwrite <SectionTableWrapper> */
+}
+/* HACK: To prevent shrinking (thus scrolling) when there is space to grow */
+/* FAQ: A <SectionTableWrapper> shrinks, but only to panel min-height */
+/* WARNING: This assumes a markup structure which Dashboard does not control */
+.sysmon-panel > :global(.o-flex-item-table-wrap) > table {
+  position: static; /* overwrite <SectionTableWrapper> */
 }
