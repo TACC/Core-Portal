@@ -55,6 +55,10 @@
     overflow: visible;
   }
 }
+/* Overwrite Bootstrap */
+.manage-account-table.table {
+  margin-bottom: 0;
+}
   /* Override striped bootstrap table */
   .table-striped > tbody {
     tr:nth-child(even) {
