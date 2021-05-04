@@ -124,11 +124,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   return (
     <>
       {!isPublic && (
-        <DataFilesSearchbar
-          api={api}
-          scheme={scheme}
-          system={system}
-        />
+        <DataFilesSearchbar api={api} scheme={scheme} system={system} />
       )}
       <div className="o-flex-item-table-wrap">
         <DataFilesTable
