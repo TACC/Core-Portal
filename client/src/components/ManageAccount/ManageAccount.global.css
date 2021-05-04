@@ -10,5 +10,5 @@
 }
 body.has-loaded-account {
   /* HACK: Should instead (ask Design) have a responsive sidebar */
-  --min-width: 730px; /* 1st breakpoint wider than "[…] Google Drive" cut off */
+  --min-width: 576px; /* 1st breakpoint wider than "[…] Google Drive" cut off */
 }

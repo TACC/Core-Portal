@@ -305,7 +305,6 @@ export const ChangePassword = () => {
         </Button>
         {lastChanged && (
           <span
-            className="text-truncate"
             style={{ fontSize: '12px', marginLeft: '1rem', color: '#707070' }}
           >
             Last Changed {lastChanged}
