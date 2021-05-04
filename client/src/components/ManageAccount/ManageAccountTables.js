@@ -301,15 +301,14 @@ export const ChangePassword = () => {
         }}
       >
         <Button onClick={openModal} className="manage-account-submit-button">
-          Change&nbsp;
-          <span className="d-none d-md-inline d-lg-inline">Password</span>
+          Change Password
         </Button>
         {lastChanged && (
           <span
             className="text-truncate"
             style={{ fontSize: '12px', marginLeft: '1rem', color: '#707070' }}
           >
-            Last Change {lastChanged}
+            Last Changed {lastChanged}
           </span>
         )}
       </div>
