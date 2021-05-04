@@ -1,14 +1,14 @@
 .InfiniteScrollTable {
   --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
 
-  /* Force `width: 100%` to have effect when table width exceeds parent width */
-  /* FAQ: Table width can exceed parent's when content on one row is too wide */
+  /* To force `width: 100%` to have effect when table is wider than container
+     (use case is any very narrow table, such as when screen is ver narrow) */
+  /* FAQ: Table is wider than container when row content is wider than table */
+  /* CAVEAT: All fixed tables' col widths must be % values whose sum is 100% */
   /* SEE: https://stackoverflow.com/a/6601257 */
   table-layout: fixed;
-
-  position: relative;
   width: 100%;
-  overflow: scroll;
+
   max-height: inherit; /* inherit max-height from parent wrapper */
   font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
 
