@@ -10,6 +10,7 @@ from portal.apps.system_creation.utils import call_reactor
 from portal.libs.agave.utils import service_account
 from django.contrib.auth import get_user_model
 import logging
+import json
 
 
 class Command(BaseCommand):
@@ -48,7 +49,7 @@ class Command(BaseCommand):
             'wma-storage',
             variables,
             force=True,
-            dryrun=True,
+            dryrun=False,
             callback="portal.apps.system_creation.management.commands.cloud_corral.CloudCorralCallback",
             callback_data={
                 "systemId": systemId,
@@ -67,12 +68,10 @@ class CloudCorralCallback(WebhookCallback):
     logger = logging.getLogger(__name__)
 
     def __init__(self):
-        super(DryrunCallback, self).__init__()
+        super(CloudCorralCallback, self).__init__()
 
     def callback(self, external_call, webhook_request):
         response = json.loads(webhook_request.body)
-        self.logger.info("Cloud Corral Rewrite")
-        self.logger.info(response)
         self.logger.info("Rewrite System {systemId} {result}, original host: {originalHost}".format(
             result=response['result'],
             systemId=external_call.callback_data['systemId'],
