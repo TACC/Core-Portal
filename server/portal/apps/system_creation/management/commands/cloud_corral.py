@@ -17,7 +17,7 @@ class Command(BaseCommand):
     """Command class."""
 
     help = (
-        'Rewrite the host of a storage system to cloud.corral'
+        'Rewrite the host of a /work storage system to cloud.corral'
     )
     def add_arguments(self, parser):
         parser.add_argument('-s', '--system', type=str, help="System name")
@@ -30,7 +30,7 @@ class Command(BaseCommand):
         
         agc = service_account()
         system = agc.systems.get(systemId=systemId)
-        username = system['storage']['rootDir'].split('/')[:-1]
+        username = system['storage']['rootDir'].split('/')[-1]
         user, _ = get_user_model().objects.get_or_create(username=username)
 
         variables = {
