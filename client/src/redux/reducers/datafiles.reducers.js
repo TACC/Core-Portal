@@ -172,6 +172,7 @@ export const initialFilesState = {
     showpath: {},
     makePublic: {}
   },
+  refs: {},
   preview: {
     href: null,
     content: null,
@@ -368,6 +369,16 @@ export function files(state = initialFilesState, action) {
           [action.payload.operation]: action.payload.props
         }
       };
+    case 'STORE_SELECTOR_REF':
+      return {
+        ...state,
+        refs: {
+          ...state.refs,
+          FileSelector: action.payload
+        }
+      };
+    case 'CLEAR_REFS':
+      return { ...state, refs: {} };
     case 'DATA_FILES_SET_MODAL_PROPS':
       return {
         ...state,
