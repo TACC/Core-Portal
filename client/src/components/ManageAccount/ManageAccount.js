@@ -66,7 +66,7 @@ const ManageAccountView = () => {
             )}
       contentStyleName="panels"
       contentClassName="manage-account-content"
-      contentLayoutName={isLoading ? `oneColumn` : `multiColumn`}
+      contentLayoutName={isLoading ? `oneColumn` : `multiColumnUnequal`}
       contentShouldScroll
     />
     /* eslint-enable prettier/prettier */

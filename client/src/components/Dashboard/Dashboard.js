@@ -23,7 +23,7 @@ function Dashboard() {
         </Link>
       }
       contentStyleName="panels"
-      contentLayoutName="twoColumn"
+      contentLayoutName="twoColumnUnequal"
       contentShouldScroll
       content={
         <>

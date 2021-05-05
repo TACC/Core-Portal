@@ -15,32 +15,9 @@
   border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
 }
 
-/* Narrow */
-@media only screen and (max-width: 991px) {
-  .panels {
-    /* FAQ: Flex is necessary to allow easy panel re-ordering */
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-  }
-  .sysmon-panel {
-    order: -1;
-    /* FAQ: Section layout gives none to a `:last-child` but we changed order */
-    margin-bottom: var(--vertical-buffer);
-  }
-}
-
-/* Wide */
-/* FAQ: The variable `--vertical-buffer` is from `.two-column` */
-@media only screen and (min-width: 992px) {
-  .panels > *:not(.sysmon-panel) {
-    height: calc(50% - var(--vertical-buffer));
-  }
-}
 
 
-
-/* System Monitor */
+/* Elements: System Monitor */
 
 /* HACK: To prevent growing when table has no more rows to fill the height */
 /* FAQ: A <SectionTableWrapper> shrinks, but only to panel min-height */
@@ -52,4 +29,52 @@
 /* WARNING: This assumes a markup structure which Dashboard does not control */
 .sysmon-panel > :global(.o-flex-item-table-wrap) > table {
   position: static; /* overwrite <SectionTableWrapper> */
+}
+
+
+
+
+
+/* Media Queries */
+
+
+
+/* Narrow */
+/* FAQ: The non-global variables come from `SectionContent.layout.module.css` */
+
+@media only screen and (max-width: 991px) {
+  /* Panel Container */
+  .panels {
+    /* FAQ: Flex is necessary to allow easy panel re-ordering */
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  /* Panels */
+  .sysmon-panel {
+    order: -1;
+    /* FAQ: Section layout gives none to a `:last-child` but we changed order */
+    margin-bottom: var(--vertical-buffer);
+  }
+}
+
+/* Wide */
+/* FAQ: The non-global variables come from `SectionContent.layout.module.css` */
+
+@media only screen and (min-width: 992px) {
+  /* Panel Container */
+  .panels {
+    width: var(--column-width--container);
+  }
+
+  /* Panels */
+  .panels > *:not(.sysmon-panel) {
+    width: var(--column-width--large);
+    height: calc(50% - var(--vertical-buffer));
+  }
+  .sysmon-panel {
+    width: var(--column-width--small);
+    height: auto;
+  }
 }

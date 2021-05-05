@@ -3,9 +3,24 @@ import PropTypes from 'prop-types';
 
 import { SectionHeader, SectionContent } from '_common';
 import SectionMessages from './SectionMessages';
-import { LAYOUTS, DEFAULT_LAYOUT } from '../SectionContent';
+import { LAYOUTS, DEFAULT_LAYOUT, LAYOUT_CLASS_MAP } from '../SectionContent';
 
 import './Section.module.css';
+
+/**
+ * Get class names based on the layout classes for <SectionContent>
+ * @param {string} contentLayoutName - The <Section> `contentLayoutName` prop
+ * @returns {string}
+ */
+function getLayoutClass(contentLayoutName) {
+  let classNames = LAYOUT_CLASS_MAP[contentLayoutName].split(' ');
+
+  classNames = classNames.map(className => {
+    return `c-section--has-content-layout-${className}`;
+  });
+
+  return classNames.join(' ');
+}
 
 /**
  * A section layout structure that supports:
@@ -101,6 +116,7 @@ function Section({
   welcomeMessageText
 }) {
   const shouldBuildHeader = header || headerClassName || headerActions;
+  const layoutClass = getLayoutClass(contentLayoutName);
 
   // Allowing ineffectual prop combinations would lead to confusion
   if (
@@ -131,7 +147,8 @@ function Section({
   }, [bodyClassName]);
 
   return (
-    <section styleName="root" className={className}>
+    /* FAQ: Global class because some content layout styles require access */
+    <section styleName="root" className={`${className} ${layoutClass}`}>
       <SectionMessages
         styleName="messages"
         className={messagesClassName}

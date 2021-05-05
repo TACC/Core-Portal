@@ -58,6 +58,7 @@
 .two-column,
 .multi-column {
   --vertical-buffer: 2.5rem; /* 40px (~32px design * 1.2 design-to-app ratio) (rounded) */
+  --column-gap: calc(var(--global-space--section-left) * 2);
 }
 .two-column > *,
 .multi-column > * {
@@ -76,7 +77,7 @@
 @media only screen and (min-width: 992px) {
   .two-column,
   .multi-column {
-    column-gap: calc(var(--global-space--section-left) * 2);
+    column-gap: var(--column-gap);
     column-rule: 1px solid rgba(112, 112, 112, 0.25);
     column-fill: auto;
   }
@@ -84,9 +85,28 @@
   .multi-column > *:not(:last-child) {
     margin-bottom: var(--vertical-buffer);
   }
+
+  .with-unequal-columns {
+    /* To make both col's 60% of intrinsic width (small col is resized later) */
+    --column-width--container: 120%;
+
+    /* To make large column 60% of `.panels` intrinsic width */
+    --column-width--large: 100%;
+
+    /* To make small column ⪅40% of `.panels` intrinsic width */
+    /* FAQ: The percentage and divisor are magic numbers */
+    --column-width--small: calc(
+      ( 66.67% - var(--global-space--section-right) )
+      - ( var(--column-gap) / 4 )
+    );
+  }
+  /* To hide the expected overflow from `.panels` expanded width */
+  :global(.c-section--has-content-layout-with-unequal-columns) {
+    overflow-x: hidden;
+  }
 }
 
-/* Tall */
+/* Tall & Wide */
 @media only screen and (min-height: 634px) and (min-width: 992px) {
   .two-column,
   .multi-column {

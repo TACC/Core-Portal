@@ -29,12 +29,29 @@ export const LAYOUT_CLASS_MAP = {
    */
   twoColumn: 'two-column',
   /**
+   * Like `twoColumn`, but supports unequal column widths (assembly required)
+   * (when there are two columns, the widths are: large on left, small on right)
+   * (when there are three columns, the widths are still equal)
+   * @see https://stackoverflow.com/a/29156418/11817077
+   * @tutorial SectionContent.layouts.unequalColumns
+   */
+  twoColumnUnequal: 'two-column with-unequal-columns',
+  /**
    * Each child element is a panel stacked into two or more full-height columns
-   * (on short wide screens, there are three columns)
+   * (on short wide screens, there are three equal-width columns)
+   * (on tall wide screens, there are two equal-width columns)
    * (on narrow screens, there is only one column)
    * @see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns
    */
-  multiColumn: 'multi-column'
+  multiColumn: 'multi-column',
+  /**
+   * Like `multiColumn`, but supports unequal column widths (assembly required)
+   * (when there are two columns, the widths are: large on left, small on right)
+   * (when there are three columns, the widths are still equal)
+   * @see https://stackoverflow.com/a/29156418/11817077
+   * @tutorial SectionContent.layouts.unequalColumns
+   */
+  multiColumnUnequal: 'multi-column with-unequal-columns'
 };
 export const DEFAULT_LAYOUT = 'hasSidebar';
 export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
