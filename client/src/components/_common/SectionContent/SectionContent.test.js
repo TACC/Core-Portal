@@ -45,9 +45,12 @@ describe('SectionContent', () => {
       const { container } = render(
         <SectionContent layoutName={layoutName}>Thing</SectionContent>
       );
-      const className = LAYOUT_CLASS_MAP[layoutName];
+      const classNameString = LAYOUT_CLASS_MAP[layoutName];
+      const classNameList = classNameString.split(' ');
 
-      expect(container.querySelector(`[class*="${className}"]`)).not.toEqual(null);
+      classNameList.forEach(className => {
+        expect(container.querySelector(`[class*="${className}"]`)).not.toEqual(null);
+      });
     });
 
     it.each(PARAMETERS)('renders accurate class for boolean parameter "%s"', parameter => {
