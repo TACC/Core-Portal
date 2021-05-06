@@ -1,8 +1,3 @@
-/* Allow extention of InfiniteScrolltable */
-/* HACK: Cross-component stylesheet inclusion is NOT modular */
-/* TODO: Instead, update <AllocationsTable> to use <InfiniteScrollTable> */
-@import '../_common/InfiniteScrollTable/InfiniteScrollTable.scss';
-
 /*
     Variables and Mixins
 */
@@ -73,10 +68,6 @@
     padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
 }
 .allocations-table {
-    /* Until Allocations uses <InfiniteScrollTable>, extend its styles */
-    /* TODO: Instead, update <AllocationsTable> to use <InfiniteScrollTable> */
-    @extend .InfiniteScrollTable;
-
     tbody {
         tr {
             .system-cell {
