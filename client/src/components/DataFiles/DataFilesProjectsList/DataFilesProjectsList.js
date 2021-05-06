@@ -102,12 +102,29 @@ const DataFilesProjectsList = ({ modal }) => {
     );
   }
 
+  /**
+   * Conditionally wrap element with given component
+   * @see https://blog.hackages.io/conditionally-wrap-an-element-in-react-a8b9a47fab2
+   */
+  function ConditionalWrapper({ condition, wrapper, children }) {
+    return condition ? wrapper(children) : children;
+  }
+
   return (
     /* !!!: Temporary bad indentation to make simpler PR diff */
     /* eslint-disable prettier/prettier */
-    <SectionTableWrapper styleName="root" contentShouldScroll manualContent>
+    <SectionTableWrapper
+      styleName={`root ${modal ? 'is-in-modal' : ''}`}
+      contentShouldScroll
+      manualContent
+    >
       {!modal && <DataFilesProjectsSearchbar />}
-      <div className="o-flex-item-table-wrap">
+      <ConditionalWrapper
+        condition={!modal}
+        wrapper={children => {
+          return <div className="o-flex-item-table-wrap">{children}</div>;
+        }}
+      >
       <InfiniteScrollTable
         tableColumns={columns}
         tableData={projects}
@@ -116,7 +133,7 @@ const DataFilesProjectsList = ({ modal }) => {
         noDataText={noDataText}
         className="projects-listing"
       />
-      </div>
+      </ConditionalWrapper>
     </SectionTableWrapper>
     /* eslint-enable prettier/prettier */
   );

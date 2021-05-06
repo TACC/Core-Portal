@@ -41,19 +41,10 @@
 
     /* Matches layout of other data files listings */
     .InfiniteScrollTable.projects-listing {
-      th {
-        color: #484848;
-      }
-      th,
-      td {
-        display: flex;
-        align-items: center;
-        font-size: 12px;
-        padding: 5px 15px;
-      }
-      td {
-        height: 45px;
-      }
+      tr > *:first-child { padding-left: 15px; }
+      tr > *:last-child { padding-right: 15px; }
+      th { height: 25px; }
+      td { height: 45px; }
     }
 }
 
