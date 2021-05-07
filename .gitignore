@@ -20,6 +20,8 @@ server/docs
 # Ignore local Django settings
 *secrets.py
 *settings_secret.py
+*settings_custom.py
+*settings_overrides.py
 
 docker_repo.var
 server/src
