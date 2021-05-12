@@ -3,5 +3,5 @@
 /* SEE: index.css */
 body.has-loaded-applications {
     /* Allow space to see `AppForm`, given how tall `AppBrowser` can be */
-    --min-height: 500px; /* just enough space (still cramped, but visible) */
+    --min-height: 400px; /* just enough space to see detail and info panels */
 }

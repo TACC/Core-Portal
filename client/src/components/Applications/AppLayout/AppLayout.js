@@ -87,6 +87,7 @@ const AppsRoutes = () => {
     </>
       }
       contentLayoutName="oneColumn"
+      contentShouldScroll
     />
     /* eslint-enable prettier/prettier */
   );
