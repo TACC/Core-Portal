@@ -3,12 +3,12 @@
 /* Reduce "double padding" of cell and button link */
 /* FAQ: Overlap padding of cell with invisible padding of button link */
 /* CAVEAT: Using [role="cell"] instead of <td> because DataFiles <div> table */
-[role="cell"] .btn-link {
+div[role="cell"] .btn-link {
   /* Overwrite Bootstrap `_button.scss` */
   margin-left: -0.75rem;
   margin-right: -0.75rem;
 }
-[role="cell"] .btn-sm.btn-link {
+div[role="cell"] .btn-sm.btn-link {
   /* Overwrite Bootstrap `_button.scss` */
   margin-left: -0.5rem;
   margin-right: -0.5rem;
