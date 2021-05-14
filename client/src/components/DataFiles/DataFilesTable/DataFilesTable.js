@@ -21,18 +21,27 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   const system = useSelector(state => state.pushKeys.target);
   const loading = useSelector(state => state.files.loading[section]);
   const err = useSelector(state => state.files.error[section]);
+  const modalRefs = useSelector(state => state.files.refs);
   const filesLength = data.length;
 
   const pushKeys = e => {
     e.preventDefault();
+    const props = {
+      onSuccess: {},
+      system
+    };
+    if (modalRefs.FileSelector) {
+      props.callback = () => {
+        modalRefs.FileSelector.props.toggle();
+        dispatch({ type: 'CLEAR_REFS' });
+      };
+      modalRefs.FileSelector.props.toggle();
+    }
     dispatch({
       type: 'SYSTEMS_TOGGLE_MODAL',
       payload: {
         operation: 'pushKeys',
-        props: {
-          onSuccess: {},
-          system
-        }
+        props
       }
     });
   };
