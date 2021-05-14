@@ -74,14 +74,14 @@ function JobsStatus({ status, fancy, jobId }) {
   let interactiveSessionLink;
 
   /* Check if job is running AND has interactive session */
-  if (status === 'RUNNING') {
-    const jobConcluded = [
-      'CLEANING_UP',
-      'ARCHIVING',
-      'FINISHED',
-      'STOPPED',
-      'FAILED'
-    ];
+  const jobConcluded = [
+    'CLEANING_UP',
+    'ARCHIVING',
+    'FINISHED',
+    'STOPPED',
+    'FAILED'
+  ];
+  if (!jobConcluded.includes(status)) {
     const interactiveNotifs = notifs.filter(
       n =>
         n.event_type === 'interactive_session_ready' &&
