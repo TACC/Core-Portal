@@ -1,4 +1,4 @@
-import { put, takeLeading, call } from 'redux-saga/effects';
+import { put, takeLeading, call, select } from 'redux-saga/effects';
 import 'cross-fetch';
 import { fetchUtil } from 'utils/fetchUtil';
 
@@ -14,6 +14,7 @@ function* pushSystemKeys(action) {
     payload: { operation: 'pushKeys', props: { submitting: true } }
   });
   try {
+    const modalRefs = yield select(state => state.files.refs);
     yield call(fetchUtil, {
       url: `/api/accounts/systems/${action.payload.systemId}/keys/`,
       body: JSON.stringify({ form, action: 'push' }),
@@ -26,6 +27,10 @@ function* pushSystemKeys(action) {
         props: {}
       }
     });
+    if (modalRefs.FileSelector) {
+      yield call(modalRefs.FileSelector.props.toggle);
+      yield put({ type: 'CLEAR_REFS' });
+    }
     if (action.payload.onSuccess) {
       yield put(action.payload.onSuccess);
     }

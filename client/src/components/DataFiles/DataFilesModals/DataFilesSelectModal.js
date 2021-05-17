@@ -19,6 +19,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     state => state.files.params.modal,
     shallowEqual
   );
+  const selectRef = React.useRef();
   const onOpened = () => {
     const systemParams = {
       api: 'tapis',
@@ -37,7 +38,6 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
       }
     });
   };
-
   const selectCallback = (system, path) => {
     onSelect(system, path);
     toggle();
@@ -46,6 +46,14 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
   useEffect(() => {
     dispatch({ type: 'FETCH_SYSTEMS' });
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch({
+      type: 'STORE_SELECTOR_REF',
+      payload: selectRef.current
+    });
+  }, [selectRef]);
+
   return (
     <Modal
       isOpen={isOpen}
@@ -53,6 +61,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
       toggle={toggle}
       size="xl"
       className="dataFilesModal"
+      ref={selectRef}
     >
       <ModalHeader toggle={toggle}>Select</ModalHeader>
       <ModalBody style={{ height: '70vh' }}>

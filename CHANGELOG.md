@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.2] - 2021-05-04: Portal User Nav endpoint; `projects_id` command; Bugfixes
+
+### Added
+
+- FP-980: `projects_id` management command (#375)
+- FP-1015: Allow Portal Nav to be Cloned (#390)
+
+### Changed
+
+- Quick: Add Portal Templates to CMS Sample Secrets (#389)
+- FP-1014: Add Onboarding Admin link to User Nav Dropdown (#388)
+
+### Fixed
+
+- FP-139: Disable Upload Modal Actions while In Progress. (#383)
+- FP-642: Fix push key modal from select modal (#219)
+
 ## [2.4.1] - 2021-04-16: Bugfixes; `work2` Message
 
 ### Added
@@ -326,8 +343,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.4.1...HEAD
-[2.4.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.0
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.4.2...HEAD
+[2.4.2]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.2
+[2.4.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.1
 [2.4.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.0
 [2.3.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.3.0
 [2.2.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.2.0
