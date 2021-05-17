@@ -681,8 +681,8 @@ export function* fileLink(action) {
   }
 }
 
-export async function downloadUtil(api, scheme, system, path, href) {
-  const q = stringify({ href });
+export async function downloadUtil(api, scheme, system, path, href, length) {
+  const q = stringify({ href, length });
   const url = `/api/datafiles/${api}/download/${scheme}/${system}${path}/?${q}`;
   const request = await fetch(url);
 
@@ -706,13 +706,15 @@ export function* watchDownload() {
 
 export function* download(action) {
   const { href } = action.payload.file._links.self;
+  const { length } = action.payload.file;
   yield call(
     downloadUtil,
     'tapis',
     'private',
     action.payload.file.system,
     action.payload.file.path,
-    href
+    href,
+    length
   );
 }
 
