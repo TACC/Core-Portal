@@ -32,7 +32,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [rejectedFiles, setUpRejectedFiles] = useState([]);
+  const [rejectedFiles, setRejectedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
     const filteredFiles = uploadedFiles.filter(
@@ -83,19 +83,25 @@ const DataFilesUploadModal = ({ className, layout }) => {
 
   const selectFiles = acceptedFiles => {
     const newFiles = [];
-    acceptedFiles.forEach(file => {
+    const newAcceptedFiles = acceptedFiles.filter(
+      af => uploadedFiles.filter(uf => uf.data.path === af.path).length === 0
+    );
+    newAcceptedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
     });
     setUploadedFiles(files => [...files, ...newFiles]);
   };
 
-  const onRejectedFiles = newRejectedFiles => {
+  const onRejectedFiles = oversizedFiles => {
     const newFiles = [];
+    const newRejectedFiles = oversizedFiles.filter(
+      of => rejectedFiles.filter(rf => rf.data.path === of.path).length === 0
+    );
     newRejectedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
     });
     setUploadedFiles(files => [...files, ...newFiles]);
-    setUpRejectedFiles(files => [...files, ...newFiles]);
+    setRejectedFiles(files => [...files, ...newFiles]);
   };
 
   return (
