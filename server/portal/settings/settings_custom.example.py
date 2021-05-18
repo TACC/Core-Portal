@@ -24,8 +24,8 @@ _SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utex
 # DJANGO SETTINGS LOCAL
 ########################
 
-_RT_QUEUE = 'QUEUE'
-_RT_TAG = 'CEP_portal'
+_RT_QUEUE = 'Web & Mobile Apps'
+_RT_TAG = 'core_portal'
 
 ########################
 # AGAVE SETTINGS
@@ -46,7 +46,7 @@ _COMMUNITY_INDEX_SCHEDULE = {}
 # DJANGO APP: WORKSPACE
 ########################
 
-_PORTAL_APPS_METADATA_NAMES = ['portal_apps']
+_PORTAL_APPS_METADATA_NAMES = ["portal_apps", "portal_apps_dev"]
 _PORTAL_ALLOCATION = 'TACC-ACI'
 _PORTAL_APPS_DEFAULT_TAB = 'Data Processing'
 
@@ -58,7 +58,7 @@ _PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 
 _PORTAL_JUPYTER_URL = "https://jupyter.tacc.cloud"
 _PORTAL_JUPYTER_SYSTEM_MAP = {
-    "cloud.corral.home.{username}": "/tacc-work",
+    "cloud.corral.work.{username}": "/tacc-work",
 }
 
 _PORTAL_KEY_SERVICE_ACTOR_ID = ""
@@ -167,6 +167,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     }
 ]
 """
+
 _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.mfa.MFAStep',
@@ -183,25 +184,28 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 ]
 
 #######################
-# PROJECTS SETTING
+# PROJECTS SETTINGS
 #######################
+
 _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = 'cep.project'
-_PORTAL_PROJECTS_NAME_PREFIX = _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
-_PORTAL_PROJECTS_ID_PREFIX = _PORTAL_NAMESPACE.upper()
-_PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projecs'
-_PORTAL_PROJECTS_ROOT_SYSTEM_NAME = '{}.root'.format(
-    _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
-)
+_PORTAL_PROJECTS_NAME_PREFIX = 'cep.project'
+_PORTAL_PROJECTS_ID_PREFIX = 'CEP'
+_PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
+_PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
 _PORTAL_PROJECTS_ROOT_HOST = 'cloud.corral.tacc.utexas.edu'
 _PORTAL_PROJECTS_SYSTEM_PORT = "2222"
-_PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = ''
-_PORTAL_PROJECTS_PEMS_APP_ID = ''
+_PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = "cep.project.admin.data.cli"
+_PORTAL_PROJECTS_PEMS_APP_ID = "cep.cloud.admin-pems-0.1"
 
 ########################
 # Custom Portal Template Assets
 # Asset path root is static files output dir.
 # {% static %} won't work in conjunction with {{ VARIABLE }} so use full paths.
 ########################
+
+# No Art.
+# _PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
+
 # Default Art.
 _PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
 
@@ -229,6 +233,5 @@ _WORKBENCH_SETTINGS = {
     "viewPath": True,
     "compressApp": 'zippy',
     "extractApp": 'extract',
-    "makePublic": True,
-    "showWork2Message": True
+    "makePublic": False
 }

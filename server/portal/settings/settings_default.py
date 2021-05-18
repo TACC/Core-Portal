@@ -184,11 +184,11 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 ]
 
 #######################
-# PROJECTS SETTING
+# PROJECTS SETTINGS
 #######################
 
 _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = 'cep.local.project'
-_PORTAL_PROJECTS_NAME_PREFIX = _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
+_PORTAL_PROJECTS_NAME_PREFIX = 'cep.local.project'
 _PORTAL_PROJECTS_ID_PREFIX = 'LOCAL.CEP'
 _PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
@@ -233,7 +233,5 @@ _WORKBENCH_SETTINGS = {
     "viewPath": True,
     "compressApp": 'zippy',
     "extractApp": 'extract',
-    "makePublic": True,
-    "showWork2Message": True,
-    "namespace": _PORTAL_NAMESPACE
+    "makePublic": True
 }
