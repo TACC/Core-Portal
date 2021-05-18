@@ -539,7 +539,8 @@ export function* preview(action) {
       action.payload.scheme,
       action.payload.system,
       action.payload.path,
-      action.payload.href
+      action.payload.href,
+      action.payload.length
     );
     yield put({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
@@ -558,8 +559,8 @@ export function* preview(action) {
   }
 }
 
-export async function previewUtil(api, scheme, system, path, href) {
-  const q = stringify({ href });
+export async function previewUtil(api, scheme, system, path, href, length) {
+  const q = stringify({ href, length });
   const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/?${q}`;
   const request = await fetch(url);
   const requestJson = await request.json();
