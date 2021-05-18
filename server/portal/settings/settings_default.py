@@ -24,7 +24,6 @@ _SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utex
 # DJANGO SETTINGS LOCAL
 ########################
 
-# Redmine Tracker Authentication.
 _RT_QUEUE = 'Web & Mobile Apps'
 _RT_TAG = 'core_portal'
 
