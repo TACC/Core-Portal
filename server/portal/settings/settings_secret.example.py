@@ -75,7 +75,7 @@ _RESULT_BACKEND_PORT = '6379'
 _RESULT_BACKEND_DB = '0'
 
 #######################
-# PROJECTS SETTING
+# PROJECTS SETTINGS
 #######################
 
 _PORTAL_PROJECTS_PRIVATE_KEY = ''
