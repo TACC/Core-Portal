@@ -207,7 +207,7 @@ _PORTAL_PROJECTS_PEMS_APP_ID = "cep.cloud.admin-pems-0.1"
 # _PORTAL_ICON_FILENAME=''                 # Empty string yields NO icon.
 
 # Default Art.
-_PORTAL_ICON_FILENAME = '/static/img/favicon.ico'
+_PORTAL_ICON_FILENAME = '/static/site_cms/img/favicons/favicon.ico'
 
 ########################
 # GOOGLE ANALYTICS
