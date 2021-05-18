@@ -18,7 +18,7 @@ _WH_BASE_URL = ''
 # Unorganized
 _LOGIN_REDIRECT_URL = '/workbench/dashboard'
 _SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utexas.edu',
-                                'lonestar5.tacc.utexas.edu', 'maverick2.tacc.utexas.edu', 'wrangler.tacc.utexas.edu', 'longhorn.tacc.utexas.edu']
+                                'maverick2.tacc.utexas.edu', 'longhorn.tacc.utexas.edu']
 
 ########################
 # DJANGO SETTINGS LOCAL

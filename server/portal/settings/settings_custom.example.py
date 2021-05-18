@@ -18,7 +18,7 @@ _WH_BASE_URL = ''
 # Unorganized
 _LOGIN_REDIRECT_URL = '/workbench/dashboard'
 _SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utexas.edu',
-                                'lonestar5.tacc.utexas.edu', 'maverick2.tacc.utexas.edu', 'wrangler.tacc.utexas.edu']
+                                'maverick2.tacc.utexas.edu', 'longhorn.tacc.utexas.edu']
 
 ########################
 # DJANGO SETTINGS LOCAL
@@ -68,7 +68,7 @@ _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = {
         'name': 'My Data (Work)',
         'description': 'My Data on Stockyard for {username}',
         'site': 'cep',
-        'systemId': 'cloud.corral.home.{username}',
+        'systemId': 'cloud.corral.work.{username}',
         'host': 'cloud.corral.tacc.utexas.edu',
         'rootDir': '/work/{tasdir}',
         'port': 2222,
