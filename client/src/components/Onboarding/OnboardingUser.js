@@ -43,52 +43,50 @@ const OnboardingUser = () => {
   }
 
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <Section
       welcomeMessageName="ONBOARDING"
-      header=
-          {isStaff
-            ? `Onboarding Administration for ${user.username} - ${user.lastName}, ${user.firstName}`
-            : 'The following steps must be completed before accessing the portal'}
+      header={
+        isStaff
+          ? `Onboarding Administration for ${user.username} - ${user.lastName}, ${user.firstName}`
+          : 'The following steps must be completed before accessing the portal'
+      }
       contentStyleName="content"
       contentLayoutName="oneColumn"
       contentShouldScroll
       content={
         <>
-        {user.steps.map(step => (
-          <OnboardingStep step={step} key={uuidv4()} />
-        ))}
-        <div styleName="access">
-          <Button
-            color="link"
-            styleName="button"
-            onClick={() =>
-              dispatch({
-                type: 'TICKET_CREATE_OPEN_MODAL',
-                payload: {
-                  provideDashBoardLinkOnSuccess: false,
-                  showAsModalOnDashboard: false,
-                  subject: `Onboarding`
-                }
-              })
-            }
-          >
-            Get Help
-          </Button>
-          <Button
-            color="primary"
-            styleName="button"
-            href="/workbench/"
-            disabled={!user.setupComplete}
-          >
-            Access Dashboard
-          </Button>
-        </div>
+          {user.steps.map(step => (
+            <OnboardingStep step={step} key={uuidv4()} />
+          ))}
+          <div styleName="access">
+            <Button
+              color="link"
+              styleName="button"
+              onClick={() =>
+                dispatch({
+                  type: 'TICKET_CREATE_OPEN_MODAL',
+                  payload: {
+                    provideDashBoardLinkOnSuccess: false,
+                    showAsModalOnDashboard: false,
+                    subject: `Onboarding`
+                  }
+                })
+              }
+            >
+              Get Help
+            </Button>
+            <Button
+              color="primary"
+              styleName="button"
+              href="/workbench/"
+              disabled={!user.setupComplete}
+            >
+              Access Dashboard
+            </Button>
+          </div>
         </>
       }
     />
-    /* eslint-enable prettier/prettier */
   );
 };
 

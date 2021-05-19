@@ -53,8 +53,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   }
 
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <SectionTableWrapper
       styleName="root"
       header={metadata.title}
@@ -85,7 +83,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
         path={path || '/'}
       />
     </SectionTableWrapper>
-    /* eslint-enable prettier/prettier */
   );
 };
 

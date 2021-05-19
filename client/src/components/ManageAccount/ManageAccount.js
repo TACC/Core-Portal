@@ -32,8 +32,6 @@ const ManageAccountView = () => {
     dispatch({ type: 'GET_PROFILE_DATA' });
   }, [dispatch, isLoading]);
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <Section
       bodyClassName="has-loaded-account"
       welcomeMessageName="ACCOUNT"
@@ -43,33 +41,33 @@ const ManageAccountView = () => {
           Back to Dashboard
         </Link>
       }
-      content=
-            {isLoading ? (
-              <LoadingSpinner />
-            ) : (
-              <>
-                {errors.data && (
-                  <Alert color="danger">Unable to get your profile data</Alert>
-                )}
-                {errors.fields && (
-                  <Alert color="danger">Unable to get form fields</Alert>
-                )}
-                <RequiredInformation />
-                <OptionalInformation />
-                <ChangePasswordModal />
-                <EditOptionalInformationModal />
-                <EditRequiredInformationModal />
-                {!isEmpty(licenses) && <Licenses />}
-                {!isEmpty(integrations) && <Integrations />}
-                <ChangePassword />
-              </>
+      content={
+        isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <>
+            {errors.data && (
+              <Alert color="danger">Unable to get your profile data</Alert>
             )}
+            {errors.fields && (
+              <Alert color="danger">Unable to get form fields</Alert>
+            )}
+            <RequiredInformation />
+            <OptionalInformation />
+            <ChangePasswordModal />
+            <EditOptionalInformationModal />
+            <EditRequiredInformationModal />
+            {!isEmpty(licenses) && <Licenses />}
+            {!isEmpty(integrations) && <Integrations />}
+            <ChangePassword />
+          </>
+        )
+      }
       contentStyleName="panels"
       contentClassName="manage-account-content"
       contentLayoutName={isLoading ? `oneColumn` : `multiColumnUnequal`}
       contentShouldScroll
     />
-    /* eslint-enable prettier/prettier */
   );
 };
 
