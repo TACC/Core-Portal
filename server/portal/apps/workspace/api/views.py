@@ -78,7 +78,7 @@ def _get_app(app_id, user):
     if len(matching) > 0:
         first_match = matching[0]
         if first_match.lastRetrieved and first_match.lastRetrieved != data['definition']['id']:
-            data['definition']['lastRetrieved'] = first_match.lastRetrieved
+            data['lastRetrieved'] = first_match.lastRetrieved
 
     return data
 
