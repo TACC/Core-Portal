@@ -13,3 +13,12 @@ div[role="cell"] .btn-sm.btn-link {
   margin-left: -0.5rem;
   margin-right: -0.5rem;
 }
+
+td .btn-sm,
+td .btn-group-sm > .btn,
+/* CAVEAT: Using [role="cell"] instead of <td> because DataFiles <div> table */
+div[role="cell"] .btn-sm,
+div[role="cell"] .btn-group-sm > .btn {
+  /* Overwrite Bootstrap `_button.scss` */
+  font-size: inherit;
+}
