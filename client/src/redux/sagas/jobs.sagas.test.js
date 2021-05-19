@@ -93,13 +93,14 @@ describe('submitJob Saga', () => {
         type: 'SUBMIT_JOB_SUCCESS',
         payload: jobDetailFixture
       })
+      .put({ type: 'TOGGLE_SUBMITTING' })
       .hasFinalState({
         ...jobsInitalState,
         submit: {
           ...jobsInitalState.submit,
           error: false,
           response: jobDetailFixture,
-          submitting: true /* TODO: fix reducer/saga */
+          submitting: false
         }
       })
       .run());

@@ -80,6 +80,7 @@ export function* submitJob(action) {
         type: 'SUBMIT_JOB_SUCCESS',
         payload: res.response
       });
+      yield put({ type: 'TOGGLE_SUBMITTING' });
     }
   } catch (error) {
     yield put({
