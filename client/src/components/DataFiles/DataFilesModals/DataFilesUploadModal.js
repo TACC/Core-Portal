@@ -85,7 +85,10 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const selectFiles = acceptedFiles => {
     const newFiles = [];
     const newAcceptedFiles = acceptedFiles.filter(
-      af => uploadedFiles.filter(uf => uf.data.path === af.path).length === 0
+      af =>
+        uploadedFiles.filter(
+          uf => uf.data.path === af.path && uf.data.size === af.size
+        ).length === 0
     );
     newAcceptedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
