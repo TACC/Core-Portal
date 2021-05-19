@@ -67,6 +67,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
   );
   const onClosed = () => {
     setUploadedFiles([]);
+    setRejectedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
