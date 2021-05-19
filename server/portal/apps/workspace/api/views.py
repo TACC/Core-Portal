@@ -48,8 +48,7 @@ def _app_license_type(app_id):
 
 def _get_app(app_id, user):
     agave = user.agave_oauth.client
-    data = {}
-    data['definition'] = agave.apps.get(appId=app_id)
+    data = {'definition': agave.apps.get(appId=app_id)}
 
     # GET EXECUTION SYSTEM INFO FOR USER APPS
     exec_sys = ExecutionSystem(agave, data['definition']['executionSystem'])
@@ -65,14 +64,14 @@ def _get_app(app_id, user):
                 break
 
     lic_type = _app_license_type(app_id)
-    data['definition']['license'] = {
+    data['license'] = {
         'type': lic_type
     }
     if lic_type is not None:
         _, license_models = get_license_info()
         license_model = list(filter(lambda x: x.license_type == lic_type, license_models))[0]
         lic = license_model.objects.filter(user=user).first()
-        data['definition']['license']['enabled'] = lic is not None
+        data['license']['enabled'] = lic is not None
 
     # Update any App Tray entries upon app retrieval, if their revision numbers have changed
     matching = AppTrayEntry.objects.all().filter(name=data['definition']['name'])
@@ -115,8 +114,7 @@ class AppsView(BaseApiView):
                 list_kwargs['query'] = {
                     "name": name
                 }
-            data = {}
-            data['appListing'] = agave.apps.list(**list_kwargs)
+            data = {'appListing': agave.apps.list(**list_kwargs)}
 
         return JsonResponse({"response": data})
 

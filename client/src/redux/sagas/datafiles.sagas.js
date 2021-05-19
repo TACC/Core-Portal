@@ -777,26 +777,26 @@ export const getLatestApp = async name => {
       name
     }
   });
-  const apps = res.response;
+  const apps = res.response.appListing;
   const latestApp = apps
-    .filter(app => app.definition.id.includes(name))
+    .filter(app => app.id.includes(name))
     .reduce(
       (latest, app) => {
-        if (app.definition.version > latest.version) {
+        if (app.version > latest.version) {
           return app;
         }
-        if (app.definition.version < latest.version) {
+        if (app.version < latest.version) {
           return latest;
         }
         // Same version of app
-        if (app.definition.revision >= latest.revision) {
+        if (app.revision >= latest.revision) {
           return app;
         }
         return latest;
       },
       { revision: null, version: null }
     );
-  return latestApp.definition.id;
+  return latestApp.id;
 };
 
 const getExtractParams = (file, latestExtract) => {
