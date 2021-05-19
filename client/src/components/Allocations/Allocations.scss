@@ -98,7 +98,8 @@
         }
     }
     .alloc-badge {
-        font-size: 12px;
+        /* NOTE: Consider deleting this style once <Pill> is used */
+        font-size: 0.875rem; /* 14px (approved deviation from design) */
     }
 }
 

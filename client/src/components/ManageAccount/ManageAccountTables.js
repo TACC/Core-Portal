@@ -305,7 +305,13 @@ export const ChangePassword = () => {
         </Button>
         {lastChanged && (
           <span
-            style={{ fontSize: '12px', marginLeft: '1rem', color: '#707070' }}
+            style={{
+              /* TODO: Move this to a stylehseet */
+              /* FAQ: `14px` is part of normalization of "table" font sizes */
+              fontSize: '0.875rem' /* 14px (assumed deviation from design) */,
+              marginLeft: '1rem',
+              color: '#707070'
+            }}
           >
             Last Changed {lastChanged}
           </span>

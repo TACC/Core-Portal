@@ -20,7 +20,10 @@
   padding-top: 0.5em;
   margin-bottom: 1em; /* padding would only be effectual within scrollarea */
   color: #707070;
-  font-size: 12px;
+
+  /* FAQ: `14px` is part of normalization of "table" font sizes */
+  font-size: 0.875rem; /* 14px (assumed deviation from design) */
+
   max-height: 10%;
   overflow-y: scroll;
 
