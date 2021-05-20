@@ -12,20 +12,16 @@ const AllocationsRoutes = () => {
     dispatch({ type: 'GET_ALLOCATIONS' });
   }, [dispatch]);
   return (
-    /* !!!: Temporary extra markup to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
-    <>
-      <Switch>
-        <Route path={`${root}/approved`}>
-          <Layout page="approved" />
-        </Route>
-        <Route path={`${root}/expired`}>
-          <Layout page="expired" />
-        </Route>
-        <Redirect from={`${root}/manage`} to={`${root}/approved/manage`} />
-        <Redirect from={root} to={`${root}/approved`} />
-      </Switch>
-    </>
+    <Switch>
+      <Route path={`${root}/approved`}>
+        <Layout page="approved" />
+      </Route>
+      <Route path={`${root}/expired`}>
+        <Layout page="expired" />
+      </Route>
+      <Redirect from={`${root}/manage`} to={`${root}/approved/manage`} />
+      <Redirect from={root} to={`${root}/approved`} />
+    </Switch>
   );
 };
 

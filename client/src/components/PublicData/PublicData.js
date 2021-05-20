@@ -94,8 +94,6 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
   }, [path, queryString]);
 
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <Section
       // HACK: Replicate wrapper class gives button correct global style
       // WARNING: Applies unused and redundant `.workbench-content` styles
@@ -126,16 +124,15 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
           system={system}
           publicData
         />
-      <DataFilesListing
-        api={api}
-        scheme={scheme}
-        system={system}
-        path={path || '/'}
-        isPublic
-      />
+        <DataFilesListing
+          api={api}
+          scheme={scheme}
+          system={system}
+          path={path || '/'}
+          isPublic
+        />
       </SectionTableWrapper>
     </Section>
-    /* eslint-enable prettier/prettier */
   );
 };
 PublicDataListing.propTypes = {

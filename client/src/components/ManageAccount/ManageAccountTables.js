@@ -78,25 +78,23 @@ export const RequiredInformation = () => {
     key => !demographics[key]
   );
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <SectionTableWrapper
       manualHeader={
-      <SectionHeader
-        actions={
-        <Button
-          color="link"
-          onClick={openModal}
-          className="form-button"
-          disabled={errors.fields !== undefined}
+        <SectionHeader
+          actions={
+            <Button
+              color="link"
+              onClick={openModal}
+              className="form-button"
+              disabled={errors.fields !== undefined}
+            >
+              Edit Required Information
+            </Button>
+          }
+          isForList
         >
-          Edit Required Information
-        </Button>
-        }
-        isForList
-      >
-        Required Information
-      </SectionHeader>
+          Required Information
+        </SectionHeader>
       }
       manualContent
     >
@@ -110,7 +108,6 @@ export const RequiredInformation = () => {
         }}
       />
     </SectionTableWrapper>
-    /* eslint-enable prettier/prettier */
   );
 };
 /* eslint-disable react/no-danger */
@@ -188,17 +185,12 @@ export const Licenses = () => {
   );
   const data = useMemo(() => licenses, [licenses]);
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <SectionTableWrapper
-      manualHeader={
-      <SectionHeader isForList>Licenses</SectionHeader>
-      }
+      manualHeader={<SectionHeader isForList>Licenses</SectionHeader>}
       manualContent
     >
       <TableTemplate attributes={{ columns, data }} />
     </SectionTableWrapper>
-    /* eslint-enable prettier/prettier */
   );
 };
 
@@ -269,17 +261,12 @@ export const Integrations = () => {
   );
   const data = useMemo(() => integrations, [integrations]);
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <SectionTableWrapper
-      manualHeader={
-      <SectionHeader isForList>3rd Party Apps</SectionHeader>
-      }
+      manualHeader={<SectionHeader isForList>3rd Party Apps</SectionHeader>}
       manualContent
     >
       <TableTemplate attributes={{ columns, data }} />
     </SectionTableWrapper>
-    /* eslint-enable prettier/prettier */
   );
 };
 export const ChangePassword = () => {
@@ -376,30 +363,27 @@ export const OptionalInformation = () => {
   const openModal = () =>
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { optional: true } });
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <SectionTableWrapper
       manualHeader={
-      <SectionHeader
-        actions={
-        <Button
-          color="link"
-          className="form-button"
-          onClick={openModal}
-          disabled={errors.fields !== undefined}
+        <SectionHeader
+          actions={
+            <Button
+              color="link"
+              className="form-button"
+              onClick={openModal}
+              disabled={errors.fields !== undefined}
+            >
+              Edit Optional Information
+            </Button>
+          }
+          isForList
         >
-          Edit Optional Information
-        </Button>
-        }
-        isForList
-      >
-        Optional Information
-      </SectionHeader>
+          Optional Information
+        </SectionHeader>
       }
       manualContent
     >
       <TableTemplate attributes={{ columns, data }} />
     </SectionTableWrapper>
-    /* eslint-enable prettier/prettier */
   );
 };
