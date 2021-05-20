@@ -41,30 +41,27 @@ function DashboardRoutes() {
   const dispatch = useDispatch();
 
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
-      <Switch>
-        <Route
-          exact
-          path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
-          render={() => {
-            dispatch({
-              type: 'TICKET_CREATE_OPEN_MODAL'
-            });
-          }}
-        />
-        <Route
-          path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/:ticketId`}
-          render={({ match: { params } }) => {
-            dispatch({
-              type: 'TICKET_DETAILED_VIEW_OPEN',
-              payload: { ticketId: Number(params.ticketId) }
-            });
-            return <TicketModal />;
-          }}
-        />
-      </Switch>
-    /* eslint-enable prettier/prettier */
+    <Switch>
+      <Route
+        exact
+        path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/create`}
+        render={() => {
+          dispatch({
+            type: 'TICKET_CREATE_OPEN_MODAL'
+          });
+        }}
+      />
+      <Route
+        path={`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}${ROUTES.TICKETS}/:ticketId`}
+        render={({ match: { params } }) => {
+          dispatch({
+            type: 'TICKET_DETAILED_VIEW_OPEN',
+            payload: { ticketId: Number(params.ticketId) }
+          });
+          return <TicketModal />;
+        }}
+      />
+    </Switch>
   );
 }
 

@@ -79,17 +79,14 @@ const DataFilesSwitch = React.memo(() => {
             }
           });
           return (
-            /* !!!: Temporary bad indentation to make simpler PR diff */
-            /* eslint-disable prettier/prettier */
             <SectionTableWrapper styleName="content" manualContent>
-            <DataFilesListing
-              api={params.api}
-              scheme={params.scheme}
-              system={params.system}
-              path={params.path || '/'}
-            />
+              <DataFilesListing
+                api={params.api}
+                scheme={params.scheme}
+                system={params.system}
+                path={params.path || '/'}
+              />
             </SectionTableWrapper>
-            /* eslint-enable prettier/prettier */
           );
         }}
       />
@@ -130,8 +127,6 @@ const DataFiles = () => {
   }
 
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <Section
       bodyClassName="has-loaded-datafiles"
       welcomeMessageName="DATA"
@@ -153,14 +148,13 @@ const DataFiles = () => {
       }
       content={
         <>
-        <DataFilesSidebar readOnly={readOnly} />
+          <DataFilesSidebar readOnly={readOnly} />
           <DataFilesSwitch />
-      <DataFilesModals />
+          <DataFilesModals />
         </>
       }
       messages={<Work2Message />}
     />
-    /* eslint-enable prettier/prettier */
   );
 };
 

@@ -252,7 +252,6 @@ export const AppSchemaForm = ({ app }) => {
         </div>
       )}
       {jobSubmission.response && (
-        /* !!!: Temporary extra markup to make simpler PR diff */
         <>
           {jobSubmission.error ? (
             <div className="appDetail-error">

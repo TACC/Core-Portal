@@ -111,8 +111,6 @@ const DataFilesProjectsList = ({ modal }) => {
   }
 
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <SectionTableWrapper
       styleName={`root ${modal ? 'is-in-modal' : ''}`}
       contentShouldScroll
@@ -125,17 +123,16 @@ const DataFilesProjectsList = ({ modal }) => {
           return <div className="o-flex-item-table-wrap">{children}</div>;
         }}
       >
-      <InfiniteScrollTable
-        tableColumns={columns}
-        tableData={projects}
-        onInfiniteScroll={infiniteScrollCallback}
-        isLoading={loading}
-        noDataText={noDataText}
-        className="projects-listing"
-      />
+        <InfiniteScrollTable
+          tableColumns={columns}
+          tableData={projects}
+          onInfiniteScroll={infiniteScrollCallback}
+          isLoading={loading}
+          noDataText={noDataText}
+          className="projects-listing"
+        />
       </ConditionalWrapper>
     </SectionTableWrapper>
-    /* eslint-enable prettier/prettier */
   );
 };
 DataFilesProjectsList.propTypes = {

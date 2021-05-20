@@ -17,14 +17,11 @@ import './Allocations.global.css';
 
 export const Header = ({ page }) => {
   return (
-    /* !!!: Temporary extra markup to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <>
-        <Link to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}`}>Allocations</Link>
-        <span>&nbsp;/&nbsp;</span>
-        <span>{page[0].toUpperCase() + page.substring(1)}</span>
+      <Link to={`${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}`}>Allocations</Link>
+      <span>&nbsp;/&nbsp;</span>
+      <span>{page[0].toUpperCase() + page.substring(1)}</span>
     </>
-    /* eslint-enable prettier/prettier */
   );
 };
 Header.propTypes = { page: string.isRequired };
@@ -32,12 +29,9 @@ Header.propTypes = { page: string.isRequired };
 export const Actions = ({ page }) => {
   const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
-    /* !!!: Temporary extra markup to make simpler PR diff */
-    <>
-      <Link to={`${root}/manage`} className="btn btn-primary">
-        Manage Allocations
-      </Link>
-    </>
+    <Link to={`${root}/manage`} className="btn btn-primary">
+      Manage Allocations
+    </Link>
   );
 };
 Actions.propTypes = { page: string.isRequired };
@@ -72,38 +66,36 @@ export const Layout = ({ page }) => {
   const history = useHistory();
   const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <Section
       bodyClassName="has-loaded-allocations"
       welcomeMessageName="ALLOCATIONS"
-      header={
-      <Header page={page} />
-      }
+      header={<Header page={page} />}
       headerClassName="allocations-header"
       headerActions={<Actions page={page} />}
       content={
-      <>
-        <Sidebar />
-        {loading ? (
-          <LoadingSpinner className="allocations-loading-icon" />
-        ) : (
-          <SectionTableWrapper className="allocations-content" contentShouldScroll>
-            <AllocationsTable page={page} />
-          </SectionTableWrapper>
-        )}
-        <Route exact path={`${root}/manage`}>
-          <AllocationsRequestModal
-            isOpen
-            toggle={() => {
-              history.push(root);
-            }}
-          />
-        </Route>
-      </>
+        <>
+          <Sidebar />
+          {loading ? (
+            <LoadingSpinner className="allocations-loading-icon" />
+          ) : (
+            <SectionTableWrapper
+              className="allocations-content"
+              contentShouldScroll
+            >
+              <AllocationsTable page={page} />
+            </SectionTableWrapper>
+          )}
+          <Route exact path={`${root}/manage`}>
+            <AllocationsRequestModal
+              isOpen
+              toggle={() => {
+                history.push(root);
+              }}
+            />
+          </Route>
+        </>
       }
     />
-    /* eslint-enable prettier/prettier */
   );
 };
 Layout.propTypes = {

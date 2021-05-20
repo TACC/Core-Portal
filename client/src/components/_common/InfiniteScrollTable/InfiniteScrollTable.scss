@@ -36,21 +36,17 @@
   }
 
   tbody {
-    tr:not([class=-status]) td {
+    tr:not(.-status) td {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
-
-    tr:nth-child(even):not([class=-status]) {
+    tr:nth-child(even):not(.-status) {
       background-color: rgba(0, 0, 0, 0.03);
     }
-    tr:hover:not([class=-status]) {
+    tr:hover:not(.-status) {
       background-color: rgba(0, 0, 0, 0.05);
     }
 
-    /* !!!: Temporary lint disabling to make simpler PR diff */
-    /* stylelint-disable no-descending-specificity */
-    :not(.-status) {
-    td {
+    tr:not(.-status) td {
       vertical-align: middle;
       padding: 0.7em var(--cell-horizontal-padding);
       margin: auto 0; /* vertically center span content */
@@ -58,20 +54,16 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    }
 
-    .-status {
+    tr.-status {
       box-sizing: border-box;
-      td {
-        padding-top: 0.5em;
-        padding-bottom: 0.5em;
-      }
     }
-    /* !!!: Temporary duplicate selector to make simpler PR diff */
-    .-status td {
+    tr.-status td {
+      padding-top: 0.5em;
+      padding-bottom: 0.5em;
+
       text-align: center;
     }
-    /* stylelint-enable no-descending-specificity */
   }
   /* Allow cell width to propogate to common child elements */
   & td > a,

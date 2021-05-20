@@ -46,50 +46,47 @@ const AppsRoutes = () => {
   const appDict = useSelector(state => state.apps.appDict, shallowEqual);
 
   return (
-    /* !!!: Temporary bad indentation to make simpler PR diff */
-    /* eslint-disable prettier/prettier */
     <Section
       bodyClassName="has-loaded-applications"
       welcomeMessageName="APPLICATIONS"
       header={
-      <Route path={`${path}/:appId?`}>
-        <AppsHeader appDict={appDict} />
-      </Route>
+        <Route path={`${path}/:appId?`}>
+          <AppsHeader appDict={appDict} />
+        </Route>
       }
       content={
-    <>
-      <Route path={`${path}/:appId?`}>
-        <AppsLayout />
-      </Route>
-      {Object.keys(appDict).length ? (
-        <Route
-          exact
-          path={`${path}/:appId`}
-          render={({ match: { params } }) => {
-            const appDef = appDict[params.appId];
-            if (appDef && 'html' in appDef) {
-              dispatch({
-                type: 'LOAD_APP',
-                payload: appDict[params.appId]
-              });
-            } else {
-              dispatch({
-                type: 'GET_APP',
-                payload: {
-                  appId: params.appId
+        <>
+          <Route path={`${path}/:appId?`}>
+            <AppsLayout />
+          </Route>
+          {Object.keys(appDict).length ? (
+            <Route
+              exact
+              path={`${path}/:appId`}
+              render={({ match: { params } }) => {
+                const appDef = appDict[params.appId];
+                if (appDef && 'html' in appDef) {
+                  dispatch({
+                    type: 'LOAD_APP',
+                    payload: appDict[params.appId]
+                  });
+                } else {
+                  dispatch({
+                    type: 'GET_APP',
+                    payload: {
+                      appId: params.appId
+                    }
+                  });
                 }
-              });
-            }
-            return <AppDetail />;
-          }}
-        />
-      ) : null}
-    </>
+                return <AppDetail />;
+              }}
+            />
+          ) : null}
+        </>
       }
       contentLayoutName="oneColumn"
       contentShouldScroll
     />
-    /* eslint-enable prettier/prettier */
   );
 };
 
