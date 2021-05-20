@@ -45,7 +45,7 @@ const SiteSearch = () => {
           results={results}
         />
       </div>
-      <div className="col-md-8" style={{ display: 'flex' }}>
+      <div className="col-md-10" style={{ display: 'flex' }}>
         <SiteSearchListing
           loading={loading}
           error={error}
@@ -53,7 +53,6 @@ const SiteSearch = () => {
           results={results[filter] || results[FILTER_PRIORITY[0]]}
         />
       </div>
-      <div className="col-md-2" />
     </div>
   );
 };
