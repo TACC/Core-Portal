@@ -1,7 +1,0 @@
-.multi-system .label-system-status {
-    /* NOTE: Consider deleting these styles once <Pill> is used */
-    font-size: 0.875rem; /* 14px (approved deviation from design) */
-    font-weight: 500;
-    width: 100%;
-    padding: 0.4em 0 0.4em 0;
-}

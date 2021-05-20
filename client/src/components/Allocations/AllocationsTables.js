@@ -110,7 +110,7 @@ export const AllocationsTable = ({ page }) => {
     <table
       {...getTableProps()}
       // Emulate <InfiniteScrollTable> and its use of `o-fixed-header-table`
-      // TODO: Instead, update <AllocationsTable> to use <InfiniteScrollTable>
+      // TODO: Create global table styles & Make <InfiniteScrollTable> use them
       className="allocations-table InfiniteScrollTable o-fixed-header-table"
       styleName="root"
     >

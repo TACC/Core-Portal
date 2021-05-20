@@ -3,8 +3,7 @@
 /* SEE: index.css */
 body.has-loaded-datafiles {
   /* HACK: Should instead (ask Design) reduce button width on narrow screen */
-  --min-width: 945px; /* short & narrow Data Files ~before table <th> cut off */
-  /* --min-width: 1020px; /* short & narrow Data Files ~no horz. table scroll */
+  --min-width: 1005px; /* short & narrow Data Files ~before table horz scroll */
 
   --min-height: 485px; /* tall enough to avoid .listing-placeholder scroll */
 }

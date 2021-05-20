@@ -30,6 +30,17 @@
 .sysmon-panel > :global(.o-flex-item-table-wrap) > table {
   position: static; /* overwrite <SectionTableWrapper> */
 }
+/* HACK: To prevent unwrappable heading text from causing scrolling */
+/* FAQ: Only System Monitor has one-word headings overflowing table width */
+/* RFE: Confirm alternative global solution (with Design): ellipses for <th>
+  ```
+  @import '.../styles/tools/mixins.scss';
+  th { @include truncate-with-ellipsis; }
+  ```
+*/
+.sysmon-panel > :global(.o-flex-item-table-wrap) {
+  overflow-x: hidden;
+}
 
 
 
