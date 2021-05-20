@@ -197,7 +197,7 @@ Client-side code is linted (JavaScript via `eslint`, CSS via `stylelint`), and i
 
 You may auto-fix your linting errors to conform with configured standards, for specific languages, via:
 - `npm run lint:js -- --fix`
-- `npm run lint:js -- --fix`
+- `npm run lint:css -- --fix`
 
 Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 main | flake8 --diff` from the command line.
 This requires that you have a local python virtual environemnt setup with this project's dependencies installed:
