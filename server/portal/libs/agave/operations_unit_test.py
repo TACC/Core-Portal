@@ -46,7 +46,7 @@ class TestOperations(TestCase):
 
         mock_search().query.assert_called_with(Q("query_string", query='query',
                                                  fields=["name"],
-                                                 minimum_should_match='80%',
+                                                 minimum_should_match='100%',
                                                  default_operator='or') |
                                                Q("query_string", query='query',
                                                  fields=[
