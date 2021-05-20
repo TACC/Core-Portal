@@ -9,7 +9,14 @@ import { useSelector } from 'react-redux';
 
 import './DataFilesSearchbar.module.css';
 
-const DataFilesSearchbar = ({ api, scheme, system, className, publicData }) => {
+const DataFilesSearchbar = ({
+  api,
+  scheme,
+  system,
+  resultCount,
+  className,
+  publicData
+}) => {
   const disabled = useSelector(
     state =>
       state.files.loading.FilesListing === true ||
@@ -83,6 +90,11 @@ const DataFilesSearchbar = ({ api, scheme, system, className, publicData }) => {
           autoComplete="off"
           disabled={disabled}
         />
+        {hasQuery && (
+          <div aria-label="Summary of Search Results" styleName="results">
+            {resultCount} Results Found for: &quot;<span>{hasQuery}</span>&quot;
+          </div>
+        )}
       </div>
       {hasQuery && (
         <Button
@@ -103,13 +115,15 @@ DataFilesSearchbar.propTypes = {
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
+  resultCount: PropTypes.number,
   /** Additional `className` (or transpiled `styleName`) for the root element */
   className: PropTypes.string,
   publicData: PropTypes.bool
 };
 DataFilesSearchbar.defaultProps = {
   className: '',
-  publicData: false
+  publicData: false,
+  resultCount: 0
 };
 
 export default DataFilesSearchbar;

@@ -129,6 +129,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           api={api}
           scheme={scheme}
           system={system}
+          resultCount={files.length}
           styleName="searchbar"
         />
       )}
