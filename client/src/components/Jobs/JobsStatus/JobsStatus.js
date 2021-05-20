@@ -73,7 +73,6 @@ function JobsStatus({ status, fancy, jobId }) {
   const notifs = useSelector(state => state.notifications.list.notifs);
   let interactiveSessionLink;
 
-  /* Check if job is running AND has interactive session */
   const jobConcluded = [
     'CLEANING_UP',
     'ARCHIVING',
@@ -81,6 +80,11 @@ function JobsStatus({ status, fancy, jobId }) {
     'STOPPED',
     'FAILED'
   ];
+
+  /* Check if job is not ended AND has interactive session. */
+  /* NOTE: Sometimes a job RUNNING status and the interactive webhook come out of order,
+  so instead of checking for a running job with a session, we check that the job is not ended.
+  */
   if (!jobConcluded.includes(status)) {
     const interactiveNotifs = notifs.filter(
       n =>
@@ -100,7 +104,12 @@ function JobsStatus({ status, fancy, jobId }) {
       )}
       {interactiveSessionLink && (
         <>
-          <button type="button" styleName="open-button" onClick={toggleModal}>
+          <button
+            type="button"
+            styleName="open-button"
+            onClick={toggleModal}
+            data-testid="interactive-session-button"
+          >
             <Icon name="new-browser" styleName="open-icon" />
             Open Session
           </button>
