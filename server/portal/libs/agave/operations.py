@@ -99,7 +99,7 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
     """
     ngram_query = Q("query_string", query=query_string,
                     fields=["name"],
-                    minimum_should_match='80%',
+                    minimum_should_match='100%',
                     default_operator='or')
     match_query = Q("query_string", query=query_string,
                     fields=[
