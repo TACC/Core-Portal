@@ -69,10 +69,11 @@
     tbody {
         tr {
             .system-cell {
-                padding: 0;
+                /* Override `.InfiniteScrollTable tbody tr…:not(.-status)` */
+                padding: 0 !important;
             }
 
-            /* Override `.InfiniteScrollTable tbody tr…:not([class=-status])` */
+            /* Override `.InfiniteScrollTable tbody tr…:not(.-status)` */
             background-color: transparent !important;
 
             border-bottom: 1px solid rgba(#707070, 0.25);
@@ -96,7 +97,8 @@
         }
     }
     .alloc-badge {
-        font-size: 12px;
+        /* NOTE: Consider deleting this style once <Pill> is used */
+        font-size: 0.875rem; /* 14px (approved deviation from design) */
     }
 }
 

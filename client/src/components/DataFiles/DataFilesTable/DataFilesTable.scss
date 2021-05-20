@@ -8,7 +8,7 @@
 .tr {
   display: flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 0.875rem; /* 14px (approved deviation from design) */
   border-bottom: 1px solid #e0e0e0;
 }
 .tr-background-shading {

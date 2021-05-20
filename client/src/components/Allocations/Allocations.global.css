@@ -3,5 +3,5 @@
 /* SEE: index.css */
 body.has-loaded-allocations {
   /* HACK: Should instead (ask Design) have a responsive sidebar */
-  --min-width: 1000px; /* just as table cell text begins to be cut off */
+  --min-width: 1000px; /* ~before important table cell text is cut off */
 }
