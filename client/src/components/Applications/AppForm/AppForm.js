@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
+import { cloneDeep } from 'lodash';
 import {
   AppIcon,
   FormField,
@@ -321,7 +322,7 @@ export const AppSchemaForm = ({ app }) => {
           });
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
-          const job = { ...values };
+          const job = cloneDeep(values);
           /* remove falsy input */
           Object.entries(job.inputs).forEach(([k, v]) => {
             let val = v;
