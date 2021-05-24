@@ -59,7 +59,7 @@
 
 .results {
   padding-left: 5px;
-  padding-top: 5px;
+  align-self: center;
   span {
     font-weight: 600;
   }
