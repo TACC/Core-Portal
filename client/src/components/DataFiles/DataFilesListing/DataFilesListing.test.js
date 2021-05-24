@@ -143,7 +143,7 @@ describe("DataFilesListing", () => {
     */
   });
 
-  
+
   it("renders message when no files to show", () => {
     const history = createMemoryHistory();
     history.push("/workbench/data/tapis/private/test.system/");
