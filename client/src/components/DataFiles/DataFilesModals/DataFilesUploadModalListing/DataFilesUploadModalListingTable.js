@@ -2,11 +2,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Table } from 'reactstrap';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, InlineMessage } from '_common';
 import { FileLengthCell } from '../../DataFilesListing/DataFilesListingCells';
 import './DataFilesUploadModalListingTable.module.scss';
 
-const DataFilesUploadStatus = ({ i, removeCallback }) => {
+const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
+  if (rejectedFiles.filter(f => f.id === i).length > 0) {
+    return <InlineMessage type="error">Exceeds File Size Limit</InlineMessage>;
+  }
   const status = useSelector(state => state.files.operationStatus.upload[i]);
   switch (status) {
     case 'UPLOADING':
@@ -14,7 +17,7 @@ const DataFilesUploadStatus = ({ i, removeCallback }) => {
     case 'SUCCESS':
       return <span className="badge badge-success">SUCCESS</span>;
     case 'ERROR':
-      return <span className="badge badge-danger">ERROR</span>;
+      return <InlineMessage type="error">Upload Failed</InlineMessage>;
     default:
       return (
         <button
@@ -29,10 +32,15 @@ const DataFilesUploadStatus = ({ i, removeCallback }) => {
 };
 DataFilesUploadStatus.propTypes = {
   i: PropTypes.string.isRequired,
-  removeCallback: PropTypes.func.isRequired
+  removeCallback: PropTypes.func.isRequired,
+  rejectedFiles: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
-function DataFilesUploadModalListingTable({ uploadedFiles, setUploadedFiles }) {
+function DataFilesUploadModalListingTable({
+  uploadedFiles,
+  rejectedFiles,
+  setUploadedFiles
+}) {
   const removeFile = id => {
     setUploadedFiles(uploadedFiles.filter(f => f.id !== id));
   };
@@ -59,6 +67,7 @@ function DataFilesUploadModalListingTable({ uploadedFiles, setUploadedFiles }) {
                   <DataFilesUploadStatus
                     i={file.id}
                     removeCallback={removeFile}
+                    rejectedFiles={rejectedFiles}
                   />
                 </span>
               </td>
@@ -73,6 +82,7 @@ function DataFilesUploadModalListingTable({ uploadedFiles, setUploadedFiles }) {
 DataFilesUploadModalListingTable.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   uploadedFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  rejectedFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   setUploadedFiles: PropTypes.func.isRequired
 };
 
