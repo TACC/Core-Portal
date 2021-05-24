@@ -32,9 +32,12 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [rejectedFiles, setRejectedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
-    const filteredFiles = uploadedFiles.filter(f => status[f.id] !== 'SUCCESS');
+    const filteredFiles = uploadedFiles.filter(
+      f => status[f.id] !== 'SUCCESS' && !rejectedFiles.includes(f)
+    );
     filteredFiles.length > 0 &&
       dispatch({
         type: 'DATA_FILES_UPLOAD',
@@ -64,6 +67,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
   );
   const onClosed = () => {
     setUploadedFiles([]);
+    setRejectedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -80,18 +84,28 @@ const DataFilesUploadModal = ({ className, layout }) => {
 
   const selectFiles = acceptedFiles => {
     const newFiles = [];
-    acceptedFiles.forEach(file => {
+    const newAcceptedFiles = acceptedFiles.filter(
+      af =>
+        uploadedFiles.filter(
+          uf => uf.data.path === af.path && uf.data.size === af.size
+        ).length === 0
+    );
+    newAcceptedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
     });
     setUploadedFiles(files => [...files, ...newFiles]);
   };
 
-  const onRejectedFiles = rejectedFiles => {
+  const onRejectedFiles = oversizedFiles => {
     const newFiles = [];
-    rejectedFiles.forEach(file => {
+    const newRejectedFiles = oversizedFiles.filter(
+      of => rejectedFiles.filter(rf => rf.data.path === of.path).length === 0
+    );
+    newRejectedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
     });
     setUploadedFiles(files => [...files, ...newFiles]);
+    setRejectedFiles(files => [...files, ...newFiles]);
   };
 
   return (
@@ -119,6 +133,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
             </span>
             <DataFilesUploadModalListingTable
               uploadedFiles={uploadedFiles}
+              rejectedFiles={rejectedFiles}
               setUploadedFiles={setUploadedFiles}
             />
           </div>
