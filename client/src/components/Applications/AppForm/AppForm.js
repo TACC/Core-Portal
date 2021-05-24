@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
+import { cloneDeep } from 'lodash';
 import {
   AppIcon,
   FormField,
@@ -321,7 +322,31 @@ export const AppSchemaForm = ({ app }) => {
           });
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
-          const job = { ...values };
+          const job = cloneDeep(values);
+          /* remove falsy input */
+          Object.entries(job.inputs).forEach(([k, v]) => {
+            let val = v;
+            if (Array.isArray(val)) {
+              val = val.filter(Boolean);
+              if (val.length === 0) {
+                delete job.inputs[k];
+              }
+            } else if (!val) {
+              delete job.inputs[k];
+            }
+          });
+          /* remove falsy parameter */
+          Object.entries(job.parameters).forEach(([k, v]) => {
+            let val = v;
+            if (Array.isArray(v)) {
+              val = val.filter(Boolean);
+              if (val.length === 0) {
+                delete job.parameters[k];
+              }
+            } else if (val === null || val === undefined) {
+              delete job.parameters[k];
+            }
+          });
           /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
           if (app.tags.includes('DCV')) {
             job.name += '-dcvserver';
