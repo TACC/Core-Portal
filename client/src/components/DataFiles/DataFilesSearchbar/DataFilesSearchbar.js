@@ -92,7 +92,7 @@ const DataFilesSearchbar = ({
         />
         {hasQuery && (
           <div aria-label="Summary of Search Results" styleName="results">
-            {resultCount} Results Found for: &quot;<span>{hasQuery}</span>&quot;
+            {resultCount} Results Found for <span>{hasQuery}</span>
           </div>
         )}
       </div>
