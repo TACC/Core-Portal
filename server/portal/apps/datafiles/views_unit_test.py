@@ -190,13 +190,13 @@ def logging_metric_mock(mocker):
 def test_tapis_file_view_get_is_logged_for_metrics(client, authenticated_user, mock_agave_client,
                                                    agave_file_listing_mock, agave_listing_indexer, logging_metric_mock):
     mock_agave_client.files.list.return_value = agave_file_listing_mock
-    response = client.get("/api/datafiles/tapis/listing/private/frontera.home.username/test.txt/")
+    response = client.get("/api/datafiles/tapis/listing/private/frontera.home.username/test.txt/?length=1234")
     assert response.status_code == 200
     assert response.json() == {"data": {"listing": agave_file_listing_mock, "reachedEnd": True}}
 
     # Ensure metric-related logging is being performed
     logging_metric_mock.assert_called_with(
-        "user:{} op:listing api:tapis scheme:private system:frontera.home.username path:test.txt".format(
+        "user:{} op:listing api:tapis scheme:private system:frontera.home.username path:test.txt filesize:1234".format(
             authenticated_user.username))
 
 
