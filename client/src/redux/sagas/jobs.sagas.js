@@ -45,23 +45,43 @@ export function* getJobs(action) {
   }
 }
 
-function* submitJob(action) {
+export async function postSubmitJobUtil(jobPayload) {
+  const result = await fetchUtil({
+    url: '/api/workspace/jobs',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': Cookies.get('csrftoken')
+    },
+    body: JSON.stringify(jobPayload)
+  });
+  return result;
+}
+
+export function* submitJob(action) {
   yield put({ type: 'FLUSH_SUBMIT' });
   yield put({ type: 'TOGGLE_SUBMITTING' });
   try {
-    const res = yield call(fetchUtil, {
-      url: '/api/workspace/jobs',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': Cookies.get('csrftoken')
-      },
-      body: JSON.stringify(action.payload)
-    });
-    yield put({
-      type: 'SUBMIT_JOB_SUCCESS',
-      payload: res.response
-    });
+    const res = yield call(postSubmitJobUtil, action.payload);
+    if (res.response.execSys) {
+      yield put({
+        type: 'SYSTEMS_TOGGLE_MODAL',
+        payload: {
+          operation: 'pushKeys',
+          props: {
+            onSuccess: { type: 'SUBMIT_JOB', payload: action.payload },
+            system: res.response.execSys
+          }
+        }
+      });
+      yield put({ type: 'TOGGLE_SUBMITTING' });
+    } else {
+      yield put({
+        type: 'SUBMIT_JOB_SUCCESS',
+        payload: res.response
+      });
+      yield put({ type: 'TOGGLE_SUBMITTING' });
+    }
   } catch (error) {
     yield put({
       type: 'SUBMIT_JOB_ERROR',
