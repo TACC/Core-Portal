@@ -77,11 +77,12 @@ class TapisFilesView(BaseApiView):
                     status=403)
         try:
             METRICS.info("user:{} op:{} api:tapis scheme:{} "
-                         "system:{} path:{}".format(request.user.username,
+                         "system:{} path:{} filesize:{}".format(request.user.username,
                                                     operation,
                                                     scheme,
                                                     system,
-                                                    path))
+                                                    path,
+                                                    request.GET.get('length')))
             response = tapis_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
 
