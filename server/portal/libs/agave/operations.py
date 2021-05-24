@@ -99,7 +99,7 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
     """
     ngram_query = Q("query_string", query=query_string,
                     fields=["name"],
-                    minimum_should_match='80%',
+                    minimum_should_match='100%',
                     default_operator='or')
     match_query = Q("query_string", query=query_string,
                     fields=[
@@ -117,7 +117,7 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
             'reachedEnd': len(hits) < int(limit)}
 
 
-def download(client, system, path, href, force=True, max_uses=3, lifetime=600):
+def download(client, system, path, href, force=True, max_uses=3, lifetime=600, **kwargs):
     """Creates a postit pointing to this file.
 
     Params
@@ -423,7 +423,7 @@ def upload(client, system, path, uploaded_file):
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
-    
+
     # the fileName param does not seem to accept a different file name
     resp = client.files.importData(systemId=system,
                                    filePath=urllib.parse.quote(path),
