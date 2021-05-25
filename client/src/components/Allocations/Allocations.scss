@@ -13,56 +13,28 @@
 /*
     Components
 */
-.btn-link {
-    color: #9d85ef;
+.allocations-content a {
     padding-left: 0;
 }
-#allocations-wrapper {
-    display: flex;
-    flex-direction: column;
-
-    padding-right: 32px;
-}
-#allocations-container {
-    /* As a flex item */
-    flex-grow: 1;
-
-    /* As a flex container */
-    display: flex;
-    flex-direction: row;
-
-    border-top: 1px solid #707070;
-}
-/* Make right-most item fill up remaining horizontal space */
-#allocations-container > :last-child {
-    flex-grow: 1;
-}
-
-#allocations-header {
+.allocations-header {
     @include alloc-button();
-    display: flex;
-    justify-content: space-between;
-    margin: 21px 0 0.5rem 1.75rem;
-    padding-left: 0.2em;
-    #header-text {
-        font-size: 1.25rem;
-        font-weight: 400;
-        vertical-align: text-bottom;
-        letter-spacing: 0;
-        width: 10rem;
-        display: flex;
-        align-items: flex-end;
+
         a {
             color: #484848;
         }
-    }
 }
-#allocations-sidebar {
-    width: 215px;
-    border-right: 1px solid rgba(112, 112, 112, 0.25);
-    font-family: Roboto, sans-serif;
+.allocations-sidebar {
+    --horizontal-buffer: var(--global-space--section-left);
+    /* FAQ: Design is inconsistent across sections, but averages about `10.5px` */
+    --vertical-buffer: 0.75rem; /* ~12px (avg. 10.5px design * 1.2 design-to-app ratio */
 
-    /* !!!: This link is `40px`, which is taller than other sidebar links (which are ~`35px`) */
+    --min-width: 200px;
+
+    margin-left: calc(var(--horizontal-buffer) * -1);
+    border-right: 1px solid rgba(112, 112, 112, 0.25);
+
+    padding-top: var(--vertical-buffer);
+
     .nav-link {
         /* NOTE: These styles match `.nav-content`. That class is not used in
                  the markup for this sidebar because it is extraneous */
@@ -70,61 +42,51 @@
         display: flex;
         align-items: center;
 
-        color: #707070;
-        padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
+        min-width: var(--min-width);
 
-        .link-icon {
-            font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
-            width: 1em;
-        }
+        color: #707070;
+        padding-left: var(--horizontal-buffer);
+
         .link-text {
             font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
             font-weight: 500;
             padding-left: 16px;
-            vertical-align: middle;
         }
     }
     .active {
         background: rgba(#9d85ef, 0.25);
     }
 }
+.allocations-content {
+    /* As a flex child */
+    flex-grow: 1;
+
+    /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
+    padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+    padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+}
 .allocations-table {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    padding: 0 0 0 1em;
-    overflow-y: auto;
-    table {
-        width: 100%;
-        border: 0;
-        font-size: 14px;
+    tbody {
         tr {
-            height: 2.25rem;
-            td {
-                padding: 0;
-                vertical-align: text-top;
+            .system-cell {
+                /* Override `.InfiniteScrollTable tbody tr…:not(.-status)` */
+                padding: 0 !important;
             }
+
+            /* Override `.InfiniteScrollTable tbody tr…:not(.-status)` */
+            background-color: transparent !important;
+
             border-bottom: 1px solid rgba(#707070, 0.25);
-            margin-bottom: 24px;
-        }
-        thead {
-            tr {
-                border-bottom: 1px solid #707070;
-            }
-        }
-        tbody {
-            tr:last-child {
-                border-bottom: none;
-            }
         }
         .sub-table-row {
+            width: 100%;
+
             /* FP-457: Will fix this *//* stylelint-disable no-descending-specificity */
             :nth-child(even) {
                 background-color: rgba(#c6c6c6, 0.1);
             }
             /* stylelint-enable no-descending-specificity */
             color: #707070;
-            font: 14px Roboto, sans-serif;
         }
         .sub-table-cell {
             background-color: white;
@@ -135,17 +97,13 @@
         }
     }
     .alloc-badge {
-        font-size: 14px;
+        /* NOTE: Consider deleting this style once <Pill> is used */
+        font-size: 0.875rem; /* 14px (approved deviation from design) */
     }
 }
-#pending {
-    @extend .allocations-table;
-}
+
 /* HACK: The loading icon should not need height set, but it fixes Safari here */
 /* FP-426: Do not use `height: 100%` or isolate usage pending solution to bigger problem */
-#allocations-wrapper .loading-icon {
+.allocations-loading-icon {
     height: auto;
-}
-.system-cell {
-    width: 120px;
 }

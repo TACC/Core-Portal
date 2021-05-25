@@ -32,7 +32,7 @@ describe('SectionMessages', () => {
     it('renders known welcome message', () => {
       const { getByText } = render(
         <Provider store={store}>
-          <SectionMessages routeName="DASHBOARD" />
+          <SectionMessages welcomeMessageName="DASHBOARD" />
         </Provider>
       );
       expect(getByText(MESSAGES['DASHBOARD'])).not.toEqual(null);
@@ -41,7 +41,10 @@ describe('SectionMessages', () => {
     it('renders known welcome message but with custom message', () => {
       const { getByText, queryByText } = render(
         <Provider store={store}>
-          <SectionMessages routeName="DASHBOARD" welcomeText="Hello" />
+          <SectionMessages
+            welcomeMessageName="DASHBOARD"
+            welcomeMessageText="Hello"
+          />
         </Provider>
       );
       expect(queryByText(MESSAGES['DASHBOARD'])).toEqual(null);
@@ -51,7 +54,7 @@ describe('SectionMessages', () => {
     it('renders custom welcome message', () => {
       const { getByText } = render(
         <Provider store={store}>
-          <SectionMessages welcomeText="Hello" />
+          <SectionMessages welcomeMessageText="Hello" />
         </Provider>
       );
       expect(getByText('Hello')).not.toEqual(null);

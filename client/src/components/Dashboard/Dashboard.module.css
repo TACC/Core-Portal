@@ -1,0 +1,91 @@
+/* Elements */
+
+.panels {
+  /* HELP: How to assign this spacing when Quick Links is added? */
+  padding-top: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
+}
+
+.panels > * {
+  min-height: 160px; /* approx. "My Tickets/Jobs" height with about 1.25 rows */
+}
+/* WARNING: This assumes a markup structure which Dashboard does not control */
+/* FAQ: A border on <table> would be hidden unless it is scrolled to bottom */
+/* CAVEAT: Jobs panel border is halfway down section, even its table is empty */
+.panels > * > :global(.o-flex-item-table-wrap) {
+  border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
+}
+
+
+
+/* Elements: System Monitor */
+
+/* HACK: To prevent growing when table has no more rows to fill the height */
+/* FAQ: A <SectionTableWrapper> shrinks, but only to panel min-height */
+.sysmon-panel {
+  flex-grow: 0; /* overwrite <SectionTableWrapper> */
+}
+/* HACK: To prevent shrinking (thus scrolling) when there is space to grow */
+/* FAQ: A <SectionTableWrapper> shrinks, but only to panel min-height */
+/* WARNING: This assumes a markup structure which Dashboard does not control */
+.sysmon-panel > :global(.o-flex-item-table-wrap) > table {
+  position: static; /* overwrite <SectionTableWrapper> */
+}
+/* HACK: To prevent unwrappable heading text from causing scrolling */
+/* FAQ: Only System Monitor has one-word headings overflowing table width */
+/* RFE: Confirm alternative global solution (with Design): ellipses for <th>
+  ```
+  @import '.../styles/tools/mixins.scss';
+  th { @include truncate-with-ellipsis; }
+  ```
+*/
+.sysmon-panel > :global(.o-flex-item-table-wrap) {
+  overflow-x: hidden;
+}
+
+
+
+
+
+/* Media Queries */
+
+
+
+/* Narrow */
+/* FAQ: The non-global variables come from `SectionContent.layout.module.css` */
+
+@media only screen and (max-width: 991px) {
+  /* Panel Container */
+  .panels {
+    /* FAQ: Flex is necessary to allow easy panel re-ordering */
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  /* Panels */
+  .sysmon-panel {
+    order: -1;
+    /* FAQ: Section layout gives none to a `:last-child` but we changed order */
+    margin-bottom: var(--vertical-buffer);
+  }
+}
+
+/* Wide */
+/* FAQ: The non-global variables come from `SectionContent.layout.module.css` */
+
+@media only screen and (min-width: 992px) {
+  /* Panel Container */
+  .panels {
+    width: var(--column-width--container);
+  }
+
+  /* Panels */
+  .panels > *:not(.sysmon-panel) {
+    width: var(--column-width--large);
+    height: calc(50% - var(--vertical-buffer));
+  }
+  .sysmon-panel {
+    width: var(--column-width--small);
+    height: auto;
+  }
+}

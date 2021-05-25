@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    margin-bottom: 20px;
 }
 
 /* Children */
@@ -55,6 +56,14 @@
 }
 .button__text {
     /* … */
+}
+
+.results {
+  padding-left: 20px;
+  align-self: center;
+  span {
+    font-weight: bold;
+  }
 }
 
 /* Hacks */

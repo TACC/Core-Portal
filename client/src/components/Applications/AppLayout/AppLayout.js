@@ -1,12 +1,12 @@
 import React from 'react';
 import { Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { LoadingSpinner } from '_common';
-import './AppLayout.scss';
+import { LoadingSpinner, Section } from '_common';
+import './AppLayout.global.css';
 import AppBrowser from '../AppBrowser/AppBrowser';
 import AppDetail, { AppPlaceholder } from '../AppForm/AppForm';
 
-const AppsLayout = appDict => {
+const AppsLayout = () => {
   const { params } = useRouteMatch();
   const { loading, categoryDict } = useSelector(
     state => ({
@@ -15,16 +15,9 @@ const AppsLayout = appDict => {
     }),
     shallowEqual
   );
-  const appMeta = appDict[params.appId];
 
   return (
     <>
-      <div className="apps-header">
-        <h5>
-          Applications
-          {appMeta ? ` / ${appMeta.value.definition.label}` : ''}
-        </h5>
-      </div>
       {loading && !Object.keys(categoryDict).length ? (
         <LoadingSpinner />
       ) : (
@@ -39,40 +32,61 @@ const AppsLayout = appDict => {
   );
 };
 
+const AppsHeader = appDict => {
+  const { params } = useRouteMatch();
+  const appMeta = appDict[params.appId];
+  const path = appMeta ? ` / ${appMeta.value.definition.label}` : '';
+
+  return `Applications ${path}`;
+};
+
 const AppsRoutes = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const appDict = useSelector(state => state.apps.appDict, shallowEqual);
 
   return (
-    <div id="apps-wrapper">
-      <Route path={`${path}/:appId?`}>
-        <AppsLayout appDict={appDict} />
-      </Route>
-      {Object.keys(appDict).length ? (
-        <Route
-          exact
-          path={`${path}/:appId`}
-          render={({ match: { params } }) => {
-            const appDef = appDict[params.appId];
-            if (appDef && 'html' in appDef) {
-              dispatch({
-                type: 'LOAD_APP',
-                payload: appDict[params.appId]
-              });
-            } else {
-              dispatch({
-                type: 'GET_APP',
-                payload: {
-                  appId: params.appId
+    <Section
+      bodyClassName="has-loaded-applications"
+      welcomeMessageName="APPLICATIONS"
+      header={
+        <Route path={`${path}/:appId?`}>
+          <AppsHeader appDict={appDict} />
+        </Route>
+      }
+      content={
+        <>
+          <Route path={`${path}/:appId?`}>
+            <AppsLayout />
+          </Route>
+          {Object.keys(appDict).length ? (
+            <Route
+              exact
+              path={`${path}/:appId`}
+              render={({ match: { params } }) => {
+                const appDef = appDict[params.appId];
+                if (appDef && 'html' in appDef) {
+                  dispatch({
+                    type: 'LOAD_APP',
+                    payload: appDict[params.appId]
+                  });
+                } else {
+                  dispatch({
+                    type: 'GET_APP',
+                    payload: {
+                      appId: params.appId
+                    }
+                  });
                 }
-              });
-            }
-            return <AppDetail />;
-          }}
-        />
-      ) : null}
-    </div>
+                return <AppDetail />;
+              }}
+            />
+          ) : null}
+        </>
+      }
+      contentLayoutName="oneColumn"
+      contentShouldScroll
+    />
   );
 };
 

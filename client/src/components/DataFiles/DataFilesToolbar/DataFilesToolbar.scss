@@ -1,19 +1,18 @@
 .data-files-toolbar-button {
+    height: 2rem;
     background-color: #F4F4F4;
     color: #484848;
     border-color: #484848;
     border-radius: 0;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
+    white-space: nowrap;
 
     .icon-action {
       display: flex;
       padding-right: 5px;
       font-size: 1.3em;
-    }
-    & + .data-files-toolbar-button {
-      margin-left: 5px;
     }
 }
 .data-files-toolbar-button:not(.disabled):hover {
@@ -25,10 +24,23 @@
 
 .toolbar-button-text {
   padding-left: 5px;
-  font: bold 15px/25px Roboto, sans-serif;
+  font: bold 14px Roboto, sans-serif;
   display: flex;
 }
 
 #data-files-toolbar-button-row {
   display: flex;
+  flex-wrap: wrap;
+
+  /* Add vertical space between children that, without wrapping, is invisible */
+  /* FAQ: Take away space added, in direction of container alignment as item */
+  /* NOTE: Container <SectionHeader> already defines `align-items: flex-end` */
+  align-self: flex-end;
+  margin-bottom: -5px;
+  & > * { margin-bottom: 5px; }
+
+  /* Space between children should be static, and not exist at ends */
+  /* FAQ: Using container flex values would not achieve static space */
+  & > * { margin-right: 5px; }
+  & > *:last-child { margin-right: 0; }
 }
