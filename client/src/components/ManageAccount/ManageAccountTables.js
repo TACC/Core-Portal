@@ -131,7 +131,7 @@ const LicenseCell = ({ cell: { value } }) => {
       >
         {value.current_user_license ? 'View Details' : 'Request Activation'}
       </Button>
-      <Modal isOpen={modal} toggle={toggle}>
+      <Modal isOpen={modal} toggle={toggle} className="manage-account-modal">
         <ModalHeader
           className="manage-account-modal-header"
           toggle={toggle}

@@ -25,7 +25,10 @@
     }
 
     /* Overrides bootstrap button */
-    .btn {
+    /* FAQ: Table cell content should be 14px so do not override cell buttons */
+    /* FAQ: The [role="cell"] matches fake <div> cells and real <td> cells */
+    /* WARNING: A <td> cell need not have [role], but this now expects it */
+    .btn:not([role="cell"]) {
       font-size: 12px;
       font-weight: 600;
     }

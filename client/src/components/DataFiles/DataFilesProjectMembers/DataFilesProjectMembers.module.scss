@@ -16,7 +16,8 @@
   align-items: center;
   h6 {
     margin-bottom: 0;
-    font-size: 12px;
+    /* NOTE: Table cell content should be 14px like this cell button */
+    font-size: 14px;
   }
 }
 

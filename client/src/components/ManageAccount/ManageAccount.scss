@@ -82,13 +82,12 @@
 }
 
 .modal-body {
-  /* NOTE: Applies globally so MAY be appropriate for button component styles */
+  /* NOTE: Applies globally so MAY be appropriate for modal component styles */
   /* SEE: client/src/styles/components/bootstrap.modal.css */
   font-size: 14px;
-
+}
+.manage-account-modal .modal-body {
   .btn-link {
-    /* NOTE: Applies globally but NOT appropriate for button component styles */
-    /* SEE: client/src/styles/components/bootstrap.modal.css */
     padding: 0;
   }
   .manage-account-submit-button {
