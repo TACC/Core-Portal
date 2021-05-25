@@ -24,7 +24,7 @@ function Workbench() {
   // showUIPatterns: Show some entries only in local development
   const { loading, setupComplete, showUIPatterns, isStaff } = useSelector(
     state => ({
-      loading: state.workbench.loading,
+      loading: state.workbench.loading || state.systems.storage.loading,
       setupComplete: state.workbench.setupComplete,
       showUIPatterns: state.workbench.config.debug,
       isStaff:
