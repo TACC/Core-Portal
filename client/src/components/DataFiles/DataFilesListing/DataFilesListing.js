@@ -129,7 +129,6 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           scheme={scheme}
           system={system}
           resultCount={files.length}
-          styleName="searchbar"
         />
       )}
       <div className="o-flex-item-table-wrap">
