@@ -67,4 +67,19 @@ describe('workbench', () => {
       )
     ).toBeDefined();
   });
+  it('shows loading spinner if systems request not finished', () => {
+    const history = createMemoryHistory();
+    const store = mockStore({
+      ...state,
+      systems: {
+        ...systems,
+        storage: {
+          ...systems.storage,
+          loading: true
+        }
+      }
+    });
+    const { getByTestId } = renderComponent(<Workbench />, store, history);
+    expect(getByTestId(/loading-spinner/)).toBeDefined();
+  });
 });
