@@ -1,0 +1,14 @@
+/* Allow space for all elements to be visible and usable */
+/* FAQ: Edit global style based on section-specific caveat */
+/* SEE: index.css */
+@media only screen and (min-width: 1200px) {
+  body.has-loaded-account {
+    /* Avoid more columns than layout allows to fit */
+    /* SEE: ../_common/SectionContent/SectionContent.layouts.module.css */
+    --min-height: 511px; /* exactly before 4th col. added for margin overflow */
+  }
+}
+body.has-loaded-account {
+  /* HACK: Should instead (ask Design) have a responsive sidebar */
+  --min-width: 576px; /* 1st breakpoint wider than "[…] Google Drive" cut off */
+}

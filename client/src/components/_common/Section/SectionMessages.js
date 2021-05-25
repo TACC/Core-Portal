@@ -1,10 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import {
-  WelcomeMessage,
-  shouldShowMessage as shouldShowWelcomeMessage
-} from '_common';
+import { WelcomeMessage, isKnownWelcomeMessage } from '_common';
 import * as MESSAGES from '../../../constants/welcomeMessages';
 
 import './SectionMessages.module.css';
@@ -20,18 +17,20 @@ import './SectionMessages.css';
  *
  * @example
  * // an automatic welcome message (if found), no additional messages
- * <SectionMessages routeName="DASHBOARD" />
+ * <SectionMessages welcomeMessageName="DASHBOARD" />
  * @example
  * // overwrite text of an automatic welcome message, no additional messages
  * <SectionMessages
- *   routeName="DASHBOARD"
- *   welcomeText={`We welcome you to the dashboard, ${givenName}`} />
+ *   welcomeMessageName="DASHBOARD"
+ *   welcomeMessageText={`We welcome you to the dashboard, ${givenName}`} />
  * @example
  * // define text for a manual welcome message, no additional messages
- * <SectionMessages welcomeText={`We welcome you to this page, ${givenName}`} />
+ * <SectionMessages
+ *   welcomeMessageText={`We welcome you to this page, ${givenName}`}
+ * />
  * @example
  * // an automatic welcome message (if found), some additional messages
- * <SectionMessages routeName="DASHBOARD">
+ * <SectionMessages welcomeMessageName="DASHBOARD">
  *   <Alert color="success">You win!</Alert>
  *   <Alert color="secondary">
  *     <button>Claim your prize.</button>
@@ -46,16 +45,22 @@ import './SectionMessages.css';
  *   </Alert>
  * </SectionMessages>
  */
-function SectionMessages({ children, className, routeName, welcomeText }) {
-  const welcomeMessageText = welcomeText || MESSAGES[routeName];
-  /* FAQ: An alternate message name allows tracking custom message dismissal */
-  const welcomeMessageName = routeName || welcomeMessageText;
-  const welcomeMessage = welcomeMessageText && (
-    <WelcomeMessage messageName={welcomeMessageName}>
-      {welcomeMessageText}
+function SectionMessages({
+  children,
+  className,
+  welcomeMessageName,
+  welcomeMessageText
+}) {
+  const welcomeMessageContent =
+    welcomeMessageText || MESSAGES[welcomeMessageName];
+  const welcomeMessage = welcomeMessageContent && (
+    /* FAQ: Alternate message name allows tracking custom message dismissal */
+    <WelcomeMessage messageName={welcomeMessageName || welcomeMessageText}>
+      {welcomeMessageContent}
     </WelcomeMessage>
   );
-  const hasMessage = shouldShowWelcomeMessage(routeName) || children.length > 0;
+  const hasMessage =
+    isKnownWelcomeMessage(welcomeMessageName) || children.length > 0;
   const hasMessageClass = 'has-message';
 
   useEffect(() => {
@@ -74,20 +79,20 @@ function SectionMessages({ children, className, routeName, welcomeText }) {
   );
 }
 SectionMessages.propTypes = {
-  /** Component-based message(s) (e.g. <Alert>, <Message>) (welcome message found automatically, given `routeName`) */
+  /** Component-based message(s) (e.g. <Alert>, <Message>) (welcome message found automatically, given `welcomeMessageName`) */
   children: PropTypes.node,
   /** Any additional className(s) for the root element */
   className: PropTypes.string,
   /** The name of the route section (to search for required welcome message) */
-  routeName: PropTypes.string,
-  /** Custom welcome text (can overwrite `routeName`-based welcome message) */
-  welcomeText: PropTypes.string
+  welcomeMessageName: PropTypes.string,
+  /** Custom welcome text (can overwrite message from `welcomeMessageName`) */
+  welcomeMessageText: PropTypes.string
 };
 SectionMessages.defaultProps = {
   children: '',
   className: '',
-  routeName: '',
-  welcomeText: ''
+  welcomeMessageName: '',
+  welcomeMessageText: ''
 };
 
 export default SectionMessages;

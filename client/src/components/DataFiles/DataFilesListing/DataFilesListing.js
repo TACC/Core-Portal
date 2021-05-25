@@ -14,7 +14,6 @@ import {
 } from './DataFilesListingCells';
 import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
-import './DataFilesListing.module.scss';
 
 const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   // Redux hooks
@@ -123,17 +122,16 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   }, [api, showViewPath, fileNavCellCallback]);
 
   return (
-    <div styleName="root">
+    <>
       {!isPublic && (
         <DataFilesSearchbar
           api={api}
           scheme={scheme}
           system={system}
           resultCount={files.length}
-          styleName="searchbar"
         />
       )}
-      <div styleName="file-container">
+      <div className="o-flex-item-table-wrap">
         <DataFilesTable
           data={files}
           columns={columns}
@@ -142,7 +140,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
           section="FilesListing"
         />
       </div>
-    </div>
+    </>
   );
 };
 DataFilesListing.propTypes = {

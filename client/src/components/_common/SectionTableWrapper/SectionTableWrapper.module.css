@@ -21,7 +21,7 @@
   flex-grow: 1;
 }
 
-/* NOTE: Similar on: SectionContent, SectionTable */
+/* NOTE: Similar on: SectionContent, SectionTableWrapper */
 .should-scroll :global(.o-flex-item-table-wrap) {
   /* We want to permit vertical scrolling, without forcing it */
   /* FAQ: Did not set `overflow: auto`, because that would certainly hide negative-margined sidebar links */

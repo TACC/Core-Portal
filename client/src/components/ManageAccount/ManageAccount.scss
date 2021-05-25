@@ -1,32 +1,13 @@
 /*
-  Wrappers
+  Important
 */
-.manage-account-wrapper {
-  display: flex;
-  .container-fluid {
-    padding: 20px 40px 0 25px !important; /* overwrite Bootstrap */ /* NOTE: The `!important` may not be necessary */
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-  }
-}
-.manage-account-content {
-  a {
-    color: #9d85ef;
-  }
-}
-.user-profile {
-  flex-grow: 1;
+/* TODO: Migrate the code in this file to:
+         - `ManageAccount.module.css`
+         - `styles/…` (for "global" styles)
+*/
 
-  @media (min-width: 992px) {
-    /* Hide Border when tables stack on one another */
-    .user-profile-main {
-      border-right: 1px solid rgba(112, 112, 112, 0.25);
-    }
-  }
-}
+/* FP-546: Consider migrating these styles out of this file */
 .btn-link {
-  color: #9d85ef;
   border: 0;
   vertical-align: baseline;
 }
@@ -34,21 +15,9 @@
 /*
   Components
 */
-.manage-account-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #707070;
-  margin-left: -15px !important;
-  margin-right: -15px !important;
-  h5 {
-    font-weight: 400;
-    color: #484848;
-  }
-}
 // Tables
 .manage-account-table {
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px (approved deviation from design) */
   table-layout: fixed;
   line-height: 2.3rem;
   td,
@@ -86,9 +55,10 @@
     overflow: visible;
   }
 }
-.profile-component-wrapper {
-  margin-top: 1.25rem;
-
+/* Overwrite Bootstrap */
+.manage-account-table.table {
+  margin-bottom: 0;
+}
   /* Override striped bootstrap table */
   .table-striped > tbody {
     tr:nth-child(even) {
@@ -98,20 +68,7 @@
       background-color: white;
     }
   }
-}
-.profile-component-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 16px;
-  border-bottom: solid 1px #707070;
-  padding: 0 0 0.5rem 0;
-}
-.profile-component-body {
-  padding: 0 0.5rem;
-  font-size: 14px;
-  margin-bottom: 1rem;
-}
+
 // Buttons and Forms
 .manage-account-submit-button {
   display: flex;
@@ -125,7 +82,11 @@
 }
 
 .modal-body {
+  /* NOTE: Applies globally so MAY be appropriate for modal component styles */
+  /* SEE: client/src/styles/components/bootstrap.modal.css */
   font-size: 14px;
+}
+.manage-account-modal .modal-body {
   .btn-link {
     padding: 0;
   }
@@ -135,16 +96,11 @@
 }
 
 .form-button {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   padding: 0;
 }
 .license-button {
   background-color: transparent !important;
   font-weight: bold;
-}
-
-.welcomeMessageGeneral {
-  margin: 0 0 20px 0;
-  flex-grow: 0;
 }

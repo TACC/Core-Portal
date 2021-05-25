@@ -132,7 +132,7 @@ export const ChangePasswordModal = () => {
 
 export const GoogleDriveModal = ({ active, toggle }) => {
   return (
-    <Modal isOpen={active} toggle={toggle}>
+    <Modal isOpen={active} toggle={toggle} className="manage-account-modal">
       <ModalHeader
         className="manage-account-modal-header"
         toggle={toggle}

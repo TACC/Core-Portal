@@ -1,0 +1,7 @@
+/* Allow space for all elements to be visible and usable */
+/* FAQ: Edit global style based on section-specific caveat */
+/* SEE: index.css */
+body.has-loaded-allocations {
+  /* HACK: Should instead (ask Design) have a responsive sidebar */
+  --min-width: 1000px; /* ~before important table cell text is cut off */
+}

@@ -8,7 +8,7 @@ function Pill({ children, type, className, shouldTruncate }) {
   if (shouldTruncate) pillStyleName += ' should-truncate';
 
   return (
-    <span styleName={pillStyleName} className={className}>
+    <span styleName={pillStyleName} className={className} title={children}>
       {children}
     </span>
   );

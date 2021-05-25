@@ -159,9 +159,7 @@ const DataFilesProjectMembers = ({
   ];
 
   const isTransferring = mode === 'transfer' && transferUser;
-  const listStyle = `member-list ${
-    isTransferring ? 'transfer-list' : 'addremove-list'
-  }`;
+  const listStyle = isTransferring ? 'transfer-list' : 'addremove-list';
 
   const existingMembers = members.filter(member => member.user);
 

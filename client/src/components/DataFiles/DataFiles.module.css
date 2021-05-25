@@ -1,52 +1,10 @@
-.container {
-  display: flex;
-  flex-direction: column;
-
-  padding: 20px 40px 0 20px;
-}
-
-/* Children */
-.items {
-  /* As a flex item */
-  flex-grow: 1;
-
-  /* As a flex container */
-  display: flex;
-  flex-direction: row;
-}
-/* Make right-most item fill up remaining horizontal space */
-.items > :last-child {
-  flex-grow: 1;
-}
-.header {
-  border-bottom: var(--global-border-width--normal) solid var(--global-color-primary--dark);
-  /* FAQ: Design is inconsistent, but most of the time uses `10.5px` */
-  padding-bottom: 0.75rem; /* ~10px * design * 1.2 design-to-app ratio */
-
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
-/* Children (of `header`) */
-.header-title {
-  font-size: 18px; /* 15px design * 1.2 design-to-app ratio */
-}
-
-/* Children (of `items`) */
-.sidebar {
-  /* FP-404: All Portal section sidebars should use this value. */
-  --min-width: 200px;
-
-  width: var(--min-width);
-  padding-top: 10px;
-
-  border-right: var(--global-border--normal);
-}
 .content {
-  padding-top: 20px;
-  padding-left: 20px;
-  display: flex;
+  /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
+  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+
+  /* As a flex child */
+  flex-grow: 1;
 }
 
 /* Error message */
