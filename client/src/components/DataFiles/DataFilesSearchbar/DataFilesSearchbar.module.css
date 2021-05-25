@@ -57,6 +57,14 @@
     /* … */
 }
 
+.results {
+  padding-left: 20px;
+  align-self: center;
+  span {
+    font-weight: bold;
+  }
+}
+
 /* Hacks */
 
 .container,
