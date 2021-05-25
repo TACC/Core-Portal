@@ -69,21 +69,6 @@
   }
 }
 
-/* !!!: Temporary unused CSS retained to make simpler PR diff */
-/*
-tbody {
-  line-height: 32px;
-}
-
-.root > tbody > tr {
-  vertical-align: top;
-}
-
-.root > tbody > tr > td {
-  padding: 0 0 0 0;
-}
-*/
-
 .user > td {
   /* Difference between tall unwrapped cell height and basic text cell height */
   --greatest-height-diff: 4.78px; /* value obtained form live render */

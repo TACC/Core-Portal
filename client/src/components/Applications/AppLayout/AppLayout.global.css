@@ -1,0 +1,7 @@
+/* Allow space for all elements to be visible and usable */
+/* FAQ: Edit global style based on section-specific caveat */
+/* SEE: index.css */
+body.has-loaded-applications {
+    /* Allow space to see `AppForm`, given how tall `AppBrowser` can be */
+    --min-height: 400px; /* just enough space to see detail and info panels */
+}

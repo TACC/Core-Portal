@@ -1,23 +1,15 @@
-@import url('../../styles/settings/space.css');
-
-.root {
-  padding: var(--global-space--section);
-}
-
 .access {
   text-align: right;
 }
 
-.title {
-  width: 100%;
-  border-bottom: 1px solid black;
-  margin-bottom: 1em;
+.content {
+  padding-bottom: 1em;
+}
+.content > * {
+  max-width: 768px; /* ~640px design * 1.2 design-to-app ratio */
 }
 
-.container {
-  width: 75%;
-}
-
+// FP-545: Remove this when Button component is used
 .button {
   border-radius: 0;
 }

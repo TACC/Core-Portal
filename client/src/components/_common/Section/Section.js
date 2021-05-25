@@ -3,9 +3,24 @@ import PropTypes from 'prop-types';
 
 import { SectionHeader, SectionContent } from '_common';
 import SectionMessages from './SectionMessages';
-import { LAYOUTS, DEFAULT_LAYOUT } from '../SectionContent';
+import { LAYOUTS, DEFAULT_LAYOUT, LAYOUT_CLASS_MAP } from '../SectionContent';
 
 import './Section.module.css';
+
+/**
+ * Get class names based on the layout classes for <SectionContent>
+ * @param {string} contentLayoutName - The <Section> `contentLayoutName` prop
+ * @returns {string}
+ */
+function getLayoutClass(contentLayoutName) {
+  let classNames = LAYOUT_CLASS_MAP[contentLayoutName].split(' ');
+
+  classNames = classNames.map(className => {
+    return `c-section--has-content-layout-${className}`;
+  });
+
+  return classNames.join(' ');
+}
 
 /**
  * A section layout structure that supports:
@@ -16,15 +31,15 @@ import './Section.module.css';
  * - manual or automatic sub-components (i.e. header, content)
  *
  * @example
- * // manually build messages, automatically build welcome message
+ * // manually build messages, automatically build welcome message (by name)
  * <Section
- *   routeName="DASHBOARD"
+ *   welcomeMessageName="DASHBOARD"
  *   messages={<>…</>}
  * />
  * @example
  * // overwrite text of an automatic welcome message, no additional messages
  * <Section
- *   routeName="DASHBOARD"
+ *   welcomeMessageName="DASHBOARD"
  *   welcomeMessageText={`We welcome you to the dashboard, ${givenName}`}
  * />
  * @example
@@ -97,10 +112,11 @@ function Section({
   // sidebarClassName,
   messages,
   messagesClassName,
-  routeName,
+  welcomeMessageName,
   welcomeMessageText
 }) {
   const shouldBuildHeader = header || headerClassName || headerActions;
+  const layoutClass = getLayoutClass(contentLayoutName);
 
   // Allowing ineffectual prop combinations would lead to confusion
   if (
@@ -131,12 +147,13 @@ function Section({
   }, [bodyClassName]);
 
   return (
-    <section styleName="root" className={className}>
+    /* FAQ: Global class because some content layout styles require access */
+    <section styleName="root" className={`${className} ${layoutClass}`}>
       <SectionMessages
         styleName="messages"
-        routeName={routeName}
         className={messagesClassName}
-        welcomeText={welcomeMessageText}
+        welcomeMessageName={welcomeMessageName}
+        welcomeMessageText={welcomeMessageText}
       >
         {messages}
       </SectionMessages>
@@ -170,7 +187,7 @@ function Section({
           tagName="main"
           styleName="content"
           className={contentClassName}
-          layoutName={contentLayoutName || DEFAULT_LAYOUT}
+          layoutName={contentLayoutName}
           shouldScroll={contentShouldScroll}
         >
           {content}
@@ -192,7 +209,7 @@ Section.propTypes = {
   /** Any additional className(s) for the content element */
   contentClassName: PropTypes.string,
   /** The name of the layout by which to arrange the content children */
-  contentLayoutName: PropTypes.oneOf(LAYOUTS.concat('')),
+  contentLayoutName: PropTypes.oneOf(LAYOUTS),
   /** Whether to allow content to scroll */
   contentShouldScroll: PropTypes.bool,
   /** The section header text (header element built automatically) */
@@ -211,15 +228,15 @@ Section.propTypes = {
   // sidebar: PropTypes.node,
   // /** Additional className for the sidebar element */
   // sidebarClassName: PropTypes.string,
-  /** Any component-based message(s) (e.g. <Alert>, <Message>) (welcome message found automatically, given `routeName`) */
+  /** Any message(s) (e.g. <Message>) (but NOT a welcome message) */
   messages: PropTypes.node,
   /** Any additional className(s) for the message list */
   messagesClassName: PropTypes.string,
-  /** The name of the route section (to search for a welcome message) */
-  routeName: PropTypes.string,
+  /** The name of the welcome message to use */
+  welcomeMessageName: PropTypes.string,
   /** Any additional className(s) for the sidebar list */
   // sidebarClassName: '',
-  /** Custom welcome text (can overwrite `routeName`-based welcome message) */
+  /** Custom welcome text (can overwrite message from `welcomeMessageName`) */
   welcomeMessageText: PropTypes.string
 };
 Section.defaultProps = {
@@ -228,7 +245,7 @@ Section.defaultProps = {
   className: '',
   content: '',
   contentClassName: '',
-  contentLayoutName: '',
+  contentLayoutName: DEFAULT_LAYOUT,
   contentShouldScroll: false,
   header: '',
   headerActions: '',
@@ -237,7 +254,7 @@ Section.defaultProps = {
   manualHeader: undefined,
   messages: '',
   messagesClassName: '',
-  routeName: '',
+  welcomeMessageName: '',
   // sidebarClassName: '',
   welcomeMessageText: ''
 };

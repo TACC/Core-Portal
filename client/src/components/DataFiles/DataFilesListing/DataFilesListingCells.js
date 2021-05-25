@@ -170,7 +170,7 @@ export const ViewPathCell = ({ file }) => {
     });
   };
   return (
-    <Button color="link" onClick={onClick}>
+    <Button className="btn btn-sm" color="link" onClick={onClick}>
       View Path
     </Button>
   );

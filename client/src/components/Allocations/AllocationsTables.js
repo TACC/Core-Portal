@@ -6,6 +6,8 @@ import { Message } from '_common';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
+import './AllocationsTables.module.scss';
+
 export const useAllocations = page => {
   const allocations = useSelector(state => {
     if (page === 'expired') return state.allocations.inactive;
@@ -105,57 +107,61 @@ export const AllocationsTable = ({ page }) => {
     prepareRow
   } = useTable(...tableAttributes);
   return (
-    <div className="allocations-table">
-      <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.length ? (
-            rows.map(row => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map(cell => (
-                    <td
-                      {...cell.getCellProps({
-                        className: cell.column.className
-                      })}
-                    >
-                      {cell.render('Cell')}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })
-          ) : (
-            <tr>
-              <td colSpan={headerGroups[0].headers.length}>
-                <center style={{ padding: '1rem' }}>
-                  {errors.listing ? (
-                    <ErrorMessage />
-                  ) : (
-                    <span>
-                      You have no
-                      {` ${page[0].toLocaleUpperCase()}${page.slice(1)} `}
-                      allocations.
-                    </span>
-                  )}
-                </center>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+    <table
+      {...getTableProps()}
+      // Emulate <InfiniteScrollTable> and its use of `o-fixed-header-table`
+      // TODO: Create global table styles & Make <InfiniteScrollTable> use them
+      className="allocations-table InfiniteScrollTable o-fixed-header-table"
+      styleName="root"
+    >
+      <thead>
+        {headerGroups.map(headerGroup => (
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map(column => (
+              <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                {column.render('Header')}
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {rows.length ? (
+          rows.map(row => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <td
+                    {...cell.getCellProps({
+                      className: cell.column.className
+                    })}
+                  >
+                    {cell.render('Cell')}
+                  </td>
+                ))}
+              </tr>
+            );
+          })
+        ) : (
+          <tr>
+            <td colSpan={headerGroups[0].headers.length}>
+              <center style={{ padding: '1rem' }}>
+                {errors.listing ? (
+                  <ErrorMessage />
+                ) : (
+                  <span>
+                    You have no
+                    {` ${page[0].toLocaleUpperCase()}${page.slice(1)} `}
+                    allocations.
+                  </span>
+                )}
+              </center>
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
   );
 };
 AllocationsTable.propTypes = {

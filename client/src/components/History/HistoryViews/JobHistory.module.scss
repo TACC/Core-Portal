@@ -1,4 +1,2 @@
-.root {
-  /* use remaining height (212px is the height from top of page to top of table) */
-  max-height: calc(100vh - 212px);
-}
+/* TODO: Migrate `unread` class from `HistoryViews.scss` to this stylesheet */
+/* FP-936: Use 'unread' class from CSS Modules stylesheet, not global one */

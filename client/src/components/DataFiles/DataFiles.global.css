@@ -1,0 +1,9 @@
+/* Avoid Data Files header buttons colliding with header text */
+/* FAQ: Edit global style based on section-specific caveat */
+/* SEE: index.css */
+body.has-loaded-datafiles {
+  /* HACK: Should instead (ask Design) reduce button width on narrow screen */
+  --min-width: 1005px; /* short & narrow Data Files ~before table horz scroll */
+
+  --min-height: 485px; /* tall enough to avoid .listing-placeholder scroll */
+}
