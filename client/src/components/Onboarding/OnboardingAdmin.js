@@ -294,7 +294,11 @@ const OnboardingAdmin = () => {
   }
   if (error) {
     return (
-      <Message type="warn">Unable to access Onboarding administration</Message>
+      <div styleName="root-placeholder">
+        <Message type="warn">
+          Unable to access Onboarding administration
+        </Message>
+      </div>
     );
   }
   return (
