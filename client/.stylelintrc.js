@@ -104,7 +104,9 @@ module.exports = {
 
     // GENERAL / SHEET
     // Disallow selectors of lower specificity from coming after overriding selectors of higher specificity.
-    // 'no-descending-specificity': null,
+    'no-descending-specificity':  [ true, {
+      ignore: ['selectors-within-list']
+    } ],
     // Disallow duplicate @import rules within a stylesheet.
     // 'no-duplicate-at-import-rules': null,
     // Disallow duplicate selectors within a stylesheet.
@@ -435,7 +437,7 @@ module.exports = {
 
     // SELECTOR LIST
     // Require a newline or disallow whitespace after the commas of selector lists (Autofixable).
-    // 'selector-list-comma-newline-after': 'always',
+    'selector-list-comma-newline-after': 'always-multi-line',
     // Require a newline or disallow whitespace before the commas of selector lists (Autofixable).
     // 'selector-list-comma-newline-before': null,
     // Require a single space or disallow whitespace after the commas of selector lists (Autofixable).
@@ -473,19 +475,13 @@ module.exports = {
 
     // AT-RULE
     // Require or disallow an empty line before at-rules (Autofixable).
-    // 'at-rule-empty-line-before': [ 'always', {
-    //     except: [
-    //       'after-same-name',
-    //       'inside-block',
-    //       'blockless-after-same-name-blockless',
-    //       'blockless-after-blockless',
-    //       'first-nested'
-    //     ],
-    //     ignore: [
-    //       'after-comment',
-    //       'first-nested'
-    //     ]
-    // } ],
+    'at-rule-empty-line-before': [ 'always', {
+      except: ["blockless-after-same-name-blockless", "first-nested"],
+      ignore: ["after-comment"],
+      ignoreAtRules: [
+        'media'
+      ]
+    } ],
     // Specify lowercase or uppercase for at-rules names (Autofixable).
     // 'at-rule-name-case': 'lower',
     // Require a newline after at-rule names.

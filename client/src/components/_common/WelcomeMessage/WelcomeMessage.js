@@ -4,10 +4,10 @@ import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 /**
- * Whether to show a welcome message
+ * Whether the name is of a known welcome message
  * @param {String} messageName - The name of the message to check
  */
-export function shouldShowMessage(messageName) {
+export function isKnownMessage(messageName) {
   const welcomeMessages = useSelector(state => state.welcomeMessages);
 
   return welcomeMessages && welcomeMessages[messageName];
@@ -30,7 +30,7 @@ export function shouldShowMessage(messageName) {
 function WelcomeMessage({ children, className, messageName }) {
   const dispatch = useDispatch();
   const welcomeMessages = useSelector(state => state.welcomeMessages);
-  const shouldShow = shouldShowMessage(messageName);
+  const shouldShow = isKnownMessage(messageName);
 
   function onDismiss(name) {
     const newMessagesState = {

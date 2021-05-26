@@ -14,7 +14,6 @@ import History from '../History';
 import Onboarding from '../Onboarding';
 import * as ROUTES from '../../constants/routes';
 import NotificationToast from '../Toasts';
-import WelcomeMessages from './WelcomeMessages';
 import OnboardingAdmin from '../Onboarding/OnboardingAdmin';
 import './Workbench.scss';
 
@@ -25,7 +24,7 @@ function Workbench() {
   // showUIPatterns: Show some entries only in local development
   const { loading, setupComplete, showUIPatterns, isStaff } = useSelector(
     state => ({
-      loading: state.workbench.loading,
+      loading: state.workbench.loading || state.systems.storage.loading,
       setupComplete: state.workbench.setupComplete,
       showUIPatterns: state.workbench.config.debug,
       isStaff:
@@ -65,7 +64,6 @@ function Workbench() {
           <LoadingSpinner />
         ) : (
           <>
-            <WelcomeMessages />
             {setupComplete ? (
               <Switch>
                 <Route path={`${path}${ROUTES.DASHBOARD}`}>

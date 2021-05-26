@@ -1,0 +1,69 @@
+/* Elements */
+
+.panels {
+  padding-top: var(--global-space--section-left); /* deviated from design to use a similar global spacing */
+}
+
+/* "[…] Information" Panels */
+.panels > *:nth-child(-n+2) {
+  min-height: 160px; /* approx. "[…] Information" height with about 3.25 rows */
+}
+
+/* Three Smaller Panels */
+.panels > *:nth-child(n+3) {
+  min-height: 77px; /* exactly "Licenses / […] Apps" height with 1 row */
+}
+
+
+
+
+
+/* Media Queries */
+
+
+
+/* Tall & Wide */
+/* FAQ: The non-global variables come from `SectionContent.layout.module.css` */
+
+@media only screen and (min-height: 634px) and (min-width: 992px) {
+  /* Panel Container */
+  .panels {
+    width: var(--column-width--container);
+  }
+
+  /* "[…] Information" Panels */
+  .panels > *:nth-child(-n+2) {
+    width: var(--column-width--large);
+
+    /* CAVEAT: This is a dev value that just "looked good" */
+    height: calc(50% - var(--vertical-buffer));
+  }
+
+  /* Three Smaller Panels */
+  .panels > *:nth-child(n+3) {
+    width: var(--column-width--small);
+
+    /* To ensure these 3 panels are always in the same column together */
+    max-height: calc(33% - var(--vertical-buffer));
+  }
+}
+
+
+
+/* Short & Wide */
+/* FAQ: The non-global variables come from `SectionContent.layout.module.css` */
+
+@media only screen and (max-height: 633px) and (min-width: 1200px) {
+
+  /* "[…] Information" Panels */
+  .panels > *:nth-child(-n+2) {
+    /* CAVEAT: This is a dev value that just "looked good" */
+    height: calc(100% - var(--vertical-buffer));
+  }
+
+  /* Three Smaller Panels */
+  .panels > *:nth-child(n+3) {
+    /* To ensure these 3 panels are always in the same column together */
+    max-height: calc(33% - var(--vertical-buffer));
+  }
+}

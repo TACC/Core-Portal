@@ -21,7 +21,7 @@ export default function getFilePermissions(name, { files, scheme, api }) {
   const isPrivate = ['projects', 'private'].includes(scheme);
   const isArchive =
     files.length === 1
-      ? files[0].name.endsWith('.zip') || files[0].name.endsWith('.tar.gz')
+      ? /^.*\.(t?gz|tar(\.gz)?|zip)$/gi.test(files[0].name)
       : false;
   switch (name) {
     case 'rename':

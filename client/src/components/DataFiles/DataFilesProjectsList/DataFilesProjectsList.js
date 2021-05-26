@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import queryStringParser from 'query-string';
-import { InfiniteScrollTable, Message } from '_common';
+import {
+  InfiniteScrollTable,
+  SectionMessage,
+  SectionTableWrapper
+} from '_common';
 import DataFilesProjectsSearchbar from './DataFilesProjectsSearchbar/DataFilesProjectsSearchbar';
 import './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
@@ -90,24 +94,45 @@ const DataFilesProjectsList = ({ modal }) => {
 
   if (error) {
     return (
-      <Message type="error">
-        There was a problem retrieving your Shared Workspaces
-      </Message>
+      <div styleName="root-placeholder">
+        <SectionMessage type="error">
+          There was a problem retrieving your Shared Workspaces.
+        </SectionMessage>
+      </div>
     );
   }
 
+  /**
+   * Conditionally wrap element with given component
+   * @see https://blog.hackages.io/conditionally-wrap-an-element-in-react-a8b9a47fab2
+   */
+  function ConditionalWrapper({ condition, wrapper, children }) {
+    return condition ? wrapper(children) : children;
+  }
+
   return (
-    <div styleName="root">
+    <SectionTableWrapper
+      styleName={`root ${modal ? 'is-in-modal' : ''}`}
+      contentShouldScroll
+      manualContent
+    >
       {!modal && <DataFilesProjectsSearchbar />}
-      <InfiniteScrollTable
-        tableColumns={columns}
-        tableData={projects}
-        onInfiniteScroll={infiniteScrollCallback}
-        isLoading={loading}
-        noDataText={noDataText}
-        className="projects-listing"
-      />
-    </div>
+      <ConditionalWrapper
+        condition={!modal}
+        wrapper={children => {
+          return <div className="o-flex-item-table-wrap">{children}</div>;
+        }}
+      >
+        <InfiniteScrollTable
+          tableColumns={columns}
+          tableData={projects}
+          onInfiniteScroll={infiniteScrollCallback}
+          isLoading={loading}
+          noDataText={noDataText}
+          className="projects-listing"
+        />
+      </ConditionalWrapper>
+    </SectionTableWrapper>
   );
 };
 DataFilesProjectsList.propTypes = {

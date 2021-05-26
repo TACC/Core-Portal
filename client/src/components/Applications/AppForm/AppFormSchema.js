@@ -116,6 +116,13 @@ const FormSchema = app => {
       appFields.schema.inputs[input.id] = appFields.schema.inputs[
         input.id
       ].matches(input.value.validator);
+    } else {
+      appFields.schema.inputs[input.id] = appFields.schema.inputs[
+        input.id
+      ].matches(
+        /^agave:\/\//g,
+        "Input file must be a valid Tapis URI, starting with 'agave://'"
+      );
     }
     appFields.inputs[input.id] = field;
     appFields.defaults.inputs[input.id] =

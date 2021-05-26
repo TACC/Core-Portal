@@ -44,10 +44,6 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
   };
 
   useEffect(() => {
-    dispatch({ type: 'FETCH_SYSTEMS' });
-  }, [dispatch]);
-
-  useEffect(() => {
     dispatch({
       type: 'STORE_SELECTOR_REF',
       payload: selectRef.current
