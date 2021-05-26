@@ -345,17 +345,18 @@ export const AppSchemaForm = ({ app }) => {
             }
           });
           /* remove falsy parameter */
-          Object.entries(job.parameters).forEach(([k, v]) => {
-            let val = v;
-            if (Array.isArray(v)) {
-              val = val.filter(Boolean);
-              if (val.length === 0) {
-                delete job.parameters[k];
-              }
-            } else if (val === null || val === undefined) {
-              delete job.parameters[k];
-            }
-          });
+          // TODO: allow falsy parameters for parameters of type bool
+          // Object.entries(job.parameters).forEach(([k, v]) => {
+          //   let val = v;
+          //   if (Array.isArray(v)) {
+          //     val = val.filter(Boolean);
+          //     if (val.length === 0) {
+          //       delete job.parameters[k];
+          //     }
+          //   } else if (val === null || val === undefined) {
+          //     delete job.parameters[k];
+          //   }
+          // });
           /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
           if (app.tags.includes('DCV')) {
             job.name += '-dcvserver';

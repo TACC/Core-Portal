@@ -161,3 +161,12 @@
   justify-content: center;
   height: 90%;
 }
+
+/* NOTE: Mimicked on: DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */
+.root-placeholder {
+  flex-grow: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

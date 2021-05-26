@@ -1,6 +1,12 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Icon, LoadingSpinner, Message, Paginator } from '_common';
+import {
+  Icon,
+  LoadingSpinner,
+  SectionMessage,
+  Message,
+  Paginator
+} from '_common';
 import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
@@ -294,7 +300,11 @@ const OnboardingAdmin = () => {
   }
   if (error) {
     return (
-      <Message type="warn">Unable to access Onboarding administration</Message>
+      <div styleName="root-placeholder">
+        <SectionMessage type="warn">
+          Unable to access Onboarding administration
+        </SectionMessage>
+      </div>
     );
   }
   return (
