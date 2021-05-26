@@ -298,7 +298,7 @@ const OnboardingAdmin = () => {
   if (loading) {
     return <LoadingSpinner />;
   }
-  if (!error) {
+  if (error) {
     return (
       <div styleName="root-placeholder">
         <SectionMessage type="warn">
