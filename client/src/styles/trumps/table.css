@@ -1,24 +1,16 @@
 /* TRUMPS: Scope: Table */
 
-/* Reduce "double padding" of cell and button link */
-/* FAQ: Overlap padding of cell with invisible padding of button link */
-/* CAVEAT: Using [role="cell"] instead of <td> because DataFiles <div> table */
+/* To remove double padding on buton links within tables */
+/* CAVEAT: The `padding: 0` also exists for specific instances */
+/* TODO: Remove `padding: 0` for all specific instances that inherit this */
 td .btn-link,
-div[role="cell"] .btn-link {
-  /* Overwrite Bootstrap `_button.scss` */
-  margin-left: -0.75rem;
-  margin-right: -0.75rem;
-}
-td .btn-sm.btn-link,
-div[role="cell"] .btn-sm.btn-link {
-  /* Overwrite Bootstrap `_button.scss` */
-  margin-left: -0.5rem;
-  margin-right: -0.5rem;
+/* FAQ: Using [role="cell"] instead of <td> because DataFiles <div> table */
+div[role="cell"] .btn-link  {
+  padding: 0;
 }
 
-td .btn-sm,
-td .btn-group-sm > .btn,
-/* CAVEAT: Using [role="cell"] instead of <td> because DataFiles <div> table */
+/* To ensure small buttons in tables match the table font size */
+/* FAQ: Using [role="cell"] instead of <td> because DataFiles <div> table */
 div[role="cell"] .btn-sm,
 div[role="cell"] .btn-group-sm > .btn {
   /* Overwrite Bootstrap `_button.scss` */
