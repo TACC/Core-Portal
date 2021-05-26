@@ -2,17 +2,20 @@
 {# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
 {# FAQ: Extra lines exist to ease CMS/Portal/Guide template comparison #}
 
-<!-- Sponsor Logos -->
+<!-- Branding Bar -->
 {% include "includes/header_branding.html" %}
 
 <!-- Navigation Bar -->
+
+
 <nav id="s-header" class="s-header  navbar navbar-dark navbar-expand-lg  is-on-portal">
   <!-- Portal Logo -->
   {% include "includes/header_logo.html" %}
 
   <!-- Navbar Accordian Toggle on Small Screens  -->
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation" data-icon-label="Menu">
+    <span class="navbar-toggler-icon">±</span>
+    <span class="sr-only">Menu</span>
   </button>
 
   <!-- Navbar Links -->
