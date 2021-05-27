@@ -23,9 +23,7 @@ const SiteSearchSearchbar = () => {
   };
 
   const onSubmit = e => {
-    if(query.length == 0 || query.length > 2){
-      routeSearch();
-    }
+    routeSearch();
     e.preventDefault();
   };
 
@@ -42,6 +40,7 @@ const SiteSearchSearchbar = () => {
         </div>
         <input
           type="search"
+          minLength="3"
           onChange={onChange}
           value={query || ''}
           name="query"

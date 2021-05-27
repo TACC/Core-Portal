@@ -49,9 +49,7 @@ const DataFilesSearchbar = ({
   }, [hasQuery, location]);
 
   const onSubmit = e => {
-    if(query.length == 0 || query.length > 2){
-      routeSearch();
-    }
+    routeSearch();
     e.preventDefault();
   };
   const onClear = e => {
@@ -81,6 +79,7 @@ const DataFilesSearchbar = ({
         </div>
         <input
           type="search"
+          minLength="3"
           onChange={onChange}
           value={query}
           name="query"
