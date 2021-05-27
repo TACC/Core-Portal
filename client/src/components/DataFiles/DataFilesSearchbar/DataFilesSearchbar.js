@@ -72,7 +72,7 @@ const DataFilesSearchbar = ({
       styleName="container"
       onSubmit={onSubmit}
     >
-      <div className="input-group hello-moto" styleName="query-fieldset">
+      <div className="input-group" styleName="query-fieldset">
         <div className="input-group-prepend">
           <Button type="submit" styleName="submit-button" disabled={disabled}>
             <Icon name="search" styleName="button__icon" />
