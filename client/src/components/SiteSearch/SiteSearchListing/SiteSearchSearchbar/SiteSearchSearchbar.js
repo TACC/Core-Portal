@@ -23,7 +23,9 @@ const SiteSearchSearchbar = () => {
   };
 
   const onSubmit = e => {
-    routeSearch();
+    if(query.length == 0 || query.length > 2){
+      routeSearch();
+    }
     e.preventDefault();
   };
 
