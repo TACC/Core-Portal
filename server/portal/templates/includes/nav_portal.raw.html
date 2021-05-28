@@ -6,30 +6,35 @@
 <li class="nav-item dropdown">
   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class="fas fa-user-circle fa-lg nav-icon"></i>
-    <span>{{ user.get_username }}</span>
+    <span class="nav-text">{{ user.get_username }}</span>
     <span class="sr-only">Toggle Dropdown</span>
   </a>
   <nav class="dropdown-menu dropdown-menu-right">
     <a class="dropdown-item" href="{% url 'workbench:dashboard' %}">
-      <i class="fas fa-desktop nav-icon"></i> My Dashboard
+      <i class="fas fa-desktop nav-icon"></i>
+      <span class="nav-text">My Dashboard</span>
     </a>
     {% if user.is_staff %}
     <a class="dropdown-item" href="{% url 'workbench:onboarding_admin' %}">
-      <i class="fas fa-tasks nav-icon"></i> Onboarding Admin
+      <i class="fas fa-tasks nav-icon"></i>
+      <span class="nav-text">Onboarding Admin</span>
     </a>
     {% endif %}
     <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
-      <i class="fas fa-user-circle nav-icon"></i> My Account
+      <i class="fas fa-user-circle nav-icon"></i>
+      <span class="nav-text">My Account</span>
     </a>
     <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">
-      <i class="fas fa-sign-out-alt nav-icon"></i> Log Out
+      <i class="fas fa-sign-out-alt nav-icon"></i>
+      <span class="nav-text">Log Out</span>
     </a>
   </nav>
 </li>
 {% else %}
 <li class="nav-item">
   <a class="nav-link" href="{% url 'portal_auth:agave_oauth' %}">
-    <i class="fas fa-sign-in-alt nav-icon"></i> Log in
+    <i class="fas fa-sign-in-alt nav-icon"></i>
+    <span class="nav-text">Log In</span>
   </a>
 </li>
 {% endif %}
