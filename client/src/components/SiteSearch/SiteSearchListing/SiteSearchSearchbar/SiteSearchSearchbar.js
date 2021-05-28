@@ -40,6 +40,7 @@ const SiteSearchSearchbar = () => {
         </div>
         <input
           type="search"
+          minLength="3"
           onChange={onChange}
           value={query || ''}
           name="query"
