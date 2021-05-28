@@ -93,14 +93,14 @@ describe('submitJob Saga', () => {
         type: 'SUBMIT_JOB_SUCCESS',
         payload: jobDetailFixture
       })
-      .put({ type: 'TOGGLE_SUBMITTING' })
       .hasFinalState({
         ...jobsInitalState,
         submit: {
           ...jobsInitalState.submit,
           error: false,
           response: jobDetailFixture,
-          submitting: false
+          submitting: true /* submitting stays `true` after successful submission as AppForm.js scrolls user to top of
+           page before dispatching TOGGLE_SUBMITTING */
         }
       })
       .run());
