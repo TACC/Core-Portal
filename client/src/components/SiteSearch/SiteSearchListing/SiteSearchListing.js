@@ -55,7 +55,8 @@ export const SiteSearchFileListing = ({ listing, filter }) => {
     {
       id: 'icon',
       accessor: 'format',
-      Cell: FileIconCell
+      Cell: FileIconCell,
+      className: 'site-search__icons'
     },
     {
       accessor: 'name',

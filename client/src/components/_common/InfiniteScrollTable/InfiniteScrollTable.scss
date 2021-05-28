@@ -6,7 +6,6 @@
   /* FAQ: Table is wider than container when row content is wider than table */
   /* CAVEAT: All tables' column widths must be % values whose sum is 100% */
   /* SEE: https://stackoverflow.com/a/6601257 */
-  table-layout: fixed;
   width: 100%;
 
   max-height: inherit; /* inherit max-height from parent wrapper */

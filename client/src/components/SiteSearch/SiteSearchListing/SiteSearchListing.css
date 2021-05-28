@@ -1,7 +1,13 @@
+.site-search__icons{
+    width: 5%;
+    text-align: center;
+}
+
 .site-search__full-width-result{
-    width: 100%;
+    width: 85%;
 }
 
 .site-search__no-overflow {
     overflow: visible !important;
+    width: 10%;
 }
