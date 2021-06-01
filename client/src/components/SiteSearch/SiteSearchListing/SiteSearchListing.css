@@ -1,3 +1,6 @@
+.site-search {
+    table-layout: auto;
+}
 .site-search__icons{
     width: 5%;
     text-align: center;

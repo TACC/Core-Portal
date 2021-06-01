@@ -76,6 +76,7 @@ export const SiteSearchFileListing = ({ listing, filter }) => {
         tableColumns={tableColumns}
         tableData={listing}
         columnMemoProps={[filter]}
+        className="site-search"
       />
     </>
   );
