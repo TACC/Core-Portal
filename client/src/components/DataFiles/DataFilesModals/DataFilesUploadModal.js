@@ -49,8 +49,14 @@ const DataFilesUploadModal = ({ className, layout }) => {
         }
       });
   };
-  const disabled =
+  const dropZoneDisabled =
     Object.values(status).filter(s => s === 'UPLOADING').length > 0;
+  const uploadButtonDisabled =
+    dropZoneDisabled ||
+    (!dropZoneDisabled &&
+      uploadedFiles.length ===
+        rejectedFiles.length +
+          Object.values(status).filter(s => s === 'SUCCESS').length);
   const hasFilesToList = uploadedFiles.length > 0;
   const showListing = hasFilesToList || layout === 'default';
 
@@ -118,7 +124,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
     >
       <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
       <ModalBody styleName={containerStyleNames}>
-        <div styleName="dropzone" disabled={disabled}>
+        <div styleName="dropzone" disabled={dropZoneDisabled}>
           <FileInputDropZone
             onSetFiles={selectFiles}
             onRejectedFiles={onRejectedFiles}
@@ -143,7 +149,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
         <Button
           className="data-files-btn"
           onClick={uploadStart}
-          disabled={disabled}
+          disabled={uploadButtonDisabled}
         >
           Upload Selected
         </Button>
