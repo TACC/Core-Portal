@@ -376,7 +376,7 @@ export function files(state = initialFilesState, action) {
             ...state.refs,
             FileSelector: action.payload
           }
-        };
+      };
     case 'CLEAR_REFS':
       return { ...state, refs: {} };
     case 'DATA_FILES_SET_MODAL_PROPS':
