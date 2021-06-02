@@ -43,13 +43,6 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     toggle();
   };
 
-  useEffect(() => {
-    dispatch({
-      type: 'STORE_SELECTOR_REF',
-      payload: selectRef.current
-    });
-  }, [selectRef]);
-
   return (
     <Modal
       isOpen={isOpen}

@@ -370,7 +370,6 @@ export function files(state = initialFilesState, action) {
         }
       };
     case 'STORE_SELECTOR_REF':
-      if(action.payload.props.isOpen){
         return {
           ...state,
           refs: {
@@ -378,7 +377,6 @@ export function files(state = initialFilesState, action) {
             FileSelector: action.payload
           }
         };
-      };
     case 'CLEAR_REFS':
       return { ...state, refs: {} };
     case 'DATA_FILES_SET_MODAL_PROPS':
