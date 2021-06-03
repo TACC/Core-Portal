@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -42,13 +42,6 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     onSelect(system, path);
     toggle();
   };
-
-  useEffect(() => {
-    dispatch({
-      type: 'STORE_SELECTOR_REF',
-      payload: selectRef.current
-    });
-  }, [selectRef]);
 
   return (
     <Modal
