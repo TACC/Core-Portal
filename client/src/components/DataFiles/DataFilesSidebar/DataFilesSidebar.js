@@ -118,13 +118,7 @@ const DataFilesSidebar = ({ readOnly }) => {
                       activeClassName="active"
                     >
                       <div className="nav-content">
-                        <Icon
-                          name={
-                            sys.icon || sys.scheme === 'public'
-                              ? 'publications'
-                              : 'my-data'
-                          }
-                        />
+                        <Icon name={sys.icon || 'my-data'} />
                         <span className="nav-text">{sys.name}</span>
                       </div>
                     </NavLink>
