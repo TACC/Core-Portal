@@ -371,12 +371,7 @@ export const AppSchemaForm = ({ app }) => {
         {({
           values,
           errors,
-          touched,
-          setFieldTouched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          setFieldValue,
+          isValid,
           isSubmitting,
           handleReset,
           resetForm,
@@ -536,7 +531,8 @@ export const AppSchemaForm = ({ app }) => {
                     />
                   ) : null}
                 </div>
-                <Button type="submit" color="primary">
+                <Button type="submit" color="primary" disabled={!isValid}
+                >
                   {jobSubmission.submitting && (
                     <LoadingSpinner placement="inline" />
                   )}{' '}
