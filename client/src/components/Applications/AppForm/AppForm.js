@@ -18,7 +18,12 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
-import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
+import {
+  getMaxQueueRunTime,
+  createMaxRunTimeRegex,
+  getNodeCountValidation,
+  getProcessorsOnEachNodeValidation
+} from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
 
@@ -305,14 +310,8 @@ export const AppSchemaForm = ({ app }) => {
               batchQueue: Yup.string()
                 .required('Required')
                 .oneOf(app.exec_sys.queues.map(q => q.name)),
-              nodeCount: Yup.number()
-                .min(1)
-                .max(queue.maxNodes),
-              processorsOnEachNode: Yup.number()
-                .min(1)
-                .max(
-                  Math.floor(queue.maxProcessorsPerNode / queue.maxNodes) || 1
-                ),
+              nodeCount: getNodeCountValidation(queue),
+              processorsOnEachNode: getProcessorsOnEachNodeValidation(queue),
               maxRunTime: Yup.string()
                 .matches(
                   createMaxRunTimeRegex(maxQueueRunTime),
