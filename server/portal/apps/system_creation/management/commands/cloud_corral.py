@@ -6,7 +6,7 @@ from portal.libs.agave.utils import service_account
 from portal.libs.agave.models.files import BaseFile
 from portal.apps.projects.models.base import ProjectId, Project
 from portal.apps.webhooks.callback import WebhookCallback
-from portal.apps.system_creation.utils import call_reactor
+from portal.apps.system_creation.utils import call_reactor, substitute_user_variables
 from portal.libs.agave.utils import service_account
 from django.contrib.auth import get_user_model
 import logging
@@ -39,9 +39,10 @@ class Command(BaseCommand):
             'host': 'cloud.corral.tacc.utexas.edu',
             'description': system['description'],
             'site': system['site'],
-            'rootDir': system['storage']['rootDir'],
+            'rootDir': '/work/{tasdir}',
             'port': 2222,
         }
+        _, variables = substitute_user_variables(user, system['name'], variables)
 
         result = call_reactor(
             user,
