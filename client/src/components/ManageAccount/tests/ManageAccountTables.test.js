@@ -146,7 +146,7 @@ describe('Third Party Apps', () => {
     );
     expect(getByText(/3rd Party Apps/)).toBeDefined();
     expect(getByText('Google Drive')).toBeDefined();
-    expect(getByText('Connect to Google Drive')).toBeDefined();
+    expect(getByText('Setup Google Drive')).toBeDefined();
   });
   it('Shows disconnect link when  connected', () => {
     const testStore = mockStore({

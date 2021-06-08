@@ -1,43 +1,24 @@
-.root {
-    display: flex;
-    flex-direction: column;
-    padding: 20px 40px 0 20px;
-}
-
-.container {
-    /* As a flex item */
-    flex-grow: 1;
-    flex-shrink: 0; /* Prevent Safari from shrinking this element (FP-389) */
-
-    /* As a flex container */
-    display: flex;
-
-    border-top: 1px solid #707070;
-}
-
-.content {
-    padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
-    padding-left: 1.25em;
-
-    /* As a flex item */
-    flex-grow: 1;
-
-    /* As a flex container */
-    display: flex;
-}
+/* Block */
 
 /*
-    Components
+.root {
+}
 */
+
+
+
+/* Elements */
+
+.content {
+    /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
+    padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+    padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+
+    /* As a flex child */
+    flex-grow: 1;
+}
+
 .header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.75rem;
-
-    .header-text {
-        font-size: 1.25rem;
-    }
-
     button {
         padding: 0;
         font-size: 0.78em;
@@ -45,13 +26,13 @@
     }
 }
 .sidebar {
+    --horizontal-buffer: var(--global-space--section-left);
     /* FAQ: Design is inconsistent across sections, but averages about `10.5px` */
     --vertical-buffer: 0.75rem; /* ~12px (avg. 10.5px design * 1.2 design-to-app ratio */
 
-    /* FP-404: All Portal section sidebars should use this value. */
     --min-width: 200px;
 
-    margin-left: -20px;
+    margin-left: calc(var(--horizontal-buffer) * -1);
     border-right: 1px solid rgba(112, 112, 112, 0.25);
 
     padding-top: var(--vertical-buffer);
@@ -60,12 +41,8 @@
         min-width: var(--min-width);
 
         color: #707070;
-        padding-left: 1.5em; /* ~20px design * 1.2 design-to-app ratio (rounded) */
+        padding-left: var(--horizontal-buffer);
 
-        .link-icon {
-            font-size: 1.2em; /* ~20px (16px design * 1.2 design-to-app ratio) */
-            width: 1em;       /* TODO: delete this after Cortal icon replaces font awesome */
-        }
         .link-text {
             font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
             font-weight: 500;

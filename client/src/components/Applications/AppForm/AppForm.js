@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
+import { cloneDeep } from 'lodash';
 import {
   AppIcon,
   FormField,
@@ -43,7 +44,10 @@ const appShape = PropTypes.shape({
 
 export const AppPlaceholder = ({ apps }) => {
   return (
-    <div className="apps-placeholder">
+    <div
+      id="appDetail-wrapper"
+      className="has-message appDetail-placeholder-message"
+    >
       {apps
         ? `Select an app from the tray above to submit a job.`
         : `No apps to show.`}
@@ -74,28 +78,34 @@ const AppDetail = () => {
     const errorText = error.message ? error.message : 'Something went wrong.';
 
     return (
-      <div className="appDetail-error">
+      <div id="appDetail-wrapper" className="has-message  appDetail-error">
         <SectionMessage type="warning">{errorText}</SectionMessage>
       </div>
     );
   }
 
   if (loading || allocationsLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div id="appDetail-wrapper" className="is-loading  appDetail-error">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (
-    <div id="appDetail-wrapper">
+    <>
       {!app && <AppPlaceholder apps={hasApps} />}
       {app.appType === 'html' ? (
-        parse(app.html)
+        <div id="appDetail-wrapper" className="has-external-app">
+          {parse(app.html)}
+        </div>
       ) : (
-        <>
+        <div id="appDetail-wrapper" className="has-internal-app">
           <AppInfo app={app} />
           <AppSchemaForm app={app} />
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
@@ -243,7 +253,7 @@ export const AppSchemaForm = ({ app }) => {
         </div>
       )}
       {jobSubmission.response && (
-        <div id="appForm-alerts">
+        <>
           {jobSubmission.error ? (
             <div className="appDetail-error">
               <SectionMessage type="warning">
@@ -276,7 +286,7 @@ export const AppSchemaForm = ({ app }) => {
               </SectionMessage>
             </div>
           )}
-        </div>
+        </>
       )}
       <Formik
         initialValues={initialValues}
@@ -321,7 +331,32 @@ export const AppSchemaForm = ({ app }) => {
           });
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
-          const job = { ...values };
+          const job = cloneDeep(values);
+          /* remove falsy input */
+          Object.entries(job.inputs).forEach(([k, v]) => {
+            let val = v;
+            if (Array.isArray(val)) {
+              val = val.filter(Boolean);
+              if (val.length === 0) {
+                delete job.inputs[k];
+              }
+            } else if (!val) {
+              delete job.inputs[k];
+            }
+          });
+          /* remove falsy parameter */
+          // TODO: allow falsy parameters for parameters of type bool
+          // Object.entries(job.parameters).forEach(([k, v]) => {
+          //   let val = v;
+          //   if (Array.isArray(v)) {
+          //     val = val.filter(Boolean);
+          //     if (val.length === 0) {
+          //       delete job.parameters[k];
+          //     }
+          //   } else if (val === null || val === undefined) {
+          //     delete job.parameters[k];
+          //   }
+          // });
           /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
           if (app.tags.includes('DCV')) {
             job.name += '-dcvserver';

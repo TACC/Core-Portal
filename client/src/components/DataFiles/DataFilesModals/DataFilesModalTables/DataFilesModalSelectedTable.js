@@ -53,13 +53,13 @@ const DataFilesSelectedTable = ({ data, operation }) => {
       },
       {
         accessor: 'name',
-        width: 0.55,
+        width: 0.5,
         Cell: DataFilesSelectedNameCell
       },
-      { accessor: 'length', Cell: FileLengthCell, width: 0.2 },
+      { accessor: 'length', Cell: FileLengthCell, width: 0.25 },
       {
         id: 'status',
-        width: 0.2,
+        width: 0.15,
         Cell: ({ row }) => DataFilesSelectedStatusCell({ row, operation })
       }
     ],

@@ -4,10 +4,11 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  flex-wrap: wrap;
 
   align-content: flex-end; /* preserve alignment of items when wrapped */
 
-  height: 2rem; /* ~32px (26px design * 1.2 design-to-app ratio) */
+  min-height: 2rem;
   box-sizing: content-box;
 
   padding-bottom: 0.75rem; /* 12px (~10px design * 1.2 design-to-app ratio) */
@@ -17,12 +18,16 @@
 
 /* Elements */
 
-/* Do not allow external margin styles */
-/* FAQ: Examples: global `h1`–`h6`, user styles) */
-.heading {
-  margin: 0;
+/* Add vertical space between children that, without wrapping, is invisible */
+/* FAQ: Take away space added, in direction that does not disturb other CSS */
+/* WARNING: `DataFilesToolbar.scss` needs `margin-bottom` */
+.root { margin-top: -5px; }
+.root > * { margin-top: 5px; }
 
-  /* FAQ: It is simpler to do this in CSS than in JavaScript */
+/* Do not allow external margin styles */
+.heading {
+  margin-bottom: 0; /* Overwrite Bootstrap `h1`–`h6` styles */
+
   text-transform: capitalize;
 }
 /* Header actions are always after heading text */
@@ -33,8 +38,9 @@
 
 /* Modifiers */
 
-.for-form {
-  /* FAQ: No styles necessary, but this is here for consistency */
+.for-form,
+.for-list {
+  /* FAQ: No styles necessary, but defining class to avoid build error */
 }
 
 .for-table {

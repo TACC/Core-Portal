@@ -11,7 +11,7 @@ import './SectionHeader.module.css';
  * - automatic styles or markup for given context (ex: within a form or a table)
  *
  * @example
- * // a section header with heading text
+ * // a section header with heading text (which happens to be also be a link)
  * <SectionHeader>
  *   <a href="…">Hyperlinked Name of Section</a>
  * </SectionHeader>
@@ -31,20 +31,25 @@ import './SectionHeader.module.css';
  * >
  *   Name of Table
  * </SectionHeader>
+ * @example
+ * // a list header (a list can be like a table with no column headers)
+ * <SectionHeader isForList>Name of List</SectionHeader>
  */
 function SectionHeader({
   actions,
   children,
   className,
   isForForm,
-  isForTable
+  isForTable,
+  isForList
 }) {
   let styleName = '';
   const styleNameList = ['root'];
-  const HeadingTagName = isForForm || isForTable ? 'h3' : 'h2';
+  const HeadingTagName = isForForm || isForTable || isForList ? 'h3' : 'h2';
 
   if (isForForm) styleNameList.push('for-form');
   if (isForTable) styleNameList.push('for-table');
+  if (isForList) styleNameList.push('for-list');
 
   // Do not join inside JSX (otherwise arcane styleName error occurs)
   styleName = styleNameList.join(' ');
@@ -68,14 +73,17 @@ SectionHeader.propTypes = {
   /** Whether this header is for a form */
   isForForm: PropTypes.bool,
   /** Whether this header is for a table */
-  isForTable: PropTypes.bool
+  isForTable: PropTypes.bool,
+  /** Whether this header is for a list */
+  isForList: PropTypes.bool
 };
 SectionHeader.defaultProps = {
   actions: '',
   className: '',
   children: '',
   isForForm: false,
-  isForTable: false
+  isForTable: false,
+  isForList: false
 };
 
 export default SectionHeader;

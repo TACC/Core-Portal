@@ -469,7 +469,7 @@ PORTAL_EXEC_SYSTEMS = {
     },
     'stampede2.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
+        'home_dir': '/home1/{}'
     },
     'lonestar5.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
@@ -481,6 +481,10 @@ PORTAL_EXEC_SYSTEMS = {
     },
     'frontera.tacc.utexas.edu': {
         'scratch_dir': '/scratch1/{}',
+        'home_dir': '/home1/{}'
+    },
+    'maverick2.tacc.utexas.edu': {
+        'scratch_dir': '/work/{}',
         'home_dir': '/home1/{}'
     }
 }

@@ -23,8 +23,8 @@ function TicketStandaloneCreate() {
 
       <div className="ticket-unauthenticated-create-form">
         <Alert
-          isOpen={welcomeMessages.tickets}
-          toggle={() => onDismissWelcome('tickets')}
+          isOpen={welcomeMessages.TICKETS}
+          toggle={() => onDismissWelcome('TICKETS')}
           color="secondary"
           className="welcomeMessageGeneral"
         >

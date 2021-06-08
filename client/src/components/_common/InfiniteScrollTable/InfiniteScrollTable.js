@@ -16,7 +16,8 @@ const InfiniteScrollLoadingRow = ({ isLoading }) => {
   }
   return (
     <tr className="-status">
-      <td>
+      {/* Ensure cell spans across ALL columns */}
+      <td colSpan="99">
         <LoadingSpinner placement="inline" />
       </td>
     </tr>
@@ -32,7 +33,8 @@ const InfiniteScrollNoDataRow = ({ display, noDataText }) => {
   }
   return (
     <tr className="-status">
-      <td>
+      {/* Ensure cell spans across ALL columns */}
+      <td colSpan="99">
         <span className="-status__message">{noDataText}</span>
       </td>
     </tr>
@@ -73,7 +75,10 @@ const InfiniteScrollTable = ({
   };
 
   return (
-    <table {...getTableProps()} className={`${className} InfiniteScrollTable`}>
+    <table
+      {...getTableProps()}
+      className={`${className} InfiniteScrollTable o-fixed-header-table`}
+    >
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
