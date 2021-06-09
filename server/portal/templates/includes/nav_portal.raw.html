@@ -1,35 +1,49 @@
 {# @var user #}
 <!-- FAQ: This template loads independently at a unique url (see `urls.py`)
           so CMS and User Guide can render this markup into their markup. -->
-  
+
+{# GH-101: Remove style tag i.e. rely only on `site.header.css` #}
+<style type="text/css">
+  .s-portal-nav .icon {
+    margin-right: 0.25em;
+
+    /* Copied from FontAwesome `.fa-lg` */
+    font-size: 1.3em;
+    vertical-align: text-bottom; /* tweaked to align better */
+  }
+  .s-portal-nav .nav-link .icon {
+      font-size: 1.5em;
+      vertical-align: middle; /* tweaked to align better */
+  }
+</style>
 {% if user.is_authenticated %}
 <li class="nav-item dropdown">
   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class="icon icon-user-reverse nav-icon"></i>
+    <i class="icon icon-user"></i>
     <span>{{ user.get_username }}</span>
     <span class="sr-only">Toggle Dropdown</span>
   </a>
   <nav class="dropdown-menu dropdown-menu-right">
     <a class="dropdown-item" href="{% url 'workbench:dashboard' %}">
-      <i class="icon icon-dashboard nav-icon"></i> My Dashboard
+      <i class="icon icon-dashboard"></i> My Dashboard
     </a>
     {% if user.is_staff %}
     <a class="dropdown-item" href="{% url 'workbench:onboarding_admin' %}">
-      <i class="icon icon-approved-boxed nav-icon"></i> Onboarding Admin
+      <i class="icon icon-approved-boxed"></i> Onboarding Admin
     </a>
     {% endif %}
     <a class="dropdown-item" href="{% url 'portal_accounts:manage_profile' %}">
-      <i class="icon icon-user nav-icon"></i> My Account
+      <i class="icon icon-user"></i> My Account
     </a>
     <a class="dropdown-item" href="{% url 'portal_accounts:logout' %}">
-      <i class="icon icon-exit nav-icon"></i> Log Out
+      <i class="icon icon-exit"></i> Log Out
     </a>
   </nav>
 </li>
 {% else %}
 <li class="nav-item">
   <a class="nav-link" href="{% url 'portal_auth:agave_oauth' %}">
-    <i class="icon icon-user-reverse nav-icon"></i> Log in
+    <i class="icon icon-user"></i> Log in
   </a>
 </li>
 {% endif %}
