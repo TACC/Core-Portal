@@ -135,7 +135,7 @@ NOTE: This may require a computer restart to take effect.
 #### OSX
 
 1. Open mac's Keychain Access
-2. File > Import Items
+2. With Default Keychains > login selected, choose File > Import Items... from the menu.
 3. Navigate to `./server/conf/nginx/certificates`
 4. Select `ca.pem`
 5. Search for CEP and double click on the certificate

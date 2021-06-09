@@ -184,7 +184,7 @@ class ProjectsManager(object):
                                             minimum_should_match="80%")
 
         search_result = search_result.execute()
-        result_ids = map(lambda hit: hit.projectId, search_result)
+        result_ids = list(map(lambda hit: hit.projectId, search_result))
 
         project_list = self.list()
         filtered_list = filter(lambda prj: prj.name in result_ids,
