@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from portal.libs.agave.utils import service_account
 from portal.apps.projects.models.base import Project
 from portal.apps.projects.models.metadata import ProjectMetadata
+from portal.apps.search.tasks import index_project
 from django.contrib.auth import get_user_model
 import logging
 
@@ -45,6 +46,8 @@ class Command(BaseCommand):
                     admin=admin.username,
                     project_id=meta.project_id
                 ))
+
+                index_project.apply_async(args=[meta.project_id])
 
             except Exception as e:
                 logger.error("Could not migrate {project_id}".format(project_id=meta.project_id))
