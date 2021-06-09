@@ -84,17 +84,21 @@ Finally, create a home page in the CMS.
 
 ### Setting up search index:
 
-At least one page in CMS is needed (see above), then rebuild the cms search index
+Requirements:
+- At least one page in CMS (see above).
+- At least 4GB of RAM allocated to Docker (see Docker Desktop > Preferences > Resources > Advanced).
+
+First, rebuild the cms search index:
 ```
     docker exec -it core_portal_cms /bin/bash
     python3 manage.py rebuild_index
 ```
-Then use the django shell in the `core_portal_django` container:
+Then, use the django shell in the `core_portal_django` container—
 ```
     docker exec -it core_portal_django /bin/bash
     python3 manage.py shell
 ```
-to run the following code to set up the search index
+—to run the following code to set up the search index:
 ```
 from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_allocations_index
 setup_files_index(force=True)
