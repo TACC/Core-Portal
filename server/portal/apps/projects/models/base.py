@@ -80,7 +80,7 @@ def set_storage_auth(storage):
 class Project(object):
     """Project class."""
 
-    metadata_name = settings.PORTAL_PROJECTS_NAME_PREFIX
+    metadata_name = settings.PORTAL_PROJECTS_SYSTEM_PREFIX
 
     def __init__(
             self,
