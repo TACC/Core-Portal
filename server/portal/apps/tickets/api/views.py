@@ -69,13 +69,13 @@ class TicketsView(BaseApiView):
 
         problem_description += "\n\n" + metadata
 
-        ticket_id = rt.create_ticket(subject=subject,
-                                     problem_description=problem_description,
-                                     requestor=email,
-                                     cc=cc,
-                                     attachments=attachments)
+        #ticket_id = rt.create_ticket(subject=subject,
+        #                             problem_description=problem_description,
+        #                             requestor=email,
+        #                             cc=cc,
+        #                             attachments=attachments)
 
-        return JsonResponse({'ticket_id': ticket_id})
+        return JsonResponse({'ticket_id': 1})
 
 
 def has_access_to_ticket(function):

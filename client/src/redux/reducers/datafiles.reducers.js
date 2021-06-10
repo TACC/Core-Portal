@@ -157,7 +157,8 @@ export const initialFilesState = {
     extract: false,
     manageproject: false,
     editproject: false,
-    makePublic: false
+    makePublic: false,
+    downloadMessage: false
   },
   modalProps: {
     preview: {},
@@ -170,7 +171,8 @@ export const initialFilesState = {
     pushKeys: {},
     link: {},
     showpath: {},
-    makePublic: {}
+    makePublic: {},
+    downloadMessage: {}
   },
   refs: {},
   preview: {

@@ -23,7 +23,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Handle command."""
         agc = service_account()
-        metadatas = ProjectMetadata.objects.all().filter(pi=None)
+        metadatas = ProjectMetadata.objects.all()
         for meta in metadatas:
             try:
 
