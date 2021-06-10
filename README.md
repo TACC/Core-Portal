@@ -28,7 +28,7 @@ After you clone the repository locally, there are several configuration steps re
 
 Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.security.utexas.edu)
 
-_Note: Update `__PORTAL_PROJECTS_NAME_PREFIX` (or `_PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX`) in `settings_secret.py`to
+_Note: Update `_PORTAL_PROJECTS_NAME_PREFIX` (or `_PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX`) in `settings_secret.py`to
 be something unique so that project creation in your local development does not clash with other development work (as
 directories and Tapis storage system names will be created using this prefix)._
 
@@ -84,17 +84,21 @@ Finally, create a home page in the CMS.
 
 ### Setting up search index:
 
-At least one page in CMS is needed (see above), then rebuild the cms search index
+Requirements:
+- At least one page in CMS (see above).
+- At least 4GB of RAM allocated to Docker (see Docker Desktop > Preferences > Resources > Advanced).
+
+First, rebuild the cms search index:
 ```
     docker exec -it core_portal_cms /bin/bash
     python3 manage.py rebuild_index
 ```
-Then use the django shell in the `core_portal_django` container:
+Then, use the django shell in the `core_portal_django` container—
 ```
     docker exec -it core_portal_django /bin/bash
     python3 manage.py shell
 ```
-to run the following code to set up the search index
+—to run the following code to set up the search index:
 ```
 from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_allocations_index
 setup_files_index(force=True)
@@ -135,7 +139,7 @@ NOTE: This may require a computer restart to take effect.
 #### OSX
 
 1. Open mac's Keychain Access
-2. File > Import Items
+2. With Default Keychains > login selected, choose File > Import Items... from the menu.
 3. Navigate to `./server/conf/nginx/certificates`
 4. Select `ca.pem`
 5. Search for CEP and double click on the certificate

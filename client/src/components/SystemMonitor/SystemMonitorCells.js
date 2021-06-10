@@ -9,7 +9,7 @@ const CELL_PROPTYPES = {
 };
 
 export const Display = ({ cell: { value } }) => (
-  <span className="wb-text-primary wb-bold">{value}</span>
+  <strong className="wb-text-primary">{value}</strong>
 );
 Display.propTypes = CELL_PROPTYPES;
 
