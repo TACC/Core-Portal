@@ -161,7 +161,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'cep.storage.public',
         'scheme': 'public',
         'api': 'tapis',
-        'icon': None
+        'icon': 'publications'
     },
     {
         'name': 'Shared Workspaces',
