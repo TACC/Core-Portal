@@ -28,8 +28,8 @@ After you clone the repository locally, there are several configuration steps re
 
 Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.security.utexas.edu)
 
-_Note: Update `_PORTAL_PROJECTS_SYSTEM_PREFIX` in `settings_secret.py`to
-be something unique so that project creation in your local development does not clash with other development work (as directories and Tapis storage system names will be created using this prefix)._
+_Note: Update `_PORTAL_PROJECTS_ID_PREFIX` in `settings_secret.py`to
+be something unique (like `local.username.CEP`) so that project creation in your local development does not clash with other development work (as directories and Tapis storage system names will be created using this prefix)._
 
 Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
 
