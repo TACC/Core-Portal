@@ -18,16 +18,16 @@ class Command(BaseCommand):
     help = (
         'Reconcile projects from CEPv1 migration that do not have '
         'a PI assigned. This will attempt to assign the creator of '
-        'these projects as PI.'
+        'these projects as PI, as well as index all projects.'
     )
 
     def handle(self, *args, **options):
         """Handle command."""
         agc = service_account()
-        metadatas = ProjectMetadata.objects.all().filter(pi=None)
+        metadatas = ProjectMetadata.objects.all()
         for meta in metadatas:
+            index_project.apply_async(args=[meta.project_id])
             try:
-
                 project = Project(agc, meta.project_id)
                 storage = project.storage
                 roles = storage.roles.to_dict().items()
@@ -46,8 +46,6 @@ class Command(BaseCommand):
                     admin=admin.username,
                     project_id=meta.project_id
                 ))
-
-                index_project.apply_async(args=[meta.project_id])
 
             except Exception as e:
                 logger.error("Could not migrate {project_id}".format(project_id=meta.project_id))
