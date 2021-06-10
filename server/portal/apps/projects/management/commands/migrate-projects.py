@@ -26,7 +26,6 @@ class Command(BaseCommand):
         agc = service_account()
         metadatas = ProjectMetadata.objects.all()
         for meta in metadatas:
-            index_project.apply_async(args=[meta.project_id])
             if not meta.pi:
                 try:
                     project = Project(agc, meta.project_id)
@@ -51,3 +50,5 @@ class Command(BaseCommand):
                 except Exception as e:
                     logger.error("Could not migrate {project_id}".format(project_id=meta.project_id))
                     logger.exception(e)
+
+            index_project.apply_async(args=[meta.project_id])
