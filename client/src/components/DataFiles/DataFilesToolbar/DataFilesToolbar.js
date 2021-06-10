@@ -203,7 +203,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
         {showMakePublic && (
           <ToolbarButton
             text="Make Public"
-            iconName="conversation"
+            iconName="publications"
             onClick={toggleMakePublicModal}
             disabled={!canMakePublic}
           />
