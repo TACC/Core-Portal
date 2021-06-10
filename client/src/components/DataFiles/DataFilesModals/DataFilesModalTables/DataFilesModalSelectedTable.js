@@ -60,6 +60,7 @@ const DataFilesSelectedTable = ({ data, operation }) => {
       {
         id: 'status',
         width: 0.15,
+        minWidth: 80,
         Cell: ({ row }) => DataFilesSelectedStatusCell({ row, operation })
       }
     ],
