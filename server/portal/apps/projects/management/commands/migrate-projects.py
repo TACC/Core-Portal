@@ -27,26 +27,27 @@ class Command(BaseCommand):
         metadatas = ProjectMetadata.objects.all()
         for meta in metadatas:
             index_project.apply_async(args=[meta.project_id])
-            try:
-                project = Project(agc, meta.project_id)
-                storage = project.storage
-                roles = storage.roles.to_dict().items()
-                admins = list(
-                    filter(
-                        lambda role_tuple: role_tuple[0] != 'wma_prtl' and (role_tuple[1] == 'ADMIN' or role_tuple[1] == 'OWNER'),
-                        roles
+            if not meta.pi:
+                try:
+                    project = Project(agc, meta.project_id)
+                    storage = project.storage
+                    roles = storage.roles.to_dict().items()
+                    admins = list(
+                        filter(
+                            lambda role_tuple: role_tuple[0] != 'wma_prtl' and (role_tuple[1] == 'ADMIN' or role_tuple[1] == 'OWNER'),
+                            roles
+                        )
                     )
-                )
-                if len(admins) != 1:
-                    raise Exception("Not exactly one admin for {project_id}".format(project_id=meta.project_id))
-                # Get first role tuple, first item in tuple which is username
-                admin = get_user_model().objects.get(username=admins[0][0])
-                project.add_pi(admin)
-                logger.info("Set {admin} as PI on {project_id}".format(
-                    admin=admin.username,
-                    project_id=meta.project_id
-                ))
+                    if len(admins) != 1:
+                        raise Exception("Not exactly one admin for {project_id}".format(project_id=meta.project_id))
+                    # Get first role tuple, first item in tuple which is username
+                    admin = get_user_model().objects.get(username=admins[0][0])
+                    project.add_pi(admin)
+                    logger.info("Set {admin} as PI on {project_id}".format(
+                        admin=admin.username,
+                        project_id=meta.project_id
+                    ))
 
-            except Exception as e:
-                logger.error("Could not migrate {project_id}".format(project_id=meta.project_id))
-                logger.exception(e)
+                except Exception as e:
+                    logger.error("Could not migrate {project_id}".format(project_id=meta.project_id))
+                    logger.exception(e)
