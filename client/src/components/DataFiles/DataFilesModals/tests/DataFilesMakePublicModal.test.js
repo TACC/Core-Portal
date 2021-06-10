@@ -31,7 +31,7 @@ describe('DataFilesMakePublicModal', () => {
       history
     );
     // Check the description
-    expect(getAllByText(/THIS ACTION CANNOT BE REVERSED/)).toBeDefined();
+    expect(getAllByText(/This action cannot be reversed/)).toBeDefined();
   });
 
   it('dispatches Make Public saga', () => {
