@@ -44,13 +44,20 @@ def mock_service_account(mocker):
     yield mock.return_value
 
 
-def test_migrate_projects(regular_user, mock_project_metadata, mock_project_storage):
+@pytest.fixture
+def mock_index_project(mocker):
+    mock = mocker.patch('portal.apps.search.tasks.index_project')
+    yield mock
+
+
+def test_migrate_projects(regular_user, mock_project_metadata, mock_project_storage, mock_index_project):
     mock_project_storage.return_value.roles.to_dict.return_value = {
         'wma_prtl': 'OWNER',
         'username': 'ADMIN'
     }
     management.call_command("migrate-projects")
     assert ProjectMetadata.objects.all()[0].pi.username == regular_user.username
+    assert mock_index_project.apply_async.called
 
 
 def test_migrate_projects_wrong_admins(regular_user, mock_project_metadata, mock_project_storage):
