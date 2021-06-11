@@ -139,7 +139,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'downloadMessage',
-          props: { selectedFile: selectedFiles[0] }
+          props: {}
         }
       });
   };

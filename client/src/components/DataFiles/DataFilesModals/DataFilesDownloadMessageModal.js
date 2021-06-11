@@ -1,14 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { SectionMessage } from '_common';
+import './DataFilesDownloadMessageModal.module.scss';
 
 const DataFilesDownloadMessageModal = () => {
   const isOpen = useSelector(state => state.files.modals.downloadMessage);
-
-  const selected = useSelector(
-    state => state.files.modalProps.makePublic.selectedFile || {}
-  );
 
   const dispatch = useDispatch();
   const toggle = () => {
@@ -18,43 +14,21 @@ const DataFilesDownloadMessageModal = () => {
     });
   };
 
-  const onClosed = () => {
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: null, operation: 'downloadMessage' }
-    });
-  };
-
-  const makePublic = () => {
-    dispatch({
-      type: 'DATA_FILES_MAKE_PUBLIC',
-      payload: {
-        system: selected.system,
-        path: selected.path
-      }
-    });
-    toggle();
-  };
-
   return (
-    <Modal
-      isOpen={isOpen}
-      onClosed={onClosed}
-      toggle={toggle}
-      size="lg"
-      className="dataFilesModal"
-    >
-      <ModalHeader toggle={toggle}>Publish {selected.name}</ModalHeader>
+    <Modal isOpen={isOpen} toggle={toggle} size="md" className="dataFilesModal">
+      <ModalHeader toggle={toggle}>Download</ModalHeader>
       <ModalBody>
-        <SectionMessage type="warning">
-          Publishing this file will copy it to the Public Data directory and
-          make it available to the general public.{' '}
-          <b>messageeeee</b>
-        </SectionMessage>
+        <p>Folders must be compressed before download.</p>
+        <ol>
+          <li>Select the folder(s).</li>
+          <li>Press the &quot;↩ Compress&quot; icon above the table.</li>
+          <li>Complete and submit the form.</li>
+          <li>After the job finishes, you may download the compressed file.</li>
+        </ol>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={makePublic} className="data-files-btn">
-          Proceed
+        <Button type="button" color="primary" onClick={toggle}>
+          Close
         </Button>
       </ModalFooter>
     </Modal>
