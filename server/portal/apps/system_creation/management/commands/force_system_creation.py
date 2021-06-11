@@ -21,7 +21,7 @@ class Command(BaseCommand):
         'Force system creation via keyservice for a given user'
     )
     def add_arguments(self, parser):
-        parser.add_argument('-u', '--username', type=str, help="Username")
+        parser.add_argument('-u', '--username', type=str, required=True, help="Username")
 
     def handle(self, *args, **options):
         """Handle command."""
