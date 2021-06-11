@@ -25,8 +25,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Handle command."""
         systemId = options.get('system')
-        if not systemId:
-            raise Exception("Missing --system argument")
         
         agc = service_account()
         system = agc.systems.get(systemId=systemId)
