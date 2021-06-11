@@ -37,6 +37,9 @@
 
   padding: var(--padding);
 }
+.panel-content dd dt {
+  font-weight: normal;
+}
 /* Any preformatted values (like system output) should use a `pre` tag */
 .panel-content pre {
   white-space: pre-wrap;
