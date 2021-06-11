@@ -110,7 +110,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'cep.storage.public',
         'scheme': 'public',
         'api': 'tapis',
-        'icon': None
+        'icon': 'publications'
     },
     {
         'name': 'Shared Workspaces',
@@ -187,8 +187,7 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 # PROJECTS SETTINGS
 #######################
 
-_PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = 'cep.local.project'
-_PORTAL_PROJECTS_NAME_PREFIX = 'cep.local.project'
+_PORTAL_PROJECTS_SYSTEM_PREFIX = 'cep.local.project'
 _PORTAL_PROJECTS_ID_PREFIX = 'LOCAL-CEP'
 _PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projects'
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = 'cep.project.root'
