@@ -716,7 +716,7 @@ SETTINGS: WORKBENCH SETTINGS
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
 
 """
-SETTINGS: CUSTOM OVERRIDES
+SETTINGS: LOCAL OVERRIDES
 """
-if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_overrides.py')):
-    from .settings_overrides import *
+if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
+    from .settings_local import *
