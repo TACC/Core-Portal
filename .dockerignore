@@ -1,6 +1,8 @@
 .git
 .cache
 **/settings_secret.py
+**/settings_custom.py
+**/settings_local.py
 **/node_modules/*
 **/client/build/*
 server/cms
