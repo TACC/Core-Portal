@@ -20,7 +20,7 @@ class Command(BaseCommand):
         'Rewrite the host of a /work storage system to cloud.corral'
     )
     def add_arguments(self, parser):
-        parser.add_argument('-s', '--system', type=str, help="System name")
+        parser.add_argument('-s', '--system', type=str, required=True, help="System name")
 
     def handle(self, *args, **options):
         """Handle command."""
