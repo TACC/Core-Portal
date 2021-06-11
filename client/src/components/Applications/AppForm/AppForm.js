@@ -530,8 +530,7 @@ export const AppSchemaForm = ({ app }) => {
                     />
                   ) : null}
                 </div>
-                <Button type="submit" color="primary" disabled={!isValid}
-                >
+                <Button type="submit" color="primary" disabled={!isValid}>
                   {jobSubmission.submitting && (
                     <LoadingSpinner placement="inline" />
                   )}{' '}
