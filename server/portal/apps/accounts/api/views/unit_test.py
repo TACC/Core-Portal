@@ -33,12 +33,12 @@ class TestSystemsListView(TestCase):
     def tearDown(self):
         super(TestSystemsListView, self).tearDown()
 
-    @override_settings(PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX='project.prefix')
+    @override_settings(PORTAL_PROJECTS_SYSTEM_PREFIX='project.prefix')
     @patch('portal.apps.accounts.api.views.systems.JsonResponse')
     def test_project_filter(self, mock_JsonResponse):
         # Make some mock systems to be filtered
         self.mock_AccountsManager.storage_systems.return_value = [
-            StorageSystem(self.mock_client, id=id) for id in [ 
+            StorageSystem(self.mock_client, id=id) for id in [
                 "project.prefix.system1",
                 "project.prefix.system2",
                 "not.a.project.system1",
@@ -50,7 +50,7 @@ class TestSystemsListView(TestCase):
         request.user = get_user_model().objects.get(username="username")
         self.view.get(request)
 
-        # See what got passed to the JsonResponse object 
+        # See what got passed to the JsonResponse object
         # (serialization doesn't work on the mocked StorageSystems)
         args, kwargs = mock_JsonResponse.call_args_list[0]
 
