@@ -52,14 +52,12 @@ def _get_app(app_id, user):
 
     # GET EXECUTION SYSTEM INFO FOR USER APPS
     exec_sys = ExecutionSystem(agave, data['definition']['executionSystem'])
-    data['resource'] = exec_sys.login.host
-    data['scheduler'] = exec_sys.scheduler
     data['exec_sys'] = exec_sys.to_dict()
 
     # set maxNodes from system queue for app
-    if (data['definition']['parallelism'] == 'PARALLEL') and ('defaultQueue' in data):
+    if (data['definition']['parallelism'] == 'PARALLEL') and ('defaultQueue' in data['definition']):
         for queue in exec_sys.queues.all():
-            if queue.name == data['defaultQueue']:
+            if queue.name == data['definition']['defaultQueue']:
                 data['definition']['maxNodes'] = queue.maxNodes
                 break
 

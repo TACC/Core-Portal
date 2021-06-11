@@ -111,7 +111,7 @@ export function getJobDisplayInformation(job, app) {
         return true;
       });
 
-      if (app.scheduler === 'SLURM') {
+      if (app.exec_sys.scheduler === 'SLURM') {
         const matchingQueue = app.exec_sys.queues.find(
           queue => queue.name === job.remoteQueue
         );

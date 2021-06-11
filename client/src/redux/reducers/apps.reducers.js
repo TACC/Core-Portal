@@ -66,8 +66,6 @@ export function app(
     loading: false,
     systemHasKeys: true,
     pushKeysSystem: {},
-    resource: '',
-    scheduler: '',
     exec_sys: {},
     license: {},
     appListing: []
@@ -81,8 +79,6 @@ export function app(
         definition: action.payload.definition,
         systemHasKeys: action.payload.systemHasKeys,
         pushKeysSystem: action.payload.pushKeysSystem,
-        resource: action.payload.resource,
-        scheduler: action.payload.scheduler,
         exec_sys: action.payload.exec_sys,
         license: action.payload.license,
         appListing: action.payload.appListing,
@@ -96,8 +92,6 @@ export function app(
         definition: {},
         systemHasKeys: true,
         pushKeysSystem: {},
-        resource: '',
-        scheduler: '',
         exec_sys: {},
         license: {},
         appListing: []

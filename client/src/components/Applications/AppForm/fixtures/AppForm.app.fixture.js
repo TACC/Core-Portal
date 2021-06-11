@@ -185,8 +185,6 @@ const namdFixture = {
     },
     absolutePath: null
   },
-  resource: 'frontera.tacc.utexas.edu',
-  scheduler: 'SLURM',
   exec_sys: {
     uuid: '7187142604918287894-242ac118-0001-006',
     id: 'frontera.community.exec.frontera',

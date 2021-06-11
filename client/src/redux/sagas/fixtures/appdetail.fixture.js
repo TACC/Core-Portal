@@ -124,8 +124,6 @@ const appDetailFixture = {
   },
   systemHasKeys: false,
   pushKeysSystem: {},
-  resource: 'stampede2.tacc.utexas.edu',
-  scheduler: 'FORK',
   exec_sys: {
     uuid: '4152270341813113321-242ac116-0001-006',
     id: 'username.FORK.exec.stampede2.CLI',

@@ -160,8 +160,6 @@ const appDetailSlurmFixture = {
   },
   systemHasKeys: false,
   pushKeysSystem: {},
-  resource: 'stampede2.tacc.utexas.edu',
-  scheduler: 'SLURM',
   exec_sys: {
     uuid: '8646989280067907095-242ac116-0001-006',
     id: 'maxmunstermann.TACC-ACI.exec.stampede2.HPC',

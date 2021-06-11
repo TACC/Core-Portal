@@ -40,12 +40,14 @@ const appShape = PropTypes.shape({
   systemHasKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
   exec_sys: PropTypes.shape({
+    login: PropTypes.shape({
+      host: PropTypes.string
+    }),
+    scheduler: PropTypes.string,
     queues: PropTypes.arrayOf(PropTypes.shape({}))
   }),
   license: PropTypes.shape({}),
-  appListing: PropTypes.arrayOf(PropTypes.shape({})),
-  resource: PropTypes.string,
-  scheduler: PropTypes.string
+  appListing: PropTypes.arrayOf(PropTypes.shape({}))
 });
 
 export const AppPlaceholder = ({ apps }) => {
@@ -151,7 +153,9 @@ export const AppSchemaForm = ({ app }) => {
     defaultStorageHost
   } = useSelector(state => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
-      host => app.resource === host || app.resource.endsWith(`.${host}`)
+      host =>
+        app.exec_sys.login.host === host ||
+        app.exec_sys.login.host.endsWith(`.${host}`)
     );
     const { defaultHost } = state.systems.storage;
     const hasCorral = [
@@ -216,7 +220,7 @@ export const AppSchemaForm = ({ app }) => {
   };
 
   let missingAllocation = false;
-  if (app.scheduler === 'SLURM') {
+  if (app.exec_sys.scheduler === 'SLURM') {
     if (allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
     } else {
@@ -234,13 +238,13 @@ export const AppSchemaForm = ({ app }) => {
       jobSubmission.error = true;
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
-          app.resource
+          app.exec_sys.login.host
         )} to run this application.`
       };
       missingAllocation = true;
     }
   } else {
-    initialValues.allocation = app.scheduler;
+    initialValues.allocation = app.exec_sys.scheduler;
   }
 
   return (
@@ -333,7 +337,7 @@ export const AppSchemaForm = ({ app }) => {
               allocation: Yup.string()
                 .required('Required')
                 .oneOf(
-                  allocations.concat([app.scheduler]),
+                  allocations.concat([app.exec_sys.scheduler]),
                   'Please select an allocation from the dropdown.'
                 )
             });
@@ -408,7 +412,7 @@ export const AppSchemaForm = ({ app }) => {
           }
           const readOnly =
             jobSubmission.submitting ||
-            (app.scheduler === 'SLURM' && missingAllocation);
+            (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
           return (
             <Form>
               <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
@@ -504,7 +508,7 @@ export const AppSchemaForm = ({ app }) => {
                       />
                     </>
                   ) : null}
-                  {app.scheduler === 'SLURM' ? (
+                  {app.exec_sys.scheduler === 'SLURM' ? (
                     <FormField
                       label="Allocation"
                       name="allocation"
