@@ -472,7 +472,7 @@ PORTAL_EXEC_SYSTEMS = {
     },
     'stampede2.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
+        'home_dir': '/home1/{}'
     },
     'lonestar5.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
@@ -484,6 +484,10 @@ PORTAL_EXEC_SYSTEMS = {
     },
     'frontera.tacc.utexas.edu': {
         'scratch_dir': '/scratch1/{}',
+        'home_dir': '/home1/{}'
+    },
+    'maverick2.tacc.utexas.edu': {
+        'scratch_dir': '/work/{}',
         'home_dir': '/home1/{}'
     }
 }
@@ -535,11 +539,8 @@ TOOLBAR_OPTIONS = {
 
 AGAVE_DEFAULT_TRASH_NAME = '.Trash'
 
-PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = settings_custom.\
-    _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
-
-PORTAL_PROJECTS_NAME_PREFIX = settings_custom.\
-    _PORTAL_PROJECTS_NAME_PREFIX
+PORTAL_PROJECTS_SYSTEM_PREFIX = settings_custom.\
+    _PORTAL_PROJECTS_SYSTEM_PREFIX
 
 PORTAL_PROJECTS_ID_PREFIX = settings_custom.\
     _PORTAL_PROJECTS_ID_PREFIX

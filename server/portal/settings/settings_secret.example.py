@@ -77,7 +77,6 @@ _RESULT_BACKEND_DB = '0'
 #######################
 # PROJECTS SETTINGS
 #######################
-
 _PORTAL_PROJECTS_PRIVATE_KEY = ''
 _PORTAL_PROJECTS_PUBLIC_KEY = ''
 
