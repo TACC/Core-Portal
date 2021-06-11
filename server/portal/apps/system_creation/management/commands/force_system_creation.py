@@ -26,8 +26,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Handle command."""
         username = options.get('username')
-        if not username:
-            raise Exception("Missing --username argument")
         
         user, created = get_user_model().objects.get_or_create(username=username)
 
