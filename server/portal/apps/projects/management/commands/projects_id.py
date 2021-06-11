@@ -31,7 +31,7 @@ def get_latest_project_storage(max_project_id=None):
 
     for prj in all_projects:
         prj_id = prj.storage.id.replace(
-            settings.PORTAL_PROJECTS_NAME_PREFIX,
+            settings.PORTAL_PROJECTS_SYSTEM_PREFIX,
             ''
         )
         if '-' not in prj_id:
