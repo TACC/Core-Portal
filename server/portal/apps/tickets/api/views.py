@@ -75,7 +75,7 @@ class TicketsView(BaseApiView):
                                      cc=cc,
                                      attachments=attachments)
 
-        return JsonResponse({'ticket_id': 1})
+        return JsonResponse({'ticket_id': ticket_id})
 
 
 def has_access_to_ticket(function):
