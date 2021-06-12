@@ -86,3 +86,15 @@ export const getProcessorsOnEachNodeValidation = queue => {
     .min(1)
     .max(queue.maxProcessorsPerNode / queue.maxNodes);
 };
+
+export const getQueueValidation = (queue, app) => {
+  return Yup.string()
+    .required('Required')
+    .oneOf(app.exec_sys.queues.map(q => q.name))
+    .test(
+      'is-not-serial-job-using-normal-queue',
+      'The normal queue does not support serial apps (i.e. Node Count set to 1).',
+      (value, context) =>
+        queue.name !== 'normal' || app.parallelism !== 'SERIAL'
+    );
+};

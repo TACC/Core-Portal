@@ -22,7 +22,8 @@ import {
   getMaxQueueRunTime,
   createMaxRunTimeRegex,
   getNodeCountValidation,
-  getProcessorsOnEachNodeValidation
+  getProcessorsOnEachNodeValidation,
+  getQueueValidation
 } from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
@@ -319,9 +320,7 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              batchQueue: Yup.string()
-                .required('Required')
-                .oneOf(app.exec_sys.queues.map(q => q.name)),
+              batchQueue: getQueueValidation(queue, app),
               nodeCount: getNodeCountValidation(queue),
               processorsOnEachNode: getProcessorsOnEachNodeValidation(queue),
               maxRunTime: Yup.string()
