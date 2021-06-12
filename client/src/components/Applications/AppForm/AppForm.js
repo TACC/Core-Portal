@@ -376,7 +376,6 @@ export const AppSchemaForm = ({ app }) => {
             payload: job
           });
         }}
-        // enableReinitialize
       >
         {({
           values,
