@@ -58,11 +58,26 @@ export const createMaxRunTimeRegex = maxRunTime => {
  * @returns {Yup.number()} min/max validation of node count
  */
 export const getNodeCountValidation = queue => {
+  // all queues have a min node count of 1 except for the normal queue.
+  const min = queue.name === 'normal' ? 3 : 1;
   return Yup.number()
-    .min(1)
-    .max(queue.maxNodes);
+    .min(
+      min,
+      `Node Count must be greater than or equal to ${min} for the ${queue.name} queue`
+    )
+    .max(
+      queue.maxNodes,
+      `Node Count must be less than or equal to ${queue.maxNodes} for the ${queue.name} queue`
+    );
 };
 
+/**
+ * Get validator for processors on each node
+ *
+ * @function
+ * @param {Object} queue
+ * @returns {Yup.number()} min/max validation of maxProcessorsPerNode
+ */
 export const getProcessorsOnEachNodeValidation = queue => {
   if (queue.maxNodes === -1) {
     return Yup.number().min(1);
