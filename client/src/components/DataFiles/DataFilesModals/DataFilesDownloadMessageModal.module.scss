@@ -1,8 +1,6 @@
-.button {
-  composes: c-button--primary from '../../../styles/components/c-button.css';
-}
-.dataFilesModal {
-}
 .title {
   font-weight: bold;
+}
+.close-button {
+  composes: c-button--primary from '../../../styles/components/c-button.css';
 }

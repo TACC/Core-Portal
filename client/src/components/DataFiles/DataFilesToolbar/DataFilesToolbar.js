@@ -125,9 +125,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
 
-  const permissionParams = { files: selectedFiles, scheme, api };
-  const canDownload = getFilePermissions('download', permissionParams);
-
   const download = () => {
     canDownload &&
       dispatch({
@@ -151,6 +148,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   };
 
+  const permissionParams = { files: selectedFiles, scheme, api };
+  const canDownload = getFilePermissions('download', permissionParams);
   const canRename = getFilePermissions('rename', permissionParams);
   const canMove = getFilePermissions('move', permissionParams);
   const canCopy = getFilePermissions('copy', permissionParams);
