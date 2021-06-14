@@ -161,7 +161,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'cep.storage.public',
         'scheme': 'public',
         'api': 'tapis',
-        'icon': None
+        'icon': 'publications'
     },
     {
         'name': 'Shared Workspaces',
@@ -223,12 +223,11 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = []
 #######################
 # PROJECTS SETTING
 #######################
-_PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = 'cep.project'
-_PORTAL_PROJECTS_NAME_PREFIX = _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
+_PORTAL_PROJECTS_SYSTEM_PREFIX = 'cep.project'
 _PORTAL_PROJECTS_ID_PREFIX = _PORTAL_NAMESPACE.upper()
 _PORTAL_PROJECTS_ROOT_DIR = '/corral-repl/tacc/aci/CEP/projecs'
 _PORTAL_PROJECTS_ROOT_SYSTEM_NAME = '{}.root'.format(
-    _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
+    _PORTAL_PROJECTS_SYSTEM_PREFIX
 )
 _PORTAL_PROJECTS_ROOT_HOST = 'cloud.corral.tacc.utexas.edu'
 _PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = ''
