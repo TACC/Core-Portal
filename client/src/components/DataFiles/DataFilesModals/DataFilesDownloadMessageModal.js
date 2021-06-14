@@ -27,11 +27,7 @@ const DataFilesDownloadMessageModal = () => {
         </ol>
       </ModalBody>
       <ModalFooter>
-        <Button
-          type="button"
-          className="data-files-btn"
-          onClick={toggle}
-        >
+        <Button type="button" className="data-files-btn" onClick={toggle}>
           Close
         </Button>
       </ModalFooter>
