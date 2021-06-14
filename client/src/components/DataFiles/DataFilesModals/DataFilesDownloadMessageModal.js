@@ -30,7 +30,6 @@ const DataFilesDownloadMessageModal = () => {
         <Button
           type="button"
           className="data-files-btn"
-          styleName="close-button"
           onClick={toggle}
         >
           Close
