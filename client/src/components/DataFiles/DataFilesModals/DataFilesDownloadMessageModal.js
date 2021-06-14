@@ -15,10 +15,10 @@ const DataFilesDownloadMessageModal = () => {
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="md" className="dataFilesModal">
+    <Modal isOpen={isOpen} toggle={toggle} size="md" styleName="dataFilesModal">
       <ModalHeader toggle={toggle}>Download</ModalHeader>
       <ModalBody>
-        <p>Folders must be compressed before download.</p>
+        <p styleName="title">Folders must be compressed before download.</p>
         <ol>
           <li>Select the folder(s).</li>
           <li>Press the &quot;↩ Compress&quot; icon above the table.</li>
@@ -29,7 +29,7 @@ const DataFilesDownloadMessageModal = () => {
       <ModalFooter>
         <Button
           type="button"
-          className="c-button--primary"
+          styleName="button"
           color="primary"
           onClick={toggle}
         >
