@@ -25,7 +25,7 @@ def gettext(s): return s  # noqa:E731
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_custom')):
+if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_custom.py')):
     from portal.settings import settings_custom
 else:
     from portal.settings import settings_default as settings_custom
