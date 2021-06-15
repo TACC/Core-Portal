@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.1] - 2021-06-15: Hotfix: Fix settings import
+
+### Fixed
+
+- Hotfix: Fix missing extension on settings import (#427)
+
 ## [2.6.0] - 2021-06-14: Separate Custom Settings From Secrets
 
 ### Changed
@@ -384,7 +390,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.6.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.6.1...HEAD
+[2.6.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.6.1
 [2.6.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.6.0
 [2.5.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.5.0
 [2.4.2]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.2
