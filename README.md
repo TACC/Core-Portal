@@ -6,8 +6,8 @@
 
 ## Prequisites for running the portal application
 
-* Docker
-* Docker Compose
+* Docker 20.10.7
+* Docker Compose 1.29.2
 * Python 3.6.8
 * Nodejs 12.x (LTS)
 
