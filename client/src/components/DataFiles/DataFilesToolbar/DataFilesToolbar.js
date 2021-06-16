@@ -126,12 +126,12 @@ const DataFilesToolbar = ({ scheme, api }) => {
   };
 
   const download = () => {
-    canDownload &&
+    if (canDownload) {
       dispatch({
         type: 'DATA_FILES_DOWNLOAD',
         payload: { file: selectedFiles[0] }
       });
-    !canDownload &&
+    } else {
       dispatch({
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
@@ -139,6 +139,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
           props: {}
         }
       });
+    }
   };
 
   const trash = () => {
