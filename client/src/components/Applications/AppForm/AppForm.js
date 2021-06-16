@@ -544,9 +544,7 @@ export const AppSchemaForm = ({ app }) => {
                   {jobSubmission.submitting && (
                     <LoadingSpinner placement="inline" />
                   )}{' '}
-                  {(jobSubmission.error) && (
-                    <Icon name="alert">Warning</Icon>
-                  )}{' '}
+                  {jobSubmission.error && <Icon name="alert">Warning</Icon>}{' '}
                   <span>Submit</span>
                 </Button>
                 <Button
