@@ -48,19 +48,17 @@ def _app_license_type(app_id):
 
 def _get_app(app_id, user):
     agave = user.agave_oauth.client
-    data = agave.apps.get(appId=app_id)
+    data = {'definition': agave.apps.get(appId=app_id)}
 
     # GET EXECUTION SYSTEM INFO FOR USER APPS
-    exec_sys = ExecutionSystem(agave, data['executionSystem'])
-    data['resource'] = exec_sys.login.host
-    data['scheduler'] = exec_sys.scheduler
+    exec_sys = ExecutionSystem(agave, data['definition']['executionSystem'])
     data['exec_sys'] = exec_sys.to_dict()
 
     # set maxNodes from system queue for app
-    if (data['parallelism'] == 'PARALLEL') and ('defaultQueue' in data):
+    if (data['definition']['parallelism'] == 'PARALLEL') and ('defaultQueue' in data['definition']):
         for queue in exec_sys.queues.all():
-            if queue.name == data['defaultQueue']:
-                data['maxNodes'] = queue.maxNodes
+            if queue.name == data['definition']['defaultQueue']:
+                data['definition']['maxNodes'] = queue.maxNodes
                 break
 
     lic_type = _app_license_type(app_id)
@@ -74,10 +72,10 @@ def _get_app(app_id, user):
         data['license']['enabled'] = lic is not None
 
     # Update any App Tray entries upon app retrieval, if their revision numbers have changed
-    matching = AppTrayEntry.objects.all().filter(name=data['name'])
+    matching = AppTrayEntry.objects.all().filter(name=data['definition']['name'])
     if len(matching) > 0:
         first_match = matching[0]
-        if first_match.lastRetrieved and first_match.lastRetrieved != data['id']:
+        if first_match.lastRetrieved and first_match.lastRetrieved != data['definition']['id']:
             data['lastRetrieved'] = first_match.lastRetrieved
 
     return data
@@ -114,7 +112,7 @@ class AppsView(BaseApiView):
                 list_kwargs['query'] = {
                     "name": name
                 }
-            data = agave.apps.list(**list_kwargs)
+            data = {'appListing': agave.apps.list(**list_kwargs)}
 
         return JsonResponse({"response": data})
 

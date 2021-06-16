@@ -29,23 +29,31 @@ import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelec
 import * as ROUTES from '../../../constants/routes';
 
 const appShape = PropTypes.shape({
-  id: PropTypes.string,
-  label: PropTypes.string,
-  longDescription: PropTypes.string,
-  helpURI: PropTypes.string,
-  resource: PropTypes.string,
-  defaultQueue: PropTypes.string,
-  exec_sys: PropTypes.shape({
-    queues: PropTypes.arrayOf(PropTypes.shape({}))
+  loading: PropTypes.bool,
+  error: PropTypes.shape({}),
+  definition: PropTypes.shape({
+    id: PropTypes.string,
+    label: PropTypes.string,
+    longDescription: PropTypes.string,
+    helpURI: PropTypes.string,
+    defaultQueue: PropTypes.string,
+    defaultNodeCount: PropTypes.number,
+    parallelism: PropTypes.string,
+    defaultProcessorsPerNode: PropTypes.number,
+    defaultMaxRunTime: PropTypes.string,
+    tags: PropTypes.arrayOf(PropTypes.string)
   }),
   systemHasKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
-  defaultNodeCount: PropTypes.number,
-  parallelism: PropTypes.string,
-  defaultProcessorsPerNode: PropTypes.number,
-  defaultMaxRunTime: PropTypes.string,
-  scheduler: PropTypes.string,
-  tags: PropTypes.arrayOf(PropTypes.string)
+  exec_sys: PropTypes.shape({
+    login: PropTypes.shape({
+      host: PropTypes.string
+    }),
+    scheduler: PropTypes.string,
+    queues: PropTypes.arrayOf(PropTypes.shape({}))
+  }),
+  license: PropTypes.shape({}),
+  appListing: PropTypes.arrayOf(PropTypes.shape({}))
 });
 
 export const AppPlaceholder = ({ apps }) => {
@@ -65,11 +73,9 @@ AppPlaceholder.propTypes = {
 };
 
 const AppDetail = () => {
-  const { loading, app, error, allocationsLoading } = useSelector(
+  const { app, allocationsLoading } = useSelector(
     state => ({
-      loading: state.app.loading,
-      app: state.app.definition,
-      error: state.app.error,
+      app: state.app,
       allocationsLoading: state.allocations.loading
     }),
     shallowEqual
@@ -80,8 +86,10 @@ const AppDetail = () => {
     category => categoryDict[category] && categoryDict[category].length > 0
   );
 
-  if (error.isError) {
-    const errorText = error.message ? error.message : 'Something went wrong.';
+  if (app.error.isError) {
+    const errorText = app.error.message
+      ? app.error.message
+      : 'Something went wrong.';
 
     return (
       <div id="appDetail-wrapper" className="has-message  appDetail-error">
@@ -90,7 +98,7 @@ const AppDetail = () => {
     );
   }
 
-  if (loading || allocationsLoading) {
+  if (app.loading || allocationsLoading) {
     return (
       <div id="appDetail-wrapper" className="is-loading  appDetail-error">
         <LoadingSpinner />
@@ -118,18 +126,19 @@ const AppDetail = () => {
 const AppInfo = ({ app }) => {
   return (
     <div className="appInfo-wrapper">
-      <h5 className="appInfo-title">{app.label}</h5>
+      <h5 className="appInfo-title">{app.definition.label}</h5>
       <div className="appInfo-description">
-        {parse(app.longDescription || '')}
+        {parse(app.definition.longDescription || '')}
       </div>
-      {app.helpURI ? (
+      {app.definition.helpURI ? (
         <a
           className="wb-link appInfo-documentation"
-          href={app.helpURI}
+          href={app.definition.helpURI}
           target="_blank"
           rel="noreferrer noopener"
         >
-          <AppIcon appId={app.id} /> <span>{app.label} Documentation</span>
+          <AppIcon appId={app.definition.id} />{' '}
+          <span>{app.definition.label} Documentation</span>
         </a>
       ) : null}
       <SystemsPushKeysModal />
@@ -150,7 +159,9 @@ export const AppSchemaForm = ({ app }) => {
     defaultStorageHost
   } = useSelector(state => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
-      host => app.resource === host || app.resource.endsWith(`.${host}`)
+      host =>
+        app.exec_sys.login.host === host ||
+        app.exec_sys.login.host.endsWith(`.${host}`)
     );
     const { defaultHost } = state.systems.storage;
     const hasCorral = [
@@ -192,27 +203,30 @@ export const AppSchemaForm = ({ app }) => {
   // initial form values
   const initialValues = {
     ...appFields.defaults,
-    name: `${app.id}_${new Date().toISOString().split('.')[0]}`,
+    name: `${app.definition.id}_${new Date().toISOString().split('.')[0]}`,
     batchQueue: (
-      (app.defaultQueue
-        ? app.exec_sys.queues.find(q => q.name === app.defaultQueue)
+      (app.definition.defaultQueue
+        ? app.exec_sys.queues.find(q => q.name === app.definition.defaultQueue)
         : app.exec_sys.queues.find(q => q.default === true)) ||
       app.exec_sys.queues[0]
     ).name,
-    nodeCount: app.defaultNodeCount,
+    nodeCount: app.definition.defaultNodeCount,
     processorsOnEachNode:
-      app.parallelism === 'PARALLEL'
-        ? Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount)
+      app.definition.parallelism === 'PARALLEL'
+        ? Math.floor(
+            app.definition.defaultProcessorsPerNode /
+              app.definition.defaultNodeCount
+          )
         : 1,
-    maxRunTime: app.defaultMaxRunTime || '',
+    maxRunTime: app.definition.defaultMaxRunTime || '',
     archivePath: '',
     archive: true,
     archiveOnAppError: true,
-    appId: app.id
+    appId: app.definition.id
   };
 
   let missingAllocation = false;
-  if (app.scheduler === 'SLURM') {
+  if (app.exec_sys.scheduler === 'SLURM') {
     if (allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
     } else {
@@ -230,13 +244,13 @@ export const AppSchemaForm = ({ app }) => {
       jobSubmission.error = true;
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
-          app.resource
+          app.exec_sys.login.host
         )} to run this application.`
       };
       missingAllocation = true;
     }
   } else {
-    initialValues.allocation = app.scheduler;
+    initialValues.allocation = app.exec_sys.scheduler;
   }
 
   return (
@@ -333,7 +347,7 @@ export const AppSchemaForm = ({ app }) => {
               allocation: Yup.string()
                 .required('Required')
                 .oneOf(
-                  allocations.concat([app.scheduler]),
+                  allocations.concat([app.exec_sys.scheduler]),
                   'Please select an allocation from the dropdown.'
                 )
             });
@@ -368,7 +382,7 @@ export const AppSchemaForm = ({ app }) => {
           //   }
           // });
           /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
-          if (app.tags.includes('DCV')) {
+          if (app.definition.tags.includes('DCV')) {
             job.name += '-dcvserver';
           }
           dispatch({
@@ -402,7 +416,7 @@ export const AppSchemaForm = ({ app }) => {
           }
           const readOnly =
             jobSubmission.submitting ||
-            (app.scheduler === 'SLURM' && missingAllocation);
+            (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
           return (
             <Form>
               <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
@@ -469,7 +483,7 @@ export const AppSchemaForm = ({ app }) => {
                       ))
                       .sort()}
                   </FormField>
-                  {!app.tags.includes('Interactive') ? (
+                  {!app.definition.tags.includes('Interactive') ? (
                     <FormField
                       label="Maximum Job Runtime"
                       description={`The maximum time you expect this job to run for. Maximum possible time is ${getMaxQueueRunTime(
@@ -482,7 +496,7 @@ export const AppSchemaForm = ({ app }) => {
                       required
                     />
                   ) : null}
-                  {app.parallelism === 'PARALLEL' ? (
+                  {app.definition.parallelism === 'PARALLEL' ? (
                     <>
                       <FormField
                         label="Processors On Each Node"
@@ -498,7 +512,7 @@ export const AppSchemaForm = ({ app }) => {
                       />
                     </>
                   ) : null}
-                  {app.scheduler === 'SLURM' ? (
+                  {app.exec_sys.scheduler === 'SLURM' ? (
                     <FormField
                       label="Allocation"
                       name="allocation"
@@ -528,7 +542,7 @@ export const AppSchemaForm = ({ app }) => {
                     type="text"
                     required
                   />
-                  {!app.tags.includes('Interactive') ? (
+                  {!app.definition.tags.includes('Interactive') ? (
                     <FormField
                       label="Output Location"
                       description={parse(
