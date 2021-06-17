@@ -86,7 +86,13 @@ Finally, create a home page in the CMS.
 
 Requirements:
 - At least one page in CMS (see above).
-- At least 4GB of RAM allocated to Docker (see Docker Desktop > Preferences > Resources > Advanced).
+- At least [15% of free disk space](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html).
+- For Mac/Windows
+    - At least 4GB of RAM allocated to Docker (see Docker Desktop > Preferences > Resources > Advanced).
+- For Linux (Locally)
+    - Run `sudo sysctl -w vm.max_map_count=2146999999` (The minimum required by [ES](https://www.elastic.co/guide/en/elasticsearch/reference/master/_maximum_map_count_check.html) is 262144 but it doesn't seem to work).
+    - Run `sudo sysctl -w vm.overcommit_memory=1`.
+    - Run `sudo sysctl -p` (In order to persist in `/etc/sysctl.conf`).
 
 First, rebuild the cms search index:
 ```
