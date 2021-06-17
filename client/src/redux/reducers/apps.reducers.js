@@ -63,7 +63,12 @@ export function app(
   state = {
     definition: {},
     error: { isError: false },
-    loading: false
+    loading: false,
+    systemHasKeys: true,
+    pushKeysSystem: {},
+    exec_sys: {},
+    license: {},
+    appListing: []
   },
   action
 ) {
@@ -71,7 +76,12 @@ export function app(
     case 'LOAD_APP':
       return {
         ...state,
-        definition: action.payload,
+        definition: action.payload.definition,
+        systemHasKeys: action.payload.systemHasKeys,
+        pushKeysSystem: action.payload.pushKeysSystem,
+        exec_sys: action.payload.exec_sys,
+        license: action.payload.license,
+        appListing: action.payload.appListing,
         loading: false
       };
     case 'GET_APP_START':
@@ -79,7 +89,12 @@ export function app(
         ...state,
         loading: true,
         error: { isError: false },
-        definition: {}
+        definition: {},
+        systemHasKeys: true,
+        pushKeysSystem: {},
+        exec_sys: {},
+        license: {},
+        appListing: []
       };
     case 'GET_APP_ERROR':
       return {

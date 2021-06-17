@@ -8,7 +8,7 @@ const FormSchema = app => {
     schema: { inputs: {}, parameters: {} }
   };
 
-  (app.parameters || []).forEach(parameter => {
+  (app.definition.parameters || []).forEach(parameter => {
     const param = parameter;
     if (!param.value.visible || param.id.startsWith('_')) {
       return;
@@ -85,7 +85,7 @@ const FormSchema = app => {
         : param.value.default;
   });
 
-  (app.inputs || []).forEach(i => {
+  (app.definition.inputs || []).forEach(i => {
     const input = i;
     if (input.id.startsWith('_') || !input.value.visible) {
       return;

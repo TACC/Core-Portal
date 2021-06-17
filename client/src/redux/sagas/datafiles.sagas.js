@@ -777,7 +777,7 @@ export const getLatestApp = async name => {
       name
     }
   });
-  const apps = res.response;
+  const apps = res.response.appListing;
   const latestApp = apps
     .filter(app => app.id.includes(name))
     .reduce(

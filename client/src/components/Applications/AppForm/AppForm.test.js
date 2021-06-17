@@ -57,7 +57,13 @@ describe('AppSchemaForm', () => {
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdFixture,
-      resource: 'login1.frontera.tacc.utexas.edu'
+      exec_sys: {
+        ...namdFixture.exec_sys, 
+        login: {
+          ...namdFixture.exec_sys.login, 
+          host: 'login1.frontera.tacc.utexas.edu'
+        }
+      }
     });
     expect(getByText(/TACC-ACI/)).toBeDefined();
   });
@@ -68,7 +74,13 @@ describe('AppSchemaForm', () => {
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdFixture,
-      resource: 'invalid_system_frontera.tacc.utexas.edu'
+      exec_sys: {
+        ...namdFixture.exec_sys, 
+        login: {
+          ...namdFixture.exec_sys.login, 
+          host: 'invalid_system_frontera.tacc.utexas.edu'
+        }
+      }
     });
     expect(getByText(/Error/)).toBeDefined();
   });
