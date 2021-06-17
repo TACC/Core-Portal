@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, wait } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
@@ -48,16 +48,18 @@ function renderAppSchemaFormComponent(store, app) {
 }
 
 describe('AppSchemaForm', () => {
-  it('renders the AppSchemaForm', () => {
+  it('renders the AppSchemaForm', async () => {
     const store = mockStore({
       ...initialMockState
     });
 
     const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
-    expect(getByText(/TACC-ACI/)).toBeDefined();
+    await wait(() => {
+      expect(getByText(/TACC-ACI/)).toBeDefined();
+    });
   });
 
-  it('matches extended host names for apps', () => {
+  it('matches extended host names for apps', async () => {
     const store = mockStore({
       ...initialMockState
     });
@@ -71,10 +73,12 @@ describe('AppSchemaForm', () => {
         }
       }
     });
-    expect(getByText(/TACC-ACI/)).toBeDefined();
+    await wait(() => {
+      expect(getByText(/TACC-ACI/)).toBeDefined();
+    });
   });
 
-  it('does not match invalid hostnames', () => {
+  it('does not match invalid hostnames', async () => {
     const store = mockStore({
       ...initialMockState
     });
@@ -88,10 +92,12 @@ describe('AppSchemaForm', () => {
         }
       }
     });
-    expect(getByText(/Error/)).toBeDefined();
+    await wait(() => {
+      expect(getByText(/Error/)).toBeDefined();
+    });
   });
 
-  it('displays an error if the user is missing an allocation on frontera.tacc', () => {
+  it('displays an error if the user is missing an allocation on frontera.tacc', async () => {
     const store = mockStore({
       ...initialMockState,
       allocations: {
@@ -102,30 +108,35 @@ describe('AppSchemaForm', () => {
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdAppFixture
     });
-    expect(getByText(/You need an allocation on Frontera/)).toBeDefined();
+    await wait(() => {
+      expect(getByText(/You need an allocation on Frontera/)).toBeDefined();
+    });
   });
 
-  it('brings up the push keys message if there is an error listing frontera.tacc', () => {
+  it('brings up the push keys message if there is an error listing frontera.tacc', async () => {
     const store = mockStore({
       ...initialMockState
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdAppMissingKeysFixture
     });
-    expect(
-      getByText(
-        /There was a problem accessing your default My Data file system/
-      )
-    ).toBeDefined();
+    await wait(() => {
+      expect(
+        getByText(
+          /There was a problem accessing your default My Data file system/
+        )
+      ).toBeDefined();
+    });
   });
 
-  it('renders the AppSchemaForm after job submission', () => {
+  it('renders the AppSchemaForm after job submission', async () => {
     const store = mockStore({
       ...initialMockState,
       jobs: jobsSubmissionSuccessFixture
     });
-
     const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
-    expect(getByText(/Your job has submitted successfully./)).toBeDefined();
+    await wait(() => {
+      expect(getByText(/Your job has submitted successfully./)).toBeDefined();
+    });
   });
 });
