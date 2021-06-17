@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Icon } from '_common';
 import './DataFilesDownloadMessageModal.module.scss';
 
 const DataFilesDownloadMessageModal = () => {
@@ -23,8 +24,7 @@ const DataFilesDownloadMessageModal = () => {
           <li>Select the folder(s).</li>
           <li>
             Press the &quot;
-            <i className="icon-action icon-compress" /> Compress&quot; icon
-            above the table.
+            <Icon name="compress">↩</Icon> Compress&quot; icon above the table.
           </li>
           <li>Complete and submit the form.</li>
           <li>After the job finishes, you may download the compressed file.</li>
