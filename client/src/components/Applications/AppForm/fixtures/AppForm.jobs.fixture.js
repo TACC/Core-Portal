@@ -1,4 +1,4 @@
-const jobsFixture = {
+export const jobsSubmissionSuccessFixture = {
   list: [],
   submit: {
     submitting: false,
@@ -11,4 +11,12 @@ const jobsFixture = {
   error: null
 };
 
-export default jobsFixture;
+export const jobsFixture = {
+  list: [],
+  submit: {
+    submitting: false,
+    error: false,
+  },
+  loading: false,
+  error: null
+};
