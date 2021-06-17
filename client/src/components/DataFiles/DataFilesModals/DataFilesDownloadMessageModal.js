@@ -21,7 +21,11 @@ const DataFilesDownloadMessageModal = () => {
         <p styleName="title">Folders must be compressed before download.</p>
         <ol>
           <li>Select the folder(s).</li>
-          <li>Press the &quot;↩ Compress&quot; icon above the table.</li>
+          <li>
+            Press the &quot;
+            <i className="icon-action icon-compress" /> Compress&quot; icon
+            above the table.
+          </li>
           <li>Complete and submit the form.</li>
           <li>After the job finishes, you may download the compressed file.</li>
         </ol>
