@@ -139,4 +139,75 @@ describe('AppSchemaForm', () => {
       expect(getByText(/Your job has submitted successfully./)).toBeDefined();
     });
   });
+
+  it('renders validation error for using normal queue but with only 1 node', async () => {
+    const store = mockStore({
+      ...initialMockState
+    });
+
+    const appFixture = {
+      ...namdAppFixture,
+      definition: {
+        ...namdAppFixture.definition,
+        defaultNodeCount: 1,
+        defaultQueue: 'normal'
+      }
+    };
+
+    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
+    await wait(() => {
+      expect(
+        getByText(
+          /Node Count must be greater than or equal to 3 for the normal queue/
+        )
+      ).toBeDefined();
+    });
+  });
+
+  it('renders validation error for using too many nodes for a queue (maxNodes)', async () => {
+    const store = mockStore({
+      ...initialMockState
+    });
+
+    const appFixture = {
+      ...namdAppFixture,
+      definition: {
+        ...namdAppFixture.definition,
+        defaultNodeCount: 3,
+        defaultQueue: 'small'
+      }
+    };
+
+    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
+    await wait(() => {
+      expect(
+        getByText(
+          /Node Count must be less than or equal to 2 for the small queue/
+        )
+      ).toBeDefined();
+    });
+  });
+
+  it('renders validation error for using normal queue for SERIAL apps', async () => {
+    const store = mockStore({
+      ...initialMockState
+    });
+
+    const appFixture = {
+      ...namdAppFixture,
+      definition: {
+        ...namdAppFixture.definition,
+        defaultNodeCount: 1,
+        defaultQueue: 'normal',
+        parallelism: 'SERIAL'
+      }
+    };
+
+    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
+    await wait(() => {
+      expect(
+        getByText(/The normal queue does not support serial apps/)
+      ).toBeDefined();
+    });
+  });
 });
