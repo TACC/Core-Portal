@@ -95,6 +95,6 @@ export const getQueueValidation = (queue, app) => {
       'is-not-serial-job-using-normal-queue',
       'The normal queue does not support serial apps (i.e. Node Count set to 1).',
       (value, context) =>
-        queue.name !== 'normal' || app.parallelism !== 'SERIAL'
+        queue.name !== 'normal' || app.definition.parallelism !== 'SERIAL'
     );
 };
