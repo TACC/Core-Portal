@@ -15,7 +15,7 @@ export const jobsFixture = {
   list: [],
   submit: {
     submitting: false,
-    error: false,
+    error: false
   },
   loading: false,
   error: null
