@@ -34,6 +34,12 @@ export default function getFilePermissions(name, { files, scheme, api }) {
         files[0].format !== 'folder' &&
         api !== 'googledrive'
       );
+    case 'isFolderSelected':
+      return (
+        files.length > 0 &&
+        files.some(file => file.format === 'folder') &&
+        api !== 'googledrive'
+      );
     case 'extract':
       return files.length === 1 && isArchive && isPrivate && api === 'tapis';
     case 'compress':
