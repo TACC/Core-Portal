@@ -79,8 +79,8 @@ export const getNodeCountValidation = queue => {
  * @returns {Yup.number()} min/max validation of maxProcessorsPerNode
  */
 export const getProcessorsOnEachNodeValidation = queue => {
-  if (queue.maxNodes === -1) {
-    return Yup.number().min(1);
+  if (queue.maxProcessorsPerNode === -1) {
+    return Yup.number();
   }
   return Yup.number()
     .min(1)
