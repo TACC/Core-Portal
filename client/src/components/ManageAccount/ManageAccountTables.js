@@ -224,7 +224,10 @@ export const GoogleDriveIntegrationCell = ({ activated }) => {
     >
       {activated ? (
         <div>
-          <a className="wb-link" href="/accounts/applications/googledrive/disconnect/">
+          <a
+            className="wb-link"
+            href="/accounts/applications/googledrive/disconnect/"
+          >
             Disconnect
           </a>
         </div>
@@ -327,7 +330,12 @@ WebsiteCell.propTypes = {
 };
 WebsiteCell.defaultProps = { cell: { value: '' } };
 const OrcidCell = ({ cell: { value } }) => (
-  <a className="wb-link" href={`https://orchid.org/${value}`} target="_blank" rel="noreferrer">
+  <a
+    className="wb-link"
+    href={`https://orchid.org/${value}`}
+    target="_blank"
+    rel="noreferrer"
+  >
     {value}
   </a>
 );
