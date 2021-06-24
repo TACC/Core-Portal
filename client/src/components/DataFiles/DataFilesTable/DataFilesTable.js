@@ -21,7 +21,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   const dispatch = useDispatch();
   const system = useSelector(state => state.pushKeys.target);
   const loading = useSelector(state => state.files.loading[section]);
-  const err = '400';
+  const err = useSelector(state => state.files.error[section]);
   const modalRefs = useSelector(state => state.files.refs);
   const filesLength = data.length;
 
