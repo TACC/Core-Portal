@@ -126,10 +126,20 @@ const DataFilesToolbar = ({ scheme, api }) => {
   };
 
   const download = () => {
-    dispatch({
-      type: 'DATA_FILES_DOWNLOAD',
-      payload: { file: selectedFiles[0] }
-    });
+    if (canDownload) {
+      dispatch({
+        type: 'DATA_FILES_DOWNLOAD',
+        payload: { file: selectedFiles[0] }
+      });
+    } else {
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: {
+          operation: 'downloadMessage',
+          props: {}
+        }
+      });
+    }
   };
 
   const trash = () => {
@@ -140,10 +150,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
   };
 
   const permissionParams = { files: selectedFiles, scheme, api };
+  const canDownload = getFilePermissions('download', permissionParams);
+  const isFolderSelected = getFilePermissions(
+    'isFolderSelected',
+    permissionParams
+  );
   const canRename = getFilePermissions('rename', permissionParams);
   const canMove = getFilePermissions('move', permissionParams);
   const canCopy = getFilePermissions('copy', permissionParams);
-  const canDownload = getFilePermissions('download', permissionParams);
   const canTrash = getFilePermissions('trash', permissionParams);
   const canCompress = getFilePermissions('compress', permissionParams);
   const canExtract = getFilePermissions('extract', permissionParams);
@@ -190,7 +204,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
           text="Download"
           iconName="download"
           onClick={download}
-          disabled={!canDownload}
+          disabled={!canDownload && !isFolderSelected}
         />
         {showMakeLink && (
           <ToolbarButton
