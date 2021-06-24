@@ -80,7 +80,7 @@ Then, run migrations and `collectstatic`:
 ```
 Finally, create a home page in the CMS.
 
-*NOTE*: TACC VPN or physical connection to the TACC network is required To log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
+*NOTE*: TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
 
 ### Setting up search index:
 
@@ -118,16 +118,16 @@ ngrok http 443
 ### Setup local access to the portal:
 
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.dev`
-
-    _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
-
-    _Note: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
+     
+     _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
+     
+     _NOTE: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
 
   2. Direct your browser to `https://cep.dev`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/login`.
 
-    _NOTE: When logging in, make sure that you are going through SSL (`https://cep.dev/login`). After succesful login, you can use the debug server at `https://cep.dev`._
+     _NOTE: When logging in, make sure that you are going through SSL (`https://cep.dev/login`). After succesful login, you can use the debug server at `https://cep.dev`._
 
-    _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
+     _NOTE: Evergreen browsers will no longer allow self-signed certificates. Currently Chrome and Firefox deny access to the local portal for this reason. A cert solution needs to be established in alignment with current TACC policies to resolve this._
 
 ### Installing local CA
 
