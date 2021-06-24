@@ -10,20 +10,22 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
 import './DataFilesTable.module.scss';
 
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
+  const { pathname } = useLocation();
   const dispatch = useDispatch();
   const system = useSelector(state => state.pushKeys.target);
   const loading = useSelector(state => state.files.loading[section]);
-  const err = useSelector(state => state.files.error[section]);
+  const err = '400';
   const modalRefs = useSelector(state => state.files.refs);
   const filesLength = data.length;
 
+  const isGDrive = pathname.includes('googledrive');
   const pushKeys = e => {
     e.preventDefault();
     const props = {
@@ -98,15 +100,30 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       );
     }
     if (err === '400') {
+      const GenericMessage = () => (
+        <>
+          There was a problem listing this directory. For help, please submit
+          a&nbsp;
+          <Link to="/workbench/dashboard/tickets/create" className="wb-link">
+            ticket
+          </Link>
+          .
+        </>
+      );
+      const GDriveMessage = () => (
+        <>
+          Connect your Google Drive account under the &quot;3rd Party Apps&quot;
+          section in the&nbsp;
+          <Link to="/workbench/account/" className="wb-link">
+            Manage Account page
+          </Link>
+          .
+        </>
+      );
       return (
         <div className="h-100 listing-placeholder">
           <SectionMessage type="warning">
-            Connect your Google Drive account under the &quot;3rd Party
-            Apps&quot; section in the&nbsp;
-            <Link to="/workbench/account/" className="wb-link">
-              Manage Account page
-            </Link>
-            .
+            {isGDrive ? <GDriveMessage /> : <GenericMessage />}
           </SectionMessage>
         </div>
       );
