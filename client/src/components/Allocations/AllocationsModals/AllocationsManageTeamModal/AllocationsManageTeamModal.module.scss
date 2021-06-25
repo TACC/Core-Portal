@@ -1,0 +1,17 @@
+.root {
+  .modal-body {
+    overflow-y: initial !important;
+  }
+}
+.listing-wrapper {
+  height: 50vh;
+  overflow-y: scroll;
+  padding-left: 0;
+  padding-right: 0;
+  border-right: 1px solid rgba(112, 112, 112, 0.25);
+}
+.information-wrapper {
+  display: flex;
+  padding: 1em;
+  overflow: auto;
+}

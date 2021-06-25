@@ -108,6 +108,7 @@ def get_tas_allocations(username):
         'portal_alloc': settings.PORTAL_ALLOCATION,
         'active': list(active_allocations.values()),
         'inactive': list(inactive_allocations.values()),
+        'raw_data': tas_projects
     }
 
 
@@ -124,7 +125,7 @@ def get_allocations(username, force=False):
         dict
     """
     try:
-        if force:
+        if not force:
             logger.debug("Forcing TAS allocation retrieval")
             raise NotFoundError
         result = {

@@ -14,6 +14,7 @@ function AppRouter() {
   useEffect(() => {
     dispatch({ type: 'FETCH_WELCOME' });
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
+    dispatch({ type: 'GET_PROFILE_DATA' });
   }, []);
   return (
     <Router>

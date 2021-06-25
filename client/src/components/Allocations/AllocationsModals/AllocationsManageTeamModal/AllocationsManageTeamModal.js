@@ -12,6 +12,7 @@ import { capitalize, has } from 'lodash';
 import { useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
+import './AllocationsManageTeamModal.module.scss';
 
 const AllocationsManageTeamTable = ({ rawData, pid }) => {
   const data = React.useMemo(() => rawData, [rawData]);
@@ -37,7 +38,7 @@ const AllocationsManageTeamTable = ({ rawData, pid }) => {
         }
       },
       {
-        Header: 'Manage',
+        Header: 'Username',
         accessor: ({ username, role }) =>
           role === 'Standard' ? `${username} ${pid}` : ''
       }
@@ -83,7 +84,7 @@ const AllocationsManageTeamTable = ({ rawData, pid }) => {
 
 const UserSearch = () => {
   const [term, setTerm] = useState(null);
-  const results = useState([]);
+  const [results, setResults] = useState([]);
   const handleSubmit = async event => {
     event.preventDefault();
     setTerm(event.target.user.value);
@@ -94,15 +95,20 @@ const UserSearch = () => {
         'https://portal.tacc.utexas.edu/projects-and-allocations/-/pm/api/users?action=search&field=username&term=';
       const r = await fetch(`${root}${term}`);
       const json = await r.json();
+
       console.log(json);
+      setResults(json);
     };
     fetchData();
   }, [term]);
   return (
-    <Form onSubmit={handleSubmit}>
-      <Input name="user" />
-      <Button type="submit">Click</Button>
-    </Form>
+    <>
+      <Form onSubmit={handleSubmit} className="d-flex">
+        <Input name="user" style={{ marginRight: '2px' }} />
+        <Button type="submit">Search</Button>
+      </Form>
+      {results && <code>{JSON.stringify(results, null, 2)}</code>}
+    </>
   );
 };
 
@@ -115,14 +121,16 @@ const AllocationsManageTeamModal = ({ isOpen, toggle, pid, ...props }) => {
   console.log(teams);
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle}>
+    <Modal isOpen={isOpen} toggle={toggle} styleName="root">
       <ModalHeader>Hello World</ModalHeader>
-      <ModalBody>
+      <ModalBody className="p-2">
         <UserSearch />
         {isLoading ? (
           <LoadingSpinner />
         ) : (
-          <AllocationsManageTeamTable rawData={teams[pid]} pid={pid} />
+          <div styleName="listing-wrapper">
+            <AllocationsManageTeamTable rawData={teams[pid]} pid={pid} />
+          </div>
         )}
       </ModalBody>
     </Modal>

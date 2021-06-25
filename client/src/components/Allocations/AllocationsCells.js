@@ -42,7 +42,7 @@ export const Team = ({ cell: { value } }) => {
       />
       {isPi && (
         <>
-          <span>|</span>
+          <span>&nbsp;|&nbsp;</span>
           <Button
             className="btn btn-sm"
             color="link"
