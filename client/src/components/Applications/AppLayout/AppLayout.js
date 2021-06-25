@@ -32,11 +32,12 @@ const AppsLayout = () => {
   );
 };
 
-const AppsHeader = appDict => {
+const AppsHeader = categoryDict => {
   const { params } = useRouteMatch();
-  const appMeta = appDict[params.appId];
-  const path = appMeta ? ` / ${appMeta.value.definition.label}` : '';
-
+  const appMeta = Object.values(categoryDict.categoryDict)
+    .flatMap(e => e)
+    .find(car => car.appId === params.appId);
+  const path = appMeta ? ` / ${appMeta.label}` : '';
   return `Applications ${path}`;
 };
 
@@ -44,6 +45,10 @@ const AppsRoutes = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const appDict = useSelector(state => state.apps.appDict, shallowEqual);
+  const categoryDict = useSelector(
+    state => state.apps.categoryDict,
+    shallowEqual
+  );
 
   return (
     <Section
@@ -51,7 +56,7 @@ const AppsRoutes = () => {
       welcomeMessageName="APPLICATIONS"
       header={
         <Route path={`${path}/:appId?`}>
-          <AppsHeader appDict={appDict} />
+          <AppsHeader categoryDict={categoryDict} />
         </Route>
       }
       content={
