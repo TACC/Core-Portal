@@ -10,22 +10,25 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
 import './DataFilesTable.module.scss';
 
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
-  const { pathname } = useLocation();
   const dispatch = useDispatch();
+  const currentListing = useSelector(
+    state => state.files.params.FilesListing.api
+  );
   const system = useSelector(state => state.pushKeys.target);
   const loading = useSelector(state => state.files.loading[section]);
   const err = useSelector(state => state.files.error[section]);
   const modalRefs = useSelector(state => state.files.refs);
-  const filesLength = data.length;
 
-  const isGDrive = pathname.includes('googledrive');
+  const filesLength = data.length;
+  const isGDrive = currentListing === 'googledrive';
+
   const pushKeys = e => {
     e.preventDefault();
     const props = {
