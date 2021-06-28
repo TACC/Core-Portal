@@ -68,7 +68,7 @@ const AppsRoutes = () => {
                 if (appDef && 'html' in appDef) {
                   dispatch({
                     type: 'LOAD_APP',
-                    payload: appDict[params.appId]
+                    payload: { definition: appDict[params.appId] }
                   });
                 } else {
                   dispatch({
