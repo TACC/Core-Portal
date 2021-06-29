@@ -4,7 +4,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner, Section } from '_common';
 import './AppLayout.global.css';
 import AppBrowser from '../AppBrowser/AppBrowser';
-import AppDetail, { AppPlaceholder } from '../AppForm/AppForm';
+import { AppDetail, AppPlaceholder } from '../AppForm/AppForm';
 
 const AppsLayout = () => {
   const { params } = useRouteMatch();

@@ -574,5 +574,3 @@ export const AppSchemaForm = ({ app }) => {
 AppSchemaForm.propTypes = {
   app: appShape.isRequired
 };
-
-export default AppDetail;
