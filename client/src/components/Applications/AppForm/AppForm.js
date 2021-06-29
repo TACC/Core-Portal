@@ -66,7 +66,7 @@ AppPlaceholder.propTypes = {
   apps: PropTypes.bool.isRequired
 };
 
-const AppDetail = () => {
+export const AppDetail = () => {
   const { app, allocationsLoading } = useSelector(
     state => ({
       app: state.app,
