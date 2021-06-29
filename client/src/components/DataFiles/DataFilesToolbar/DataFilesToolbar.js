@@ -39,16 +39,16 @@ const DataFilesToolbar = ({ scheme, api }) => {
     )
   );
 
-  const publicData =
+  const userData =
     api !== 'googledrive' && scheme !== 'public' && scheme !== 'community';
 
-  const showMove = useSelector(() => publicData);
+  const showMove = userData;
 
-  const showRename = useSelector(() => publicData);
+  const showRename = userData;
 
-  const showTrash = useSelector(() => publicData);
+  const showTrash = userData;
 
-  const showDownload = useSelector(() => api !== 'googledrive');
+  const showDownload = api !== 'googledrive';
 
   const showMakeLink = useSelector(
     state =>
@@ -59,11 +59,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
 
   const showCompress = !!useSelector(
-    state => state.workbench.config.extractApp && publicData
+    state => state.workbench.config.extractApp && userData
   );
 
   const showExtract = !!useSelector(
-    state => state.workbench.config.compressApp && publicData
+    state => state.workbench.config.compressApp && userData
   );
 
   const showMakePublic = useSelector(
@@ -71,7 +71,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
       state.workbench &&
       state.workbench.config.makePublic &&
       api === 'tapis' &&
-      publicData
+      userData
   );
 
   const toggleRenameModal = () =>
