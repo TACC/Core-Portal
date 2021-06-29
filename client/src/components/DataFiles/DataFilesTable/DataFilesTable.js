@@ -105,7 +105,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     if (err === '400') {
       const GenericMessage = () => (
         <>
-          There was a problem listing this directory. For help, please submit
+          An error occurred loading this directory. For help, please submit
           a&nbsp;
           <Link to="/workbench/dashboard/tickets/create" className="wb-link">
             ticket
