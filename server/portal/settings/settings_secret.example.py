@@ -64,8 +64,6 @@ _ES_HOSTS = 'core_portal_elasticsearch:9200'
 _ES_AUTH = 'username:password'
 _ES_INDEX_PREFIX = 'cep-dev-{}'
 
-_COMMUNITY_INDEX_SCHEDULE = {}
-
 ########################
 # CELERY SETTINGS
 ########################
@@ -77,6 +75,7 @@ _RESULT_BACKEND_DB = '0'
 #######################
 # PROJECTS SETTINGS
 #######################
+
 _PORTAL_PROJECTS_PRIVATE_KEY = ''
 _PORTAL_PROJECTS_PUBLIC_KEY = ''
 
