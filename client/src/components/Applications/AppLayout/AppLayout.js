@@ -44,6 +44,10 @@ const AppsRoutes = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const appDict = useSelector(state => state.apps.appDict, shallowEqual);
+  const categoryDict = useSelector(
+    state => state.apps.categoryDict,
+    shallowEqual
+  );
 
   return (
     <Section
@@ -59,7 +63,7 @@ const AppsRoutes = () => {
           <Route path={`${path}/:appId?`}>
             <AppsLayout />
           </Route>
-          {Object.keys(appDict).length ? (
+          {Object.keys(categoryDict).length ? (
             <Route
               exact
               path={`${path}/:appId`}
