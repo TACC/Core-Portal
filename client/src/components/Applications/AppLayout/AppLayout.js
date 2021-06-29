@@ -36,7 +36,7 @@ const AppsHeader = categoryDict => {
   const { params } = useRouteMatch();
   const appMeta = Object.values(categoryDict.categoryDict)
     .flatMap(e => e)
-    .find(car => car.appId === params.appId);
+    .find(app => app.appId === params.appId);
   const path = appMeta ? ` / ${appMeta.label}` : '';
   return `Applications ${path}`;
 };
