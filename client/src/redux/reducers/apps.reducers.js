@@ -59,19 +59,17 @@ export function apps(state = initialState, action) {
   }
 }
 
-export function app(
-  state = {
-    definition: {},
-    error: { isError: false },
-    loading: false,
-    systemHasKeys: true,
-    pushKeysSystem: {},
-    exec_sys: {},
-    license: {},
-    appListing: []
-  },
-  action
-) {
+export const initialAppState = {
+  definition: {},
+  error: { isError: false },
+  loading: false,
+  systemHasKeys: true,
+  pushKeysSystem: {},
+  exec_sys: {},
+  license: {},
+  appListing: []
+};
+export function app(state = initialAppState, action) {
   switch (action.type) {
     case 'LOAD_APP':
       return {
