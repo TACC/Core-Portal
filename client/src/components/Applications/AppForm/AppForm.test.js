@@ -3,17 +3,20 @@ import { render, wait } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
-import { AppSchemaForm } from './AppForm';
+import { AppSchemaForm, AppDetail } from './AppForm';
 import allocationsFixture from './fixtures/AppForm.allocations.fixture';
 import {
   jobsFixture,
   jobsSubmissionSuccessFixture
 } from './fixtures/AppForm.jobs.fixture';
+import { appTrayFixture, appTrayExpectedFixture } from '../../../redux/sagas/fixtures/apptray.fixture';
+import { initialAppState } from '../../../redux/reducers/apps.reducers';
 import {
   namdAppFixture,
   namdAppMissingKeysFixture
 } from './fixtures/AppForm.app.fixture';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
+import renderComponent from 'utils/testing';
 import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
@@ -209,5 +212,17 @@ describe('AppSchemaForm', () => {
         getByText(/The normal queue does not support serial apps/)
       ).toBeDefined();
     });
+  });
+});
+
+describe('AppDetail', () => {
+  it('renders an html app', () => {
+    const store = mockStore({
+      allocations: { loading: false },
+      app: { ...initialAppState, definition: { ...appTrayFixture.definitions['vis-portal'] }},
+      apps: { ...appTrayExpectedFixture }
+    });
+    const { getByText } = renderComponent(<AppDetail />, store);
+    expect(getByText(/The TACC Visualization Portal allows simple access to TACC/)).toBeDefined();
   });
 });
