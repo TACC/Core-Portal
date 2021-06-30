@@ -2,11 +2,14 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { AppSchemaForm } from './AppForm';
+import { AppSchemaForm, AppDetail } from './AppForm';
 import { default as allocationsFixture } from './fixtures/AppForm.allocations.fixture';
 import { default as jobsFixture } from './fixtures/AppForm.jobs.fixture';
 import { default as namdFixture } from './fixtures/AppForm.app.fixture';
+import { appTrayFixture, appTrayExpectedFixture } from '../../../redux/sagas/fixtures/apptray.fixture';
+import { initialAppState } from '../../../redux/reducers/apps.reducers';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
+import renderComponent from 'utils/testing';
 import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -57,7 +60,13 @@ describe('AppSchemaForm', () => {
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdFixture,
-      resource: 'login1.frontera.tacc.utexas.edu'
+      exec_sys: {
+        ...namdFixture.exec_sys,
+        login: {
+          ...namdFixture.exec_sys.login,
+          host: 'login1.frontera.tacc.utexas.edu'
+        }
+      }
     });
     expect(getByText(/TACC-ACI/)).toBeDefined();
   });
@@ -68,7 +77,13 @@ describe('AppSchemaForm', () => {
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdFixture,
-      resource: 'invalid_system_frontera.tacc.utexas.edu'
+      exec_sys: {
+        ...namdFixture.exec_sys,
+        login: {
+          ...namdFixture.exec_sys.login,
+          host: 'invalid_system_frontera.tacc.utexas.edu'
+        }
+      }
     });
     expect(getByText(/Error/)).toBeDefined();
   });
@@ -95,5 +110,17 @@ describe('AppSchemaForm', () => {
       ...namdFixture
     });
     expect(getByText(/There was a problem accessing your default My Data file system/)).toBeDefined();
+  });
+});
+
+describe('AppDetail', () => {
+  it('renders an html app', () => {
+    const store = mockStore({
+      allocations: { loading: false },
+      app: { ...initialAppState, definition: { ...appTrayFixture.definitions['vis-portal'] }},
+      apps: { ...appTrayExpectedFixture }
+    });
+    const { getByText } = renderComponent(<AppDetail />, store);
+    expect(getByText(/The TACC Visualization Portal allows simple access to TACC/)).toBeDefined();
   });
 });

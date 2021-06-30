@@ -205,7 +205,7 @@ PORTAL_ALLOCATION = 'test'
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
 
-PORTAL_PROJECTS_NAME_PREFIX = 'test.project'
+PORTAL_PROJECTS_SYSTEM_PREFIX = 'test.project'
 
 PORTAL_PROJECTS_ID_PREFIX = 'test.project'
 
