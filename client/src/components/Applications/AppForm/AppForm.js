@@ -69,7 +69,7 @@ AppPlaceholder.propTypes = {
   apps: PropTypes.bool.isRequired
 };
 
-const AppDetail = () => {
+export const AppDetail = () => {
   const { app, allocationsLoading } = useSelector(
     state => ({
       app: state.app,
@@ -105,10 +105,10 @@ const AppDetail = () => {
 
   return (
     <>
-      {!app && <AppPlaceholder apps={hasApps} />}
-      {app.appType === 'html' ? (
+      {!app.definition && <AppPlaceholder apps={hasApps} />}
+      {app.definition.appType === 'html' ? (
         <div id="appDetail-wrapper" className="has-external-app">
-          {parse(app.html)}
+          {parse(app.definition.html)}
         </div>
       ) : (
         <div id="appDetail-wrapper" className="has-internal-app">
@@ -406,11 +406,8 @@ export const AppSchemaForm = ({ app }) => {
           ) {
             setSubmitting(false);
             resetForm(initialValues);
-            const formTop = document.getElementById('appForm-wrapper');
-            formTop.scrollTo({
-              top: 0,
-              behavior: 'smooth'
-            });
+            const formTop = document.getElementById('appBrowser-wrapper');
+            formTop.scrollIntoView({ behavior: 'smooth' });
             dispatch({ type: 'TOGGLE_SUBMITTING' });
           }
           const missingLicense = app.license.type && !app.license.enabled;
@@ -600,5 +597,3 @@ export const AppSchemaForm = ({ app }) => {
 AppSchemaForm.propTypes = {
   app: appShape.isRequired
 };
-
-export default AppDetail;
