@@ -58,16 +58,20 @@ def initialize_token(request):
 @login_required
 def oauth2_callback(request):
     state = request.GET.get('state')
-    if 'googledrive' in request.session:
-        googledrive = request.session['googledrive']
+    if 'googledrivers' in request.session:
+        googledrive = request.session['googledriveer']
     else:
-        messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
-                                'up the Google Drive application. Please try again.')
+        logger.error("Error getting googledrive state")
+        request.session['googledrive_error'] = \
+                    'Oh no! An unexpected error occurred while trying to set up the Google Drive application. Please try again.'
+        # messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
+        #                         'up the Google Drive application. Please try again.')
         return HttpResponseRedirect('/accounts/profile')
 
     if not (state == googledrive['state']):
-        messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
-                                'up the Google Drive application. Please try again.')
+        logger.info("(state == googledrive['state']):  **********************************************")
+        request.session['googledrive_error'] = \
+                    'Oh no! An unexpected error occurred while trying to set up the Google Drive application. Please try again.'
         return HttpResponseRedirect('/accounts/profile')
 
     try:
@@ -102,8 +106,8 @@ def oauth2_callback(request):
 
     except Exception as e:
         logger.exception('Unable to complete Google Drive integration setup: %s' % e)
-        messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
-                                'up the Google Drive application. Please try again.')
+        request.session['googledrive_error'] = \
+                    'Oh no! An unexpected error occurred while trying to set up the Google Drive application. Please try again.'
 
     return HttpResponseRedirect('/accounts/profile')
 

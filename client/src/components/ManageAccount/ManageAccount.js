@@ -32,6 +32,10 @@ const ManageAccountView = () => {
     dispatch({ type: 'GET_PROFILE_DATA' });
   }, [dispatch, isLoading]);
   return (
+
+      !isLoading && integrations[0].error_message && (
+               <Alert color="danger">{integrations[0].error_message}</Alert>
+            )
     <Section
       bodyClassName="has-loaded-account"
       welcomeMessageName="ACCOUNT"
@@ -48,6 +52,9 @@ const ManageAccountView = () => {
           <>
             {errors.data && (
               <Alert color="danger">Unable to get your profile data</Alert>
+            )}
+            {integrations[0].error_message && (
+              <Alert color="danger">{integrations[0].error_message}</Alert>
             )}
             {errors.fields && (
               <Alert color="danger">Unable to get form fields</Alert>

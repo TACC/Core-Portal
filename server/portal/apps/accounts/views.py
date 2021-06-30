@@ -118,7 +118,7 @@ def manage_licenses(request):
 
 @login_required
 def manage_integrations(request):
-    return integrations.get_integrations(request.user)
+    return integrations.get_integrations(request)
 
 
 @login_required
