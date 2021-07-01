@@ -46,7 +46,10 @@ const appShape = PropTypes.shape({
     scheduler: PropTypes.string,
     queues: PropTypes.arrayOf(PropTypes.shape({}))
   }),
-  license: PropTypes.shape({}),
+  license: PropTypes.shape({
+    type: PropTypes.string,
+    enabled: PropTypes.bool
+  }),
   appListing: PropTypes.arrayOf(PropTypes.shape({}))
 });
 
@@ -178,7 +181,7 @@ export const AppSchemaForm = ({ app }) => {
   }, shallowEqual);
 
   const { systemHasKeys, pushKeysSystem } = app;
-
+  const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = e => {
     e.preventDefault();
     dispatch({
@@ -263,6 +266,20 @@ export const AppSchemaForm = ({ app }) => {
               push your keys
             </a>
             .
+          </SectionMessage>
+        </div>
+      )}
+      {missingLicense && (
+        <div className="appDetail-error">
+          <SectionMessage type="warning">
+            Activate your {app.license.type} license in{' '}
+            <Link
+              to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`}
+              className="wb-link"
+            >
+              Manage Account
+            </Link>
+            , then return to this form.
           </SectionMessage>
         </div>
       )}
@@ -408,6 +425,7 @@ export const AppSchemaForm = ({ app }) => {
             dispatch({ type: 'TOGGLE_SUBMITTING' });
           }
           const readOnly =
+            missingLicense ||
             jobSubmission.submitting ||
             (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
           return (

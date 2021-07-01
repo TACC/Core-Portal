@@ -111,6 +111,19 @@ describe('AppSchemaForm', () => {
     });
     expect(getByText(/There was a problem accessing your default My Data file system/)).toBeDefined();
   });
+
+  it('displays an error when license is missing', () => {
+    const store = mockStore({
+      ...initialMockState
+    });
+    const { getByText } = renderAppSchemaFormComponent(store, {
+      ...namdFixture,
+      license: {
+        type: 'Application Name'
+      }
+    });
+    expect(getByText(/Activate your Application Name license/)).toBeDefined();
+  });
 });
 
 describe('AppDetail', () => {
