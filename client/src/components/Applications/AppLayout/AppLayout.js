@@ -4,7 +4,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner, Section } from '_common';
 import './AppLayout.global.css';
 import AppBrowser from '../AppBrowser/AppBrowser';
-import AppDetail, { AppPlaceholder } from '../AppForm/AppForm';
+import { AppDetail, AppPlaceholder } from '../AppForm/AppForm';
 
 const AppsLayout = () => {
   const { params } = useRouteMatch();
@@ -64,7 +64,7 @@ const AppsRoutes = () => {
           <Route path={`${path}/:appId?`}>
             <AppsLayout />
           </Route>
-          {Object.keys(appDict).length ? (
+          {Object.keys(categoryDict).length ? (
             <Route
               exact
               path={`${path}/:appId`}
@@ -73,7 +73,7 @@ const AppsRoutes = () => {
                 if (appDef && 'html' in appDef) {
                   dispatch({
                     type: 'LOAD_APP',
-                    payload: appDict[params.appId]
+                    payload: { definition: appDict[params.appId] }
                   });
                 } else {
                   dispatch({
