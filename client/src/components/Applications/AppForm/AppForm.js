@@ -181,7 +181,7 @@ export const AppSchemaForm = ({ app }) => {
   }, shallowEqual);
 
   const { systemHasKeys, pushKeysSystem } = app;
-
+  const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = e => {
     e.preventDefault();
     dispatch({
@@ -266,6 +266,20 @@ export const AppSchemaForm = ({ app }) => {
               push your keys
             </a>
             .
+          </SectionMessage>
+        </div>
+      )}
+      {missingLicense && (
+        <div className="appDetail-error">
+          <SectionMessage type="warning">
+            Activate your {app.license.type} license in{' '}
+            <Link
+              to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`}
+              className="wb-link"
+            >
+              Manage Account
+            </Link>
+            , then return to this form.
           </SectionMessage>
         </div>
       )}
@@ -410,184 +424,165 @@ export const AppSchemaForm = ({ app }) => {
             formTop.scrollIntoView({ behavior: 'smooth' });
             dispatch({ type: 'TOGGLE_SUBMITTING' });
           }
-          const missingLicense = app.license.type && !app.license.enabled;
           const readOnly =
             missingLicense ||
             jobSubmission.submitting ||
             (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
           return (
-            <>
-              {missingLicense && (
-                <div className="form-message">
-                  <SectionMessage type="warning">
-                    Activate your {app.license.type} license in{' '}
-                    <Link
-                      to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`}
-                      className="wb-link"
-                    >
-                      Manage Account
-                    </Link>
-                    , then return to this form.
-                  </SectionMessage>
-                </div>
-              )}
-              <Form>
-                <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
-                  <div className="appSchema-section">
-                    <div className="appSchema-header">
-                      <span>Inputs</span>
-                    </div>
-                    {Object.entries(appFields.inputs).map(([id, field]) => {
-                      return (
-                        <FormField
-                          {...field}
-                          name={`inputs.${id}`}
-                          agaveFile
-                          SelectModal={DataFilesSelectModal}
-                          placeholder="Browse Data Files"
-                          key={`inputs.${id}`}
-                        />
-                      );
-                    })}
-                    {Object.entries(appFields.parameters).map(([id, field]) => {
-                      return (
-                        <FormField
-                          {...field}
-                          name={`parameters.${id}`}
-                          key={`parameters.${id}`}
-                        >
-                          {field.options
-                            ? field.options.map(item => {
-                                let val = item;
-                                if (val instanceof String) {
-                                  const tmp = {};
-                                  tmp[val] = val;
-                                  val = tmp;
-                                }
-                                return Object.entries(val).map(
-                                  ([key, value]) => (
-                                    <option key={key} value={key}>
-                                      {value}
-                                    </option>
-                                  )
-                                );
-                              })
-                            : null}
-                        </FormField>
-                      );
-                    })}
+            <Form>
+              <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
+                <div className="appSchema-section">
+                  <div className="appSchema-header">
+                    <span>Inputs</span>
                   </div>
-                  <div className="appSchema-section">
-                    <div className="appSchema-header">
-                      <span>Configuration</span>
-                    </div>
+                  {Object.entries(appFields.inputs).map(([id, field]) => {
+                    return (
+                      <FormField
+                        {...field}
+                        name={`inputs.${id}`}
+                        agaveFile
+                        SelectModal={DataFilesSelectModal}
+                        placeholder="Browse Data Files"
+                        key={`inputs.${id}`}
+                      />
+                    );
+                  })}
+                  {Object.entries(appFields.parameters).map(([id, field]) => {
+                    return (
+                      <FormField
+                        {...field}
+                        name={`parameters.${id}`}
+                        key={`parameters.${id}`}
+                      >
+                        {field.options
+                          ? field.options.map(item => {
+                              let val = item;
+                              if (val instanceof String) {
+                                const tmp = {};
+                                tmp[val] = val;
+                                val = tmp;
+                              }
+                              return Object.entries(val).map(([key, value]) => (
+                                <option key={key} value={key}>
+                                  {value}
+                                </option>
+                              ));
+                            })
+                          : null}
+                      </FormField>
+                    );
+                  })}
+                </div>
+                <div className="appSchema-section">
+                  <div className="appSchema-header">
+                    <span>Configuration</span>
+                  </div>
+                  <FormField
+                    label="Queue"
+                    name="batchQueue"
+                    description="Select the queue this job will execute on."
+                    type="select"
+                    required
+                  >
+                    {app.exec_sys.queues
+                      .map(q => q.name)
+                      .sort()
+                      .map(queue => (
+                        <option key={queue} value={queue}>
+                          {queue}
+                        </option>
+                      ))
+                      .sort()}
+                  </FormField>
+                  {!app.definition.tags.includes('Interactive') ? (
                     <FormField
-                      label="Queue"
-                      name="batchQueue"
-                      description="Select the queue this job will execute on."
+                      label="Maximum Job Runtime"
+                      description={`The maximum time you expect this job to run for. Maximum possible time is ${getMaxQueueRunTime(
+                        app,
+                        values.batchQueue
+                      )} (hrs:min:sec). After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
+                      name="maxRunTime"
+                      type="text"
+                      placeholder="HH:MM:SS"
+                      required
+                    />
+                  ) : null}
+                  {app.definition.parallelism === 'PARALLEL' ? (
+                    <>
+                      <FormField
+                        label="Processors On Each Node"
+                        description="Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total."
+                        name="processorsOnEachNode"
+                        type="number"
+                      />
+                      <FormField
+                        label="Node Count"
+                        description="Number of requested process nodes for the job."
+                        name="nodeCount"
+                        type="number"
+                      />
+                    </>
+                  ) : null}
+                  {app.exec_sys.scheduler === 'SLURM' ? (
+                    <FormField
+                      label="Allocation"
+                      name="allocation"
+                      description="Select the project allocation you would like to use with this job submission."
                       type="select"
                       required
                     >
-                      {app.exec_sys.queues
-                        .map(q => q.name)
-                        .sort()
-                        .map(queue => (
-                          <option key={queue} value={queue}>
-                            {queue}
-                          </option>
-                        ))
-                        .sort()}
-                    </FormField>
-                    {!app.definition.tags.includes('Interactive') ? (
-                      <FormField
-                        label="Maximum Job Runtime"
-                        description={`The maximum time you expect this job to run for. Maximum possible time is ${getMaxQueueRunTime(
-                          app,
-                          values.batchQueue
-                        )} (hrs:min:sec). After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
-                        name="maxRunTime"
-                        type="text"
-                        placeholder="HH:MM:SS"
-                        required
-                      />
-                    ) : null}
-                    {app.definition.parallelism === 'PARALLEL' ? (
-                      <>
-                        <FormField
-                          label="Processors On Each Node"
-                          description="Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total."
-                          name="processorsOnEachNode"
-                          type="number"
-                        />
-                        <FormField
-                          label="Node Count"
-                          description="Number of requested process nodes for the job."
-                          name="nodeCount"
-                          type="number"
-                        />
-                      </>
-                    ) : null}
-                    {app.exec_sys.scheduler === 'SLURM' ? (
-                      <FormField
-                        label="Allocation"
-                        name="allocation"
-                        description="Select the project allocation you would like to use with this job submission."
-                        type="select"
-                        required
-                      >
-                        <option hidden disabled>
-                          {' '}
+                      <option hidden disabled>
+                        {' '}
+                      </option>
+                      {allocations.sort().map(projectId => (
+                        <option key={projectId} value={projectId}>
+                          {projectId}
                         </option>
-                        {allocations.sort().map(projectId => (
-                          <option key={projectId} value={projectId}>
-                            {projectId}
-                          </option>
-                        ))}
-                      </FormField>
-                    ) : null}
+                      ))}
+                    </FormField>
+                  ) : null}
+                </div>
+                <div className="appSchema-section">
+                  <div className="appSchema-header">
+                    <span>Output</span>
                   </div>
-                  <div className="appSchema-section">
-                    <div className="appSchema-header">
-                      <span>Output</span>
-                    </div>
+                  <FormField
+                    label="Job Name"
+                    description="A recognizable name for this job."
+                    name="name"
+                    type="text"
+                    required
+                  />
+                  {!app.definition.tags.includes('Interactive') ? (
                     <FormField
-                      label="Job Name"
-                      description="A recognizable name for this job."
-                      name="name"
+                      label="Output Location"
+                      description={parse(
+                        'Specify a location where the job output should be archived. By default, job output will be archived at: <code>archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.' // eslint-disable-line no-template-curly-in-string
+                      )}
+                      name="archivePath"
                       type="text"
-                      required
+                      placeholder="archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}" // eslint-disable-line no-template-curly-in-string
                     />
-                    {!app.definition.tags.includes('Interactive') ? (
-                      <FormField
-                        label="Output Location"
-                        description={parse(
-                          'Specify a location where the job output should be archived. By default, job output will be archived at: <code>archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.' // eslint-disable-line no-template-curly-in-string
-                        )}
-                        name="archivePath"
-                        type="text"
-                        placeholder="archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}" // eslint-disable-line no-template-curly-in-string
-                      />
-                    ) : null}
-                  </div>
-                  <Button type="submit" color="primary">
-                    {jobSubmission.submitting && (
-                      <LoadingSpinner placement="inline" />
-                    )}{' '}
-                    {(Object.keys(errors).length || jobSubmission.error) && (
-                      <Icon name="alert">Warning</Icon>
-                    )}{' '}
-                    <span>Submit</span>
-                  </Button>
-                  <Button
-                    onClick={handleReset}
-                    className="btn-resetForm"
-                    color="link"
-                  >
-                    <h6>Reset Fields to Defaults</h6>
-                  </Button>
-                </FormGroup>
-              </Form>
-            </>
+                  ) : null}
+                </div>
+                <Button type="submit" color="primary">
+                  {jobSubmission.submitting && (
+                    <LoadingSpinner placement="inline" />
+                  )}{' '}
+                  {(Object.keys(errors).length || jobSubmission.error) && (
+                    <Icon name="alert">Warning</Icon>
+                  )}{' '}
+                  <span>Submit</span>
+                </Button>
+                <Button
+                  onClick={handleReset}
+                  className="btn-resetForm"
+                  color="link"
+                >
+                  <h6>Reset Fields to Defaults</h6>
+                </Button>
+              </FormGroup>
+            </Form>
           );
         }}
       </Formik>
