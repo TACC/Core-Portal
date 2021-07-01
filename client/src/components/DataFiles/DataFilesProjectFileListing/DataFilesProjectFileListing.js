@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
@@ -15,8 +15,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
     });
   }, [system]);
 
-  const [showMore, setShowMore] = useState(false);
-
   const metadata = useSelector(state => state.projects.metadata);
 
   const onEdit = () => {
@@ -24,10 +22,6 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'editproject', props: {} }
     });
-  };
-
-  const readMore = () => {
-    setShowMore(!showMore);
   };
 
   const onManage = () => {
@@ -81,11 +75,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (C) an independent component <SectionDescription>
                - (D) __both__ (A) or (B) __and__ (C)
       */}
-      {/* <div styleName="description"> */}
-      <div styleName={showMore ? 'hide-description' : 'description'}>
-        {metadata.description}
-      </div>
-      <Button onClick={readMore}>Read More</Button>
+      <div styleName="description">{metadata.description}</div>
       <DataFilesListing
         api="tapis"
         scheme="projects"
