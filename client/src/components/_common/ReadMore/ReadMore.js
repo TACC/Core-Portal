@@ -28,7 +28,7 @@ const ReadMore = ({ className, children }) => {
         </div>
       }
       {(hasOverflow || expanded) && (
-        <Button styleName="read-btn" color="link" onClick={toggleCallback}>
+        <Button color="link" onClick={toggleCallback}>
           {expanded ? 'Read Less' : 'Read More'}
         </Button>
       )}
