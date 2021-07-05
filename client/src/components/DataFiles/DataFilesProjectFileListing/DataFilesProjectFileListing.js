@@ -2,7 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { LoadingSpinner, SectionMessage, SectionTableWrapper } from '_common';
+import {
+  ReadMore,
+  LoadingSpinner,
+  SectionMessage,
+  SectionTableWrapper
+} from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import './DataFilesProjectFileListing.module.scss';
 
@@ -75,7 +80,9 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (C) an independent component <SectionDescription>
                - (D) __both__ (A) or (B) __and__ (C)
       */}
-      <div styleName="description">{metadata.description}</div>
+      <div styleName="description">
+        <ReadMore>{metadata.description}</ReadMore>
+      </div>
       <DataFilesListing
         api="tapis"
         scheme="projects"

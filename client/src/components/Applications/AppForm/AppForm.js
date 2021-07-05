@@ -46,7 +46,10 @@ const appShape = PropTypes.shape({
     scheduler: PropTypes.string,
     queues: PropTypes.arrayOf(PropTypes.shape({}))
   }),
-  license: PropTypes.shape({}),
+  license: PropTypes.shape({
+    type: PropTypes.string,
+    enabled: PropTypes.bool
+  }),
   appListing: PropTypes.arrayOf(PropTypes.shape({}))
 });
 
@@ -66,7 +69,7 @@ AppPlaceholder.propTypes = {
   apps: PropTypes.bool.isRequired
 };
 
-const AppDetail = () => {
+export const AppDetail = () => {
   const { app, allocationsLoading } = useSelector(
     state => ({
       app: state.app,
@@ -102,10 +105,10 @@ const AppDetail = () => {
 
   return (
     <>
-      {!app && <AppPlaceholder apps={hasApps} />}
-      {app.appType === 'html' ? (
+      {!app.definition && <AppPlaceholder apps={hasApps} />}
+      {app.definition.appType === 'html' ? (
         <div id="appDetail-wrapper" className="has-external-app">
-          {parse(app.html)}
+          {parse(app.definition.html)}
         </div>
       ) : (
         <div id="appDetail-wrapper" className="has-internal-app">
@@ -178,7 +181,7 @@ export const AppSchemaForm = ({ app }) => {
   }, shallowEqual);
 
   const { systemHasKeys, pushKeysSystem } = app;
-
+  const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = e => {
     e.preventDefault();
     dispatch({
@@ -263,6 +266,20 @@ export const AppSchemaForm = ({ app }) => {
               push your keys
             </a>
             .
+          </SectionMessage>
+        </div>
+      )}
+      {missingLicense && (
+        <div className="appDetail-error">
+          <SectionMessage type="warning">
+            Activate your {app.license.type} license in{' '}
+            <Link
+              to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`}
+              className="wb-link"
+            >
+              Manage Account
+            </Link>
+            , then return to this form.
           </SectionMessage>
         </div>
       )}
@@ -403,14 +420,12 @@ export const AppSchemaForm = ({ app }) => {
           ) {
             setSubmitting(false);
             resetForm(initialValues);
-            const formTop = document.getElementById('appForm-wrapper');
-            formTop.scrollTo({
-              top: 0,
-              behavior: 'smooth'
-            });
+            const formTop = document.getElementById('appBrowser-wrapper');
+            formTop.scrollIntoView({ behavior: 'smooth' });
             dispatch({ type: 'TOGGLE_SUBMITTING' });
           }
           const readOnly =
+            missingLicense ||
             jobSubmission.submitting ||
             (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
           return (
@@ -577,5 +592,3 @@ export const AppSchemaForm = ({ app }) => {
 AppSchemaForm.propTypes = {
   app: appShape.isRequired
 };
-
-export default AppDetail;
