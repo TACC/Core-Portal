@@ -10,7 +10,7 @@ const mockStore = configureStore();
 expect.extend({ toHaveClass });
 describe('ToolbarButton', () => {
   const store = mockStore({});
-  it('render button with correct text', () => {
+  it('renders button with correct text', () => {
     const { getByText, getByRole, getByTestId } = renderComponent(
       <ToolbarButton text="Rename" iconName="rename" onClick={() => {}} />,
       store,
@@ -24,7 +24,7 @@ describe('ToolbarButton', () => {
 });
 
 describe('DataFilesToolbar', () => {
-  it('render necessary buttons', () => {
+  it('renders necessary buttons', () => {
     const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
@@ -70,7 +70,7 @@ describe('DataFilesToolbar', () => {
     expect(queryByText(/Make Public/)).toBeFalsy();
   });
 
-  it('do not render unnecessary buttons in Public Data', () => {
+  it('does not render unnecessary buttons in Public Data', () => {
     const {getByText, queryByText} = renderComponent(
       <DataFilesToolbar scheme="public" api="tapis" />,
       mockStore({
@@ -93,7 +93,7 @@ describe('DataFilesToolbar', () => {
     expect(queryByText(/Make Public/)).toBeFalsy();
   });
 
-  it('do not render unnecessary buttons in Google Drive', () => {
+  it('does not render unnecessary buttons in Google Drive', () => {
     const {getByText, queryByText} = renderComponent(
       <DataFilesToolbar scheme="private" api="googledrive" />,
       mockStore({
@@ -116,7 +116,7 @@ describe('DataFilesToolbar', () => {
     expect(queryByText(/Make Public/)).toBeFalsy();
   });
 
-  it('render Make Public button', () => {
+  it('renders Make Public button', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
