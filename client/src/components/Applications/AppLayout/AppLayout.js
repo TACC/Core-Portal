@@ -4,7 +4,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { LoadingSpinner, Section } from '_common';
 import './AppLayout.global.css';
 import AppBrowser from '../AppBrowser/AppBrowser';
-import AppDetail, { AppPlaceholder } from '../AppForm/AppForm';
+import { AppDetail, AppPlaceholder } from '../AppForm/AppForm';
 
 const AppsLayout = () => {
   const { params } = useRouteMatch();
@@ -32,11 +32,12 @@ const AppsLayout = () => {
   );
 };
 
-const AppsHeader = appDict => {
+const AppsHeader = categoryDict => {
   const { params } = useRouteMatch();
-  const appMeta = appDict[params.appId];
-  const path = appMeta ? ` / ${appMeta.value.definition.label}` : '';
-
+  const appMeta = Object.values(categoryDict.categoryDict)
+    .flatMap(e => e)
+    .find(app => app.appId === params.appId);
+  const path = appMeta ? ` / ${appMeta.label}` : '';
   return `Applications ${path}`;
 };
 
@@ -44,6 +45,10 @@ const AppsRoutes = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const appDict = useSelector(state => state.apps.appDict, shallowEqual);
+  const categoryDict = useSelector(
+    state => state.apps.categoryDict,
+    shallowEqual
+  );
 
   return (
     <Section
@@ -51,7 +56,7 @@ const AppsRoutes = () => {
       welcomeMessageName="APPLICATIONS"
       header={
         <Route path={`${path}/:appId?`}>
-          <AppsHeader appDict={appDict} />
+          <AppsHeader categoryDict={categoryDict} />
         </Route>
       }
       content={
@@ -59,7 +64,7 @@ const AppsRoutes = () => {
           <Route path={`${path}/:appId?`}>
             <AppsLayout />
           </Route>
-          {Object.keys(appDict).length ? (
+          {Object.keys(categoryDict).length ? (
             <Route
               exact
               path={`${path}/:appId`}
@@ -68,7 +73,7 @@ const AppsRoutes = () => {
                 if (appDef && 'html' in appDef) {
                   dispatch({
                     type: 'LOAD_APP',
-                    payload: appDict[params.appId]
+                    payload: { definition: appDict[params.appId] }
                   });
                 } else {
                   dispatch({

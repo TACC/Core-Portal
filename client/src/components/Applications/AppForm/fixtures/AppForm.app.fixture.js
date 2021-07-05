@@ -307,7 +307,7 @@ const namdFixture = {
     lastModified: '2020-07-02T13:44:46-05:00'
   },
   license: { type: null },
-  appListing: {}
+  appListing: []
 };
 
 export default namdFixture;

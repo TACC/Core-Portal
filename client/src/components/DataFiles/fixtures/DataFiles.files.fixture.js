@@ -134,7 +134,8 @@ const filesFixture = {
     rename: {},
     pushKeys: {},
     showpath: {},
-    makePublic: {}
+    makePublic: {},
+    select: {}
   },
   preview: {
     href: '',
