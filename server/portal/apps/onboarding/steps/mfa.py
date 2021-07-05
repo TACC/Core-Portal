@@ -16,7 +16,7 @@ class MFAStep(AbstractStep):
     def description(self):
         return """First, set up multi-factor authentication on the
                 <a style="color:#9d85ef;" href="https://portal.tacc.utexas.edu">TACC User Portal</a>
-                using 
+                using the
                 <a style="color:#9d85ef;" href="https://portal.tacc.utexas.edu/tutorials/multifactor-authentication#tacctokenapp">TACC Token App</a>,
                 then confirm the pairing was successful."""
 
