@@ -46,10 +46,8 @@ describe('DataFilesToolbar', () => {
     expect(getByText(/Trash/)).toBeDefined();
     expect(queryByText(/Make Public/)).toBeFalsy();
   });
-});
 
-describe('DataFilesToolbar', () => {
-  it('do not render unnecessary buttons in Community Data', () => {
+  it('does not render unnecessary buttons in Community Data', () => {
     const {getByText, queryByText} = renderComponent(
       <DataFilesToolbar scheme="community" api="tapis" />,
       mockStore({
@@ -71,10 +69,7 @@ describe('DataFilesToolbar', () => {
     expect(queryByText(/Trash/)).toBeFalsy();
     expect(queryByText(/Make Public/)).toBeFalsy();
   });
-});
 
-
-describe('DataFilesToolbar', () => {
   it('do not render unnecessary buttons in Public Data', () => {
     const {getByText, queryByText} = renderComponent(
       <DataFilesToolbar scheme="public" api="tapis" />,
@@ -97,9 +92,7 @@ describe('DataFilesToolbar', () => {
     expect(queryByText(/Trash/)).toBeFalsy();
     expect(queryByText(/Make Public/)).toBeFalsy();
   });
-});
 
-describe('DataFilesToolbar', () => {
   it('do not render unnecessary buttons in Google Drive', () => {
     const {getByText, queryByText} = renderComponent(
       <DataFilesToolbar scheme="private" api="googledrive" />,
@@ -122,10 +115,7 @@ describe('DataFilesToolbar', () => {
     expect(queryByText(/Trash/)).toBeFalsy();
     expect(queryByText(/Make Public/)).toBeFalsy();
   });
-});
 
-
-describe('DataFilesToolbar', () => {
   it('render Make Public button', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
