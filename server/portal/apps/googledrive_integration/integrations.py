@@ -1,18 +1,18 @@
 from django.conf import settings
 from portal.apps.googledrive_integration.models import GoogleDriveUserToken
-
+from django.core.cache import cache
 
 def provide_integrations(request):
     activated = False
     error = False
-    error_message = 'Hello error message'
+    error_message = ''
 
     try:
         request.user.googledrive_user_token
         activated = True
     except GoogleDriveUserToken.DoesNotExist:
-        if 'googledrive_error' in request.session:
-            error_message = request.session.pop('googledrive_error')
+        if cache.get('{0}_googledrive_error'.format(request.session.session_key), False):
+            error_message = cache.get('{0}_googledrive_error'.format(request.session.session_key))
         pass
 
     integration = {
