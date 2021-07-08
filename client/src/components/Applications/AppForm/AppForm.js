@@ -328,17 +328,7 @@ export const AppSchemaForm = ({ app }) => {
       <Formik
         validateOnMount
         initialValues={initialValues}
-        initialTouched={{
-          parameters: true /* todo: set true for all parameters */,
-          inputs: true /* todo: set true for all inputs */,
-          name: true,
-          batchQueue: true,
-          nodeCount: true,
-          processorsOnEachNode: true,
-          maxRunTime: true,
-          archivePath: true,
-          allocation: true
-        }}
+        initialTouched={initialValues}
         validationSchema={props => {
           return Yup.lazy(values => {
             const queue = app.exec_sys.queues.find(
