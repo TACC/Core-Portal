@@ -490,6 +490,11 @@ export const AppSchemaForm = ({ app }) => {
                   >
                     {app.exec_sys.queues
                       .map(q => q.name)
+                      .filter(
+                        q =>
+                          q !== 'normal' ||
+                          app.definition.parallelism !== 'SERIAL'
+                      )
                       .sort()
                       .map(queue => (
                         <option key={queue} value={queue}>
