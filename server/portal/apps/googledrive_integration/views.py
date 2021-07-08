@@ -58,19 +58,19 @@ def initialize_token(request):
 @csrf_exempt
 @login_required
 def oauth2_callback(request):
-    error_message = 'An unexpected error occurred during Google Drive setup.'
+    error = 'SETUP_ERROR'
     error_timeout = 5
     state = request.GET.get('state')
     if 'googledrive' in request.session:
         googledrive = request.session['googledrive']
     else:
         logger.error('Could not retrieve googledrive from session')
-        cache.set('{0}_googledrive_error'.format(request.session.session_key), error_message, error_timeout)
+        cache.set('{0}_googledrive_error'.format(request.session.session_key), error, error_timeout)
         return HttpResponseRedirect('/accounts/profile')
 
     if not (state == googledrive['state']):
         logger.error('Could not retrieve state from googledrive stored var')
-        cache.set('{0}_googledrive_error'.format(request.session.session_key), error_message, error_timeout)
+        cache.set('{0}_googledrive_error'.format(request.session.session_key), error, error_timeout)
         return HttpResponseRedirect('/accounts/profile')
 
     try:
@@ -105,7 +105,7 @@ def oauth2_callback(request):
 
     except Exception as e:
         logger.exception('Unable to complete Google Drive integration setup: %s' % e)
-        cache.set('{0}_googledrive_error'.format(request.session.session_key), error_message, error_timeout)
+        cache.set('{0}_googledrive_error'.format(request.session.session_key), error, error_timeout)
 
     return HttpResponseRedirect('/accounts/profile')
 

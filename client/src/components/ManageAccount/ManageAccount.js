@@ -20,6 +20,7 @@ import {
 import './ManageAccount.scss';
 import './ManageAccount.global.css';
 import './ManageAccount.module.css';
+import { GOOGLE_DRIVE_SETUP_ERROR } from '../../constants/messages';
 
 const ManageAccountView = () => {
   const {
@@ -38,8 +39,8 @@ const ManageAccountView = () => {
       header="Manage Account"
       messages={
         !isLoading &&
-        integrations[0].error_message && (
-          <Alert color="danger">{integrations[0].error_message}</Alert>
+        integrations[0].error === 'SETUP_ERROR' && (
+          <Alert color="danger">{GOOGLE_DRIVE_SETUP_ERROR}</Alert>
         )
       }
       headerActions={
