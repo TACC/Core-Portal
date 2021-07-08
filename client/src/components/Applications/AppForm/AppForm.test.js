@@ -213,6 +213,19 @@ describe('AppSchemaForm', () => {
       ).toBeDefined();
     });
   });
+
+  it('displays an error when license is missing', () => {
+    const store = mockStore({
+      ...initialMockState
+    });
+    const { getByText } = renderAppSchemaFormComponent(store, {
+      ...namdFixture,
+      license: {
+        type: 'Application Name'
+      }
+    });
+    expect(getByText(/Activate your Application Name license/)).toBeDefined();
+  });
 });
 
 describe('AppDetail', () => {

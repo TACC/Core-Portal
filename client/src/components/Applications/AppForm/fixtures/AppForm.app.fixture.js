@@ -566,7 +566,7 @@ export const namdAppMissingKeysFixture = {
     lastModified: '2021-06-16T12:28:28-05:00'
   },
   license: { type: null },
-  systemHasKeys: false,
+  appListing: []
   pushKeysSystem: {
     owner: null,
     available: true,

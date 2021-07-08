@@ -25,9 +25,6 @@
   /* FAQ: `14px` is part of normalization of "table" font sizes */
   font-size: 0.875rem; /* 14px (assumed deviation from design) */
 
-  max-height: 10%;
-  overflow-y: scroll;
-
   border-top: var(--global-border-width--normal) solid var(--global-color-primary--dark);
 }
 
