@@ -162,7 +162,10 @@ describe('AppSchemaForm', () => {
       }
     };
 
-    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      appFixture
+    );
     await wait(() => {
       expect(
         getByText(
@@ -186,7 +189,11 @@ describe('AppSchemaForm', () => {
       }
     };
 
-    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      appFixture
+    );
+
     await wait(() => {
       expect(
         getByText(
@@ -211,7 +218,11 @@ describe('AppSchemaForm', () => {
       }
     };
 
-    const { getByText } = renderAppSchemaFormComponent(store, appFixture);
+    const { getByText } = renderAppSchemaFormComponent(
+      store,
+      appFixture
+    );
+
     await wait(() => {
       expect(
         getByText(/The normal queue does not support serial apps/)
@@ -219,17 +230,19 @@ describe('AppSchemaForm', () => {
     });
   });
 
-  it('displays an error when license is missing', () => {
+  it('displays an error when license is missing', async () => {
     const store = mockStore({
       ...initialMockState
     });
     const { getByText } = renderAppSchemaFormComponent(store, {
-      ...namdFixture,
+      ...namdAppFixture,
       license: {
         type: 'Application Name'
       }
     });
-    expect(getByText(/Activate your Application Name license/)).toBeDefined();
+    await wait(() => {
+      expect(getByText(/Activate your Application Name license/)).toBeDefined();
+    });
   });
 });
 
@@ -237,10 +250,15 @@ describe('AppDetail', () => {
   it('renders an html app', () => {
     const store = mockStore({
       allocations: { loading: false },
-      app: { ...initialAppState, definition: { ...appTrayFixture.definitions['vis-portal'] }},
+      app: {
+        ...initialAppState,
+        definition: { ...appTrayFixture.definitions['vis-portal'] }
+      },
       apps: { ...appTrayExpectedFixture }
     });
     const { getByText } = renderComponent(<AppDetail />, store);
-    expect(getByText(/The TACC Visualization Portal allows simple access to TACC/)).toBeDefined();
+    expect(
+      getByText(/The TACC Visualization Portal allows simple access to TACC/)
+    ).toBeDefined();
   });
 });
