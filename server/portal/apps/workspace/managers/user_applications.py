@@ -100,11 +100,12 @@ class UserApplicationsManager(AbstractApplicationsManager):
             cloned_exec_sys = host_exec
             logger.debug('Using current execution system {}'.format(cloned_exec_sys.id))
         else:
-            cloned_exec_id = '{username}.{allocation}.exec.{resource}.{execType}'.format(
+            cloned_exec_id = '{username}.{allocation}.exec.{resource}.{execType}.{revision}'.format(
                 username=self.user.username,
                 allocation=allocation,
                 resource=host_exec.login.host.replace('.tacc.utexas.edu', ''),
-                execType=host_exec.execution_type
+                execType=host_exec.execution_type,
+                revision=host_exec.revision
             )
             logger.debug('Getting cloned execution system: {}'.format(cloned_exec_id))
             cloned_exec_sys = self.get_or_create_exec_system(cloned_exec_id, host_exec.id, allocation)
@@ -164,7 +165,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
         return cloned_app
 
-    def get_or_create_cloned_app(self, host_app, allocation):
+    def get_or_create_cloned_app(self, host_app, allocation, cloned_execution_system):
         """Gets or creates a cloned app for the user.
 
         Generates a cloned app id and tries to fetch that app.
@@ -174,6 +175,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
 
         :param host_app: Application instance of host app
         :param str allocation: Project allocation for app to be run on
+        :param ExecutionSystem cloned_execution_system: Cloned execution system
 
         :returns: Application instance
         :rtype: class Application
@@ -194,6 +196,13 @@ class UserApplicationsManager(AbstractApplicationsManager):
             cloned_app = self.get_application(cloned_app_id)
 
             logger.debug('Cloned app {} found. Checking for updates...'.format(cloned_app_id))
+
+            if cloned_app.execution_system != cloned_execution_system.id:
+                logger.info("Cloned app {} has outdated execution system ('{}' != '{}'). Recreating...".format(
+                    cloned_app_id, cloned_app.execution_system, cloned_execution_system.id))
+                cloned_app.delete()
+                cloned_app = self.clone_application(allocation, cloned_app_name, host_app=host_app)
+                return cloned_app
 
             if not cloned_app.available:
                 logger.info('Cloned app {} is unavailable. Recreating...'.format(cloned_app_id))
@@ -244,10 +253,9 @@ class UserApplicationsManager(AbstractApplicationsManager):
             logger.info('User is app owner, no need to clone. Returning original app.')
             app = host_app
             exec_sys = ExecutionSystem(self.client, app.execution_system, ignore_error=None)
-
         else:
-            app = self.get_or_create_cloned_app(host_app, allocation)
             exec_sys = self.get_or_create_cloned_app_exec_system(host_app.execution_system, allocation)
+            app = self.get_or_create_cloned_app(host_app, allocation, exec_sys)
 
         # Check if app's execution system needs keys reset and pushed
         if not app.exec_sys:

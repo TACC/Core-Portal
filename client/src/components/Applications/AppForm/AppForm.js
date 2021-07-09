@@ -18,7 +18,13 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
-import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
+import {
+  getMaxQueueRunTime,
+  createMaxRunTimeRegex,
+  getNodeCountValidation,
+  getProcessorsOnEachNodeValidation,
+  getQueueValidation
+} from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
 
@@ -320,8 +326,16 @@ export const AppSchemaForm = ({ app }) => {
         </>
       )}
       <Formik
+        validateOnMount
         initialValues={initialValues}
+        initialTouched={initialValues}
         validationSchema={props => {
+          if (jobSubmission.submitting) {
+            /* to to avoid a strange error where values are valid but yup returns invalid,
+            we stop invalidating during submission. This occurs only when validateOnMount is set.
+             */
+            return Yup.mixed().notRequired();
+          }
           return Yup.lazy(values => {
             const queue = app.exec_sys.queues.find(
               q => q.name === values.batchQueue
@@ -333,17 +347,9 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              batchQueue: Yup.string()
-                .required('Required')
-                .oneOf(app.exec_sys.queues.map(q => q.name)),
-              nodeCount: Yup.number()
-                .min(1)
-                .max(queue.maxNodes),
-              processorsOnEachNode: Yup.number()
-                .min(1)
-                .max(
-                  Math.floor(queue.maxProcessorsPerNode / queue.maxNodes) || 1
-                ),
+              batchQueue: getQueueValidation(queue, app),
+              nodeCount: getNodeCountValidation(queue),
+              processorsOnEachNode: getProcessorsOnEachNodeValidation(queue),
               maxRunTime: Yup.string()
                 .matches(
                   createMaxRunTimeRegex(maxQueueRunTime),
@@ -397,17 +403,11 @@ export const AppSchemaForm = ({ app }) => {
             payload: job
           });
         }}
-        // enableReinitialize
       >
         {({
           values,
           errors,
-          touched,
-          setFieldTouched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          setFieldValue,
+          isValid,
           isSubmitting,
           handleReset,
           resetForm,
@@ -486,6 +486,11 @@ export const AppSchemaForm = ({ app }) => {
                   >
                     {app.exec_sys.queues
                       .map(q => q.name)
+                      .filter(
+                        q =>
+                          q !== 'normal' ||
+                          app.definition.parallelism !== 'SERIAL'
+                      )
                       .sort()
                       .map(queue => (
                         <option key={queue} value={queue}>
@@ -565,13 +570,11 @@ export const AppSchemaForm = ({ app }) => {
                     />
                   ) : null}
                 </div>
-                <Button type="submit" color="primary">
+                <Button type="submit" color="primary" disabled={!isValid}>
                   {jobSubmission.submitting && (
                     <LoadingSpinner placement="inline" />
                   )}{' '}
-                  {(Object.keys(errors).length || jobSubmission.error) && (
-                    <Icon name="alert">Warning</Icon>
-                  )}{' '}
+                  {jobSubmission.error && <Icon name="alert">Warning</Icon>}{' '}
                   <span>Submit</span>
                 </Button>
                 <Button
