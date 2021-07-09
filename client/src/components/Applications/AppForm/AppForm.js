@@ -330,6 +330,12 @@ export const AppSchemaForm = ({ app }) => {
         initialValues={initialValues}
         initialTouched={initialValues}
         validationSchema={props => {
+          if (jobSubmission.submitting) {
+            /* to to avoid a strange error where values are valid but yup returns invalid,
+            we stop invalidating during submission. This occurs only when validateOnMount is set.
+             */
+            return Yup.mixed().notRequired();
+          }
           return Yup.lazy(values => {
             const queue = app.exec_sys.queues.find(
               q => q.name === values.batchQueue
