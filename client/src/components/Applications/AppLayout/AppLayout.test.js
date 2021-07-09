@@ -9,8 +9,8 @@ import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture'
 import filesFixture from '../../DataFiles/fixtures/DataFiles.files.fixture';
 import { appTrayExpectedFixture } from '../../../redux/sagas/fixtures/apptray.fixture';
 import allocationsFixture from '../AppForm/fixtures/AppForm.allocations.fixture';
-import namdFixture from '../AppForm/fixtures/AppForm.app.fixture';
-import { default as jobsFixture } from '../AppForm/fixtures/AppForm.jobs.fixture';
+import { namdAppFixture } from '../AppForm/fixtures/AppForm.app.fixture';
+import { jobsFixture } from '../AppForm/fixtures/AppForm.jobs.fixture';
 
 const mockStore = configureStore();
 
@@ -39,8 +39,7 @@ describe('AppHeader', () => {
         error: {
           isError: false
         },
-        ...namdFixture,
-        
+        ...namdAppFixture,
       },
       pushKeys: {
         modals: filesFixture.modals,

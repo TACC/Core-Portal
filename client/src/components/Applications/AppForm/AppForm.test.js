@@ -3,20 +3,24 @@ import { render, wait } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
+import renderComponent from 'utils/testing';
 import { AppSchemaForm, AppDetail } from './AppForm';
 import allocationsFixture from './fixtures/AppForm.allocations.fixture';
 import {
   jobsFixture,
   jobsSubmissionSuccessFixture
 } from './fixtures/AppForm.jobs.fixture';
-import { appTrayFixture, appTrayExpectedFixture } from '../../../redux/sagas/fixtures/apptray.fixture';
+import {
+  appTrayFixture,
+  appTrayExpectedFixture
+} from '../../../redux/sagas/fixtures/apptray.fixture';
 import { initialAppState } from '../../../redux/reducers/apps.reducers';
 import {
   namdAppFixture,
   namdAppMissingKeysFixture
 } from './fixtures/AppForm.app.fixture';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
-import renderComponent from 'utils/testing';
+import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
 import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
@@ -24,6 +28,7 @@ const initialMockState = {
   allocations: allocationsFixture,
   jobs: jobsFixture,
   systems: systemsFixture,
+  projects: projectsFixture,
   files: {
     listing: {
       modal: []
