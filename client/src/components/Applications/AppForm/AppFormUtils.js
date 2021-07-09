@@ -1,3 +1,5 @@
+import * as Yup from 'yup';
+
 export const getMaxQueueRunTime = (app, queueName) => {
   return app.exec_sys.queues.find(q => q.name === queueName).maxRequestedTime;
 };
@@ -46,4 +48,53 @@ export const createMaxRunTimeRegex = maxRunTime => {
     index += i % 2 === 0 ? 5 : 6;
   });
   return `${regStr}|${upperReg}`;
+};
+
+/**
+ * Get validator for a node count of a queue
+ *
+ * @function
+ * @param {Object} queue
+ * @returns {Yup.number()} min/max validation of node count
+ */
+export const getNodeCountValidation = queue => {
+  // all queues have a min node count of 1 except for the normal queue.
+  const min = queue.name === 'normal' ? 3 : 1;
+  return Yup.number()
+    .min(
+      min,
+      `Node Count must be greater than or equal to ${min} for the ${queue.name} queue`
+    )
+    .max(
+      queue.maxNodes,
+      `Node Count must be less than or equal to ${queue.maxNodes} for the ${queue.name} queue`
+    );
+};
+
+/**
+ * Get validator for processors on each node
+ *
+ * @function
+ * @param {Object} queue
+ * @returns {Yup.number()} min/max validation of maxProcessorsPerNode
+ */
+export const getProcessorsOnEachNodeValidation = queue => {
+  if (queue.maxProcessorsPerNode === -1) {
+    return Yup.number();
+  }
+  return Yup.number()
+    .min(1)
+    .max(queue.maxProcessorsPerNode / queue.maxNodes);
+};
+
+export const getQueueValidation = (queue, app) => {
+  return Yup.string()
+    .required('Required')
+    .oneOf(app.exec_sys.queues.map(q => q.name))
+    .test(
+      'is-not-serial-job-using-normal-queue',
+      'The normal queue does not support serial apps (i.e. Node Count set to 1).',
+      (value, context) =>
+        queue.name !== 'normal' || app.definition.parallelism !== 'SERIAL'
+    );
 };
