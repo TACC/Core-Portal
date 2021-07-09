@@ -1,10 +1,38 @@
 .breadcrumbs {
   /* ... */
   margin-right: 2em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 1400px;
 }
 .breadcrumb-link {
   color: #9d85ef;
 }
 .breadcrumb-link:hover {
   color: #9d85ef;
+}
+
+@media only screen and (max-width: 2699px) {
+  .breadcrumbs {
+    max-width: 1000px;
+  }
+}
+
+@media only screen and (max-width: 2399px) {
+  .breadcrumbs {
+    max-width: 630px;
+  }
+}
+
+@media only screen and (max-width: 1920px) {
+  .breadcrumbs {
+    max-width: 380px;
+  }
+}
+
+@media only screen and (max-width: 1680px) {
+  .breadcrumbs {
+    max-width: 700px;
+  }
 }

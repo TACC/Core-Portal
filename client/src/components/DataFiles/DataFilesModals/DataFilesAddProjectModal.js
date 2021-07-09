@@ -80,6 +80,7 @@ const DataFilesAddProjectModal = () => {
   const validationSchema = Yup.object().shape({
     title: Yup.string()
       .min(1)
+      .max(70)
       .required('Please enter a title.')
   });
 
@@ -100,7 +101,17 @@ const DataFilesAddProjectModal = () => {
           <Form>
             <ModalHeader toggle={toggle}>Add Shared Workspace</ModalHeader>
             <ModalBody>
-              <FormField name="title" label="Workspace Title" />
+              <FormField
+                name="title"
+                label={
+                  <div>
+                    Workspace Title{' '}
+                    <small>
+                      <em>(Maximum 70 characters)</em>
+                    </small>
+                  </div>
+                }
+              />
               <DataFilesProjectMembers
                 members={members}
                 onAdd={onAdd}
