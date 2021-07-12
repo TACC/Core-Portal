@@ -1,3 +1,5 @@
+@import '../../../styles/tools/mixins.scss';
+
 .root {
   /* As a flex child */
   flex-grow: 1;
@@ -34,9 +36,7 @@
 }
 
 .title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  @include truncate-with-ellipsis;
   max-width: 1400px;
 }
 

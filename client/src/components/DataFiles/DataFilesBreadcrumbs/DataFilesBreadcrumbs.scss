@@ -1,9 +1,9 @@
+@import '../../../styles/tools/mixins.scss';
+
 .breadcrumbs {
   /* ... */
+  @include truncate-with-ellipsis;
   margin-right: 2em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   max-width: 1400px;
 }
 .breadcrumb-link {
