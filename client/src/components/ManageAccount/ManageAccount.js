@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from 'reactstrap';
 import { isEmpty } from 'lodash';
-import { LoadingSpinner, Section } from '_common';
+import { LoadingSpinner, Section, SectionMessage } from '_common';
 import {
   RequiredInformation,
   ChangePassword,
@@ -40,7 +40,9 @@ const ManageAccountView = () => {
       messages={
         !isLoading &&
         integrations[0].error === 'SETUP_ERROR' && (
-          <Alert color="danger">{GOOGLE_DRIVE_SETUP_ERROR}</Alert>
+          <SectionMessage type="warning" canDismiss>
+            {GOOGLE_DRIVE_SETUP_ERROR}
+          </SectionMessage>
         )
       }
       headerActions={
