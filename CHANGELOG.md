@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.0] - 2021-07-13: Apps, Shared Workspaces Improvements
+
+### Added
+
+- FP-1060: Folder download message (#425)
+
+### Changed
+
+- FP-1027: Remove unrelated objects from app definition (#387)
+- FP-939: Display shared workspace description whitespace. (#435)
+- FP-997, FP-1041, FP-1042: Improve apps, add small queue support, and update execution systems when needed (#426)
+- FP-573: Prevent submitting unlicensed app (#438)
+- FP-1009: Apply ReadMore UI pattern to long Shared Workspace descriptions (#442)
+- FP-1031: Clarify Onboarding MFA Steps (#441)
+- FP-1007: Remove inactive toolbar buttons for public/community/google drive (#436)
+
+### Fixed
+
+- FP-1095: Adjust colors of links in Manage Account to match the website's theme. (#430)
+- FP-1108: Fix HTML App Loading (#437)
+- FP-1030: Fix breadcrumbs for application page (#434)
+
 ## [2.6.1] - 2021-06-15: Hotfix: Fix settings import
 
 ### Fixed
@@ -390,7 +412,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.6.1...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.7.0...HEAD
+[2.7.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.7.0
 [2.6.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.6.1
 [2.6.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.6.0
 [2.5.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.5.0
