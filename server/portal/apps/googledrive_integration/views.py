@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
 from portal.apps.googledrive_integration.models import GoogleDriveUserToken
+from django.core.cache import cache
 
 import logging
 logger = logging.getLogger(__name__)
@@ -57,17 +58,19 @@ def initialize_token(request):
 @csrf_exempt
 @login_required
 def oauth2_callback(request):
+    error = 'SETUP_ERROR'
+    error_timeout = 5
     state = request.GET.get('state')
     if 'googledrive' in request.session:
         googledrive = request.session['googledrive']
     else:
-        messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
-                                'up the Google Drive application. Please try again.')
+        logger.error('Could not retrieve googledrive from session')
+        cache.set('{0}_googledrive_error'.format(request.session.session_key), error, error_timeout)
         return HttpResponseRedirect('/accounts/profile')
 
     if not (state == googledrive['state']):
-        messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
-                                'up the Google Drive application. Please try again.')
+        logger.error('Could not retrieve state from googledrive stored var')
+        cache.set('{0}_googledrive_error'.format(request.session.session_key), error, error_timeout)
         return HttpResponseRedirect('/accounts/profile')
 
     try:
@@ -88,7 +91,7 @@ def oauth2_callback(request):
             # Auth flow completed previously, and no refresh_token granted. Need to disconnect to get
             # another refresh_token.
 
-            logger.debug('GoogleDriveUserToken refresh_token cannot be null, revoking previous access and restart flow.')
+            logger.error('GoogleDriveUserToken refresh_token cannot be null, revoking previous access and restart flow.')
             requests.post('https://accounts.google.com/o/oauth2/revoke',
                           params={'token': credentials.token},
                           headers={'content-type': 'application/x-www-form-urlencoded'})
@@ -102,11 +105,9 @@ def oauth2_callback(request):
 
     except Exception as e:
         logger.exception('Unable to complete Google Drive integration setup: %s' % e)
-        messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
-                                'up the Google Drive application. Please try again.')
+        cache.set('{0}_googledrive_error'.format(request.session.session_key), error, error_timeout)
 
     return HttpResponseRedirect('/accounts/profile')
-
 
 @login_required
 def disconnect(request):

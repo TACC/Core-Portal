@@ -1,3 +1,4 @@
+import React from 'react';
 /**
  * Standard welcome message texts
  *
@@ -20,3 +21,9 @@ export const TICKETS =
   'This page allows you to submit a help request via an RT Ticket.';
 export const UI =
   'This hidden page allows developers to review UI components in isolation.';
+export const GOOGLE_DRIVE_SETUP_ERROR = (
+  <span>
+    An error occurred setting up Google Drive. For help,{' '}
+    <a href="/workbench/dashboard/tickets/create">submit a ticket</a>.
+  </span>
+);
