@@ -64,9 +64,12 @@ const DataFilesProjectEditDescriptionModal = () => {
   const validationSchema = Yup.object().shape({
     title: Yup.string()
       .min(3)
-      .max(70)
+      .max(70, 'Title must be at most 70 characters')
       .required('Please enter a title.'),
-    description: Yup.string().max(800)
+    description: Yup.string().max(
+      800,
+      'Description must be at most 70 characters'
+    )
   });
 
   return (
