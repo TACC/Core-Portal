@@ -30,6 +30,12 @@
   border-top: var(--global-border-width--normal) solid var(--global-color-primary--dark);
 }
 
+.description button {
+  font-size: 0.875rem;
+  padding-right: 0;
+  padding-left: 0;
+}
+
 .controls {
   display: flex;
   align-items: flex-start;
