@@ -97,6 +97,28 @@ describe('DataFilesProjectEditDescriptionModal', () => {
     expect(getByTestId('updating-error')).toBeDefined();
   });
 
+  it("disallows title input under 3 characters", async () => {
+    const store = mockStore(initialMockState);
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/private/test.system/');
+    const { getAllByText, getByRole } = renderComponent(
+      <DataFilesProjectEditDescriptionModal/>,
+      store,
+      history
+    )
+
+    const inputField = getByRole('textbox', {name: 'title'});
+    const button = getByRole('button', { name: 'Update Changes' });
+    fireEvent.change(inputField, {
+      target: {
+        value: 'a'
+      }
+    });
+    fireEvent.click(button);
+
+    await waitForElement(() => getAllByText(/Title must be at least 3 characters/));
+  });
+
   it("disallows title input over 70 characters and description over 800 characters", async () => {
     const store = mockStore(initialMockState);
     const history = createMemoryHistory();
@@ -137,8 +159,8 @@ describe('DataFilesProjectEditDescriptionModal', () => {
     titleField.focus();
 
     await waitForElement(() =>
-      getAllByText(/title must be at most 70 characters/));
+      getAllByText(/Title must be at most 70 characters/));
     await waitForElement(() => 
-      getAllByText(/description must be at most 800 characters/));
+      getAllByText(/Description must be at most 800 characters/));
   });
 });
