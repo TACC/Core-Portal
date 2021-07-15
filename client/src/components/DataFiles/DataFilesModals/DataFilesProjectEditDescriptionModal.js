@@ -63,9 +63,13 @@ const DataFilesProjectEditDescriptionModal = () => {
 
   const validationSchema = Yup.object().shape({
     title: Yup.string()
-      .min(1)
+      .min(3, 'Title must be at least 3 characters')
+      .max(70, 'Title must be at most 70 characters')
       .required('Please enter a title.'),
-    description: Yup.string()
+    description: Yup.string().max(
+      800,
+      'Description must be at most 800 characters'
+    )
   });
 
   return (
@@ -79,10 +83,29 @@ const DataFilesProjectEditDescriptionModal = () => {
         >
           {({ isValid, dirty }) => (
             <Form>
-              <FormField name="title" label="Workspace Title" />
+              <FormField
+                name="title"
+                aria-label="title"
+                label={
+                  <div>
+                    Workspace Title{' '}
+                    <small>
+                      <em>(Maximum 70 characters)</em>
+                    </small>
+                  </div>
+                }
+              />
               <FormField
                 name="description"
-                label="Workspace Description"
+                aria-label="description"
+                label={
+                  <div>
+                    Workspace Description{' '}
+                    <small>
+                      <em>(Maximum 800 characters)</em>
+                    </small>
+                  </div>
+                }
                 type="textarea"
                 styleName="description-textarea"
               />
