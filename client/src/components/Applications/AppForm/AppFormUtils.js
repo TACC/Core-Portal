@@ -92,6 +92,15 @@ export const getProcessorsOnEachNodeValidation = queue => {
     .max(queue.maxProcessorsPerNode / queue.maxNodes);
 };
 
+/**
+ * Get validator for queues
+ *
+ * 'normal' queue isn't supported on Frontera for SERIAL (i.e. one node) jobs
+ *
+ * @function
+ * @param {Object} queue
+ * @returns {Yup.string()} validation of queue
+ */
 export const getQueueValidation = (queue, app) => {
   return Yup.string()
     .required('Required')
