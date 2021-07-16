@@ -61,7 +61,7 @@ export const createMaxRunTimeRegex = maxRunTime => {
 export const getNodeCountValidation = (queue, app) => {
   // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node of 3
   const min =
-    getSystemName(app.exec_sys.login.host) === 'FRONTERA' &&
+    getSystemName(app.exec_sys.login.host) === 'Frontera' &&
     queue.name === 'normal'
       ? 3
       : 1;
@@ -109,7 +109,7 @@ export const getQueueValidation = (queue, app) => {
       'is-not-serial-job-using-normal-queue',
       'The normal queue does not support serial apps (i.e. Node Count set to 1).',
       (value, context) =>
-        getSystemName(app.exec_sys.login.host) !== 'FRONTERA' ||
+        getSystemName(app.exec_sys.login.host) !== 'Frontera' ||
         queue.name !== 'normal' ||
         app.definition.parallelism !== 'SERIAL'
     );
