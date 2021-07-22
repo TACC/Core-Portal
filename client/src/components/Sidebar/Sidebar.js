@@ -53,6 +53,7 @@ const Sidebar = ({ disabled, showUIPatterns }) => {
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
 
   const unread = useSelector(state => state.notifications.list.unread);
+  const showApps = useSelector(state => state.workbench.config.showApps);
 
   return (
     <Nav styleName="root" vertical>
@@ -68,26 +69,30 @@ const Sidebar = ({ disabled, showUIPatterns }) => {
         iconName="folder"
         disabled={disabled}
       />
-      <SidebarItem
-        to={`${path}${ROUTES.APPLICATIONS}`}
-        label="Applications"
-        iconName="applications"
-        disabled={disabled}
-      />
+      {showApps && (
+        <SidebarItem
+          to={`${path}${ROUTES.APPLICATIONS}`}
+          label="Applications"
+          iconName="applications"
+          disabled={disabled}
+        />
+      )}
       <SidebarItem
         to={`${path}${ROUTES.ALLOCATIONS}`}
         label="Allocations"
         iconName="allocations"
         disabled={disabled}
       />
-      <SidebarItem
-        to={`${path}${ROUTES.HISTORY}`}
-        label="History"
-        iconName="history"
-        disabled={disabled}
-      >
-        <HistoryBadge unread={unread} disabled={disabled} />
-      </SidebarItem>
+      {showApps && (
+        <SidebarItem
+          to={`${path}${ROUTES.HISTORY}`}
+          label="History"
+          iconName="history"
+          disabled={disabled}
+        >
+          <HistoryBadge unread={unread} disabled={disabled} />
+        </SidebarItem>
+      )}
       {showUIPatterns && (
         <SidebarItem
           to={`${path}${ROUTES.UI}`}

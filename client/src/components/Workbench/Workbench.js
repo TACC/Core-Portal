@@ -33,6 +33,8 @@ function Workbench() {
     shallowEqual
   );
 
+  const showApps = useSelector(state => state.workbench.config.showApps);
+
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
     dispatch({ type: 'FETCH_WORKBENCH' });
@@ -76,15 +78,32 @@ function Workbench() {
                 <Route path={`${path}${ROUTES.DATA}`}>
                   <DataFiles />
                 </Route>
-                <Route
-                  path={`${path}${ROUTES.APPLICATIONS}`}
-                  component={Applications}
-                />
+                {showApps ? (
+                  <Route
+                    path={`${path}${ROUTES.APPLICATIONS}`}
+                    component={Applications}
+                  />
+                ) : (
+                  <Redirect
+                    from={`${path}${ROUTES.APPLICATIONS}`}
+                    to={`${path}${ROUTES.DASHBOARD}`}
+                  />
+                )}
                 <Route
                   path={`${path}${ROUTES.ALLOCATIONS}`}
                   component={Allocations}
                 />
-                <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
+                {showApps ? (
+                  <Route
+                    path={`${path}${ROUTES.HISTORY}`}
+                    component={History}
+                  />
+                ) : (
+                  <Redirect
+                    from={`${path}${ROUTES.HISTORY}`}
+                    to={`${path}${ROUTES.DASHBOARD}`}
+                  />
+                )}
                 <Route
                   path={`${path}${ROUTES.ONBOARDING}`}
                   component={Onboarding}

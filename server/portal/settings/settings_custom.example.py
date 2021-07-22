@@ -232,5 +232,6 @@ _WORKBENCH_SETTINGS = {
     "viewPath": True,
     "compressApp": 'zippy',
     "extractApp": 'extract',
-    "makePublic": False
+    "makePublic": False,
+    "showApps": False
 }
