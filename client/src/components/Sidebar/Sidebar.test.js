@@ -16,6 +16,7 @@ const PUBLIC_PAGES = [
   'Allocations',
   'History'
 ];
+const APP_PAGES = ['Applications', 'History'];
 const DEBUG_PAGES = ['UI Patterns'];
 
 function getPath(page) {
@@ -34,8 +35,8 @@ function renderSideBar(store, showUIPatterns) {
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['/workbench']}>
-        <Route path='/workbench'>
-          <Sidebar showUIPatterns={showUIPatterns}/>
+        <Route path="/workbench">
+          <Sidebar showUIPatterns={showUIPatterns} />
         </Route>
       </MemoryRouter>
     </Provider>
@@ -49,7 +50,8 @@ describe('workbench sidebar', () => {
       mockStore({
         workbench,
         notifications,
-        ticketCreate
+        ticketCreate,
+        workbench: { config: { showApps: true } }
       }),
       false
     );
@@ -67,7 +69,8 @@ describe('workbench sidebar', () => {
       mockStore({
         workbench,
         notifications: { list: { unread: 1 } },
-        ticketCreate
+        ticketCreate,
+        workbench: { config: { showApps: true } }
       }),
       false
     );
@@ -93,7 +96,8 @@ describe('workbench sidebar', () => {
       mockStore({
         workbench: { status: { debug: true } },
         notifications,
-        ticketCreate
+        ticketCreate,
+        workbench: { config: { showApps: true } }
       }),
       true
     );
