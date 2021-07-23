@@ -1,7 +1,7 @@
 from django.conf import settings
 import pytest
 from django.urls import reverse
-
+from portal.apps.auth.views import launch_setup_checks
 
 TEST_STATE = "ABCDEFG123456"
 
@@ -65,3 +65,16 @@ def test_agave_callback_mismatched_state(client):
     session.save()
     response = client.get("/auth/agave/callback/?state={}".format('bar'))
     assert response.status_code == 400
+
+
+def test_launch_setup_checks(regular_user, mocker):
+    mock_execute_setup_steps = mocker.patch('portal.apps.auth.views.execute_setup_steps')
+    launch_setup_checks(regular_user)
+    mock_execute_setup_steps.apply_async.assert_called_with(args=[regular_user.username])
+
+
+def test_launch_setup_checks_already_onboarded(regular_user, mocker):
+    regular_user.profile.setup_complete = True
+    mock_index_allocations = mocker.patch('portal.apps.auth.views.index_allocations')
+    launch_setup_checks(regular_user)
+    mock_index_allocations.apply_async.assert_called_with(args=[regular_user.username])
