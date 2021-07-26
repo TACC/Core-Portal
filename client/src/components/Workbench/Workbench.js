@@ -33,7 +33,7 @@ function Workbench() {
     shallowEqual
   );
 
-  const showApps = useSelector(state => state.workbench.config.showApps);
+  const hideApps = useSelector(state => state.workbench.config.hideApps);
 
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
@@ -78,7 +78,7 @@ function Workbench() {
                 <Route path={`${path}${ROUTES.DATA}`}>
                   <DataFiles />
                 </Route>
-                {showApps && (
+                {!hideApps && (
                   <Route
                     path={`${path}${ROUTES.APPLICATIONS}`}
                     component={Applications}
@@ -88,7 +88,7 @@ function Workbench() {
                   path={`${path}${ROUTES.ALLOCATIONS}`}
                   component={Allocations}
                 />
-                {showApps && (
+                {!hideApps && (
                   <Route
                     path={`${path}${ROUTES.HISTORY}`}
                     component={History}

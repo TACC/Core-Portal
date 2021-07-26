@@ -11,7 +11,7 @@ import './Dashboard.global.css';
 import './Dashboard.module.css';
 
 function Dashboard() {
-  const showApps = useSelector(state => state.workbench.config.showApps);
+  const hideApps = useSelector(state => state.workbench.config.hideApps);
   return (
     <Section
       bodyClassName="has-loaded-dashboard"
@@ -28,7 +28,7 @@ function Dashboard() {
       contentShouldScroll
       content={
         <>
-          {showApps && <DashboardJobs />}
+          {!hideApps && <DashboardJobs />}
           <DashboardTickets />
           <DashboardSysmon />
           <DashboardRoutes />

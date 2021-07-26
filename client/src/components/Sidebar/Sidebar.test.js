@@ -47,7 +47,7 @@ describe('workbench sidebar', () => {
   it.each(PUBLIC_PAGES)('should have a link to the %s page', page => {
     const { getByText, queryByRole } = renderSideBar(
       mockStore({
-        workbench: { ...workbench, config: { showApps: true } },
+        workbench: { ...workbench, config: { hideApps: false } },
         notifications,
         ticketCreate
       }),
@@ -65,7 +65,7 @@ describe('workbench sidebar', () => {
   it('should have a notification badge', () => {
     const { getByRole } = renderSideBar(
       mockStore({
-        workbench: { ...workbench, config: { showApps: true } },
+        workbench: { ...workbench, config: { hideApps: false } },
         notifications: { list: { unread: 1 } },
         ticketCreate
       }),
@@ -91,7 +91,7 @@ describe('workbench sidebar', () => {
   it.each(DEBUG_PAGES)('is available in debug mode', page => {
     const { getByText } = renderSideBar(
       mockStore({
-        workbench: { status: { debug: true }, config: { showApps: true } },
+        workbench: { status: { debug: true }, config: { hideApps: false } },
         notifications,
         ticketCreate
       }),
