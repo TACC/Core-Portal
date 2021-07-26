@@ -95,8 +95,7 @@ describe('workbench sidebar', () => {
       mockStore({
         workbench: { status: { debug: true },config: { showApps: true } },
         notifications,
-        ticketCreate,
-        workbench: { config: { showApps: true } }
+        ticketCreate
       }),
       true
     );
