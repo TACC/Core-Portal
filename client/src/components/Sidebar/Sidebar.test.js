@@ -93,7 +93,7 @@ describe('workbench sidebar', () => {
   it.each(DEBUG_PAGES)('is available in debug mode', page => {
     const { getByText } = renderSideBar(
       mockStore({
-        workbench: { status: { debug: true } },
+        workbench: { status: { debug: true },config: { showApps: true } },
         notifications,
         ticketCreate,
         workbench: { config: { showApps: true } }
