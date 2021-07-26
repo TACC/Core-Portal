@@ -16,7 +16,6 @@ const PUBLIC_PAGES = [
   'Allocations',
   'History'
 ];
-const APP_PAGES = ['Applications', 'History'];
 const DEBUG_PAGES = ['UI Patterns'];
 
 function getPath(page) {
