@@ -51,7 +51,8 @@ class SystemListingView(BaseApiView):
                     )
                 default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
                 response['default_host'] = default_system['host']
-        response['system_list'] += portal_systems
+        if portal_systems:
+            response['system_list'] += portal_systems
         return JsonResponse(response)
 
 
