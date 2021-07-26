@@ -78,15 +78,10 @@ function Workbench() {
                 <Route path={`${path}${ROUTES.DATA}`}>
                   <DataFiles />
                 </Route>
-                {showApps ? (
+                {showApps && (
                   <Route
                     path={`${path}${ROUTES.APPLICATIONS}`}
                     component={Applications}
-                  />
-                ) : (
-                  <Redirect
-                    from={`${path}${ROUTES.APPLICATIONS}`}
-                    to={`${path}${ROUTES.DASHBOARD}`}
                   />
                 )}
                 <Route
