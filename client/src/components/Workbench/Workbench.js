@@ -93,15 +93,10 @@ function Workbench() {
                   path={`${path}${ROUTES.ALLOCATIONS}`}
                   component={Allocations}
                 />
-                {showApps ? (
+                {showApps && (
                   <Route
                     path={`${path}${ROUTES.HISTORY}`}
                     component={History}
-                  />
-                ) : (
-                  <Redirect
-                    from={`${path}${ROUTES.HISTORY}`}
-                    to={`${path}${ROUTES.DASHBOARD}`}
                   />
                 )}
                 <Route
