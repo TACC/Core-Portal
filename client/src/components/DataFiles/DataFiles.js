@@ -107,6 +107,7 @@ const DataFiles = () => {
   );
   const loading = useSelector(state => state.systems.storage.loading);
   const error = useSelector(state => state.systems.storage.error);
+  const systems = useSelector(state => state.systems.storage.configuration);
 
   const readOnly =
     listingParams.scheme === 'projects' &&
@@ -124,6 +125,16 @@ const DataFiles = () => {
 
   if (loading) {
     return <LoadingSpinner />;
+  }
+
+  if (!systems.length) {
+    return (
+      <div styleName="error">
+        <SectionMessage type="warning">
+          No storage systems enabled for this portal
+        </SectionMessage>
+      </div>
+    );
   }
 
   return (

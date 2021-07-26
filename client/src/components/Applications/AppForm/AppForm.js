@@ -159,18 +159,20 @@ export const AppSchemaForm = ({ app }) => {
     portalAlloc,
     jobSubmission,
     hasDefaultAllocation,
-    defaultStorageHost
+    defaultStorageHost,
+    hasStorageSystems
   } = useSelector(state => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       host =>
         app.exec_sys.login.host === host ||
         app.exec_sys.login.host.endsWith(`.${host}`)
     );
-    const { defaultHost } = state.systems.storage;
-    const hasCorral = [
-      'cloud.corral.tacc.utexas.edu',
-      'data.tacc.utexas.edu'
-    ].some(s => defaultHost.endsWith(s));
+    const { defaultHost, configuration } = state.systems.storage;
+    const hasCorral =
+      defaultHost &&
+      ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some(s =>
+        defaultHost.endsWith(s)
+      );
     return {
       allocations: matchingExecutionHost
         ? state.allocations.hosts[matchingExecutionHost]
@@ -182,7 +184,8 @@ export const AppSchemaForm = ({ app }) => {
         state.systems.storage.loading ||
         state.allocations.hosts[defaultHost] ||
         hasCorral,
-      defaultStorageHost: defaultHost
+      defaultStorageHost: defaultHost,
+      hasStorageSystems: configuration.length
     };
   }, shallowEqual);
 
@@ -235,7 +238,7 @@ export const AppSchemaForm = ({ app }) => {
     } else {
       initialValues.allocation = allocations.length === 1 ? allocations[0] : '';
     }
-    if (!hasDefaultAllocation) {
+    if (!hasDefaultAllocation && hasStorageSystems) {
       jobSubmission.error = true;
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
@@ -258,7 +261,7 @@ export const AppSchemaForm = ({ app }) => {
 
   return (
     <div id="appForm-wrapper">
-      {!systemHasKeys && (
+      {!!(!systemHasKeys && hasStorageSystems) && (
         <div className="appDetail-error">
           <SectionMessage type="warning">
             There was a problem accessing your default My Data file system. If
@@ -275,7 +278,14 @@ export const AppSchemaForm = ({ app }) => {
           </SectionMessage>
         </div>
       )}
-      {missingLicense && (
+      {!hasStorageSystems && (
+        <div className="appDetail-error">
+          <SectionMessage type="warning">
+            No storage systems enabled for this portal.
+          </SectionMessage>
+        </div>
+      )}
+      {!!(missingLicense && hasStorageSystems) && (
         <div className="appDetail-error">
           <SectionMessage type="warning">
             Activate your {app.license.type} license in{' '}
@@ -426,6 +436,7 @@ export const AppSchemaForm = ({ app }) => {
           }
           const readOnly =
             missingLicense ||
+            !hasStorageSystems ||
             jobSubmission.submitting ||
             (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
           return (
