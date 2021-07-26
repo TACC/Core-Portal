@@ -169,7 +169,7 @@ export const AppSchemaForm = ({ app }) => {
     );
     const { defaultHost, configuration } = state.systems.storage;
     const hasCorral =
-      defaultHost &&
+      configuration.length &&
       ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some(s =>
         defaultHost.endsWith(s)
       );
