@@ -148,7 +148,7 @@ describe('AppSchemaForm', () => {
     });
   });
 
-  it('renders validation error for using normal queue but with only 1 node', async () => {
+  it('renders validation error for using normal queue but with only 1 node on Frontera', async () => {
     const store = mockStore({
       ...initialMockState
     });
@@ -232,7 +232,7 @@ describe('AppSchemaForm', () => {
     });
   });
 
-  it('renders validation error for using normal queue for SERIAL apps', async () => {
+  it('renders validation error for using normal queue for SERIAL apps on Frontera', async () => {
     const store = mockStore({
       ...initialMockState
     });

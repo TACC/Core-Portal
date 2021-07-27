@@ -17,6 +17,7 @@ from portal.apps.onboarding.execute import (
     execute_setup_steps,
     new_user_setup_check
 )
+from portal.apps.search.tasks import index_allocations
 
 
 logger = logging.getLogger(__name__)
@@ -60,7 +61,7 @@ def agave_oauth(request):
 
 
 def launch_setup_checks(user):
-    """Perform any onboarding checks that may spawn celery tasks
+    """Perform any onboarding checks or non-onboarding steps that may spawn celery tasks
     """
 
     # Check onboarding settings
@@ -68,6 +69,10 @@ def launch_setup_checks(user):
     if not user.profile.setup_complete:
         logger.info("Executing onboarding setup steps for %s", user.username)
         execute_setup_steps.apply_async(args=[user.username])
+    else:
+        logger.info("Already onboarded, running non-onboarding steps (e.g. update cached "
+                    "allocation information) for %s", user.username)
+        index_allocations.apply_async(args=[user.username])
 
 
 def agave_oauth_callback(request):
