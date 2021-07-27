@@ -59,7 +59,11 @@ function Workbench() {
   return (
     <div className="workbench-wrapper">
       <NotificationToast />
-      <Sidebar disabled={!setupComplete} showUIPatterns={showUIPatterns} />
+      <Sidebar
+        disabled={!setupComplete}
+        showUIPatterns={showUIPatterns}
+        loading={loading}
+      />
       <div className="workbench-content">
         {loading ? (
           <LoadingSpinner />

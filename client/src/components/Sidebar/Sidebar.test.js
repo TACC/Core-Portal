@@ -36,7 +36,7 @@ function renderSideBar(store, showUIPatterns) {
     <Provider store={store}>
       <MemoryRouter initialEntries={['/workbench']}>
         <Route path="/workbench">
-          <Sidebar showUIPatterns={showUIPatterns} />
+          <Sidebar showUIPatterns={showUIPatterns} loading={false} />
         </Route>
       </MemoryRouter>
     </Provider>
