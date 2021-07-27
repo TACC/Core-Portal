@@ -489,10 +489,12 @@ export const AppSchemaForm = ({ app }) => {
                       .filter(
                         q =>
                           /* normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed */
-                          getSystemName(app.exec_sys.login.host) !==
-                            'Frontera' ||
-                          q !== 'normal' ||
-                          app.definition.parallelism !== 'SERIAL'
+                          !(
+                            getSystemName(app.exec_sys.login.host) ===
+                              'Frontera' &&
+                            q === 'normal' &&
+                            app.definition.parallelism === 'SERIAL'
+                          )
                       )
                       .sort()
                       .map(queue => (
