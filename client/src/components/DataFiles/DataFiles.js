@@ -38,8 +38,8 @@ const DefaultSystemRedirect = () => {
     const defaultSystem = systems[0];
     history.push(
       `/workbench/data/${defaultSystem.api}/${defaultSystem.scheme}/${
-        defaultSystem.scheme === 'projects' ? '' : defaultSystem.system
-      }/`
+        defaultSystem.scheme === 'projects' ? '' : `${defaultSystem.system}/`
+      }`
     );
   }, [systems]);
   return <></>;
