@@ -27,7 +27,7 @@ import DataFilesModals from './DataFilesModals/DataFilesModals';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
 
-const PrivateDataRedirect = () => {
+const DefaultSystemRedirect = () => {
   const systems = useSelector(
     state => state.systems.storage.configuration,
     shallowEqual
@@ -35,7 +35,12 @@ const PrivateDataRedirect = () => {
   const history = useHistory();
   useEffect(() => {
     if (systems.length === 0) return;
-    history.push(`/workbench/data/tapis/private/${systems[0].system}/`);
+    const defaultSystem = systems[0];
+    history.push(
+      `/workbench/data/${defaultSystem.api}/${defaultSystem.scheme}/${
+        defaultSystem.scheme === 'projects' ? '' : defaultSystem.system
+      }/`
+    );
   }, [systems]);
   return <></>;
 };
@@ -94,7 +99,7 @@ const DataFilesSwitch = React.memo(() => {
         <DataFilesProjectsList />
       </Route>
       <Route path={`${path}`}>
-        <PrivateDataRedirect />
+        <DefaultSystemRedirect />
       </Route>
     </Switch>
   );
