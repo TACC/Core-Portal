@@ -60,7 +60,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   return (
     <SectionTableWrapper
       styleName="root"
-      header={metadata.title}
+      header={<div styleName="title">{metadata.title}</div>}
       headerActions={
         <div styleName="controls">
           <Button color="link" styleName="edit" onClick={onEdit}>
