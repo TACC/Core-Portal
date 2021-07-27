@@ -348,7 +348,7 @@ export const AppSchemaForm = ({ app }) => {
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
               batchQueue: getQueueValidation(queue, app),
-              nodeCount: getNodeCountValidation(queue),
+              nodeCount: getNodeCountValidation(queue, app),
               processorsOnEachNode: getProcessorsOnEachNodeValidation(queue),
               maxRunTime: Yup.string()
                 .matches(
@@ -488,8 +488,13 @@ export const AppSchemaForm = ({ app }) => {
                       .map(q => q.name)
                       .filter(
                         q =>
-                          q !== 'normal' ||
-                          app.definition.parallelism !== 'SERIAL'
+                          /* normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed */
+                          !(
+                            getSystemName(app.exec_sys.login.host) ===
+                              'Frontera' &&
+                            q === 'normal' &&
+                            app.definition.parallelism === 'SERIAL'
+                          )
                       )
                       .sort()
                       .map(queue => (
