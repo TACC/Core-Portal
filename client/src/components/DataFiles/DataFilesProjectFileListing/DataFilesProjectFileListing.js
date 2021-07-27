@@ -22,6 +22,14 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   const metadata = useSelector(state => state.projects.metadata);
 
+  const userIsOwner = useSelector(state =>
+    metadata.members.some(
+      member =>
+        member.access === 'owner' &&
+        member.user.username === state.authenticatedUser.user.username
+    )
+  );
+
   const onEdit = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -62,15 +70,17 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       styleName="root"
       header={<div styleName="title">{metadata.title}</div>}
       headerActions={
-        <div styleName="controls">
-          <Button color="link" styleName="edit" onClick={onEdit}>
-            Edit Descriptions
-          </Button>
-          <span styleName="separator">|</span>
-          <Button color="link" styleName="edit" onClick={onManage}>
-            Manage Team
-          </Button>
-        </div>
+        userIsOwner && (
+          <div styleName="controls">
+            <Button color="link" styleName="edit" onClick={onEdit}>
+              Edit Descriptions
+            </Button>
+            <span styleName="separator">|</span>
+            <Button color="link" styleName="edit" onClick={onManage}>
+              Manage Team
+            </Button>
+          </div>
+        )
       }
       manualContent
     >
@@ -81,7 +91,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div styleName="description">
-        <ReadMore>{metadata.description}</ReadMore>
+        {metadata.description && <ReadMore>{metadata.description}</ReadMore>}
       </div>
       <DataFilesListing
         api="tapis"
