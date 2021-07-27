@@ -20,6 +20,7 @@ import './Workbench.scss';
 function Workbench() {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
+  const hideApps = useSelector(state => state.workbench.config.hideApps);
 
   // showUIPatterns: Show some entries only in local development
   const { loading, setupComplete, showUIPatterns, isStaff } = useSelector(
@@ -32,8 +33,6 @@ function Workbench() {
     }),
     shallowEqual
   );
-
-  const hideApps = useSelector(state => state.workbench.config.hideApps);
 
   // Get systems and any other initial data we need from the backend
   useEffect(() => {
