@@ -34,7 +34,7 @@ const DataFilesSidebar = ({ readOnly }) => {
   );
   const { user } = useSelector(state => state.authenticatedUser);
 
-  const sharedWorkspaces = systems.find(e => e.name === 'Shared Workspaces');
+  const sharedWorkspaces = systems.find(e => e.scheme === 'projects');
 
   const toggleMkdirModal = () => {
     dispatch({
@@ -88,12 +88,11 @@ const DataFilesSidebar = ({ readOnly }) => {
                   <i className="icon-folder" /> Folder
                 </span>
               </DropdownItem>
-              {systems.some(s => s.scheme === 'projects') &&
-                !!(sharedWorkspaces && !sharedWorkspaces.read_only) && (
-                  <DropdownItem onClick={toggleAddProjectModal}>
-                    <i className="icon-folder" /> Shared Workspace
-                  </DropdownItem>
-                )}
+              {sharedWorkspaces && !sharedWorkspaces.read_only && (
+                <DropdownItem onClick={toggleAddProjectModal}>
+                  <i className="icon-folder" /> Shared Workspace
+                </DropdownItem>
+              )}
               <DropdownItem
                 className="complex-dropdown-item"
                 onClick={toggleUploadModal}
