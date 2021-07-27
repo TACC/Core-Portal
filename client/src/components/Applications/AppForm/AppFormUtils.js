@@ -108,9 +108,12 @@ export const getQueueValidation = (queue, app) => {
     .test(
       'is-not-serial-job-using-normal-queue',
       'The normal queue does not support serial apps (i.e. Node Count set to 1).',
-      (value, context) =>
-        getSystemName(app.exec_sys.login.host) !== 'Frontera' ||
-        queue.name !== 'normal' ||
-        app.definition.parallelism !== 'SERIAL'
+      (value, context) => {
+        return !(
+          getSystemName(app.exec_sys.login.host) === 'Frontera' &&
+          queue.name === 'normal' &&
+          app.definition.parallelism === 'SERIAL'
+        );
+      }
     );
 };
