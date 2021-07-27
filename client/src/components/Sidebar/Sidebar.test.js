@@ -16,6 +16,7 @@ const PUBLIC_PAGES = [
   'Allocations',
   'History'
 ];
+const APP_PAGES = ['Applications', 'History'];
 const DEBUG_PAGES = ['UI Patterns'];
 
 function getPath(page) {
@@ -59,6 +60,20 @@ describe('workbench sidebar', () => {
       'href',
       `/workbench/${path}`
     );
+    expect(queryByRole('status')).toBeNull();
+  });
+
+  it.each(APP_PAGES)('should not have a link to the %s page', page => {
+    const { queryByText, queryByRole } = renderSideBar(
+      mockStore({
+        workbench: { ...workbench, config: { hideApps: true } },
+        notifications,
+        ticketCreate
+      }),
+      false
+    );
+    const path = getPath(page);
+    expect(queryByText(page)).not.toBeInTheDocument();
     expect(queryByRole('status')).toBeNull();
   });
 
