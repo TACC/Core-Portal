@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { getSystemName } from 'utils/systems';
 
 export const getMaxQueueRunTime = (app, queueName) => {
   return app.exec_sys.queues.find(q => q.name === queueName).maxRequestedTime;
@@ -57,9 +58,13 @@ export const createMaxRunTimeRegex = maxRunTime => {
  * @param {Object} queue
  * @returns {Yup.number()} min/max validation of node count
  */
-export const getNodeCountValidation = queue => {
-  // all queues have a min node count of 1 except for the normal queue.
-  const min = queue.name === 'normal' ? 3 : 1;
+export const getNodeCountValidation = (queue, app) => {
+  // all queues have a min node count of 1 except for the normal queue on Frontera which has a min node of 3
+  const min =
+    getSystemName(app.exec_sys.login.host) === 'Frontera' &&
+    queue.name === 'normal'
+      ? 3
+      : 1;
   return Yup.number()
     .min(
       min,
@@ -87,6 +92,15 @@ export const getProcessorsOnEachNodeValidation = queue => {
     .max(queue.maxProcessorsPerNode / queue.maxNodes);
 };
 
+/**
+ * Get validator for queues
+ *
+ * 'normal' queue isn't supported on Frontera for SERIAL (i.e. one node) jobs
+ *
+ * @function
+ * @param {Object} queue
+ * @returns {Yup.string()} validation of queue
+ */
 export const getQueueValidation = (queue, app) => {
   return Yup.string()
     .required('Required')
@@ -94,7 +108,12 @@ export const getQueueValidation = (queue, app) => {
     .test(
       'is-not-serial-job-using-normal-queue',
       'The normal queue does not support serial apps (i.e. Node Count set to 1).',
-      (value, context) =>
-        queue.name !== 'normal' || app.definition.parallelism !== 'SERIAL'
+      (value, context) => {
+        return !(
+          getSystemName(app.exec_sys.login.host) === 'Frontera' &&
+          queue.name === 'normal' &&
+          app.definition.parallelism === 'SERIAL'
+        );
+      }
     );
 };
