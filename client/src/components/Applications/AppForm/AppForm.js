@@ -261,6 +261,8 @@ export const AppSchemaForm = ({ app }) => {
 
   return (
     <div id="appForm-wrapper">
+      {/* The !! is needed because the second value of this shorthand 
+          is interpreted as a literal 0 if not. */}
       {!!(!systemHasKeys && hasStorageSystems) && (
         <div className="appDetail-error">
           <SectionMessage type="warning">
