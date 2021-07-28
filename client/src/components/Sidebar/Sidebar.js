@@ -103,12 +103,12 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
               disabled={disabled}
             />
           )}
-          <NavItem styleName="feedback-nav-item">
-            <FeedbackButton />
-          </NavItem>
-        </Nav>
+        </>
       )}
-    </>
+      <NavItem styleName="feedback-nav-item">
+        <FeedbackButton />
+      </NavItem>
+    </Nav>
   );
 };
 

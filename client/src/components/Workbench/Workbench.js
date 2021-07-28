@@ -20,16 +20,22 @@ import './Workbench.scss';
 function Workbench() {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
-  const hideApps = useSelector(state => state.workbench.config.hideApps);
 
   // showUIPatterns: Show some entries only in local development
-  const { loading, setupComplete, showUIPatterns, isStaff } = useSelector(
+  const {
+    loading,
+    setupComplete,
+    showUIPatterns,
+    isStaff,
+    hideApps
+  } = useSelector(
     state => ({
       loading: state.workbench.loading || state.systems.storage.loading,
       setupComplete: state.workbench.setupComplete,
       showUIPatterns: state.workbench.config.debug,
       isStaff:
-        state.authenticatedUser.user && state.authenticatedUser.user.isStaff
+        state.authenticatedUser.user && state.authenticatedUser.user.isStaff,
+      hideApps: state.workbench.config.hideApps
     }),
     shallowEqual
   );
