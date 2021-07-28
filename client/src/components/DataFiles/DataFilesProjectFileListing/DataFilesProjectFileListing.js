@@ -22,13 +22,23 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   const metadata = useSelector(state => state.projects.metadata);
 
-  const userIsOwner = useSelector(state =>
-    metadata.members.some(
-      member =>
-        member.access === 'owner' &&
-        member.user.username === state.authenticatedUser.user.username
-    )
-  );
+  const editable = useSelector(state => {
+    const projectSystem = state.systems.storage.configuration.find(
+      s => s.scheme === 'projects'
+    );
+
+    const privilegeRequired = projectSystem && projectSystem.privilegeRequired;
+
+    return (
+      !privilegeRequired ||
+      metadata.members.some(member => {
+        return (
+          member.access === 'owner' &&
+          member.user.username === state.authenticatedUser.user.username
+        );
+      })
+    );
+  });
 
   const onEdit = () => {
     dispatch({
@@ -70,7 +80,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       styleName="root"
       header={<div styleName="title">{metadata.title}</div>}
       headerActions={
-        userIsOwner && (
+        editable && (
           <div styleName="controls">
             <Button color="link" styleName="edit" onClick={onEdit}>
               Edit Descriptions

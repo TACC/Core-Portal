@@ -116,7 +116,8 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': None
+        'icon': None,
+        'privilegeRequired': False
     },
     {
         'name': 'Google Drive',
