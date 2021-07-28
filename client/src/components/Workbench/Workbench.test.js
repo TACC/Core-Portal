@@ -42,7 +42,8 @@ describe('workbench', () => {
       ...state,
       workbench: {
         ...workbench,
-        setupComplete: false
+        setupComplete: false,
+        loading: false
       }
     });
     const { getByText } = renderComponent(<Workbench />, store, history);
@@ -58,7 +59,8 @@ describe('workbench', () => {
       ...state,
       workbench: {
         ...workbench,
-        setupComplete: true
+        setupComplete: true,
+        loading: false
       }
     });
 
