@@ -56,9 +56,9 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   const hideApps = useSelector(state => state.workbench.config.hideApps);
 
   return (
-    <>
+    <Nav styleName="root" vertical>
       {!loading && (
-        <Nav styleName="root" vertical>
+        <>
           <SidebarItem
             to={`${path}${ROUTES.DASHBOARD}`}
             label="Dashboard"
