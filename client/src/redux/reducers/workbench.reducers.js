@@ -1,5 +1,5 @@
 export const initialState = {
-  loading: false,
+  loading: true,
   config: {},
   portalName: '',
   setupComplete: window.__INITIAL_SETUP_COMPLETE__
