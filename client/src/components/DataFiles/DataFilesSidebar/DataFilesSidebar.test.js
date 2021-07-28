@@ -8,7 +8,7 @@ import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
 
-const store = mockStore({
+const initialMockState = {
   files: {
     error: {
       FilesListing: false
@@ -26,12 +26,16 @@ const store = mockStore({
       email: 'user@username.com'
     }
   }
-});
+};
 
 describe('DataFilesSidebar', () => {
   it('contains an Add button and a link', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/');
+
+    const store = mockStore({
+      ...initialMockState
+    });
 
     const { getByText } = renderComponent(
       <Route path="/workbench/data">
@@ -54,5 +58,30 @@ describe('DataFilesSidebar', () => {
         .closest('a')
         .getAttribute('href')
     ).toEqual('/workbench/data/tapis/private/longhorn.home.username/');
+  });
+
+  it('disables creating new shared workspaces in read only shared workspaces', async () => {
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/projects/');
+
+    systemsFixture.storage.configuration[5].read_only = true;
+
+    const store = mockStore({
+      ...initialMockState,
+      systems: systemsFixture,
+    });
+
+    const { container } = renderComponent(
+      <Route path="/workbench/data/tapis/projects/">
+        <DataFilesSidebar />
+      </Route>,
+      store,
+      history
+    );
+
+    expect(Array.from(container.querySelectorAll('.dropdown-item'))
+      .find(el =>
+        el.textContent.includes('Shared Workspace'))
+      ).toBeUndefined();
   });
 });
