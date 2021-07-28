@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link, Route, Switch } from 'react-router-dom';
 
 import { BrowserChecker, Section, SectionTableWrapper } from '_common';
@@ -11,6 +11,7 @@ import './Dashboard.global.css';
 import './Dashboard.module.css';
 
 function Dashboard() {
+  const hideApps = useSelector(state => state.workbench.config.hideApps);
   return (
     <Section
       bodyClassName="has-loaded-dashboard"
@@ -27,7 +28,7 @@ function Dashboard() {
       contentShouldScroll
       content={
         <>
-          <DashboardJobs />
+          {!hideApps && <DashboardJobs />}
           <DashboardTickets />
           <DashboardSysmon />
           <DashboardRoutes />
