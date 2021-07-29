@@ -110,6 +110,6 @@ $core-portal-color-primary: #9d85ef;
   line-height: 1.1em;
   small {
     display: block;
-    color: #484848;
+    color: var(--global-color-primary--xx-dark);
   }
 }

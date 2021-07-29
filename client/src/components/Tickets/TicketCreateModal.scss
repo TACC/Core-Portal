@@ -3,7 +3,7 @@
   max-height: 60vh;
 }
 .ticket-create-modal {
-  color: #484848;
+  color: var(--global-color-primary--xx-dark);
   font-size: 0.75rem;
 
   /* make bootstrap dialog wider */

@@ -20,7 +20,7 @@
     @include alloc-button();
 
         a {
-            color: #484848;
+            color: var(--global-color-primary--xx-dark);
         }
 }
 .allocations-sidebar {
@@ -86,7 +86,7 @@
                 background-color: rgba(#c6c6c6, 0.1);
             }
             /* stylelint-enable no-descending-specificity */
-            color: #707070;
+            color: var(--global-color-primary--x-dark);
         }
         .sub-table-cell {
             background-color: white;

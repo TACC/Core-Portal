@@ -32,7 +32,7 @@ Styleguide Components.Bootstrap.Modal
   padding: 1.35rem 1.75rem; /* (18px 23.5px design * 1.2 design-to-app ratio) */
 }
 .modal-title {
-  color: #484848;
+  color: var(--global-color-primary--xx-dark);
   font-weight: normal;
   font-size: 1.2rem; /* 16px design * 1.2 design-to-app ratio */
 
