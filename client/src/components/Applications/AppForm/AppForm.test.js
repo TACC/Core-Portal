@@ -148,7 +148,7 @@ describe('AppSchemaForm', () => {
     });
   });
 
-  it('renders validation error for using normal queue but with only 1 node', async () => {
+  it('renders validation error for using normal queue but with only 1 node on Frontera', async () => {
     const store = mockStore({
       ...initialMockState
     });
@@ -203,7 +203,36 @@ describe('AppSchemaForm', () => {
     });
   });
 
-  it('renders validation error for using normal queue for SERIAL apps', async () => {
+  it('displays an error if no storage systems are enabled', async () => {
+    const store = mockStore({
+      ...initialMockState,
+      systems: {
+        storage: {
+          configuration: [],
+          error: false,
+          errorMessage: null,
+          loading: false,
+          defaultHost: ''
+        },
+        definitions: {
+          list: [],
+          error: false,
+          errorMessage: null,
+          loading: false
+        },
+      }
+    });
+
+    const { getByText } = renderAppSchemaFormComponent(store, {
+      ...namdAppFixture
+    });
+
+    await wait(() => {
+      expect(getByText(/No storage systems enabled for this portal./)).toBeDefined();
+    });
+  });
+
+  it('renders validation error for using normal queue for SERIAL apps on Frontera', async () => {
     const store = mockStore({
       ...initialMockState
     });

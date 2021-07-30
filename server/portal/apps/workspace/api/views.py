@@ -89,16 +89,17 @@ class AppsView(BaseApiView):
         if app_id:
             METRICS.debug("user:{} is requesting app id:{}".format(request.user.username, app_id))
             data = _get_app(app_id, request.user)
-            
-            # check if default system needs keys pushed
-            default_sys = UserSystemsManager(
-                request.user,
-                settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-            )
-            storage_sys = StorageSystem(agave, default_sys.get_system_id())
-            success, result = storage_sys.test()
-            data['systemHasKeys'] = success
-            data['pushKeysSystem'] = storage_sys.to_dict()
+
+            if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
+                # check if default system needs keys pushed
+                default_sys = UserSystemsManager(
+                    request.user,
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                )
+                storage_sys = StorageSystem(agave, default_sys.get_system_id())
+                success, result = storage_sys.test()
+                data['systemHasKeys'] = success
+                data['pushKeysSystem'] = storage_sys.to_dict()
         else:
             METRICS.debug("user:{} is requesting all public apps".format(request.user.username))
             public_only = request.GET.get('publicOnly')
