@@ -25,7 +25,7 @@
     --global-color-accent--normal: #9D85EF;
         --global-color-accent--weak: #9D85EF40;  /* =25% opacity *//* on white, eq. to #E6E0FB */
         --global-color-accent--light: #DFDAF5;   /* ~33% opacity */
-        --global-color-accent--x-light: #D2CCE7;
+        --global-color-accent--x-light: #D2CCE7; /* ~46% opacity */
     --global-color-info--normal: var(--global-color-primary--x-dark);
         --global-color-info--weak: var(--global-color-primary--x-light);
     --global-color-success--normal: #43D130;
