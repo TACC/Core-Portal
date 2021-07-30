@@ -59,13 +59,13 @@ ul#appBrowser-sidebar {
 
 #appBrowser-sidebar .nav-link.active,
 #appBrowser-tray .nav-link.active {
-  background: #dfdaf5;
+  background: var(--global-color-accent--weak);
   border: none;
 }
 
 #appBrowser-sidebar .nav-link:hover,
 #appBrowser-tray .nav-link:hover {
-  background: #d9d1ff;
+  background: var(--global-color-accent--weak);
   border: none;
 }
 

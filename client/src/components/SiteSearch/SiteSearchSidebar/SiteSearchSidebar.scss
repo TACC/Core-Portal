@@ -13,7 +13,7 @@ $core-portal-color-primary: #9d85ef;
 }
 
 .site-search-sidebar .nav-link.active {
-  background: #dfdaf5;
+  background: var(--global-color-accent--weak);
 }
 
 .site-search-sidebar .nav-text {

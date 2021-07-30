@@ -16,7 +16,7 @@ $width: 215px;
   color: #707070;
 }
 .link--active {
-  background-color: #dfdaf5;
+  background-color: var(--global-color-accent--weak);
 }
 
 .content {

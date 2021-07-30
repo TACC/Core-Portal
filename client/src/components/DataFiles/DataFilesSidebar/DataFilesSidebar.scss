@@ -21,7 +21,7 @@ $core-portal-color-primary: #9d85ef;
 }
 
 .data-files-sidebar .nav-link.active {
-  background: rgba($core-portal-color-primary, 0.25);
+  background: var(--global-color-accent--weak);
 }
 
 .data-files-sidebar .nav-text {
@@ -95,7 +95,7 @@ $core-portal-color-primary: #9d85ef;
   }
   .dropdown-item:focus,
   .dropdown-item:hover {
-    background-color: #E6E0FB;
+    background-color: var(--global-color-accent--weak);
   }
 }
 

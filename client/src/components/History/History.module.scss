@@ -50,6 +50,6 @@
         }
     }
     .active {
-        background: rgba(#9d85ef, 0.25);
+        background: var(--global-color-accent--weak);
     }
 }
