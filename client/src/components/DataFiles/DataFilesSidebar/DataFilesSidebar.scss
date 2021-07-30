@@ -93,6 +93,9 @@
   }
   .dropdown-item:focus,
   .dropdown-item:hover {
+    /* FAQ: Before FP-1083, value was #E6E0FB, which matched Design
+            and was `--global-color-accent` at 25% opacity on white…
+            which is what `--global-color-accent--weak` is now */
     background-color: var(--global-color-accent--weak);
   }
 }
