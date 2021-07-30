@@ -88,7 +88,7 @@ const DataFilesSidebar = ({ readOnly }) => {
                   <i className="icon-folder" /> Folder
                 </span>
               </DropdownItem>
-              {sharedWorkspaces && !sharedWorkspaces.read_only && (
+              {sharedWorkspaces && !sharedWorkspaces.readOnly && (
                 <DropdownItem onClick={toggleAddProjectModal}>
                   <i className="icon-folder" /> Shared Workspace
                 </DropdownItem>

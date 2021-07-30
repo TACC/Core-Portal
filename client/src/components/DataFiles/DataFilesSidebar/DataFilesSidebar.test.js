@@ -64,7 +64,7 @@ describe('DataFilesSidebar', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/projects/');
 
-    systemsFixture.storage.configuration[5].read_only = true;
+    systemsFixture.storage.configuration[5].readOnly = true;
 
     const store = mockStore({
       ...initialMockState,
