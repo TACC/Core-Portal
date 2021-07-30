@@ -57,7 +57,7 @@
   }
 
   .ticket-responder {
-    color: #9d85ef;
+    color: var(--global-color-accent--normal);
   }
 
   /* FP-426: Avoid all these styles by using `LoadingSpinner` */
@@ -70,7 +70,7 @@
 
   .btn-primary {
     border: none;
-    background-color: #9d85ef;
+    background-color: var(--global-color-accent--normal);
     min-width: 100px;
     min-height: 25px;
     font-size: 0.75rem;

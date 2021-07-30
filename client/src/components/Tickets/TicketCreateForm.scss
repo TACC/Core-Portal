@@ -42,12 +42,12 @@
 .ticket-create-button-row .btn-primary {
   margin-left: auto;
   border: none;
-  background-color: #9d85ef;
+  background-color: var(--global-color-accent--normal);
   font-size: 0.75rem;
 }
 
 .ticket-link {
-  color: #9d85ef;
+  color: var(--global-color-accent--normal);
 }
 
 .form-validation-error {

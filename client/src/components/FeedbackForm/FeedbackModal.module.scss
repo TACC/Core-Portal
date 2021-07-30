@@ -1,6 +1,6 @@
 .container {
   a {
-    color: #9d85ef;
+    color: var(--global-color-accent--normal);
   }
 
   @media (min-width: 1200px) {

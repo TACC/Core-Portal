@@ -12,5 +12,5 @@ Styleguide Components.Bootstrap.Button
            global styles are scattered among components */
 .btn-link,
 .btn-link:hover {
-  color: #9d85ef;
+  color: var(--global-color-accent--normal);
 }

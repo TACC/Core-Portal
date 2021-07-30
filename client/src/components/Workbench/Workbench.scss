@@ -46,7 +46,7 @@
 
 .workbench-content .btn-link,
 .workbench-content .wb-link {
-  color: #9d85ef;
+  color: var(--global-color-accent--normal);
 }
 
 .workbench-content .btn-secondary {
@@ -56,7 +56,7 @@
 }
 
 .workbench-content .btn-primary {
-  background-color: #9d85ef;
+  background-color: var(--global-color-accent--normal);
   color: white;
   border: none;
 }
