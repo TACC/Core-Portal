@@ -141,16 +141,15 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
 
   return (
     <>
-      {!isPublic && (
-        <DataFilesSearchbar
-          api={api}
-          scheme={scheme}
-          system={system}
-          filterType={filterType}
-          setFilterType={setFilterType}
-          resultCount={files.length}
-        />
-      )}
+      <DataFilesSearchbar
+        api={api}
+        scheme={scheme}
+        system={system}
+        filterType={filterType}
+        setFilterType={setFilterType}
+        resultCount={files.length}
+        publicData={isPublic}
+      />
       <div className="o-flex-item-table-wrap">
         <DataFilesTable
           data={filteredFiles}

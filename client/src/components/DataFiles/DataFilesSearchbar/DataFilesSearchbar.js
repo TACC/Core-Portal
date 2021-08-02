@@ -58,6 +58,7 @@ const DataFilesSearchbar = ({
   const onClear = e => {
     e.preventDefault();
     setQuery('');
+    setFilterType('All Types');
     if (publicData) {
       history.push(`/public-data/${api}/${scheme}/${system}/`);
     } else {

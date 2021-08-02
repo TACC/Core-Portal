@@ -118,12 +118,6 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
       }
     >
       <SectionTableWrapper styleName="content" manualContent>
-        <DataFilesSearchbar
-          api="tapis"
-          scheme="public"
-          system={system}
-          publicData
-        />
         <DataFilesListing
           api={api}
           scheme={scheme}
