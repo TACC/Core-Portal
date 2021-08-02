@@ -81,7 +81,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div styleName="description">
-        <ReadMore>{metadata.description}</ReadMore>
+        {metadata.description && <ReadMore>{metadata.description}</ReadMore>}
       </div>
       <DataFilesListing
         api="tapis"
