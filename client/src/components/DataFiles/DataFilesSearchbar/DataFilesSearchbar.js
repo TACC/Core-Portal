@@ -113,15 +113,18 @@ const DataFilesSearchbar = ({
         )}
       </div>
       {scheme !== 'cms' && (
-        <DropdownSelector
-          onChange={e => setFilterType(e.target.value)}
-          value={filterType}
-        >
-          <option>All Types</option>
-          {fileTypes.map(item => (
-            <option key={`fileTypeFilter${item.type}`}>{item.type}</option>
-          ))}
-        </DropdownSelector>
+        <>
+          <span>File Type:</span>
+          <DropdownSelector
+            onChange={e => setFilterType(e.target.value)}
+            value={filterType}
+          >
+            <option>All Types</option>
+            {fileTypes.map(item => (
+              <option key={`fileTypeFilter${item.type}`}>{item.type}</option>
+            ))}
+          </DropdownSelector>
+        </>
       )}
       {((hasQuery && !siteSearch) || filterType !== 'All Types') && (
         <Button
