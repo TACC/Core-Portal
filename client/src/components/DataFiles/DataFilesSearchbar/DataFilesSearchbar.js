@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import queryString from 'query-string';
-import { Icon } from '_common';
+import { Icon, DropdownSelector } from '_common';
 import { findSystemDisplayName } from 'utils/systems';
 import { useSelector } from 'react-redux';
+import fileTypes from './FileTypes';
 
 import './DataFilesSearchbar.module.css';
 
@@ -13,6 +14,8 @@ const DataFilesSearchbar = ({
   api,
   scheme,
   system,
+  setFilterType,
+  filterType,
   resultCount,
   className,
   publicData
@@ -97,6 +100,15 @@ const DataFilesSearchbar = ({
           </div>
         )}
       </div>
+      <DropdownSelector
+        onChange={e => setFilterType(e.target.value)}
+        value={filterType}
+      >
+        <option>All Types</option>
+        {fileTypes.map(item => (
+          <option key={`fileTypeFilter${item.type}`}>{item.type}</option>
+        ))}
+      </DropdownSelector>
       {hasQuery && (
         <Button
           type="reset"
@@ -116,12 +128,15 @@ DataFilesSearchbar.propTypes = {
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
   system: PropTypes.string.isRequired,
+  setFilterType: PropTypes.func.isRequired,
+  filterType: PropTypes.string,
   resultCount: PropTypes.number,
   /** Additional `className` (or transpiled `styleName`) for the root element */
   className: PropTypes.string,
   publicData: PropTypes.bool
 };
 DataFilesSearchbar.defaultProps = {
+  filterType: 'All Types',
   className: '',
   publicData: false,
   resultCount: 0
