@@ -109,14 +109,16 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
           <LoadingSpinner />
         </div>
       )}
-      {hasNoResults && (
+
+      {!loading && hasNoResults && (
         <div styleName="placeholder">
           <InlineMessage type="info" className="small">
             No results found in {FILTER_MAPPING[filter]}.
           </InlineMessage>
         </div>
       )}
-      {error && (
+
+      {!loading && error && (
         <div styleName="placeholder">
           <InlineMessage type="error">
             There was an error retrieving your search results.
@@ -124,7 +126,8 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
         </div>
       )}
 
-      {results.type === 'cms' &&
+      {!loading &&
+        results.type === 'cms' &&
         results.listing.map(item => (
           <CMSListingItem
             key={item.id}
@@ -134,11 +137,11 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
           />
         ))}
 
-      {results.type === 'file' && (
+      {!loading && results.type === 'file' && (
         <SiteSearchFileListing listing={results.listing} filter={filter} />
       )}
 
-      {results.count > 0 && (
+      {!loading && results.count > 0 && (
         <div styleName="paginator-container">
           <SiteSearchPaginator lastPageIndex={lastPageIndex} />
         </div>
