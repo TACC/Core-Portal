@@ -110,41 +110,44 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
         </div>
       )}
 
-      {!loading && hasNoResults && (
-        <div styleName="placeholder">
-          <InlineMessage type="info" className="small">
-            No results found in {FILTER_MAPPING[filter]}.
-          </InlineMessage>
-        </div>
-      )}
+      {!loading && (
+        <>
+          {hasNoResults && (
+            <div styleName="placeholder">
+              <InlineMessage type="info" className="small">
+                No results found in {FILTER_MAPPING[filter]}.
+              </InlineMessage>
+            </div>
+          )}
 
-      {!loading && error && (
-        <div styleName="placeholder">
-          <InlineMessage type="error">
-            There was an error retrieving your search results.
-          </InlineMessage>
-        </div>
-      )}
+          {error && (
+            <div styleName="placeholder">
+              <InlineMessage type="error">
+                There was an error retrieving your search results.
+              </InlineMessage>
+            </div>
+          )}
 
-      {!loading &&
-        results.type === 'cms' &&
-        results.listing.map(item => (
-          <CMSListingItem
-            key={item.id}
-            highlight={item.highlight}
-            url={item.url}
-            title={item.title}
-          />
-        ))}
+          {results.type === 'cms' &&
+            results.listing.map(item => (
+              <CMSListingItem
+                key={item.id}
+                highlight={item.highlight}
+                url={item.url}
+                title={item.title}
+              />
+            ))}
 
-      {!loading && results.type === 'file' && (
-        <SiteSearchFileListing listing={results.listing} filter={filter} />
-      )}
+          {results.type === 'file' && (
+            <SiteSearchFileListing listing={results.listing} filter={filter} />
+          )}
 
-      {!loading && results.count > 0 && (
-        <div styleName="paginator-container">
-          <SiteSearchPaginator lastPageIndex={lastPageIndex} />
-        </div>
+          {results.count > 0 && (
+            <div styleName="paginator-container">
+              <SiteSearchPaginator lastPageIndex={lastPageIndex} />
+            </div>
+          )}
+        </>
       )}
       <DataFilesPreviewModal />
     </div>
