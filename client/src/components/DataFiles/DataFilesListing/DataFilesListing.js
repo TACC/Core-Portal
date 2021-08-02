@@ -20,8 +20,12 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   // Redux hooks
   const dispatch = useDispatch();
   const queryString = parse(useLocation().search).query_string;
-  const files = useSelector(
-    state => state.files.listing.FilesListing,
+  const { files, loading, error } = useSelector(
+    state => ({
+      files: state.files.listing.FilesListing,
+      loading: state.files.loading.FilesListing,
+      error: state.files.error.FilesListing
+    }),
     shallowEqual
   );
 
@@ -149,6 +153,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         setFilterType={setFilterType}
         resultCount={files.length}
         publicData={isPublic}
+        disabled={loading || error}
       />
       <div className="o-flex-item-table-wrap">
         <DataFilesTable

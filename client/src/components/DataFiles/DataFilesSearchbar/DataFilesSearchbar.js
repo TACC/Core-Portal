@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useParams } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button } from 'reactstrap';
@@ -18,15 +18,13 @@ const DataFilesSearchbar = ({
   filterType,
   resultCount,
   className,
-  publicData
+  publicData,
+  siteSearch,
+  disabled
 }) => {
-  const disabled = useSelector(
-    state =>
-      state.files.loading.FilesListing === true ||
-      state.files.error.FilesListing !== false
-  );
   const systemList = useSelector(state => state.systems.storage.configuration);
-  const [query, setQuery] = useState('');
+  const urlQueryParam = queryString.parse(window.location.search).query_string;
+  const [query, setQuery] = useState(urlQueryParam);
   const history = useHistory();
   const hasQuery = queryString.parse(useLocation().search).query_string;
   const location = useLocation();
@@ -36,20 +34,33 @@ const DataFilesSearchbar = ({
       : findSystemDisplayName(systemList, system);
 
   const routeSearch = () => {
+    // Site Search query
+    if (siteSearch) {
+      const baseUrl = scheme ? `/search/${scheme}` : '/search';
+      const qs = query
+        ? `?${queryString.stringify({ query_string: query, page: 1 })}`
+        : '';
+      history.push(`${baseUrl}/${qs}`);
+
+      window.dispatchEvent(new Event('portal.search'));
+      return;
+    }
+
+    // All other queries
     const qs = query
       ? `?${queryString.stringify({ query_string: query })}`
       : '';
     if (publicData) {
       history.push(`/public-data/${api}/${scheme}/${system}/${qs}`);
-      return;
+    } else {
+      history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
     }
-    history.push(`/workbench/data/${api}/${scheme}/${system}/${qs}`);
   };
 
   // Reset form field on route change
   useEffect(() => {
-    !hasQuery && setQuery('');
-  }, [hasQuery, location]);
+    !hasQuery && !siteSearch && setQuery('');
+  }, [hasQuery, location, siteSearch]);
 
   const onSubmit = e => {
     routeSearch();
@@ -61,7 +72,7 @@ const DataFilesSearchbar = ({
     setFilterType('All Types');
     if (publicData) {
       history.push(`/public-data/${api}/${scheme}/${system}/`);
-    } else {
+    } else if (!siteSearch) {
       history.push(`/workbench/data/${api}/${scheme}/${system}/`);
     }
   };
@@ -85,32 +96,34 @@ const DataFilesSearchbar = ({
           type="search"
           minLength="3"
           onChange={onChange}
-          value={query}
+          value={query || ''}
           name="query"
-          aria-label={`Search (in ${sectionName})`}
+          aria-label={`Search`}
           styleName="input"
           className="form-control"
-          placeholder={`Search in ${sectionName}`}
+          placeholder={`Search`}
           data-testid="input"
           autoComplete="off"
           disabled={disabled}
         />
-        {hasQuery && (
+        {hasQuery && !siteSearch && (
           <div aria-label="Summary of Search Results" styleName="results">
             {resultCount} Results Found for <span>{hasQuery}</span>
           </div>
         )}
       </div>
-      <DropdownSelector
-        onChange={e => setFilterType(e.target.value)}
-        value={filterType}
-      >
-        <option>All Types</option>
-        {fileTypes.map(item => (
-          <option key={`fileTypeFilter${item.type}`}>{item.type}</option>
-        ))}
-      </DropdownSelector>
-      {hasQuery && (
+      {scheme !== 'cms' && (
+        <DropdownSelector
+          onChange={e => setFilterType(e.target.value)}
+          value={filterType}
+        >
+          <option>All Types</option>
+          {fileTypes.map(item => (
+            <option key={`fileTypeFilter${item.type}`}>{item.type}</option>
+          ))}
+        </DropdownSelector>
+      )}
+      {((hasQuery && !siteSearch) || filterType !== 'All Types') && (
         <Button
           type="reset"
           color="link"
@@ -134,13 +147,17 @@ DataFilesSearchbar.propTypes = {
   resultCount: PropTypes.number,
   /** Additional `className` (or transpiled `styleName`) for the root element */
   className: PropTypes.string,
-  publicData: PropTypes.bool
+  publicData: PropTypes.bool,
+  siteSearch: PropTypes.bool,
+  disabled: PropTypes.bool
 };
 DataFilesSearchbar.defaultProps = {
   filterType: 'All Types',
   className: '',
   publicData: false,
-  resultCount: 0
+  resultCount: 0,
+  siteSearch: false,
+  disabled: false
 };
 
 export default DataFilesSearchbar;
