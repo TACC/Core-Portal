@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useParams } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button } from 'reactstrap';
@@ -8,7 +8,7 @@ import { findSystemDisplayName } from 'utils/systems';
 import { useSelector } from 'react-redux';
 import fileTypes from './FileTypes';
 
-import './DataFilesSearchbar.module.css';
+import './DataFilesSearchbar.module.scss';
 
 const DataFilesSearchbar = ({
   api,
@@ -113,7 +113,7 @@ const DataFilesSearchbar = ({
         )}
       </div>
       {scheme !== 'cms' && (
-        <>
+        <div styleName="file-filter">
           <span>File Type:</span>
           <DropdownSelector
             onChange={e => setFilterType(e.target.value)}
@@ -124,7 +124,7 @@ const DataFilesSearchbar = ({
               <option key={`fileTypeFilter${item.type}`}>{item.type}</option>
             ))}
           </DropdownSelector>
-        </>
+        </div>
       )}
       {((hasQuery && !siteSearch) || filterType !== 'All Types') && (
         <Button
