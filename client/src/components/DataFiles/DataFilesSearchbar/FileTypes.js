@@ -59,6 +59,7 @@ const fileTypes = [
       '.sml',
       '.sql',
       '.toml',
+      '.ts',
       '.txt',
       '.vi',
       '.vim',
