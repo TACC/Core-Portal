@@ -153,7 +153,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         setFilterType={setFilterType}
         resultCount={files.length}
         publicData={isPublic}
-        disabled={loading || error}
+        disabled={loading || !!error}
       />
       <div className="o-flex-item-table-wrap">
         <DataFilesTable

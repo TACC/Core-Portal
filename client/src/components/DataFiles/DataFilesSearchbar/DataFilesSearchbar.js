@@ -123,6 +123,7 @@ const DataFilesSearchbar = ({
           <DropdownSelector
             onChange={e => setFilterType(e.target.value)}
             value={filterType}
+            disabled={disabled}
           >
             <option>All Types</option>
             {fileTypes.map(item => (
