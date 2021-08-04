@@ -4,10 +4,12 @@ import SiteSearchListing from './SiteSearchListing';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import siteSearchResults from '../fixtures/siteSearch.fixture.json';
+import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import '@testing-library/jest-dom';
 
 const mockStore = configureStore();
 const mockState = {
+  systems: systemsFixture,
   files: {
     modals: {
       preview: false
