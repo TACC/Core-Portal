@@ -242,5 +242,7 @@ describe('DataFilesListing', () => {
     expect(getAllByTestId('file-listing-item').length).toBe(2);
     fireEvent.change(dropdownSelector, { target: { value: 'Folders' } });
     expect(getAllByTestId('file-listing-item').length).toBe(4);
+    fireEvent.change(dropdownSelector, { target: { value: 'All Types' } });
+    expect(getAllByTestId('file-listing-item').length).toBe(filesFixture.listing.FilesListing.length);
   })
 });

@@ -127,7 +127,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
         filterType={fileFilterType}
         setFilterType={setFileFilterType}
         siteSearch
-        disabled={loading || error}
+        disabled={loading || !!error}
       />
       <h5 styleName="header">{FILTER_MAPPING[filter]}</h5>
 
