@@ -21,6 +21,7 @@ const fileTypes = [
     extensions: [
       '.c',
       '.css',
+      '.err',
       '.h',
       '.haml',
       '.hh',
@@ -42,6 +43,7 @@ const fileTypes = [
       '.ods',
       '.odt',
       '.odp',
+      '.out',
       '.php',
       '.pl',
       '.properties',
