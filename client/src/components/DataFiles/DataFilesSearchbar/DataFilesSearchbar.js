@@ -28,10 +28,15 @@ const DataFilesSearchbar = ({
   const history = useHistory();
   const hasQuery = queryString.parse(useLocation().search).query_string;
   const location = useLocation();
-  const sectionName =
-    scheme === 'projects'
-      ? 'Workspace'
-      : findSystemDisplayName(systemList, system);
+
+  let sectionName;
+  if (siteSearch) {
+    sectionName = 'Site';
+  } else if (scheme === 'projects') {
+    sectionName = 'Workspace';
+  } else {
+    sectionName = findSystemDisplayName(systemList, system);
+  }
 
   const routeSearch = () => {
     // Site Search query
@@ -98,10 +103,10 @@ const DataFilesSearchbar = ({
           onChange={onChange}
           value={query || ''}
           name="query"
-          aria-label={`Search`}
+          aria-label={`Search ${sectionName}`}
           styleName="input"
           className="form-control"
-          placeholder={`Search`}
+          placeholder={`Search ${sectionName}`}
           data-testid="input"
           autoComplete="off"
           disabled={disabled}
