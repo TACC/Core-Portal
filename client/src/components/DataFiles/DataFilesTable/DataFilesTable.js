@@ -170,6 +170,7 @@ const DataFilesTableRow = ({
         index={row.index}
         onClick={onClick}
         onKeyDown={onKeyDown}
+        data-testid="file-listing-item"
       >
         {row.cells.map(cell => {
           return (

@@ -148,6 +148,34 @@ const fileTypes = [
   {
     type: 'ZIP',
     extensions: ['.zip', '.tar', '.tar.gz', '.gz', '.tgz']
+  },
+  {
+    type: '3D Visualization',
+    extensions: [
+      '.pov',
+      '.vrml',
+      '.webgl',
+      '.x3d',
+      '.x3db',
+      '.pvd',
+      '.ppvd',
+      '.pwin',
+      '.pvsm',
+      '.vtk',
+      '.vti',
+      '.pvti',
+      '.vts',
+      '.pvts',
+      '.vtr',
+      '.vtp',
+      '.STL',
+      '.OBJ',
+      '.FBX',
+      '.COLLADA',
+      '.3DS',
+      '.IGES',
+      '.STEP'
+    ]
   }
 ];
 
