@@ -21,7 +21,6 @@ const fileTypes = [
     extensions: [
       '.c',
       '.css',
-      '.err',
       '.h',
       '.haml',
       '.hh',
@@ -34,7 +33,6 @@ const fileTypes = [
       '.jsx',
       '.j2',
       '.less',
-      '.log',
       '.m',
       '.make',
       '.ml',
@@ -43,7 +41,6 @@ const fileTypes = [
       '.ods',
       '.odt',
       '.odp',
-      '.out',
       '.php',
       '.pl',
       '.properties',
@@ -60,7 +57,6 @@ const fileTypes = [
       '.sql',
       '.toml',
       '.ts',
-      '.txt',
       '.vi',
       '.vim',
       '.wpd',
@@ -147,6 +143,10 @@ const fileTypes = [
       '.xml',
       '.cpg'
     ]
+  },
+  {
+    type: 'Text',
+    extensions: ['.err', '.log', '.out', '.txt']
   },
   {
     type: 'ZIP',
