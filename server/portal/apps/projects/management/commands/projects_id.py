@@ -1,67 +1,10 @@
 """Management command."""
 
-from django.conf import settings
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
-from portal.libs.agave.utils import service_account
-from portal.apps.projects.models.base import ProjectId, Project
-from portal.libs.agave.operations import iterate_listing
-
-
-def get_latest_project_storage(max_project_id=None):
-    """Get latest agave project storage.
-
-    :param max_project_id: If provided, then ignore projects ids that are greater than or equal to this value.
-    """
-    offset = 0
-    limit = 1000
-    latest = -1
-    all_projects = []
-    while True:
-        prjs = [p for p in Project.listing(
-            service_account(),
-            offset=offset,
-            limit=limit
-        )]
-        all_projects += prjs
-        offset += limit
-        if len(prjs) < limit:
-            break
-
-    for prj in all_projects:
-        prj_id = prj.storage.id.replace(
-            settings.PORTAL_PROJECTS_SYSTEM_PREFIX,
-            ''
-        )
-        if '-' not in prj_id:
-            continue
-        _, prj_id = prj_id.rsplit('-')
-        prj_id = int(prj_id)
-
-        if prj_id > latest and (max_project_id is None or prj_id < max_project_id):
-            latest = prj_id
-
-    return latest
-
-
-def get_latest_project_directory(max_project_id=None):
-    """Get latest agave project directory.
-
-    :param max_project_id: If provided, then ignore projects ids that are greater than or equal to this value.
-    """
-    latest = -1
-    for f in iterate_listing(service_account(),
-                             system=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-                             path='/'):
-        name = f["name"]
-        if '-' not in name or not name.startswith(settings.PORTAL_PROJECTS_ID_PREFIX):
-            continue
-        _, dir_id = name.rsplit('-', 1)
-        dir_id = int(dir_id)
-        if dir_id > latest and (max_project_id is None or dir_id < max_project_id):
-            latest = dir_id
-    return latest
+from portal.apps.projects.models.base import ProjectId
+from portal.apps.models.utils import get_latest_project_storage, get_latest_project_directory
 
 
 class Command(BaseCommand):
@@ -145,6 +88,6 @@ class Command(BaseCommand):
             self.stdout.write('Updating to user provided value of: {}'.format(options.get('update')))
             ProjectId.update(options.get('update'))
         elif options["update_using_max_value_found"]:
-            latest_storage_system_id = 0 if latest_storage_system_id == -1 else latest_storage_system_id
-            self.stdout.write('Updating to value latest storage system id: {}'.format(latest_storage_system_id))
-            ProjectId.update(latest_storage_system_id)
+            max_value_found = max(latest_storage_system_id, latest_project_id, 0)
+            self.stdout.write('Updating to value latest storage system id: {}'.format(max_value_found)
+            ProjectId.update(max_value_found)

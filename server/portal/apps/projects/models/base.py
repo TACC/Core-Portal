@@ -257,6 +257,7 @@ class Project(object):
         :param str title: Project title
         :param str project_id: Project ID. Preferable in the form PRJ-[0-9]+
         """
+        project_id = 'SAL.CEP-24'
         cls._create_dir(project_id)
 
         try:
@@ -271,6 +272,9 @@ class Project(object):
                 project_id,
                 owner
             )
+        except ValueError:
+            raise
+
         except Exception as e:
             cls._delete_dir(project_id)
             raise e
