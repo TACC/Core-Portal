@@ -98,7 +98,7 @@ describe('DataFilesSearchbar', () => {
 
     expect(getByRole('form')).toBeDefined();
     expect(getByRole('searchbox')).toBeDefined();
-    expect(getByTestId('reset')).toBeDefined();
-    expect(getByPlaceholderText('Search in My Data (Frontera)')).toBeDefined();
+    expect(getByTestId('selector')).toBeDefined();
+    expect(getByPlaceholderText('Search My Data (Frontera)')).toBeDefined();
   });
 });
