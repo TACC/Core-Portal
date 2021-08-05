@@ -238,7 +238,7 @@ describe('DataFilesListing', () => {
     const dropdownSelector = getByTestId('selector');
     fireEvent.change(dropdownSelector, { target: { value: 'Images' } });
     expect(getAllByTestId('file-listing-item').length).toBe(1);
-    fireEvent.change(dropdownSelector, { target: { value: 'Code' } });
+    fireEvent.change(dropdownSelector, { target: { value: 'Text' } });
     expect(getAllByTestId('file-listing-item').length).toBe(2);
     fireEvent.change(dropdownSelector, { target: { value: 'Folders' } });
     expect(getAllByTestId('file-listing-item').length).toBe(4);
