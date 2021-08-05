@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import renderHtml from 'utils/renderHtml';
 import { InlineMessage, LoadingSpinner, InfiniteScrollTable } from '_common';
@@ -7,9 +7,10 @@ import {
   FileLengthCell,
   FileIconCell
 } from '../../DataFiles/DataFilesListing/DataFilesListingCells';
-import SiteSearchSearchbar from './SiteSearchSearchbar/SiteSearchSearchbar';
 import SiteSearchPaginator from './SiteSearchPaginator/SiteSearchPaginator';
 import DataFilesPreviewModal from '../../DataFiles/DataFilesModals/DataFilesPreviewModal';
+import DataFilesSearchbar from '../../DataFiles/DataFilesSearchbar/DataFilesSearchbar';
+import fileTypes from '../../DataFiles/DataFilesSearchbar/FileTypes';
 import './SiteSearchListing.module.scss';
 import './SiteSearchListing.css';
 
@@ -87,21 +88,47 @@ SiteSearchFileListing.propTypes = {
 };
 
 const SiteSearchListing = ({ results, loading, error, filter }) => {
+  const { listing, count, type } = results;
+  const [fileFilterType, setFileFilterType] = useState();
+  const [filteredFiles, setFilteredFiles] = useState(listing);
+  useEffect(() => {
+    const fileFilter = fileTypes.find(f => f.type === fileFilterType);
+    if (!fileFilter) {
+      setFilteredFiles(listing);
+    } else if (fileFilter.type === 'Folders') {
+      setFilteredFiles(listing.filter(f => f.format === 'folder'));
+    } else {
+      setFilteredFiles(
+        listing.filter(f =>
+          fileFilter.extensions.some(ext => f.name.endsWith(ext))
+        )
+      );
+    }
+  }, [fileFilterType, listing]);
+
   const FILTER_MAPPING = {
     cms: 'Web Content',
     public: 'Public Files',
     community: 'Community Data'
   };
 
-  const hasNoResults = !loading && !error && results.count === 0;
+  const hasNoResults = !loading && !error && count === 0;
 
   let containerStyleNames = `container for-${filter}`;
   if (hasNoResults) containerStyleNames += ' is-empty';
 
-  const lastPageIndex = Math.ceil(results.count / 10);
+  const lastPageIndex = Math.ceil(count / 10);
   return (
     <div styleName={containerStyleNames}>
-      <SiteSearchSearchbar />
+      <DataFilesSearchbar
+        api="tapis"
+        scheme={filter}
+        system=""
+        filterType={fileFilterType}
+        setFilterType={setFileFilterType}
+        siteSearch
+        disabled={loading || !!error}
+      />
       <h5 styleName="header">{FILTER_MAPPING[filter]}</h5>
 
       {loading && (
@@ -124,8 +151,8 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
         </div>
       )}
 
-      {results.type === 'cms' &&
-        results.listing.map(item => (
+      {type === 'cms' &&
+        listing.map(item => (
           <CMSListingItem
             key={item.id}
             highlight={item.highlight}
@@ -134,11 +161,11 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
           />
         ))}
 
-      {results.type === 'file' && (
-        <SiteSearchFileListing listing={results.listing} filter={filter} />
+      {type === 'file' && (
+        <SiteSearchFileListing listing={filteredFiles} filter={filter} />
       )}
 
-      {results.count > 0 && (
+      {count > 0 && (
         <div styleName="paginator-container">
           <SiteSearchPaginator lastPageIndex={lastPageIndex} />
         </div>
