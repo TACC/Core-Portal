@@ -1,0 +1,230 @@
+[
+    {
+        "name": "All Types",
+        "type": "any"
+    },
+    {
+        "name": "Audio",
+        "type": "audio",
+        "extensions": [
+            ".aac",
+            ".aifc",
+            ".aiff",
+            ".amr",
+            ".au",
+            ".flac",
+            ".m4a",
+            ".mp3",
+            ".ogg",
+            ".ra",
+            ".wav",
+            ".wma"
+        ]
+    },
+    {
+        "name": "Code",
+        "type": "code",
+        "extensions": [
+            ".c",
+            ".css",
+            ".h",
+            ".haml",
+            ".hh",
+            ".htm",
+            ".html",
+            ".ini",
+            ".java",
+            ".js",
+            ".json",
+            ".jsx",
+            ".j2",
+            ".less",
+            ".m",
+            ".make",
+            ".ml",
+            ".mm",
+            ".msg",
+            ".ods",
+            ".odt",
+            ".odp",
+            ".php",
+            ".pl",
+            ".properties",
+            ".py",
+            ".rb",
+            ".rtf",
+            ".sass",
+            ".scala",
+            ".scm",
+            ".script",
+            ".scss",
+            ".sh",
+            ".sml",
+            ".sql",
+            ".toml",
+            ".ts",
+            ".vi",
+            ".vim",
+            ".wpd",
+            ".xml",
+            ".xsd",
+            ".xsl",
+            ".yaml",
+            ".yml"
+        ]
+    },
+    {
+        "name": "Documents",
+        "type": "doc",
+        "extensions": [
+            ".doc",
+            ".dot",
+            ".docx",
+            ".docm",
+            ".dotx",
+            ".dotm",
+            ".docb"
+        ]
+    },
+    {
+        "name": "Folders",
+        "type": "dir"
+    },
+    {
+        "name": "Images",
+        "type": "image",
+        "extensions": [
+            ".ai",
+            ".bmp",
+            ".gif",
+            ".eps",
+            ".jpeg",
+            ".jpg",
+            ".png",
+            ".ps",
+            ".psd",
+            ".svg",
+            ".tif",
+            ".tiff",
+            ".dcm",
+            ".dicm",
+            ".dicom",
+            ".svs",
+            ".tga"
+        ]
+    },
+    {
+        "name": "Jupyter Notebook",
+        "type": "jupyter",
+        "extensions": [
+            ".ipynb"
+        ]
+    },
+    {
+        "name": "PDF",
+        "type": "pdf",
+        "extensions": [
+            ".pdf"
+        ]
+    },
+    {
+        "name": "Presentation",
+        "type": "presentation",
+        "extensions": [
+            ".ppt",
+            ".pot",
+            ".pps",
+            ".pptx",
+            ".pptm",
+            ".potx",
+            ".ppsx",
+            ".ppsm",
+            ".sldx",
+            ".sldm"
+        ]
+    },
+    {
+        "name": "Spreadsheet",
+        "type": "spreadsheet",
+        "extensions": [
+            ".xls",
+            ".xlt",
+            ".xlm",
+            ".xlsx",
+            ".xlsm",
+            ".xltx",
+            ".xltm"
+        ]
+    },
+    {
+        "name": "Shape File",
+        "type": "shape",
+        "extensions": [
+            ".shp",
+            ".shx",
+            ".dbf",
+            ".sbn",
+            ".sbx",
+            ".fbn",
+            ".fbx",
+            ".ain",
+            ".aih",
+            ".atx",
+            ".ixs",
+            ".mxs",
+            ".prj",
+            ".xml",
+            ".cpg"
+        ]
+    },
+    {
+        "name": "Text",
+        "type": "text",
+        "extensions": [
+            ".err",
+            ".log",
+            ".out",
+            ".txt"
+        ]
+    },
+    {
+        "name": "ZIP",
+        "type": "zip",
+        "extensions": [
+            ".zip",
+            ".tar",
+            ".tar.gz",
+            ".gz",
+            ".tgz"
+        ]
+    },
+    {
+        "name": "3D Visualization",
+        "type": "3d",
+        "extensions": [
+            ".pov",
+            ".vrml",
+            ".webgl",
+            ".x3d",
+            ".x3db",
+            ".pvd",
+            ".ppvd",
+            ".pwin",
+            ".pvsm",
+            ".vtk",
+            ".vti",
+            ".pvti",
+            ".vts",
+            ".pvts",
+            ".vtr",
+            ".vtp",
+            ".STL",
+            ".OBJ",
+            ".FBX",
+            ".COLLADA",
+            ".3DS",
+            ".IGES",
+            ".STEP"
+        ]
+    }
+]

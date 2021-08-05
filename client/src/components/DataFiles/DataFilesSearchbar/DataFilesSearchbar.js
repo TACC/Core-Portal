@@ -6,7 +6,6 @@ import queryString from 'query-string';
 import { Icon, DropdownSelector } from '_common';
 import { findSystemDisplayName } from 'utils/systems';
 import { useSelector } from 'react-redux';
-import fileTypes from './FileTypes';
 
 import './DataFilesSearchbar.module.scss';
 
@@ -23,6 +22,7 @@ const DataFilesSearchbar = ({
   disabled
 }) => {
   const systemList = useSelector(state => state.systems.storage.configuration);
+  const fileTypes = useSelector(state => state.workbench.fileTypes);
   const urlQueryParam = queryString.parse(window.location.search).query_string;
   const [query, setQuery] = useState(urlQueryParam);
   const history = useHistory();
@@ -43,7 +43,11 @@ const DataFilesSearchbar = ({
     if (siteSearch) {
       const baseUrl = scheme ? `/search/${scheme}` : '/search';
       const qs = query
-        ? `?${queryString.stringify({ query_string: query, page: 1 })}`
+        ? `?${queryString.stringify({
+            query_string: query,
+            file_type: filterType,
+            page: 1
+          })}`
         : '';
       history.push(`${baseUrl}/${qs}`);
 
@@ -52,9 +56,13 @@ const DataFilesSearchbar = ({
     }
 
     // All other queries
-    const qs = query
-      ? `?${queryString.stringify({ query_string: query })}`
-      : '';
+    const qs =
+      query || filterType
+        ? `?${queryString.stringify({
+            query_string: query,
+            file_type: filterType
+          })}`
+        : '';
     if (publicData) {
       history.push(`/public-data/${api}/${scheme}/${system}/${qs}`);
     } else {
@@ -74,7 +82,7 @@ const DataFilesSearchbar = ({
   const onClear = e => {
     e.preventDefault();
     setQuery('');
-    setFilterType('All Types');
+    setFilterType('any');
     if (publicData) {
       history.push(`/public-data/${api}/${scheme}/${system}/`);
     } else if (!siteSearch) {
@@ -82,6 +90,10 @@ const DataFilesSearchbar = ({
     }
   };
   const onChange = e => setQuery(e.target.value);
+
+  useEffect(() => {
+    hasQuery && routeSearch();
+  }, [filterType]);
 
   return (
     <form
@@ -120,9 +132,10 @@ const DataFilesSearchbar = ({
             value={filterType}
             disabled={disabled}
           >
-            <option>All Types</option>
             {fileTypes.map(item => (
-              <option key={`fileTypeFilter${item.type}`}>{item.type}</option>
+              <option key={`fileTypeFilter${item.type}`} value={item.type}>
+                {item.name}
+              </option>
             ))}
           </DropdownSelector>
         </div>
@@ -132,7 +145,7 @@ const DataFilesSearchbar = ({
           {resultCount} Results Found for <span>{hasQuery}</span>
         </div>
       )}
-      {((hasQuery && !siteSearch) || filterType !== 'All Types') && (
+      {((hasQuery && !siteSearch) || filterType !== 'any') && (
         <Button
           type="reset"
           color="link"
@@ -161,7 +174,7 @@ DataFilesSearchbar.propTypes = {
   disabled: PropTypes.bool
 };
 DataFilesSearchbar.defaultProps = {
-  filterType: 'All Types',
+  filterType: '',
   className: '',
   publicData: false,
   resultCount: 0,

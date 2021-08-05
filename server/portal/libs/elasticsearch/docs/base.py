@@ -74,7 +74,7 @@ class IndexedFile(Document):
     length = Long()
     format = Text()
     mimeType = Keyword()
-    type = Text()
+    type = Text(fields={'_exact': Keyword()})
     system = Text(fields={'_exact': Keyword()})
     basePath = Text(
         fields={

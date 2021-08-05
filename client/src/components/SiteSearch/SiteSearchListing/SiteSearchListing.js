@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useSelector } from 'react';
 import PropTypes from 'prop-types';
 import renderHtml from 'utils/renderHtml';
 import { InlineMessage, LoadingSpinner, InfiniteScrollTable } from '_common';
@@ -10,7 +10,6 @@ import {
 import SiteSearchPaginator from './SiteSearchPaginator/SiteSearchPaginator';
 import DataFilesPreviewModal from '../../DataFiles/DataFilesModals/DataFilesPreviewModal';
 import DataFilesSearchbar from '../../DataFiles/DataFilesSearchbar/DataFilesSearchbar';
-import fileTypes from '../../DataFiles/DataFilesSearchbar/FileTypes';
 import './SiteSearchListing.module.scss';
 import './SiteSearchListing.css';
 
@@ -89,13 +88,14 @@ SiteSearchFileListing.propTypes = {
 
 const SiteSearchListing = ({ results, loading, error, filter }) => {
   const { listing, count, type } = results;
+  const fileTypes = useSelector(state => state.workbench.fileTypes);
   const [fileFilterType, setFileFilterType] = useState();
   const [filteredFiles, setFilteredFiles] = useState(listing);
   useEffect(() => {
     const fileFilter = fileTypes.find(f => f.type === fileFilterType);
-    if (!fileFilter) {
+    if (!fileFilter || fileFilterType === 'any') {
       setFilteredFiles(listing);
-    } else if (fileFilter.type === 'Folders') {
+    } else if (fileFilter.type === 'dir') {
       setFilteredFiles(listing.filter(f => f.format === 'folder'));
     } else {
       setFilteredFiles(

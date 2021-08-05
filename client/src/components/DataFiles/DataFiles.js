@@ -49,6 +49,7 @@ const DataFilesSwitch = React.memo(() => {
   const dispatch = useDispatch();
   const { path } = useRouteMatch();
   const queryString = parse(useLocation().search).query_string;
+  const fileType = parse(useLocation().search).file_type;
   return (
     <Switch>
       <Route
@@ -61,6 +62,7 @@ const DataFilesSwitch = React.memo(() => {
               api: 'tapis',
               scheme: 'projects',
               queryString,
+              fileType,
               section: 'FilesListing'
             }
           });
@@ -80,6 +82,7 @@ const DataFilesSwitch = React.memo(() => {
             payload: {
               ...params,
               queryString,
+              fileType,
               section: 'FilesListing'
             }
           });

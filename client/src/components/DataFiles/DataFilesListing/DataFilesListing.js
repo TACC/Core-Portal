@@ -14,28 +14,28 @@ import {
 } from './DataFilesListingCells';
 import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
-import fileTypes from '../DataFilesSearchbar/FileTypes';
 
 const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   // Redux hooks
   const dispatch = useDispatch();
-  const queryString = parse(useLocation().search).query_string;
-  const { files, loading, error } = useSelector(
+  const urlQueryParams = parse(useLocation().search);
+  const { files, loading, error, fileTypes } = useSelector(
     state => ({
       files: state.files.listing.FilesListing,
       loading: state.files.loading.FilesListing,
-      error: state.files.error.FilesListing
+      error: state.files.error.FilesListing,
+      fileTypes: state.workbench.fileTypes
     }),
     shallowEqual
   );
 
-  const [filterType, setFilterType] = useState();
+  const [filterType, setFilterType] = useState(urlQueryParams.file_type);
   const [filteredFiles, setFilteredFiles] = useState(files);
   useEffect(() => {
     const fileFilter = fileTypes.find(f => f.type === filterType);
-    if (!fileFilter) {
+    if (!fileFilter || filterType === 'any') {
       setFilteredFiles(files);
-    } else if (fileFilter.type === 'Folders') {
+    } else if (fileFilter.type === 'dir') {
       setFilteredFiles(files.filter(f => f.format === 'folder'));
     } else {
       setFilteredFiles(
@@ -61,7 +61,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         path: path || '/',
         section: 'FilesListing',
         offset: files.length,
-        queryString,
+        queryString: urlQueryParams.query_string,
         nextPageToken: files.nextPageToken
       }
     });

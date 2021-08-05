@@ -1,7 +1,7 @@
 import urllib
 import os
 import io
-import datetime
+import json
 from django.conf import settings
 from requests.exceptions import HTTPError
 import logging
@@ -74,7 +74,7 @@ def iterate_listing(client, system, path, limit=100):
             break
 
 
-def search(client, system, path, offset=0, limit=100, query_string='', **kwargs):
+def search(client, system, path, offset=0, limit=100, query_string='', file_type=None, **kwargs):
     """
     Perform a search for files using a query string.
 
@@ -110,6 +110,23 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
     search = search.query(ngram_query | match_query)
     search = search.filter('term', **{'system._exact': system})
     search = search.extra(from_=int(offset), size=int(limit))
+
+    if file_type and file_type != 'any':
+        if file_type == 'dir':
+            ext_query = Q("term", **{'type._exact': 'dir'})
+        else:
+            with open(os.path.join(settings.BASE_DIR, 'libs/agave/fileTypes.json')) as f:
+                file_types = json.load(f)
+                logger.debug(file_type)
+                logger.debug(file_types)
+                extensions = next((item['extensions'] for item in file_types if item['type'] == file_type), [])
+
+                logger.debug(extensions)
+                ext_query = Q("term", **{'name._pattern': extensions[0].replace('.', '')})
+                for ext in extensions[1:]:
+                    ext_query = ext_query | Q("term", **{'name._pattern': ext.replace('.', '')})
+        search = search.filter(ext_query)
+
     res = search.execute()
     hits = [hit.to_dict() for hit in res]
 
