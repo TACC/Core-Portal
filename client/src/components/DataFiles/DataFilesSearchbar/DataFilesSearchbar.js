@@ -111,11 +111,6 @@ const DataFilesSearchbar = ({
           autoComplete="off"
           disabled={disabled}
         />
-        {hasQuery && !siteSearch && (
-          <div aria-label="Summary of Search Results" styleName="results">
-            {resultCount} Results Found for <span>{hasQuery}</span>
-          </div>
-        )}
       </div>
       {scheme !== 'cms' && (
         <div styleName="file-filter">
@@ -130,6 +125,11 @@ const DataFilesSearchbar = ({
               <option key={`fileTypeFilter${item.type}`}>{item.type}</option>
             ))}
           </DropdownSelector>
+        </div>
+      )}
+      {hasQuery && !siteSearch && (
+        <div aria-label="Summary of Search Results" styleName="results">
+          {resultCount} Results Found for <span>{hasQuery}</span>
         </div>
       )}
       {((hasQuery && !siteSearch) || filterType !== 'All Types') && (

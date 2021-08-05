@@ -151,7 +151,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         system={system}
         filterType={filterType}
         setFilterType={setFilterType}
-        resultCount={files.length}
+        resultCount={filteredFiles.length}
         publicData={isPublic}
         disabled={loading || !!error}
       />
