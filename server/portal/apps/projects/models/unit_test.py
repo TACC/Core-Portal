@@ -6,7 +6,9 @@
 
 from portal.apps.projects.models.metadata import ProjectMetadata
 from portal.apps.projects.models.base import Project
+from portal.libs.agave.models.systems.storage import StorageSystem
 import pytest
+from mock import MagicMock
 
 
 @pytest.fixture()
@@ -31,6 +33,12 @@ def mock_owner(django_user_model):
 @pytest.fixture()
 def mock_signal(mocker):
     yield mocker.patch('portal.apps.signals.receivers.index_project')
+
+
+@pytest.fixture()
+def mock_system(mocker):
+    mocker.patch('portal.libs.agave.models.systems.base.roles')
+    yield StorageSystem
 
 
 def test_create_metadata(mock_owner, mock_signal):
@@ -82,3 +90,18 @@ def test_project_create_storage_failure(mock_owner, portal_project, agave_client
     with pytest.raises(Exception):
         Project.create(agave_client, "my_project", "mock_project_id", mock_owner)
     assert ProjectMetadata.objects.all().count() == 0
+
+
+def test_metadata_create_on_project_load(agave_client, mock_owner, mock_signal):
+    agave_client.systems.listRoles.return_value = [{'username': 'username', 'role': 'ADMIN'}]
+    sys = StorageSystem(agave_client, 'cep.test.PRJ-123')
+    sys.last_modified = '1234'
+    sys.description = 'PRJ-123'
+    assert ProjectMetadata.objects.all().count() == 0
+    Project(
+        agave_client,
+        'PRJ-123',
+        storage=sys
+    )
+    assert ProjectMetadata.objects.all().count() == 1
+    assert ProjectMetadata.objects.last().pi == mock_owner
