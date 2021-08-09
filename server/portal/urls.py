@@ -32,7 +32,7 @@ urlpatterns = [
 
     # admin.
     path('core/admin/', admin.site.urls),
-    path('impersonate/', include('impersonate.urls')),
+    path('core/admin/impersonate/', include('impersonate.urls')),
 
     # terms-and-conditions
     path('terms/', include('termsandconditions.urls')),
