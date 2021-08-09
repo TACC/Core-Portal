@@ -159,7 +159,11 @@ class Project(object):
         try:
             meta = ProjectMetadata.objects.get(project_id=self.project_id)
         except ObjectDoesNotExist:
-            meta = self._create_metadata(self.title, self.project_id)
+            try:
+                user = get_user_model().objects.get(username=self.storage.owner)
+                meta = self._create_metadata(self.title, self.project_id, user)
+            except ObjectDoesNotExist:
+                meta = self._create_metadata(self.title, self.project_id)
 
         return meta
 
