@@ -175,6 +175,8 @@ class Project(object):
                     # Get first role tuple, first item in tuple which is username
                     admin = get_user_model().objects.get(username=admins[0][0])
                     meta.pi = admin
+                    meta.full_clean()
+                    meta.save()
                 except ObjectDoesNotExist:
                     # User does not exist, skip PI assignment
                     pass
