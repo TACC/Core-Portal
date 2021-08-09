@@ -113,7 +113,6 @@ class Project(object):
         if not self._storage.last_modified:
             logger.debug(self._storage.to_dict())
             raise Exception("Invalid storage system")
-        logger.debug(self.storage.roles.to_dict())
         if metadata is None:
             self._metadata = self._get_metadata()
         else:
