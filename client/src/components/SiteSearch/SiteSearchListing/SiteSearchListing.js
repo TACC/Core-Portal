@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import renderHtml from 'utils/renderHtml';
 import { InlineMessage, LoadingSpinner, InfiniteScrollTable } from '_common';
@@ -49,7 +49,7 @@ export const SiteSearchFileListing = ({ listing, filter }) => {
         />
       );
     },
-    [filter]
+    [filter, listing]
   );
 
   const tableColumns = [
@@ -90,21 +90,22 @@ SiteSearchFileListing.propTypes = {
 const SiteSearchListing = ({ results, loading, error, filter }) => {
   const { listing, count, type } = results;
   const [fileFilterType, setFileFilterType] = useState();
-  const [filteredFiles, setFilteredFiles] = useState(listing);
-  useEffect(() => {
+
+  const filterFiles = () => {
     const fileFilter = fileTypes.find(f => f.type === fileFilterType);
+    let filteredFiles = listing;
     if (!fileFilter) {
-      setFilteredFiles(listing);
-    } else if (fileFilter.type === 'Folders') {
-      setFilteredFiles(listing.filter(f => f.format === 'folder'));
+      return filteredFiles;
+    }
+    if (fileFilter.type === 'Folders') {
+      filteredFiles = listing.filter(f => f.format === 'folder');
     } else {
-      setFilteredFiles(
-        listing.filter(f =>
-          fileFilter.extensions.some(ext => f.name.endsWith(ext))
-        )
+      filteredFiles = listing.filter(f =>
+        fileFilter.extensions.some(ext => f.name.endsWith(ext))
       );
     }
-  }, [fileFilterType, listing]);
+    return filteredFiles;
+  };
 
   const FILTER_MAPPING = {
     cms: 'Web Content',
@@ -112,10 +113,10 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
     community: 'Community Data'
   };
 
-  const hasNoResults = !loading && !error && count === 0;
+  const hasResults = !loading && !error && count > 0;
 
   let containerStyleNames = `container for-${filter}`;
-  if (hasNoResults) containerStyleNames += ' is-empty';
+  if (!hasResults) containerStyleNames += ' is-empty';
 
   const lastPageIndex = Math.ceil(count / 10);
   return (
@@ -137,24 +138,24 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
         </div>
       )}
 
-      {!loading && (
+      {!loading && !error && !hasResults && (
+        <div styleName="placeholder">
+          <InlineMessage type="info" className="small">
+            No results found in {FILTER_MAPPING[filter]}.
+          </InlineMessage>
+        </div>
+      )}
+
+      {!loading && error && (
+        <div styleName="placeholder">
+          <InlineMessage type="error">
+            There was an error retrieving your search results.
+          </InlineMessage>
+        </div>
+      )}
+
+      {hasResults && (
         <>
-          {hasNoResults && (
-            <div styleName="placeholder">
-              <InlineMessage type="info" className="small">
-                No results found in {FILTER_MAPPING[filter]}.
-              </InlineMessage>
-            </div>
-          )}
-
-          {error && (
-            <div styleName="placeholder">
-              <InlineMessage type="error">
-                There was an error retrieving your search results.
-              </InlineMessage>
-            </div>
-          )}
-
           {type === 'cms' &&
             listing.map(item => (
               <CMSListingItem
@@ -166,14 +167,12 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
             ))}
 
           {type === 'file' && (
-            <SiteSearchFileListing listing={filteredFiles} filter={filter} />
+            <SiteSearchFileListing listing={filterFiles()} filter={filter} />
           )}
 
-          {count > 0 && (
-            <div styleName="paginator-container">
-              <SiteSearchPaginator lastPageIndex={lastPageIndex} />
-            </div>
-          )}
+          <div styleName="paginator-container">
+            <SiteSearchPaginator lastPageIndex={lastPageIndex} />
+          </div>
         </>
       )}
       <DataFilesPreviewModal />
