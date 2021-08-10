@@ -11,24 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-FP-508: Data Files Filter (#455)
-FP-195: Fix django impersonate feature (#456)
+- FP-508: Data Files Filter (#455)
+- FP-195: Enable Django impersonate feature (#456)
 
 ### Changed
 
-FP-1004: Update Onboarding Step Description Text (#454)
-FP-1118: Support no datafiles systems (#449)
-FP-1117: Read only shared workspace setting (#450)
-FP-1129: Toggle Apps and History Sections (#447)
-FP-1134: Toggle Manage Team and Edit Description (#451)
-FP-952: Replace Django Messages with Client Side Messages (#443)
+- FP-1004: Update Onboarding Step Description Text (#454)
+- FP-1118: Support no datafiles systems (#449)
+- FP-1117: Read only shared workspace setting (#450)
+- FP-1129: Toggle Apps and History Sections (#447)
+- FP-1134: Toggle Manage Team and Edit Description (#451)
+- FP-952: Replace Django Messages with Client Side Messages (#443)
 
 ### Fixed
 
-FP-1110: Shared workspace description character limit (#444)
-FP-1133: Ensure that Frontera-related normal queue validation occurs only on Frontera (#446)
-FP-1080: Fix search loading (#453)
-FP-1139: Update allocations cache during login (#448)
+- FP-1110: Shared workspace description character limit (#444)
+- FP-1133: Ensure that Frontera-related normal queue validation occurs only on Frontera (#446)
+- FP-1080: Fix search loading (#453)
+- FP-1139: Update allocations cache during login (#448)
 
 ## [2.7.0] - 2021-07-13: Apps, Shared Workspaces Improvements
 
