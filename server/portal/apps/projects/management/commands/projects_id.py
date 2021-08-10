@@ -4,7 +4,7 @@ from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 from portal.apps.projects.models.base import ProjectId
-from portal.apps.models.utils import get_latest_project_storage, get_latest_project_directory
+from portal.apps.projects.models.utils import get_latest_project_storage, get_latest_project_directory
 
 
 class Command(BaseCommand):
@@ -89,5 +89,5 @@ class Command(BaseCommand):
             ProjectId.update(options.get('update'))
         elif options["update_using_max_value_found"]:
             max_value_found = max(latest_storage_system_id, latest_project_id, 0)
-            self.stdout.write('Updating to value latest storage system id: {}'.format(max_value_found)
+            self.stdout.write('Updating to value latest storage system id: {}'.format(max_value_found))
             ProjectId.update(max_value_found)

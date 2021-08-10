@@ -174,8 +174,8 @@ class ProjectsManager(object):
                 self.user
             )
         except ValueError:
-            # Tapis StorageSystem or ProjectMetadata with this ProjectID
-            # already exists, try to update to latest project value and recreate
+            # Tapis StorageSystem or ProjectMetadata with this ProjectID already exists,
+            # try to update to latest project value and recreate
             logger.info('Project with id: {} already exists'.format(project_id))
 
             latest_storage_system_id = get_latest_project_storage()

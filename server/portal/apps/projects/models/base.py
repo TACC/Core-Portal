@@ -271,9 +271,6 @@ class Project(object):
                 project_id,
                 owner
             )
-        except ValueError:
-            # Tapis storage system already exists
-            raise
 
         except Exception as e:
             cls._delete_dir(project_id)
