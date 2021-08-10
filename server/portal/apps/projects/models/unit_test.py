@@ -14,23 +14,10 @@ def agave_client(mocker):
     yield mocker.patch('portal.apps.auth.models.AgaveOAuthToken.client', autospec=True)
 
 
-# @pytest.fixture()
-# def portal_project(mocker):
-#     mocker.patch('portal.apps.projects.models.base.Project._create_dir')
-#     mocker.patch('portal.apps.projects.models.base.Project._delete_dir')
-#     mocker.patch('portal.apps.projects.models.base.Project._create_storage')
-#     yield Project
-
-
 @pytest.fixture()
 def mock_owner(django_user_model):
     return django_user_model.objects.create_user(username='username',
                                                  password='password')
-
-
-# @pytest.fixture()
-# def mock_project_save_signal(mocker):
-#     yield mocker.patch('portal.apps.signals.receivers.index_project')
 
 
 def test_create_metadata(mock_owner, mock_project_save_signal):
