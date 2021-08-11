@@ -291,6 +291,7 @@ class Project(object):
                 project_id,
                 owner
             )
+
         except Exception as e:
             cls._delete_dir(project_id)
             raise e
