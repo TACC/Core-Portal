@@ -15,25 +15,12 @@ def agave_client(mocker):
 
 
 @pytest.fixture()
-def portal_project(mocker):
-    mocker.patch('portal.apps.projects.models.base.Project._create_dir')
-    mocker.patch('portal.apps.projects.models.base.Project._delete_dir')
-    mocker.patch('portal.apps.projects.models.base.Project._create_storage')
-    yield Project
-
-
-@pytest.fixture()
 def mock_owner(django_user_model):
     return django_user_model.objects.create_user(username='username',
                                                  password='password')
 
 
-@pytest.fixture()
-def mock_signal(mocker):
-    yield mocker.patch('portal.apps.signals.receivers.index_project')
-
-
-def test_create_metadata(mock_owner, mock_signal):
+def test_create_metadata(mock_owner, mock_project_save_signal):
     project_id = 'PRJ-123'
     defaults = {
         'title': 'Project Title',
@@ -52,7 +39,7 @@ def test_create_metadata(mock_owner, mock_signal):
     assert meta.team_members.count() == 0
 
 
-def test_metadata_str(mock_owner, mock_signal):
+def test_metadata_str(mock_owner, mock_project_save_signal):
     project_id = 'PRJ-123'
     defaults = {
         'title': 'Project Title',
@@ -65,19 +52,19 @@ def test_metadata_str(mock_owner, mock_signal):
     assert meta_str == '(<ProjectMetadata: PRJ-123 - Project Title>, True)'
 
 
-def test_project_create(mock_owner, portal_project, agave_client, mock_signal):
+def test_project_create(mock_owner, portal_project, agave_client, mock_project_save_signal):
     Project.create(agave_client, "my_project", "mock_project_id", mock_owner)
     assert ProjectMetadata.objects.all().count() == 1
 
 
-def test_project_create_dir_failure(mock_owner, portal_project, agave_client, mock_signal):
+def test_project_create_dir_failure(mock_owner, portal_project, agave_client, mock_project_save_signal):
     portal_project._create_dir.side_effect = Exception()
     with pytest.raises(Exception):
         Project.create(agave_client, "my_project", "mock_project_id", mock_owner)
     assert ProjectMetadata.objects.all().count() == 0
 
 
-def test_project_create_storage_failure(mock_owner, portal_project, agave_client, mock_signal):
+def test_project_create_storage_failure(mock_owner, portal_project, agave_client, mock_project_save_signal):
     portal_project._create_storage.side_effect = Exception()
     with pytest.raises(Exception):
         Project.create(agave_client, "my_project", "mock_project_id", mock_owner)
