@@ -23,6 +23,16 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     state => state.files.listing.FilesListing,
     shallowEqual
   );
+  const systems = useSelector(
+    state => state.systems.storage.configuration,
+    shallowEqual
+  );
+  const sharedWorkspaces = systems.find(e => e.scheme === 'projects');
+  const systemPrefix = useSelector(
+    state => state.workbench.config.systemPrefix
+  );
+  const isPortalProject = system && system.startsWith(systemPrefix);
+  const hideSearchbar = isPortalProject && sharedWorkspaces.hideSearchbar;
 
   const showViewPath = useSelector(
     state =>
@@ -123,7 +133,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
 
   return (
     <>
-      {!isPublic && (
+      {!isPublic && !hideSearchbar && (
         <DataFilesSearchbar
           api={api}
           scheme={scheme}

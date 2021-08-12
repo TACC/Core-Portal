@@ -119,7 +119,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None,
         'privilegeRequired': False,
         'readOnly': False,
-        "hideSearchbar": False
+        'hideSearchbar': False
     },
     {
         'name': 'Google Drive',
@@ -236,5 +236,6 @@ _WORKBENCH_SETTINGS = {
     "compressApp": 'zippy',
     "extractApp": 'extract',
     "makePublic": False,
-    "hideApps": False
+    "hideApps": False,
+    "systemPrefix": _PORTAL_PROJECTS_SYSTEM_PREFIX
 }
