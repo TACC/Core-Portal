@@ -161,6 +161,26 @@ class Project(object):
         except ObjectDoesNotExist:
             meta = self._create_metadata(self.title, self.project_id)
 
+            # Look for admin in tapis roles, and add as PI
+            roles = self.storage.roles.to_dict().items()
+            admins = list(
+                filter(
+                    lambda role_tuple: role_tuple[0] != 'wma_prtl' and (role_tuple[1] == 'ADMIN' or role_tuple[1] == 'OWNER'),
+                    roles
+                )
+                )
+            if len(admins) == 1:
+                # Exactly one admin found, assign as PI
+                try:
+                    # Get first role tuple, first item in tuple which is username
+                    admin = get_user_model().objects.get(username=admins[0][0])
+                    meta.pi = admin
+                    meta.full_clean()
+                    meta.save()
+                except ObjectDoesNotExist:
+                    # User does not exist, skip PI assignment
+                    pass
+
         return meta
 
     def _get_storage(self):

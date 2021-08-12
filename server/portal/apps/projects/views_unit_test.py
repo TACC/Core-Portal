@@ -64,7 +64,6 @@ def test_projects_post(authenticated_user, client, mock_project_mgr):
     )
 
     mock_project_mgr.create.assert_called_with('Test Title')
-    mock_project.add_pi.assert_called_with(authenticated_user)
     mock_project_mgr.add_member.assert_called_with('PRJ-123', 'pi', 'username')
     assert response.status_code == 200
     assert response.json() == {
