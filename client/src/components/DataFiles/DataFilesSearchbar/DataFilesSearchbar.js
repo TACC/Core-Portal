@@ -132,7 +132,8 @@ const DataFilesSearchbar = ({
           {resultCount} Results Found for <span>{hasQuery}</span>
         </div>
       )}
-      {((hasQuery && !siteSearch) || filterType !== 'All Types') && (
+      {((hasQuery && !siteSearch) ||
+        (filterType !== 'All Types' && scheme !== 'cms')) && (
         <Button
           type="reset"
           color="link"
