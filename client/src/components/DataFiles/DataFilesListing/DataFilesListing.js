@@ -32,7 +32,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     state => state.workbench.config.systemPrefix
   );
   const isPortalProject = system && system.startsWith(systemPrefix);
-  const hideSearchbar = isPortalProject && sharedWorkspaces.hideSearchbar;
+  const hideSearchBar = isPortalProject && sharedWorkspaces.hideSearchBar;
 
   const showViewPath = useSelector(
     state =>
@@ -133,7 +133,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
 
   return (
     <>
-      {!isPublic && !hideSearchbar && (
+      {!isPublic && !hideSearchBar && (
         <DataFilesSearchbar
           api={api}
           scheme={scheme}

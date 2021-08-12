@@ -29,7 +29,7 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
     indexing = True
 
     if next(sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-        if sys['name'] == 'Shared Workspaces' and sys['hideSearchbar'] == True
+        if sys['name'] == 'Shared Workspaces' and sys['hideSearchBar'] == True
         and systemId.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX)):
             indexing = False
 

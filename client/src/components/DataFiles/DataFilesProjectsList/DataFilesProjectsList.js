@@ -121,7 +121,7 @@ const DataFilesProjectsList = ({ modal }) => {
       contentShouldScroll
       manualContent
     >
-      {!modal && sharedWorkspaces && !sharedWorkspaces.hideSearchbar && (
+      {!modal && sharedWorkspaces && !sharedWorkspaces.hideSearchBar && (
         <DataFilesProjectsSearchbar />
       )}
       <ConditionalWrapper

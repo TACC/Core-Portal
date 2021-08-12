@@ -119,7 +119,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'icon': None,
         'privilegeRequired': False,
         'readOnly': False,
-        'hideSearchbar': False
+        'hideSearchBar': False
     },
     {
         'name': 'Google Drive',
