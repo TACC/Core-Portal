@@ -1,5 +1,5 @@
 import pytest
-from portal.apps.projects.models.base import Project
+from portal.apps.projects.models.base import Project, ProjectId
 
 
 @pytest.mark.django_db
@@ -35,3 +35,16 @@ def mock_projects(project_model, service_account, mock_storage_system, mock_agav
 @pytest.fixture()
 def mock_projects_storage_systems(mock_projects):
     yield [prj.storage for prj in mock_projects]
+
+
+@pytest.fixture()
+def portal_project(mocker):
+    mocker.patch('portal.apps.projects.models.base.Project._create_dir')
+    mocker.patch('portal.apps.projects.models.base.Project._delete_dir')
+    mocker.patch('portal.apps.projects.models.base.Project._create_storage')
+    yield Project
+
+
+@pytest.fixture()
+def mock_project_save_signal(mocker):
+    yield mocker.patch('portal.apps.signals.receivers.index_project')
