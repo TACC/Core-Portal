@@ -119,7 +119,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
     await waitForElement(() => getAllByText(/Title must be at least 3 characters/));
   });
 
-  it("disallows title input over 70 characters and description over 800 characters", async () => {
+  it("disallows title input over 150 characters and description over 800 characters", async () => {
     const store = mockStore(initialMockState);
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
@@ -159,7 +159,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
     titleField.focus();
 
     await waitForElement(() =>
-      getAllByText(/Title must be at most 70 characters/));
+      getAllByText(/Title must be at most 150 characters/));
     await waitForElement(() => 
       getAllByText(/Description must be at most 800 characters/));
   });

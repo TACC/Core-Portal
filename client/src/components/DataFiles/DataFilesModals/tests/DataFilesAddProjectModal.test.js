@@ -78,7 +78,7 @@ describe("DataFilesAddProjectModal", () => {
     await waitForElement(() => getAllByText(/Title must be at least 3 characters/));
   });
 
-  it("disallows title input over 70 characters", async () => {
+  it("disallows title input over 150 characters", async () => {
     const store = mockStore(initialMockState);
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
@@ -97,6 +97,6 @@ describe("DataFilesAddProjectModal", () => {
     });
     fireEvent.click(button);
 
-    await waitForElement(() => getAllByText(/Title must be at most 70 characters/));
+    await waitForElement(() => getAllByText(/Title must be at most 150 characters/));
   });
 });
