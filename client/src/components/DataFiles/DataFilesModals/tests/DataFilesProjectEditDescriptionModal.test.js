@@ -134,7 +134,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
 
     fireEvent.change(titleField, {
       target: {
-        value: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula.'
+        value: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient'
       }
     });
 

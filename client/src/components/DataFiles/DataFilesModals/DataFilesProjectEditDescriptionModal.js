@@ -90,7 +90,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                   <div>
                     Workspace Title{' '}
                     <small>
-                      <em>(Maximum 70 characters)</em>
+                      <em>(Maximum 150 characters)</em>
                     </small>
                   </div>
                 }

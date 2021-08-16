@@ -92,7 +92,7 @@ describe("DataFilesAddProjectModal", () => {
     const button = getByRole('button', { name: 'Add Workspace' });
     fireEvent.change(inputField, {
       target: {
-        value: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula.'
+        value: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient.'
       }
     });
     fireEvent.click(button);
