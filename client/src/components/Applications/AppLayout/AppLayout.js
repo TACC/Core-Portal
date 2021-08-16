@@ -32,11 +32,12 @@ const AppsLayout = () => {
   );
 };
 
-const AppsHeader = appDict => {
+const AppsHeader = categoryDict => {
   const { params } = useRouteMatch();
-  const appMeta = appDict[params.appId];
-  const path = appMeta ? ` / ${appMeta.value.definition.label}` : '';
-
+  const appMeta = Object.values(categoryDict.categoryDict)
+    .flatMap(e => e)
+    .find(app => app.appId === params.appId);
+  const path = appMeta ? ` / ${appMeta.label}` : '';
   return `Applications ${path}`;
 };
 
@@ -55,7 +56,7 @@ const AppsRoutes = () => {
       welcomeMessageName="APPLICATIONS"
       header={
         <Route path={`${path}/:appId?`}>
-          <AppsHeader appDict={appDict} />
+          <AppsHeader categoryDict={categoryDict} />
         </Route>
       }
       content={

@@ -11,7 +11,7 @@ class AllocationStep(AbstractStep):
         super(AllocationStep, self).__init__(user)
 
     def display_name(self):
-        return "Retrieving Allocations"
+        return "Allocations"
 
     def description(self):
         return """Accessing your allocations. No action required."""

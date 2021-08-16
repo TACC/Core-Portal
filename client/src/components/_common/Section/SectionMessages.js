@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { WelcomeMessage, isKnownWelcomeMessage } from '_common';
-import * as MESSAGES from '../../../constants/welcomeMessages';
+import * as MESSAGES from '../../../constants/messages';
 
 import './SectionMessages.module.css';
 import './SectionMessages.css';

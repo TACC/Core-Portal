@@ -3,6 +3,7 @@ import { createMemoryHistory } from "history";
 import  DataFilesAddProjectModal  from "../DataFilesAddProjectModal";
 import configureStore from "redux-mock-store";
 import renderComponent from 'utils/testing';
+import {fireEvent, waitForElement} from '@testing-library/react';
 import {
   projectsListingFixture,
   projectMetadataFixture
@@ -53,5 +54,49 @@ describe("DataFilesAddProjectModal", () => {
     // Check that the authenticated user appears as the default owner
     // for a new project
     expect(getAllByText(/User Name/)).toBeDefined();
+  });
+
+  it("disallows title input under 3 characters", async () => {
+    const store = mockStore(initialMockState);
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/private/test.system/');
+    const { getAllByText, getByRole } = renderComponent(
+      <DataFilesAddProjectModal />,
+      store,
+      history
+    )
+
+    const inputField = getByRole('textbox', {name: ''});
+    const button = getByRole('button', { name: 'Add Workspace' });
+    fireEvent.change(inputField, {
+      target: {
+        value: 'a'
+      }
+    });
+    fireEvent.click(button);
+
+    await waitForElement(() => getAllByText(/Title must be at least 3 characters/));
+  });
+
+  it("disallows title input over 70 characters", async () => {
+    const store = mockStore(initialMockState);
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/private/test.system/');
+    const { getAllByText, getByRole } = renderComponent(
+      <DataFilesAddProjectModal />,
+      store,
+      history
+    )
+
+    const inputField = getByRole('textbox', {name: ''});
+    const button = getByRole('button', { name: 'Add Workspace' });
+    fireEvent.change(inputField, {
+      target: {
+        value: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula.'
+      }
+    });
+    fireEvent.click(button);
+
+    await waitForElement(() => getAllByText(/Title must be at most 70 characters/));
   });
 });

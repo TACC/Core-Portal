@@ -122,7 +122,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   if (filesLength === 0) {
     return (
       <div className="h-100 listing-placeholder">
-        <SectionMessage type="warn">
+        <SectionMessage type="warning">
           No files or folders to show.
         </SectionMessage>
       </div>
@@ -170,6 +170,7 @@ const DataFilesTableRow = ({
         index={row.index}
         onClick={onClick}
         onKeyDown={onKeyDown}
+        data-testid="file-listing-item"
       >
         {row.cells.map(cell => {
           return (

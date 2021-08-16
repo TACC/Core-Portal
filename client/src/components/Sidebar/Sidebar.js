@@ -48,53 +48,62 @@ SidebarItem.defaultProps = {
 };
 
 /** A navigation list for the application */
-const Sidebar = ({ disabled, showUIPatterns }) => {
+const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   let { path } = useRouteMatch();
   if (path.includes('accounts')) path = ROUTES.WORKBENCH;
 
   const unread = useSelector(state => state.notifications.list.unread);
+  const hideApps = useSelector(state => state.workbench.config.hideApps);
 
   return (
     <Nav styleName="root" vertical>
-      <SidebarItem
-        to={`${path}${ROUTES.DASHBOARD}`}
-        label="Dashboard"
-        iconName="dashboard"
-        disabled={disabled}
-      />
-      <SidebarItem
-        to={`${path}${ROUTES.DATA}`}
-        label="Data Files"
-        iconName="folder"
-        disabled={disabled}
-      />
-      <SidebarItem
-        to={`${path}${ROUTES.APPLICATIONS}`}
-        label="Applications"
-        iconName="applications"
-        disabled={disabled}
-      />
-      <SidebarItem
-        to={`${path}${ROUTES.ALLOCATIONS}`}
-        label="Allocations"
-        iconName="allocations"
-        disabled={disabled}
-      />
-      <SidebarItem
-        to={`${path}${ROUTES.HISTORY}`}
-        label="History"
-        iconName="history"
-        disabled={disabled}
-      >
-        <HistoryBadge unread={unread} disabled={disabled} />
-      </SidebarItem>
-      {showUIPatterns && (
-        <SidebarItem
-          to={`${path}${ROUTES.UI}`}
-          label="UI Patterns"
-          iconName="copy"
-          disabled={disabled}
-        />
+      {!loading && (
+        <>
+          <SidebarItem
+            to={`${path}${ROUTES.DASHBOARD}`}
+            label="Dashboard"
+            iconName="dashboard"
+            disabled={disabled}
+          />
+          <SidebarItem
+            to={`${path}${ROUTES.DATA}`}
+            label="Data Files"
+            iconName="folder"
+            disabled={disabled}
+          />
+          {!hideApps && (
+            <SidebarItem
+              to={`${path}${ROUTES.APPLICATIONS}`}
+              label="Applications"
+              iconName="applications"
+              disabled={disabled}
+            />
+          )}
+          <SidebarItem
+            to={`${path}${ROUTES.ALLOCATIONS}`}
+            label="Allocations"
+            iconName="allocations"
+            disabled={disabled}
+          />
+          {!hideApps && (
+            <SidebarItem
+              to={`${path}${ROUTES.HISTORY}`}
+              label="History"
+              iconName="history"
+              disabled={disabled}
+            >
+              <HistoryBadge unread={unread} disabled={disabled} />
+            </SidebarItem>
+          )}
+          {showUIPatterns && (
+            <SidebarItem
+              to={`${path}${ROUTES.UI}`}
+              label="UI Patterns"
+              iconName="copy"
+              disabled={disabled}
+            />
+          )}
+        </>
       )}
       <NavItem styleName="feedback-nav-item">
         <FeedbackButton />
@@ -105,12 +114,14 @@ const Sidebar = ({ disabled, showUIPatterns }) => {
 
 Sidebar.propTypes = {
   disabled: PropTypes.bool,
-  showUIPatterns: PropTypes.bool
+  showUIPatterns: PropTypes.bool,
+  loading: PropTypes.bool
 };
 
 Sidebar.defaultProps = {
   disabled: false,
-  showUIPatterns: false
+  showUIPatterns: false,
+  loading: true
 };
 
 export default Sidebar;

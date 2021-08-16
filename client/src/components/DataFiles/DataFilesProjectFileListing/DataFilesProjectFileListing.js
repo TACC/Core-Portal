@@ -2,7 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { LoadingSpinner, SectionMessage, SectionTableWrapper } from '_common';
+import {
+  ReadMore,
+  LoadingSpinner,
+  SectionMessage,
+  SectionTableWrapper
+} from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import './DataFilesProjectFileListing.module.scss';
 
@@ -16,6 +21,24 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   }, [system]);
 
   const metadata = useSelector(state => state.projects.metadata);
+
+  const editable = useSelector(state => {
+    const projectSystem = state.systems.storage.configuration.find(
+      s => s.scheme === 'projects'
+    );
+
+    const privilegeRequired = projectSystem && projectSystem.privilegeRequired;
+
+    return (
+      !privilegeRequired ||
+      metadata.members.some(member => {
+        return (
+          member.access === 'owner' &&
+          member.user.username === state.authenticatedUser.user.username
+        );
+      })
+    );
+  });
 
   const onEdit = () => {
     dispatch({
@@ -55,17 +78,19 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   return (
     <SectionTableWrapper
       styleName="root"
-      header={metadata.title}
+      header={<div styleName="title">{metadata.title}</div>}
       headerActions={
-        <div styleName="controls">
-          <Button color="link" styleName="edit" onClick={onEdit}>
-            Edit Descriptions
-          </Button>
-          <span styleName="separator">|</span>
-          <Button color="link" styleName="edit" onClick={onManage}>
-            Manage Team
-          </Button>
-        </div>
+        editable && (
+          <div styleName="controls">
+            <Button color="link" styleName="edit" onClick={onEdit}>
+              Edit Descriptions
+            </Button>
+            <span styleName="separator">|</span>
+            <Button color="link" styleName="edit" onClick={onManage}>
+              Manage Team
+            </Button>
+          </div>
+        )
       }
       manualContent
     >
@@ -75,7 +100,9 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (C) an independent component <SectionDescription>
                - (D) __both__ (A) or (B) __and__ (C)
       */}
-      <div styleName="description">{metadata.description}</div>
+      <div styleName="description">
+        {metadata.description && <ReadMore>{metadata.description}</ReadMore>}
+      </div>
       <DataFilesListing
         api="tapis"
         scheme="projects"
