@@ -26,7 +26,7 @@ def project_id_to_system_id(project_id):
     """Return a system id from a project id.
 
     A *system id* is a string constructed from the value of
-    `settings.PORTAL_PROJECTS_NAME_PREFIX` followed by a "." (dot)
+    `settings.PORTAL_PROJECTS_SYSTEM_PREFIX` followed by a "." (dot)
     and then a project id.
     A *project id* should be in the form [A-Z]+-[0-9]+.
     The prefix consists of one or more letters which ensures uniqueness
@@ -38,6 +38,6 @@ def project_id_to_system_id(project_id):
     :param str project_id: Project Id.
     """
     return '{prefix}.{prj_id}'.format(
-        prefix=settings.PORTAL_PROJECTS_NAME_PREFIX,
+        prefix=settings.PORTAL_PROJECTS_SYSTEM_PREFIX,
         prj_id=project_id
     )

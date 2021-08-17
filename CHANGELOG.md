@@ -7,6 +7,98 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.0] - 2021-08-10: Data Files Filter; Custom Settings for A2CPS
+
+### Added
+
+- FP-508: Data Files Filter (#455)
+- FP-195: Enable Django impersonate feature (#456)
+
+### Changed
+
+- FP-1004: Update Onboarding Step Description Text (#454)
+- FP-1118: Support no datafiles systems (#449)
+- FP-1117: Read only shared workspace setting (#450)
+- FP-1129: Toggle Apps and History Sections (#447)
+- FP-1134: Toggle Manage Team and Edit Description (#451)
+- FP-952: Replace Django Messages with Client Side Messages (#443)
+
+### Fixed
+
+- FP-1110: Shared workspace description character limit (#444)
+- FP-1133: Ensure that Frontera-related normal queue validation occurs only on Frontera (#446)
+- FP-1080: Fix search loading (#453)
+- FP-1139: Update allocations cache during login (#448)
+
+## [2.7.0] - 2021-07-13: Apps, Shared Workspaces Improvements
+
+### Added
+
+- FP-1060: Folder download message (#425)
+
+### Changed
+
+- FP-1027: Remove unrelated objects from app definition (#387)
+- FP-939: Display shared workspace description whitespace. (#435)
+- FP-997, FP-1041, FP-1042: Improve apps, add small queue support, and update execution systems when needed (#426)
+- FP-573: Prevent submitting unlicensed app (#438)
+- FP-1009: Apply ReadMore UI pattern to long Shared Workspace descriptions (#442)
+- FP-1031: Clarify Onboarding MFA Steps (#441)
+- FP-1007: Remove inactive toolbar buttons for public/community/google drive (#436)
+
+### Fixed
+
+- FP-1095: Adjust colors of links in Manage Account to match the website's theme. (#430)
+- FP-1108: Fix HTML App Loading (#437)
+- FP-1030: Fix breadcrumbs for application page (#434)
+
+## [2.6.1] - 2021-06-15: Hotfix: Fix settings import
+
+### Fixed
+
+- Hotfix: Fix missing extension on settings import (#427)
+
+## [2.6.0] - 2021-06-14: Separate Custom Settings From Secrets
+
+### Changed
+
+- FP-304: Separate custom settings from secrets (#393)
+
+## [2.5.0] - 2021-06-14: Section Components; Workspace bugfixes
+
+### Added
+
+- FP-813: Download Filesize Metrics (#396)
+- FP-563: Support Count of Search Results in UI. (#403)
+- FP-1037: Management commands for forcing system creation (#414)
+
+### Changed
+
+- Update README.md (#397, #416, #418, #419)
+- FP-594: Ensure search result matches contain the entire search query (#399)
+- FP-250: Upload Modal Error Messages (#392)
+- FP-962, FP-385: Section Components (#350)
+- FP-1061: Disable “Upload Selected” button when no valid files or nothing to upload. (#409)
+- FP-1005: "Make Public" Adjustments. (#413)
+- FP-526: Update Header Dropdown to Use Cortal Icons (#417)
+- FP-1020: Index project after migrating (#423)
+- FP-995: Rename system prefix setting to `PORTAL_PROJECTS_SYSTEM_ PREFIX` (#424)
+
+### Fixed
+
+- FP-1039 push keys job submission fix (#400)
+- FP-1000: Remove falsy values from job submission (#402)
+- FP-1038: Fix race condition causing `Cannot read property 'system' of undefined` bug (#404)
+- FP-1045, FP-1048, FP-1049: Various jobs fixes (#394)
+- Hotfix: Layout and Appform bugfixes (#405)
+- FP-1064: Remove problematic TOGGLE_SUBMITTING action from saga (#407)
+- FP-1062: Only open data files select modal when pushing keys to access data files (#411)
+- Hotfix: Change stampede2 homeDir to /home1; add maverick2 (#412)
+- FP-1065: Fix issues with site search header and spacing (#410)
+- FP-1021: Fix Shared Workspace search issue. (#415)
+- FP-1067: Prevent certain table columns from squishing content (#422)
+- FP-1010: Fix Erroneous Font-Weight 500's (#420)
+
 ## [2.4.2] - 2021-05-04: Portal User Nav endpoint; `projects_id` command; Bugfixes
 
 ### Added
@@ -73,7 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add some intitial steps to README (#367)
 - FP-895: Re-style site search file listing as a table (#353)
 - FP-950: Quick: Remove <Message type="info"> icon (#362)
-- FP-385: section comp welcome msg  patterns (#347)
+- FP-385: section comp welcome msg patterns (#347)
 - FP-898: onboarding system health checks (#345)
 - FP-908: Hide empty application tabs (#343)
 - Bump poetry version (#356)
@@ -343,7 +435,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.4.2...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.7.0...HEAD
+[2.7.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.7.0
+[2.6.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.6.1
+[2.6.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.6.0
+[2.5.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.5.0
 [2.4.2]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.2
 [2.4.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.1
 [2.4.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.0

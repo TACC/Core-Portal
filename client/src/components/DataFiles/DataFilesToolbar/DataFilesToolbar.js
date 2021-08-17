@@ -39,6 +39,17 @@ const DataFilesToolbar = ({ scheme, api }) => {
     )
   );
 
+  const modifiableUserData =
+    api === 'tapis' && scheme !== 'public' && scheme !== 'community';
+
+  const showMove = modifiableUserData;
+
+  const showRename = modifiableUserData;
+
+  const showTrash = modifiableUserData;
+
+  const showDownload = api === 'tapis';
+
   const showMakeLink = useSelector(
     state =>
       state.workbench &&
@@ -48,15 +59,19 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
 
   const showCompress = !!useSelector(
-    state => state.workbench.config.extractApp
+    state => state.workbench.config.extractApp && modifiableUserData
   );
 
   const showExtract = !!useSelector(
-    state => state.workbench.config.compressApp
+    state => state.workbench.config.compressApp && modifiableUserData
   );
+
   const showMakePublic = useSelector(
     state =>
-      state.workbench && state.workbench.config.makePublic && api === 'tapis'
+      state.workbench &&
+      state.workbench.config.makePublic &&
+      api === 'tapis' &&
+      modifiableUserData
   );
 
   const toggleRenameModal = () =>
@@ -126,10 +141,20 @@ const DataFilesToolbar = ({ scheme, api }) => {
   };
 
   const download = () => {
-    dispatch({
-      type: 'DATA_FILES_DOWNLOAD',
-      payload: { file: selectedFiles[0] }
-    });
+    if (canDownload) {
+      dispatch({
+        type: 'DATA_FILES_DOWNLOAD',
+        payload: { file: selectedFiles[0] }
+      });
+    } else {
+      dispatch({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: {
+          operation: 'downloadMessage',
+          props: {}
+        }
+      });
+    }
   };
 
   const trash = () => {
@@ -140,10 +165,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
   };
 
   const permissionParams = { files: selectedFiles, scheme, api };
+  const canDownload = getFilePermissions('download', permissionParams);
+  const isFolderSelected = getFilePermissions(
+    'isFolderSelected',
+    permissionParams
+  );
   const canRename = getFilePermissions('rename', permissionParams);
   const canMove = getFilePermissions('move', permissionParams);
   const canCopy = getFilePermissions('copy', permissionParams);
-  const canDownload = getFilePermissions('download', permissionParams);
   const canTrash = getFilePermissions('trash', permissionParams);
   const canCompress = getFilePermissions('compress', permissionParams);
   const canExtract = getFilePermissions('extract', permissionParams);
@@ -168,30 +197,36 @@ const DataFilesToolbar = ({ scheme, api }) => {
             disabled={!canCompress}
           />
         )}
-        <ToolbarButton
-          text="Rename"
-          onClick={toggleRenameModal}
-          iconName="rename"
-          disabled={!canRename}
-        />
-        <ToolbarButton
-          text="Move"
-          onClick={toggleMoveModal}
-          iconName="move"
-          disabled={!canMove}
-        />
+        {showRename && (
+          <ToolbarButton
+            text="Rename"
+            onClick={toggleRenameModal}
+            iconName="rename"
+            disabled={!canRename}
+          />
+        )}
+        {showMove && (
+          <ToolbarButton
+            text="Move"
+            onClick={toggleMoveModal}
+            iconName="move"
+            disabled={!canMove}
+          />
+        )}
         <ToolbarButton
           text="Copy"
           onClick={toggleCopyModal}
           iconName="copy"
           disabled={!canCopy}
         />
-        <ToolbarButton
-          text="Download"
-          iconName="download"
-          onClick={download}
-          disabled={!canDownload}
-        />
+        {showDownload && (
+          <ToolbarButton
+            text="Download"
+            iconName="download"
+            onClick={download}
+            disabled={!canDownload && !isFolderSelected}
+          />
+        )}
         {showMakeLink && (
           <ToolbarButton
             text="Link"
@@ -203,17 +238,19 @@ const DataFilesToolbar = ({ scheme, api }) => {
         {showMakePublic && (
           <ToolbarButton
             text="Make Public"
-            iconName="conversation"
+            iconName="publications"
             onClick={toggleMakePublicModal}
             disabled={!canMakePublic}
           />
         )}
-        <ToolbarButton
-          text="Trash"
-          iconName="trash"
-          onClick={trash}
-          disabled={!canTrash}
-        />
+        {showTrash && (
+          <ToolbarButton
+            text="Trash"
+            iconName="trash"
+            onClick={trash}
+            disabled={!canTrash}
+          />
+        )}
       </div>
     </>
   );

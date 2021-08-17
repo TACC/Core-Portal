@@ -24,7 +24,7 @@ class UserSystemsManager():
 
     Systems Config:
     You can find an object of "PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS" in
-    settings_secret. The systems are indexed by the name of the system
+    settings_default. The systems are indexed by the name of the system
     (ex: frontera). Each object has settings for managing a user's
     storage system.
         'localsystem1': {

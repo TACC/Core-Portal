@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from 'reactstrap';
 import { isEmpty } from 'lodash';
-import { LoadingSpinner, Section } from '_common';
+import { LoadingSpinner, Section, SectionMessage } from '_common';
 import {
   RequiredInformation,
   ChangePassword,
@@ -20,6 +20,7 @@ import {
 import './ManageAccount.scss';
 import './ManageAccount.global.css';
 import './ManageAccount.module.css';
+import { GOOGLE_DRIVE_SETUP_ERROR } from '../../constants/messages';
 
 const ManageAccountView = () => {
   const {
@@ -36,6 +37,14 @@ const ManageAccountView = () => {
       bodyClassName="has-loaded-account"
       welcomeMessageName="ACCOUNT"
       header="Manage Account"
+      messages={
+        !isLoading &&
+        integrations[0].error === 'SETUP_ERROR' && (
+          <SectionMessage type="warning" canDismiss>
+            {GOOGLE_DRIVE_SETUP_ERROR}
+          </SectionMessage>
+        )
+      }
       headerActions={
         <Link to="/workbench/dashboard" className="wb-link">
           Back to Dashboard

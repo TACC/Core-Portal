@@ -153,7 +153,7 @@ const FormField = ({
 FormField.propTypes = {
   id: PropTypes.string,
   name: PropTypes.string,
-  label: PropTypes.string,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   description: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   required: PropTypes.bool,
   agaveFile: PropTypes.bool,

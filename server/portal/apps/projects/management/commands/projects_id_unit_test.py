@@ -1,7 +1,7 @@
 from io import StringIO
 import pytest
 from django.core.management import call_command
-from portal.apps.projects.management.commands.projects_id import get_latest_project_storage, get_latest_project_directory
+from portal.apps.projects.models.utils import get_latest_project_storage, get_latest_project_directory
 
 
 pytestmark = pytest.mark.django_db
@@ -9,20 +9,20 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def mock_project_listing(mocker):
-    project_mock = mocker.patch('portal.apps.projects.management.commands.projects_id.Project')
+    project_mock = mocker.patch('portal.apps.projects.models.utils.Project')
     project_mock.listing.return_value = []
     yield project_mock
 
 
 @pytest.fixture
 def mock_project_listing_with_projects(mocker, mock_projects):
-    project_mock = mocker.patch('portal.apps.projects.management.commands.projects_id.Project')
+    project_mock = mocker.patch('portal.apps.projects.models.utils.Project')
     project_mock.listing.return_value = mock_projects
 
 
 @pytest.fixture
 def mock_iterate_listings(mocker):
-    iterate_listing_mock = mocker.patch('portal.apps.projects.management.commands.projects_id.iterate_listing')
+    iterate_listing_mock = mocker.patch('portal.apps.projects.models.utils.iterate_listing')
     iterate_listing_mock.return_value = []
     yield iterate_listing_mock
 

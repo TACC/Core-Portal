@@ -18,28 +18,45 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
-import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
+import {
+  getMaxQueueRunTime,
+  createMaxRunTimeRegex,
+  getNodeCountValidation,
+  getProcessorsOnEachNodeValidation,
+  getQueueValidation
+} from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
 
 const appShape = PropTypes.shape({
-  id: PropTypes.string,
-  label: PropTypes.string,
-  longDescription: PropTypes.string,
-  helpURI: PropTypes.string,
-  resource: PropTypes.string,
-  defaultQueue: PropTypes.string,
-  exec_sys: PropTypes.shape({
-    queues: PropTypes.arrayOf(PropTypes.shape({}))
+  loading: PropTypes.bool,
+  error: PropTypes.shape({}),
+  definition: PropTypes.shape({
+    id: PropTypes.string,
+    label: PropTypes.string,
+    longDescription: PropTypes.string,
+    helpURI: PropTypes.string,
+    defaultQueue: PropTypes.string,
+    defaultNodeCount: PropTypes.number,
+    parallelism: PropTypes.string,
+    defaultProcessorsPerNode: PropTypes.number,
+    defaultMaxRunTime: PropTypes.string,
+    tags: PropTypes.arrayOf(PropTypes.string)
   }),
   systemHasKeys: PropTypes.bool,
   pushKeysSystem: PropTypes.shape({}),
-  defaultNodeCount: PropTypes.number,
-  parallelism: PropTypes.string,
-  defaultProcessorsPerNode: PropTypes.number,
-  defaultMaxRunTime: PropTypes.string,
-  scheduler: PropTypes.string,
-  tags: PropTypes.arrayOf(PropTypes.string)
+  exec_sys: PropTypes.shape({
+    login: PropTypes.shape({
+      host: PropTypes.string
+    }),
+    scheduler: PropTypes.string,
+    queues: PropTypes.arrayOf(PropTypes.shape({}))
+  }),
+  license: PropTypes.shape({
+    type: PropTypes.string,
+    enabled: PropTypes.bool
+  }),
+  appListing: PropTypes.arrayOf(PropTypes.shape({}))
 });
 
 export const AppPlaceholder = ({ apps }) => {
@@ -58,12 +75,10 @@ AppPlaceholder.propTypes = {
   apps: PropTypes.bool.isRequired
 };
 
-const AppDetail = () => {
-  const { loading, app, error, allocationsLoading } = useSelector(
+export const AppDetail = () => {
+  const { app, allocationsLoading } = useSelector(
     state => ({
-      loading: state.app.loading,
-      app: state.app.definition,
-      error: state.app.error,
+      app: state.app,
       allocationsLoading: state.allocations.loading
     }),
     shallowEqual
@@ -74,8 +89,10 @@ const AppDetail = () => {
     category => categoryDict[category] && categoryDict[category].length > 0
   );
 
-  if (error.isError) {
-    const errorText = error.message ? error.message : 'Something went wrong.';
+  if (app.error.isError) {
+    const errorText = app.error.message
+      ? app.error.message
+      : 'Something went wrong.';
 
     return (
       <div id="appDetail-wrapper" className="has-message  appDetail-error">
@@ -84,7 +101,7 @@ const AppDetail = () => {
     );
   }
 
-  if (loading || allocationsLoading) {
+  if (app.loading || allocationsLoading) {
     return (
       <div id="appDetail-wrapper" className="is-loading  appDetail-error">
         <LoadingSpinner />
@@ -94,10 +111,10 @@ const AppDetail = () => {
 
   return (
     <>
-      {!app && <AppPlaceholder apps={hasApps} />}
-      {app.appType === 'html' ? (
+      {!app.definition && <AppPlaceholder apps={hasApps} />}
+      {app.definition.appType === 'html' ? (
         <div id="appDetail-wrapper" className="has-external-app">
-          {parse(app.html)}
+          {parse(app.definition.html)}
         </div>
       ) : (
         <div id="appDetail-wrapper" className="has-internal-app">
@@ -112,18 +129,19 @@ const AppDetail = () => {
 const AppInfo = ({ app }) => {
   return (
     <div className="appInfo-wrapper">
-      <h5 className="appInfo-title">{app.label}</h5>
+      <h5 className="appInfo-title">{app.definition.label}</h5>
       <div className="appInfo-description">
-        {parse(app.longDescription || '')}
+        {parse(app.definition.longDescription || '')}
       </div>
-      {app.helpURI ? (
+      {app.definition.helpURI ? (
         <a
           className="wb-link appInfo-documentation"
-          href={app.helpURI}
+          href={app.definition.helpURI}
           target="_blank"
           rel="noreferrer noopener"
         >
-          <AppIcon appId={app.id} /> <span>{app.label} Documentation</span>
+          <AppIcon appId={app.definition.id} />{' '}
+          <span>{app.definition.label} Documentation</span>
         </a>
       ) : null}
       <SystemsPushKeysModal />
@@ -141,16 +159,20 @@ export const AppSchemaForm = ({ app }) => {
     portalAlloc,
     jobSubmission,
     hasDefaultAllocation,
-    defaultStorageHost
+    defaultStorageHost,
+    hasStorageSystems
   } = useSelector(state => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
-      host => app.resource === host || app.resource.endsWith(`.${host}`)
+      host =>
+        app.exec_sys.login.host === host ||
+        app.exec_sys.login.host.endsWith(`.${host}`)
     );
-    const { defaultHost } = state.systems.storage;
-    const hasCorral = [
-      'cloud.corral.tacc.utexas.edu',
-      'data.tacc.utexas.edu'
-    ].some(s => defaultHost.endsWith(s));
+    const { defaultHost, configuration } = state.systems.storage;
+    const hasCorral =
+      configuration.length &&
+      ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some(s =>
+        defaultHost.endsWith(s)
+      );
     return {
       allocations: matchingExecutionHost
         ? state.allocations.hosts[matchingExecutionHost]
@@ -162,12 +184,13 @@ export const AppSchemaForm = ({ app }) => {
         state.systems.storage.loading ||
         state.allocations.hosts[defaultHost] ||
         hasCorral,
-      defaultStorageHost: defaultHost
+      defaultStorageHost: defaultHost,
+      hasStorageSystems: configuration.length
     };
   }, shallowEqual);
 
   const { systemHasKeys, pushKeysSystem } = app;
-
+  const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = e => {
     e.preventDefault();
     dispatch({
@@ -186,33 +209,36 @@ export const AppSchemaForm = ({ app }) => {
   // initial form values
   const initialValues = {
     ...appFields.defaults,
-    name: `${app.id}_${new Date().toISOString().split('.')[0]}`,
+    name: `${app.definition.id}_${new Date().toISOString().split('.')[0]}`,
     batchQueue: (
-      (app.defaultQueue
-        ? app.exec_sys.queues.find(q => q.name === app.defaultQueue)
+      (app.definition.defaultQueue
+        ? app.exec_sys.queues.find(q => q.name === app.definition.defaultQueue)
         : app.exec_sys.queues.find(q => q.default === true)) ||
       app.exec_sys.queues[0]
     ).name,
-    nodeCount: app.defaultNodeCount,
+    nodeCount: app.definition.defaultNodeCount,
     processorsOnEachNode:
-      app.parallelism === 'PARALLEL'
-        ? Math.floor(app.defaultProcessorsPerNode / app.defaultNodeCount)
+      app.definition.parallelism === 'PARALLEL'
+        ? Math.floor(
+            app.definition.defaultProcessorsPerNode /
+              app.definition.defaultNodeCount
+          )
         : 1,
-    maxRunTime: app.defaultMaxRunTime || '',
+    maxRunTime: app.definition.defaultMaxRunTime || '',
     archivePath: '',
     archive: true,
     archiveOnAppError: true,
-    appId: app.id
+    appId: app.definition.id
   };
 
   let missingAllocation = false;
-  if (app.scheduler === 'SLURM') {
+  if (app.exec_sys.scheduler === 'SLURM') {
     if (allocations.includes(portalAlloc)) {
       initialValues.allocation = portalAlloc;
     } else {
       initialValues.allocation = allocations.length === 1 ? allocations[0] : '';
     }
-    if (!hasDefaultAllocation) {
+    if (!hasDefaultAllocation && hasStorageSystems) {
       jobSubmission.error = true;
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
@@ -224,18 +250,20 @@ export const AppSchemaForm = ({ app }) => {
       jobSubmission.error = true;
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
-          app.resource
+          app.exec_sys.login.host
         )} to run this application.`
       };
       missingAllocation = true;
     }
   } else {
-    initialValues.allocation = app.scheduler;
+    initialValues.allocation = app.exec_sys.scheduler;
   }
 
   return (
     <div id="appForm-wrapper">
-      {!systemHasKeys && (
+      {/* The !! is needed because the second value of this shorthand 
+          is interpreted as a literal 0 if not. */}
+      {!!(!systemHasKeys && hasStorageSystems) && (
         <div className="appDetail-error">
           <SectionMessage type="warning">
             There was a problem accessing your default My Data file system. If
@@ -249,6 +277,27 @@ export const AppSchemaForm = ({ app }) => {
               push your keys
             </a>
             .
+          </SectionMessage>
+        </div>
+      )}
+      {!hasStorageSystems && (
+        <div className="appDetail-error">
+          <SectionMessage type="warning">
+            No storage systems enabled for this portal.
+          </SectionMessage>
+        </div>
+      )}
+      {!!(missingLicense && hasStorageSystems) && (
+        <div className="appDetail-error">
+          <SectionMessage type="warning">
+            Activate your {app.license.type} license in{' '}
+            <Link
+              to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`}
+              className="wb-link"
+            >
+              Manage Account
+            </Link>
+            , then return to this form.
           </SectionMessage>
         </div>
       )}
@@ -289,8 +338,16 @@ export const AppSchemaForm = ({ app }) => {
         </>
       )}
       <Formik
+        validateOnMount
         initialValues={initialValues}
+        initialTouched={initialValues}
         validationSchema={props => {
+          if (jobSubmission.submitting) {
+            /* to to avoid a strange error where values are valid but yup returns invalid,
+            we stop invalidating during submission. This occurs only when validateOnMount is set.
+             */
+            return Yup.mixed().notRequired();
+          }
           return Yup.lazy(values => {
             const queue = app.exec_sys.queues.find(
               q => q.name === values.batchQueue
@@ -302,17 +359,9 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              batchQueue: Yup.string()
-                .required('Required')
-                .oneOf(app.exec_sys.queues.map(q => q.name)),
-              nodeCount: Yup.number()
-                .min(1)
-                .max(queue.maxNodes),
-              processorsOnEachNode: Yup.number()
-                .min(1)
-                .max(
-                  Math.floor(queue.maxProcessorsPerNode / queue.maxNodes) || 1
-                ),
+              batchQueue: getQueueValidation(queue, app),
+              nodeCount: getNodeCountValidation(queue, app),
+              processorsOnEachNode: getProcessorsOnEachNodeValidation(queue),
               maxRunTime: Yup.string()
                 .matches(
                   createMaxRunTimeRegex(maxQueueRunTime),
@@ -323,7 +372,7 @@ export const AppSchemaForm = ({ app }) => {
               allocation: Yup.string()
                 .required('Required')
                 .oneOf(
-                  allocations.concat([app.scheduler]),
+                  allocations.concat([app.exec_sys.scheduler]),
                   'Please select an allocation from the dropdown.'
                 )
             });
@@ -358,7 +407,7 @@ export const AppSchemaForm = ({ app }) => {
           //   }
           // });
           /* To ensure that DCV server is alive, name of job needs to contain 'dcvserver' */
-          if (app.tags.includes('DCV')) {
+          if (app.definition.tags.includes('DCV')) {
             job.name += '-dcvserver';
           }
           dispatch({
@@ -366,17 +415,11 @@ export const AppSchemaForm = ({ app }) => {
             payload: job
           });
         }}
-        // enableReinitialize
       >
         {({
           values,
           errors,
-          touched,
-          setFieldTouched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          setFieldValue,
+          isValid,
           isSubmitting,
           handleReset,
           resetForm,
@@ -389,16 +432,15 @@ export const AppSchemaForm = ({ app }) => {
           ) {
             setSubmitting(false);
             resetForm(initialValues);
-            const formTop = document.getElementById('appForm-wrapper');
-            formTop.scrollTo({
-              top: 0,
-              behavior: 'smooth'
-            });
+            const formTop = document.getElementById('appBrowser-wrapper');
+            formTop.scrollIntoView({ behavior: 'smooth' });
             dispatch({ type: 'TOGGLE_SUBMITTING' });
           }
           const readOnly =
+            missingLicense ||
+            !hasStorageSystems ||
             jobSubmission.submitting ||
-            (app.scheduler === 'SLURM' && missingAllocation);
+            (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
           return (
             <Form>
               <FormGroup tag="fieldset" disabled={readOnly || !systemHasKeys}>
@@ -457,6 +499,16 @@ export const AppSchemaForm = ({ app }) => {
                   >
                     {app.exec_sys.queues
                       .map(q => q.name)
+                      .filter(
+                        q =>
+                          /* normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed */
+                          !(
+                            getSystemName(app.exec_sys.login.host) ===
+                              'Frontera' &&
+                            q === 'normal' &&
+                            app.definition.parallelism === 'SERIAL'
+                          )
+                      )
                       .sort()
                       .map(queue => (
                         <option key={queue} value={queue}>
@@ -465,7 +517,7 @@ export const AppSchemaForm = ({ app }) => {
                       ))
                       .sort()}
                   </FormField>
-                  {!app.tags.includes('Interactive') ? (
+                  {!app.definition.tags.includes('Interactive') ? (
                     <FormField
                       label="Maximum Job Runtime"
                       description={`The maximum time you expect this job to run for. Maximum possible time is ${getMaxQueueRunTime(
@@ -478,7 +530,7 @@ export const AppSchemaForm = ({ app }) => {
                       required
                     />
                   ) : null}
-                  {app.parallelism === 'PARALLEL' ? (
+                  {app.definition.parallelism === 'PARALLEL' ? (
                     <>
                       <FormField
                         label="Processors On Each Node"
@@ -494,7 +546,7 @@ export const AppSchemaForm = ({ app }) => {
                       />
                     </>
                   ) : null}
-                  {app.scheduler === 'SLURM' ? (
+                  {app.exec_sys.scheduler === 'SLURM' ? (
                     <FormField
                       label="Allocation"
                       name="allocation"
@@ -524,7 +576,7 @@ export const AppSchemaForm = ({ app }) => {
                     type="text"
                     required
                   />
-                  {!app.tags.includes('Interactive') ? (
+                  {!app.definition.tags.includes('Interactive') ? (
                     <FormField
                       label="Output Location"
                       description={parse(
@@ -536,13 +588,11 @@ export const AppSchemaForm = ({ app }) => {
                     />
                   ) : null}
                 </div>
-                <Button type="submit" color="primary">
+                <Button type="submit" color="primary" disabled={!isValid}>
                   {jobSubmission.submitting && (
                     <LoadingSpinner placement="inline" />
                   )}{' '}
-                  {(Object.keys(errors).length || jobSubmission.error) && (
-                    <Icon name="alert">Warning</Icon>
-                  )}{' '}
+                  {jobSubmission.error && <Icon name="alert">Warning</Icon>}{' '}
                   <span>Submit</span>
                 </Button>
                 <Button
@@ -563,5 +613,3 @@ export const AppSchemaForm = ({ app }) => {
 AppSchemaForm.propTypes = {
   app: appShape.isRequired
 };
-
-export default AppDetail;
