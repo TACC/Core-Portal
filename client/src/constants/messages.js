@@ -22,7 +22,7 @@ export const UI =
   'This hidden page allows developers to review UI components in isolation.';
 
 /**
- * Error Message Texts
+ * Error Messages
  */
 export const GOOGLE_DRIVE_SETUP_ERROR = (
   <span>
