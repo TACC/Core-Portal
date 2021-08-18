@@ -268,3 +268,5 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 
 [Core-CMS]: https://github.com/TACC/Core-CMS "Core CMS"
 [Camino]: https://github.com/TACC/Camino "Camino (Deployment)"
+[1]: https://docs.docker.com/get-docker/
+[2]: https://docs.docker.com/compose/install/
