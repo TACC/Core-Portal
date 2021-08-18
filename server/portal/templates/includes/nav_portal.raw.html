@@ -4,7 +4,7 @@
 
 {% if user.is_authenticated %}
 <li class="nav-item dropdown">
-  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <a class="nav-link dropdown-toggle  gh-101" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class="icon icon-user"></i>
     <span class="nav-text">{{ user.get_username }}</span>
     <span class="sr-only">Toggle Dropdown</span>
@@ -37,7 +37,7 @@
 </li>
 {% else %}
 <li class="nav-item">
-  <a class="nav-link" href="{% url 'portal_auth:agave_oauth' %}">
+  <a class="nav-link  gh-101" href="{% url 'portal_auth:agave_oauth' %}">
     <i class="icon icon-user"></i>
     <span class="nav-text">Log In</span>
   </a>
