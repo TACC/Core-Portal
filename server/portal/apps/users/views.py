@@ -48,7 +48,7 @@ class UsageView(BaseApiView):
             # get default system prefix
             default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
             default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['systemId']
-            system_id = default_system_prefix.format(username)
+            system_id = default_system_prefix.format(username.replace('_', '-'))
 
         search = IndexedFile.search()
         # search = search.filter(Q({'nested': {'path': 'pems', 'query': {'term': {'pems.username': username} }} }))
