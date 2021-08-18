@@ -115,12 +115,9 @@ class ProjectsApiView(BaseApiView):
         project_id = prj.project_id
         for member in members:
             try:
-                user = get_user_model().objects.get(username=member['username'])
                 if member['access'] == 'owner':
-                    prj.add_pi(user)
                     access = 'pi'
                 elif member['access'] == 'edit':
-                    prj.add_co_pi(user)
                     access = 'co_pi'
                 else:
                     raise ApiException("Unsupported access level")

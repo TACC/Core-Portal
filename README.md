@@ -29,7 +29,6 @@ After you clone the repository locally, there are several configuration steps re
 - Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.security.utexas.edu)
 
 - Copy `server/portal/settings/settings_local.example.py` to `server/portal/settings/settings_local.py`
-	 - _Note: Update `PORTAL_PROJECTS_ID_PREFIX` in `settings_local.py` to be something unique (like `USERNAME.CEP`) so that project creation in your local development does not clash with other development work (as directories and Tapis storage system names will be created using this prefix)._
     - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally._
 
 - Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
@@ -124,9 +123,9 @@ ngrok http 443
 ### Setup local access to the portal:
 
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.dev`
-     
+
      _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
-     
+
      _NOTE: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
 
   2. Direct your browser to `https://cep.dev`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/login`.
@@ -269,3 +268,5 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 
 [Core-CMS]: https://github.com/TACC/Core-CMS "Core CMS"
 [Camino]: https://github.com/TACC/Camino "Camino (Deployment)"
+[1]: https://docs.docker.com/get-docker/
+[2]: https://docs.docker.com/compose/install/
