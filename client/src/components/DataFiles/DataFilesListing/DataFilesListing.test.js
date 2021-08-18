@@ -40,7 +40,8 @@ const initialMockState = {
       FilesListing: true
     }
   },
-  systems: systemsFixture
+  systems: systemsFixture,
+  workbench: { config: { systemPrefix: 'cep.local.project' } }
 };
 
 describe('CheckBoxCell', () => {
