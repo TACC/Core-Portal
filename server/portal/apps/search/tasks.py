@@ -91,22 +91,22 @@ def project_indexer(self, listing):
 
 
 # Indexing task for My Data.
-@shared_task(bind=True, queue='indexing')
-def index_my_data(self, reindex=False):
-    users = User.objects.all()
-    for user in users:
-        uname = user.username
-        default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-        default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
-        systemId = default_system_prefix.format(uname)
+# @shared_task(bind=True, queue='indexing')
+# def index_my_data(self, reindex=False):
+#     users = User.objects.all()
+#     for user in users:
+#         uname = user.username
+#         default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+#         default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
+#         systemId = default_system_prefix.format(uname)
 
-        # s = IndexedFile.search()
-        # s = s.query("match", **{"system._exact": systemId})
-        # resp = s.delete()
-        agave_indexer.apply_async(
-            args=[systemId],
-            kwargs={'filePath': '/', 'reindex': reindex}
-        )
+#         # s = IndexedFile.search()
+#         # s = s.query("match", **{"system._exact": systemId})
+#         # resp = s.delete()
+#         agave_indexer.apply_async(
+#             args=[systemId],
+#             kwargs={'filePath': '/', 'reindex': reindex}
+#         )
 
 
 # @shared_task(bind=True, queue='indexing')
