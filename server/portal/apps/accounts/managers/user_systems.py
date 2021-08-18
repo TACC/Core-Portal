@@ -87,7 +87,7 @@ class UserSystemsManager():
         :returns: unique id for a user's home system. ex: [system].home.[username]
         :rtype: str
         """
-        return self.system['systemId'].format(username=self.user.username)
+        return self.system['systemId'].format(username=self.user.username.replace('_', '-'))
 
     def get_sys_tas_user_dir(self):
         """Gets path to user's home directory for given system
