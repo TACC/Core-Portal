@@ -1,7 +1,8 @@
 import React from 'react';
 
 /**
- * Standard Welcome Message Texts
+ * Standard Intro Message Texts
+ * - FP-1165: The codebase refers to these as "Welcome Messages".
  * - Each of these is expected-not-required to match a route from `./routes.js`.
  * - To customize message text (example: dynamic content) use `<Section>` props.
  */
