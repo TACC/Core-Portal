@@ -8,7 +8,7 @@
 <!-- Navigation Bar -->
 
 
-<nav id="s-header" class="s-header  navbar navbar-dark navbar-expand-xl  is-on-portal">
+<nav id="s-header" class="s-header  navbar navbar-dark navbar-expand-xl  is-on-portal {% if user.is_authenticated %}is-portal-user{% endif %}">
   <!-- Portal Logo -->
   {% include "includes/header_logo.html" %}
 
@@ -24,10 +24,13 @@
 
       {% include "includes/nav_cms.html" with className="navbar-nav" only %}
 
+
       {# NOTE: As of 2020-12, search is only available with a Portal #}
       {% include "includes/nav_search.html" with className="form-inline" only %}
-      {# FAQ: Unlike CMS and User Guide, we must pass `user` #}
-      {% include "includes/nav_portal.html" with className="navbar-nav" user=user only %}
 
   </div>
+
+    {# FAQ: Unlike CMS and User Guide, we must pass `user` #}
+    {% include "includes/nav_portal.html" with className="navbar-nav" user=user only %}
+
 </nav>
