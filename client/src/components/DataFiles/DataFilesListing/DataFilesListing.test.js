@@ -2,6 +2,7 @@ import React from 'react';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import { fireEvent, wait } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import renderComponent from 'utils/testing';
 import DataFilesListing from './DataFilesListing';
 import { CheckboxCell, FileNavCell } from './DataFilesListingCells';
@@ -244,6 +245,34 @@ describe('DataFilesListing', () => {
     fireEvent.change(dropdownSelector, { target: { value: 'Folders' } });
     expect(getAllByTestId('file-listing-item').length).toBe(4);
     fireEvent.change(dropdownSelector, { target: { value: 'All Types' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(filesFixture.listing.FilesListing.length);
-  })
+    expect(getAllByTestId('file-listing-item').length).toBe(
+      filesFixture.listing.FilesListing.length
+    );
+  });
+
+  it('not rendering Shared Workspaces component', () => {
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/projects/');
+
+    systemsFixture.storage.configuration[5].hideSearchBar = false;
+
+    const store = mockStore({
+      ...initialMockState,
+      systems: systemsFixture
+    });
+
+    const { getByText } = renderComponent(
+      <DataFilesListing
+        api="tapis"
+        scheme="projects"
+        system="test.system"
+        resultCount={0}
+        path="/"
+        isPublic={false}
+      />,
+      store,
+      history
+    );
+    expect(getByText(/Search/)).toBeInTheDocument();
+  });
 });
