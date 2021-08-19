@@ -78,7 +78,7 @@ describe("DataFilesAddProjectModal", () => {
     await waitForElement(() => getAllByText(/Title must be at least 3 characters/));
   });
 
-  it("disallows title input over 70 characters", async () => {
+  it("disallows title input over 150 characters", async () => {
     const store = mockStore(initialMockState);
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
@@ -92,11 +92,11 @@ describe("DataFilesAddProjectModal", () => {
     const button = getByRole('button', { name: 'Add Workspace' });
     fireEvent.change(inputField, {
       target: {
-        value: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula.'
+        value: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient.'
       }
     });
     fireEvent.click(button);
 
-    await waitForElement(() => getAllByText(/Title must be at most 70 characters/));
+    await waitForElement(() => getAllByText(/Title must be at most 150 characters/));
   });
 });
