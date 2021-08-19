@@ -51,7 +51,7 @@ const DataFilesSidebar = ({ readOnly }) => {
       type: 'PROJECTS_CLEAR_OPERATION'
     });
     dispatch({
-      type: 'PROJECTS_MEMBER_LIST_SET',
+      type: 'PROJECTS_FORM_MEMBER_LIST_SET',
       payload: [{ user, access: 'owner' }]
     });
     dispatch({

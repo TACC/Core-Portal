@@ -14,7 +14,7 @@ const DataFilesAddProjectModal = () => {
   const match = useRouteMatch();
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.addproject);
-  const { members } = useSelector(state => state.projects.metadata);
+  const { formMembers } = useSelector(state => state.projects.metadata);
   const isCreating = useSelector(state => {
     return (
       state.projects.operation &&
@@ -48,7 +48,7 @@ const DataFilesAddProjectModal = () => {
       type: 'PROJECTS_CREATE',
       payload: {
         title,
-        members: members.map(member => ({
+        members: formMembers.map(member => ({
           username: member.user.username,
           access: member.access
         })),
@@ -60,7 +60,7 @@ const DataFilesAddProjectModal = () => {
   const onAdd = useCallback(
     newUser => {
       dispatch({
-        type: 'PROJECTS_MEMBER_LIST_ADD',
+        type: 'PROJECTS_FORM_MEMBER_LIST_ADD',
         payload: newUser
       });
     },
@@ -70,7 +70,7 @@ const DataFilesAddProjectModal = () => {
   const onRemove = useCallback(
     removedUser => {
       dispatch({
-        type: 'PROJECTS_MEMBER_LIST_REMOVE',
+        type: 'PROJECTS_FORM_MEMBER_LIST_REMOVE',
         payload: removedUser
       });
     },
@@ -113,7 +113,7 @@ const DataFilesAddProjectModal = () => {
                 }
               />
               <DataFilesProjectMembers
-                members={members}
+                members={formMembers}
                 onAdd={onAdd}
                 onRemove={onRemove}
               />
