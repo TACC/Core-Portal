@@ -27,7 +27,20 @@ const initialMockState = {
       loading: false,
       error: null
     },
-    metadata: projectMetadataFixture
+    metadata: {
+      ...projectMetadataFixture,
+      formMembers: [
+        {
+          user: {
+            username: 'username',
+            first_name: 'User',
+            last_name: 'Name',
+            email: 'user@username.com'
+          },
+          access: 'owner'
+        }
+      ]
+    }
   },
   authenticatedUser: {
     user: {
