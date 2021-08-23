@@ -7,7 +7,11 @@ const initialState = {
   hosts: {},
   portal_alloc: '',
   loadingPage: false,
-  errors: {}
+  errors: {},
+  search: {
+    results: [],
+    term: ''
+  }
 };
 function allocations(state = initialState, action) {
   switch (action.type) {
@@ -60,6 +64,20 @@ function allocations(state = initialState, action) {
       };
       console.log(newState);
       return newState;
+    case 'SET_SEARCH_TERM':
+      return {
+        ...state,
+        search: {
+          ...state.search,
+          term: action.payload.term
+        }
+      };
+    case 'ADD_SEARCH_RESULTS':
+      console.log('dispatched', action.payload);
+      return {
+        ...state,
+        search: { ...state.search, results: action.payload.data }
+      };
     default:
       return state;
   }

@@ -187,3 +187,31 @@ def get_per_user_allocation_usage(allocation_id):
         return resp['result']
     else:
         raise ApiException('Failed to get project users', resp['message'])
+
+def add_user(project_id, user_id):
+    logger.debug(project_id)
+    logger.debug(user_id)
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    uri = '{0}/v1/projects/{1}/users/{2}'.format(settings.TAS_URL, project_id, user_id)
+    logger.debug(uri)
+    r = requests.post(uri, auth=auth)
+    logger.debug(r)
+    return
+    resp = r.json()
+    logger.debug(resp)
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise ApiException('Failed to add user', resp['message'])
+
+def remove_user(project_id, user_id):
+    auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+    r = requests.delete('{0}/projects/{1}/users/{2}'.format(settings.TAS_URL, project_id, user_id), auth=auth)
+    logger.debug(r)
+    return
+    resp = r.json()
+    logger.debug(resp)
+    if resp['status'] == 'success':
+        return resp['result']
+    else:
+        raise ApiException('Failed to delete user', resp['message'])

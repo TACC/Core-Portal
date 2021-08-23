@@ -11,7 +11,7 @@ from django.conf import settings
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
-from portal.apps.users.utils import get_allocations, get_usernames, get_user_data, get_per_user_allocation_usage
+from portal.apps.users.utils import get_allocations, get_usernames, get_user_data, get_per_user_allocation_usage, add_user, remove_user
 
 logger = logging.getLogger(__name__)
 
@@ -152,3 +152,15 @@ class AllocationUsageView(BaseApiView):
     def get(self, request, allocation_id):
         usage = get_per_user_allocation_usage(allocation_id)
         return JsonResponse({'response': usage})
+
+@method_decorator(login_required, name='dispatch')
+class AllocationManagementView(BaseApiView):
+
+    def post(self, request, project_id, user_id):
+        logger.debug(project_id)
+        logger.debug(user_id)
+        data = add_user(project_id, user_id)
+        return JsonResponse({'response': 'ok'})
+    def delete(self, request, project_id, user_id):
+        data = remove_user(project_id, user_id)
+        return JsonResponse({'response': 'ok'})

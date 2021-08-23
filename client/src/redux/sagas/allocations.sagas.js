@@ -4,10 +4,12 @@ import {
   takeLatest,
   call,
   all,
-  select
+  select,
+  debounce
 } from 'redux-saga/effects';
 import { chain, flatten, isEmpty } from 'lodash';
 import { fetchUtil } from 'utils/fetchUtil';
+import Cookies from 'js-cookie';
 import 'cross-fetch';
 
 export function* getAllocations() {
@@ -238,7 +240,61 @@ export function* getUsernamesManage(action) {
     console.log(error);
   }
 }
+const searchUsersUtil = async term => {
+  console.log(term);
+  const root =
+    'https://portal.tacc.utexas.edu/projects-and-allocations/-/pm/api/users?action=search&field=username&term=';
+  const res = await fetch(`${root}${term}`);
+  const json = await res.json();
+  console.log(json);
+  return json.result;
+};
+export function* searchUsers(action) {
+  try {
+    const { term } = action.payload;
+    const json = yield call(searchUsersUtil, term);
+    yield put({
+      type: 'ADD_SEARCH_RESULTS',
+      payload: { data: json }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
 
+const manageUtil = async (pid, uid, add = true) => {
+  const r = await fetch(`/api/users/team/manage/${pid}/${uid}`, {
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    method: add ? 'POST' : 'DELETE'
+  });
+  const json = r.json();
+  return json;
+};
+
+export function* addUser(action) {
+  try {
+    yield call(manageUtil, action.payload.projectId, action.payload.id);
+  } catch (error) {
+    console.log(error);
+  }
+}
+export function* removeUser(action) {
+  try {
+    yield call(manageUtil, action.payload.projectId, action.payload.id, false);
+  } catch (error) {
+    console.log(error);
+  }
+}
+export function* watchAddUser() {
+  yield takeEvery('ADD_USER_TO_TAS_PROJECT', addUser);
+}
+export function* watchRemoveUser() {
+  yield takeEvery('REMOVE_USER_FROM_TAS_PROJECT', removeUser);
+}
+
+export function* watchUserSearch() {
+  yield debounce(750, 'GET_USERS_FROM_SEARCH', searchUsers);
+}
 export function* watchAllocationData() {
   yield takeEvery('GET_ALLOCATIONS', getAllocations);
 }
@@ -248,4 +304,11 @@ export function* watchTeams() {
 export function* watchManageTeams() {
   yield takeLatest('GET_MANAGE_TEAMS', getUsernamesManage);
 }
-export default [watchAllocationData(), watchTeams(), watchManageTeams()];
+export default [
+  watchAllocationData(),
+  watchTeams(),
+  watchManageTeams(),
+  watchUserSearch(),
+  watchAddUser(),
+  watchRemoveUser()
+];
