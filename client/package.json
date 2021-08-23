@@ -27,6 +27,7 @@
     "react-redux": "^7.2.1",
     "react-resize-detector": "^6.1.0",
     "react-router-dom": "^5.2.0",
+    "react-search-autocomplete": "^5.4.2",
     "react-table": "^7.0.5",
     "react-table-6": "^6.11.0",
     "react-virtualized-auto-sizer": "^1.0.2",

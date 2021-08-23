@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   ModalHeader,
@@ -8,16 +8,14 @@ import {
   Button,
   Input
 } from 'reactstrap';
-import { capitalize, has } from 'lodash';
-import { useSelector } from 'react-redux';
+import { has } from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner } from '_common';
 import './AllocationsManageTeamModal.module.scss';
 
 const AllocationsManageTeamTable = ({ rawData, pid }) => {
   const data = React.useMemo(() => rawData, [rawData]);
-  console.log(rawData);
-  // return <table />;
   const columns = React.useMemo(
     () => [
       {
@@ -38,9 +36,18 @@ const AllocationsManageTeamTable = ({ rawData, pid }) => {
         }
       },
       {
-        Header: 'Username',
-        accessor: ({ username, role }) =>
-          role === 'Standard' ? `${username} ${pid}` : ''
+        Header: '',
+        accessor: 'id',
+        Cell: ({ value }) => (
+          <Button
+            color="link"
+            onClick={() => {
+              console.log(value);
+            }}
+          >
+            Remove
+          </Button>
+        )
       }
     ],
     [rawData]
@@ -82,32 +89,108 @@ const AllocationsManageTeamTable = ({ rawData, pid }) => {
   );
 };
 
-const UserSearch = () => {
-  const [term, setTerm] = useState(null);
-  const [results, setResults] = useState([]);
-  const handleSubmit = async event => {
-    event.preventDefault();
-    setTerm(event.target.user.value);
+/**
+ * Autocomplete Component
+ *
+ */
+const UserSearch = ({ disabled, projectId }) => {
+  const dispatch = useDispatch();
+  const [selected, setSelected] = useState(0);
+  const search = useSelector(state => state.allocations.search);
+  console.log(search);
+  const [show, setShowing] = useState(false);
+  const [v, setTerm] = useState('');
+  const [current, setCurr] = useState({});
+  // useSelector(state => state)
+  const handleChange = e => {
+    if (v.length > 0)
+      dispatch({
+        type: 'GET_USERS_FROM_SEARCH',
+        payload: {
+          term: e.target.value
+        }
+      });
+    setTerm(e.target.value);
+    setShowing(true);
   };
-  React.useEffect(() => {
-    const fetchData = async () => {
-      const root =
-        'https://portal.tacc.utexas.edu/projects-and-allocations/-/pm/api/users?action=search&field=username&term=';
-      const r = await fetch(`${root}${term}`);
-      const json = await r.json();
 
-      console.log(json);
-      setResults(json);
-    };
-    fetchData();
-  }, [term]);
+  const handleClick = i => {
+    setSelected(i);
+    setShowing(false);
+  };
+  // const handleKeyDown = e => {
+  //   if (e.keyCode === 13) {
+  //     setSelected(0);
+  //     setShowing(false);
+  //     setCurr(search.results[selected]);
+  //   } else if (e.keyCode === 38) {
+  //     if (selected === 0) {
+  //       return;
+  //     }
+  //     setSelected(selected - 1);
+  //   }
+  //   // User pressed the down arrow, increment the index
+  //   else if (e.keyCode === 40) {
+  //     if (selected - 1 === search.results.length) {
+  //       return;
+  //     }
+  //     selected(selected + 1);
+  //   }
+  // };
+  const display = show && search.results.length > 0;
   return (
     <>
-      <Form onSubmit={handleSubmit} className="d-flex">
-        <Input name="user" style={{ marginRight: '2px' }} />
-        <Button type="submit">Search</Button>
-      </Form>
-      {results && <code>{JSON.stringify(results, null, 2)}</code>}
+      <div>
+        <Button>Add</Button>
+        <input
+          style={{ width: '100%' }}
+          type="text"
+          onChange={handleChange}
+          // onKeyDown={handleKeyDown}
+          value={v}
+          list="data"
+          disabled={disabled}
+        />
+        {display && (
+          <datalist id="data">
+            {search.results.map((user, index) => {
+              // TODO: Recompose
+              const { firstName, lastName, username, email } = user;
+              const optionValue = ` ${username} ${email}`;
+              const optionLabel = `${firstName} ${lastName}`;
+              return (
+                <option
+                  key={optionValue}
+                  label={optionLabel}
+                  onClick={e => {
+                    e.preventDefault();
+                    handleClick(index);
+                    console.log('click');
+                    dispatch({
+                      type: 'ADD_USER_TO_TAS_PROJECT',
+                      payload: {
+                        projectId,
+                        id: username
+                      }
+                    });
+                  }}
+                >
+                  {optionValue}
+                </option>
+              );
+            })}
+          </datalist>
+        )}
+      </div>
+      {display ? (
+        <>
+          {Object.keys(current).length ? JSON.stringify(current, null, 2) : ''}
+        </>
+      ) : (
+        <div className="no-suggestions">
+          <em>No suggestions available.</em>
+        </div>
+      )}
     </>
   );
 };
@@ -116,22 +199,21 @@ const AllocationsManageTeamModal = ({ isOpen, toggle, pid, ...props }) => {
   const { teams, loadingUsernames, errors } = useSelector(
     state => state.allocations
   );
+  console.log(pid);
   const error = has(errors.teams, pid);
   const isLoading = loadingUsernames[pid] && loadingUsernames[pid].loading;
-  console.log(teams);
-
   return (
     <Modal isOpen={isOpen} toggle={toggle} styleName="root">
-      <ModalHeader>Hello World</ModalHeader>
+      <ModalHeader>Manage Team</ModalHeader>
       <ModalBody className="p-2">
-        <UserSearch />
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <div styleName="listing-wrapper">
+        <UserSearch disabled={isLoading} projectId={pid} />{' '}
+        <div styleName="listing-wrapper">
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : (
             <AllocationsManageTeamTable rawData={teams[pid]} pid={pid} />
-          </div>
-        )}
+          )}
+        </div>
       </ModalBody>
     </Modal>
   );
