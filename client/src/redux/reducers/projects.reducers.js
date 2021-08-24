@@ -112,14 +112,6 @@ export default function projects(state = initialState, action) {
           members: [...action.payload]
         }
       };
-    case 'PROJECTS_FORM_MEMBER_LIST_SET':
-      return {
-        ...state,
-        metadata: {
-          ...state.metadata,
-          formMembers: [...action.payload]
-        }
-      };
     case 'PROJECTS_MEMBER_LIST_ADD':
       return {
         ...state,
@@ -128,34 +120,12 @@ export default function projects(state = initialState, action) {
           members: addProjectMember(state.metadata.members, action.payload)
         }
       };
-    case 'PROJECTS_FORM_MEMBER_LIST_ADD':
-      return {
-        ...state,
-        metadata: {
-          ...state.metadata,
-          formMembers: addProjectMember(
-            state.metadata.formMembers,
-            action.payload
-          )
-        }
-      };
     case 'PROJECTS_MEMBER_LIST_REMOVE':
       return {
         ...state,
         metadata: {
           ...state.metadata,
           members: removeProjectMember(state.metadata.members, action.payload)
-        }
-      };
-    case 'PROJECTS_FORM_MEMBER_LIST_REMOVE':
-      return {
-        ...state,
-        metadata: {
-          ...state.metadata,
-          formMembers: removeProjectMember(
-            state.metadata.formMembers,
-            action.payload
-          )
         }
       };
     case 'PROJECTS_GET_METADATA_STARTED':

@@ -29,17 +29,6 @@ const initialMockState = {
     },
     metadata: {
       ...projectMetadataFixture,
-      formMembers: [
-        {
-          user: {
-            username: 'username',
-            first_name: 'User',
-            last_name: 'Name',
-            email: 'user@username.com'
-          },
-          access: 'owner'
-        }
-      ]
     }
   },
   authenticatedUser: {

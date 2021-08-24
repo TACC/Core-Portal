@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -13,8 +13,9 @@ const DataFilesAddProjectModal = () => {
   const history = useHistory();
   const match = useRouteMatch();
   const dispatch = useDispatch();
+  const { user } = useSelector(state => state.authenticatedUser);
+  const [members, setMembers] = useState([{ user, access: 'owner' }]);
   const isOpen = useSelector(state => state.files.modals.addproject);
-  const { formMembers } = useSelector(state => state.projects.metadata);
   const isCreating = useSelector(state => {
     return (
       state.projects.operation &&
@@ -48,7 +49,7 @@ const DataFilesAddProjectModal = () => {
       type: 'PROJECTS_CREATE',
       payload: {
         title,
-        members: formMembers.map(member => ({
+        members: members.map(member => ({
           username: member.user.username,
           access: member.access
         })),
@@ -57,25 +58,15 @@ const DataFilesAddProjectModal = () => {
     });
   };
 
-  const onAdd = useCallback(
-    newUser => {
-      dispatch({
-        type: 'PROJECTS_FORM_MEMBER_LIST_ADD',
-        payload: newUser
-      });
-    },
-    [dispatch]
-  );
+  const onAdd = newUser => {
+    setMembers([...members, newUser]);
+  };
 
-  const onRemove = useCallback(
-    removedUser => {
-      dispatch({
-        type: 'PROJECTS_FORM_MEMBER_LIST_REMOVE',
-        payload: removedUser
-      });
-    },
-    [dispatch]
-  );
+  const onRemove = removedUser => {
+    setMembers(
+      members.filter(m => m.user.username !== removedUser.user.username)
+    );
+  };
 
   const validationSchema = Yup.object().shape({
     title: Yup.string()
@@ -113,7 +104,7 @@ const DataFilesAddProjectModal = () => {
                 }
               />
               <DataFilesProjectMembers
-                members={formMembers}
+                members={members}
                 onAdd={onAdd}
                 onRemove={onRemove}
               />
