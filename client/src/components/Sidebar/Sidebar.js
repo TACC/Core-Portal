@@ -54,6 +54,9 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
 
   const unread = useSelector(state => state.notifications.list.unread);
   const hideApps = useSelector(state => state.workbench.config.hideApps);
+  const hideDataFiles = useSelector(
+    state => state.workbench.config.hideDataFiles
+  );
 
   return (
     <Nav styleName="root" vertical>
@@ -65,12 +68,14 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
             iconName="dashboard"
             disabled={disabled}
           />
-          <SidebarItem
-            to={`${path}${ROUTES.DATA}`}
-            label="Data Files"
-            iconName="folder"
-            disabled={disabled}
-          />
+          {!hideDataFiles && (
+            <SidebarItem
+              to={`${path}${ROUTES.DATA}`}
+              label="Data Files"
+              iconName="folder"
+              disabled={disabled}
+            />
+          )}
           {!hideApps && (
             <SidebarItem
               to={`${path}${ROUTES.APPLICATIONS}`}
