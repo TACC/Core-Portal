@@ -19,7 +19,7 @@
     --global-color-primary--normal: #AFAFAF;
     --global-color-primary--dark: #707070;
     --global-color-primary--x-dark: #484848;
-    --global-color-primary--xx-dark: #222222; /* Unused. For header background, which is styled by CMS styles */
+    --global-color-primary--xx-dark: #222222;
 
     /* Distinct Hues */
     --global-color-accent--normal: #9D85EF;
