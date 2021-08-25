@@ -18,8 +18,10 @@
     --global-color-primary--light: #C6C6C6;
     --global-color-primary--normal: #AFAFAF;
     --global-color-primary--dark: #707070;
-    --global-color-primary--x-dark: #484848;
-    --global-color-primary--xx-dark: #222222;
+    --global-color-primary--x-dark: #484848; /* ¹ */
+    --global-color-primary--xx-dark: #222222; /* ¹ */
+    /* ¹ REQ: Use of this color for text may have result darker than design
+              (designer approved for accessibile color contrast via FP-1082) */
 
     /* Distinct Hues */
     --global-color-accent--normal: #7754E8;
