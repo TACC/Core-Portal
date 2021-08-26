@@ -267,18 +267,18 @@ def test_add_user_failure(client, requests_mock, authenticated_user, tas_add_use
 
 
 def test_delete_user(client, requests_mock, authenticated_user, tas_delete_user_response):
-    requests_mock.post("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_response)
-    response = client.post('/api/users/team/manage/1234/5678')
+    requests_mock.delete("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_response)
+    response = client.delete('/api/users/team/manage/1234/5678')
     assert response.status_code == 200
     assert response.json() == {"response": 'ok'}
 
 
 def test_delete_user_unauthenticated(client):
-    response = client.post('/api/users/team/manage/1234/5678')
+    response = client.delete('/api/users/team/manage/1234/5678')
     assert response.status_code == 302
 
 
 def test_delete_user_failure(client, requests_mock, authenticated_user, tas_delete_user_error_response):
-    requests_mock.post("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_error_response)
-    response = client.post('/api/users/team/manage/1234/5678')
+    requests_mock.delete("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_error_response)
+    response = client.delete('/api/users/team/manage/1234/5678')
     assert response.status_code == 400
