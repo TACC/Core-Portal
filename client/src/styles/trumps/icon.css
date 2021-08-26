@@ -35,3 +35,22 @@
 .btn .loading-icon + span {
   vertical-align: middle;
 }
+
+
+
+/* Placeholders */
+/* FAQ: Some icons do not exist, but can be faked (with caveats) */
+
+/* To create a small "chevron" */
+/* CAVEAT: Use `--color` to set color */
+[class*="icon-nav-"] {
+  border: solid var(--color, var(--global-color-primary--xx-dark));
+  border-width: 0 0.25em 0.25em 0;
+  font-size: 8px;
+  /* display: inline-block; *//* let `.icon`'s `display: inline-flex;` do it */
+  /* padding: var(--size); *//* let `.icon`'s equal `width` & `height` do it */
+}
+.icon-nav-up { transform: rotate(-135deg); }
+.icon-nav-left { transform: rotate(135deg); }
+.icon-nav-down { transform: rotate(45deg); }
+.icon-nav-right { transform: rotate(-45deg); }
