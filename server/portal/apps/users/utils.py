@@ -206,9 +206,7 @@ def add_user(project_id, user_id):
 
 def remove_user(project_id, user_id):
     auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
-    r = requests.delete('{0}/projects/{1}/users/{2}'.format(settings.TAS_URL, project_id, user_id), auth=auth)
-    logger.debug(r)
-    return
+    r = requests.delete('{0}/v1/projects/{1}/users/{2}'.format(settings.TAS_URL, project_id, user_id), auth=auth)
     resp = r.json()
     logger.debug(resp)
     if resp['status'] == 'success':
