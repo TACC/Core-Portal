@@ -18,18 +18,16 @@
   flex-direction: column;
 }
 
-.ticket-reply-group {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
 .ticket-reply-text-area {
   min-height: 5em;
 }
 
-.ticket-reply-button {
-  text-align: right;
+.ticket-reply-submission {
+  display: flex;
+  justify-content: space-between;
+}
+.ticket-reply-submission .btn {
+  margin-left: auto;
 }
 
 .ticket-model-content {

@@ -19,8 +19,6 @@ import {
 } from 'reactstrap';
 import * as Yup from 'yup';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { formatDateTime } from 'utils/timeFormat';
 import {
   FormField,
@@ -98,7 +96,10 @@ function TicketHistoryReply({ ticketId }) {
               maxSizeMessage="Max File Size: 3MB"
               maxSize={3145728}
             />
-            <FormGroup className="ticket-reply-button">
+            <FormGroup className="ticket-reply-submission">
+              {replyingError && (
+                <Message type="error">Something went wrong.</Message>
+              )}
               <Button
                 type="submit"
                 color="primary"
@@ -110,11 +111,7 @@ function TicketHistoryReply({ ticketId }) {
                   loadingError
                 }
               >
-                {isReplying && <Spinner size="sm" color="white" />}{' '}
-                {replyingError && (
-                  <FontAwesomeIcon icon={faExclamationCircle} />
-                )}{' '}
-                Reply
+                {isReplying && <Spinner size="sm" color="white" />} Reply
               </Button>
             </FormGroup>
           </Form>
