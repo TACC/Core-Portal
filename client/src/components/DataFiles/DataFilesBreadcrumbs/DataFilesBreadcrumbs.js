@@ -71,6 +71,51 @@ BreadcrumbLink.defaultProps = {
   isPublic: false
 };
 
+const RootProjectsLink = ({ api, scheme, section, label }) => {
+  const dispatch = useDispatch();
+  const onClick = e => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatch({
+      type: 'DATA_FILES_SET_MODAL_PROPS',
+      payload: {
+        operation: 'select',
+        props: { showProjects: true }
+      }
+    });
+  };
+  const basePath = '/workbench/data';
+  switch (section) {
+    case 'FilesListing':
+      return (
+        <Link className="breadcrumb-link" to={`${basePath}/${api}/${scheme}/`}>
+          {label}
+        </Link>
+      );
+
+    case 'modal':
+      return (
+        <span>
+          <a
+            className="breadcrumb-link"
+            href={`/workbench/data/${api}/${scheme}/`}
+            onClick={onClick}
+          >
+            {label}
+          </a>
+        </span>
+      );
+    default:
+      return <span>{label}</span>;
+  }
+};
+RootProjectsLink.propTypes = {
+  api: PropTypes.string.isRequired,
+  scheme: PropTypes.string.isRequired,
+  section: PropTypes.string.isRequired,
+  label: PropTypes.element.isRequired
+};
+
 const DataFilesBreadcrumbs = ({
   api,
   scheme,
@@ -108,12 +153,12 @@ const DataFilesBreadcrumbs = ({
     <div className={`breadcrumbs ${className}`}>
       {scheme === 'projects' && (
         <>
-          <Link
-            className="breadcrumb-link"
-            to={`/workbench/data/${api}/${scheme}/`}
-          >
-            Shared Workspaces
-          </Link>{' '}
+          <RootProjectsLink
+            api={api}
+            scheme={scheme}
+            section={section}
+            label="Shared Workspaces"
+          />{' '}
           {system && `/ `}
         </>
       )}
