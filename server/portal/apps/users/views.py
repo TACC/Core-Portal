@@ -153,14 +153,16 @@ class AllocationUsageView(BaseApiView):
         usage = get_per_user_allocation_usage(allocation_id)
         return JsonResponse({'response': usage})
 
+
 @method_decorator(login_required, name='dispatch')
 class AllocationManagementView(BaseApiView):
 
     def post(self, request, project_id, user_id):
         logger.debug(project_id)
         logger.debug(user_id)
-        data = add_user(project_id, user_id)
+        add_user(project_id, user_id)
         return JsonResponse({'response': 'ok'})
+
     def delete(self, request, project_id, user_id):
-        data = remove_user(project_id, user_id)
+        remove_user(project_id, user_id)
         return JsonResponse({'response': 'ok'})

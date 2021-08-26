@@ -154,7 +154,6 @@ def get_usernames(project_name):
     auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
     r = requests.get('{0}/v1/projects/name/{1}/users'.format(settings.TAS_URL, project_name), auth=auth)
     resp = r.json()
-    logger.debug(resp)
     if resp['status'] == 'success':
         return resp['result']
     else:
