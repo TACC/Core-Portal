@@ -125,7 +125,7 @@ def get_allocations(username, force=False):
         dict
     """
     try:
-        if not force:
+        if force:
             logger.debug("Forcing TAS allocation retrieval")
             raise NotFoundError
         result = {
