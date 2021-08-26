@@ -125,7 +125,7 @@ def get_allocations(username, force=False):
     """
     try:
         if force:
-            logger.debug("Forcing TAS allocation retrieval")
+            logger.info("Forcing TAS allocation retrieval for user:{}".format(username))
             raise NotFoundError
         result = {
             'hosts': {},
