@@ -7,7 +7,7 @@ export const AllocationsRequestModal = ({ isOpen, toggle }) => (
   <Modal isOpen={isOpen} toggle={toggle}>
     <ModalHeader
       toggle={toggle}
-      charCode="x"
+      charCode="&#xe912;"
       className="allocations-modal-header"
     >
       <span>Manage Allocations</span>

@@ -67,7 +67,7 @@ const DataFilesTrashModal = React.memo(() => {
       size="lg"
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
         Moving {selected.length} File(s) to Trash
       </ModalHeader>
       <ModalBody style={{ height: '70vh' }}>
