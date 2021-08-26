@@ -52,7 +52,9 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
       className="dataFilesModal"
       ref={selectRef}
     >
-      <ModalHeader toggle={toggle}>Select</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Select
+      </ModalHeader>
       <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-12 d-flex flex-column">

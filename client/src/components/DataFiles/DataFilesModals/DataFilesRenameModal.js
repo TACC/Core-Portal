@@ -76,7 +76,9 @@ const DataFilesRenameModal = () => {
         onSubmit={rename}
       >
         <Form>
-          <ModalHeader toggle={toggle}>Rename {selected.name}</ModalHeader>
+          <ModalHeader toggle={toggle} charCode="&#xe912;">
+            Rename {selected.name}
+          </ModalHeader>
           <ModalBody>
             <FormField
               name="newName"

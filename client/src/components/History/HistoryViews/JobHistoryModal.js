@@ -169,7 +169,7 @@ function JobHistoryModal({ jobId }) {
       toggle={close}
       size="lg"
     >
-      <ModalHeader styleName="header" toggle={close}>
+      <ModalHeader styleName="header" toggle={close} charCode="&#xe912;">
         <div className="d-inline-block text-truncate">{jobName}</div>
         <DescriptionList
           data={headerData}
