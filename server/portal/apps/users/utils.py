@@ -183,8 +183,7 @@ def get_per_user_allocation_usage(allocation_id):
     if resp['status'] == 'success':
         return resp['result']
     else:
-        # fix this
-        raise ApiException('Failed to get project users', resp['message'])
+        raise ApiException('Failed to get project users: {}'.format(resp['message']))
 
 
 def add_user(project_id, user_id):
