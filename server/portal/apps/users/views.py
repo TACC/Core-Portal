@@ -158,11 +158,11 @@ class AllocationUsageView(BaseApiView):
 class AllocationManagementView(BaseApiView):
 
     def post(self, request, project_id, user_id):
-        logger.debug(project_id)
-        logger.debug(user_id)
+        logger.info('Adding {} to TAS project {}'.format(user_id, project_id))
         add_user(project_id, user_id)
         return JsonResponse({'response': 'ok'})
 
     def delete(self, request, project_id, user_id):
+        logger.info('Deleting {} to TAS project {}'.format(user_id, project_id))
         remove_user(project_id, user_id)
         return JsonResponse({'response': 'ok'})
