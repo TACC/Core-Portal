@@ -7,6 +7,7 @@ import './Checkbox.module.css';
 
 // RFE: Use (and style) an actual checkbox… `<input type="checkbox">`
 //      and still support `DataFilesListingCells`'s button usage (how?)
+//      (this would also resolve the aria/lint complications noted below)
 const Checkbox = ({ className, isChecked, tabIndex, role, ...props }) => {
   const rootStyleNames = ['root', isChecked ? ['is-checked'] : ''].join(' ');
 
