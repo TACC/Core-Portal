@@ -5,6 +5,10 @@ from portal.apps.auth.models import AgaveOAuthToken
 from pytas.http import TASClient
 from portal.apps.users.utils import get_tas_allocations, get_allocations
 from elasticsearch.exceptions import NotFoundError
+import pytest
+import json
+import os
+from django.conf import settings
 
 
 class AttrDict(dict):
@@ -222,3 +226,59 @@ class TestGetIndexedAllocations(TestCase):
         get_allocations('testuser')
         mock_get_alloc.assert_called_with('testuser')
         mock_idx().save.assert_called_with()
+
+
+@pytest.fixture
+def tas_add_user_response():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_add_user_to_project.json')))
+
+
+@pytest.fixture
+def tas_delete_user_response():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_delete_user_from_project.json')))
+
+
+@pytest.fixture
+def tas_add_user_error_response():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_add_user_to_project_error.json')))
+
+
+@pytest.fixture
+def tas_delete_user_error_response():
+    yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/tas/tas_delete_user_from_project_error.json')))
+
+
+def test_add_user(client, requests_mock, authenticated_user, tas_add_user_response):
+    requests_mock.post("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_add_user_response)
+    response = client.post('/api/users/team/manage/1234/5678')
+    assert response.status_code == 200
+    assert response.json() == {"response": 'ok'}
+
+
+def test_add_user_unauthenticated(client):
+    response = client.post('/api/users/team/manage/1234/5678')
+    assert response.status_code == 302
+
+
+def test_add_user_failure(client, requests_mock, authenticated_user, tas_add_user_error_response):
+    requests_mock.post("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_add_user_error_response)
+    response = client.post('/api/users/team/manage/1234/5678')
+    assert response.status_code == 400
+
+
+def test_delete_user(client, requests_mock, authenticated_user, tas_delete_user_response):
+    requests_mock.post("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_response)
+    response = client.post('/api/users/team/manage/1234/5678')
+    assert response.status_code == 200
+    assert response.json() == {"response": 'ok'}
+
+
+def test_delete_user_unauthenticated(client):
+    response = client.post('/api/users/team/manage/1234/5678')
+    assert response.status_code == 302
+
+
+def test_delete_user_failure(client, requests_mock, authenticated_user, tas_delete_user_error_response):
+    requests_mock.post("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_error_response)
+    response = client.post('/api/users/team/manage/1234/5678')
+    assert response.status_code == 400
