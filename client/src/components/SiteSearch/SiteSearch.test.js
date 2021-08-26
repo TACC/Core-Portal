@@ -5,6 +5,7 @@ import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import siteSearchResults from './fixtures/siteSearch.fixture.json';
 import systemsFixture from '../DataFiles/fixtures/DataFiles.systems.fixture';
+import {initialState as workbench} from '../../redux/reducers/workbench.reducers';
 import '@testing-library/jest-dom';
 
 const mockStore = configureStore();
@@ -16,7 +17,8 @@ const mockState = {
     completed: true,
     results: siteSearchResults
   },
-  authenticatedUser: { user: null },
+  authenticatedUser: {user: null},
+  workbench: { ...workbench, config: { hideDataFiles: false } },
   files: {
     modals: {
       preview: false

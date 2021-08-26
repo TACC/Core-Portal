@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import queryStringParser from 'query-string';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import PropTypes from 'prop-types';
@@ -8,6 +9,10 @@ import './SiteSearchSidebar.scss';
 
 const SiteSearchSidebar = ({ authenticated, schemes, results }) => {
   const queryParams = queryStringParser.parse(useLocation().search);
+  const hideDataFiles = useSelector(
+    state => state.workbench.config.hideDataFiles
+  );
+
   // Reset pagination on browse
   const query = queryStringParser.stringify({ ...queryParams, page: 1 });
   return (
@@ -44,21 +49,23 @@ const SiteSearchSidebar = ({ authenticated, schemes, results }) => {
                   </div>
                 </NavLink>
               )}
-              {authenticated && schemes.includes('community') && (
-                <NavLink
-                  tag={RRNavLink}
-                  to={`/search/community/?${query}`}
-                  activeClassName="active"
-                >
-                  <div className="nav-content">
-                    <Icon name="folder" />
-                    <span className="nav-text">Community Data</span>
-                    <div className="search-count-pill">
-                      <Pill>{results.community.count.toString()}</Pill>
+              {!hideDataFiles &&
+                authenticated &&
+                schemes.includes('community') && (
+                  <NavLink
+                    tag={RRNavLink}
+                    to={`/search/community/?${query}`}
+                    activeClassName="active"
+                  >
+                    <div className="nav-content">
+                      <Icon name="folder" />
+                      <span className="nav-text">Community Data</span>
+                      <div className="search-count-pill">
+                        <Pill>{results.community.count.toString()}</Pill>
+                      </div>
                     </div>
-                  </div>
-                </NavLink>
-              )}
+                  </NavLink>
+                )}
             </NavItem>
           </Nav>
         </div>

@@ -4,17 +4,21 @@ import SiteSearchSidebar from './SiteSearchSidebar';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import siteSearchResults from '../fixtures/siteSearch.fixture.json';
+import {initialState as workbench} from '../../../redux/reducers/workbench.reducers';
 import '@testing-library/jest-dom';
 import { fireEvent } from '@testing-library/react';
 import { within } from '@testing-library/dom';
 
 const mockStore = configureStore();
+const initialMockState = {
+  workbench: {...workbench, config: {hideDataFiles: false}},
+};
 
 describe('SiteSearchSidebar', () => {
   it('renders nav links and pills', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({});
+    const store = mockStore(initialMockState);
     const { getAllByRole, getByText } = renderComponent(
       <SiteSearchSidebar
         authenticated
@@ -39,7 +43,7 @@ describe('SiteSearchSidebar', () => {
   it('links navigate to correct filters', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({});
+    const store = mockStore(initialMockState);
     const { getAllByRole, getByText } = renderComponent(
       <SiteSearchSidebar
         authenticated
@@ -60,5 +64,24 @@ describe('SiteSearchSidebar', () => {
     fireEvent.click(getByText('Web Content'));
     expect(history.location.pathname).toEqual('/search/cms/');
     expect(history.location.search).toEqual('?page=1&query_string=test');
+  });
+
+  it('hides community data when data files are toggled off', () => {
+    const history = createMemoryHistory();
+    history.push('/search/cms/?page=1&query_string=test');
+    const store = mockStore({
+      workbench: {...workbench, config: {hideDataFiles: true}}
+    });
+    const { queryByText } = renderComponent(
+      <SiteSearchSidebar
+        authenticated
+        schemes={['public', 'community']}
+        results={siteSearchResults}
+      />,
+      store,
+      history
+    );
+
+    expect(queryByText(/Community Data/)).toBeNull();
   });
 });
