@@ -15,6 +15,9 @@ const Checkbox = ({ className, isChecked, tabIndex, role, ...props }) => {
       styleName={rootStyleNames}
       className={`icon-set ${className}`}
       aria-checked={isChecked}
+      // HELP: Should use `tabIndex={0}`, but that causes unable-to-disable
+      //       lint error `jsx-ally/no-noninteractive-tabindex`
+      //       (need for a `onClick`, `onKeyDown`, et cetera).
       tabIndex={tabIndex}
       role={role}
       // FAQ: `DataFilesListingCells` needs to pass `onClick` and `onKeyDown`,
