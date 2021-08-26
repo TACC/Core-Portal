@@ -107,8 +107,7 @@ def get_tas_allocations(username):
         'hosts': hosts,
         'portal_alloc': settings.PORTAL_ALLOCATION,
         'active': list(active_allocations.values()),
-        'inactive': list(inactive_allocations.values()),
-        'raw_data': tas_projects
+        'inactive': list(inactive_allocations.values())
     }
 
 
