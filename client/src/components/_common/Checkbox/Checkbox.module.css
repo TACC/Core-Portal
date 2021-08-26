@@ -1,0 +1,17 @@
+/* HACK: Only necessary because icon sizes are not managed by <Icon> yet */
+.root,
+.root > * { font-size: 1rem !important; /* override `.icon, .icon-set` */ }
+
+/* Children */
+
+.check {
+  background-color: var(--global-color-accent--normal);
+  color: var(--global-color-primary--xx-light);
+
+  clip-path: inset(0.075em); /* to hide internal padding around box shape */
+}
+.root:not(.is-checked) .check { display: none; }
+
+.box {
+  color: var(--global-color-primary--x-dark);
+}
