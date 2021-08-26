@@ -40,3 +40,24 @@ Styleguide Components.Bootstrap.Modal
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* To darken close button */
+.modal-header .close {
+  color: var(--global-color-primary--x-dark);
+  opacity: 1;
+}
+/* FAQ: The specificity matches Bootstrap */
+.modal-header .close:not(:disabled):not(.disabled):focus,
+.modal-header .close:not(:disabled):not(.disabled):hover {
+  color: var(--global-color-primary--xx-dark);
+  opacity: 1;
+}
+
+/* To render modal close button icon as a Cortal icon */
+/* CAVEAT: Pass `charCode="&#xe912;"` to `<ModalHeader>` */
+.modal-header .close span {
+  /* To mimic `.icon` styles without `@extend` or `composes` (unavailable) */
+  /* HACK: Copied (and reduced and edited) from `src/styles/trumps/icon...` */
+  font-size: 1.5rem; /* bigger to match header text font height (like design) */
+  font-family: 'Cortal-Icons' !important;
+}
