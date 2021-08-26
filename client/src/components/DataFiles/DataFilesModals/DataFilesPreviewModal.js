@@ -56,7 +56,9 @@ const DataFilesPreviewModal = () => {
       toggle={toggle}
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        File Preview: {params.name}
+      </ModalHeader>
       <ModalBody styleName="root">
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
           <LoadingSpinner />

@@ -36,7 +36,7 @@ export const EditRequiredInformationModal = () => {
       <ModalHeader
         className="manage-account-modal-header"
         toggle={closeModal}
-        charCode="X"
+        charCode="&#xe912;"
       >
         <span>Edit Required Information</span>
       </ModalHeader>
@@ -77,7 +77,7 @@ export const EditOptionalInformationModal = () => {
       <ModalHeader
         className="manage-account-modal-header"
         toggle={closeModal}
-        charCode="X"
+        charCode="&#xe912;"
       >
         <span>Edit Optional Information</span>
       </ModalHeader>
@@ -113,7 +113,7 @@ export const ChangePasswordModal = () => {
       <ModalHeader
         className="manage-account-modal-header"
         toggle={closeModal}
-        charCode="X"
+        charCode="&#xe912;"
       >
         <span>Change Password</span>
       </ModalHeader>
@@ -136,7 +136,7 @@ export const GoogleDriveModal = ({ active, toggle }) => {
       <ModalHeader
         className="manage-account-modal-header"
         toggle={toggle}
-        charCode="X"
+        charCode="&#xe912;"
       >
         Connect to Google Drive
       </ModalHeader>
