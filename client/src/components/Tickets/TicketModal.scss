@@ -25,9 +25,7 @@
 .ticket-reply-submission {
   display: flex;
   justify-content: space-between;
-}
-.ticket-reply-submission .btn {
-  margin-left: auto;
+  align-items: right;
 }
 
 .ticket-model-content {
