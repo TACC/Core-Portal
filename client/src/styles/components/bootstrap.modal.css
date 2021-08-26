@@ -46,7 +46,7 @@ Styleguide Components.Bootstrap.Modal
   color: var(--global-color-primary--x-dark);
   opacity: 1;
 }
-/* FAQ: The sepcificity matches Bootstrap */
+/* FAQ: The specificity matches Bootstrap */
 .modal-header .close:not(:disabled):not(.disabled):focus,
 .modal-header .close:not(:disabled):not(.disabled):hover {
   color: var(--global-color-primary--xx-dark);
