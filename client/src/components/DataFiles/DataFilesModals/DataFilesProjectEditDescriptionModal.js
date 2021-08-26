@@ -110,7 +110,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                 styleName="description-textarea"
               />
               <div styleName="button-container">
-                {true && (
+                {updatingError && (
                   <Message type="error" dataTestid="updating-error">
                     Something went wrong.
                   </Message>
