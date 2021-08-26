@@ -65,6 +65,7 @@ export const DEFAULT_SCOPE = 'inline'; // FAQ: Historical support for default
 const Message = ({
   children,
   className,
+  dataTestid,
   onDismiss,
   canDismiss,
   isVisible,
@@ -121,6 +122,7 @@ const Message = ({
       className={className}
       role={role}
       in={isVisible}
+      data-testid={dataTestid}
     >
       <Icon styleName="icon type-icon" name={iconName}>
         {iconText}
@@ -149,6 +151,8 @@ Message.propTypes = {
   children: PropTypes.node.isRequired, // This checks for any render-able value
   /** Additional className for the root element */
   className: PropTypes.string,
+  /** Message type or severity */
+  dataTestid: PropTypes.string,
   /** Whether message is visible (pair with `onDismiss`) */
   isVisible: PropTypes.bool,
   /** Action on message dismissal (pair with `isVisible`) */
@@ -161,6 +165,7 @@ Message.propTypes = {
 Message.defaultProps = {
   className: '',
   canDismiss: false,
+  dataTestid: '',
   isVisible: true,
   onDismiss: () => {},
   scope: '' // RFE: Require scope; remove this line
