@@ -22,7 +22,12 @@ import * as Yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { formatDateTime } from 'utils/timeFormat';
-import { FormField, FileInputDropZoneFormField, LoadingSpinner } from '_common';
+import {
+  FormField,
+  FileInputDropZoneFormField,
+  LoadingSpinner,
+  Message
+} from '_common';
 import { Formik, Form } from 'formik';
 import * as ROUTES from '../../constants/routes';
 import './TicketModal.scss';
@@ -197,10 +202,10 @@ const TicketHistory = () => {
   return (
     <>
       {loading && <LoadingSpinner />}
-      {loadingError && (
-        <div className="ticket-history-loading-icon">
-          <FontAwesomeIcon icon={faExclamationCircle} size="8x" />
-        </div>
+      {loadingError && !loading && (
+        <Message type="error" className="ticket-history-error">
+          Something went wrong.
+        </Message>
       )}
       {history.map(d => (
         <TicketHistoryCard
