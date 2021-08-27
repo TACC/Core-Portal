@@ -3,7 +3,7 @@ from cms.extensions import PageExtension
 from cms.extensions.extension_pool import extension_pool
 
 
-class AuthorizationExtension(PageExtension):
-    pass
+class AuthenticationExtension(PageExtension):
+    authentication = models.BooleanField()
 
-extension_pool.register(AuthorizationExtension)
+extension_pool.register(AuthenticationExtension)

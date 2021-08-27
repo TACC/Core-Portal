@@ -3,8 +3,7 @@ from cms.extensions import PageExtensionAdmin
 
 from .models import IconExtension
 
-
-class AuthorizationExtensionAdmin(PageExtensionAdmin):
+class AuthenticationExtensionAdmin(PageExtensionAdmin):
     pass
 
-admin.site.register(AuthorizationExtension, AuthorizationExtensionAdmin)
+admin.site.register(AuthenticationExtension, AuthenticationExtensionAdmin)
