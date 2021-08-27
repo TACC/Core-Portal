@@ -17,7 +17,9 @@ const DataFilesDownloadMessageModal = () => {
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="md" className="dataFilesModal">
-      <ModalHeader toggle={toggle}>Download</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Download
+      </ModalHeader>
       <ModalBody>
         <p styleName="title">Folders must be compressed before download.</p>
         <ol>

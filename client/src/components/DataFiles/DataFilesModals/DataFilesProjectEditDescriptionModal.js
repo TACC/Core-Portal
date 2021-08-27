@@ -3,10 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import './DataFilesProjectEditDescription.module.scss';
 
 const DataFilesProjectEditDescriptionModal = () => {
@@ -64,7 +62,7 @@ const DataFilesProjectEditDescriptionModal = () => {
   const validationSchema = Yup.object().shape({
     title: Yup.string()
       .min(3, 'Title must be at least 3 characters')
-      .max(70, 'Title must be at most 70 characters')
+      .max(150, 'Title must be at most 150 characters')
       .required('Please enter a title.'),
     description: Yup.string().max(
       800,
@@ -74,7 +72,9 @@ const DataFilesProjectEditDescriptionModal = () => {
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
-      <ModalHeader toggle={toggle}>Edit Descriptions</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Edit Descriptions
+      </ModalHeader>
       <ModalBody>
         <Formik
           initialValues={initialValues}
@@ -90,7 +90,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                   <div>
                     Workspace Title{' '}
                     <small>
-                      <em>(Maximum 70 characters)</em>
+                      <em>(Maximum 150 characters)</em>
                     </small>
                   </div>
                 }
@@ -110,6 +110,11 @@ const DataFilesProjectEditDescriptionModal = () => {
                 styleName="description-textarea"
               />
               <div styleName="button-container">
+                {updatingError && (
+                  <Message type="error" dataTestid="updating-error">
+                    Something went wrong.
+                  </Message>
+                )}
                 <Button
                   type="submit"
                   className="data-files-btn"
@@ -117,12 +122,6 @@ const DataFilesProjectEditDescriptionModal = () => {
                   disabled={isUpdating || !isValid || !dirty}
                 >
                   {isUpdating && <LoadingSpinner placement="inline" />}
-                  {updatingError && (
-                    <FontAwesomeIcon
-                      icon={faExclamationCircle}
-                      data-testid="updating-error"
-                    />
-                  )}
                   Update Changes
                 </Button>
               </div>

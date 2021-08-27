@@ -90,7 +90,7 @@ const SystemsPushKeysModal = () => {
             onSubmit={pushKeys}
           >
             <Form>
-              <ModalHeader toggle={toggle}>
+              <ModalHeader toggle={toggle} charCode="&#xe912;">
                 Authenticate with TACC Token
               </ModalHeader>
               <ModalBody>
