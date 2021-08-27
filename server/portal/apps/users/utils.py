@@ -107,8 +107,7 @@ def get_tas_allocations(username):
         'hosts': hosts,
         'portal_alloc': settings.PORTAL_ALLOCATION,
         'active': list(active_allocations.values()),
-        'inactive': list(inactive_allocations.values()),
-        'raw_data': tas_projects
+        'inactive': list(inactive_allocations.values())
     }
 
 
@@ -125,8 +124,8 @@ def get_allocations(username, force=False):
         dict
     """
     try:
-        if not force:
-            logger.debug("Forcing TAS allocation retrieval")
+        if force:
+            logger.info("Forcing TAS allocation retrieval for user:{}".format(username))
             raise NotFoundError
         result = {
             'hosts': {},
@@ -154,7 +153,6 @@ def get_usernames(project_name):
     auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
     r = requests.get('{0}/v1/projects/name/{1}/users'.format(settings.TAS_URL, project_name), auth=auth)
     resp = r.json()
-    logger.debug(resp)
     if resp['status'] == 'success':
         return resp['result']
     else:
@@ -182,36 +180,26 @@ def get_per_user_allocation_usage(allocation_id):
     auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
     r = requests.get('{0}/v1/allocations/{1}/usage'.format(settings.TAS_URL, allocation_id), auth=auth)
     resp = r.json()
-    logger.debug(resp)
     if resp['status'] == 'success':
         return resp['result']
     else:
-        raise ApiException('Failed to get project users', resp['message'])
+        raise ApiException('Failed to get project users: {}'.format(resp['message']))
+
 
 def add_user(project_id, user_id):
-    logger.debug(project_id)
-    logger.debug(user_id)
     auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
     uri = '{0}/v1/projects/{1}/users/{2}'.format(settings.TAS_URL, project_id, user_id)
-    logger.debug(uri)
     r = requests.post(uri, auth=auth)
-    logger.debug(r)
-    return
     resp = r.json()
-    logger.debug(resp)
-    if resp['status'] == 'success':
-        return resp['result']
-    else:
-        raise ApiException('Failed to add user', resp['message'])
+    if resp['status'] != 'success':
+        raise ApiException("Failed to add user: '{}'".format(resp['message']))
+    return resp['result']
+
 
 def remove_user(project_id, user_id):
     auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
-    r = requests.delete('{0}/projects/{1}/users/{2}'.format(settings.TAS_URL, project_id, user_id), auth=auth)
-    logger.debug(r)
-    return
+    r = requests.delete('{0}/v1/projects/{1}/users/{2}'.format(settings.TAS_URL, project_id, user_id), auth=auth)
     resp = r.json()
-    logger.debug(resp)
-    if resp['status'] == 'success':
-        return resp['result']
-    else:
-        raise ApiException('Failed to delete user', resp['message'])
+    if resp['status'] != 'success':
+        raise ApiException("Failed to delete user: '{}'".format(resp['message']))
+    return resp['result']
