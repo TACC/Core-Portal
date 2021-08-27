@@ -151,7 +151,7 @@ Message.propTypes = {
   children: PropTypes.node.isRequired, // This checks for any render-able value
   /** Additional className for the root element */
   className: PropTypes.string,
-  /** Message type or severity */
+  /** ID for test case element selection */
   dataTestid: PropTypes.string,
   /** Whether message is visible (pair with `onDismiss`) */
   isVisible: PropTypes.bool,
