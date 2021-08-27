@@ -4,9 +4,10 @@ import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import { useLocation } from 'react-router-dom';
 import { parse } from 'query-string';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+
+import { Icon } from '_common';
 import { findSystemDisplayName } from 'utils/systems';
+
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
 import './DataFilesModalListingTable.module.scss';
@@ -36,7 +37,7 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
   };
   return (
     <Button styleName="link" color="link" onClick={onClick}>
-      <FontAwesomeIcon icon={faAngleLeft} />
+      <Icon styleName="link-icon" name="nav-left" />
       <span styleName="path">Back</span>
     </Button>
   );
