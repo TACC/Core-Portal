@@ -66,22 +66,4 @@ describe('SiteSearchSidebar', () => {
     expect(history.location.search).toEqual('?page=1&query_string=test');
   });
 
-  it('hides community data when data files are toggled off', () => {
-    const history = createMemoryHistory();
-    history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({
-      workbench: {...workbench, config: {hideDataFiles: true}}
-    });
-    const { queryByText } = renderComponent(
-      <SiteSearchSidebar
-        authenticated
-        schemes={['public', 'community']}
-        results={siteSearchResults}
-      />,
-      store,
-      history
-    );
-
-    expect(queryByText(/Community Data/)).toBeNull();
-  });
 });
