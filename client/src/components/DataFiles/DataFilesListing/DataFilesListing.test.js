@@ -1,10 +1,12 @@
 import React from 'react';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
+import { fireEvent, wait } from '@testing-library/react';
 import renderComponent from 'utils/testing';
 import DataFilesListing from './DataFilesListing';
 import { CheckboxCell, FileNavCell } from './DataFilesListingCells';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
+import filesFixture from '../fixtures/DataFiles.files.fixture';
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -44,32 +46,30 @@ const initialMockState = {
 };
 
 describe('CheckBoxCell', () => {
-  it('shows checkbox when checked', () => {
+  it('box is checked when selected', () => {
     const history = createMemoryHistory();
     const store = mockStore({ files: { selected: { FilesListing: [0] } } });
-    const { getAllByRole } = renderComponent(
+    const { getByRole } = renderComponent(
       <CheckboxCell index={0} />,
       store,
       history
     );
     expect(
-      getAllByRole('img', { hidden: true })[1].getAttribute('data-icon')
-    ).toEqual('check-square');
+      getByRole('checkbox').getAttribute('aria-checked')
+    ).toEqual('true');
   });
 
-  it('shows square when unchecked', () => {
+  it('box is unchecked when not selected', () => {
     const history = createMemoryHistory();
     const store = mockStore({ files: { selected: { FilesListing: [] } } });
-    const { getAllByRole } = renderComponent(
+    const { getByRole } = renderComponent(
       <CheckboxCell index={0} />,
       store,
       history
     );
     expect(
-      getAllByRole('img', { hidden: true })
-        .pop()
-        .getAttribute('data-icon')
-    ).toEqual('square');
+      getByRole('checkbox').getAttribute('aria-checked')
+    ).toEqual('false');
   });
 });
 
@@ -213,4 +213,34 @@ describe('DataFilesListing', () => {
 
     expect(getByText(message)).toBeDefined();
   });
+
+  it('filters by file type', () => {
+    const store = mockStore({
+      ...initialMockState,
+      files: filesFixture
+    });
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/private/test.system/');
+
+    const { getByTestId, getAllByTestId } = renderComponent(
+      <DataFilesListing
+        api="tapis"
+        scheme="private"
+        system="frontera.home.username"
+        path="/"
+      />,
+      store,
+      history
+    );
+
+    const dropdownSelector = getByTestId('selector');
+    fireEvent.change(dropdownSelector, { target: { value: 'Images' } });
+    expect(getAllByTestId('file-listing-item').length).toBe(1);
+    fireEvent.change(dropdownSelector, { target: { value: 'Text' } });
+    expect(getAllByTestId('file-listing-item').length).toBe(2);
+    fireEvent.change(dropdownSelector, { target: { value: 'Folders' } });
+    expect(getAllByTestId('file-listing-item').length).toBe(4);
+    fireEvent.change(dropdownSelector, { target: { value: 'All Types' } });
+    expect(getAllByTestId('file-listing-item').length).toBe(filesFixture.listing.FilesListing.length);
+  })
 });

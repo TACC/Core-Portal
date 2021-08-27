@@ -26,10 +26,9 @@ After you clone the repository locally, there are several configuration steps re
 
 #### Create settings_secret.py, settings_local.py, and secrets.py
 
-- Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.security.utexas.edu)
+- Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu)
 
 - Copy `server/portal/settings/settings_local.example.py` to `server/portal/settings/settings_local.py`
-	 - _Note: Update `PORTAL_PROJECTS_ID_PREFIX` in `settings_local.py` to be something unique (like `USERNAME.CEP`) so that project creation in your local development does not clash with other development work (as directories and Tapis storage system names will be created using this prefix)._
     - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally._
 
 - Copy `server/conf/cms/secrets.sample.py` to `server/conf/cms/secrets.py`
@@ -67,17 +66,12 @@ OR
     python3 manage.py import-apps # Add set of example apps used in Frontnera portal (optional)
 
 #### Initialize the CMS in the `core_portal_cms` container:
-First, copy the sample secrets:
 
-    cp server/conf/cms/secrets.sample.py server/conf/cms/secrets.py
-
-Then, run migrations and `collectstatic`:
-```
     docker exec -it core_portal_cms /bin/bash
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser
-```
+
 Finally, create a home page in the CMS.
 
 *NOTE*: TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
@@ -95,15 +89,15 @@ Requirements:
     - Run `sudo sysctl -p` (In order to persist in `/etc/sysctl.conf`).
 
 First, rebuild the cms search index:
-```
+
     docker exec -it core_portal_cms /bin/bash
     python3 manage.py rebuild_index
-```
+
 Then, use the django shell in the `core_portal_django` container—
-```
+
     docker exec -it core_portal_django /bin/bash
     python3 manage.py shell
-```
+
 —to run the following code to set up the search index:
 ```
 from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_allocations_index
@@ -124,9 +118,9 @@ ngrok http 443
 ### Setup local access to the portal:
 
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.dev`
-     
+
      _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
-     
+
      _NOTE: Do NOT have your VPN connected when you do this.  Otherwise your hosts file will be overwritten and you will have to do this step again._
 
   2. Direct your browser to `https://cep.dev`. This will display the django CMS default page. To login to the portal, point your browser to `https://cep.dev/login`.
@@ -269,3 +263,5 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 
 [Core-CMS]: https://github.com/TACC/Core-CMS "Core CMS"
 [Camino]: https://github.com/TACC/Camino "Camino (Deployment)"
+[1]: https://docs.docker.com/get-docker/
+[2]: https://docs.docker.com/compose/install/

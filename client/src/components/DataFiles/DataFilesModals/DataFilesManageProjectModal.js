@@ -109,7 +109,9 @@ const DataFilesManageProjectModal = () => {
         toggle={toggle}
         className="dataFilesModal"
       >
-        <ModalHeader toggle={toggle}>Manage Team</ModalHeader>
+        <ModalHeader toggle={toggle} charCode="&#xe912;">
+          Manage Team
+        </ModalHeader>
         <ModalBody>
           <DataFilesProjectMembers
             members={members}
