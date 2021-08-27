@@ -83,7 +83,13 @@ class UserSystemsManager():
         return self.system['host']
 
     def get_system_id(self):
-        """Gets system ID for given system and user
+        """Gets system ID for given system and user.
+
+        .. note:: Due to the lack of support for underscores in Tapis v2
+        systemIds, we replace underscores in the username with hyphens. Because
+        hyphens are not allowed characters in usernames, the resulting
+        systemId strings remain unique.
+
         :returns: unique id for a user's home system. ex: [system].home.[username]
         :rtype: str
         """
