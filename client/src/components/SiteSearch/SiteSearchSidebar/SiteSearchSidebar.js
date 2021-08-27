@@ -8,7 +8,6 @@ import './SiteSearchSidebar.scss';
 
 const SiteSearchSidebar = ({ authenticated, schemes, results }) => {
   const queryParams = queryStringParser.parse(useLocation().search);
-
   // Reset pagination on browse
   const query = queryStringParser.stringify({ ...queryParams, page: 1 });
   return (
