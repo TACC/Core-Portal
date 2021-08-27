@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.urls import path
-from portal.apps.users.views import SearchView, AuthenticatedView, UsageView, AllocationsView, TeamView, UserDataView, AllocationUsageView, AllocationManagementView
+from portal.apps.users.views import (SearchView, AuthenticatedView, UsageView, AllocationsView, TeamView,
+                                     UserDataView, AllocationUsageView, AllocationManagementView)
 
 app_name = 'users'
 urlpatterns = [
