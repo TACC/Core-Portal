@@ -16,7 +16,7 @@ const mockState = {
     completed: true,
     results: siteSearchResults
   },
-  authenticatedUser: {user: null},
+  authenticatedUser: { user: null },
   files: {
     modals: {
       preview: false
