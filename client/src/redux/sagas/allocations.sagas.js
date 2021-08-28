@@ -280,9 +280,27 @@ export function* addUser(action) {
 }
 export function* removeUser(action) {
   try {
+    yield put({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+      payload: { loading: true, error: false, userName: action.payload.id }
+    });
     yield call(manageUtil, action.payload.projectId, action.payload.id, false);
+    yield put({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+      payload: { loading: false, error: false }
+    });
+    yield put({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_FROM_PROJECT_STATE',
+      payload: {
+        projectId: action.payload.projectId,
+        userName: action.payload.id
+      }
+    });
   } catch (error) {
-    console.log(error);
+    yield put({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+      payload: { loading: false, error: true }
+    });
   }
 }
 export function* watchAddUser() {

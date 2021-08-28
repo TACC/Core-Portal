@@ -1,20 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Table,
-  Form,
-  Button,
-  Input
-} from 'reactstrap';
+import React, { useEffect, useState } from 'react';
+import { Modal, ModalHeader, ModalBody, Table, Button } from 'reactstrap';
 import { has } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import './AllocationsManageTeamModal.module.scss';
 
 const AllocationsManageTeamTable = ({ rawData, pid }) => {
+  const { removingUserOperation } = useSelector(state => state.allocations);
+  const dispatch = useDispatch();
+
   const data = React.useMemo(() => rawData, [rawData]);
   const columns = React.useMemo(
     () => [
@@ -38,19 +33,44 @@ const AllocationsManageTeamTable = ({ rawData, pid }) => {
       {
         Header: '',
         accessor: 'id',
-        Cell: ({ value }) => (
-          <Button
-            color="link"
-            onClick={() => {
-              console.log(value);
-            }}
-          >
-            Remove
-          </Button>
-        )
+        Cell: el => {
+          const deleteOperationOccuring =
+            removingUserOperation.loading &&
+            el.row.original.username === removingUserOperation.userName;
+          const deleteOperationFailed =
+            removingUserOperation.error &&
+            el.row.original.username === removingUserOperation.userName;
+
+          return (
+            <>
+              {deleteOperationFailed && (
+                <Message type="error">Something went wrong.</Message>
+              )}
+              {deleteOperationOccuring ? (
+                <LoadingSpinner placement="inline" />
+              ) : (
+                <Button
+                  color="link"
+                  disabled={removingUserOperation.loading}
+                  onClick={e => {
+                    dispatch({
+                      type: 'REMOVE_USER_FROM_TAS_PROJECT',
+                      payload: {
+                        projectId: pid,
+                        id: el.row.original.username
+                      }
+                    });
+                  }}
+                >
+                  Remove
+                </Button>
+              )}
+            </>
+          );
+        }
       }
     ],
-    [rawData]
+    [rawData, removingUserOperation]
   );
   const {
     getTableProps,
@@ -101,6 +121,7 @@ const UserSearch = ({ disabled, projectId }) => {
   const [show, setShowing] = useState(false);
   const [v, setTerm] = useState('');
   const [current, setCurr] = useState({});
+
   // useSelector(state => state)
   const handleChange = e => {
     if (v.length > 0)
@@ -196,9 +217,17 @@ const UserSearch = ({ disabled, projectId }) => {
 };
 
 const AllocationsManageTeamModal = ({ isOpen, toggle, pid, ...props }) => {
+  const dispatch = useDispatch();
   const { teams, loadingUsernames, errors } = useSelector(
     state => state.allocations
   );
+
+  useEffect(() => {
+    dispatch({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT'
+    });
+  }, [isOpen]);
+
   console.log(pid);
   const error = has(errors.teams, pid);
   const isLoading = loadingUsernames[pid] && loadingUsernames[pid].loading;
