@@ -40,15 +40,15 @@ const AllocationsManageTeamTable = ({ rawData, pid }) => {
           const deleteOperationFailed =
             removingUserOperation.error &&
             el.row.original.username === removingUserOperation.userName;
+          const removable = !deleteOperationOccuring && el.row.original.role !== 'PI';
 
           return (
             <>
               {deleteOperationFailed && (
                 <Message type="error">Something went wrong.</Message>
               )}
-              {deleteOperationOccuring ? (
-                <LoadingSpinner placement="inline" />
-              ) : (
+              {deleteOperationOccuring && <LoadingSpinner placement="inline" />}
+              {removable && (
                 <Button
                   color="link"
                   disabled={removingUserOperation.loading}
