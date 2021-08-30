@@ -99,7 +99,9 @@ const DataFilesAddProjectModal = () => {
           validationSchema={validationSchema}
         >
           <Form>
-            <ModalHeader toggle={toggle}>Add Shared Workspace</ModalHeader>
+            <ModalHeader toggle={toggle} charCode="&#xe912;">
+              Add Shared Workspace
+            </ModalHeader>
             <ModalBody>
               <FormField
                 name="title"

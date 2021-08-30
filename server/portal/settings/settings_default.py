@@ -116,7 +116,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': None,
+        'icon': 'publications',
         'privilegeRequired': False,
         'readOnly': False
     },
