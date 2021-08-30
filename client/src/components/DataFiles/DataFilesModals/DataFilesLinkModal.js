@@ -186,7 +186,9 @@ const DataFilesLinkModal = () => {
       className="dataFilesModal"
     >
       <Form>
-        <ModalHeader toggle={toggle}>Link for {file.name}</ModalHeader>
+        <ModalHeader toggle={toggle} charCode="&#xe912;">
+          Link for {file.name}
+        </ModalHeader>
         <ModalBody>
           <DataFilesLinkStatus scheme={scheme} file={file} status={status} />
         </ModalBody>

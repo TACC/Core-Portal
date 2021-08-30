@@ -19,10 +19,13 @@ import {
 } from 'reactstrap';
 import * as Yup from 'yup';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { formatDateTime } from 'utils/timeFormat';
-import { FormField, FileInputDropZoneFormField, LoadingSpinner } from '_common';
+import {
+  FormField,
+  FileInputDropZoneFormField,
+  LoadingSpinner,
+  Message
+} from '_common';
 import { Formik, Form } from 'formik';
 import * as ROUTES from '../../constants/routes';
 import './TicketModal.scss';
@@ -93,7 +96,10 @@ function TicketHistoryReply({ ticketId }) {
               maxSizeMessage="Max File Size: 3MB"
               maxSize={3145728}
             />
-            <FormGroup className="ticket-reply-button">
+            <FormGroup className="ticket-reply-submission">
+              {replyingError && (
+                <Message type="error">Something went wrong.</Message>
+              )}
               <Button
                 type="submit"
                 color="primary"
@@ -105,11 +111,7 @@ function TicketHistoryReply({ ticketId }) {
                   loadingError
                 }
               >
-                {isReplying && <Spinner size="sm" color="white" />}{' '}
-                {replyingError && (
-                  <FontAwesomeIcon icon={faExclamationCircle} />
-                )}{' '}
-                Reply
+                {isReplying && <Spinner size="sm" color="white" />} Reply
               </Button>
             </FormGroup>
           </Form>
@@ -198,9 +200,9 @@ const TicketHistory = () => {
     <>
       {loading && <LoadingSpinner />}
       {loadingError && (
-        <div className="ticket-history-loading-icon">
-          <FontAwesomeIcon icon={faExclamationCircle} size="8x" />
-        </div>
+        <Message type="error" className="ticket-history-error">
+          Something went wrong.
+        </Message>
       )}
       {history.map(d => (
         <TicketHistoryCard
@@ -235,7 +237,7 @@ function TicketModal({ history }) {
       toggle={close}
       size="lg"
     >
-      <ModalHeader toggle={close}>
+      <ModalHeader toggle={close} charCode="&#xe912;">
         <span className="ticket-id">Ticket {ticketId}</span>
         <span className="ticket-subject">{ticketSubject}</span>
       </ModalHeader>

@@ -49,7 +49,9 @@ function TicketCreateModal() {
       size="lg"
       contentClassName="ticket-create-modal-content"
     >
-      <ModalHeader toggle={close}>Add Ticket</ModalHeader>
+      <ModalHeader toggle={close} charCode="&#xe912;">
+        Add Ticket
+      </ModalHeader>
       <TicketCreateForm
         authenticatedUser={authenticatedUser}
         provideDashBoardLinkOnSuccess={provideDashBoardLinkOnSuccess}
