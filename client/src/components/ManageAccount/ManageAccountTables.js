@@ -172,6 +172,8 @@ LicenseCell.propTypes = {
 /* eslint-enable react/no-danger */
 export const Licenses = () => {
   const { licenses } = useSelector(state => state.profile.data);
+  const { hideDataFiles } = useSelector(state => state.workbench.config);
+
   const columns = useMemo(
     () =>
       licenses.map(license => {
@@ -185,12 +187,14 @@ export const Licenses = () => {
   );
   const data = useMemo(() => licenses, [licenses]);
   return (
-    <SectionTableWrapper
-      manualHeader={<SectionHeader isForList>Licenses</SectionHeader>}
-      manualContent
-    >
-      <TableTemplate attributes={{ columns, data }} />
-    </SectionTableWrapper>
+    !hideDataFiles && (
+      <SectionTableWrapper
+        manualHeader={<SectionHeader isForList>Licenses</SectionHeader>}
+        manualContent
+      >
+        <TableTemplate attributes={{ columns, data }} />
+      </SectionTableWrapper>
+    )
   );
 };
 
@@ -253,6 +257,7 @@ GoogleDriveIntegrationCell.propTypes = {
 
 export const Integrations = () => {
   const { integrations } = useSelector(state => state.profile.data);
+  const { hideDataFiles } = useSelector(state => state.workbench.config);
   const columns = useMemo(
     () =>
       integrations.map(app => ({
@@ -264,12 +269,14 @@ export const Integrations = () => {
   );
   const data = useMemo(() => integrations, [integrations]);
   return (
-    <SectionTableWrapper
-      manualHeader={<SectionHeader isForList>3rd Party Apps</SectionHeader>}
-      manualContent
-    >
-      <TableTemplate attributes={{ columns, data }} />
-    </SectionTableWrapper>
+    !hideDataFiles && (
+      <SectionTableWrapper
+        manualHeader={<SectionHeader isForList>3rd Party Apps</SectionHeader>}
+        manualContent
+      >
+        <TableTemplate attributes={{ columns, data }} />
+      </SectionTableWrapper>
+    )
   );
 };
 export const ChangePassword = () => {

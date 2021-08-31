@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, wait, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import {
@@ -61,7 +62,10 @@ const mockStore = configureStore({});
 describe('Required Information Component', () => {
   let getByText;
   const testStore = mockStore({
-    profile: dummyState
+    profile: dummyState,
+    workbench: {
+      ...workbench, config: {hideDataFiles: false}
+    }
   });
   beforeEach(() => {
     const utils = render(
@@ -103,7 +107,10 @@ describe('Required Information Component', () => {
 describe('Change Password Component', () => {
   let getByText, getAllByText;
   const testStore = mockStore({
-    profile: dummyState
+    profile: dummyState,
+    workbench: {
+      ...workbench, config: {hideDataFiles: false}
+    }
   });
   beforeEach(() => {
     const utils = render(
@@ -137,7 +144,10 @@ describe('Third Party Apps', () => {
 
   it('Shows connect link when not connected', () => {
     const testStore = mockStore({
-      profile: dummyState
+      profile: dummyState,
+      workbench: {
+        ...workbench, config: {hideDataFiles: false}
+      }
     });
     const { getByText } = render(
       <Provider store={testStore}>
@@ -150,6 +160,9 @@ describe('Third Party Apps', () => {
   });
   it('Shows disconnect link when  connected', () => {
     const testStore = mockStore({
+      workbench: {
+        ...workbench, config: {hideDataFiles: false}
+      },
       profile: {
         ...dummyState,
         data: {
@@ -178,7 +191,10 @@ describe('Third Party Apps', () => {
 describe('Optional Information Component', () => {
   let getByText;
   const testStore = mockStore({
-    profile: dummyState
+    profile: dummyState,
+    workbench: {
+      ...workbench, config: {hideDataFiles: false}
+    }
   });
   beforeEach(() => {
     const utils = render(
@@ -214,7 +230,10 @@ describe('Optional Information Component', () => {
 describe('License Cell', () => {
   let getByText, getByRole;
   const testStore = mockStore({
-    profile: dummyState
+    profile: dummyState,
+    workbench: {
+      ...workbench, config: {hideDataFiles: false}
+    }
   });
   beforeEach(() => {
     const utils = render(
