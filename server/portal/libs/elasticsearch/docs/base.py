@@ -193,8 +193,8 @@ class IndexedAllocation(Document):
         ------
         elasticsearch.exceptions.NotFoundError
         """
-        es_client = Elasticsearch([{'host': settings.ES_HOSTS,
-                                    'http_auth': settings.ES_AUTH}],
+        es_client = Elasticsearch(hosts=settings.ES_HOSTS,
+                                  http_auth=settings.ES_AUTH,
                                   timeout=10)
         uuid = get_sha256_hash(username)
         return cls.get(uuid, using=es_client)
