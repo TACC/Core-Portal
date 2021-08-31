@@ -70,7 +70,7 @@ describe('DataFilesBreadcrumbs', () => {
     ).toEqual('/workbench/data/tapis/private/frontera.home.username/');
   });
 
-  it('render breadcrumbs', () => {
+  it('render breadcrumbs for projects', () => {
     const store = mockStore({
       systems: systemsFixture,
       projects: projectsFixture
