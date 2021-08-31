@@ -5,6 +5,7 @@
 import logging
 import datetime
 from django.conf import settings
+from elasticsearch import Elasticsearch
 from elasticsearch_dsl import (Document, Date, Object, Text, Long, Boolean,
                                Keyword)
 from portal.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, file_pattern_analyzer, reverse_file_analyzer
@@ -192,8 +193,11 @@ class IndexedAllocation(Document):
         ------
         elasticsearch.exceptions.NotFoundError
         """
+        es_client = Elasticsearch([{'host': settings.ES_HOSTS,
+                                    'http_auth': settings.ES_AUTH}],
+                                  timeout=10)
         uuid = get_sha256_hash(username)
-        return cls.get(uuid)
+        return cls.get(uuid, using=es_client)
 
     class Index:
         name = settings.ES_INDEX_PREFIX.format('allocations')
