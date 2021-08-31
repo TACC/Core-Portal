@@ -1,4 +1,4 @@
-const initialState = {
+export const initialState = {
   active: [],
   inactive: [],
   loading: true,
@@ -18,7 +18,8 @@ const initialState = {
     loading: false
   }
 };
-function allocations(state = initialState, action) {
+
+export function allocations(state = initialState, action) {
   switch (action.type) {
     case 'START_ADD_ALLOCATIONS':
       return {
@@ -67,7 +68,6 @@ function allocations(state = initialState, action) {
           ...action.payload.loading
         }
       };
-      console.log(newState);
       return newState;
     case 'SET_SEARCH_TERM':
       return {
@@ -113,5 +113,3 @@ function allocations(state = initialState, action) {
       return state;
   }
 }
-
-export default allocations;

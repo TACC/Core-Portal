@@ -262,7 +262,7 @@ export function* searchUsers(action) {
   }
 }
 
-const manageUtil = async (pid, uid, add = true) => {
+export const manageUtil = async (pid, uid, add = true) => {
   const r = await fetch(`/api/users/team/manage/${pid}/${uid}`, {
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: add ? 'POST' : 'DELETE'
@@ -278,6 +278,7 @@ export function* addUser(action) {
     console.log(error);
   }
 }
+
 export function* removeUser(action) {
   try {
     yield put({
