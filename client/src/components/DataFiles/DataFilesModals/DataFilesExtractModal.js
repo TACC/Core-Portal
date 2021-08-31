@@ -74,7 +74,9 @@ const DataFilesExtractModal = () => {
       toggle={toggle}
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>Extract Files</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Extract Files
+      </ModalHeader>
       <ModalBody>
         <p>
           A job to extract your file will be submitted on your behalf. You can

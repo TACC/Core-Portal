@@ -15,6 +15,9 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const isLoading = useSelector(state => state.jobs.loading);
   const jobs = useSelector(state => state.jobs.list);
   const error = useSelector(state => state.jobs.error);
+  const hideDataFiles = useSelector(
+    state => state.workbench.config.hideDataFiles
+  );
 
   const noDataText = (
     <>
@@ -113,7 +116,7 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
       Cell: el => {
         const outputPath =
           el.row.original.outputLocation || getOutputPathFromHref(el.value);
-        return outputPath ? (
+        return outputPath && !hideDataFiles ? (
           <Link
             to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${outputPath}`}
             className="wb-link job__path"
