@@ -41,7 +41,7 @@ const systemsFixture = {
         scheme: 'projects',
         api: 'tapis',
         icon: null,
-        hideSearchBar: true
+        hideSearchBar: false
       },
       {
         name: 'Google Drive',
