@@ -60,7 +60,7 @@ describe('Utils', () => {
 
     const output = await getUsageUtil(fixture);
     expect(fetchUtil).toHaveBeenCalledWith(fakeParams);
-    output.forEach( (entry) => {
+    output.forEach(entry => {
       expect(entry).toHaveProperty('resource', 'frontera.tacc.utexas.edu');
       expect(entry).toHaveProperty('allocationId', 12345);
     });
@@ -230,6 +230,35 @@ describe('Allocations Sagas', () => {
         removingUserOperation: {
           userName: 'chicken',
           error: false,
+          loading: false
+        }
+      })
+      .run();
+  });
+
+  it('removeUser failure', async () => {
+    const initialState = {
+      ...initialAllocationState,
+      teams: { 1234: teamFixture }
+    };
+    const fakeError = new Error('Unable to remove user');
+    expectSaga(removeUser, { payload: { projectId: 1234, id: 'chicken' } })
+      .withReducer(allocationsReducer, { ...initialState })
+      .provide([[matchers.call.fn(manageUtil), throwError(fakeError)]])
+      .put({
+        type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+        payload: { loading: true, error: false, userName: 'chicken' }
+      })
+      .call(manageUtil, 1234, 'chicken', false)
+      .put({
+        type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+        payload: { loading: false, error: true }
+      })
+      .hasFinalState({
+        ...initialState,
+        removingUserOperation: {
+          userName: 'chicken',
+          error: true,
           loading: false
         }
       })
