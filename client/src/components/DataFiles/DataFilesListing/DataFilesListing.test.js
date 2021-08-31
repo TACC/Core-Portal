@@ -250,7 +250,7 @@ describe('DataFilesListing', () => {
     );
   });
 
-  it('not rendering Shared Workspaces component', () => {
+  it('does not render the Shared Workspaces component', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/projects/');
 
