@@ -96,18 +96,8 @@ export function allocations(state = initialState, action) {
     case 'ALLOCATION_OPERATION_REMOVE_USER_STATUS': {
       return {
         ...state,
-        removingUserOperation: {
-          ...state.removingUserOperation,
-          ...action.payload
-        }
+        ...action.payload
       };
-    }
-    case 'ALLOCATION_OPERATION_REMOVE_USER_FROM_PROJECT_STATE': {
-      const updatedState = { ...state };
-      updatedState.teams[action.payload.projectId] = updatedState.teams[
-        action.payload.projectId
-      ].filter(i => i.username !== action.payload.userName);
-      return updatedState;
     }
     default:
       return state;

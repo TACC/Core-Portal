@@ -15,7 +15,8 @@ import {
   removeUser,
   manageUtil,
   watchAllocationData,
-  watchTeams
+  watchTeams,
+  allocationsTeamSelector
 } from '../allocations.sagas';
 import {
   allocations as allocationsReducer,
@@ -28,6 +29,7 @@ import {
   teamFixture,
   usageDataFixture
 } from '../fixtures/allocations.fixtures';
+import {select} from "@redux-saga/core/effects";
 
 jest.mock('utils/fetchUtil');
 
@@ -203,32 +205,43 @@ describe('Allocations Sagas', () => {
       });
   });
 
-  it('removeUser success', async () => {
+  it('removeUser success', () => {
     const initialState = {
       ...initialAllocationState,
       teams: { 1234: teamFixture }
     };
+    const expectedTeam = {
+      1234: teamFixture.filter(i => i.username !== 'chicken')
+    };
     expectSaga(removeUser, { payload: { projectId: 1234, id: 'chicken' } })
       .withReducer(allocationsReducer, { ...initialState })
-      .provide([[matchers.call.fn(manageUtil), { response: 'ok' }]])
+      .provide([
+        [matchers.call.fn(manageUtil), { response: 'ok' }],
+        [select(allocationsTeamSelector), { 1234: teamFixture }]
+      ])
       .put({
         type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
-        payload: { loading: true, error: false, userName: 'chicken' }
+        payload: {
+          removingUserOperation: {
+            loading: true,
+            error: false,
+            userName: 'chicken'
+          }
+        }
       })
       .call(manageUtil, 1234, 'chicken', false)
       .put({
         type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
-        payload: { loading: false, error: false }
-      })
-      .put({
-        type: 'ALLOCATION_OPERATION_REMOVE_USER_FROM_PROJECT_STATE',
-        payload: { projectId: 1234, userName: 'chicken' }
+        payload: {
+          teams: { 1234: teamFixture.filter(i => i.username !== 'chicken') },
+          removingUserOperation: { loading: false, error: false, userName: '' }
+        }
       })
       .hasFinalState({
         ...initialState,
-        teams: { 1234: teamFixture.filter(i => i.username !== 'chicken')},
+        teams: expectedTeam,
         removingUserOperation: {
-          userName: 'chicken',
+          userName: '',
           error: false,
           loading: false
         }
@@ -236,7 +249,7 @@ describe('Allocations Sagas', () => {
       .run();
   });
 
-  it('removeUser failure', async () => {
+  it('removeUser failure', () => {
     const initialState = {
       ...initialAllocationState,
       teams: { 1234: teamFixture }
@@ -247,12 +260,24 @@ describe('Allocations Sagas', () => {
       .provide([[matchers.call.fn(manageUtil), throwError(fakeError)]])
       .put({
         type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
-        payload: { loading: true, error: false, userName: 'chicken' }
+        payload: {
+          removingUserOperation: {
+            loading: true,
+            error: false,
+            userName: 'chicken'
+          }
+        }
       })
       .call(manageUtil, 1234, 'chicken', false)
       .put({
         type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
-        payload: { loading: false, error: true }
+        payload: {
+          removingUserOperation: {
+            loading: false,
+            error: true,
+            userName: 'chicken'
+          }
+        }
       })
       .hasFinalState({
         ...initialState,

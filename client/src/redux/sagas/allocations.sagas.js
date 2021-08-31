@@ -279,28 +279,44 @@ export function* addUser(action) {
   }
 }
 
+export const allocationsTeamSelector = state => state.allocations.teams;
+
 export function* removeUser(action) {
   try {
     yield put({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
-      payload: { loading: true, error: false, userName: action.payload.id }
+      payload: {
+        removingUserOperation: {
+          loading: true,
+          error: false,
+          userName: action.payload.id
+        }
+      }
     });
     yield call(manageUtil, action.payload.projectId, action.payload.id, false);
+    // remove user from team state
+    const teams = yield select(allocationsTeamSelector);
+    const updatedTeams = { ...teams };
+    updatedTeams[action.payload.projectId] = teams[
+      action.payload.projectId
+    ].filter(i => i.username !== action.payload.id);
     yield put({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
-      payload: { loading: false, error: false }
-    });
-    yield put({
-      type: 'ALLOCATION_OPERATION_REMOVE_USER_FROM_PROJECT_STATE',
       payload: {
-        projectId: action.payload.projectId,
-        userName: action.payload.id
+        teams: updatedTeams,
+        removingUserOperation: { loading: false, error: false, userName: '' }
       }
     });
   } catch (error) {
     yield put({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
-      payload: { loading: false, error: true }
+      payload: {
+        removingUserOperation: {
+          loading: false,
+          error: true,
+          userName: action.payload.id
+        }
+      }
     });
   }
 }
