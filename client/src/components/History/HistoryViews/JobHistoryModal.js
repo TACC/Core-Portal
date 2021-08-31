@@ -54,6 +54,9 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
+  const hideDataFiles = useSelector(
+    state => state.workbench.config.hideDataFiles
+  );
 
   const statusDataObj = {
     Submitted: created,
@@ -108,7 +111,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
         styleName="left-panel panel-content"
         density="compact"
         data={{
-          Output: (
+          Output: !hideDataFiles && (
             <DataFilesLink
               path={outputPath}
               disabled={!isOutputState(jobDetails.status)}
