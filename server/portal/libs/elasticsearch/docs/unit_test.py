@@ -63,13 +63,11 @@ class TestIndexedFile(TestCase):
 
 
 class TestIndexedAllocation(TestCase):
+
     @patch('portal.libs.elasticsearch.docs.base.IndexedAllocation.get')
-    @patch('portal.libs.elasticsearch.docs.base.Elasticsearch')
-    def test_from_username(self, mock_es, mock_get):
-        mock_es_client = MagicMock()
-        mock_es.return_value = mock_es_client
+    def test_from_username(self, mock_get):
         IndexedAllocation.from_username('testuser')
-        mock_get.assert_called_once_with('ae5deb822e0d71992900471a7199d0d95b8e7c9d05c40a8245a281fd2c1d6684', using=mock_es_client)
+        mock_get.assert_called_once_with('ae5deb822e0d71992900471a7199d0d95b8e7c9d05c40a8245a281fd2c1d6684')
 
 
 class TestIndexedProject(TestCase):
