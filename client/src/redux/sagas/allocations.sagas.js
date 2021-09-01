@@ -280,7 +280,6 @@ export function* addUser(action) {
 }
 
 export const allocationsTeamSelector = state => state.allocations.teams;
-
 export function* removeUser(action) {
   try {
     yield put({
