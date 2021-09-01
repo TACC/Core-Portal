@@ -262,7 +262,7 @@ export function* searchUsers(action) {
   }
 }
 
-const manageUtil = async (pid, uid, add = true) => {
+export const manageUtil = async (pid, uid, add = true) => {
   const r = await fetch(`/api/users/team/manage/${pid}/${uid}`, {
     headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
     method: add ? 'POST' : 'DELETE'
@@ -278,11 +278,45 @@ export function* addUser(action) {
     console.log(error);
   }
 }
+
+export const allocationsTeamSelector = state => state.allocations.teams;
 export function* removeUser(action) {
   try {
+    yield put({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+      payload: {
+        removingUserOperation: {
+          loading: true,
+          error: false,
+          userName: action.payload.id
+        }
+      }
+    });
     yield call(manageUtil, action.payload.projectId, action.payload.id, false);
+    // remove user from team state
+    const teams = yield select(allocationsTeamSelector);
+    const updatedTeams = { ...teams };
+    updatedTeams[action.payload.projectId] = teams[
+      action.payload.projectId
+    ].filter(i => i.username !== action.payload.id);
+    yield put({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+      payload: {
+        teams: updatedTeams,
+        removingUserOperation: { loading: false, error: false, userName: '' }
+      }
+    });
   } catch (error) {
-    console.log(error);
+    yield put({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+      payload: {
+        removingUserOperation: {
+          loading: false,
+          error: true,
+          userName: action.payload.id
+        }
+      }
+    });
   }
 }
 export function* watchAddUser() {

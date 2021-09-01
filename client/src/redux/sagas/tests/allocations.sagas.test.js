@@ -1,4 +1,8 @@
-import allocationsReducer from '../../reducers/allocations.reducers';
+import { isEqual } from 'lodash';
+import { fetchUtil } from 'utils/fetchUtil';
+import { expectSaga, testSaga } from 'redux-saga-test-plan';
+import { throwError } from 'redux-saga-test-plan/providers';
+import * as matchers from 'redux-saga-test-plan/matchers';
 import {
   getAllocationsUtil,
   getTeamsUtil,
@@ -8,24 +12,35 @@ import {
   allocationsSelector,
   getAllocations,
   getUsernames,
+  removeUser,
+  manageUtil,
   watchAllocationData,
   watchTeams,
+  allocationsTeamSelector
 } from '../allocations.sagas';
-import { isEqual } from 'lodash';
-import { fetchUtil } from 'utils/fetchUtil';
-import { expectSaga, testSaga } from 'redux-saga-test-plan';
-import { throwError } from 'redux-saga-test-plan/providers';
+import {
+  allocations as allocationsReducer,
+  initialState as initialAllocationState
+} from '../../reducers/allocations.reducers';
+import {
+  projectNameFixture,
+  allocationsFixture,
+  projectIdFixture,
+  teamFixture,
+  usageDataFixture
+} from '../fixtures/allocations.fixtures';
+import {select} from "@redux-saga/core/effects";
 
 jest.mock('utils/fetchUtil');
 
 describe('Utils', () => {
   test('fetchUtil wrapper functions', () => {
     const fakeParams = {
-      url: '/api/users/allocations/',
+      url: '/api/users/allocations/'
     };
     fetchUtil.mockReturnValue({
       response: []
-    })
+    });
     getAllocationsUtil();
     expect(fetchUtil).toHaveBeenCalledWith(fakeParams);
 
@@ -41,13 +56,13 @@ describe('Utils', () => {
     fetchUtil.mockReturnValueOnce({
       response: [
         { username: 'testUser1', usage: 12.345 },
-        { username: 'testUser2', usage: 567.89 },
-      ],
+        { username: 'testUser2', usage: 567.89 }
+      ]
     });
 
     const output = await getUsageUtil(fixture);
     expect(fetchUtil).toHaveBeenCalledWith(fakeParams);
-    output.forEach((entry) => {
+    output.forEach(entry => {
       expect(entry).toHaveProperty('resource', 'frontera.tacc.utexas.edu');
       expect(entry).toHaveProperty('allocationId', 12345);
     });
@@ -55,13 +70,13 @@ describe('Utils', () => {
 });
 
 describe('Allocations Sagas', () => {
-  const allocationsFixture = {
+  const emptyAllocationsFixture = {
     hosts: {},
     portal_alloc: '',
     active: [],
-    inactive: [],
+    inactive: []
   };
-  const teamsFixture = populateTeamsUtil(allocationsFixture);
+  const teamsFixture = populateTeamsUtil(emptyAllocationsFixture);
   test('GET Allocations', () => {
     // Success
     expectSaga(getAllocations)
@@ -69,14 +84,14 @@ describe('Allocations Sagas', () => {
       .provide({
         call(effect, next) {
           if (effect.fn === getAllocationsUtil) {
-            return allocationsFixture;
+            return emptyAllocationsFixture;
           }
           return next();
-        },
+        }
       })
       .put({ type: 'START_ADD_ALLOCATIONS' })
       .call(getAllocationsUtil)
-      .put({ type: 'ADD_ALLOCATIONS', payload: allocationsFixture })
+      .put({ type: 'ADD_ALLOCATIONS', payload: emptyAllocationsFixture })
       .put({ type: 'POPULATE_TEAMS', payload: teamsFixture })
       .run();
     // Error
@@ -89,7 +104,7 @@ describe('Allocations Sagas', () => {
             throw testError;
           }
           return next();
-        },
+        }
       })
       .put({ type: 'START_ADD_ALLOCATIONS' })
       .call(getAllocationsUtil)
@@ -98,106 +113,11 @@ describe('Allocations Sagas', () => {
   });
 
   test('GET Usernames', () => {
-    const testProjectName = 'TEST_PROJECT';
-    const testProjectId = 1234;
-    const testProjectUsers = [
-      {
-        id: 1,
-        username: 'doc',
-        role: 'PI',
-        firstName: 'doc',
-        lastName: 'brown',
-        email: 'docbrown@gmail.com',
-      },
-      {
-        id: 2,
-        username: 'chicken',
-        role: 'Standard',
-        firstName: 'marty',
-        lastName: 'mcfly',
-        email: 'mcfly@gmail.com',
-      },
-      {
-        id: 3,
-        username: 'dude',
-        role: 'Standard',
-        firstName: 'Jeff',
-        lastName: 'Lebowski',
-        email: 'dude@gmail.com',
-      },
-    ];
-    const testAllocations = [
-      {
-        title: 'Test Project',
-        projectId: testProjectId,
-        pi: 'Doc Brown',
-        projectName: testProjectName,
-        systems: [
-          {
-            name: 'Frontera',
-            host: 'frontera.tacc.utexas.edu',
-            type: 'HPC',
-            allocation: {
-              id: 1984,
-              status: 'Active',
-              computeRequested: 1,
-              computeAllocated: 100,
-              resourceId: 56,
-              resource: 'Frontera',
-              projectId: testProjectId,
-              project: testProjectName,
-              requestorId: 1,
-              requestor: 'Maytal Dahan',
-              computeUsed: 136.746,
-            },
-          },
-          {
-            name: 'Longhorn',
-            host: 'longhorn.tacc.utexas.edu',
-            type: 'HPC',
-            allocation: {
-              id: 1985,
-              status: 'Active',
-              computeRequested: 100,
-              computeAllocated: 100,
-              resourceId: 58,
-              resource: 'Longhorn3',
-              projectId: testProjectId,
-              project: testProjectName,
-              requestorId: 1,
-              requestor: 'Maytal Dahan',
-              computeUsed: 0,
-            },
-          },
-        ],
-      },
-    ];
-    const testUsageData = [
-      {
-        username: 'doc',
-        usage: 5,
-        resource: 'frontera.tacc.utexas.edu',
-        allocationId: 1984,
-      },
-      {
-        username: 'chicken',
-        usage: 55,
-        resource: 'frontera.tacc.utexas.edu',
-        allocationId: 1984,
-      },
-      {
-        username: 'doc',
-        usage: 20,
-        resource: 'longhorn.tacc.utexas.edu',
-        allocationId: 1985,
-      },
-      {
-        username: 'chicken',
-        usage: 25,
-        resource: 'longhorn.tacc.utexas.edu',
-        allocationId: 1985,
-      },
-    ];
+    const testProjectName = projectNameFixture;
+    const testProjectId = projectIdFixture;
+    const testProjectUsers = teamFixture;
+    const testAllocations = allocationsFixture;
+    const testUsageData = usageDataFixture;
 
     const testPayload = teamPayloadUtil(
       testProjectId,
@@ -208,7 +128,7 @@ describe('Allocations Sagas', () => {
     );
     // Success
     expectSaga(getUsernames, {
-      payload: { name: testProjectName, projectId: testProjectId },
+      payload: { name: testProjectName, projectId: testProjectId }
     })
       .withReducer(allocationsReducer)
       .provide({
@@ -220,7 +140,7 @@ describe('Allocations Sagas', () => {
               if (
                 isEqual(effect.args[0], {
                   host: 'frontera.tacc.utexas.edu',
-                  id: 1984,
+                  id: 1984
                 })
               ) {
                 return [
@@ -228,31 +148,31 @@ describe('Allocations Sagas', () => {
                     username: 'doc',
                     usage: 5,
                     resource: 'frontera.tacc.utexas.edu',
-                    allocationId: 1984,
+                    allocationId: 1984
                   },
                   {
                     username: 'chicken',
                     usage: 55,
                     resource: 'frontera.tacc.utexas.edu',
-                    allocationId: 1984,
-                  },
-                ];
-              } else {
-                return [
-                  {
-                    username: 'doc',
-                    usage: 20,
-                    resource: 'longhorn.tacc.utexas.edu',
-                    allocationId: 1985,
-                  },
-                  {
-                    username: 'chicken',
-                    usage: 25,
-                    resource: 'longhorn.tacc.utexas.edu',
-                    allocationId: 1985,
-                  },
+                    allocationId: 1984
+                  }
                 ];
               }
+              return [
+                {
+                  username: 'doc',
+                  usage: 20,
+                  resource: 'longhorn.tacc.utexas.edu',
+                  allocationId: 1985
+                },
+                {
+                  username: 'chicken',
+                  usage: 25,
+                  resource: 'longhorn.tacc.utexas.edu',
+                  allocationId: 1985
+                }
+              ];
+
             default:
               return next();
           }
@@ -260,29 +180,114 @@ describe('Allocations Sagas', () => {
         select({ selector }, next) {
           if (selector === allocationsSelector) return testAllocations;
           return next();
-        },
+        }
       })
       .put({
         type: 'ADD_USERNAMES_TO_TEAM',
-        payload: testPayload,
+        payload: testPayload
       })
       .run();
     // Error
     const testError = new Error('PC Load Letter?');
     expectSaga(getUsernames, {
-      payload: { name: testProjectName, projectId: testProjectId },
+      payload: { name: testProjectName, projectId: testProjectId }
     })
       .withReducer(allocationsReducer)
       .provide({
         call(effect, next) {
           throwError(testError);
           next();
-        },
+        }
       })
       .put({
         type: 'POPULATE_TEAMS_ERROR',
-        payload: teamPayloadUtil(testProjectId, testError, true),
+        payload: teamPayloadUtil(testProjectId, testError, true)
       });
+  });
+
+  it('removeUser success', () => {
+    const initialState = {
+      ...initialAllocationState,
+      teams: { 1234: teamFixture }
+    };
+    const expectedTeam = {
+      1234: teamFixture.filter(i => i.username !== 'chicken')
+    };
+    expectSaga(removeUser, { payload: { projectId: 1234, id: 'chicken' } })
+      .withReducer(allocationsReducer, { ...initialState })
+      .provide([
+        [matchers.call.fn(manageUtil), { response: 'ok' }],
+        [select(allocationsTeamSelector), { 1234: teamFixture }]
+      ])
+      .put({
+        type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+        payload: {
+          removingUserOperation: {
+            loading: true,
+            error: false,
+            userName: 'chicken'
+          }
+        }
+      })
+      .call(manageUtil, 1234, 'chicken', false)
+      .put({
+        type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+        payload: {
+          teams: { 1234: teamFixture.filter(i => i.username !== 'chicken') },
+          removingUserOperation: { loading: false, error: false, userName: '' }
+        }
+      })
+      .hasFinalState({
+        ...initialState,
+        teams: expectedTeam,
+        removingUserOperation: {
+          userName: '',
+          error: false,
+          loading: false
+        }
+      })
+      .run();
+  });
+
+  it('removeUser failure', () => {
+    const initialState = {
+      ...initialAllocationState,
+      teams: { 1234: teamFixture }
+    };
+    const fakeError = new Error('Unable to remove user');
+    expectSaga(removeUser, { payload: { projectId: 1234, id: 'chicken' } })
+      .withReducer(allocationsReducer, { ...initialState })
+      .provide([[matchers.call.fn(manageUtil), throwError(fakeError)]])
+      .put({
+        type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+        payload: {
+          removingUserOperation: {
+            loading: true,
+            error: false,
+            userName: 'chicken'
+          }
+        }
+      })
+      .call(manageUtil, 1234, 'chicken', false)
+      .put({
+        type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+        payload: {
+          removingUserOperation: {
+            loading: false,
+            error: true,
+            userName: 'chicken'
+          }
+        }
+      })
+      .hasFinalState({
+        ...initialState,
+        removingUserOperation: {
+          userName: 'chicken',
+          error: true,
+          loading: false
+        }
+      })
+      .run();
   });
 });
 

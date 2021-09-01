@@ -1,4 +1,4 @@
-const initialState = {
+export const initialState = {
   active: [],
   inactive: [],
   loading: true,
@@ -11,9 +11,15 @@ const initialState = {
   search: {
     results: [],
     term: ''
+  },
+  removingUserOperation: {
+    userName: '',
+    error: false,
+    loading: false
   }
 };
-function allocations(state = initialState, action) {
+
+export function allocations(state = initialState, action) {
   switch (action.type) {
     case 'START_ADD_ALLOCATIONS':
       return {
@@ -75,9 +81,23 @@ function allocations(state = initialState, action) {
         ...state,
         search: { ...state.search, results: action.payload.data }
       };
+    case 'ALLOCATION_OPERATION_REMOVE_USER_INIT': {
+      return {
+        ...state,
+        removingUserOperation: {
+          userName: '',
+          error: false,
+          loading: false
+        }
+      };
+    }
+    case 'ALLOCATION_OPERATION_REMOVE_USER_STATUS': {
+      return {
+        ...state,
+        ...action.payload
+      };
+    }
     default:
       return state;
   }
 }
-
-export default allocations;
