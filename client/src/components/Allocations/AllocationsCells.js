@@ -37,7 +37,7 @@ export const Team = ({ cell: { value } }) => {
       </Button>
       <AllocationsTeamViewModal
         isOpen={teamModal}
-        pid={projectId}
+        projectId={projectId}
         toggle={() => setTeamModal(!teamModal)}
       />
       {isPi && (
@@ -58,7 +58,7 @@ export const Team = ({ cell: { value } }) => {
           </Button>
           <AllocationsManageTeamModal
             isOpen={manageModal}
-            pid={projectId}
+            projectId={projectId}
             toggle={() => setManageModal(!manageModal)}
           />
         </>

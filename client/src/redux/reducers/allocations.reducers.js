@@ -60,7 +60,7 @@ export function allocations(state = initialState, action) {
         }
       };
     case 'ADD_USERNAMES_TO_TEAM':
-      const newState = {
+      return {
         ...state,
         teams: { ...state.teams, ...action.payload.data },
         loadingUsernames: {
@@ -68,7 +68,6 @@ export function allocations(state = initialState, action) {
           ...action.payload.loading
         }
       };
-      return newState;
     case 'SET_SEARCH_TERM':
       return {
         ...state,
@@ -78,7 +77,6 @@ export function allocations(state = initialState, action) {
         }
       };
     case 'ADD_SEARCH_RESULTS':
-      console.log('dispatched', action.payload);
       return {
         ...state,
         search: { ...state.search, results: action.payload.data }
