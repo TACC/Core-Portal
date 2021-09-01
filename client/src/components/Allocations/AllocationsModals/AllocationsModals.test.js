@@ -33,7 +33,7 @@ describe("View Team Modal", () => {
   const testProps = {
     isOpen: true,
     toggle: () => null,
-    pid: 1234,
+    projectId: 1234,
   };
 
   test("View Team Modal Loading", () => {
@@ -154,7 +154,7 @@ describe("View Team Modal", () => {
         <AllocationsTeamViewModal {...testProps} />
       </Provider>
     );
-    
+
     expect(getByText(/Unable to retrieve team data./)).toBeDefined();
   });
 });

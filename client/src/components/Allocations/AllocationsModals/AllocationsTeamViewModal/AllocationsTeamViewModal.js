@@ -8,13 +8,14 @@ import AllocationsTeamTable from './AllocationsTeamTable';
 import AllocationsContactCard from './AllocationsContactCard';
 import './AllocationsTeamViewModal.module.scss';
 
-const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
+const AllocationsTeamViewModal = ({ isOpen, toggle, projectId }) => {
   const { teams, loadingUsernames, errors } = useSelector(
     state => state.allocations
   );
-  const error = has(errors.teams, pid);
+  const error = has(errors.teams, projectId);
   const [card, setCard] = useState(null);
-  const isLoading = loadingUsernames[pid] && loadingUsernames[pid].loading;
+  const isLoading =
+    loadingUsernames[projectId] && loadingUsernames[projectId].loading;
   const resetCard = () => {
     setCard(null);
   };
@@ -49,7 +50,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
                 ) : (
                   <AllocationsTeamTable
                     visible={card}
-                    rawData={teams[pid]}
+                    rawData={teams[projectId]}
                     clickHandler={setCard}
                   />
                 )}
@@ -71,7 +72,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
 AllocationsTeamViewModal.propTypes = {
   isOpen: bool.isRequired,
   toggle: func.isRequired,
-  pid: number.isRequired
+  projectId: number.isRequired
 };
 
 export default AllocationsTeamViewModal;

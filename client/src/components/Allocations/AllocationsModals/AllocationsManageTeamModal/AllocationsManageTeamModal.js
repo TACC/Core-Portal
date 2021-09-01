@@ -1,26 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Table,
-  Form,
-  Button,
-  Input
-} from 'reactstrap';
-import { has } from 'lodash';
+import React, { useCallback } from 'react';
+import { Modal, ModalHeader, ModalBody, Table, Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, UserSearchbar } from '_common';
 import './AllocationsManageTeamModal.module.scss';
 
-const AllocationsManageTeamTable = ({ rawData, pid }) => {
+const AllocationsManageTeamTable = ({ rawData }) => {
   const data = React.useMemo(() => rawData, [rawData]);
   const columns = React.useMemo(
     () => [
       {
         Header: 'Members',
-        accessor: ({ firstName, lastName }) => `${firstName} ${lastName}`
+        Cell: el => {
+          const user = el.row.original;
+          return (
+            <span>
+              <strong>{`${user.firstName} ${user.lastName}`}</strong>
+              {` ${user.username} (${user.email})`}
+            </span>
+          );
+        }
       },
       {
         Header: 'Role',
@@ -89,129 +88,57 @@ const AllocationsManageTeamTable = ({ rawData, pid }) => {
   );
 };
 
-/**
- * Autocomplete Component
- *
- */
-const UserSearch = ({ disabled, projectId }) => {
+const AllocationsManageTeamModal = ({ isOpen, toggle, projectId }) => {
   const dispatch = useDispatch();
-  const [selected, setSelected] = useState(0);
-  const search = useSelector(state => state.allocations.search);
-  console.log(search);
-  const [show, setShowing] = useState(false);
-  const [v, setTerm] = useState('');
-  const [current, setCurr] = useState({});
-  // useSelector(state => state)
-  const handleChange = e => {
-    if (v.length > 0)
+  const { teams, loadingUsernames, search } = useSelector(
+    state => state.allocations
+  );
+
+  const isLoading =
+    loadingUsernames[projectId] && loadingUsernames[projectId].loading;
+
+  const onAdd = useCallback(
+    newUser => {
+      dispatch({
+        type: 'ADD_USER_TO_TAS_PROJECT',
+        payload: {
+          projectId,
+          id: newUser.user.username
+        }
+      });
+    },
+    [projectId, dispatch]
+  );
+
+  const onChange = useCallback(
+    query => {
       dispatch({
         type: 'GET_USERS_FROM_SEARCH',
         payload: {
-          term: e.target.value
+          term: query
         }
       });
-    setTerm(e.target.value);
-    setShowing(true);
-  };
-
-  const handleClick = i => {
-    setSelected(i);
-    setShowing(false);
-  };
-  // const handleKeyDown = e => {
-  //   if (e.keyCode === 13) {
-  //     setSelected(0);
-  //     setShowing(false);
-  //     setCurr(search.results[selected]);
-  //   } else if (e.keyCode === 38) {
-  //     if (selected === 0) {
-  //       return;
-  //     }
-  //     setSelected(selected - 1);
-  //   }
-  //   // User pressed the down arrow, increment the index
-  //   else if (e.keyCode === 40) {
-  //     if (selected - 1 === search.results.length) {
-  //       return;
-  //     }
-  //     selected(selected + 1);
-  //   }
-  // };
-  const display = show && search.results.length > 0;
-  return (
-    <>
-      <div>
-        <Button>Add</Button>
-        <input
-          style={{ width: '100%' }}
-          type="text"
-          onChange={handleChange}
-          // onKeyDown={handleKeyDown}
-          value={v}
-          list="data"
-          disabled={disabled}
-        />
-        {display && (
-          <datalist id="data">
-            {search.results.map((user, index) => {
-              // TODO: Recompose
-              const { firstName, lastName, username, email } = user;
-              const optionValue = ` ${username} ${email}`;
-              const optionLabel = `${firstName} ${lastName}`;
-              return (
-                <option
-                  key={optionValue}
-                  label={optionLabel}
-                  onClick={e => {
-                    e.preventDefault();
-                    handleClick(index);
-                    console.log('click');
-                    dispatch({
-                      type: 'ADD_USER_TO_TAS_PROJECT',
-                      payload: {
-                        projectId,
-                        id: username
-                      }
-                    });
-                  }}
-                >
-                  {optionValue}
-                </option>
-              );
-            })}
-          </datalist>
-        )}
-      </div>
-      {display ? (
-        <>
-          {Object.keys(current).length ? JSON.stringify(current, null, 2) : ''}
-        </>
-      ) : (
-        <div className="no-suggestions">
-          <em>No suggestions available.</em>
-        </div>
-      )}
-    </>
+    },
+    [dispatch]
   );
-};
 
-const AllocationsManageTeamModal = ({ isOpen, toggle, pid, ...props }) => {
-  const { teams, loadingUsernames, errors } = useSelector(
-    state => state.allocations
-  );
-  console.log(pid);
-  const error = has(errors.teams, pid);
-  const isLoading = loadingUsernames[pid] && loadingUsernames[pid].loading;
   return (
     <Modal isOpen={isOpen} toggle={toggle} styleName="root">
       <ModalHeader>Manage Team</ModalHeader>
       <ModalBody className="p-2">
-        <UserSearch disabled={isLoading} projectId={pid} />{' '}
+        <UserSearchbar
+          members={teams[projectId]}
+          onAdd={onAdd}
+          addDisabled={isLoading}
+          searchDisable={isLoading}
+          onChange={onChange}
+          searchResults={search.results}
+        />
         <div styleName="listing-wrapper">
           {isLoading ? (
             <LoadingSpinner />
           ) : (
-            <AllocationsManageTeamTable rawData={teams[pid]} pid={pid} />
+            <AllocationsManageTeamTable rawData={teams[projectId]} />
           )}
         </div>
       </ModalBody>
