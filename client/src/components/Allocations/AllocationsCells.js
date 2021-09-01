@@ -40,7 +40,7 @@ export const Team = ({ cell: { value } }) => {
         projectId={projectId}
         toggle={() => setTeamModal(!teamModal)}
       />
-      {!isPi && (
+      {isPi && (
         <>
           <span>&nbsp;|&nbsp;</span>
           <Button
