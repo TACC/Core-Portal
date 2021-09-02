@@ -89,7 +89,7 @@ const RootProjectsLink = ({ api, section, operation, label }) => {
       <span>
         <a
           className="breadcrumb-link"
-          href={`/workbench/data/${api}/projets/`}
+          href={`/workbench/data/${api}/projects/`}
           onClick={onClick}
         >
           {label}
