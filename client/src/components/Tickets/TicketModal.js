@@ -237,7 +237,7 @@ function TicketModal({ history }) {
       toggle={close}
       size="lg"
     >
-      <ModalHeader toggle={close}>
+      <ModalHeader toggle={close} charCode="&#xe912;">
         <span className="ticket-id">Ticket {ticketId}</span>
         <span className="ticket-subject">{ticketSubject}</span>
       </ModalHeader>

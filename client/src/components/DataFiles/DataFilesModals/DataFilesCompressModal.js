@@ -102,7 +102,9 @@ const DataFilesCompressModal = () => {
       toggle={toggle}
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>Compress Files</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Compress Files
+      </ModalHeader>
       <Formik
         innerRef={formRef}
         initialValues={initialValues}

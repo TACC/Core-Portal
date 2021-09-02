@@ -72,7 +72,9 @@ const DataFilesProjectEditDescriptionModal = () => {
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
-      <ModalHeader toggle={toggle}>Edit Descriptions</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Edit Descriptions
+      </ModalHeader>
       <ModalBody>
         <Formik
           initialValues={initialValues}
