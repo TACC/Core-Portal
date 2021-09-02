@@ -1,13 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCheckSquare,
-  faSquare as filledSquare
-} from '@fortawesome/free-solid-svg-icons';
-import { faSquare } from '@fortawesome/free-regular-svg-icons';
-import { Icon } from '_common';
+import { Checkbox, Icon } from '_common';
 import { Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
@@ -30,22 +24,13 @@ export const CheckboxHeaderCell = () => {
   };
   const handleKeyPress = e => e.key === 'enter' && toggleSelect();
   return (
-    <>
-      <span
-        role="button"
-        tabIndex={-1}
-        className="fa-layers fa-fw"
-        onClick={toggleSelect}
-        onKeyDown={handleKeyPress}
-      >
-        <FontAwesomeIcon icon={filledSquare} color="white" />
-        <FontAwesomeIcon
-          icon={selected ? faCheckSquare : faSquare}
-          color="#9D85EF"
-        />
-        <FontAwesomeIcon icon={faSquare} color="#707070" />
-      </span>
-    </>
+    <Checkbox
+      isChecked={selected}
+      role="button"
+      tabIndex={0}
+      onClick={toggleSelect}
+      onKeyDown={handleKeyPress}
+    />
   );
 };
 
@@ -53,18 +38,7 @@ export const CheckboxCell = React.memo(({ index }) => {
   const selected = useSelector(state =>
     state.files.selected.FilesListing.includes(index)
   );
-  return (
-    <>
-      <span className="fa-layers fa-fw">
-        <FontAwesomeIcon icon={filledSquare} color="white" />
-        <FontAwesomeIcon
-          icon={selected ? faCheckSquare : faSquare}
-          color="#9D85EF"
-        />
-        <FontAwesomeIcon icon={faSquare} color="#707070" />
-      </span>
-    </>
-  );
+  return <Checkbox isChecked={selected} />;
 });
 CheckboxCell.propTypes = {
   index: PropTypes.number.isRequired

@@ -7,6 +7,7 @@ import JobHistoryModal from '../JobHistoryModal';
 import jobDetailFixture from '../../../../redux/sagas/fixtures/jobdetail.fixture';
 import jobDetailDisplayFixture from '../../../../redux/sagas/fixtures/jobdetaildisplay.fixture';
 import appDetailFixture from '../../../../redux/sagas/fixtures/appdetail.fixture';
+import { initialState as workbench } from '../../../../redux/reducers/workbench.reducers';
 
 const mockInitialState = {
   jobId: 'job_id',
@@ -15,7 +16,7 @@ const mockInitialState = {
   display: jobDetailDisplayFixture,
   loading: false,
   loadingError: false,
-  loadingErrorMessage: ''
+  loadingErrorMessage: '',
 };
 
 describe('Job History Modal', () => {
@@ -27,6 +28,9 @@ describe('Job History Modal', () => {
           store={mockStore({
             jobDetail: {
               ...mockInitialState
+            },
+            workbench: {
+              ...workbench, config: {hideDataFiles: false}
             }
           })}
         >

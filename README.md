@@ -26,7 +26,7 @@ After you clone the repository locally, there are several configuration steps re
 
 #### Create settings_secret.py, settings_local.py, and secrets.py
 
-- Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.security.utexas.edu)
+- Create `server/portal/settings/settings_secret.py` containing what is in `secret` field in the `Core Portal Settings Secret` entry secured on [UT Stache](https://stache.utexas.edu)
 
 - Copy `server/portal/settings/settings_local.example.py` to `server/portal/settings/settings_local.py`
     - _Note: [Setup ngrok](#setting-up-notifications-locally) and update `WH_BASE_URL` in `settings_local.py` to enable webhook notifications locally._
@@ -66,17 +66,12 @@ OR
     python3 manage.py import-apps # Add set of example apps used in Frontnera portal (optional)
 
 #### Initialize the CMS in the `core_portal_cms` container:
-First, copy the sample secrets:
 
-    cp server/conf/cms/secrets.sample.py server/conf/cms/secrets.py
-
-Then, run migrations and `collectstatic`:
-```
     docker exec -it core_portal_cms /bin/bash
     python3 manage.py migrate
     python3 manage.py collectstatic --noinput
     python3 manage.py createsuperuser
-```
+
 Finally, create a home page in the CMS.
 
 *NOTE*: TACC VPN or physical connection to the TACC network is required to log-in to CMS using LDAP, otherwise the password set with `python3 manage.py createsuperuser` is used
@@ -94,15 +89,15 @@ Requirements:
     - Run `sudo sysctl -p` (In order to persist in `/etc/sysctl.conf`).
 
 First, rebuild the cms search index:
-```
+
     docker exec -it core_portal_cms /bin/bash
     python3 manage.py rebuild_index
-```
+
 Then, use the django shell in the `core_portal_django` container—
-```
+
     docker exec -it core_portal_django /bin/bash
     python3 manage.py shell
-```
+
 —to run the following code to set up the search index:
 ```
 from portal.libs.elasticsearch.indexes import setup_files_index, setup_projects_index, setup_allocations_index
@@ -268,3 +263,5 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 
 [Core-CMS]: https://github.com/TACC/Core-CMS "Core CMS"
 [Camino]: https://github.com/TACC/Camino "Camino (Deployment)"
+[1]: https://docs.docker.com/get-docker/
+[2]: https://docs.docker.com/compose/install/
