@@ -27,7 +27,7 @@ const initialMockState = {
       loading: false,
       error: null
     },
-    metadata: projectMetadataFixture
+    metadata: projectMetadataFixture,
   },
   authenticatedUser: {
     user: {
