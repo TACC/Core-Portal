@@ -82,7 +82,7 @@ describe('DataFilesBreadcrumbs', () => {
         scheme="projects"
         system="frontera.home.username"
         path="/path/to/the/files"
-        section="modal"
+        section="FilesListing"
       />,
       store,
       createMemoryHistory()
@@ -93,6 +93,6 @@ describe('DataFilesBreadcrumbs', () => {
       getByText(/Shared Workspaces/)
         .closest('a')
         .getAttribute('href')
-    ).toEqual('/workbench/data/tapis/projects/');
+    ).toEqual('/public-data/tapis/projects/');
   });
 });
