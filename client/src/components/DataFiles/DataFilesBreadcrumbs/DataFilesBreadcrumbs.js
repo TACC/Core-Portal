@@ -71,7 +71,7 @@ BreadcrumbLink.defaultProps = {
   isPublic: false
 };
 
-const RootProjectsLink = ({ api, scheme, section, label }) => {
+const RootProjectsLink = ({ api, section, operation, label }) => {
   const dispatch = useDispatch();
   const onClick = e => {
     e.stopPropagation();
@@ -79,41 +79,35 @@ const RootProjectsLink = ({ api, scheme, section, label }) => {
     dispatch({
       type: 'DATA_FILES_SET_MODAL_PROPS',
       payload: {
-        operation: 'select',
+        operation,
         props: { showProjects: true }
       }
     });
   };
-  const basePath = '/workbench/data';
-  switch (section) {
-    case 'FilesListing':
-      return (
-        <Link className="breadcrumb-link" to={`${basePath}/${api}/${scheme}/`}>
+  if (section === 'modal') {
+    return (
+      <span>
+        <a
+          className="breadcrumb-link"
+          href={`/workbench/data/${api}/projets/`}
+          onClick={onClick}
+        >
           {label}
-        </Link>
-      );
-
-    case 'modal':
-      return (
-        <span>
-          <a
-            className="breadcrumb-link"
-            href={`/workbench/data/${api}/${scheme}/`}
-            onClick={onClick}
-          >
-            {label}
-          </a>
-        </span>
-      );
-    default:
-      return <span>{label}</span>;
+        </a>
+      </span>
+    );
   }
+  return (
+    <Link className="breadcrumb-link" to={`/public-data/${api}/projects/`}>
+      {label}
+    </Link>
+  );
 };
 RootProjectsLink.propTypes = {
   api: PropTypes.string.isRequired,
-  scheme: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
-  label: PropTypes.element.isRequired
+  operation: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired
 };
 
 const DataFilesBreadcrumbs = ({
@@ -122,6 +116,7 @@ const DataFilesBreadcrumbs = ({
   system,
   path,
   section,
+  operation,
   isPublic,
   className
 }) => {
@@ -155,8 +150,8 @@ const DataFilesBreadcrumbs = ({
         <>
           <RootProjectsLink
             api={api}
-            scheme={scheme}
             section={section}
+            operation={operation}
             label="Shared Workspaces"
           />{' '}
           {system && `/ `}
@@ -204,13 +199,15 @@ DataFilesBreadcrumbs.propTypes = {
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
+  operation: PropTypes.string,
   isPublic: PropTypes.bool,
   /** Additional className for the root element */
   className: PropTypes.string
 };
 DataFilesBreadcrumbs.defaultProps = {
   isPublic: false,
-  className: ''
+  className: '',
+  operation: 'select'
 };
 
 export default DataFilesBreadcrumbs;
