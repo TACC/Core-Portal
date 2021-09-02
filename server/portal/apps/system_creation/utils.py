@@ -80,7 +80,7 @@ def _get_tas_dir(user):
 def _create_substitutions(user):
     substitutions = {}
     substitutions["tasdir"] = _get_tas_dir(user)
-    substitutions["username"] = user.username
+    substitutions["username"] = user.username.replace('_', '-')
     substitutions["portal"] = settings.PORTAL_DOMAIN
     return substitutions
 

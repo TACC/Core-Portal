@@ -11,6 +11,7 @@
                         /* a modern slimmer alternative to `&::before { display: block; }` */
 }
 
+/* To layer multiple icons atop each other, wrap them in this */
 .icon-set { position: relative; }
 .icon-set > .icon {
   position: absolute;

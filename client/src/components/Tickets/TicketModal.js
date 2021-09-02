@@ -199,7 +199,7 @@ const TicketHistory = () => {
   return (
     <>
       {loading && <LoadingSpinner />}
-      {loadingError && !loading && (
+      {loadingError && (
         <Message type="error" className="ticket-history-error">
           Something went wrong.
         </Message>

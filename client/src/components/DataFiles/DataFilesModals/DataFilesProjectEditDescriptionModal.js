@@ -111,7 +111,7 @@ const DataFilesProjectEditDescriptionModal = () => {
               />
               <div styleName="button-container">
                 {updatingError && (
-                  <Message type="error" data-testid="updating-error">
+                  <Message type="error" dataTestid="updating-error">
                     Something went wrong.
                   </Message>
                 )}
