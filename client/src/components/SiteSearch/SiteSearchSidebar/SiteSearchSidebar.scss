@@ -9,10 +9,12 @@ $core-portal-color-primary: var(--global-color-accent--normal);
 
 .site-search-sidebar .nav-link {
   padding-left: $data-files-wrapper-horizontal-padding;
-  color: #707070;
+  color: var(--global-color-primary--dark);
 }
 
-.site-search-sidebar .nav-link.active {
+.site-search-sidebar .nav-link.active,
+.site-search-sidebar .nav-link:hover {
+  color: var(--global-color-primary--x-dark);
   background: var(--global-color-accent--weak);
 }
 
