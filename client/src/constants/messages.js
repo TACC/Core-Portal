@@ -1,7 +1,8 @@
+import React from 'react';
+
 /**
- * Standard welcome message texts
- *
- * Notes:
+ * Standard Intro Message Texts
+ * - FP-1165: The codebase refers to these as "Welcome Messages".
  * - Each of these is expected-not-required to match a route from `./routes.js`.
  * - To customize message text (example: dynamic content) use `<Section>` props.
  */
@@ -20,3 +21,13 @@ export const TICKETS =
   'This page allows you to submit a help request via an RT Ticket.';
 export const UI =
   'This hidden page allows developers to review UI components in isolation.';
+
+/**
+ * Error Messages
+ */
+export const GOOGLE_DRIVE_SETUP_ERROR = (
+  <span>
+    An error occurred setting up Google Drive. For help,{' '}
+    <a href="/workbench/dashboard/tickets/create">submit a ticket</a>.
+  </span>
+);

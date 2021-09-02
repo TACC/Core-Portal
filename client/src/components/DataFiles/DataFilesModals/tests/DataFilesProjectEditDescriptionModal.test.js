@@ -1,6 +1,8 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
+import { createMemoryHistory } from "history";
 import renderComponent from 'utils/testing';
+import {fireEvent, waitForElement} from '@testing-library/react';
 import DataFilesProjectEditDescriptionModal from '../DataFilesProjectEditDescriptionModal';
 import {
   projectsListingFixture,
@@ -93,5 +95,72 @@ describe('DataFilesProjectEditDescriptionModal', () => {
       store
     );
     expect(getByTestId('updating-error')).toBeDefined();
+  });
+
+  it("disallows title input under 3 characters", async () => {
+    const store = mockStore(initialMockState);
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/private/test.system/');
+    const { getAllByText, getByRole } = renderComponent(
+      <DataFilesProjectEditDescriptionModal/>,
+      store,
+      history
+    )
+
+    const inputField = getByRole('textbox', {name: 'title'});
+    const button = getByRole('button', { name: 'Update Changes' });
+    fireEvent.change(inputField, {
+      target: {
+        value: 'a'
+      }
+    });
+    fireEvent.click(button);
+
+    await waitForElement(() => getAllByText(/Title must be at least 3 characters/));
+  });
+
+  it("disallows title input over 150 characters and description over 800 characters", async () => {
+    const store = mockStore(initialMockState);
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/private/test.system/');
+    const { getAllByText, getByRole } = renderComponent(
+      <DataFilesProjectEditDescriptionModal/>,
+      store,
+      history
+    )
+
+    const titleField = getByRole('textbox', {name: 'title'});
+    const descriptionField = getByRole('textbox', {name: 'description'});
+
+    fireEvent.change(titleField, {
+      target: {
+        value: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient'
+      }
+    });
+
+    fireEvent.change(descriptionField, {
+      target: {
+        value: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo \
+        ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient \
+        montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium \
+        quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, \
+        vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. \
+        Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus \
+        elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor \
+        eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, \
+        feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. \
+        Aenean imperdiet. Etiam ultricies.'
+      }
+    });
+
+    // Blur each field for error
+    titleField.focus();
+    descriptionField.focus();
+    titleField.focus();
+
+    await waitForElement(() =>
+      getAllByText(/Title must be at most 150 characters/));
+    await waitForElement(() => 
+      getAllByText(/Description must be at most 800 characters/));
   });
 });

@@ -32,7 +32,8 @@ const DataFilesSidebar = ({ readOnly }) => {
     state => state.systems.storage.configuration,
     shallowEqual
   );
-  const { user } = useSelector(state => state.authenticatedUser);
+
+  const sharedWorkspaces = systems.find(e => e.scheme === 'projects');
 
   const toggleMkdirModal = () => {
     dispatch({
@@ -47,10 +48,6 @@ const DataFilesSidebar = ({ readOnly }) => {
     });
     dispatch({
       type: 'PROJECTS_CLEAR_OPERATION'
-    });
-    dispatch({
-      type: 'PROJECTS_MEMBER_LIST_SET',
-      payload: [{ user, access: 'owner' }]
     });
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -86,7 +83,7 @@ const DataFilesSidebar = ({ readOnly }) => {
                   <i className="icon-folder" /> Folder
                 </span>
               </DropdownItem>
-              {systems.some(s => s.scheme === 'projects') && (
+              {sharedWorkspaces && !sharedWorkspaces.readOnly && (
                 <DropdownItem onClick={toggleAddProjectModal}>
                   <i className="icon-folder" /> Shared Workspace
                 </DropdownItem>

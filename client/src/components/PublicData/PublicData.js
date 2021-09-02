@@ -13,7 +13,6 @@ import { Section, SectionTableWrapper, LoadingSpinner } from '_common';
 import DataFilesBreadcrumbs from '../DataFiles/DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesListing from '../DataFiles/DataFilesListing/DataFilesListing';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
-import DataFilesSearchbar from '../DataFiles/DataFilesSearchbar/DataFilesSearchbar';
 import { ToolbarButton } from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 
 import './PublicData.module.css';
@@ -118,12 +117,6 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
       }
     >
       <SectionTableWrapper styleName="content" manualContent>
-        <DataFilesSearchbar
-          api="tapis"
-          scheme="public"
-          system={system}
-          publicData
-        />
         <DataFilesListing
           api={api}
           scheme={scheme}

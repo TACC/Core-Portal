@@ -18,18 +18,14 @@
   flex-direction: column;
 }
 
-.ticket-reply-group {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
 .ticket-reply-text-area {
   min-height: 5em;
 }
 
-.ticket-reply-button {
-  text-align: right;
+.ticket-reply-submission {
+  display: flex;
+  justify-content: space-between;
+  align-items: right;
 }
 
 .ticket-model-content {
@@ -60,8 +56,7 @@
     color: #9d85ef;
   }
 
-  /* FP-426: Avoid all these styles by using `LoadingSpinner` */
-  .ticket-history-loading-icon {
+  .ticket-history-error {
     display: flex;
     height: 100%;
     justify-content: center;

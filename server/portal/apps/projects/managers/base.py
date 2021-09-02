@@ -13,6 +13,8 @@ from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.libs.elasticsearch.docs.base import IndexedProject
 from portal.apps.projects.models import Project, ProjectId, ProjectSystemSerializer
 from portal.apps.projects.serializers import MetadataJSONSerializer
+from portal.apps.projects.models.utils import get_latest_project_storage, get_latest_project_directory
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # pylint: disable=invalid-name
@@ -150,16 +152,50 @@ class ProjectsManager(object):
         if not title:
             raise Exception("No title.")
 
-        project_id = '{prefix}-{prj_id}'.format(
+        try:
+            prjId = ProjectId.next_id()
+        except ObjectDoesNotExist:
+            latest_storage_system_id = get_latest_project_storage()
+            latest_project_id = get_latest_project_directory()
+            max_value_found = max(latest_storage_system_id, latest_project_id, 0)
+            ProjectId.objects.create(value=max_value_found).save()
+            prjId = ProjectId.next_id()
+
+        project_id = '{prefix}-{prjId}'.format(
             prefix=settings.PORTAL_PROJECTS_ID_PREFIX,
-            prj_id=ProjectId.next_id()
+            prjId=prjId
         )
-        prj = Project.create(
-            self.user.agave_oauth.client,
-            title,
-            project_id,
-            self.user
-        )
+
+        try:
+            prj = Project.create(
+                self.user.agave_oauth.client,
+                title,
+                project_id,
+                self.user
+            )
+        except ValueError:
+            # Tapis StorageSystem or ProjectMetadata with this ProjectID already exists,
+            # try to update to latest project value and recreate
+            logger.info('Project with id: {} already exists'.format(project_id))
+
+            latest_storage_system_id = get_latest_project_storage()
+            latest_project_id = get_latest_project_directory()
+            max_value_found = max(latest_storage_system_id, latest_project_id, 0)
+
+            logger.info('Updating ProjectId to latest project dir or storage system id: {}'.format(max_value_found))
+
+            ProjectId.update(max_value_found)
+            project_id = '{prefix}-{prj_id}'.format(
+                prefix=settings.PORTAL_PROJECTS_ID_PREFIX,
+                prj_id=ProjectId.next_id()
+            )
+            prj = Project.create(
+                self.user.agave_oauth.client,
+                title,
+                project_id,
+                self.user
+            )
+
         prj.storage.update_role(
             self.user.username,
             'ADMIN'

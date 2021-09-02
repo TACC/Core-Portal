@@ -116,7 +116,9 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': None
+        'icon': 'publications',
+        'privilegeRequired': False,
+        'readOnly': False
     },
     {
         'name': 'Google Drive',
@@ -232,5 +234,7 @@ _WORKBENCH_SETTINGS = {
     "viewPath": True,
     "compressApp": 'zippy',
     "extractApp": 'extract',
-    "makePublic": False
+    "makePublic": False,
+    "hideApps": False,
+    "hideDataFiles": False
 }

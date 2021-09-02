@@ -22,13 +22,22 @@ function Workbench() {
   const dispatch = useDispatch();
 
   // showUIPatterns: Show some entries only in local development
-  const { loading, setupComplete, showUIPatterns, isStaff } = useSelector(
+  const {
+    loading,
+    setupComplete,
+    showUIPatterns,
+    isStaff,
+    hideApps,
+    hideDataFiles
+  } = useSelector(
     state => ({
       loading: state.workbench.loading || state.systems.storage.loading,
       setupComplete: state.workbench.setupComplete,
       showUIPatterns: state.workbench.config.debug,
       isStaff:
-        state.authenticatedUser.user && state.authenticatedUser.user.isStaff
+        state.authenticatedUser.user && state.authenticatedUser.user.isStaff,
+      hideApps: state.workbench.config.hideApps,
+      hideDataFiles: state.workbench.config.hideDataFiles
     }),
     shallowEqual
   );
@@ -58,7 +67,11 @@ function Workbench() {
   return (
     <div className="workbench-wrapper">
       <NotificationToast />
-      <Sidebar disabled={!setupComplete} showUIPatterns={showUIPatterns} />
+      <Sidebar
+        disabled={!setupComplete}
+        showUIPatterns={showUIPatterns}
+        loading={loading}
+      />
       <div className="workbench-content">
         {loading ? (
           <LoadingSpinner />
@@ -73,18 +86,27 @@ function Workbench() {
                   path={`${path}${ROUTES.ACCOUNT}`}
                   component={ManageAccount}
                 />
-                <Route path={`${path}${ROUTES.DATA}`}>
-                  <DataFiles />
-                </Route>
-                <Route
-                  path={`${path}${ROUTES.APPLICATIONS}`}
-                  component={Applications}
-                />
+                {!hideDataFiles && (
+                  <Route path={`${path}${ROUTES.DATA}`}>
+                    <DataFiles />
+                  </Route>
+                )}
+                {!hideApps && (
+                  <Route
+                    path={`${path}${ROUTES.APPLICATIONS}`}
+                    component={Applications}
+                  />
+                )}
                 <Route
                   path={`${path}${ROUTES.ALLOCATIONS}`}
                   component={Allocations}
                 />
-                <Route path={`${path}${ROUTES.HISTORY}`} component={History} />
+                {!hideApps && (
+                  <Route
+                    path={`${path}${ROUTES.HISTORY}`}
+                    component={History}
+                  />
+                )}
                 <Route
                   path={`${path}${ROUTES.ONBOARDING}`}
                   component={Onboarding}

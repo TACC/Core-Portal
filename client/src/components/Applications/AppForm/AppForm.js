@@ -18,7 +18,13 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
-import { getMaxQueueRunTime, createMaxRunTimeRegex } from './AppFormUtils';
+import {
+  getMaxQueueRunTime,
+  createMaxRunTimeRegex,
+  getNodeCountValidation,
+  getProcessorsOnEachNodeValidation,
+  getQueueValidation
+} from './AppFormUtils';
 import DataFilesSelectModal from '../../DataFiles/DataFilesModals/DataFilesSelectModal';
 import * as ROUTES from '../../../constants/routes';
 
@@ -46,7 +52,10 @@ const appShape = PropTypes.shape({
     scheduler: PropTypes.string,
     queues: PropTypes.arrayOf(PropTypes.shape({}))
   }),
-  license: PropTypes.shape({}),
+  license: PropTypes.shape({
+    type: PropTypes.string,
+    enabled: PropTypes.bool
+  }),
   appListing: PropTypes.arrayOf(PropTypes.shape({}))
 });
 
@@ -150,18 +159,20 @@ export const AppSchemaForm = ({ app }) => {
     portalAlloc,
     jobSubmission,
     hasDefaultAllocation,
-    defaultStorageHost
+    defaultStorageHost,
+    hasStorageSystems
   } = useSelector(state => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       host =>
         app.exec_sys.login.host === host ||
         app.exec_sys.login.host.endsWith(`.${host}`)
     );
-    const { defaultHost } = state.systems.storage;
-    const hasCorral = [
-      'cloud.corral.tacc.utexas.edu',
-      'data.tacc.utexas.edu'
-    ].some(s => defaultHost.endsWith(s));
+    const { defaultHost, configuration } = state.systems.storage;
+    const hasCorral =
+      configuration.length &&
+      ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some(s =>
+        defaultHost.endsWith(s)
+      );
     return {
       allocations: matchingExecutionHost
         ? state.allocations.hosts[matchingExecutionHost]
@@ -173,12 +184,13 @@ export const AppSchemaForm = ({ app }) => {
         state.systems.storage.loading ||
         state.allocations.hosts[defaultHost] ||
         hasCorral,
-      defaultStorageHost: defaultHost
+      defaultStorageHost: defaultHost,
+      hasStorageSystems: configuration.length
     };
   }, shallowEqual);
 
   const { systemHasKeys, pushKeysSystem } = app;
-
+  const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = e => {
     e.preventDefault();
     dispatch({
@@ -226,7 +238,7 @@ export const AppSchemaForm = ({ app }) => {
     } else {
       initialValues.allocation = allocations.length === 1 ? allocations[0] : '';
     }
-    if (!hasDefaultAllocation) {
+    if (!hasDefaultAllocation && hasStorageSystems) {
       jobSubmission.error = true;
       jobSubmission.response = {
         message: `You need an allocation on ${getSystemName(
@@ -249,7 +261,9 @@ export const AppSchemaForm = ({ app }) => {
 
   return (
     <div id="appForm-wrapper">
-      {!systemHasKeys && (
+      {/* The !! is needed because the second value of this shorthand 
+          is interpreted as a literal 0 if not. */}
+      {!!(!systemHasKeys && hasStorageSystems) && (
         <div className="appDetail-error">
           <SectionMessage type="warning">
             There was a problem accessing your default My Data file system. If
@@ -263,6 +277,27 @@ export const AppSchemaForm = ({ app }) => {
               push your keys
             </a>
             .
+          </SectionMessage>
+        </div>
+      )}
+      {!hasStorageSystems && (
+        <div className="appDetail-error">
+          <SectionMessage type="warning">
+            No storage systems enabled for this portal.
+          </SectionMessage>
+        </div>
+      )}
+      {!!(missingLicense && hasStorageSystems) && (
+        <div className="appDetail-error">
+          <SectionMessage type="warning">
+            Activate your {app.license.type} license in{' '}
+            <Link
+              to={`${ROUTES.WORKBENCH}${ROUTES.ACCOUNT}`}
+              className="wb-link"
+            >
+              Manage Account
+            </Link>
+            , then return to this form.
           </SectionMessage>
         </div>
       )}
@@ -303,8 +338,16 @@ export const AppSchemaForm = ({ app }) => {
         </>
       )}
       <Formik
+        validateOnMount
         initialValues={initialValues}
+        initialTouched={initialValues}
         validationSchema={props => {
+          if (jobSubmission.submitting) {
+            /* to to avoid a strange error where values are valid but yup returns invalid,
+            we stop invalidating during submission. This occurs only when validateOnMount is set.
+             */
+            return Yup.mixed().notRequired();
+          }
           return Yup.lazy(values => {
             const queue = app.exec_sys.queues.find(
               q => q.name === values.batchQueue
@@ -316,17 +359,9 @@ export const AppSchemaForm = ({ app }) => {
               name: Yup.string()
                 .max(64, 'Must be 64 characters or less')
                 .required('Required'),
-              batchQueue: Yup.string()
-                .required('Required')
-                .oneOf(app.exec_sys.queues.map(q => q.name)),
-              nodeCount: Yup.number()
-                .min(1)
-                .max(queue.maxNodes),
-              processorsOnEachNode: Yup.number()
-                .min(1)
-                .max(
-                  Math.floor(queue.maxProcessorsPerNode / queue.maxNodes) || 1
-                ),
+              batchQueue: getQueueValidation(queue, app),
+              nodeCount: getNodeCountValidation(queue, app),
+              processorsOnEachNode: getProcessorsOnEachNodeValidation(queue),
               maxRunTime: Yup.string()
                 .matches(
                   createMaxRunTimeRegex(maxQueueRunTime),
@@ -380,17 +415,11 @@ export const AppSchemaForm = ({ app }) => {
             payload: job
           });
         }}
-        // enableReinitialize
       >
         {({
           values,
           errors,
-          touched,
-          setFieldTouched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          setFieldValue,
+          isValid,
           isSubmitting,
           handleReset,
           resetForm,
@@ -408,6 +437,8 @@ export const AppSchemaForm = ({ app }) => {
             dispatch({ type: 'TOGGLE_SUBMITTING' });
           }
           const readOnly =
+            missingLicense ||
+            !hasStorageSystems ||
             jobSubmission.submitting ||
             (app.exec_sys.scheduler === 'SLURM' && missingAllocation);
           return (
@@ -468,6 +499,16 @@ export const AppSchemaForm = ({ app }) => {
                   >
                     {app.exec_sys.queues
                       .map(q => q.name)
+                      .filter(
+                        q =>
+                          /* normal queue on Frontera does not support 1 (or 2) node jobs and should not be listed */
+                          !(
+                            getSystemName(app.exec_sys.login.host) ===
+                              'Frontera' &&
+                            q === 'normal' &&
+                            app.definition.parallelism === 'SERIAL'
+                          )
+                      )
                       .sort()
                       .map(queue => (
                         <option key={queue} value={queue}>
@@ -547,13 +588,11 @@ export const AppSchemaForm = ({ app }) => {
                     />
                   ) : null}
                 </div>
-                <Button type="submit" color="primary">
+                <Button type="submit" color="primary" disabled={!isValid}>
                   {jobSubmission.submitting && (
                     <LoadingSpinner placement="inline" />
                   )}{' '}
-                  {(Object.keys(errors).length || jobSubmission.error) && (
-                    <Icon name="alert">Warning</Icon>
-                  )}{' '}
+                  {jobSubmission.error && <Icon name="alert">Warning</Icon>}{' '}
                   <span>Submit</span>
                 </Button>
                 <Button
