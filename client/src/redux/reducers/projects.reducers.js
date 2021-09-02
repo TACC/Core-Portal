@@ -104,14 +104,6 @@ export default function projects(state = initialState, action) {
           result: null
         }
       };
-    case 'PROJECTS_MEMBER_LIST_SET':
-      return {
-        ...state,
-        metadata: {
-          ...state.metadata,
-          members: [...action.payload]
-        }
-      };
     case 'PROJECTS_MEMBER_LIST_ADD':
       return {
         ...state,

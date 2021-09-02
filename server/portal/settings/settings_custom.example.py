@@ -235,5 +235,6 @@ _WORKBENCH_SETTINGS = {
     "compressApp": 'zippy',
     "extractApp": 'extract',
     "makePublic": False,
-    "hideApps": False
+    "hideApps": False,
+    "hideDataFiles": False
 }
