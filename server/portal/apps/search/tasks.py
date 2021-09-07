@@ -45,75 +45,10 @@ def agave_listing_indexer(self, listing):
 
 @shared_task(bind=True, queue='indexing')
 def index_community_data(self, reindex=False):
-    # s = IndexedFile.search()
-    # s = s.query("match", **{"system._exact": settings.AGAVE_COMMUNITY_DATA_SYSTEM})
-    # resp = s.delete()
     for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS:
         if sys.api == 'tapis':
             logger.info('INDEXING {} SYSTEM'.format(sys.name))
             agave_indexer.apply_async(args=[sys.system], kwargs={'reindex': reindex})
-
-
-@shared_task(bind=True, max_retries=3, queue='default')
-def project_indexer(self, listing):
-    pass
-
-# @shared_task(bind=True, queue='indexing')
-# def project_indexer(self, projectId):
-#     """
-#     Background task to index a single project given its ID
-#     """
-#     index_project(projectId)
-
-# @shared_task(bind=True, queue='indexing')
-# def index_all_projects(self):
-#     """
-#     Retrieve all project metadata records from the database and index them
-#     """
-#     project_records = ProjectMetadata.objects.all()
-#     for project in project_records:
-#         project_indexer.apply_async(args=[project.project_id])
-
-# @shared_task(bind=True, queue='indexing')
-# def index_project_files(self, reindex=False):
-#     """
-#     Index all storage systems associated with projects.
-#     """
-#     project_records = ProjectMetadata.objects.all()
-#     for project in project_records:
-#         projectId = project.project_id
-#         uname = project.owner.username
-#         systemId = project_id_to_system_id(projectId)
-#         agave_indexer.apply_async(
-#             args=[systemId],
-#             kwargs={'filePath': '/', 'reindex': reindex}
-#         )
-
-
-# Indexing task for My Data.
-@shared_task(bind=True, queue='indexing')
-def index_my_data(self, reindex=False):
-    users = User.objects.all()
-    for user in users:
-        uname = user.username
-        default_sys = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
-        default_system_prefix = settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS[default_sys]['prefix']
-        systemId = default_system_prefix.format(uname)
-
-        # s = IndexedFile.search()
-        # s = s.query("match", **{"system._exact": systemId})
-        # resp = s.delete()
-        agave_indexer.apply_async(
-            args=[systemId],
-            kwargs={'filePath': '/', 'reindex': reindex}
-        )
-
-
-# @shared_task(bind=True, queue='indexing')
-# def index_cms(self):
-#     logger.info("Updating search index")
-#     if not settings.DEBUG:
-#         call_command("update_index", interactive=False)
 
 
 @shared_task(bind=True, max_retries=3, queue='api')

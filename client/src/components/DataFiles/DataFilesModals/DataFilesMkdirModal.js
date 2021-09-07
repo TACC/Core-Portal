@@ -74,7 +74,7 @@ const DataFilesMkdirModal = () => {
           onSubmit={mkdir}
         >
           <Form>
-            <ModalHeader toggle={toggle}>
+            <ModalHeader toggle={toggle} charCode="&#xe912;">
               Creating folder in {systemDisplayName}/{params.path}
             </ModalHeader>
             <ModalBody>
