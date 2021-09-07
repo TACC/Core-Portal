@@ -1,2 +1,2 @@
 # NOTE: set WH_BASE_URL to ngrok redirect for local dev testing (i.e. WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
-WH_BASE_URL = 'https://12345.ngrok.io'
+WH_BASE_URL = 'https://c237-2603-8081-3105-3f00-543f-afff-2b44-39f9.ngrok.io'

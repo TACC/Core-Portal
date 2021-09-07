@@ -23,5 +23,5 @@ export {
 } from './WelcomeMessage';
 export { default as Pill } from './Pill';
 export { default as TextCopyField } from './TextCopyField';
-export { default as ReadMore } from './ReadMore';
+export { default as ShowMore } from './ShowMore';
 export { default as Paginator } from './Paginator';
