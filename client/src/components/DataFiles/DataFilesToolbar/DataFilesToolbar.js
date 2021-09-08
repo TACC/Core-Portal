@@ -7,7 +7,6 @@ import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
   const iconClassName = `icon-action icon-${iconName}`;
-
   return (
     <Button
       disabled={disabled}
@@ -30,7 +29,7 @@ ToolbarButton.propTypes = {
   iconName: PropTypes.string.isRequired
 };
 
-const DataFilesToolbar = ({ scheme, api }) => {
+const DataFilesToolbar = ({ scheme, api, path }) => {
   const dispatch = useDispatch();
 
   const selectedFiles = useSelector(state =>
@@ -173,7 +172,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const canRename = getFilePermissions('rename', permissionParams);
   const canMove = getFilePermissions('move', permissionParams);
   const canCopy = getFilePermissions('copy', permissionParams);
-  const canTrash = getFilePermissions('trash', permissionParams);
+  const inTrash = path.includes('.Trash');
+  const canTrash = getFilePermissions('trash', permissionParams) && !inTrash;
   const canCompress = getFilePermissions('compress', permissionParams);
   const canExtract = getFilePermissions('extract', permissionParams);
   const canMakePublic =
@@ -257,7 +257,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
 };
 DataFilesToolbar.propTypes = {
   scheme: PropTypes.string.isRequired,
-  api: PropTypes.string.isRequired
+  api: PropTypes.string.isRequired,
+  path: PropTypes.string.isRequired
 };
-
 export default DataFilesToolbar;
