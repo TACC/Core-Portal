@@ -61,14 +61,14 @@ const initialMockState = {
 };
 
 describe('DataFilesProjectFileListing', () => {
-  it('shows uses the Read More component for long descriptions', () => {
+  it('shows uses the Show More component for long descriptions', () => {
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
       <DataFilesProjectFileListing system="test.site.project.PROJECT-3" path="/" />,
       store
     );
 
-    expect(getByText(/Read More/)).toBeDefined();
+    expect(getByText(/Show More/)).toBeDefined();
   });
 
   it('hides Edit Descriptions and Manage Team when privilege is needed and user is not owner', () => {

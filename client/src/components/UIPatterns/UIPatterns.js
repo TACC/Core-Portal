@@ -38,7 +38,7 @@ function UIPatterns() {
             <UIPatternsPill />
           </div>
           <div styleName="list-item">
-            <h6>Read More</h6>
+            <h6>Show More</h6>
             <UIPatternsShowMore />
           </div>
           <div styleName="list-item">
