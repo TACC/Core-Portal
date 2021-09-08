@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FP-939: Display shared workspace description whitespace. (#435)
 - FP-997, FP-1041, FP-1042: Improve apps, add small queue support, and update execution systems when needed (#426)
 - FP-573: Prevent submitting unlicensed app (#438)
-- FP-1009: Apply ShowMore UI pattern to long Shared Workspace descriptions (#442)
+- FP-1009: Apply ReadMore UI pattern to long Shared Workspace descriptions (#442)
 - FP-1031: Clarify Onboarding MFA Steps (#441)
 - FP-1007: Remove inactive toolbar buttons for public/community/google drive (#436)
 
@@ -153,7 +153,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FP-802: Paginator component (#348)
 - FP-369: DataFiles Toolbar Compress and Extract buttons (#264)
 - FP-837: add unit tests for file preview and determine file size in back end (#300)
-- FP-874: ShowMore expandable text component proof of concept (#336)
+- FP-874: ReadMore expandable text component proof of concept (#336)
 - FP-862: load branding from cms (#334)
 - FP-828: Prevent write operations on protected files (#321)
 - FP-780: add indexing and searchbar for projects (#316)
