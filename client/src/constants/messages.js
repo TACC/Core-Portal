@@ -36,6 +36,5 @@ export const INTEGRATION_SETUP_ERROR = integration => (
     >
       submit a ticket.
     </Link>
-    {/* <a href="/workbench/dashboard/tickets/create">submit a ticket</a>. */}
   </span>
 );

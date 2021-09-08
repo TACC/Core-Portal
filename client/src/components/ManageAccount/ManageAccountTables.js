@@ -244,45 +244,6 @@ IntegrationCell.propTypes = {
   }).isRequired
 };
 
-// export const IntegrationCell = ({ activated }) => {
-//   const [modal, setModal] = React.useState(false);
-//   const toggle = () => setModal(!modal);
-//   return (
-//     <div
-//       style={{
-//         display: 'flex',
-//         justifyContent: 'flex-end'
-//       }}
-//     >
-//       {activated ? (
-//         <div>
-//           <a
-//             className="wb-link"
-//             href={disconnect}
-//           >
-//             Disconnect
-//           </a>
-//         </div>
-//       ) : (
-//         <div>
-//           <Button
-//             color="link"
-//             size="sm"
-//             onClick={toggle}
-//             className="license-button"
-//           >
-//             Setup {label}
-//           </Button>
-//         </div>
-//       )}
-//       <GoogleDriveModal active={modal} toggle={toggle} />
-//     </div>
-//   );
-// };
-// IntegrationCell.propTypes = {
-//   activated: bool.isRequired
-// };
-
 export const Integrations = () => {
   const { integrations } = useSelector(state => state.profile.data);
   const columns = useMemo(
