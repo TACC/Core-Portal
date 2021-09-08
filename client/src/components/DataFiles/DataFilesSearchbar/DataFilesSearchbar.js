@@ -28,6 +28,7 @@ const DataFilesSearchbar = ({
   const history = useHistory();
   const hasQuery = queryString.parse(useLocation().search).query_string;
   const location = useLocation();
+  
 
   let sectionName;
   if (siteSearch) {
@@ -82,6 +83,10 @@ const DataFilesSearchbar = ({
     }
   };
   const onChange = e => setQuery(e.target.value);
+  
+  
+  
+  
 
   return (
     <form
@@ -97,9 +102,12 @@ const DataFilesSearchbar = ({
             <span styleName="button__text">Search</span>
           </Button>
         </div>
+       
         <input
           type="search"
-          minLength="3"
+          minlength="3"
+          onInput={e => e.target.setCustomValidity("")}
+          onInvalid={e => e.target.setCustomValidity("Include at least 3 characters in your search.")}
           onChange={onChange}
           value={query || ''}
           name="query"
@@ -110,6 +118,7 @@ const DataFilesSearchbar = ({
           data-testid="input"
           autoComplete="off"
           disabled={disabled}
+          
         />
       </div>
       {scheme !== 'cms' && (

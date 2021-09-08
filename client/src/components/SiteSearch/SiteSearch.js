@@ -41,6 +41,7 @@ const SiteSearch = () => {
         <SiteSearchSidebar
           queryString={query_string}
           schemes={Object.keys(results).filter(key => results[key].include)}
+       
           authenticated={Boolean(user)}
           results={results}
         />

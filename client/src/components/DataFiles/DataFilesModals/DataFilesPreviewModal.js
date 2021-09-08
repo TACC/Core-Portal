@@ -76,6 +76,7 @@ const DataFilesPreviewModal = () => {
               className="embed-responsive-item"
               onLoad={onFrameLoad}
               src={href}
+              
             />
           </div>
         )}

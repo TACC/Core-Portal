@@ -56,6 +56,7 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
           </Button>
         </div>
         <input
+          
           type="search"
           onChange={onChange}
           value={search || ''}
