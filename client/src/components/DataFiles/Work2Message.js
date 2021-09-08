@@ -7,24 +7,24 @@ import * as ROUTES from '../../constants/routes';
 
 const Work2Message = () => {
   const dispatch = useDispatch();
-  const { welcomeMessages, showWork2Message } = useSelector(state => ({
-    welcomeMessages: state.welcomeMessages,
+  const { introMessages, showWork2Message } = useSelector(state => ({
+    introMessages: state.introMessages,
     showWork2Message: state.workbench.config.showWork2Message
   }));
-  const onDismissWelcome = section => {
+  const onDismissIntro = section => {
     const newMessagesState = {
-      ...welcomeMessages,
+      ...introMessages,
       [section]: false
     };
-    dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState });
+    dispatch({ type: 'SAVE_INTRO', payload: newMessagesState });
   };
 
   return (
     <>
       {showWork2Message && (
         <Alert
-          isOpen={welcomeMessages.WORK2}
-          toggle={() => onDismissWelcome('WORK2')}
+          isOpen={introMessages.WORK2}
+          toggle={() => onDismissIntro('WORK2')}
           color="warning"
         >
           <>

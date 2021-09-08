@@ -8,7 +8,7 @@ import { initialState as profile } from '../../../redux/reducers/profile.reducer
 import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import { initialState as notifications } from '../../../redux/reducers/notifications.reducers';
 import { initialTicketCreateState as ticketCreate } from '../../../redux/reducers/tickets.reducers';
-import welcomeMessages from '../../../redux/reducers/welcome.reducers';
+import introMessages from '../../../redux/reducers/intro.reducers';
 import ManageAccountPage from '../index';
 
 const mockStore = configureStore();
@@ -20,7 +20,7 @@ describe('Manage Account Page', () => {
         profile,
         workbench,
         notifications,
-        welcomeMessages,
+        introMessages,
         ticketCreate
       })}>
         <BrowserRouter>
@@ -32,6 +32,6 @@ describe('Manage Account Page', () => {
     expect(getByText(/Manage Account/)).toBeInTheDocument();
     expect(getByText(/Back to Dashboard/)).toBeInTheDocument();
     expect(getAllByText(/Loading.../)).toBeDefined();
-    expect(getByRole('alert', {class: /welcomeMessageGeneral/i})).toBeInTheDocument();
+    expect(getByRole('alert', {class: /introMessageGeneral/i})).toBeInTheDocument();
   });
 });

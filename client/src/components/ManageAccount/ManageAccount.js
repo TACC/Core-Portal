@@ -35,7 +35,7 @@ const ManageAccountView = () => {
   return (
     <Section
       bodyClassName="has-loaded-account"
-      welcomeMessageName="ACCOUNT"
+      introMessageName="ACCOUNT"
       header="Manage Account"
       messages={
         !isLoading &&

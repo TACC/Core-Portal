@@ -38,9 +38,9 @@ import {
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
 import { watchWorkbench } from './workbench.sagas';
 import {
-  watchFetchWelcomeMessages,
-  watchSaveWelcomeMessages
-} from './welcome.sagas';
+  watchFetchIntroMessages,
+  watchSaveIntroMessages
+} from './intro.sagas';
 import {
   watchOnboardingAdminList,
   watchOnboardingAdminIndividualUser,
@@ -88,8 +88,8 @@ export default function* rootSaga() {
     watchSocket(),
     watchFetchNotifications(),
     watchWorkbench(),
-    watchFetchWelcomeMessages(),
-    watchSaveWelcomeMessages(),
+    watchFetchIntroMessages(),
+    watchSaveIntroMessages(),
     watchOnboardingAdminList(),
     watchOnboardingAdminIndividualUser(),
     watchOnboardingAction(),
