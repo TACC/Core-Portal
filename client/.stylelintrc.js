@@ -22,7 +22,9 @@ module.exports = {
     // Disallow duplicate font family names.
     // 'font-family-no-duplicate-names': null,
     // Disallow missing generic families in lists of font family names.
-    // 'font-family-no-missing-generic-family-keyword': null,
+    'font-family-no-missing-generic-family-keyword': [ true, {
+      ignoreFontFamilies: ['Cortal-Icons']
+    }],
 
     // FUNCTION
     // Disallow an invalid expression within calc functions.

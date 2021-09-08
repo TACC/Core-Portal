@@ -135,7 +135,7 @@ const LicenseCell = ({ cell: { value } }) => {
         <ModalHeader
           className="manage-account-modal-header"
           toggle={toggle}
-          charCode="X"
+          charCode="&#xe912;"
         >
           {type}
         </ModalHeader>

@@ -122,7 +122,9 @@ const DataFilesUploadModal = ({ className, layout }) => {
       size="xl"
       className={`dataFilesModal ${className}`}
     >
-      <ModalHeader toggle={toggle}>Upload Files</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Upload Files
+      </ModalHeader>
       <ModalBody styleName={containerStyleNames}>
         <div styleName="dropzone" disabled={dropZoneDisabled}>
           <FileInputDropZone
