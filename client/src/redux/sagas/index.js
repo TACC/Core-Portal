@@ -37,10 +37,7 @@ import {
 } from './tickets.sagas';
 import { watchAuthenticatedUser } from './authenticated_user.sagas';
 import { watchWorkbench } from './workbench.sagas';
-import {
-  watchFetchIntroMessages,
-  watchSaveIntroMessages
-} from './intro.sagas';
+import { watchFetchIntroMessages, watchSaveIntroMessages } from './intro.sagas';
 import {
   watchOnboardingAdminList,
   watchOnboardingAdminIndividualUser,
