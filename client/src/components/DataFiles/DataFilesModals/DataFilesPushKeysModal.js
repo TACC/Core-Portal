@@ -61,7 +61,9 @@ const DataFilesPushKeysModal = () => {
         className="dataFilesModal"
       >
         <Form>
-          <ModalHeader toggle={toggle}>Push Keys</ModalHeader>
+          <ModalHeader toggle={toggle} charCode="&#xe912;">
+            Push Keys
+          </ModalHeader>
           <ModalBody>
             <FormGroup>
               <Label>Password</Label>
