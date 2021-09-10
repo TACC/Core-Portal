@@ -27,14 +27,14 @@ def accounts(request):
     return response
 
 
-class LogoutView(View):
-    """Logout view
-    """
-
-    def get(self, request):
-        """GET"""
-        logout(request)
-        return HttpResponseRedirect('/')
+# class LogoutView(View):
+#     """Logout view
+#     """
+#
+#     def get(self, request):
+#         """GET"""
+#         logout(request)
+#         return HttpResponseRedirect('/')
 
 
 @login_required

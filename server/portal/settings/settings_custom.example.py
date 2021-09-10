@@ -238,3 +238,8 @@ _WORKBENCH_SETTINGS = {
     "hideApps": False,
     "hideDataFiles": False
 }
+
+# to authenticate a user with the CMS after Portal login,
+# set the _LOGIN_REDIRECT_URL to the custom cms auth endpoint
+# otherwise just redirect to /workbench
+_LOGIN_REDIRECT_URL='/remote/login/'

@@ -34,6 +34,9 @@ FIXTURE_DIRS = [
     os.path.join(BASE_DIR, 'fixtures'),
 ]
 
+# this can be set to just '/' if we're not using core portal to create cms sessions
+LOGOUT_REDIRECT_URL='/cms/logout/'
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = settings_secret._SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
