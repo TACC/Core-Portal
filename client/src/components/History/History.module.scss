@@ -40,16 +40,18 @@
     a {
         min-width: var(--min-width);
 
-        color: #707070;
+        color: var(--global-color-primary--dark);
         padding-left: var(--horizontal-buffer);
 
+        &.active,
+        &:hover {
+            background: var(--global-color-accent--weak);
+            color: var(--global-color-primary--x-dark);
+        }
         .link-text {
             font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
             font-weight: 500;
             padding-left: 16px;
         }
-    }
-    .active {
-        background: var(--global-color-accent--weak);
     }
 }
