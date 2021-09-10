@@ -3,7 +3,6 @@
    :synopsys: Views to handle Workspace API
 """
 import logging
-#import sys
 import json
 from urllib.parse import urlparse
 from datetime import timedelta
@@ -391,7 +390,6 @@ class SystemsView(BaseApiView):
 class JobHistoryView(BaseApiView):
     def get(self, request, job_uuid):
         agave = request.user.agave_oauth.client
-        print('Hello world')
         data = agave.jobs.getHistory(jobId=job_uuid)
         return JsonResponse({"response": data})
 

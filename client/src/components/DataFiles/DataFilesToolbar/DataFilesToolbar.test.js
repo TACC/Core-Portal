@@ -1,5 +1,5 @@
 import React from 'react';
-import { toHaveClass } from '@testing-library/jest-dom/dist/matchers';
+import { toHaveClass, toBeDisabled } from '@testing-library/jest-dom/dist/matchers';
 import DataFilesToolbar, { ToolbarButton } from './DataFilesToolbar';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
@@ -7,7 +7,7 @@ import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
-expect.extend({ toHaveClass });
+expect.extend({ toHaveClass, toBeDisabled });
 describe('ToolbarButton', () => {
   const store = mockStore({});
   it('renders button with correct text', () => {
@@ -26,7 +26,7 @@ describe('ToolbarButton', () => {
 describe('DataFilesToolbar', () => {
   it('renders necessary buttons', () => {
     const { getByText, queryByText } = renderComponent(
-      <DataFilesToolbar scheme="private" api="tapis" />,
+      <DataFilesToolbar scheme="private" api="tapis" path="/" />,
       mockStore({
         workbench: { config: {
           extract: '',
@@ -49,7 +49,7 @@ describe('DataFilesToolbar', () => {
 
   it('does not render unnecessary buttons in Community Data', () => {
     const {getByText, queryByText} = renderComponent(
-      <DataFilesToolbar scheme="community" api="tapis" />,
+      <DataFilesToolbar scheme="community" api="tapis" path="/" />,
       mockStore({
         workbench: { config: {
           extract: '',
@@ -72,7 +72,7 @@ describe('DataFilesToolbar', () => {
 
   it('does not render unnecessary buttons in Public Data', () => {
     const {getByText, queryByText} = renderComponent(
-      <DataFilesToolbar scheme="public" api="tapis" />,
+      <DataFilesToolbar scheme="public" api="tapis" path="/" />,
       mockStore({
         workbench: { config: {
           extract: '',
@@ -95,7 +95,7 @@ describe('DataFilesToolbar', () => {
 
   it('does not render unnecessary buttons in Google Drive', () => {
     const {getByText, queryByText} = renderComponent(
-      <DataFilesToolbar scheme="private" api="googledrive" />,
+      <DataFilesToolbar scheme="private" api="googledrive" path="/"/>,
       mockStore({
         workbench: { config: {
           extract: '',
@@ -118,7 +118,7 @@ describe('DataFilesToolbar', () => {
 
   it('renders Make Public button', () => {
     const { getByText } = renderComponent(
-      <DataFilesToolbar scheme="private" api="tapis" />,
+      <DataFilesToolbar scheme="private" api="tapis" path="/"/>,
       mockStore({
         files: { selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
@@ -129,5 +129,22 @@ describe('DataFilesToolbar', () => {
     );
 
     expect(getByText(/Make Public/)).toBeDefined();
+  });
+
+  it('disables Trash button for files in .Trash', () => {
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" path=".Trash" />,
+      mockStore({
+        workbench: { config: {
+          extract: '',
+          compress: ''
+        } },
+        files: { selected: { FilesListing: [] } },
+        listing: { selected: { FilesListing: [] } },
+        systems: systemsFixture
+      }),
+      createMemoryHistory()
+    );
+    expect(getByText(/Trash/).closest('button')).toBeDisabled();
   });
 });
