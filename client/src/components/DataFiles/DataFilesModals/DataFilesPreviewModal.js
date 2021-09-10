@@ -4,6 +4,8 @@ import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { LoadingSpinner, Message } from '_common';
 import './DataFilesPreviewModal.module.scss';
 
+
+
 const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state => state.files.modals.preview);
@@ -58,7 +60,7 @@ const DataFilesPreviewModal = () => {
     >
       <ModalHeader toggle={toggle}>File Preview: {params.name}</ModalHeader>
       <ModalBody styleName="root">
-        {(isLoading || (previewUsingHref && isFrameLoading)) && (
+        { isLoading && isFrameLoading && (
           <LoadingSpinner />
         )}
         {previewUsingTextContent && (
@@ -68,14 +70,18 @@ const DataFilesPreviewModal = () => {
             </code>
           </div>
         )}
-        {previewUsingHref && (
-          <div className="embed-responsive embed-responsive-4by3">
+        {(previewUsingHref) && (
+          <div className="embed-responsive embed-responsive-16by9">
             <iframe
+             
               title="preview"
               frameBorder="0"
               className="embed-responsive-item"
               onLoad={onFrameLoad}
               src={href}
+              scrolling="yes" 
+              crop="fill" effect="sepia" 
+              
               
             />
           </div>

@@ -18,6 +18,7 @@ module.exports = merge.smart(common, {
   // serve assets via webpack-dev-server instead of Django for HMR to work
   devServer: {
     headers: {
+      
       'Access-Control-Allow-Origin': '*'
     },
     compress: true,
