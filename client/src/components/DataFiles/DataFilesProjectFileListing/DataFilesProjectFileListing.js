@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import {
-  ReadMore,
+  ShowMore,
   LoadingSpinner,
   SectionMessage,
   SectionTableWrapper
@@ -101,7 +101,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (D) __both__ (A) or (B) __and__ (C)
       */}
       <div styleName="description">
-        {metadata.description && <ReadMore>{metadata.description}</ReadMore>}
+        {metadata.description && <ShowMore>{metadata.description}</ShowMore>}
       </div>
       <DataFilesListing
         api="tapis"
