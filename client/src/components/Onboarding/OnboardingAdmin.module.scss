@@ -54,7 +54,7 @@
 
     .-sort-asc,
     .sort-desc {
-      color: #484848;
+      color: var(--global-color-primary--xx-dark);
     }
 
     /* Match horizontal padding of `td` elements in table to align properly */
@@ -140,7 +140,7 @@
 .action-link:not(:last-child) { margin-right: 0.25em; }
 
 .staffwait {
-  background-color: var(--global-color-accent--light);
+  background-color: var(--global-color-accent--weak);
 }
 
 .users {

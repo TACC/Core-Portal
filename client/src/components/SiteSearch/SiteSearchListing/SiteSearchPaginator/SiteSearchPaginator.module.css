@@ -1,9 +1,9 @@
 .paginator-link {
-  color: #9d85ef;
+  color: var(--global-color-accent--normal);
 }
 
 .active {
-  background-color: #9d85ef;
+  background-color: var(--global-color-accent--normal);
 }
 
 .active .paginator-link {
