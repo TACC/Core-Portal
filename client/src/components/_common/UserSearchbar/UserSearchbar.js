@@ -10,7 +10,8 @@ const UserSearchbar = ({
   onChange,
   addDisabled,
   searchDisabled,
-  searchResults
+  searchResults,
+  placeholder
 }) => {
   const [selectedUser, setSelectedUser] = useState('');
   const [inputUser, setInputUser] = useState('');
@@ -72,7 +73,7 @@ const UserSearchbar = ({
           list="user-search-list"
           type="text"
           onChange={e => userSearch(e)}
-          placeholder="Search by name"
+          placeholder={placeholder}
           styleName="member-search"
           disabled={searchDisabled}
           autoComplete="false"
@@ -114,11 +115,13 @@ UserSearchbar.propTypes = {
       firstName: PropTypes.string,
       email: PropTypes.string
     })
-  ).isRequired
+  ).isRequired,
+  placeholder: PropTypes.string
 };
 UserSearchbar.defaultProps = {
   addDisabled: false,
-  searchDisabled: false
+  searchDisabled: false,
+  placeholder: 'Search by name'
 };
 
 export default UserSearchbar;

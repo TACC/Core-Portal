@@ -240,22 +240,38 @@ export function* getUsernamesManage(action) {
     console.log(error);
   }
 }
-const searchUsersUtil = async term => {
-  console.log(term);
-  const root =
-    'https://portal.tacc.utexas.edu/projects-and-allocations/-/pm/api/users?action=search&field=username&term=';
-  const res = await fetch(`${root}${term}`);
-  const json = await res.json();
-  console.log(json);
-  return json.result;
+/**
+ * Search for users in TAS
+ * @async
+ * @returns {Array.<Object>}
+ */
+export const searchUsersUtil = async (field, term) => {
+  const res = await fetchUtil({
+    url:
+      'https://portal.tacc.utexas.edu/projects-and-allocations/-/pm/api/users',
+    params: {
+      action: 'search',
+      field,
+      term
+    },
+    init: { fetchParams: null }
+  });
+  const json = res.result;
+  return json;
 };
 export function* searchUsers(action) {
   try {
     const { term } = action.payload;
-    const json = yield call(searchUsersUtil, term);
+    const fields = ['lastName', 'username', 'email'];
+    const result = yield all(
+      fields.map(field => call(searchUsersUtil, field, term))
+    );
+    const uniqueUsers = flatten(result).filter(
+      (value, index, array) => array.findIndex(u => u.id === value.id) === index
+    );
     yield put({
       type: 'ADD_SEARCH_RESULTS',
-      payload: { data: json }
+      payload: { data: uniqueUsers }
     });
   } catch (error) {
     console.log(error);

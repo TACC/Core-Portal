@@ -168,6 +168,7 @@ const AllocationsManageTeamModal = ({ isOpen, toggle, projectId }) => {
           searchDisable={isLoading}
           onChange={onChange}
           searchResults={search.results}
+          placeholder="Search by username, email, or last name"
         />
         <div styleName="listing-wrapper">
           {isLoading ? (
