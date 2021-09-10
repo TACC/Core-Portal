@@ -1,6 +1,7 @@
 {# WARNING: Some markup is duplicated in other repositories #}
 {# SEE: https://confluence.tacc.utexas.edu/x/LoCnCQ #}
 {# FAQ: Extra lines exist to ease CMS/Portal/Guide template comparison #}
+{% load static %}
 
 <!-- Branding Bar -->
 {% include "includes/header_branding.html" %}
@@ -11,12 +12,6 @@
 <nav id="s-header" class="s-header  navbar navbar-dark navbar-expand-xl  is-on-portal {% if user.is_authenticated %}is-portal-user{% endif %}">
   <!-- Portal Logo -->
   {% include "includes/header_logo.html" %}
-
-  <!-- Navbar Accordian Toggle on Small Screens  -->
-  <button class="navbar-toggler  gh-101" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation">
-    <i class="navbar-toggler-icon"></i>
-    <span class="navbar-toggler-text">Menu</span>
-  </button>
 
   <!-- Navbar Links -->
   <div class="collapse navbar-collapse" id="navbarsExpandTarget">
@@ -29,8 +24,20 @@
       {% include "includes/nav_search.html" with className="form-inline" only %}
 
   </div>
+  <aside class="s-header__menu-backdrop" aria-hidden="true"
+    data-target="#navbarsExpandTarget"
+    data-toggle="collapse">
+  </aside>
+
+  <!-- Navbar Accordian Toggle on Small Screens  -->
+  <button class="navbar-toggler  gh-101" type="button" data-toggle="collapse" data-target="#navbarsExpandTarget" aria-controls="navbarsExpandTarget" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="navbar-toggler-icon"></i>
+    <span class="navbar-toggler-text">Menu</span>
+  </button>
 
     {# FAQ: Unlike CMS and User Guide, we must pass `user` #}
     {% include "includes/nav_portal.html" with className="navbar-nav" user=user only %}
 
 </nav>
+
+<script src="/static/site_cms/js/site.header.js" type="module"></script>
