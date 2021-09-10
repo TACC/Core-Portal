@@ -27,7 +27,8 @@ function Workbench() {
     setupComplete,
     showUIPatterns,
     isStaff,
-    hideApps
+    hideApps,
+    hideDataFiles
   } = useSelector(
     state => ({
       loading: state.workbench.loading || state.systems.storage.loading,
@@ -35,7 +36,8 @@ function Workbench() {
       showUIPatterns: state.workbench.config.debug,
       isStaff:
         state.authenticatedUser.user && state.authenticatedUser.user.isStaff,
-      hideApps: state.workbench.config.hideApps
+      hideApps: state.workbench.config.hideApps,
+      hideDataFiles: state.workbench.config.hideDataFiles
     }),
     shallowEqual
   );
@@ -84,9 +86,11 @@ function Workbench() {
                   path={`${path}${ROUTES.ACCOUNT}`}
                   component={ManageAccount}
                 />
-                <Route path={`${path}${ROUTES.DATA}`}>
-                  <DataFiles />
-                </Route>
+                {!hideDataFiles && (
+                  <Route path={`${path}${ROUTES.DATA}`}>
+                    <DataFiles />
+                  </Route>
+                )}
                 {!hideApps && (
                   <Route
                     path={`${path}${ROUTES.APPLICATIONS}`}

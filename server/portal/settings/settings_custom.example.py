@@ -116,7 +116,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': None,
+        'icon': 'publications',
         'privilegeRequired': False,
         'readOnly': False
     },
@@ -235,5 +235,6 @@ _WORKBENCH_SETTINGS = {
     "compressApp": 'zippy',
     "extractApp": 'extract',
     "makePublic": False,
-    "hideApps": False
+    "hideApps": False,
+    "hideDataFiles": False
 }
