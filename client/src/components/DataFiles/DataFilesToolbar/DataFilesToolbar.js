@@ -172,7 +172,8 @@ const DataFilesToolbar = ({ scheme, api, path }) => {
   const canRename = getFilePermissions('rename', permissionParams);
   const canMove = getFilePermissions('move', permissionParams);
   const canCopy = getFilePermissions('copy', permissionParams);
-  const canTrash = getFilePermissions('trash', permissionParams) && !path.startsWith('.Trash');
+  const canTrash =
+    getFilePermissions('trash', permissionParams) && !path.startsWith('.Trash');
   const canCompress = getFilePermissions('compress', permissionParams);
   const canExtract = getFilePermissions('extract', permissionParams);
   const canMakePublic =
