@@ -28,6 +28,9 @@ const ManageAccountView = () => {
     errors,
     data: { licenses, integrations }
   } = useSelector(state => state.profile);
+
+  const { hideDataFiles } = useSelector(state => state.workbench.config);
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch({ type: 'GET_PROFILE_DATA' });
@@ -66,8 +69,8 @@ const ManageAccountView = () => {
             <ChangePasswordModal />
             <EditOptionalInformationModal />
             <EditRequiredInformationModal />
-            {!isEmpty(licenses) && <Licenses />}
-            {!isEmpty(integrations) && <Integrations />}
+            {!hideDataFiles && !isEmpty(licenses) && <Licenses />}
+            {!hideDataFiles && !isEmpty(integrations) && <Integrations />}
             <ChangePassword />
           </>
         )

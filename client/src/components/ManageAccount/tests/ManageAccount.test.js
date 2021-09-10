@@ -18,7 +18,9 @@ describe('Manage Account Page', () => {
     const { getByText, getAllByText, getByRole } = render(
       <Provider store={mockStore({
         profile,
-        workbench,
+        workbench: {
+          ...workbench, config: {hideDataFiles: false}
+        },
         notifications,
         introMessages,
         ticketCreate

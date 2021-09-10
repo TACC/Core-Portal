@@ -28,7 +28,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
     >
       <ModalHeader
         toggle={toggle}
-        charCode="x"
+        charCode="&#xe912;"
         className="allocations-modal-header"
       >
         <span>View Team</span>

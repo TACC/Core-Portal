@@ -16,7 +16,7 @@ const PUBLIC_PAGES = [
   'Allocations',
   'History'
 ];
-const APP_PAGES = ['Applications', 'History'];
+const APP_DATA_PAGES = ['Applications', 'History', 'Data Files'];
 const DEBUG_PAGES = ['UI Patterns'];
 
 function getPath(page) {
@@ -48,7 +48,7 @@ describe('workbench sidebar', () => {
   it.each(PUBLIC_PAGES)('should have a link to the %s page', page => {
     const { getByText, queryByRole } = renderSideBar(
       mockStore({
-        workbench: { ...workbench, config: { hideApps: false } },
+        workbench: { ...workbench, config: { hideApps: false, hideDataFiles: false } },
         notifications,
         ticketCreate
       }),
@@ -63,10 +63,10 @@ describe('workbench sidebar', () => {
     expect(queryByRole('status')).toBeNull();
   });
 
-  it.each(APP_PAGES)('should not have a link to the %s page', page => {
+  it.each(APP_DATA_PAGES)('should not have a link to the %s page', page => {
     const { queryByText, queryByRole } = renderSideBar(
       mockStore({
-        workbench: { ...workbench, config: { hideApps: true } },
+        workbench: { ...workbench, config: { hideApps: true, hideDataFiles: true } },
         notifications,
         ticketCreate
       }),
@@ -80,7 +80,7 @@ describe('workbench sidebar', () => {
   it('should have a notification badge', () => {
     const { getByRole } = renderSideBar(
       mockStore({
-        workbench: { ...workbench, config: { hideApps: false } },
+        workbench: { ...workbench, config: { hideApps: false, hideDataFiles: false } },
         notifications: { list: { unread: 1 } },
         ticketCreate
       }),
@@ -106,7 +106,7 @@ describe('workbench sidebar', () => {
   it.each(DEBUG_PAGES)('is available in debug mode', page => {
     const { getByText } = renderSideBar(
       mockStore({
-        workbench: { status: { debug: true }, config: { hideApps: false } },
+        workbench: { status: { debug: true }, config: { hideApps: false, hideDataFiles: false } },
         notifications,
         ticketCreate
       }),
