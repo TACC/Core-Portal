@@ -60,8 +60,6 @@ const DataFilesSidebar = ({ readOnly }) => {
     });
   };
 
-  const writeItemStyle = readOnly ? 'read-only' : '';
-
   const match = useRouteMatch();
 
   const disabled =
@@ -69,6 +67,8 @@ const DataFilesSidebar = ({ readOnly }) => {
     err !== false ||
     api !== 'tapis' ||
     (scheme !== 'private' && scheme !== 'projects');
+
+  const writeItemStyle = disabled ? 'read-only' : '';
 
   return (
     <div styleName="root">

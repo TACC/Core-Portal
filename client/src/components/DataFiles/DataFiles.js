@@ -113,11 +113,9 @@ const DataFiles = () => {
   const loading = useSelector(state => state.systems.storage.loading);
   const error = useSelector(state => state.systems.storage.error);
   const systems = useSelector(state => state.systems.storage.configuration);
-
   const readOnly =
     listingParams.scheme === 'projects' &&
     (listingParams.system === '' || !listingParams.system);
-
   if (error) {
     return (
       <div styleName="error">
