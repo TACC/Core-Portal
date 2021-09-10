@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.0] - 2021-09-01: Shared Workspace Updates; Cortal Icons
+
+### Changed
+
+- FP-1142: Distinguish types of message text constants (#445)
+- FP-1153: Shared Workspaces Icon (#466)
+- FP-223: Add Custom Close Icon to Modals (#465)
+- FP-635: Remove Font Awesome Icons (#469)
+- Reduce Body Min-* Verbosity (#421)
+- FP-1089: Update ProjectId on collision (#459)
+- FP-1143: Convert underscore to hyphen in system ids (#461)
+- FP-1150: 150 max character limit for shared workspace title (#460)
+- FP-1171: Toggle data files [A2CPS] (#471)
+- FP-1128: Accommodate non-portal created Projects (#458)
+
+### Fixed
+
+- FP-1151: Shared workspace privilege bypass (#462)
+
 ## [2.8.0] - 2021-08-10: Data Files Filter; Custom Settings for A2CPS
 
 ### Added
@@ -435,7 +454,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.7.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.9.0...HEAD
+[2.9.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.9.0
+[2.8.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.8.0
 [2.7.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.7.0
 [2.6.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.6.1
 [2.6.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.6.0
