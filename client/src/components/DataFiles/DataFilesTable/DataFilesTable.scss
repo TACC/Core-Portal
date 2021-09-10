@@ -25,7 +25,7 @@
   justify-content: center;
 }
 .tr-selected:not(.scroll):not(.tr-header) {
-  background: #9d85ef40;
+  background: var(--global-color-accent--weak);
 }
 
 .td {

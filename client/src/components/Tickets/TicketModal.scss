@@ -30,7 +30,7 @@
 
 .ticket-model-content {
 
-  color: #484848;
+  color: var(--global-color-primary--xx-dark);
   font-size: 0.75rem;
   height: 90vh;
   min-height: 535px;
@@ -53,7 +53,7 @@
   }
 
   .ticket-responder {
-    color: #9d85ef;
+    color: var(--global-color-accent--normal);
   }
 
   .ticket-history-error {
@@ -65,7 +65,7 @@
 
   .btn-primary {
     border: none;
-    background-color: #9d85ef;
+    background-color: var(--global-color-accent--normal);
     min-width: 100px;
     min-height: 25px;
     font-size: 0.75rem;
