@@ -61,7 +61,9 @@ const DataFilesPreviewModal = () => {
       </ModalHeader>
       <ModalBody styleName="root">
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
-          <div styleName = "loading-style"><LoadingSpinner /> </div>
+          <div styleName="loading-style">
+            <LoadingSpinner />
+          </div>
         )}
         {previewUsingTextContent && (
           <div>
@@ -75,7 +77,7 @@ const DataFilesPreviewModal = () => {
             <iframe
               title="preview"
               frameBorder="0"
-              className="embed-responsive-item"
+              className="emcdbed-responsive-item"
               onLoad={onFrameLoad}
               src={href}
             />
