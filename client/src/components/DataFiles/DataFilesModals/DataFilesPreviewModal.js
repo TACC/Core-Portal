@@ -77,7 +77,7 @@ const DataFilesPreviewModal = () => {
             <iframe
               title="preview"
               frameBorder="0"
-              className="emcdbed-responsive-item"
+              className="embed-responsive-item"
               onLoad={onFrameLoad}
               src={href}
             />
