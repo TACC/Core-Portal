@@ -25,7 +25,7 @@ afterEach(() => {
 
 // Mock Resize Detector
 jest.mock('react-resize-detector', () => ({
-  useResizeDetector: () => 
+  useResizeDetector: () =>
   {
     return {
       height: 10,
@@ -61,20 +61,30 @@ const initialMockState = {
 };
 
 describe('DataFilesProjectFileListing', () => {
-  it('shows uses the Read More component for long descriptions', () => {
+  it('shows uses the Show More component for long descriptions', () => {
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
       <DataFilesProjectFileListing system="test.site.project.PROJECT-3" path="/" />,
       store
     );
 
-    expect(getByText(/Read More/)).toBeDefined();
+    expect(getByText(/Show More/)).toBeDefined();
   });
 
   it('hides Edit Descriptions and Manage Team when privilege is needed and user is not owner', () => {
     initialMockState.authenticatedUser.user.username = 'member';
     initialMockState.systems.storage.configuration[5].privilegeRequired = true;
-    const store = mockStore(initialMockState);
+    const initialMockStateUnknownUser = {
+      ...initialMockState,
+      projects: {
+        ...initialMockState.projects,
+        metadata: {
+          ...initialMockState.projects.metadata,
+          members: [{ access: 'owner', user: null }]
+        }
+      }
+    };
+    const store = mockStore(initialMockStateUnknownUser);
     const { queryByText } = renderComponent(
       <DataFilesProjectFileListing system="test.site.project.PROJECT-3" path="/" />,
       store
