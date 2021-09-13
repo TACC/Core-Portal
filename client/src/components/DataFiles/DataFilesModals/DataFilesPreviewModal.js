@@ -61,8 +61,7 @@ const DataFilesPreviewModal = () => {
       </ModalHeader>
       <ModalBody styleName="root">
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
-          <div class = "loading-style">
-          <LoadingSpinner /> </div>
+          <div styleName = "loading-style"><LoadingSpinner /> </div>
         )}
         {previewUsingTextContent && (
           <div>
