@@ -58,12 +58,12 @@ const ManageAccountView = () => {
         ) : (
           <>
             {errors.data && (
-              <SectionMessage type="warning" canDismiss>
+              <SectionMessage type="error" canDismiss>
                 Unable to get your profile data
               </SectionMessage>
             )}
             {errors.fields && (
-              <SectionMessage type="warning" canDismiss color="danger">
+              <SectionMessage type="error" canDismiss color="danger">
                 Unable to get form fields
               </SectionMessage>
             )}
