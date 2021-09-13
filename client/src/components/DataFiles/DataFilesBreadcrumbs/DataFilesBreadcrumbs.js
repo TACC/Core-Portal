@@ -98,7 +98,7 @@ const RootProjectsLink = ({ api, section, operation, label }) => {
     );
   }
   return (
-    <Link className="breadcrumb-link" to={`/public-data/${api}/projects/`}>
+   <Link className="breadcrumb-link" to={`/workbench/data/${api}/projects/`}>
       {label}
     </Link>
   );
