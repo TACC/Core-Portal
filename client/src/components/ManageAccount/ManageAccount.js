@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Alert } from 'reactstrap';
 import { isEmpty } from 'lodash';
 import { LoadingSpinner, Section, SectionMessage } from '_common';
 import {
@@ -59,10 +58,14 @@ const ManageAccountView = () => {
         ) : (
           <>
             {errors.data && (
-              <Alert color="danger">Unable to get your profile data</Alert>
+              <SectionMessage type="error">
+                Unable to get your profile data
+              </SectionMessage>
             )}
             {errors.fields && (
-              <Alert color="danger">Unable to get form fields</Alert>
+              <SectionMessage type="error">
+                Unable to get form fields
+              </SectionMessage>
             )}
             <RequiredInformation />
             <OptionalInformation />
