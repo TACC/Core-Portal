@@ -135,7 +135,7 @@ const LicenseCell = ({ cell: { value } }) => {
         <ModalHeader
           className="manage-account-modal-header"
           toggle={toggle}
-          charCode="X"
+          charCode="&#xe912;"
         >
           {type}
         </ModalHeader>
@@ -172,6 +172,7 @@ LicenseCell.propTypes = {
 /* eslint-enable react/no-danger */
 export const Licenses = () => {
   const { licenses } = useSelector(state => state.profile.data);
+
   const columns = useMemo(
     () =>
       licenses.map(license => {

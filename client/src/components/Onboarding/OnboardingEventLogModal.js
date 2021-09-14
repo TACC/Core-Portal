@@ -8,7 +8,9 @@ import './OnboardingEventLogModal.module.scss';
 const OnboardingEventLogModal = ({ toggle, params }) => {
   return (
     <Modal isOpen={params !== null} toggle={toggle}>
-      <ModalHeader toggle={toggle}>View Log</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        View Log
+      </ModalHeader>
       <ModalBody styleName="event-container">
         <h6 styleName="log-detail">
           {`${params.user.firstName} ${params.user.lastName} - ${params.step.displayName}`}

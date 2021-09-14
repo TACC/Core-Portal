@@ -1,11 +1,11 @@
 import React from 'react';
-import { ReadMore } from '_common';
-import './UIPatternsReadMore.module.scss';
+import { ShowMore } from '_common';
+import './UIPatternsShowMore.module.scss';
 
-function UIPatternsReadMore() {
+function UIPatternsShowMore() {
   return (
     <div styleName="root">
-      <ReadMore>
+      <ShowMore>
         Long text beyond 4 lines should be clamped. Short text should not be
         clamped. This element is responsive to line number changes due to window
         resizing. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
@@ -19,9 +19,9 @@ function UIPatternsReadMore() {
         accumsan congue sem. Morbi eu mattis magna. Donec arcu ligula, mollis ac
         leo ut, pretium euismod turpis. Maecenas quis elit id dui vehicula
         sagittis semper aliquet enim.
-      </ReadMore>
+      </ShowMore>
     </div>
   );
 }
 
-export default UIPatternsReadMore;
+export default UIPatternsShowMore;

@@ -22,7 +22,7 @@
 
     .-sort-asc,
     .sort-desc {
-      color: #484848;
+      color: var(--global-color-primary--xx-dark);
     }
 
     /* Match horizontal padding of `td` elements in table to align properly */

@@ -61,15 +61,11 @@ def test_create_substitutions(regular_user, mocker):
     assert subs == expected
 
 
-def test_substitute_user_variables(regular_user, mocker):
-    mock_substitutions = mocker.patch('portal.apps.system_creation.utils._create_substitutions')
-    mock_substitutions.return_value = {
-        "tasdir": "12345/MOCK_WORK",
-        "username": "username",
-        "portal": "test.portal"
-    }
+def test_substitute_user_variables(regular_user_with_underscore, mocker):
+    mock_substitutions = mocker.patch('portal.apps.system_creation.utils._get_tas_dir')
+    mock_substitutions.return_value = "12345/MOCK_WORK"
     systemId, variables = substitute_user_variables(
-        regular_user,
+        regular_user_with_underscore,
         "data-tacc-work-{username}",
         {
             "description": "Home system for {portal}",
@@ -83,8 +79,8 @@ def test_substitute_user_variables(regular_user, mocker):
         "rootDir": "/work/12345/MOCK_WORK",
         "description": "Home system for test.portal",
         "site": "test.portal",
-        "id": "data-tacc-work-username",
-        "name": "data-tacc-work-username"
+        "id": "data-tacc-work-user-name",
+        "name": "data-tacc-work-user-name"
     }
-    assert systemId == "data-tacc-work-username"
+    assert systemId == "data-tacc-work-user-name"
     assert variables == expected_variables

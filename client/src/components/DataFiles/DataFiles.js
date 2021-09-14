@@ -18,7 +18,6 @@ import {
   SectionMessage,
   LoadingSpinner
 } from '_common';
-import Work2Message from './Work2Message';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
@@ -169,7 +168,6 @@ const DataFiles = () => {
           <DataFilesModals />
         </>
       }
-      messages={<Work2Message />}
     />
   );
 };

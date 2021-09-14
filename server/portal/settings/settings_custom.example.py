@@ -116,7 +116,7 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': None,
+        'icon': 'publications',
         'privilegeRequired': False,
         'readOnly': False,
         'hideSearchBar': False
@@ -237,5 +237,6 @@ _WORKBENCH_SETTINGS = {
     "extractApp": 'extract',
     "makePublic": False,
     "hideApps": False,
-    "systemPrefix": _PORTAL_PROJECTS_SYSTEM_PREFIX
+    "systemPrefix": _PORTAL_PROJECTS_SYSTEM_PREFIX,
+    "hideDataFiles": False
 }

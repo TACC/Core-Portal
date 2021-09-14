@@ -1,5 +1,3 @@
-$core-portal-color-primary: #9d85ef;
-
 .data-files-sidebar {
   --horizontal-buffer: var(--global-space--section-left);
   /* FAQ: Design is inconsistent across sections, but averages about `10.5px` */
@@ -17,11 +15,13 @@ $core-portal-color-primary: #9d85ef;
   min-width: var(--min-width);
 
   padding-left: var(--horizontal-buffer);
-  color: #707070;
+  color: var(--global-color-primary--dark);
 }
 
-.data-files-sidebar .nav-link.active {
-  background: rgba($core-portal-color-primary, 0.25);
+.data-files-sidebar .nav-link.active,
+.data-files-sidebar .nav-link:hover {
+  color: var(--global-color-primary--x-dark);
+  background: var(--global-color-accent--weak);
 }
 
 .data-files-sidebar .nav-text {
@@ -31,8 +31,8 @@ $core-portal-color-primary: #9d85ef;
 }
 
 .data-files-btn {
-  background-color: #9d85ef;
-  border-color: #9d85ef;
+  background-color: var(--global-color-accent--normal);
+  border-color: var(--global-color-accent--normal);
   border-radius: 0;
 }
 
@@ -54,7 +54,7 @@ $core-portal-color-primary: #9d85ef;
 /* HACK: Quick solution to prevent styles from cascading into header dropdown */
 .data-files-sidebar {
   .dropdown-menu {
-    border-color: $core-portal-color-primary;
+    border-color: var(--global-color-accent--normal);
     border-radius: 0;
     margin-top: 11px;
     padding: 0;
@@ -66,7 +66,7 @@ $core-portal-color-primary: #9d85ef;
     top: -10px;
     left: 65px;
     border-right: 10px solid transparent;
-    border-bottom: 10px solid $core-portal-color-primary;
+    border-bottom: 10px solid var(--global-color-accent--normal);
     border-left: 10px solid transparent;
     content: '';
   }
@@ -95,7 +95,10 @@ $core-portal-color-primary: #9d85ef;
   }
   .dropdown-item:focus,
   .dropdown-item:hover {
-    background-color: #E6E0FB;
+    /* FAQ: Before FP-1083, value was #E6E0FB, which matched Design
+            and was `--global-color-accent` at 25% opacity on white…
+            which is what `--global-color-accent--weak` is now */
+    background-color: var(--global-color-accent--weak);
   }
 }
 
@@ -110,6 +113,6 @@ $core-portal-color-primary: #9d85ef;
   line-height: 1.1em;
   small {
     display: block;
-    color: #484848;
+    color: var(--global-color-primary--xx-dark);
   }
 }

@@ -8,7 +8,7 @@
 .sitesearch-cms-item a {
   font-weight: bold;
   /* NOTE: Would get this from `.wb-link`, but its styles rely on `.workbench` container, which is (correctly) not part of site search */
-  color: #9d85ef;
+  color: var(--global-color-accent--normal);
 }
 
 .cms-header {

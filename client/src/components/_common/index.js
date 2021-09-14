@@ -9,6 +9,7 @@ export { FileInputDropZoneFormField } from './Form';
 export { FileInputDropZone } from './Form';
 export { default as InfiniteScrollTable } from './InfiniteScrollTable';
 export { default as AppIcon } from './AppIcon';
+export { default as Checkbox } from './Checkbox';
 export { default as Expand } from './Expand';
 export { default as Icon } from './Icon';
 export { default as Message } from './Message';
@@ -23,5 +24,5 @@ export {
 } from './WelcomeMessage';
 export { default as Pill } from './Pill';
 export { default as TextCopyField } from './TextCopyField';
-export { default as ReadMore } from './ReadMore';
+export { default as ShowMore } from './ShowMore';
 export { default as Paginator } from './Paginator';
