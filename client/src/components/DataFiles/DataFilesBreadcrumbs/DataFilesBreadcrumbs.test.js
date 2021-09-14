@@ -93,6 +93,6 @@ describe('DataFilesBreadcrumbs', () => {
       getByText(/Shared Workspaces/)
         .closest('a')
         .getAttribute('href')
-    ).toEqual('/public-data/tapis/projects/');
+    ).toEqual('/workbench/data/tapis/projects/');
   });
 });
