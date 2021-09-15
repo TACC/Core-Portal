@@ -6,7 +6,7 @@ import Workbench from './Workbench';
 import * as ROUTES from '../../constants/routes';
 import TicketStandaloneCreate from '../Tickets/TicketStandaloneCreate';
 import PublicData from '../PublicData/PublicData';
-import GoogleDrivePrivacyPolicy from '../ManageAccount/GoogleDrivePrivacyPolicy/GoogleDrivePrivacyPolicy';
+import GoogleDrivePrivacyPolicy from '../ManageAccount/GoogleDrivePrivacyPolicy';
 import SiteSearch from '../SiteSearch';
 
 function AppRouter() {
