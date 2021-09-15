@@ -1,6 +1,8 @@
 from django.conf import settings
 from portal.apps.googledrive_integration.models import GoogleDriveUserToken
 from django.core.cache import cache
+from django.urls import reverse
+
 
 def provide_integrations(request):
     activated = False
@@ -18,7 +20,9 @@ def provide_integrations(request):
         'label': 'Google Drive',
         'description': 'Access files from your Google Drive account in {}.'.format(settings.PORTAL_NAMESPACE),
         'activated': activated,
-        'error': error
+        'error': error,
+        'disconnect': reverse('googledrive_integration:disconnect'),
+        'connect': reverse('googledrive_integration:initialize')
     },
 
     return integration
