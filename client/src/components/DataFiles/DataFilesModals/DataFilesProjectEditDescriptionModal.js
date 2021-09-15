@@ -6,6 +6,7 @@ import FormField from '_common/Form/FormField';
 import { LoadingSpinner, Message } from '_common';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import './DataFilesProjectEditDescription.module.scss';
+import { getStatusText } from '../../Tickets/TicketsLayout';
 
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
@@ -17,7 +18,7 @@ const DataFilesProjectEditDescriptionModal = () => {
     return (
       state.projects.operation &&
       state.projects.operation.name === 'titleDescription' &&
-      state.projects.operation.loading
+      state.projects.operation.loading 
     );
   });
   const updatingError = useSelector(state => {
@@ -55,9 +56,10 @@ const DataFilesProjectEditDescriptionModal = () => {
           }
         }
       });
-    },
+    }, 
     [projectId, dispatch]
   );
+ 
 
   const validationSchema = Yup.object().shape({
     title: Yup.string()

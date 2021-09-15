@@ -93,8 +93,8 @@ export default function() {
       
     phone: str()
       .matches(
-        /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
-        (' ${phone} Phone number is not valid')
+        /^(\+{0,})(\d{0,})([(]{1}\d{1,3}[)]{0,}){0,}(\s?\d+|\+\d{2,3}\s{1}\d+|\d+){1}[\s|-]?\d+([\s|-]?\d+){1,2}(\s){0,}$/,
+        ('Phone number is not valid')
       )
       .required('Please enter your phone number'),
     // Schema for 'select' fields
