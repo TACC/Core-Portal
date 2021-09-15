@@ -29,7 +29,7 @@ ToolbarButton.propTypes = {
   iconName: PropTypes.string.isRequired
 };
 
-const DataFilesToolbar = ({ scheme, api, path }) => {
+const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
 
   const selectedFiles = useSelector(state =>
@@ -37,7 +37,6 @@ const DataFilesToolbar = ({ scheme, api, path }) => {
       i => state.files.listing.FilesListing[i]
     )
   );
-
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';
 
@@ -172,8 +171,7 @@ const DataFilesToolbar = ({ scheme, api, path }) => {
   const canRename = getFilePermissions('rename', permissionParams);
   const canMove = getFilePermissions('move', permissionParams);
   const canCopy = getFilePermissions('copy', permissionParams);
-  const canTrash =
-    getFilePermissions('trash', permissionParams) && !path.startsWith('.Trash');
+  const canTrash = getFilePermissions('trash', permissionParams);
   const canCompress = getFilePermissions('compress', permissionParams);
   const canExtract = getFilePermissions('extract', permissionParams);
   const canMakePublic =
@@ -257,7 +255,6 @@ const DataFilesToolbar = ({ scheme, api, path }) => {
 };
 DataFilesToolbar.propTypes = {
   scheme: PropTypes.string.isRequired,
-  api: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired
+  api: PropTypes.string.isRequired
 };
 export default DataFilesToolbar;

@@ -160,7 +160,6 @@ const DataFiles = () => {
         <DataFilesToolbar
           api={listingParams.api}
           scheme={listingParams.scheme}
-          path={listingParams.path || '/'}
         />
       }
       content={
