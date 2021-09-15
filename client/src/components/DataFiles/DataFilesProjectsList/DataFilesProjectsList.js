@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import queryStringParser from 'query-string';
 import {
   InfiniteScrollTable,
@@ -16,12 +16,6 @@ const DataFilesProjectsList = ({ modal }) => {
   const { error, loading, projects } = useSelector(
     state => state.projects.listing
   );
-  const systems = useSelector(
-    state => state.systems.storage.configuration,
-    shallowEqual
-  );
-  const sharedWorkspaces = systems.find(e => e.scheme === 'projects');
-
   const query = queryStringParser.parse(useLocation().search);
 
   const infiniteScrollCallback = useCallback(() => {});
@@ -121,9 +115,7 @@ const DataFilesProjectsList = ({ modal }) => {
       contentShouldScroll
       manualContent
     >
-      {!modal && sharedWorkspaces && !sharedWorkspaces.hideSearchBar && (
-        <DataFilesProjectsSearchbar />
-      )}
+      {!modal && <DataFilesProjectsSearchbar />}
       <ConditionalWrapper
         condition={!modal}
         wrapper={children => {
