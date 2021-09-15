@@ -26,23 +26,20 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
     if not filePath.startswith('/'):
         filePath = '/' + filePath
 
-    indexing = True
-
     if next(sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
         if sys['name'] == 'Shared Workspaces' and sys['hideSearchBar'] == True
         and systemId.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX)):
-            indexing = False
+            return {}
 
-    if indexing:
-        try:
-            filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).__next__()
-            index_level(filePath, folders, files, systemId, reindex=reindex)
-            if recurse:
-                for child in folders:
-                    self.delay(systemId, filePath=child.path, reindex=reindex)
-        except Exception as exc:
-            logger.error("Error walking files under system {} and path {}".format(systemId, filePath))
-            raise self.retry(exc=exc)
+    try:
+        filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).__next__()
+        index_level(filePath, folders, files, systemId, reindex=reindex)
+        if recurse:
+            for child in folders:
+                self.delay(systemId, filePath=child.path, reindex=reindex)
+    except Exception as exc:
+        logger.error("Error walking files under system {} and path {}".format(systemId, filePath))
+        raise self.retry(exc=exc)
 
 
 @shared_task(bind=True, max_retries=3, queue='default')
