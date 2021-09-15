@@ -155,7 +155,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
 
   return (
     <>
-      {!isPublic && !hideSearchBar && (
+      {!hideSearchBar && (
         <DataFilesSearchbar
           api={api}
           scheme={scheme}
