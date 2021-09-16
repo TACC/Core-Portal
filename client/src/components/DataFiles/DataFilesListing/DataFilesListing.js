@@ -33,7 +33,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     shallowEqual
   );
   const sharedWorkspaces = systems.find(e => e.scheme === 'projects');
-  const isPortalProject = system?.scheme === 'projects';
+  const isPortalProject = scheme === 'projects';
   const hideSearchBar = isPortalProject && sharedWorkspaces.hideSearchBar;
 
   const [filterType, setFilterType] = useState();

@@ -1,7 +1,9 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent, wait, render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import renderComponent from 'utils/testing';
 import DataFilesListing from './DataFilesListing';
@@ -56,9 +58,7 @@ describe('CheckBoxCell', () => {
       store,
       history
     );
-    expect(
-      getByRole('checkbox').getAttribute('aria-checked')
-    ).toEqual('true');
+    expect(getByRole('checkbox').getAttribute('aria-checked')).toEqual('true');
   });
 
   it('box is unchecked when not selected', () => {
@@ -69,9 +69,7 @@ describe('CheckBoxCell', () => {
       store,
       history
     );
-    expect(
-      getByRole('checkbox').getAttribute('aria-checked')
-    ).toEqual('false');
+    expect(getByRole('checkbox').getAttribute('aria-checked')).toEqual('false');
   });
 });
 
@@ -252,25 +250,27 @@ describe('DataFilesListing', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/projects/');
 
-    systemsFixture.storage.configuration[5].hideSearchBar = false;
+    systemsFixture.storage.configuration[5].hideSearchBar = true;
 
     const store = mockStore({
       ...initialMockState,
       systems: systemsFixture
     });
 
-    const { getByText } = renderComponent(
-      <DataFilesListing
-        api="tapis"
-        scheme="projects"
-        system="test.system"
-        resultCount={0}
-        path="/"
-        isPublic={false}
-      />,
-      store,
-      history
+    const { queryByText } = render(
+      <Provider store={store}>
+        <BrowserRouter history={history}>
+          <DataFilesListing
+            api="tapis"
+            scheme="projects"
+            system="test.system"
+            resultCount={0}
+            path="/"
+            isPublic={false}
+          />
+        </BrowserRouter>
+      </Provider>
     );
-    expect(getByText(/Search/)).toBeInTheDocument();
+    expect(queryByText(/Search/)).toBeNull();
   });
 });
