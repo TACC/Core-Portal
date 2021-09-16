@@ -103,7 +103,7 @@ const DataFilesSearchbar = ({
           onInput={e => e.target.setCustomvalidity('')}
           onInvalid={e =>
             e.target.setCustomvalidity(
-              'Include at LEast 3 charcaters in your search'
+              'Include at least 3 characters in your search.'
             )
           }
           onChange={onChange}
