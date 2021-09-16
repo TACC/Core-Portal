@@ -105,25 +105,34 @@ _ES_DOMAIN = 'https://cep.dev'
 
 """
 Features for the CMS that can be turned either ON or OFF
+
 Usage:
+
 - For baked-in features, like BRANDING or PORTAL, see relevant section instead.
 - For optional features, look below, and enable feature(s) via _FEATURES list.
+
 Baked-In Feature Setting Example.
+
 # Desctipion of feature X
 # SEE: [link to user/div guide about feature]
 _FEATURE_A = "someValue"
+
 Optional Feature Toggle Example.
+
 _FEATURES = {
     # Desctipion of feature X
     # SEE: [link to user/dev guide about feature]
     "X": True,
+
     # Desctipion of feature Y
     # SEE: [link to user/dev guide about feature]
     "Y": False,
+
     # Desctipion of feature Z
     # SEE: [link to user/dev guide about feature]
     "Z": True,
 }
+
 """
 
 _FEATURES = {
@@ -143,7 +152,9 @@ _FEATURES = {
 
 """
 Additional Branding and Portal Logos for Partner & Affiliate Organizations
+
 Usage:
+
 - For each beand used in the templating, add corresponding new settings values to this file  (see example below).
 - New branding settings must be added to the _BRANDING list to render in the template.
 - The order of the _BRANDING list determines the rendering order of the elements in the template.
@@ -151,7 +162,9 @@ Usage:
 - The following VALUES for new elements set in the configuration object must exist in the portal css as well:
     - Any new selectors or css styles (add to /taccsite_cms/static/site_cms/css/src/_imports/branding_logos.css)
     - Image files being references (add to /taccsite_cms/static/site_cms/img/org_logos)
+
 Values to populate (for an array):
+
 _SETTING_NAME = [                # The name of the branding or logo config setting object.
     "org_name",                    # The name of the organization the branding belongs too.
     "img_file_src",                # Path and filename relative to the static files folder.
@@ -162,11 +175,15 @@ _SETTING_NAME = [                # The name of the branding or logo config setti
     "cors_setting",                # The CORS setting for the image, set to anonymous by default.
     "visibility"                   # Toggles wether or not to display the element in the template, use True to render, False to hide.
 ]
+
 Values to populate (for a dict):
+
 _SETTING_NAME = {                  # The name of the favicon config setting object.
     "img_file_src": "…",             # Path and filename relative to the static files folder.
 }
+
 Branding Configuration Example.
+
 _ANORG_BRANDING = [
    "anorg",
    "site_cms/img/org_logos/anorg-logo.png"
@@ -177,7 +194,9 @@ _ANORG_BRANDING = [
    "anonymous",
    "True"
 ]
+
 Logo Configuration Example.
+
 _ANORG_LOGO = [
    "anorg",
    "site_cms/img/org_logos/anorg-logo.png"
@@ -188,7 +207,9 @@ _ANORG_LOGO = [
    "anonymous",
    "True"
 ]
+
 Favicon Configuration Example.
+
 _ANORG_FAVICON = {
     "img_file_src": "site_cms/img/favicons/favicon.ico"
 }
@@ -264,29 +285,37 @@ _PORTAL = True     # True for any CMS that is part of a Portal.
 
 """
 Portal Links
+
 Usage:
+
 - For each link used in the templating, add new links values (see example below).
 - New links must be added to the _PORTAL_AUTH_LINKS and _PORTAL_UNAUTH_LINKS lists.
+
 Values to populate:
+
 _NAMED_LINK = {                    # The name of the link object.
     "name": "…",                       # The name of the link (to distinguish it, as if for ID).
     "url": "…",                        # The URL path to which the link should navigate the user.
     "text": "…",                       # The text of the link.
     "icon": "…",                       # The icon of the link.
 }
+
 Links Configuration Example.
+
 _ANY_AUTH_LINK = {
     "name": "section-1",
     "url": "/some/section/",
     "text": "Visit Section",
     "icon": "some-section",
 }
+
 _ANY_UNAUTH_LINK = {
     "name": "action-1",
     "url": "/some-action/",
     "text": "Do Action",
     "icon": "some-action",
 }
+
 """
 
 ########################
