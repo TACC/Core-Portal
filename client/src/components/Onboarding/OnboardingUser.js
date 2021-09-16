@@ -20,8 +20,7 @@ const OnboardingUser = () => {
   const onboardingSetupCompleteNext = useSelector(
     state => state.workbench.config.onboardingSetupCompleteNext
   );
-  const continueLink = onboardingSetupCompleteNext || '/workbench/'
-
+  const continueLink = onboardingSetupCompleteNext || '/workbench/';
 
   useEffect(() => {
     dispatch({
