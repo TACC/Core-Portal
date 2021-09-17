@@ -117,7 +117,7 @@ const DataFiles = () => {
   const readOnly =
     listingParams.scheme === 'projects' &&
     (listingParams.system === '' || !listingParams.system);
-    
+
   if (error) {
     return (
       <div styleName="error">
