@@ -5,8 +5,6 @@ import logging
 import json
 import requests
 from django.forms.models import model_to_dict
-from django.contrib.auth import logout
-from django.views.generic.base import View
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -25,16 +23,6 @@ logger = logging.getLogger(__name__)
 def accounts(request):
     response = redirect('/workbench/account/')
     return response
-
-
-# class LogoutView(View):
-#     """Logout view
-#     """
-#
-#     def get(self, request):
-#         """GET"""
-#         logout(request)
-#         return HttpResponseRedirect('/')
 
 
 @login_required

@@ -243,3 +243,5 @@ _WORKBENCH_SETTINGS = {
 # set the _LOGIN_REDIRECT_URL to the custom cms auth endpoint
 # otherwise just redirect to /workbench
 _LOGIN_REDIRECT_URL='/remote/login/'
+
+_LOGOUT_REDIRECT_URL='/cms/logout/'
