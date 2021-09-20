@@ -8,14 +8,14 @@ import { AppDetail, AppPlaceholder } from '../AppForm/AppForm';
 
 const AppsLayout = () => {
   const { params } = useRouteMatch();
-  const { loading, categoryDict } = useSelector(
+  const { loading, categoryDict, error } = useSelector(
     state => ({
       loading: state.apps.loading,
+      error: state.apps.error,
       categoryDict: state.apps.categoryDict
     }),
     shallowEqual
   );
-
   return (
     <>
       {loading && !Object.keys(categoryDict).length ? (
@@ -24,7 +24,10 @@ const AppsLayout = () => {
         <>
           {Boolean(Object.keys(categoryDict).length) && <AppBrowser />}
           {!params.appId && (
-            <AppPlaceholder apps={Boolean(Object.keys(categoryDict).length)} />
+            <AppPlaceholder
+              apps={Boolean(Object.keys(categoryDict).length)}
+              error={error}
+            />
           )}
         </>
       )}
@@ -49,7 +52,6 @@ const AppsRoutes = () => {
     state => state.apps.categoryDict,
     shallowEqual
   );
-
   return (
     <Section
       bodyClassName="has-loaded-applications"

@@ -59,7 +59,16 @@ const appShape = PropTypes.shape({
   appListing: PropTypes.arrayOf(PropTypes.shape({}))
 });
 
-export const AppPlaceholder = ({ apps }) => {
+export const AppPlaceholder = ({ apps, error }) => {
+  if (error)
+    return (
+      <div
+        id="appDetail-wrapper"
+        className="has-message appDetail-placeholder-message"
+      >
+        Something went wrong
+      </div>
+    );
   return (
     <div
       id="appDetail-wrapper"
@@ -76,24 +85,22 @@ AppPlaceholder.propTypes = {
 };
 
 export const AppDetail = () => {
-  const { app, allocationsLoading } = useSelector(
+  const { app, allocationsLoading, apps } = useSelector(
     state => ({
       app: state.app,
-      allocationsLoading: state.allocations.loading
+      allocationsLoading: state.allocations.loading,
+      apps: state.apps
     }),
     shallowEqual
   );
-
   const categoryDict = useSelector(state => state.apps.categoryDict);
   const hasApps = Object.keys(categoryDict).some(
     category => categoryDict[category] && categoryDict[category].length > 0
   );
-
   if (app.error.isError) {
     const errorText = app.error.message
       ? app.error.message
       : 'Something went wrong.';
-
     return (
       <div id="appDetail-wrapper" className="has-message  appDetail-error">
         <SectionMessage type="warning">{errorText}</SectionMessage>
