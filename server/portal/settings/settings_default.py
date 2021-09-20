@@ -15,8 +15,12 @@ _PORTAL_DOMAIN = 'Core Portal'
 # NOTE: set _WH_BASE_URL to ngrok redirect for local dev testing (i.e. _WH_BASE_URL = 'https://12345.ngrock.io', see https://ngrok.com/)
 _WH_BASE_URL = ''
 
-# Unorganized
-_LOGIN_REDIRECT_URL = '/workbench/dashboard'
+# To authenticate a user with the CMS after Portal login,
+# set the _LOGIN_REDIRECT_URL to the custom cms auth endpoint
+# otherwise just redirect to /workbench/dashboard
+_LOGIN_REDIRECT_URL = '/remote/login/'
+_LOGOUT_REDIRECT_URL = '/cms/logout/'
+
 _SYSTEM_MONITOR_DISPLAY_LIST = ['frontera.tacc.utexas.edu', 'stampede2.tacc.utexas.edu',
                                 'maverick2.tacc.utexas.edu', 'longhorn.tacc.utexas.edu']
 
@@ -165,6 +169,13 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'settings': {}
     },
     {
+        'step': 'portal.apps.onboarding.steps.system_access.SystemAccessStep',
+        'settings': {
+            'required_systems': ['stampede2.tacc.utexas.edu','ls5.tacc.utexas.edu'],
+            'project_sql_id': 12345,
+        }
+    },
+    {
         'step': 'portal.apps.onboarding.steps.system_creation.SystemCreationStep',
         'settings': {}
     }
@@ -179,6 +190,13 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {}
+    },
+    {
+        'step': 'portal.apps.onboarding.steps.system_access.SystemAccessStep',
+        'settings': {
+            'required_systems': ['stampede2.tacc.utexas.edu', 'ls5.tacc.utexas.edu'],
+            'project_sql_id': 40534,
+        }
     },
     {
         'step': 'portal.apps.onboarding.steps.key_service_creation.KeyServiceCreationStep',
@@ -239,10 +257,3 @@ _WORKBENCH_SETTINGS = {
     "hideApps": False,
     "hideDataFiles": False
 }
-
-# to authenticate a user with the CMS after Portal login,
-# set the _LOGIN_REDIRECT_URL to the custom cms auth endpoint
-# otherwise just redirect to /workbench
-_LOGIN_REDIRECT_URL='/remote/login/'
-
-_LOGOUT_REDIRECT_URL='/cms/logout/'
