@@ -60,7 +60,7 @@ const appShape = PropTypes.shape({
 });
 
 export const AppPlaceholder = ({ apps, error }) => {
-  if (error)
+  if (error.isError)
     return (
       <div
         id="appDetail-wrapper"
@@ -81,15 +81,15 @@ export const AppPlaceholder = ({ apps, error }) => {
   );
 };
 AppPlaceholder.propTypes = {
-  apps: PropTypes.bool.isRequired
+  apps: PropTypes.bool.isRequired,
+  error: PropTypes.bool.isRequired
 };
 
 export const AppDetail = () => {
-  const { app, allocationsLoading, apps } = useSelector(
+  const { app, allocationsLoading } = useSelector(
     state => ({
       app: state.app,
-      allocationsLoading: state.allocations.loading,
-      apps: state.apps
+      allocationsLoading: state.allocations.loading
     }),
     shallowEqual
   );
