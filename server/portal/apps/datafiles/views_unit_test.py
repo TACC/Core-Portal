@@ -152,20 +152,6 @@ def test_link_put(postits_create, authenticated_user, mock_agave_client, client)
     assert Link.objects.all()[0].get_uuid() == "uuid"
 
 
-def test_generate_notification_on_request(client, authenticated_user, mock_agave_client, agave_indexer):
-    mock_response = {'nativeFormat': 'dir'}
-    mock_agave_client.files.manage.return_value = mock_response
-
-    response = client.put("/api/datafiles/tapis/move/private/frontera.home.username/test.txt/",
-                          content_type="application/json",
-                          data={"dest_path": "/testfol",
-                                "dest_system": "frontera.home.username"})
-    assert response.json() == {'data': mock_response}
-    n = Notification.objects.last()
-    extra_from_notification = n.to_dict()['extra']
-    assert extra_from_notification == {'response': mock_response}
-
-
 def test_get_system(client, authenticated_user, mock_agave_client, agave_storage_system_mock):
     mock_agave_client.systems.get.return_value = agave_storage_system_mock
 
