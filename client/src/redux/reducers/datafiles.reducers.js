@@ -157,7 +157,8 @@ export const initialFilesState = {
     extract: false,
     manageproject: false,
     editproject: false,
-    makePublic: false
+    makePublic: false,
+    downloadMessage: false
   },
   modalProps: {
     preview: {},
@@ -170,8 +171,10 @@ export const initialFilesState = {
     pushKeys: {},
     link: {},
     showpath: {},
-    makePublic: {}
+    makePublic: {},
+    downloadMessage: {}
   },
+  refs: {},
   preview: {
     href: null,
     content: null,
@@ -368,6 +371,16 @@ export function files(state = initialFilesState, action) {
           [action.payload.operation]: action.payload.props
         }
       };
+    case 'STORE_SELECTOR_REF':
+      return {
+        ...state,
+        refs: {
+          ...state.refs,
+          FileSelector: action.payload
+        }
+      };
+    case 'CLEAR_REFS':
+      return { ...state, refs: {} };
     case 'DATA_FILES_SET_MODAL_PROPS':
       return {
         ...state,

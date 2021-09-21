@@ -1,25 +1,3 @@
-// Admin listing of all users (i.e. result of `api/onboarding/admin/`)
-export const onboardingAdminFixture = {
-  users: [
-    {
-      username: 'username',
-      setupComplete: false,
-      firstName: 'First',
-      lastName: 'Last',
-      dateJoined: '2020-09-23T16:42:37.623Z',
-      lastEvent: {
-        username: 'username',
-        state: 'failed',
-        step: 'portal.apps.onboarding.steps.test_steps.MockProcessingFailStep',
-        time: '2020-09-23 16:43:01.103968+00:00',
-        message: 'Failure',
-        data: null
-      },
-      email: 'username@tacc.utexas.edu'
-    }
-  ]
-};
-
 // Admin list of a single user (i.e. result of `api/onboarding/user/username`)
 export const onboardingUserFixture = {
   username: 'username',
@@ -188,6 +166,14 @@ export const onboardingUserFixture = {
   email: 'username@tacc.utexas.edu'
 };
 
+// Admin listing of all users (i.e. result of `api/onboarding/admin/`)
+export const onboardingAdminFixture = {
+  users: [{ ...onboardingUserFixture }],
+  offset: 0,
+  limit: 25,
+  total: 1
+};
+
 export const onboardingActionFixture = {
   step: null,
   action: null,
@@ -199,6 +185,10 @@ export const onboardingActionFixture = {
 export const onboardingAdminState = {
   admin: {
     users: onboardingAdminFixture.users,
+    offset: 0,
+    limit: 25,
+    total: 1,
+    query: 'query',
     loading: false,
     error: null
   },
@@ -217,6 +207,10 @@ export const onboardingAdminState = {
 export const onboardingUserState = {
   admin: {
     users: [],
+    offset: 0,
+    limit: 25,
+    total: 0,
+    query: null,
     loading: false,
     error: null
   },
@@ -231,6 +225,10 @@ export const onboardingUserState = {
 export const onboardingActionState = {
   admin: {
     users: [],
+    offset: 0,
+    limit: 25,
+    total: 0,
+    query: null,
     loading: false,
     error: null
   },

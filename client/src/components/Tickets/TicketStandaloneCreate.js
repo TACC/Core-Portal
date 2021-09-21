@@ -9,13 +9,13 @@ import './TicketStandaloneCreate.scss';
 function TicketStandaloneCreate() {
   const dispatch = useDispatch();
   const authenticatedUser = useSelector(state => state.authenticatedUser.user);
-  const welcomeMessages = useSelector(state => state.welcomeMessages);
-  const onDismissWelcome = section => {
+  const introMessages = useSelector(state => state.introMessages);
+  const onDismissIntro = section => {
     const newMessagesState = {
-      ...welcomeMessages,
+      ...introMessages,
       [section]: false
     };
-    dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState });
+    dispatch({ type: 'SAVE_INTRO', payload: newMessagesState });
   };
   return (
     <>
@@ -23,10 +23,10 @@ function TicketStandaloneCreate() {
 
       <div className="ticket-unauthenticated-create-form">
         <Alert
-          isOpen={welcomeMessages.tickets}
-          toggle={() => onDismissWelcome('tickets')}
+          isOpen={introMessages.TICKETS}
+          toggle={() => onDismissIntro('TICKETS')}
           color="secondary"
-          className="welcomeMessageGeneral"
+          className="introMessageGeneral"
         >
           This page allows you to submit a help request via an RT Ticket.
         </Alert>

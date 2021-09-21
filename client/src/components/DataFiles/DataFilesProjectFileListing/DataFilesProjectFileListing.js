@@ -2,7 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { LoadingSpinner, Message } from '_common';
+import {
+  ShowMore,
+  LoadingSpinner,
+  SectionMessage,
+  SectionTableWrapper
+} from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import './DataFilesProjectFileListing.module.scss';
 
@@ -16,6 +21,25 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   }, [system]);
 
   const metadata = useSelector(state => state.projects.metadata);
+
+  const editable = useSelector(state => {
+    const projectSystem = state.systems.storage.configuration.find(
+      s => s.scheme === 'projects'
+    );
+
+    const privilegeRequired = projectSystem && projectSystem.privilegeRequired;
+
+    return (
+      !privilegeRequired ||
+      metadata.members.some(member => {
+        return (
+          member.access === 'owner' &&
+          member.user &&
+          member.user.username === state.authenticatedUser.user.username
+        );
+      })
+    );
+  });
 
   const onEdit = () => {
     dispatch({
@@ -35,39 +59,58 @@ const DataFilesProjectFileListing = ({ system, path }) => {
   };
 
   if (metadata.loading) {
-    return <LoadingSpinner />;
+    return (
+      <div styleName="root-placeholder">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (metadata.error) {
     return (
-      <Message type="warn">
-        We were unable to retrieve this shared workspace.
-      </Message>
+      <div styleName="root-placeholder">
+        <SectionMessage type="warning">
+          We were unable to retrieve this shared workspace.
+        </SectionMessage>
+      </div>
     );
   }
 
   return (
-    <div styleName="root">
-      <div styleName="title-bar">
-        <h6>{metadata.title}</h6>
-        <div styleName="controls">
-          <Button color="link" styleName="edit" onClick={onEdit}>
-            <h6>Edit Descriptions</h6>
-          </Button>
-          <span styleName="separator">|</span>
-          <Button color="link" styleName="edit" onClick={onManage}>
-            <h6>Manage Team</h6>
-          </Button>
-        </div>
+    <SectionTableWrapper
+      styleName="root"
+      header={<div styleName="title">{metadata.title}</div>}
+      headerActions={
+        editable && (
+          <div styleName="controls">
+            <Button color="link" styleName="edit" onClick={onEdit}>
+              Edit Descriptions
+            </Button>
+            <span styleName="separator">|</span>
+            <Button color="link" styleName="edit" onClick={onManage}>
+              Manage Team
+            </Button>
+          </div>
+        )
+      }
+      manualContent
+    >
+      {/* RFE: If this description element is re-used, then it should become:
+               - (A) part of <SectionTableWrapper>
+               - (B) part of <SectionHeader>
+               - (C) an independent component <SectionDescription>
+               - (D) __both__ (A) or (B) __and__ (C)
+      */}
+      <div styleName="description">
+        {metadata.description && <ShowMore>{metadata.description}</ShowMore>}
       </div>
-      <div styleName="description">{metadata.description}</div>
       <DataFilesListing
         api="tapis"
         scheme="projects"
         system={system}
         path={path || '/'}
       />
-    </div>
+    </SectionTableWrapper>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
@@ -14,16 +14,37 @@ import {
 } from './DataFilesListingCells';
 import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
-import './DataFilesListing.module.scss';
+import fileTypes from '../DataFilesSearchbar/FileTypes';
 
 const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   // Redux hooks
   const dispatch = useDispatch();
   const queryString = parse(useLocation().search).query_string;
-  const files = useSelector(
-    state => state.files.listing.FilesListing,
+  const { files, loading, error } = useSelector(
+    state => ({
+      files: state.files.listing.FilesListing,
+      loading: state.files.loading.FilesListing,
+      error: state.files.error.FilesListing
+    }),
     shallowEqual
   );
+
+  const [filterType, setFilterType] = useState();
+  const [filteredFiles, setFilteredFiles] = useState(files);
+  useEffect(() => {
+    const fileFilter = fileTypes.find(f => f.type === filterType);
+    if (!fileFilter) {
+      setFilteredFiles(files);
+    } else if (fileFilter.type === 'Folders') {
+      setFilteredFiles(files.filter(f => f.format === 'folder'));
+    } else {
+      setFilteredFiles(
+        files.filter(f =>
+          fileFilter.extensions.some(ext => f.name.endsWith(ext))
+        )
+      );
+    }
+  }, [filterType, files]);
 
   const showViewPath = useSelector(
     state =>
@@ -120,28 +141,30 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       });
     }
     return cells;
-  }, [api, showViewPath]);
+  }, [api, showViewPath, fileNavCellCallback]);
 
   return (
-    <div styleName="root">
-      {!isPublic && (
-        <DataFilesSearchbar
-          api={api}
-          scheme={scheme}
-          system={system}
-          styleName="searchbar"
-        />
-      )}
-      <div styleName="file-container">
+    <>
+      <DataFilesSearchbar
+        api={api}
+        scheme={scheme}
+        system={system}
+        filterType={filterType}
+        setFilterType={setFilterType}
+        resultCount={filteredFiles.length}
+        publicData={isPublic}
+        disabled={loading || !!error}
+      />
+      <div className="o-flex-item-table-wrap">
         <DataFilesTable
-          data={files}
+          data={filteredFiles}
           columns={columns}
           rowSelectCallback={rowSelectCallback}
           scrollBottomCallback={scrollBottomCallback}
           section="FilesListing"
         />
       </div>
-    </div>
+    </>
   );
 };
 DataFilesListing.propTypes = {

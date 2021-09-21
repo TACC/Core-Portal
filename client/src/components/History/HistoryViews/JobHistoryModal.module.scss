@@ -1,6 +1,5 @@
 .root {
   font-size: 0.75rem;
-  color: var(--global-color-primary--x-dark);
   --border: 1px solid var(--global-color-primary--light);
 }
 
@@ -36,6 +35,9 @@
   --padding: 20px;
 
   padding: var(--padding);
+}
+.panel-content dd dt {
+  font-weight: normal;
 }
 /* Any preformatted values (like system output) should use a `pre` tag */
 .panel-content pre {

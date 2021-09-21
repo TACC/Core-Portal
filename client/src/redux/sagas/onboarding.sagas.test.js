@@ -22,17 +22,21 @@ jest.mock('cross-fetch');
 
 describe('getOnboardingAdminList Saga', () => {
   it('should fetch list of onboarding users and transform state', () =>
-    expectSaga(getOnboardingAdminList)
+    expectSaga(getOnboardingAdminList, { payload: { offset: 0, limit: 25, query: 'query' } })
       .withReducer(onboarding)
       .provide([
         [matchers.call.fn(fetchOnboardingAdminList), onboardingAdminFixture]
       ])
       .put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING' })
-      .call(fetchOnboardingAdminList)
+      .call(fetchOnboardingAdminList, 0, 25, 'query')
       .put({
         type: 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS',
         payload: {
-          users: onboardingAdminFixture.users
+          users: onboardingAdminFixture.users,
+          offset: 0,
+          limit: 25,
+          query: 'query',
+          total: 1
         }
       })
       .hasFinalState(onboardingAdminState)
@@ -63,8 +67,6 @@ describe('getOnboardingAdminIndividualUser Saga', () => {
       .run());
 });
 
-
-
 describe('postOnboarding Saga', () => {
   it('should send onboarding actions to back end', () =>
     expectSaga(postOnboardingAction, {
@@ -79,7 +81,7 @@ describe('postOnboarding Saga', () => {
         [
           matchers.call.fn(sendOnboardingAction),
           {
-            response: "OK"
+            response: 'OK'
           }
         ]
       ])
@@ -94,7 +96,7 @@ describe('postOnboarding Saga', () => {
       .call(sendOnboardingAction, 'username', 'onboarding.step', 'user_confirm')
       .put({
         type: 'POST_ONBOARDING_ACTION_SUCCESS',
-        payload: { response: "OK" } 
+        payload: { response: 'OK' }
       })
       .hasFinalState(onboardingActionState)
       .run());

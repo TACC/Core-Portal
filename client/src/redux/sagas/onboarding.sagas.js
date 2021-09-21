@@ -3,20 +3,29 @@ import { fetchUtil } from 'utils/fetchUtil';
 import Cookies from 'js-cookie';
 
 // Admin listing of all users
-export async function fetchOnboardingAdminList() {
+export async function fetchOnboardingAdminList(offset, limit, q) {
+  const params = { offset, limit };
+  if (q) {
+    params.q = q;
+  }
   const result = await fetchUtil({
-    url: 'api/onboarding/admin/'
+    url: 'api/onboarding/admin/',
+    params
   });
   return result;
 }
 
-export function* getOnboardingAdminList() {
+export function* getOnboardingAdminList(action) {
   yield put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_PROCESSING' });
   try {
-    const adminList = yield call(fetchOnboardingAdminList);
+    const { offset, limit, query } = action.payload;
+    const result = yield call(fetchOnboardingAdminList, offset, limit, query);
     yield put({
       type: 'FETCH_ONBOARDING_ADMIN_LIST_SUCCESS',
-      payload: adminList
+      payload: {
+        ...result,
+        query: query && query.length > 0 ? query : null
+      }
     });
   } catch (error) {
     yield put({ type: 'FETCH_ONBOARDING_ADMIN_LIST_ERROR', payload: error });

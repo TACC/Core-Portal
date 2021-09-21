@@ -37,20 +37,22 @@ class SystemListingView(BaseApiView):
         # compare available storage systems to the systems a user can access
         response = {'system_list': []}
         if request.user.is_authenticated:
-            user_systems = get_user_storage_systems(request.user.username, local_systems)
-            for system_name, details in user_systems.items():
-                response['system_list'].append(
-                    {
-                        'name': details['name'],
-                        'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
-                        'scheme': 'private',
-                        'api': 'tapis',
-                        'icon': details['icon']
-                    }
-                )
-            default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
-            response['default_host'] = default_system['host']
-        response['system_list'] += portal_systems
+            if local_systems:
+                user_systems = get_user_storage_systems(request.user.username, local_systems)
+                for system_name, details in user_systems.items():
+                    response['system_list'].append(
+                        {
+                            'name': details['name'],
+                            'system':  UserSystemsManager(request.user, system_name=system_name).get_system_id(),
+                            'scheme': 'private',
+                            'api': 'tapis',
+                            'icon': details['icon']
+                        }
+                    )
+                default_system = user_systems[settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT]
+                response['default_host'] = default_system['host']
+        if portal_systems:
+            response['system_list'] += portal_systems
         return JsonResponse(response)
 
 
@@ -77,11 +79,12 @@ class TapisFilesView(BaseApiView):
                     status=403)
         try:
             METRICS.info("user:{} op:{} api:tapis scheme:{} "
-                         "system:{} path:{}".format(request.user.username,
+                         "system:{} path:{} filesize:{}".format(request.user.username,
                                                     operation,
                                                     scheme,
                                                     system,
-                                                    path))
+                                                    path,
+                                                    request.GET.get('length')))
             response = tapis_get_handler(
                 client, scheme, system, path, operation, **request.GET.dict())
 
@@ -96,8 +99,9 @@ class TapisFilesView(BaseApiView):
                 system = dict(client.systems.get(systemId=system))
                 allocations = get_allocations(request.user.username)
 
-                # If user is missing an allocation mangle error to a 403
-                if system['storage']['host'] not in allocations['hosts']:
+                # If user is missing a non-corral allocation mangle error to a 403
+                if not any(system['storage']['host'].endswith(ele) for ele in
+                           list(allocations['hosts'].keys()) + ['cloud.corral.tacc.utexas.edu', 'data.tacc.utexas.edu']):
                     e.response.status_code = 403
                     raise e
 

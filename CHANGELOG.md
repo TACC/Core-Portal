@@ -7,6 +7,238 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.0] - 2021-09-01: Shared Workspace Updates; Cortal Icons
+
+### Changed
+
+- FP-1142: Distinguish types of message text constants (#445)
+- FP-1153: Shared Workspaces Icon (#466)
+- FP-223: Add Custom Close Icon to Modals (#465)
+- FP-635: Remove Font Awesome Icons (#469)
+- Reduce Body Min-* Verbosity (#421)
+- FP-1089: Update ProjectId on collision (#459)
+- FP-1143: Convert underscore to hyphen in system ids (#461)
+- FP-1150: 150 max character limit for shared workspace title (#460)
+- FP-1171: Toggle data files [A2CPS] (#471)
+- FP-1128: Accommodate non-portal created Projects (#458)
+
+### Fixed
+
+- FP-1151: Shared workspace privilege bypass (#462)
+
+## [2.8.0] - 2021-08-10: Data Files Filter; Custom Settings for A2CPS
+
+### Added
+
+- FP-508: Data Files Filter (#455)
+- FP-195: Enable Django impersonate feature (#456)
+
+### Changed
+
+- FP-1004: Update Onboarding Step Description Text (#454)
+- FP-1118: Support no datafiles systems (#449)
+- FP-1117: Read only shared workspace setting (#450)
+- FP-1129: Toggle Apps and History Sections (#447)
+- FP-1134: Toggle Manage Team and Edit Description (#451)
+- FP-952: Replace Django Messages with Client Side Messages (#443)
+
+### Fixed
+
+- FP-1110: Shared workspace description character limit (#444)
+- FP-1133: Ensure that Frontera-related normal queue validation occurs only on Frontera (#446)
+- FP-1080: Fix search loading (#453)
+- FP-1139: Update allocations cache during login (#448)
+
+## [2.7.0] - 2021-07-13: Apps, Shared Workspaces Improvements
+
+### Added
+
+- FP-1060: Folder download message (#425)
+
+### Changed
+
+- FP-1027: Remove unrelated objects from app definition (#387)
+- FP-939: Display shared workspace description whitespace. (#435)
+- FP-997, FP-1041, FP-1042: Improve apps, add small queue support, and update execution systems when needed (#426)
+- FP-573: Prevent submitting unlicensed app (#438)
+- FP-1009: Apply ReadMore UI pattern to long Shared Workspace descriptions (#442)
+- FP-1031: Clarify Onboarding MFA Steps (#441)
+- FP-1007: Remove inactive toolbar buttons for public/community/google drive (#436)
+
+### Fixed
+
+- FP-1095: Adjust colors of links in Manage Account to match the website's theme. (#430)
+- FP-1108: Fix HTML App Loading (#437)
+- FP-1030: Fix breadcrumbs for application page (#434)
+
+## [2.6.1] - 2021-06-15: Hotfix: Fix settings import
+
+### Fixed
+
+- Hotfix: Fix missing extension on settings import (#427)
+
+## [2.6.0] - 2021-06-14: Separate Custom Settings From Secrets
+
+### Changed
+
+- FP-304: Separate custom settings from secrets (#393)
+
+## [2.5.0] - 2021-06-14: Section Components; Workspace bugfixes
+
+### Added
+
+- FP-813: Download Filesize Metrics (#396)
+- FP-563: Support Count of Search Results in UI. (#403)
+- FP-1037: Management commands for forcing system creation (#414)
+
+### Changed
+
+- Update README.md (#397, #416, #418, #419)
+- FP-594: Ensure search result matches contain the entire search query (#399)
+- FP-250: Upload Modal Error Messages (#392)
+- FP-962, FP-385: Section Components (#350)
+- FP-1061: Disable “Upload Selected” button when no valid files or nothing to upload. (#409)
+- FP-1005: "Make Public" Adjustments. (#413)
+- FP-526: Update Header Dropdown to Use Cortal Icons (#417)
+- FP-1020: Index project after migrating (#423)
+- FP-995: Rename system prefix setting to `PORTAL_PROJECTS_SYSTEM_ PREFIX` (#424)
+
+### Fixed
+
+- FP-1039 push keys job submission fix (#400)
+- FP-1000: Remove falsy values from job submission (#402)
+- FP-1038: Fix race condition causing `Cannot read property 'system' of undefined` bug (#404)
+- FP-1045, FP-1048, FP-1049: Various jobs fixes (#394)
+- Hotfix: Layout and Appform bugfixes (#405)
+- FP-1064: Remove problematic TOGGLE_SUBMITTING action from saga (#407)
+- FP-1062: Only open data files select modal when pushing keys to access data files (#411)
+- Hotfix: Change stampede2 homeDir to /home1; add maverick2 (#412)
+- FP-1065: Fix issues with site search header and spacing (#410)
+- FP-1021: Fix Shared Workspace search issue. (#415)
+- FP-1067: Prevent certain table columns from squishing content (#422)
+- FP-1010: Fix Erroneous Font-Weight 500's (#420)
+
+## [2.4.2] - 2021-05-04: Portal User Nav endpoint; `projects_id` command; Bugfixes
+
+### Added
+
+- FP-980: `projects_id` management command (#375)
+- FP-1015: Allow Portal Nav to be Cloned (#390)
+
+### Changed
+
+- Quick: Add Portal Templates to CMS Sample Secrets (#389)
+- FP-1014: Add Onboarding Admin link to User Nav Dropdown (#388)
+
+### Fixed
+
+- FP-139: Disable Upload Modal Actions while In Progress. (#383)
+- FP-642: Fix push key modal from select modal (#219)
+
+## [2.4.1] - 2021-04-16: Bugfixes; `work2` Message
+
+### Added
+
+- FP-976: Add configurable work2 Alert message (#373)
+
+### Changed
+
+- Quick: Have Data List Cells use Util Functions (#378)
+- Quick: Update Sample CMS Settings (#376)
+- Update local certs (#372)
+- FP-883: Pass PORTAL_NAMESPACE to front end for use in Feedback Form (#374)
+- FP-338: File Uploader UI (#309)
+- FP-630: Notify user to push keys before starting app (#359)
+
+### Fixed
+
+- FP-984: Fix Onboarding Search Query (#379)
+- FP-985: Fix window search overwriting site search query (#380)
+- FP-973: Enable Copy button/operation in Public Data and Community Data (#384)
+- FP-1013: Disable copying to non-private systems in copy modal (#385)
+
+## [2.4.0] - 2021-03-26: CEPv2 Release
+
+### Added
+
+- FP-889: Add searchbar to Public Data view. (#366)
+- FP-739: Add Make Public button. (#318)
+- FP-688: Unauthenticated Public Data (#281)
+- FP-531: search bar in header (#290)
+- FP-922: updates for CEPv1 project migration (#364)
+- FP-877: Onboarding admin (#349)
+- FP-123: Add incremented file number to files copied into the same directory. (#79)
+- FP-881: unit testing for toast message (#355)
+- FP-802: Paginator component (#348)
+- FP-369: DataFiles Toolbar Compress and Extract buttons (#264)
+- FP-837: add unit tests for file preview and determine file size in back end (#300)
+- FP-874: ReadMore expandable text component proof of concept (#336)
+- FP-862: load branding from cms (#334)
+- FP-828: Prevent write operations on protected files (#321)
+- FP-780: add indexing and searchbar for projects (#316)
+- FP-817: TextCopyField user feedback (#293)
+- FP-838: allow git tags as docker image tags (#303)
+
+### Changed
+
+- Add some intitial steps to README (#367)
+- FP-895: Re-style site search file listing as a table (#353)
+- FP-950: Quick: Remove <Message type="info"> icon (#362)
+- FP-385: section comp welcome msg patterns (#347)
+- FP-898: onboarding system health checks (#345)
+- FP-908: Hide empty application tabs (#343)
+- Bump poetry version (#356)
+- Quick: Resolve Secrets Delta (#294)
+- FP-884 modal title styles (#339)
+- FP-661: Edit error message in push keys modal (#271)
+- Bump cryptography from 2.7 to 3.2 in /server (#230)
+- FP-827: Assorted Dashboard Fixes (#331)
+- Rename master to main (#340)
+- FP-836: Rename Frontera-Portal repo to Core-Portal (#329)
+- FP-834: feedback modal updates (#319)
+- Quick: Clarify Message prop deprecation warning (#335)
+- FP-866: handle potential delay in systems list retrieval (#330)
+- FP-820: Show loading spinner during iframe load (#324)
+- FP-653: Add explicit mapping for Corral system name (#323)
+- FP-121: Add app browser unit test (#298)
+- FP-867: Fix JWT Auth (#325)
+- FP-664: Add system name to directory creation modal. (#273)
+- FP-832: Update onboarding step description texts (#306)
+- Update readme (#315)
+- Disable codecov annotations; pr template adjustment; branch deploys (#297)
+
+### Removed
+
+- FP-749: remove unused system manager code (#338)
+
+### Fixed
+
+- FP-975: Fix `StopIteration` error for backend Jobs listing (#369)
+- Quick: Fix Onboarding MFA step desc. typo (#371)
+- FP-972: Unsqueeze onboarding status loading icon (#370)
+- FP-970: Make columns depenedent on fileNavCellCallback to handle scheme changes (#365)
+- FP-885: Ignore allocation checks to cloud.corral and data.tacc (#351)
+- FP-960: Fix migration & db export bugs (#361)
+- FP-906: Clear search bar in Data Files when changing systems. (#352)
+- FP-821: Google Drive UI fixes (#354)
+- FP-891: fix external workbench access disrupted by onboarding (#358)
+- FP-880: Skip project members that have no user object (#344)
+- FP-896: Fix add definition to list (#342)
+- FP-800: Fix incorrect path and typo in nginx.conf (#341)
+- FP-824: Combined projects fixes (#326)
+- FP-803: Handle error during data files scrolling (#322)
+- FP-868: Set project ACLs for each member on creation (#328)
+- FP-860: Get job output location from notification info (#317)
+- FP-855: Disable add and upload buttons when user cannot write to system (#314)
+- FP-850: Disable make link on community and public data (#313)
+- FP-835: ticket create modal UI fixes (#305)
+- FP-831: Allow multiple <dd> elements when data is Array in DescriptionList (#299)
+- FP-832: Disable search bar when error in files listing (#304)
+- FP-815: prevent View Path from appearing when browsing Google Drive (#292)
+- FP-825: Fix HTML app loading (#295)
+- FP-814: public url fixes from testing (#291)
+- FP-823: Project add user list shows all users, project creation failure persists (#296)
+
 ## [2.3.0] - 2020-12-21: Shared Workspaces, Site Search, Apps Metadata, Google Drive
 
 ### Added
@@ -17,7 +249,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FP-694: Site Metrics
 - FP-698: Jupyter Mounts endpoint
 - FP-695: Data Files Events and Notification Toasts
-
 
 ### Changed
 
@@ -31,7 +262,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FP-371: Fix File Preview
 - FP-363: Consistent Header Templates
 - FP-601: Correct color of back button in file navigation
-
 
 ## [2.2.0] - 2020-12-01: User Onboarding; Feedback
 
@@ -224,7 +454,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.3.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.9.0...HEAD
+[2.9.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.9.0
+[2.8.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.8.0
+[2.7.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.7.0
+[2.6.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.6.1
+[2.6.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.6.0
+[2.5.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.5.0
+[2.4.2]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.2
+[2.4.1]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.1
+[2.4.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.4.0
 [2.3.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.3.0
 [2.2.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.2.0
 [2.1.2]: https://github.com/TACC/Core-Portal/releases/tag/v2.1.2

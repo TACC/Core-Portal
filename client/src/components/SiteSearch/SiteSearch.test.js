@@ -4,17 +4,28 @@ import SiteSearch from './SiteSearch';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import siteSearchResults from './fixtures/siteSearch.fixture.json';
+import systemsFixture from '../DataFiles/fixtures/DataFiles.systems.fixture';
 import '@testing-library/jest-dom';
 
 const mockStore = configureStore();
 const mockState = {
+  systems: systemsFixture,
   siteSearch: {
     loading: false,
     error: null,
     completed: true,
     results: siteSearchResults
   },
-  authenticatedUser: { user: null }
+  authenticatedUser: { user: null },
+  files: {
+    modals: {
+      preview: false
+    },
+    modalProps: {
+      preview: {}
+    },
+    preview: {}
+  }
 };
 
 describe('SiteSearchListing', () => {

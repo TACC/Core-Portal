@@ -1,0 +1,16 @@
+/*
+Button (Bootstrap)
+
+Override Bootstrap styles. See:
+
+- [ReactStrap Buttons](https://reactstrap.github.io/components/buttons/)
+- [Bootstrap Buttons](https://getbootstrap.com/docs/4.4/components/buttons/)
+
+Styleguide Components.Bootstrap.Button
+*/
+/* CAVEAT: This stylesheet is not complete, because some
+           global styles are scattered among components */
+.btn-link,
+.btn-link:hover {
+  color: var(--global-color-accent--normal);
+}

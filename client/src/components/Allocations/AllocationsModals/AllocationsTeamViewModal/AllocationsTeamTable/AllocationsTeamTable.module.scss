@@ -1,7 +1,7 @@
 .row {
   height: 35px;
   cursor: pointer;
-  color: #484848;
+  color: var(--global-color-primary--xx-dark);
   td {
     font-weight: 500;
     font-size: 14px;
@@ -9,12 +9,12 @@
   }
 }
 .row:hover {
-  background-color: #dfdaf5;
+  background-color: var(--global-color-accent--weak);
 }
 .content {
   margin-left: 1.5rem;
 }
 .active-user {
   @extend .row;
-  background-color: #dfdaf5;
+  background-color: var(--global-color-accent--weak);
 }

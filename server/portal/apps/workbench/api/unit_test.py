@@ -7,3 +7,4 @@ def test_workbench(client, authenticated_user):
     assert response.status_code == 200
     result = json.loads(response.content)
     assert result['response']['config']['debug'] == settings.DEBUG
+    assert result['response']['portalName'] == settings.PORTAL_NAMESPACE

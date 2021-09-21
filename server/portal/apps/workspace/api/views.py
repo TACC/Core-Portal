@@ -20,6 +20,7 @@ from portal.apps.licenses.models import LICENSE_TYPES, get_license_info
 from portal.libs.agave.utils import service_account
 from agavepy.agave import Agave
 from portal.libs.agave.models.systems.execution import ExecutionSystem
+from portal.libs.agave.models.systems.storage import StorageSystem
 from portal.apps.workspace.managers.user_applications import UserApplicationsManager
 from portal.utils.translations import url_parse_inputs
 from portal.apps.workspace.models import JobSubmission
@@ -47,19 +48,17 @@ def _app_license_type(app_id):
 
 def _get_app(app_id, user):
     agave = user.agave_oauth.client
-    data = agave.apps.get(appId=app_id)
+    data = {'definition': agave.apps.get(appId=app_id)}
 
     # GET EXECUTION SYSTEM INFO FOR USER APPS
-    exec_sys = ExecutionSystem(agave, data['executionSystem'])
-    data['resource'] = exec_sys.login.host
-    data['scheduler'] = exec_sys.scheduler
+    exec_sys = ExecutionSystem(agave, data['definition']['executionSystem'])
     data['exec_sys'] = exec_sys.to_dict()
 
     # set maxNodes from system queue for app
-    if (data['parallelism'] == 'PARALLEL') and ('defaultQueue' in data):
+    if (data['definition']['parallelism'] == 'PARALLEL') and ('defaultQueue' in data['definition']):
         for queue in exec_sys.queues.all():
-            if queue.name == data['defaultQueue']:
-                data['maxNodes'] = queue.maxNodes
+            if queue.name == data['definition']['defaultQueue']:
+                data['definition']['maxNodes'] = queue.maxNodes
                 break
 
     lic_type = _app_license_type(app_id)
@@ -73,10 +72,10 @@ def _get_app(app_id, user):
         data['license']['enabled'] = lic is not None
 
     # Update any App Tray entries upon app retrieval, if their revision numbers have changed
-    matching = AppTrayEntry.objects.all().filter(name=data['name'])
+    matching = AppTrayEntry.objects.all().filter(name=data['definition']['name'])
     if len(matching) > 0:
         first_match = matching[0]
-        if first_match.lastRetrieved and first_match.lastRetrieved != data['id']:
+        if first_match.lastRetrieved and first_match.lastRetrieved != data['definition']['id']:
             data['lastRetrieved'] = first_match.lastRetrieved
 
     return data
@@ -90,6 +89,17 @@ class AppsView(BaseApiView):
         if app_id:
             METRICS.debug("user:{} is requesting app id:{}".format(request.user.username, app_id))
             data = _get_app(app_id, request.user)
+
+            if settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS:
+                # check if default system needs keys pushed
+                default_sys = UserSystemsManager(
+                    request.user,
+                    settings.PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
+                )
+                storage_sys = StorageSystem(agave, default_sys.get_system_id())
+                success, result = storage_sys.test()
+                data['systemHasKeys'] = success
+                data['pushKeysSystem'] = storage_sys.to_dict()
         else:
             METRICS.debug("user:{} is requesting all public apps".format(request.user.username))
             public_only = request.GET.get('publicOnly')
@@ -103,7 +113,8 @@ class AppsView(BaseApiView):
                 list_kwargs['query'] = {
                     "name": name
                 }
-            data = agave.apps.list(**list_kwargs)
+            data = {'appListing': agave.apps.list(**list_kwargs)}
+
         return JsonResponse({"response": data})
 
 
@@ -231,7 +242,9 @@ class JobsView(BaseApiView):
             if user_job_ids:
                 data = agave.jobs.list(query={'id.in': ','.join(user_job_ids)})
                 # re-order agave job info to match our time-ordered jobs
-                data = [next(job for job in data if job["id"] == id) for id in user_job_ids]
+                # while also taking care that tapis in rare cases might no longer
+                # have that job (see https://jira.tacc.utexas.edu/browse/FP-975)
+                data = list(filter(None, [next((job for job in data if job["id"] == id), None) for id in user_job_ids]))
             else:
                 data = []
 

@@ -3,6 +3,7 @@ from mock import MagicMock
 from django.conf import settings
 from portal.apps.workspace.api.views import JobsView, AppsTrayView
 from portal.apps.workspace.models import AppTrayCategory
+from portal.apps.workspace.models import JobSubmission
 import json
 import os
 import pytest
@@ -88,8 +89,19 @@ def request_jobs_util(rf, authenticated_user, query_params={}):
     return json.loads(response.content)["response"]
 
 
-def test_get_no_jobs(rf, authenticated_user, mock_agave_client):
+def test_get_no_tapis_jobs(rf, authenticated_user, mock_agave_client):
     mock_agave_client.jobs.list.return_value = []
+    jobs = request_jobs_util(rf, authenticated_user)
+    assert len(jobs) == 0
+
+
+def test_get_no_portal_jobs(rf, authenticated_user, mock_agave_client):
+    JobSubmission.objects.create(
+        user=authenticated_user,
+        jobId="9876"
+    )
+    mock_agave_client.jobs.list.return_value = [
+    ]
     jobs = request_jobs_util(rf, authenticated_user)
     assert len(jobs) == 0
 

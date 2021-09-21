@@ -16,6 +16,7 @@ const defaultValues = {
 
 const FeedbackForm = () => {
   const dispatch = useDispatch();
+  const portalName = useSelector(state => state.workbench.portalName);
   const creating = useSelector(state => state.ticketCreate.creating);
   const creatingError = useSelector(state => state.ticketCreate.creatingError);
   const creatingErrorMessage = useSelector(
@@ -30,7 +31,7 @@ const FeedbackForm = () => {
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach(key => formData.append(key, values[key]));
-        formData.append('subject', 'Feedback for the Portal');
+        formData.append('subject', `Feedback for ${portalName}`);
         dispatch({
           type: 'TICKET_CREATE',
           payload: {

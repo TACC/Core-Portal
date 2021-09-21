@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner, Message } from '_common';
 import { Display, Operational, Load } from './SystemMonitorCells';
+
 import './SystemMonitor.module.scss';
-import './SystemMonitor.css';
 
 const SystemsList = () => {
   const systemList = useSelector(state => state.systemMonitor.list);
@@ -20,8 +20,7 @@ const SystemsList = () => {
       {
         accessor: 'is_operational',
         Header: 'Status',
-        Cell: Operational,
-        styleName: 'status'
+        Cell: Operational
       },
       {
         accessor: 'load_percentage',
@@ -59,7 +58,13 @@ const SystemsList = () => {
     data
   });
   return (
-    <table {...getTableProps()} styleName="root" className="multi-system">
+    <table
+      {...getTableProps()}
+      styleName="root"
+      // Emulate <InfiniteScrollTable> and its use of `o-fixed-header-table`
+      // TODO: Create global table styles & Make <InfiniteScrollTable> use them
+      className="multi-system InfiniteScrollTable o-fixed-header-table"
+    >
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()} styleName="header">
@@ -76,10 +81,7 @@ const SystemsList = () => {
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map(cell => (
-                  <td
-                    {...cell.getCellProps({ test: cell.column.testProp })}
-                    styleName={cell.column.styleName}
-                  >
+                  <td {...cell.getCellProps({ test: cell.column.testProp })}>
                     {cell.render('Cell')}
                   </td>
                 ))}

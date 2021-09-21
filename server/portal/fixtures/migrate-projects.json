@@ -1,0 +1,42 @@
+[
+  {
+    "model": "projects.abstractprojectmetadata",
+    "pk": 1,
+    "fields": {
+      "title": "asdasdasd",
+      "project_id": "CEP-6",
+      "description": null,
+      "created": "2018-12-03T21:04:22.985Z",
+      "last_modified": "2018-12-03T21:04:22.985Z",
+      "owner": null,
+      "pi": null,
+      "co_pis": [],
+      "team_members": []
+    }
+  },
+  {
+    "model": "projects.projectmetadata",
+    "pk": 1,
+    "fields": {
+      "co_pis": [],
+      "team_members": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "fields": {
+      "password": "",
+      "last_login": "2019-10-07T22:07:21.068Z",
+      "is_superuser": false,
+      "username": "jmeiring",
+      "first_name": "user",
+      "last_name": "name",
+      "email": "user@username.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2018-04-02T20:29:46Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

@@ -24,7 +24,7 @@ class UserSystemsManager():
 
     Systems Config:
     You can find an object of "PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS" in
-    settings_secret. The systems are indexed by the name of the system
+    settings_default. The systems are indexed by the name of the system
     (ex: frontera). Each object has settings for managing a user's
     storage system.
         'localsystem1': {
@@ -83,11 +83,17 @@ class UserSystemsManager():
         return self.system['host']
 
     def get_system_id(self):
-        """Gets system ID for given system and user
+        """Gets system ID for given system and user.
+
+        .. note:: Due to the lack of support for underscores in Tapis v2
+        systemIds, we replace underscores in the username with hyphens. Because
+        hyphens are not allowed characters in usernames, the resulting
+        systemId strings remain unique.
+
         :returns: unique id for a user's home system. ex: [system].home.[username]
         :rtype: str
         """
-        return self.system['systemId'].format(username=self.user.username)
+        return self.system['systemId'].format(username=self.user.username.replace('_', '-'))
 
     def get_sys_tas_user_dir(self):
         """Gets path to user's home directory for given system

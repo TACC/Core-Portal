@@ -1,11 +1,6 @@
 .root {
-  display: inline-block;
+  overflow: hidden; /* FAQ: Triggers truncation of <Pill> */
   margin-right: 0.5em;
-}
-
-.loading-icon {
-  display: inherit;
-  width: inherit;
 }
 
 .processing {

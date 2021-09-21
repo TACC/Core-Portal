@@ -1,49 +1,27 @@
+/* FP-993: Create and use a common Uploader component */
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Table
-} from 'reactstrap';
-import { LoadingSpinner, FileInputDropZone } from '_common';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { FileInputDropZone } from '_common';
 import { findSystemOrProjectDisplayName } from 'utils/systems';
-import { FileLengthCell } from '../DataFilesListing/DataFilesListingCells';
+import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
 
-const DataFilesUploadStatus = ({ i, removeCallback }) => {
-  const status = useSelector(state => state.files.operationStatus.upload[i]);
-  switch (status) {
-    case 'UPLOADING':
-      return <LoadingSpinner placement="inline" />;
-    case 'SUCCESS':
-      return <span className="badge badge-success">SUCCESS</span>;
-    case 'ERROR':
-      return <span className="badge badge-danger">ERROR</span>;
-    default:
-      return (
-        <button
-          type="button"
-          className="btn btn-link"
-          onClick={() => removeCallback(i)}
-        >
-          Remove
-        </button>
-      );
-  }
-};
-DataFilesUploadStatus.propTypes = {
-  i: PropTypes.string.isRequired,
-  removeCallback: PropTypes.func.isRequired
-};
+import './DataFilesUploadModal.module.scss';
 
-const DataFilesUploadModal = () => {
+export const LAYOUT_CLASS_MAP = {
+  compact: 'is-compact',
+  default: 'is-normal'
+};
+export const DEFAULT_LAYOUT = 'default';
+export const LAYOUTS = ['', ...Object.keys(LAYOUT_CLASS_MAP)];
+
+const DataFilesUploadModal = ({ className, layout }) => {
   const history = useHistory();
   const location = useLocation();
+
   const reloadCallback = () => {
     history.push(location.pathname);
   };
@@ -54,9 +32,12 @@ const DataFilesUploadModal = () => {
   const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [rejectedFiles, setRejectedFiles] = useState([]);
   const dispatch = useDispatch();
   const uploadStart = () => {
-    const filteredFiles = uploadedFiles.filter(f => status[f.id] !== 'SUCCESS');
+    const filteredFiles = uploadedFiles.filter(
+      f => status[f.id] !== 'SUCCESS' && !rejectedFiles.includes(f)
+    );
     filteredFiles.length > 0 &&
       dispatch({
         type: 'DATA_FILES_UPLOAD',
@@ -68,6 +49,21 @@ const DataFilesUploadModal = () => {
         }
       });
   };
+  const dropZoneDisabled =
+    Object.values(status).filter(s => s === 'UPLOADING').length > 0;
+  const uploadButtonDisabled =
+    dropZoneDisabled ||
+    (!dropZoneDisabled &&
+      uploadedFiles.length ===
+        rejectedFiles.length +
+          Object.values(status).filter(s => s === 'SUCCESS').length);
+  const hasFilesToList = uploadedFiles.length > 0;
+  const showListing = hasFilesToList || layout === 'default';
+
+  const modifierClasses = [];
+  if (hasFilesToList) modifierClasses.push('has-entries');
+  modifierClasses.push(LAYOUT_CLASS_MAP[layout || DEFAULT_LAYOUT]);
+  const containerStyleNames = ['container', ...modifierClasses].join(' ');
 
   const systemDisplayName = findSystemOrProjectDisplayName(
     params.scheme,
@@ -75,13 +71,9 @@ const DataFilesUploadModal = () => {
     projectsList,
     params.system
   );
-
-  const removeFile = id => {
-    setUploadedFiles(uploadedFiles.filter(f => f.id !== id));
-  };
-
   const onClosed = () => {
     setUploadedFiles([]);
+    setRejectedFiles([]);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -98,18 +90,28 @@ const DataFilesUploadModal = () => {
 
   const selectFiles = acceptedFiles => {
     const newFiles = [];
-    acceptedFiles.forEach(file => {
+    const newAcceptedFiles = acceptedFiles.filter(
+      af =>
+        uploadedFiles.filter(
+          uf => uf.data.path === af.path && uf.data.size === af.size
+        ).length === 0
+    );
+    newAcceptedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
     });
     setUploadedFiles(files => [...files, ...newFiles]);
   };
 
-  const onRejectedFiles = rejectedFiles => {
+  const onRejectedFiles = oversizedFiles => {
     const newFiles = [];
-    rejectedFiles.forEach(file => {
+    const newRejectedFiles = oversizedFiles.filter(
+      of => rejectedFiles.filter(rf => rf.data.path === of.path).length === 0
+    );
+    newRejectedFiles.forEach(file => {
       newFiles.push({ data: file, id: uuidv4() });
     });
     setUploadedFiles(files => [...files, ...newFiles]);
+    setRejectedFiles(files => [...files, ...newFiles]);
   };
 
   return (
@@ -118,74 +120,55 @@ const DataFilesUploadModal = () => {
       toggle={toggle}
       onClosed={onClosed}
       size="xl"
-      className="dataFilesModal"
+      className={`dataFilesModal ${className}`}
     >
-      <ModalHeader toggle={toggle}>
-        Upload Files in {systemDisplayName}/{params.path}
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Upload Files
       </ModalHeader>
-      <ModalBody>
-        <FileInputDropZone
-          onSetFiles={selectFiles}
-          onRejectedFiles={onRejectedFiles}
-          maxSize={524288000}
-          maxSizeMessage="Max File Size: 500MB"
-        />
-
-        <div hidden={uploadedFiles.length === 0} style={{ marginTop: '10px' }}>
-          <span style={{ fontSize: '20px' }}>
-            Uploading to {systemDisplayName}/{params.path}
-          </span>
-
-          <div>
-            <div
-              style={{
-                border: '1px solid black',
-                width: '100%',
-                marginTop: '5px',
-                height: '300px',
-                overflow: 'auto'
-              }}
-            >
-              <Table striped>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Size</th>
-                    <th aria-label="null" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {uploadedFiles.map((file, i) => (
-                    <tr key={file.id}>
-                      <td style={{ verticalAlign: 'middle' }}>
-                        {file.data.name}
-                      </td>
-                      <td style={{ verticalAlign: 'middle' }}>
-                        <FileLengthCell cell={{ value: file.data.size }} />
-                      </td>
-                      <td>
-                        <span className="float-right">
-                          <DataFilesUploadStatus
-                            i={file.id}
-                            removeCallback={removeFile}
-                          />
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </div>
+      <ModalBody styleName={containerStyleNames}>
+        <div styleName="dropzone" disabled={dropZoneDisabled}>
+          <FileInputDropZone
+            onSetFiles={selectFiles}
+            onRejectedFiles={onRejectedFiles}
+            maxSize={524288000}
+            maxSizeMessage="Max File Size: 500MB"
+          />
         </div>
+        {showListing && (
+          <div styleName="listing">
+            <span styleName="listing-header">
+              Uploading to {systemDisplayName}/{params.path}
+            </span>
+            <DataFilesUploadModalListingTable
+              uploadedFiles={uploadedFiles}
+              rejectedFiles={rejectedFiles}
+              setUploadedFiles={setUploadedFiles}
+            />
+          </div>
+        )}
       </ModalBody>
       <ModalFooter>
-        <Button className="data-files-btn" onClick={uploadStart}>
+        <Button
+          className="data-files-btn"
+          onClick={uploadStart}
+          disabled={uploadButtonDisabled}
+        >
           Upload Selected
         </Button>
       </ModalFooter>
     </Modal>
   );
+};
+
+DataFilesUploadModal.propTypes = {
+  /** Additional className for the root element */
+  className: PropTypes.string,
+  /** Layout */
+  layout: PropTypes.oneOf(LAYOUTS)
+};
+DataFilesUploadModal.defaultProps = {
+  className: '',
+  layout: DEFAULT_LAYOUT
 };
 
 export default DataFilesUploadModal;

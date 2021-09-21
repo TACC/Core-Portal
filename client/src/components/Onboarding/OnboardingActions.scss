@@ -1,5 +1,9 @@
 .onboarding-action__loading {
   display: inline-block;
-  width: inherit;
+  width: auto;
 }
 
+.onboarding-action__loading .inline {
+  width: 16px;
+  height: 16px;
+}

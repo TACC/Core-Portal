@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { Modal, ModalHeader, ModalBody, Alert, Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { bool, func } from 'prop-types';
+import { bool, func, string } from 'prop-types';
 import {
   EditRequiredInformationForm,
   ChangePasswordForm,
   EditOptionalInformationForm
 } from './ManageAccountForms';
+import GoogleDrivePrivacyPolicy from './GoogleDrivePrivacyPolicy';
 
 export const EditRequiredInformationModal = () => {
   const { required: open, success, error, isEditing } = useSelector(
@@ -36,7 +37,7 @@ export const EditRequiredInformationModal = () => {
       <ModalHeader
         className="manage-account-modal-header"
         toggle={closeModal}
-        charCode="X"
+        charCode="&#xe912;"
       >
         <span>Edit Required Information</span>
       </ModalHeader>
@@ -77,7 +78,7 @@ export const EditOptionalInformationModal = () => {
       <ModalHeader
         className="manage-account-modal-header"
         toggle={closeModal}
-        charCode="X"
+        charCode="&#xe912;"
       >
         <span>Edit Optional Information</span>
       </ModalHeader>
@@ -113,7 +114,7 @@ export const ChangePasswordModal = () => {
       <ModalHeader
         className="manage-account-modal-header"
         toggle={closeModal}
-        charCode="X"
+        charCode="&#xe912;"
       >
         <span>Change Password</span>
       </ModalHeader>
@@ -130,55 +131,42 @@ export const ChangePasswordModal = () => {
   );
 };
 
-export const GoogleDriveModal = ({ active, toggle }) => {
+export const IntegrationPolicy = ({ label }) => {
+  switch (label) {
+    case 'Google Drive':
+      return <GoogleDrivePrivacyPolicy />;
+    default:
+      return <></>;
+  }
+};
+IntegrationPolicy.propTypes = {
+  label: string.isRequired
+};
+
+export const IntegrationModal = ({ active, toggle, connect, label }) => {
   return (
-    <Modal isOpen={active} toggle={toggle}>
+    <Modal isOpen={active} toggle={toggle} className="manage-account-modal">
       <ModalHeader
         className="manage-account-modal-header"
         toggle={toggle}
-        charCode="X"
+        charCode="&#xe912;"
       >
-        Connect to Google Drive
+        Connect to {label}
       </ModalHeader>
       <ModalBody>
+        <IntegrationPolicy label={label} />
         <div className="container">
-          <h2>Google Drive Privacy Policy</h2>
-
-          <p>
-            By connecting your Google Drive account, you consent to giving this
-            portal <strong>read</strong> and <strong>write</strong> access to
-            your Google Drive account. This portal makes a secure connection to
-            your Google Drive account to list your data in the Data Depot, and
-            to copy data to and from TACC&lsquo;s data servers.
-          </p>
-          <p>
-            We request this level of scope access (as opposed to read-only) to
-            give you the best user experience, allowing you to upload field data
-            and simulation results directly to your Google Drive, while also
-            viewing and using these files in experimental workflows by copying
-            data from Google Drive to a directory you own in the Data Depot.
-          </p>
-          <p>
-            <strong>
-              We do not store any personal or identifying information from your
-              Google Drive account
-            </strong>
-            , other than an access token and related file metadata, which is
-            limited to mimeType, name, id, modifiedTime, fileExtension, size,
-            and parents.
-          </p>
-          <Button
-            href="/accounts/applications/googledrive/initialize/"
-            className="manage-account-submit-button"
-          >
-            <span>Agree and Connect to Google Drive</span>
+          <Button href={connect} className="manage-account-submit-button">
+            <span>Agree and Connect to {label}</span>
           </Button>
         </div>
       </ModalBody>
     </Modal>
   );
 };
-GoogleDriveModal.propTypes = {
+IntegrationModal.propTypes = {
   active: bool.isRequired,
-  toggle: func.isRequired
+  toggle: func.isRequired,
+  connect: string.isRequired,
+  label: string.isRequired
 };

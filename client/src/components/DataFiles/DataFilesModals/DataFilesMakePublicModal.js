@@ -44,13 +44,14 @@ const DataFilesMakePublicModal = () => {
       size="lg"
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>Publish {selected.name}</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Publish {selected.name}
+      </ModalHeader>
       <ModalBody>
         <SectionMessage type="warning">
           Publishing this file will copy it to the Public Data directory and
           make it available to the general public.{' '}
-          <b>THIS ACTION CANNOT BE REVERSED.</b> Click &quot;Proceed&quot; to
-          continue.
+          <b>This action cannot be reversed.</b>
         </SectionMessage>
       </ModalBody>
       <ModalFooter>

@@ -24,6 +24,12 @@ def gettext(s): return s  # noqa:E731
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_custom.py')):
+    from portal.settings import settings_custom
+else:
+    from portal.settings import settings_default as settings_custom
+
 FIXTURE_DIRS = [
     os.path.join(BASE_DIR, 'fixtures'),
 ]
@@ -47,7 +53,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
 # Custom Portal Template Assets
-PORTAL_ICON_FILENAME = settings_secret._PORTAL_ICON_FILENAME
+PORTAL_ICON_FILENAME = settings_custom._PORTAL_ICON_FILENAME
 
 ROOT_URLCONF = 'portal.urls'
 
@@ -176,7 +182,9 @@ IMPERSONATE = {
     'REQUIRE_SUPERUSER': True
 }
 
-LOGIN_REDIRECT_URL = getattr(settings_secret, '_LOGIN_REDIRECT_URL', '/')
+# this can be set to just '/' if we're not using core portal to create cms sessions
+LOGOUT_REDIRECT_URL = getattr(settings_custom, '_LOGOUT_REDIRECT_URL', '/')
+LOGIN_REDIRECT_URL = getattr(settings_custom, '_LOGIN_REDIRECT_URL', '/')
 LOGIN_URL = '/auth/agave/'
 
 # Internationalization
@@ -223,8 +231,7 @@ FIXTURE_DIRS = [
 SETTINGS: LOCAL
 """
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEBUG = settings_secret._DEBUG
+DEBUG = settings_custom._DEBUG
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -251,12 +258,12 @@ TAS_CLIENT_SECRET = settings_secret._TAS_CLIENT_SECRET
 RT_HOST = settings_secret._RT_HOST
 RT_UN = settings_secret._RT_UN
 RT_PW = settings_secret._RT_PW
-RT_QUEUE = settings_secret._RT_QUEUE
-RT_TAG = getattr(settings_secret, '_RT_TAG', "")
+RT_QUEUE = settings_custom._RT_QUEUE
+RT_TAG = getattr(settings_custom, '_RT_TAG', "")
 
 
 # Google Analytics.
-GOOGLE_ANALYTICS_PROPERTY_ID = settings_secret._GOOGLE_ANALYTICS_PROPERTY_ID
+GOOGLE_ANALYTICS_PROPERTY_ID = settings_custom._GOOGLE_ANALYTICS_PROPERTY_ID
 
 
 """
@@ -351,7 +358,7 @@ AGAVE_TENANT_BASEURL = settings_secret._AGAVE_TENANT_BASEURL
 AGAVE_CLIENT_KEY = settings_secret._AGAVE_CLIENT_KEY
 AGAVE_CLIENT_SECRET = settings_secret._AGAVE_CLIENT_SECRET
 AGAVE_SUPER_TOKEN = settings_secret._AGAVE_SUPER_TOKEN
-AGAVE_STORAGE_SYSTEM = settings_secret._AGAVE_STORAGE_SYSTEM
+AGAVE_STORAGE_SYSTEM = settings_custom._AGAVE_STORAGE_SYSTEM
 
 PORTAL_ADMIN_USERNAME = settings_secret._PORTAL_ADMIN_USERNAME
 
@@ -361,7 +368,7 @@ AGAVE_JWT_PUBKEY = (
     '0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXn\n'
     'RS4HrKGJTzxaCcU7OQIDAQAB'
 )
-AGAVE_JWT_HEADER = settings_secret._AGAVE_JWT_HEADER
+AGAVE_JWT_HEADER = settings_custom._AGAVE_JWT_HEADER
 AGAVE_JWT_ISSUER = 'wso2.org/products/am'
 AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
 
@@ -369,8 +376,6 @@ AGAVE_JWT_USER_CLAIM_FIELD = 'http://wso2.org/claims/fullname'
 """
 SETTINGS: CELERY
 """
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 _BROKER_URL_PROTOCOL = 'amqp://'
 _BROKER_URL_USERNAME = settings_secret._BROKER_URL_USERNAME
@@ -469,7 +474,7 @@ PORTAL_EXEC_SYSTEMS = {
     },
     'stampede2.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
-        'home_dir': '/home/{}'
+        'home_dir': '/home1/{}'
     },
     'lonestar5.tacc.utexas.edu': {
         'scratch_dir': '/scratch/{}',
@@ -482,18 +487,23 @@ PORTAL_EXEC_SYSTEMS = {
     'frontera.tacc.utexas.edu': {
         'scratch_dir': '/scratch1/{}',
         'home_dir': '/home1/{}'
+    },
+    'maverick2.tacc.utexas.edu': {
+        'scratch_dir': '/work/{}',
+        'home_dir': '/home1/{}'
     }
 }
 
 """
 SETTINGS: DATA DEPOT
 """
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_secret.\
-    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_secret.\
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = getattr(
+    settings_custom, '_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS', {}
+)
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_custom.\
     _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
 PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(
-    settings_secret, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', {}
+    settings_custom, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', []
 )
 
 PORTAL_SEARCH_MANAGERS = {
@@ -532,22 +542,19 @@ TOOLBAR_OPTIONS = {
 
 AGAVE_DEFAULT_TRASH_NAME = '.Trash'
 
-PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX = settings_secret.\
-    _PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX
+PORTAL_PROJECTS_SYSTEM_PREFIX = settings_custom.\
+    _PORTAL_PROJECTS_SYSTEM_PREFIX
 
-PORTAL_PROJECTS_NAME_PREFIX = settings_secret.\
-    _PORTAL_PROJECTS_NAME_PREFIX
-
-PORTAL_PROJECTS_ID_PREFIX = settings_secret.\
+PORTAL_PROJECTS_ID_PREFIX = settings_custom.\
     _PORTAL_PROJECTS_ID_PREFIX
 
-PORTAL_PROJECTS_ROOT_DIR = settings_secret.\
+PORTAL_PROJECTS_ROOT_DIR = settings_custom.\
     _PORTAL_PROJECTS_ROOT_DIR
 
-PORTAL_PROJECTS_ROOT_SYSTEM_NAME = settings_secret.\
+PORTAL_PROJECTS_ROOT_SYSTEM_NAME = settings_custom.\
     _PORTAL_PROJECTS_ROOT_SYSTEM_NAME
 
-PORTAL_PROJECTS_ROOT_HOST = settings_secret.\
+PORTAL_PROJECTS_ROOT_HOST = settings_custom.\
     _PORTAL_PROJECTS_ROOT_HOST
 
 PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
@@ -556,7 +563,7 @@ PORTAL_PROJECTS_PRIVATE_KEY = settings_secret.\
 PORTAL_PROJECTS_PUBLIC_KEY = settings_secret.\
     _PORTAL_PROJECTS_PUBLIC_KEY
 
-COMMUNITY_INDEX_SCHEDULE = settings_secret.\
+COMMUNITY_INDEX_SCHEDULE = settings_custom.\
     _COMMUNITY_INDEX_SCHEDULE
 
 # This setting is not used directly most of the time.
@@ -566,41 +573,41 @@ COMMUNITY_INDEX_SCHEDULE = settings_secret.\
 # so we can refer to this line when looking for this system's ID.
 # Also, it might be useful in the future when we need to do any changes
 # to this system or setup any management commands.
-PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = settings_secret.\
+PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID = settings_custom.\
     _PORTAL_PROJECTS_FS_EXEC_SYSTEM_ID
 
-PORTAL_PROJECTS_PEMS_APP_ID = settings_secret.\
+PORTAL_PROJECTS_PEMS_APP_ID = settings_custom.\
     _PORTAL_PROJECTS_PEMS_APP_ID
 
-PORTAL_KEYS_MANAGER = settings_secret.\
+PORTAL_KEYS_MANAGER = settings_custom.\
     _PORTAL_KEYS_MANAGER
 
-PORTAL_USER_ACCOUNT_SETUP_STEPS = getattr(settings_secret, '_PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
+PORTAL_USER_ACCOUNT_SETUP_STEPS = getattr(settings_custom, '_PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
 
-PORTAL_NAMESPACE = settings_secret.\
+PORTAL_NAMESPACE = settings_custom.\
     _PORTAL_NAMESPACE
 
-PORTAL_PROJECTS_SYSTEM_PORT = getattr(settings_secret, '_PORTAL_PROJECTS_SYSTEM_PORT', 22)
+PORTAL_PROJECTS_SYSTEM_PORT = getattr(settings_custom, '_PORTAL_PROJECTS_SYSTEM_PORT', 22)
 
-PORTAL_APPS_METADATA_NAMES = settings_secret._PORTAL_APPS_METADATA_NAMES
+PORTAL_APPS_METADATA_NAMES = settings_custom._PORTAL_APPS_METADATA_NAMES
 
-PORTAL_APPS_DEFAULT_TAB = getattr(settings_secret, '_PORTAL_APPS_DEFAULT_TAB', '')
+PORTAL_APPS_DEFAULT_TAB = getattr(settings_custom, '_PORTAL_APPS_DEFAULT_TAB', '')
 
-PORTAL_KEY_SERVICE_ACTOR_ID = getattr(settings_secret, '_PORTAL_KEY_SERVICE_ACTOR_ID', "jzQP0EeX7mE1K")
+PORTAL_KEY_SERVICE_ACTOR_ID = getattr(settings_custom, '_PORTAL_KEY_SERVICE_ACTOR_ID', "jzQP0EeX7mE1K")
 
 PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "SUBMITTING", "QUEUED", "RUNNING",
                                   "CLEANING_UP", "FINISHED", "STOPPED", "FAILED", "BLOCKED", "PAUSED"]
 
 # "View in Jupyter Notebook" base URL
-PORTAL_JUPYTER_URL = getattr(settings_secret, '_PORTAL_JUPYTER_URL', None)
+PORTAL_JUPYTER_URL = getattr(settings_custom, '_PORTAL_JUPYTER_URL', None)
 # "View in Jupyter Notebook" mount map, i.e. "data-sd2e-community" -> "/sd2e-community" for SD2E
-PORTAL_JUPYTER_SYSTEM_MAP = getattr(settings_secret, '_PORTAL_JUPYTER_SYSTEM_MAP', None)
+PORTAL_JUPYTER_SYSTEM_MAP = getattr(settings_custom, '_PORTAL_JUPYTER_SYSTEM_MAP', None)
 
-WH_BASE_URL = getattr(settings_secret, '_WH_BASE_URL', '')
+WH_BASE_URL = getattr(settings_custom, '_WH_BASE_URL', '')
 
-PORTAL_DOMAIN = settings_secret._PORTAL_DOMAIN
+PORTAL_DOMAIN = settings_custom._PORTAL_DOMAIN
 
-PORTAL_ALLOCATION = getattr(settings_secret, '_PORTAL_ALLOCATION', '')
+PORTAL_ALLOCATION = getattr(settings_custom, '_PORTAL_ALLOCATION', '')
 
 """
 SETTINGS: ELASTICSEARCH
@@ -624,9 +631,9 @@ HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
-SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_secret, '_SYSTEM_MONITOR_DISPLAY_LIST', [])
+SYSTEM_MONITOR_DISPLAY_LIST = getattr(settings_custom, '_SYSTEM_MONITOR_DISPLAY_LIST', [])
 
-SYSTEM_MONITOR_URL = getattr(settings_secret, '_SYSTEM_MONITOR_URL', 'https://portal.tacc.utexas.edu/commnq/index.json')
+SYSTEM_MONITOR_URL = getattr(settings_custom, '_SYSTEM_MONITOR_URL', 'https://portal.tacc.utexas.edu/commnq/index.json')
 
 """
 SETTINGS: EXPORTS
@@ -709,4 +716,10 @@ CHANNEL_LAYERS = {
 """
 SETTINGS: WORKBENCH SETTINGS
 """
-WORKBENCH_SETTINGS = getattr(settings_secret, '_WORKBENCH_SETTINGS', {})
+WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
+
+"""
+SETTINGS: LOCAL OVERRIDES
+"""
+if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
+    from .settings_local import *

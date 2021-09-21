@@ -1,10 +1,10 @@
 import React from 'react';
 import { fireEvent, wait } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import DataFilesSearchbar from './DataFilesSearchbar';
-import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
+import DataFilesSearchbar from './DataFilesSearchbar';
+import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
 
@@ -90,6 +90,7 @@ describe('DataFilesSearchbar', () => {
         api="tapis"
         scheme="private"
         system="frontera.home.username"
+        resultCount={4}
       />,
       store,
       history
@@ -97,7 +98,7 @@ describe('DataFilesSearchbar', () => {
 
     expect(getByRole('form')).toBeDefined();
     expect(getByRole('searchbox')).toBeDefined();
-    expect(getByTestId('reset')).toBeDefined();
-    expect(getByPlaceholderText('Search in My Data (Frontera)')).toBeDefined();
+    expect(getByTestId('selector')).toBeDefined();
+    expect(getByPlaceholderText('Search My Data (Frontera)')).toBeDefined();
   });
 });

@@ -9,9 +9,15 @@ import {
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
 
+import './DataFiles.global.css';
 import './DataFiles.module.css';
 
-import { SectionMessage, LoadingSpinner } from '_common';
+import {
+  Section,
+  SectionTableWrapper,
+  SectionMessage,
+  LoadingSpinner
+} from '_common';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
@@ -20,7 +26,7 @@ import DataFilesModals from './DataFilesModals/DataFilesModals';
 import DataFilesProjectsList from './DataFilesProjectsList/DataFilesProjectsList';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing/DataFilesProjectFileListing';
 
-const PrivateDataRedirect = () => {
+const DefaultSystemRedirect = () => {
   const systems = useSelector(
     state => state.systems.storage.configuration,
     shallowEqual
@@ -28,7 +34,12 @@ const PrivateDataRedirect = () => {
   const history = useHistory();
   useEffect(() => {
     if (systems.length === 0) return;
-    history.push(`/workbench/data/tapis/private/${systems[0].system}/`);
+    const defaultSystem = systems[0];
+    history.push(
+      `/workbench/data/${defaultSystem.api}/${defaultSystem.scheme}/${
+        defaultSystem.scheme === 'projects' ? '' : `${defaultSystem.system}/`
+      }`
+    );
   }, [systems]);
   return <></>;
 };
@@ -72,12 +83,14 @@ const DataFilesSwitch = React.memo(() => {
             }
           });
           return (
-            <DataFilesListing
-              api={params.api}
-              scheme={params.scheme}
-              system={params.system}
-              path={params.path || '/'}
-            />
+            <SectionTableWrapper styleName="content" manualContent>
+              <DataFilesListing
+                api={params.api}
+                scheme={params.scheme}
+                system={params.system}
+                path={params.path || '/'}
+              />
+            </SectionTableWrapper>
           );
         }}
       />
@@ -85,7 +98,7 @@ const DataFilesSwitch = React.memo(() => {
         <DataFilesProjectsList />
       </Route>
       <Route path={`${path}`}>
-        <PrivateDataRedirect />
+        <DefaultSystemRedirect />
       </Route>
     </Switch>
   );
@@ -98,6 +111,7 @@ const DataFiles = () => {
   );
   const loading = useSelector(state => state.systems.storage.loading);
   const error = useSelector(state => state.systems.storage.error);
+  const systems = useSelector(state => state.systems.storage.configuration);
 
   const readOnly =
     listingParams.scheme === 'projects' &&
@@ -117,12 +131,22 @@ const DataFiles = () => {
     return <LoadingSpinner />;
   }
 
+  if (!systems.length) {
+    return (
+      <div styleName="error">
+        <SectionMessage type="warning">
+          No storage systems enabled for this portal
+        </SectionMessage>
+      </div>
+    );
+  }
+
   return (
-    <div styleName="container">
-      {/* row containing breadcrumbs and toolbar */}
-      <div styleName="header">
+    <Section
+      bodyClassName="has-loaded-datafiles"
+      introMessageName="DATA"
+      header={
         <DataFilesBreadcrumbs
-          styleName="header-title"
           api={listingParams.api}
           scheme={listingParams.scheme}
           system={listingParams.system}
@@ -130,21 +154,21 @@ const DataFiles = () => {
           section="FilesListing"
           route
         />
+      }
+      headerActions={
         <DataFilesToolbar
           api={listingParams.api}
           scheme={listingParams.scheme}
         />
-      </div>
-      {/* row containing sidebar and listing pane */}
-      <div styleName="items">
-        <DataFilesSidebar styleName="sidebar" readOnly={readOnly} />
-        <div styleName="content">
+      }
+      content={
+        <>
+          <DataFilesSidebar readOnly={readOnly} />
           <DataFilesSwitch />
-        </div>
-      </div>
-      <DataFilesModals />
-    </div>
+          <DataFilesModals />
+        </>
+      }
+    />
   );
 };
-
 export default DataFiles;

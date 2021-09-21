@@ -19,13 +19,16 @@
 
 /* OBJECTS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
+@import url('./objects/o-fixed-header-table.css');
 @import url('./objects/o-flex-item-table-wrap.css');
 
 /* COMPONENTS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
 @import url('./components/bootstrap.form.css');
 @import url('./components/bootstrap.modal.css');
+@import url('./components/bootstrap.button.css');
 
 /* TRUMPS */
 /* NOTE: For the most part, allow React components to explicitely import as needed */
 @import url('./trumps/icon.css');
+@import url('./trumps/table.css');

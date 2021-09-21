@@ -6,25 +6,29 @@
   font-family: monospace;
 }
 
-.tickets-view {
-  /* Ticket Number */
-  th:nth-child(1),
-  td:nth-child(1) { min-width: 5em; }
-  /* Subject */
-  th:nth-child(2),
-  td:nth-child(2) { width: 80%; }
-  /* Date */
-  th:nth-child(3),
-  td:nth-child(3) { width: 20%; }
-  /* Status */
-  th:nth-child(4),
-  td:nth-child(4) { min-width: 10em; }
+/* WARNING: Custom breakpoint: 1679px / 1680px */
+/* SEE: https://confluence.tacc.utexas.edu/x/b4AZCg */
+@media only screen and (min-width: 1680px) {
+  .tickets-view {
+    /* number */  tr > *:nth-child(1) { width: 7%; }
+    /* subject */ tr > *:nth-child(2) { width: 70%; }
+    /* date */    tr > *:nth-child(3) { width: 11%; }
+    /* status */  tr > *:nth-child(4) { width: 12%; }
+  }
+}
+@media only screen and (max-width: 1679px) {
+  .tickets-view {
+    /* number */  tr > *:nth-child(1) { width: 12.5%; }
+    /* subject */ tr > *:nth-child(2) { width: 52.5%; }
+    /* date */    tr > *:nth-child(3) { width: 20%; }
+    /* status */  tr > *:nth-child(4) { width: 15%; }
+  }
 }
 
 .ticket__error {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #9d85ef;
+  color: var(--global-color-accent--normal);
   padding: 30px;
 }

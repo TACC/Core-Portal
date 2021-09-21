@@ -1,127 +1,93 @@
 """Management command."""
 
-from django.conf import settings
+from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
-from portal.libs.agave.utils import service_account
-from portal.libs.agave.models.files import BaseFile
-from portal.apps.projects.models.base import ProjectId, Project
+from portal.apps.projects.models.base import ProjectId
+from portal.apps.projects.models.utils import get_latest_project_storage, get_latest_project_directory
 
 
 class Command(BaseCommand):
-    """Command class."""
+    """Manage project latest project id
 
+    Examples:
+
+        Discover what the current latest project ids are:
+
+        >>> ./manage.py projects_id
+
+        Update the project id to a specific number:
+
+        >>> ./manage.py projects_id --update 42
+
+        Update the project id to something safe:
+
+        >>> ./manage.py projects_id --update-using-max-value-found
+
+        Update the project id to something safe but don't look for a safe value above 1000000. This could be used if
+        you had previously set the max project id to something super larger (like 1000000) for testing purposes but now
+        want to revert to a safe (but lower) project id.
+
+        >>> ./manage.py projects_id --update-using-max-value-found --max-project-id 1000000
+
+    """
     help = (
-        'Manage projects next Id. By default this command will print '
+        'Manage projects latest project id. By default this command will print '
         'the current latest project id, the last project id used in '
-        'storage systems and the last project id used in folders created '
-        'in corral.'
+        'storage systems, and the last project id used in folders created.'
     )
-
-    def _get_latest_project_storage(self):  # pylint:disable=no-self-use
-        """Get latest agave project storage."""
-        offset = 0
-        limit = 100
-        prjs = Project.listing(
-            service_account(),
-            offset=offset,
-            limit=limit
-        )
-        done = False
-        latest = -1
-        while not done:
-            prj_id = -1
-            for prj in prjs:
-                prj_id = prj.storage.id.replace(
-                    settings._PORTAL_DATA_DEPOT_PROJECTS_SYSTEM_PREFIX,
-                    ''
-                )
-                if '-' not in prj_id:
-                    continue
-                _, prj_id = prj_id.rsplit('-')
-                try:
-                    prj_id = int(prj_id)
-                except ValueError:
-                    # prj_id is not an int
-                    pass
-
-                if prj_id > latest:
-                    latest = prj_id
-            if prj_id == -1:
-                done = True
-            else:
-                offset += 100
-                prjs = Project.listing(
-                    service_account(),
-                    offset=offset,
-                    limit=limit
-                )
-        return latest
-
-    def _get_latest_project_directory(self):  # pylint:disable=no-self-use
-        """Get latest agave project directory."""
-        offset = 0
-        limit = 100
-        _file = BaseFile(
-            service_account(),
-            system=settings.PORTAL_PROJECTS_ROOT_SYSTEM_NAME,
-            path='/'
-        )
-        dirs = _file.children(offset=offset, limit=limit)
-        done = False
-        latest = -1
-        while not done:
-            dir_id = -1
-            for _dir in dirs:
-                if ('-' not in _dir.name or
-                        not _dir.name.startswith(settings.PORTAL_PROJECTS_ID_PREFIX)):
-                    continue
-                _, dir_id = _dir.name.rsplit('-', 1)
-                try:
-                    dir_id = int(dir_id)
-                except ValueError:
-                    # dir_id is not an int
-                    pass
-
-                if dir_id > latest:
-                    latest = dir_id
-
-            if dir_id == -1:
-                done = True
-            else:
-                offset += 100
-                _file.set_children(None)
-                dirs = _file.children(offset=offset, limit=limit)
-        return latest
 
     def add_arguments(self, parser):
         """Add arguments."""
-        parser.add_argument(
+        update_group = parser.add_mutually_exclusive_group()
+        update_group.add_argument(
             '--update',
             action='store',
             type=int,
-            help='Integer to update saved DB value.'
+            help='Update project id DB value.'
+        )
+        update_group.add_argument(
+            '--update-using-max-value-found',
+            action='store_true',
+            help='Update project id DB value using value derived from latest storage system project id or latest '
+                 'directory project id (whichever is higher).'
+        )
+        parser.add_argument(
+            '--max-project-id',
+            action='store',
+            type=int,
+            help='Ignore project ids larger than a certain value'
         )
 
     def handle(self, *args, **options):
         """Handle command."""
+        max_project_id = options["max_project_id"]
+        if max_project_id:
+            self.stdout.write('NOTE(!!!!): Ignoring project ids >= {} when '
+                              'processing/updating the storage systems and directories'.format(max_project_id))
+
+        latest_storage_system_id = get_latest_project_storage(max_project_id=max_project_id)
+        latest_project_id = get_latest_project_directory(max_project_id=max_project_id)
+
+        if latest_storage_system_id == -1:
+            self.stdout.write('There are no project storage systems.')
+        if latest_project_id == -1:
+            self.stdout.write('There are no project directories.')
+
+        self.stdout.write('Latest storage system project id: {}'.format(latest_storage_system_id))
+        self.stdout.write('Latest directory project id: {}'.format(latest_project_id))
+
+        try:
+            with transaction.atomic():
+                model_project_id = ProjectId.objects.select_for_update().latest('last_updated').value
+            self.stdout.write('Latest project id in ProjectId model: {}'.format(model_project_id))
+        except ObjectDoesNotExist:
+            self.stdout.write('Latest project id in ProjectId model: None')
+
         if options.get('update'):
+            self.stdout.write('Updating to user provided value of: {}'.format(options.get('update')))
             ProjectId.update(options.get('update'))
-        else:
-            latest_storage_prj_id = self._get_latest_project_storage()
-            if latest_storage_prj_id == -1:
-                self.stdout.write('There are no project storage systems.')
-            else:
-                self.stdout.write(
-                    'Latest Storage Project Id: {prj_id}'.format(
-                        prj_id=latest_storage_prj_id
-                    )
-                )
-            latest_project_dir_id = self._get_latest_project_directory()
-            if latest_project_dir_id == -1:
-                self.stdout.write('There are no project directories.')
-            else:
-                self.stdout.write(
-                    'Latest Directory Project Id: {dir_id}'.format(
-                        dir_id=latest_project_dir_id
-                    )
-                )
+        elif options["update_using_max_value_found"]:
+            max_value_found = max(latest_storage_system_id, latest_project_id, 0)
+            self.stdout.write('Updating to value latest storage system id: {}'.format(max_value_found))
+            ProjectId.update(max_value_found)

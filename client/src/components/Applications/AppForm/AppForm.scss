@@ -1,23 +1,55 @@
 #appDetail-wrapper {
+    --space-top: 1.25rem; /* 20px (~17px design * 1.2 design-to-app ratio) */
+    --space-bottom: 2.25rem; /* 36px (~30px design * 1.2 design-to-app ratio) */
+
+    /* As a flex item */
     flex-grow: 1;
+
+    /* As a flex container */
     display: flex;
     flex-direction: row;
-    height: 100%; /* Be consistent with `#appDetail-error`/`.app-placeholder` (which can exist at the same location),
-                     so that `appBrowser-wrapper` height does not change based on sibling content */
-    padding-top: 15px;
-    /* Match bottom space found in UI design at `Core Portal > Applications` */
-    padding-bottom: 30px;
+
+    height: 100%;
+    /* To ensure flex children stretch to height of scrolled content */
+    /* FAQ: For cross-axis to include scrollHeight, flex must be "multi-line" */
+    /* SEE: https://bugzilla.mozilla.org/show_bug.cgi?id=1267060 */
+    flex-wrap: wrap;
+}
+#appDetail-wrapper.has-message,
+#appDetail-wrapper.is-loading,
+#appDetail-wrapper.has-external-app {
+    justify-content: center;
+    align-items: center;
 }
 
-/* Overwrite independent opinion of Bootstrap styles */
-/* ???: Is `.jumbotron` used without Design review? */
-/* ???: From where does `.jumbotron` originate? */
+/* Add space to top and bottom of `.appInfo-wrapper` and `#appForm-wrapper` */
+/* CLEVER: Use padding on flex item children, not directly on flex items */
+/* FAQ: Flex items do not respect padding on the main axis */
+/* NOTE: UI design is not clear about scroll bounds with top & bottom space */
+.appInfo-wrapper > *:first-child,
+#appForm-wrapper > *:first-child {
+    padding-top: var(--space-top);
+}
+.appInfo-wrapper > *:last-child,
+#appForm-wrapper > *:last-child {
+    padding-bottom: var(--space-bottom);
+}
+
+/* Overwrite external Jumbotron component */
+/* FAQ: The `.jumbotron` originates from external injected HTML */
 #appDetail-wrapper .jumbotron {
+    /* Radius clashes with app design, because border is flush with container */
+    border-radius: 0;
+
+    /* Prevent extra space beneath `#appDetail-wrapper` */
     margin-bottom: 0;
+
+    /* Ensure `.jumbotron` scrolls within `#appDetail-wrapper` */
+    height: 100%;
+    overflow: auto;
 }
 
 #appForm-wrapper {
-    overflow-y: scroll;
     display: flex;
     padding: 0 40px 0 30px;
     flex: 0.7 1 0;
@@ -73,10 +105,18 @@
     padding: 5px 0 0 20px;
 }
 
+.appDetail-placeholder-message {
+    font-size: 1.4rem;
+}
+
+/* WARNING: This class is used by other components */
 .appDetail-error {
-    display: flex; /* overwrite `Message` */
-    justify-content: center;
-    height: 100%; /* Be consistent with `#appDetail-wrapper`/`.app-placeholder` (which can exist at the same location),
-                     so that `appBrowser-wrapper` height does not change based on sibling content */
     padding: 30px 0;
+}
+/* Remove padding of two error messages */
+/* HACK: Remove padding by subtracting margin (avoids revisiting padding) */
+/* TODO: Consider refactoring padding to use margin, but test side-effects */
+/* CLEVER: `#appForm-wrapper` avoids possible side-effect on other components */
+#appForm-wrapper .appDetail-error ~ .appDetail-error {
+    margin-top: -30px;
 }

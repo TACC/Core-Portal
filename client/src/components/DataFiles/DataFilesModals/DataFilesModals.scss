@@ -4,7 +4,7 @@
 }
 
 .dataFilesModal {
-    color: #484848;
+    color: var(--global-color-primary--xx-dark);
     padding: 20px;
     .h-100 {
         padding: 0 10px 0 10px;
@@ -24,14 +24,13 @@
         border-bottom-color: #C6C6C6;
     }
 
-    /* Overrides tr font-size for modals (being defined in DataFilesTable.scss */
-    .tr {
-      font-size: 12px;
-    }
-
     /* Overrides bootstrap button */
-    .btn {
+    /* FAQ: Table cell content should be 14px so do not override cell buttons */
+    /* FAQ: The [role="cell"] matches fake <div> cells and real <td> cells */
+    /* WARNING: A <td> cell need not have [role], but this now expects it */
+    .btn:not([role="cell"]) {
       font-size: 12px;
+      font-weight: 600;
     }
 
     .flex-column {
@@ -40,19 +39,10 @@
 
     /* Matches layout of other data files listings */
     .InfiniteScrollTable.projects-listing {
-      th {
-        color: #484848;
-      }
-      th,
-      td {
-        display: flex;
-        align-items: center;
-        font-size: 12px;
-        padding: 5px 15px;
-      }
-      td {
-        height: 45px;
-      }
+      tr > *:first-child { padding-left: 15px; }
+      tr > *:last-child { padding-right: 15px; }
+      th { height: 25px; }
+      td { height: 45px; }
     }
 }
 

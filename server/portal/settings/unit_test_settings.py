@@ -205,7 +205,7 @@ PORTAL_ALLOCATION = 'test'
 PORTAL_KEYS_MANAGER = 'portal.apps.accounts.managers.ssh_keys.KeysManager'
 PORTAL_PROJECTS_PEMS_APP_ID = 'pems.app-test'
 
-PORTAL_PROJECTS_NAME_PREFIX = 'test.project'
+PORTAL_PROJECTS_SYSTEM_PREFIX = 'test.project'
 
 PORTAL_PROJECTS_ID_PREFIX = 'test.project'
 
@@ -486,14 +486,15 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': None
+        'icon': 'publications'
     },
     {
         'name': 'Google Drive',
         'system': 'googledrive',
         'scheme': 'private',
         'api': 'googledrive',
-        'icon': None
+        'icon': None,
+        'integration': 'portal.apps.googledrive_integration'
     },
     {
         'name': 'Public Data',

@@ -3,7 +3,8 @@ import { useTable } from 'react-table';
 import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { shape, string, arrayOf, bool } from 'prop-types';
-import { GoogleDriveModal } from './ManageAccountModals';
+import { SectionHeader, SectionTableWrapper } from '_common';
+import { IntegrationModal } from './ManageAccountModals';
 import './ManageAccount.scss';
 
 export const TableTemplate = ({ attributes }) => {
@@ -77,18 +78,26 @@ export const RequiredInformation = () => {
     key => !demographics[key]
   );
   return (
-    <div className="profile-component-wrapper">
-      <div className="profile-component-header">
-        <strong>Required Information</strong>
-        <Button
-          color="link"
-          onClick={openModal}
-          className="form-button"
-          disabled={errors.fields !== undefined}
+    <SectionTableWrapper
+      manualHeader={
+        <SectionHeader
+          actions={
+            <Button
+              color="link"
+              onClick={openModal}
+              className="form-button"
+              disabled={errors.fields !== undefined}
+            >
+              Edit Required Information
+            </Button>
+          }
+          isForList
         >
-          Edit Required Information
-        </Button>
-      </div>
+          Required Information
+        </SectionHeader>
+      }
+      manualContent
+    >
       <TableTemplate
         attributes={{
           columns,
@@ -98,7 +107,7 @@ export const RequiredInformation = () => {
           }
         }}
       />
-    </div>
+    </SectionTableWrapper>
   );
 };
 /* eslint-disable react/no-danger */
@@ -122,11 +131,11 @@ const LicenseCell = ({ cell: { value } }) => {
       >
         {value.current_user_license ? 'View Details' : 'Request Activation'}
       </Button>
-      <Modal isOpen={modal} toggle={toggle}>
+      <Modal isOpen={modal} toggle={toggle} className="manage-account-modal">
         <ModalHeader
           className="manage-account-modal-header"
           toggle={toggle}
-          charCode="X"
+          charCode="&#xe912;"
         >
           {type}
         </ModalHeader>
@@ -163,6 +172,7 @@ LicenseCell.propTypes = {
 /* eslint-enable react/no-danger */
 export const Licenses = () => {
   const { licenses } = useSelector(state => state.profile.data);
+
   const columns = useMemo(
     () =>
       licenses.map(license => {
@@ -176,34 +186,17 @@ export const Licenses = () => {
   );
   const data = useMemo(() => licenses, [licenses]);
   return (
-    <div className="profile-component-wrapper">
-      <div className="profile-component-header">
-        <strong>Licenses</strong>
-      </div>
+    <SectionTableWrapper
+      manualHeader={<SectionHeader isForList>Licenses</SectionHeader>}
+      manualContent
+    >
       <TableTemplate attributes={{ columns, data }} />
-    </div>
+    </SectionTableWrapper>
   );
 };
 
 export const IntegrationCell = ({ cell: { value } }) => {
-  const { activated, label } = value;
-  switch (label) {
-    case 'Google Drive':
-      return <GoogleDriveIntegrationCell activated={activated} />;
-    default:
-      return <></>;
-  }
-};
-IntegrationCell.propTypes = {
-  cell: shape({
-    value: shape({
-      activated: bool.isRequired,
-      label: string.isRequired
-    })
-  }).isRequired
-};
-
-export const GoogleDriveIntegrationCell = ({ activated }) => {
+  const { activated, label, disconnect, connect } = value;
   const [modal, setModal] = React.useState(false);
   const toggle = () => setModal(!modal);
   return (
@@ -215,7 +208,7 @@ export const GoogleDriveIntegrationCell = ({ activated }) => {
     >
       {activated ? (
         <div>
-          <a href="/accounts/applications/googledrive/disconnect/">
+          <a className="wb-link" href={disconnect}>
             Disconnect
           </a>
         </div>
@@ -227,16 +220,28 @@ export const GoogleDriveIntegrationCell = ({ activated }) => {
             onClick={toggle}
             className="license-button"
           >
-            Connect to Google Drive
+            Setup {label}
           </Button>
         </div>
       )}
-      <GoogleDriveModal active={modal} toggle={toggle} />
+      <IntegrationModal
+        active={modal}
+        toggle={toggle}
+        connect={connect}
+        label={label}
+      />
     </div>
   );
 };
-GoogleDriveIntegrationCell.propTypes = {
-  activated: bool.isRequired
+IntegrationCell.propTypes = {
+  cell: shape({
+    value: shape({
+      activated: bool.isRequired,
+      label: string.isRequired,
+      disconnect: string.isRequired,
+      connect: string.isRequired
+    })
+  }).isRequired
 };
 
 export const Integrations = () => {
@@ -252,12 +257,12 @@ export const Integrations = () => {
   );
   const data = useMemo(() => integrations, [integrations]);
   return (
-    <div className="profile-component-wrapper">
-      <div className="profile-component-header">
-        <strong>3rd Party Apps</strong>
-      </div>
+    <SectionTableWrapper
+      manualHeader={<SectionHeader isForList>3rd Party Apps</SectionHeader>}
+      manualContent
+    >
       <TableTemplate attributes={{ columns, data }} />
-    </div>
+    </SectionTableWrapper>
   );
 };
 export const ChangePassword = () => {
@@ -269,10 +274,8 @@ export const ChangePassword = () => {
   const openModal = () =>
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { password: true } });
   return (
-    <div className="profile-component-wrapper">
-      <div className="profile-component-header">
-        <strong>Change Password</strong>
-      </div>
+    <article>
+      <SectionHeader isForList>Change Password</SectionHeader>
       <div
         style={{
           display: 'flex',
@@ -285,13 +288,20 @@ export const ChangePassword = () => {
         </Button>
         {lastChanged && (
           <span
-            style={{ fontSize: '14px', marginLeft: '1rem', color: '#707070' }}
+            style={{
+              /* TODO: Move this to a stylehseet */
+              /* FAQ: `14px` is part of normalization of "table" font sizes */
+              fontSize: '0.875rem' /* 14px (assumed deviation from design) */,
+              marginLeft: '1rem',
+              color: '#707070'
+            }}
           >
             Last Changed {lastChanged}
           </span>
         )}
       </div>
-    </div>
+    </article>
+    /* eslint-enable prettier/prettier */
   );
 };
 const WebsiteCell = ({ cell: { value } }) => {
@@ -301,7 +311,7 @@ const WebsiteCell = ({ cell: { value } }) => {
       ? `https://${website}`
       : website;
     return (
-      <a href={url} target="_blank" rel="noreferrer">
+      <a className="wb-link" href={url} target="_blank" rel="noreferrer">
         {url}
       </a>
     );
@@ -313,7 +323,12 @@ WebsiteCell.propTypes = {
 };
 WebsiteCell.defaultProps = { cell: { value: '' } };
 const OrcidCell = ({ cell: { value } }) => (
-  <a href={`https://orchid.org/${value}`} target="_blank" rel="noreferrer">
+  <a
+    className="wb-link"
+    href={`https://orchid.org/${value}`}
+    target="_blank"
+    rel="noreferrer"
+  >
     {value}
   </a>
 );
@@ -349,19 +364,27 @@ export const OptionalInformation = () => {
   const openModal = () =>
     dispatch({ type: 'OPEN_PROFILE_MODAL', payload: { optional: true } });
   return (
-    <div className="profile-component-wrapper">
-      <div className="profile-component-header">
-        <strong>Optional Information</strong>
-        <Button
-          color="link"
-          className="form-button"
-          onClick={openModal}
-          disabled={errors.fields !== undefined}
+    <SectionTableWrapper
+      manualHeader={
+        <SectionHeader
+          actions={
+            <Button
+              color="link"
+              className="form-button"
+              onClick={openModal}
+              disabled={errors.fields !== undefined}
+            >
+              Edit Optional Information
+            </Button>
+          }
+          isForList
         >
-          Edit Optional Information
-        </Button>
-      </div>
+          Optional Information
+        </SectionHeader>
+      }
+      manualContent
+    >
       <TableTemplate attributes={{ columns, data }} />
-    </div>
+    </SectionTableWrapper>
   );
 };

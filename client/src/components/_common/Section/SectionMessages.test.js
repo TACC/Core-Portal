@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { Alert } from 'reactstrap';
 
 import SectionMessages from './SectionMessages';
-import * as MESSAGES from '../../../constants/welcomeMessages';
+import * as MESSAGES from '../../../constants/messages';
 
 const mockStore = configureStore();
 const store = mockStore({});
@@ -29,29 +29,32 @@ describe('SectionMessages', () => {
   });
 
   describe('weclome message', () => {
-    it('renders known welcome message', () => {
+    it('renders known intro message', () => {
       const { getByText } = render(
         <Provider store={store}>
-          <SectionMessages routeName="DASHBOARD" />
+          <SectionMessages introMessageName="DASHBOARD" />
         </Provider>
       );
       expect(getByText(MESSAGES['DASHBOARD'])).not.toEqual(null);
     });
 
-    it('renders known welcome message but with custom message', () => {
+    it('renders known intro message but with custom message', () => {
       const { getByText, queryByText } = render(
         <Provider store={store}>
-          <SectionMessages routeName="DASHBOARD" welcomeText="Hello" />
+          <SectionMessages
+            introMessageName="DASHBOARD"
+            introMessageText="Hello"
+          />
         </Provider>
       );
       expect(queryByText(MESSAGES['DASHBOARD'])).toEqual(null);
       expect(getByText('Hello')).not.toEqual(null);
     });
 
-    it('renders custom welcome message', () => {
+    it('renders custom intro message', () => {
       const { getByText } = render(
         <Provider store={store}>
-          <SectionMessages welcomeText="Hello" />
+          <SectionMessages introMessageText="Hello" />
         </Provider>
       );
       expect(getByText('Hello')).not.toEqual(null);

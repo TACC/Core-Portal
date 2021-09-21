@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, wait, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import {
@@ -146,7 +147,7 @@ describe('Third Party Apps', () => {
     );
     expect(getByText(/3rd Party Apps/)).toBeDefined();
     expect(getByText('Google Drive')).toBeDefined();
-    expect(getByText('Connect to Google Drive')).toBeDefined();
+    expect(getByText('Setup Google Drive')).toBeDefined();
   });
   it('Shows disconnect link when  connected', () => {
     const testStore = mockStore({

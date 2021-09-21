@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Section } from '_common';
 import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import OnboardingStep from './OnboardingStep';
@@ -43,46 +43,50 @@ const OnboardingUser = () => {
   }
 
   return (
-    <div styleName="root">
-      <div styleName="title">
-        <h2>
-          {isStaff
-            ? `Onboarding Administration for ${user.username} - ${user.lastName}, ${user.firstName}`
-            : 'The following steps must be completed before accessing the portal'}
-        </h2>
-      </div>
-      <div styleName="container">
-        {user.steps.map(step => (
-          <OnboardingStep step={step} key={uuidv4()} />
-        ))}
-        <div styleName="access">
-          <Button
-            color="link"
-            styleName="button"
-            onClick={() =>
-              dispatch({
-                type: 'TICKET_CREATE_OPEN_MODAL',
-                payload: {
-                  provideDashBoardLinkOnSuccess: false,
-                  showAsModalOnDashboard: false,
-                  subject: `Onboarding`
-                }
-              })
-            }
-          >
-            Get Help
-          </Button>
-          <Button
-            color="primary"
-            styleName="button"
-            href="/workbench/"
-            disabled={!user.setupComplete}
-          >
-            Access Dashboard
-          </Button>
-        </div>
-      </div>
-    </div>
+    <Section
+      introMessageName="ONBOARDING"
+      header={
+        isStaff
+          ? `Onboarding Administration for ${user.username} - ${user.lastName}, ${user.firstName}`
+          : 'The following steps must be completed before accessing the portal'
+      }
+      contentStyleName="content"
+      contentLayoutName="oneColumn"
+      contentShouldScroll
+      content={
+        <>
+          {user.steps.map(step => (
+            <OnboardingStep step={step} key={uuidv4()} />
+          ))}
+          <div styleName="access">
+            <Button
+              color="link"
+              styleName="button"
+              onClick={() =>
+                dispatch({
+                  type: 'TICKET_CREATE_OPEN_MODAL',
+                  payload: {
+                    provideDashBoardLinkOnSuccess: false,
+                    showAsModalOnDashboard: false,
+                    subject: `Onboarding`
+                  }
+                })
+              }
+            >
+              Get Help
+            </Button>
+            <Button
+              color="primary"
+              styleName="button"
+              href="/workbench/"
+              disabled={!user.setupComplete}
+            >
+              Access Dashboard
+            </Button>
+          </div>
+        </>
+      }
+    />
   );
 };
 

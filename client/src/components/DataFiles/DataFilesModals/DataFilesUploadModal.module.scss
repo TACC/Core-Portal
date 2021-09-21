@@ -1,0 +1,38 @@
+/* Base */
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Elements */
+
+.listing-header {
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+/* Modifiers */
+
+.is-normal {
+  /* … */
+}
+.is-compact .listing {
+  order: -1;
+}
+
+.is-compact.has-entries .dropzone {
+  i,
+  p,
+  strong {
+    display: none;
+  }
+  div {
+    max-height: 80px;
+  }
+}
+
+div[disabled] {
+  pointer-events: none;
+  opacity: 0.7;
+}

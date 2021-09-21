@@ -14,8 +14,10 @@ import {
 } from '../../redux/reducers/tickets.reducers';
 import { initialState as authenticatedUser } from '../../redux/reducers/authenticated_user.reducer';
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
-import { initialWelcomeMessages as welcomeMessages } from '../../redux/reducers/welcome.reducers';
+import { initialIntroMessages as introMessages } from '../../redux/reducers/intro.reducers';
 import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
+
+import * as introMessageText from '../../constants/messages';
 
 /* state required to render workbench/dashboard */
 const state = {
@@ -23,7 +25,7 @@ const state = {
   workbench,
   onboarding,
   notifications,
-  welcomeMessages,
+  introMessages,
   jobs,
   systemMonitor,
   ticketList,
@@ -40,7 +42,8 @@ describe('workbench', () => {
       ...state,
       workbench: {
         ...workbench,
-        setupComplete: false
+        setupComplete: false,
+        loading: false
       }
     });
     const { getByText } = renderComponent(<Workbench />, store, history);
@@ -56,15 +59,27 @@ describe('workbench', () => {
       ...state,
       workbench: {
         ...workbench,
-        setupComplete: true
+        setupComplete: true,
+        loading: false
       }
     });
 
     const { getByText } = renderComponent(<Workbench />, store, history);
-    expect(
-      getByText(
-        /This page allows you to monitor your job status, get help with/
-      )
-    ).toBeDefined();
+    expect(getByText(introMessageText.DASHBOARD)).toBeDefined();
+  });
+  it('shows loading spinner if systems request not finished', () => {
+    const history = createMemoryHistory();
+    const store = mockStore({
+      ...state,
+      systems: {
+        ...systems,
+        storage: {
+          ...systems.storage,
+          loading: true
+        }
+      }
+    });
+    const { getByTestId } = renderComponent(<Workbench />, store, history);
+    expect(getByTestId(/loading-spinner/)).toBeDefined();
   });
 });

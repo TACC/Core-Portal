@@ -54,7 +54,9 @@ const DataFilesShowPathModal = React.memo(() => {
         toggle={toggle}
         className="dataFilesModal"
       >
-        <ModalHeader toggle={toggle}>Pathnames for {file.name}</ModalHeader>
+        <ModalHeader toggle={toggle} charCode="&#xe912;">
+          Pathnames for {file.name}
+        </ModalHeader>
         <ModalBody>
           <DataFilesBreadcrumbs
             api={params.api}

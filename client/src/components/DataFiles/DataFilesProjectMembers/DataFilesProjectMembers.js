@@ -62,7 +62,8 @@ const DataFilesProjectMembers = ({
 
   const alreadyMember = user => {
     return members.some(
-      existingMember => existingMember.user.username === user.username
+      existingMember =>
+        existingMember.user && existingMember.user.username === user.username
     );
   };
 
@@ -158,9 +159,7 @@ const DataFilesProjectMembers = ({
   ];
 
   const isTransferring = mode === 'transfer' && transferUser;
-  const listStyle = `member-list ${
-    isTransferring ? 'transfer-list' : 'addremove-list'
-  }`;
+  const listStyle = isTransferring ? 'transfer-list' : 'addremove-list';
 
   const existingMembers = members.filter(member => member.user);
 

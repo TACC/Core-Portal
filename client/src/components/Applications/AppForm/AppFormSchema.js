@@ -8,7 +8,7 @@ const FormSchema = app => {
     schema: { inputs: {}, parameters: {} }
   };
 
-  (app.parameters || []).forEach(parameter => {
+  (app.definition.parameters || []).forEach(parameter => {
     const param = parameter;
     if (!param.value.visible || param.id.startsWith('_')) {
       return;
@@ -85,7 +85,7 @@ const FormSchema = app => {
         : param.value.default;
   });
 
-  (app.inputs || []).forEach(i => {
+  (app.definition.inputs || []).forEach(i => {
     const input = i;
     if (input.id.startsWith('_') || !input.value.visible) {
       return;
@@ -116,6 +116,13 @@ const FormSchema = app => {
       appFields.schema.inputs[input.id] = appFields.schema.inputs[
         input.id
       ].matches(input.value.validator);
+    } else {
+      appFields.schema.inputs[input.id] = appFields.schema.inputs[
+        input.id
+      ].matches(
+        /^agave:\/\//g,
+        "Input file must be a valid Tapis URI, starting with 'agave://'"
+      );
     }
     appFields.inputs[input.id] = field;
     appFields.defaults.inputs[input.id] =

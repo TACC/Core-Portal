@@ -258,7 +258,7 @@ class BaseSystem(BaseAgaveResource):
         """
         query['limit'] = limit
         query['offset'] = offset
-        if client.token:
+        if hasattr(client, "token") and hasattr(client.token, "token_info"):
             token = client.token.token_info['access_token']
         else:
             token = client._token  # pylint: disable=protected-access

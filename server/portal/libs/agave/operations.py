@@ -9,7 +9,7 @@ from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.indexes import IndexedFile
 from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 from portal.exceptions.api import ApiException
-from portal.libs.agave.utils import text_preview, get_file_size
+from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
 logger = logging.getLogger(__name__)
 
 
@@ -99,7 +99,7 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
     """
     ngram_query = Q("query_string", query=query_string,
                     fields=["name"],
-                    minimum_should_match='80%',
+                    minimum_should_match='100%',
                     default_operator='or')
     match_query = Q("query_string", query=query_string,
                     fields=[
@@ -117,7 +117,7 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
             'reachedEnd': len(hits) < int(limit)}
 
 
-def download(client, system, path, href, force=True, max_uses=3, lifetime=600):
+def download(client, system, path, href, force=True, max_uses=3, lifetime=600, **kwargs):
     """Creates a postit pointing to this file.
 
     Params
@@ -225,14 +225,9 @@ def move(client, src_system, src_path, dest_system, dest_path, file_name=None):
         return {'system': src_system, 'path': src_path_full, 'name': file_name}
 
     try:
-        client.files.list(systemId=dest_system,
-                          filePath="{}/{}".format(dest_path, file_name))
-
-        # Destination path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        file_name = '{}_{}{}'.format(_name, now, _ext)
+        # list the directory and check if file_name exists
+        file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
+        file_name = increment_file_name(listing=file_listing, file_name=file_name)
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
@@ -289,14 +284,9 @@ def copy(client, src_system, src_path, dest_system, dest_path, file_name=None,
         file_name = src_path.strip('/').split('/')[-1]
 
     try:
-        client.files.list(systemId=dest_system,
-                          filePath="{}/{}".format(dest_path, file_name))
-
-        # Destination path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        file_name = '{}_{}{}'.format(_name, now, _ext)
+        # list the directory and check if file_name exists
+        file_listing = client.files.list(systemId=dest_system, filePath=dest_path)
+        file_name = increment_file_name(listing=file_listing, file_name=file_name)
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
@@ -393,9 +383,8 @@ def trash(client, system, path):
     """
 
     file_name = path.strip('/').split('/')[-1]
-    trash_name = file_name
 
-    # Create a trash path if none exists
+    # Create a .Trash path if none exists
     try:
         client.files.list(systemId=system,
                           filePath=settings.AGAVE_DEFAULT_TRASH_NAME)
@@ -405,22 +394,8 @@ def trash(client, system, path):
             raise
         mkdir(client, system, '/', settings.AGAVE_DEFAULT_TRASH_NAME)
 
-    try:
-        client.files.list(systemId=system,
-                          filePath=os.path.join(settings.AGAVE_DEFAULT_TRASH_NAME,
-                                                file_name))
-        # Trash path exists, must make it unique.
-        _ext = os.path.splitext(file_name)[1].lower()
-        _name = os.path.splitext(file_name)[0]
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-        trash_name = '{}_{}{}'.format(_name, now, _ext)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            logger.error("Unexpected exception listing path {} under .trash in system {}".format(file_name, system))
-            raise
-
     resp = move(client, system, path, system,
-                settings.AGAVE_DEFAULT_TRASH_NAME, trash_name)
+                settings.AGAVE_DEFAULT_TRASH_NAME, file_name)
 
     return resp
 
@@ -442,18 +417,16 @@ def upload(client, system, path, uploaded_file):
     -------
     dict
     """
-
     try:
-        listing(client, system=system, path=path)
+        file_listing = client.files.list(systemId=system, filePath=path)
+        uploaded_file.name = increment_file_name(listing=file_listing, file_name=uploaded_file.name)
     except HTTPError as err:
         if err.response.status_code != 404:
             raise
 
-    upload_name = os.path.basename(uploaded_file.name)
-
+    # the fileName param does not seem to accept a different file name
     resp = client.files.importData(systemId=system,
                                    filePath=urllib.parse.quote(path),
-                                   fileName=str(upload_name),
                                    fileToUpload=uploaded_file)
 
     agave_indexer.apply_async(kwargs={'systemId': system,

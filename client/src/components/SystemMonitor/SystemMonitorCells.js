@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge } from 'reactstrap';
+import { Pill } from '_common';
 import { shape, string, bool, number } from 'prop-types';
 
 const CELL_PROPTYPES = {
@@ -9,20 +9,16 @@ const CELL_PROPTYPES = {
 };
 
 export const Display = ({ cell: { value } }) => (
-  <span className="wb-text-primary wb-bold">{value}</span>
+  <strong className="wb-text-primary">{value}</strong>
 );
 Display.propTypes = CELL_PROPTYPES;
 
 export const Operational = ({ cell: { value } }) => (
   <>
     {value ? (
-      <Badge color="success" className="label-system-status">
-        Operational
-      </Badge>
+      <Pill type="success">Operational</Pill>
     ) : (
-      <Badge color="warning" className="label-system-status">
-        Maintenance
-      </Badge>
+      <Pill type="warning">Maintenance</Pill>
     )}
   </>
 );

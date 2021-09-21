@@ -7,7 +7,11 @@ import './JobsSessionModal.module.scss';
 const JobsSessionModal = ({ isOpen, toggle, interactiveSessionLink }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} contentClassName="session-modal">
-      <ModalHeader styleName="session-modal-header" toggle={toggle}>
+      <ModalHeader
+        styleName="session-modal-header"
+        toggle={toggle}
+        charCode="&#xe912;"
+      >
         Open Session
       </ModalHeader>
       <ModalBody styleName="session-modal-body">

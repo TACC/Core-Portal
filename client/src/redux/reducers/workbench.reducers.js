@@ -1,7 +1,9 @@
 export const initialState = {
-  loading: false,
+  loading: true,
   config: {},
-  setupComplete: window.__INITIAL_SETUP_COMPLETE__
+  portalName: '',
+  setupComplete: window.__INITIAL_SETUP_COMPLETE__,
+  hideDataFiles: false
 };
 
 export default function workbench(state = initialState, action) {

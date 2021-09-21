@@ -137,7 +137,9 @@ const DataFilesCopyModal = React.memo(() => {
       size="xl"
       className="dataFilesModal"
     >
-      <ModalHeader toggle={toggle}>Copy</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Copy
+      </ModalHeader>
       <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-6 d-flex flex-column">
@@ -163,6 +165,9 @@ const DataFilesCopyModal = React.memo(() => {
                 section="modal"
                 disabled={disabled}
                 showProjects={showProjects}
+                excludedSystems={systems
+                  .filter(s => s.scheme !== 'private')
+                  .map(s => s.system)}
               />
             </div>
             {!showProjects && (

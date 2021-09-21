@@ -1,13 +1,10 @@
 .project-members__loading {
   font-size: 1em;
-  width: inherit;
+  justify-content: flex-end;
 }
 
 .project-members__cell {
   height: 31px;
-  display: flex;
-  align-items: center;
-  font-size: 12px;
 }
 
 .project-members__loading-header {

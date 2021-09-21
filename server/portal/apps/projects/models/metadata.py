@@ -60,14 +60,12 @@ class AbstractProjectMetadata(models.Model):
         related_name='rel_co_pi_%(class)s',
         related_query_name='co_pi_%(class)s',
         blank=True,
-        null=True,
     )
     team_members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='rel_member_%(class)s',
         related_query_name='member_%(class)s',
         blank=True,
-        null=True,
     )
 
     def __str__(self):

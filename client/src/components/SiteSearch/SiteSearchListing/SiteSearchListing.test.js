@@ -4,16 +4,29 @@ import SiteSearchListing from './SiteSearchListing';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import siteSearchResults from '../fixtures/siteSearch.fixture.json';
+import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import '@testing-library/jest-dom';
 
 const mockStore = configureStore();
+const mockState = {
+  systems: systemsFixture,
+  files: {
+    modals: {
+      preview: false
+    },
+    modalProps: {
+      preview: {}
+    },
+    preview: {}
+  }
+};
 
 describe('SiteSearchListing', () => {
   it('renders cms content', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({});
-    const { getAllByRole, getByText, getAllByTestId } = renderComponent(
+    const store = mockStore(mockState);
+    const { getAllByRole, getByText, getAllByTestId, queryByTestId } = renderComponent(
       <SiteSearchListing
         filter="cms"
         loading={false}
@@ -34,12 +47,32 @@ describe('SiteSearchListing', () => {
       'href',
       'https://simcenter.designsafe-ci.org/about/test-page'
     );
+    expect(queryByTestId('select')).toBeNull();
+  });
+
+  it('renders file listing', () => {
+    const history = createMemoryHistory();
+    history.push('/search/cms/?page=1&query_string=test');
+    const store = mockStore(mockState);
+    const { getAllByRole, getByText, getByTestId } = renderComponent(
+      <SiteSearchListing
+        filter="public"
+        loading={false}
+        error={null}
+        results={siteSearchResults.public}
+      />,
+      store,
+      history
+    );
+
+    expect(getByText(/Test data/)).toBeDefined();
+    expect(getByTestId('selector')).toBeDefined();
   });
 
   it('renders loading spinner', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({});
+    const store = mockStore(mockState);
     const { getByTestId } = renderComponent(
       <SiteSearchListing
         filter="cms"
@@ -57,7 +90,7 @@ describe('SiteSearchListing', () => {
   it('renders warning when no results', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({});
+    const store = mockStore(mockState);
     const { getByText } = renderComponent(
       <SiteSearchListing
         filter="cms"
@@ -75,7 +108,7 @@ describe('SiteSearchListing', () => {
   it('renders error message', () => {
     const history = createMemoryHistory();
     history.push('/search/cms/?page=1&query_string=test');
-    const store = mockStore({});
+    const store = mockStore(mockState);
     const { getByText } = renderComponent(
       <SiteSearchListing
         filter="cms"

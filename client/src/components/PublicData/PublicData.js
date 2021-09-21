@@ -1,14 +1,15 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 import {
-  useLocation,
   useHistory,
   Switch,
   Route,
-  useParams
+  useParams,
+  useLocation
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { LoadingSpinner } from '_common';
+import { parse } from 'query-string';
+import { Section, SectionTableWrapper, LoadingSpinner } from '_common';
 import DataFilesBreadcrumbs from '../DataFiles/DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesListing from '../DataFiles/DataFilesListing/DataFilesListing';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
@@ -17,10 +18,9 @@ import { ToolbarButton } from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 import './PublicData.module.css';
 
 const PublicData = () => {
-  const { pathname } = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
-
+  const location = useLocation();
   const publicDataSystem = useSelector(
     state =>
       state.systems.storage.configuration.find(
@@ -44,16 +44,17 @@ const PublicData = () => {
 
   useLayoutEffect(() => {
     dispatch({ type: 'FETCH_SYSTEMS' });
-  }, [pathname]);
+  }, []);
 
   useEffect(() => {
-    if (publicDataSystem.system) {
+    const pathLength = location.pathname.split('/').length;
+    if (publicDataSystem.system && pathLength < 6) {
       history.push(`/public-data/tapis/public/${publicDataSystem.system}/`);
     }
   }, [publicDataSystem.system]);
 
   return (
-    <div>
+    <>
       <Switch>
         <Route path="/public-data/:api/:scheme/:system/:path*">
           {publicDataSystem.system ? (
@@ -69,13 +70,14 @@ const PublicData = () => {
         </Route>
       </Switch>
       <DataFilesPreviewModal />
-    </div>
+    </>
   );
 };
 
 const PublicDataListing = ({ canDownload, downloadCallback }) => {
   const { api, scheme, system, path } = useParams();
   const dispatch = useDispatch();
+  const queryString = parse(useLocation().search).query_string;
   useLayoutEffect(() => {
     dispatch({
       type: 'FETCH_FILES',
@@ -84,16 +86,19 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
         system,
         scheme,
         path: path || '',
+        queryString,
         section: 'FilesListing'
       }
     });
-  }, [path]);
+  }, [path, queryString]);
 
   return (
-    <div styleName="container">
-      <div styleName="header">
+    <Section
+      // HACK: Replicate wrapper class gives button correct global style
+      // WARNING: Applies unused and redundant `.workbench-content` styles
+      className="workbench-content"
+      header={
         <DataFilesBreadcrumbs
-          styleName="header-title"
           api={api}
           scheme={scheme}
           system={system}
@@ -101,21 +106,26 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
           section="FilesListing"
           isPublic
         />
+      }
+      headerActions={
         <ToolbarButton
           text="Download"
           iconName="download"
           onClick={downloadCallback}
           disabled={!canDownload}
         />
-      </div>
-      <DataFilesListing
-        api={api}
-        scheme={scheme}
-        system={system}
-        path={path || '/'}
-        isPublic
-      />
-    </div>
+      }
+    >
+      <SectionTableWrapper styleName="content" manualContent>
+        <DataFilesListing
+          api={api}
+          scheme={scheme}
+          system={system}
+          path={path || '/'}
+          isPublic
+        />
+      </SectionTableWrapper>
+    </Section>
   );
 };
 PublicDataListing.propTypes = {

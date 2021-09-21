@@ -27,7 +27,7 @@ const Paginator = ({ pages, current, callback, spread }) => {
   if (pages === 1) {
     end = 0;
     start = 1;
-  } else if (pages > 2 && pages < spread) {
+  } else if (pages > 2 && pages <= spread) {
     start = 2;
     end = pages - 1;
   } else if (pages > spread && current <= 4) {

@@ -9,9 +9,6 @@
   align-items: stretch;
 
   border-bottom: 1px solid #707070;
-
-  /* FP-404: All Portal section sidebars should use this value. */
-  --min-width: 200px;
 }
 #appBrowser-sidebar,
 #appBrowser-tray .apps-grid-list {
@@ -29,13 +26,15 @@
   padding-bottom: var(--vertical-buffer);
 }
 
-#appBrowser-sidebar {
-    margin-left: -20px;
+#appBrowser-sidebar,
+#appBrowser-tray {
+  --horizontal-buffer: var(--global-space--section-left);
 }
-#appBrowser-sidebar .nav-item {
-  /* Define minimum width of list and minimum width of columns in list */
-  /* NOTE: Wes B. does not know how to do this using CSS Grid. Help is welcome. */
-  min-width: var(--min-width);
+#appBrowser-sidebar {
+  --min-width: 200px;
+
+  margin-left: calc(var(--horizontal-buffer) * -1);
+  border-right: 1px solid rgba(112, 112, 112, 0.25);
 }
 /* Overwrite browser styles */
 /* FAQ: Combining ID and classname is overspecific, but it is accurate,
@@ -47,23 +46,23 @@ ul#appBrowser-sidebar {
 
 #appBrowser-sidebar .nav-link,
 #appBrowser-tray .nav-link {
-  color: #707070;
-  border-radius: 0;
-  cursor: pointer; /* RFE: Add `href` on links to both avoid needing this style and provide URL to app state */
-  border: none;
+  min-width: var(--min-width);
+  padding-left: var(--horizontal-buffer);
+  color: var(--global-color-primary--dark);
 
   white-space: nowrap;
 }
-
-#appBrowser-sidebar .nav-link.active,
-#appBrowser-tray .nav-link.active {
-  background: #dfdaf5;
-  border: none;
+#appBrowser-sidebar .nav-link {
+  /* RFE: Add `href` on links to: obviate this CSS, provide URL to app state */
+  cursor: pointer;
 }
 
+#appBrowser-sidebar .nav-link.active,
+#appBrowser-tray .nav-link.active,
 #appBrowser-sidebar .nav-link:hover,
 #appBrowser-tray .nav-link:hover {
-  background: #d9d1ff;
+  color: var(--global-color-primary--x-dark);
+  background: var(--global-color-accent--weak);
   border: none;
 }
 
@@ -71,11 +70,6 @@ ul#appBrowser-sidebar {
   flex-grow: 1;
 
   background-color: #f4f4f4;
-  border-left: 1px solid rgba(112, 112, 112, 0.25);
-
-  .apps-grid-item {
-    min-width: var(--min-width);
-  }
 }
 
 #appBrowser-sidebar .nav-text,

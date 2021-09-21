@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -19,6 +19,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
     state => state.files.params.modal,
     shallowEqual
   );
+  const selectRef = React.useRef();
   const onOpened = () => {
     const systemParams = {
       api: 'tapis',
@@ -37,15 +38,11 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
       }
     });
   };
-
   const selectCallback = (system, path) => {
     onSelect(system, path);
     toggle();
   };
 
-  useEffect(() => {
-    dispatch({ type: 'FETCH_SYSTEMS' });
-  }, [dispatch]);
   return (
     <Modal
       isOpen={isOpen}
@@ -53,8 +50,11 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
       toggle={toggle}
       size="xl"
       className="dataFilesModal"
+      ref={selectRef}
     >
-      <ModalHeader toggle={toggle}>Select</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Select
+      </ModalHeader>
       <ModalBody style={{ height: '70vh' }}>
         <div className="row h-100">
           <div className="col-md-12 d-flex flex-column">
@@ -65,6 +65,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
                 systemId={(systems[0] || modalParams).system}
                 section="modal"
                 excludedSystems={['googledrive']}
+                showProjects={showProjects}
               />
             </div>
             <div>

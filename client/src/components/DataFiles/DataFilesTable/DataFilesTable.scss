@@ -8,7 +8,7 @@
 .tr {
   display: flex;
   align-items: center;
-  font-size: 16px;
+  font-size: 0.875rem; /* 14px (approved deviation from design) */
   border-bottom: 1px solid #e0e0e0;
 }
 .tr-background-shading {
@@ -25,16 +25,22 @@
   justify-content: center;
 }
 .tr-selected:not(.scroll):not(.tr-header) {
-  background: #9d85ef40;
+  background: var(--global-color-accent--weak);
 }
 
 .td {
   padding-left: 15px;
   padding-right: 15px;
+  flex-grow: 1;
 }
 
+/* NOTE: Mimicked on: DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */
 .listing-placeholder {
+  flex-grow: 1;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  overflow-y: auto; /* to allow content to scroll when window height is short */
 }

@@ -1,6 +1,6 @@
 import getFilePermissions from './filePermissions';
 
-const fixture = {
+const privateFixture = {
   files: [
     {
       name: 'test.tar.gz',
@@ -11,6 +11,19 @@ const fixture = {
     },
   ],
   scheme: 'private',
+  api: 'tapis',
+};
+const publicFixture = {
+  files: [
+    {
+      name: 'test.txt',
+      path: '/test/test.txt',
+      lastModified: '2020-08-01T00:00:00-05:00',
+      system: 'frontera.home.test',
+      type: 'file',
+    },
+  ],
+  scheme: 'public',
   api: 'tapis',
 };
 describe('getFilePermissions utility function', () => {
@@ -24,9 +37,14 @@ describe('getFilePermissions utility function', () => {
     'compress',
   ])('Correctly evaluate %s permission', (pem) => {
     if (pem !== 'compress') {
-      expect(getFilePermissions(pem, fixture)).toEqual(true);
+      expect(getFilePermissions(pem, privateFixture)).toEqual(true);
     } else {
-      expect(getFilePermissions(pem, fixture)).toEqual(false);
+      expect(getFilePermissions(pem, privateFixture)).toEqual(false);
+    }
+    if (['copy', 'download'].includes(pem)) {
+      expect(getFilePermissions(pem, publicFixture)).toEqual(true);
+    } else {
+      expect(getFilePermissions(pem, publicFixture)).toEqual(false);
     }
   });
 });

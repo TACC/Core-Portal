@@ -1,8 +1,8 @@
 .container {
   font-size: 0.75em;
-  font-weight: 500;
+  font-weight: bold;
 
   &:hover {
-    color: #9d85ef;
+    color: var(--global-color-accent--normal);
   }
 }

@@ -1,16 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCheckSquare,
-  faSquare as filledSquare
-} from '@fortawesome/free-solid-svg-icons';
-import { faSquare } from '@fortawesome/free-regular-svg-icons';
-import { Icon } from '_common';
+import { Checkbox, Icon } from '_common';
 import { Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
+
+import formatSize from 'utils/sizeFormat';
+import { formatDateTimeFromValue } from 'utils/timeFormat';
 
 export const CheckboxHeaderCell = () => {
   const selected = useSelector(state => state.files.selectAll.FilesListing);
@@ -27,22 +24,13 @@ export const CheckboxHeaderCell = () => {
   };
   const handleKeyPress = e => e.key === 'enter' && toggleSelect();
   return (
-    <>
-      <span
-        role="button"
-        tabIndex={-1}
-        className="fa-layers fa-fw"
-        onClick={toggleSelect}
-        onKeyDown={handleKeyPress}
-      >
-        <FontAwesomeIcon icon={filledSquare} color="white" />
-        <FontAwesomeIcon
-          icon={selected ? faCheckSquare : faSquare}
-          color="#9D85EF"
-        />
-        <FontAwesomeIcon icon={faSquare} color="#707070" />
-      </span>
-    </>
+    <Checkbox
+      isChecked={selected}
+      role="button"
+      tabIndex={0}
+      onClick={toggleSelect}
+      onKeyDown={handleKeyPress}
+    />
   );
 };
 
@@ -50,18 +38,7 @@ export const CheckboxCell = React.memo(({ index }) => {
   const selected = useSelector(state =>
     state.files.selected.FilesListing.includes(index)
   );
-  return (
-    <>
-      <span className="fa-layers fa-fw">
-        <FontAwesomeIcon icon={filledSquare} color="white" />
-        <FontAwesomeIcon
-          icon={selected ? faCheckSquare : faSquare}
-          color="#9D85EF"
-        />
-        <FontAwesomeIcon icon={faSquare} color="#707070" />
-      </span>
-    </>
-  );
+  return <Checkbox isChecked={selected} />;
 });
 CheckboxCell.propTypes = {
   index: PropTypes.number.isRequired
@@ -122,37 +99,17 @@ FileNavCell.defaultProps = {
 
 export const FileLengthCell = ({ cell }) => {
   const bytes = cell.value;
-  const units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
-  const number = bytes === 0 ? 0 : Math.floor(Math.log(bytes) / Math.log(1024));
-  const bytesString = (bytes / 1024 ** Math.floor(number)).toFixed(1);
 
-  return (
-    <span>
-      {bytesString} {units[number]}
-    </span>
-  );
+  return <span>{formatSize(bytes)}</span>;
 };
 FileLengthCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.number }).isRequired
 };
 
 export const LastModifiedCell = ({ cell }) => {
-  const date = new Date(cell.value);
-  const dateString = date.toLocaleDateString(undefined, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
-  const timeString = date.toLocaleTimeString(undefined, {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-  return (
-    <span>
-      {dateString} {timeString}
-    </span>
-  );
+  const timeValue = cell.value;
+
+  return <span>{formatDateTimeFromValue(timeValue)}</span>;
 };
 LastModifiedCell.propTypes = {
   cell: PropTypes.shape({ value: PropTypes.string }).isRequired
@@ -187,7 +144,7 @@ export const ViewPathCell = ({ file }) => {
     });
   };
   return (
-    <Button color="link" onClick={onClick}>
+    <Button className="btn btn-sm" color="link" onClick={onClick}>
       View Path
     </Button>
   );

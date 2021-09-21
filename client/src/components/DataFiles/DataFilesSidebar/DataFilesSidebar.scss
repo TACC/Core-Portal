@@ -1,32 +1,38 @@
-$data-files-wrapper-horizontal-padding: 20px;
-$core-portal-color-primary: #9d85ef;
-
 .data-files-sidebar {
-  width: 165px;
-  background: #ffffff;
-  padding-top: 10px;
+  --horizontal-buffer: var(--global-space--section-left);
+  /* FAQ: Design is inconsistent across sections, but averages about `10.5px` */
+  --vertical-buffer: 0.75rem; /* ~12px (avg. 10.5px design * 1.2 design-to-app ratio */
+
+  --min-width: 200px;
+
+  margin-left: calc(var(--horizontal-buffer) * -1);
   border-right: 1px solid rgba(112, 112, 112, 0.25);
-  height: 100%;
+
+  padding-top: var(--vertical-buffer);
 }
 
 .data-files-sidebar .nav-link {
-  padding-left: $data-files-wrapper-horizontal-padding;
-  color: #707070;
+  min-width: var(--min-width);
+
+  padding-left: var(--horizontal-buffer);
+  color: var(--global-color-primary--dark);
 }
 
-.data-files-sidebar .nav-link.active {
-  background: #dfdaf5;
+.data-files-sidebar .nav-link.active,
+.data-files-sidebar .nav-link:hover {
+  color: var(--global-color-primary--x-dark);
+  background: var(--global-color-accent--weak);
 }
 
 .data-files-sidebar .nav-text {
-  padding-left: 15px;
+  padding-left: 16px;
   font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
   font-weight: 500;
 }
 
 .data-files-btn {
-  background-color: #9d85ef;
-  border-color: #9d85ef;
+  background-color: var(--global-color-accent--normal);
+  border-color: var(--global-color-accent--normal);
   border-radius: 0;
 }
 
@@ -34,21 +40,21 @@ $core-portal-color-primary: #9d85ef;
   border-radius: 0;
 }
 
+#add-button-wrapper {
+  padding-left: var(--horizontal-buffer);
+}
 #data-files-add {
   width: 140px;
 }
 
 .data-files-nav {
   padding-top: 20px;
-  /* Pull back sidebar to the left, so it can use (as UI design dictactes)
-      the negative space created from `data-files-wrapper`'s `padding` */
-  margin-left: -$data-files-wrapper-horizontal-padding;
 }
 
 /* HACK: Quick solution to prevent styles from cascading into header dropdown */
 .data-files-sidebar {
   .dropdown-menu {
-    border-color: $core-portal-color-primary;
+    border-color: var(--global-color-accent--normal);
     border-radius: 0;
     margin-top: 11px;
     padding: 0;
@@ -60,7 +66,7 @@ $core-portal-color-primary: #9d85ef;
     top: -10px;
     left: 65px;
     border-right: 10px solid transparent;
-    border-bottom: 10px solid $core-portal-color-primary;
+    border-bottom: 10px solid var(--global-color-accent--normal);
     border-left: 10px solid transparent;
     content: '';
   }
@@ -89,7 +95,10 @@ $core-portal-color-primary: #9d85ef;
   }
   .dropdown-item:focus,
   .dropdown-item:hover {
-    background-color: #E6E0FB;
+    /* FAQ: Before FP-1083, value was #E6E0FB, which matched Design
+            and was `--global-color-accent` at 25% opacity on white…
+            which is what `--global-color-accent--weak` is now */
+    background-color: var(--global-color-accent--weak);
   }
 }
 
@@ -104,6 +113,6 @@ $core-portal-color-primary: #9d85ef;
   line-height: 1.1em;
   small {
     display: block;
-    color: #484848;
+    color: var(--global-color-primary--xx-dark);
   }
 }

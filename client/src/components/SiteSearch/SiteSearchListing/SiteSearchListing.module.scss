@@ -1,21 +1,35 @@
 .sitesearch-cms-item {
-  padding-bottom: 20px;
+  padding-bottom: 15px;
+  padding-left: var(--space--listing-horz);
+
+  font-size: 12px; /* 10px design * 1.2 design-to-app ratio */
 }
 
-.sitesearch-cms-item .wb-link {
-  color: #9d85ef;
+.sitesearch-cms-item a {
+  font-weight: bold;
+  /* NOTE: Would get this from `.wb-link`, but its styles rely on `.workbench` container, which is (correctly) not part of site search */
+  color: var(--global-color-accent--normal);
 }
 
-.header {
+.cms-header {
   border-bottom: 1px solid #707070;
-  margin-bottom: 20px;
+  padding-left: var(--space--listing-horz);
+  padding-bottom: var(--space--listing-vert);
+  font-size: 14px; /* 12px design * 1.2 design-to-app ratio */
 }
-
-.header h5 {
-  font-weight: 400;
+.for-cms .header {
+  margin-bottom: 30px; /* 24.5 design * 1.2 design-to-app ratio */
+}
+.for-public .header,
+.for-community .header,
+.is-empty .header {
+  margin-bottom: 0; /* Overwrite Bootstrap */
 }
 
 .container {
+  --space--listing-horz: 11px; /* 9.5px design * 1.2 design-to-app ratio */
+  --space--listing-vert: 15px; /* 12.5px design * 1.2 design-to-app ratio */
+
   // FAQ: Extra padding is added to bottom only for this section
   padding: 20px 40px 40px 25px;
   display: flex;
@@ -24,13 +38,12 @@
 }
 
 .placeholder {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin: 25px var(--space--listing-horz);
 }
 
 .paginator-container {
   display: flex;
   justify-content: center;
+
+  margin-top: var(--space--listing-vert);
 }

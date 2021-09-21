@@ -539,7 +539,8 @@ export function* preview(action) {
       action.payload.scheme,
       action.payload.system,
       action.payload.path,
-      action.payload.href
+      action.payload.href,
+      action.payload.length
     );
     yield put({
       type: 'DATA_FILES_SET_PREVIEW_CONTENT',
@@ -558,8 +559,8 @@ export function* preview(action) {
   }
 }
 
-export async function previewUtil(api, scheme, system, path, href) {
-  const q = stringify({ href });
+export async function previewUtil(api, scheme, system, path, href, length) {
+  const q = stringify({ href, length });
   const url = `/api/datafiles/${api}/preview/${scheme}/${system}${path}/?${q}`;
   const request = await fetch(url);
   const requestJson = await request.json();
@@ -681,8 +682,8 @@ export function* fileLink(action) {
   }
 }
 
-export async function downloadUtil(api, scheme, system, path, href) {
-  const q = stringify({ href });
+export async function downloadUtil(api, scheme, system, path, href, length) {
+  const q = stringify({ href, length });
   const url = `/api/datafiles/${api}/download/${scheme}/${system}${path}/?${q}`;
   const request = await fetch(url);
 
@@ -706,13 +707,15 @@ export function* watchDownload() {
 
 export function* download(action) {
   const { href } = action.payload.file._links.self;
+  const { length } = action.payload.file;
   yield call(
     downloadUtil,
     'tapis',
     'private',
     action.payload.file.system,
     action.payload.file.path,
-    href
+    href,
+    length
   );
 }
 
@@ -774,7 +777,7 @@ export const getLatestApp = async name => {
       name
     }
   });
-  const apps = res.response;
+  const apps = res.response.appListing;
   const latestApp = apps
     .filter(app => app.id.includes(name))
     .reduce(

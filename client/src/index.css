@@ -12,15 +12,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  color: var(--global-color-primary--xx-dark); /* overwrite Bootstrap */
+
   /* Allow components to overwrite minimum width and height of body */
   /* FAQ: Use variable to isolate value from application of value */
   /* WARNING: Must use a unit, NOT a keyword (which would break any `calc()`) */
   /* stylelint-disable length-zero-no-unit */
-  --min-height: 0px;
-  --min-width: 0px;
+  min-height: var(--min-height, 0);
+  min-width: var(--min-width, 0);
   /* stylelint-enable length-zero-no-unit */
-  min-height: var(--min-height);
-  min-width: var(--min-width);
 }
 
 /*

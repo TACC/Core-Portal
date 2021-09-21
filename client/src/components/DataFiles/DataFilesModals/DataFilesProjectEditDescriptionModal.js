@@ -3,10 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
-import { LoadingSpinner } from '_common';
+import { LoadingSpinner, Message } from '_common';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import './DataFilesProjectEditDescription.module.scss';
 
 const DataFilesProjectEditDescriptionModal = () => {
@@ -63,14 +61,20 @@ const DataFilesProjectEditDescriptionModal = () => {
 
   const validationSchema = Yup.object().shape({
     title: Yup.string()
-      .min(1)
+      .min(3, 'Title must be at least 3 characters')
+      .max(150, 'Title must be at most 150 characters')
       .required('Please enter a title.'),
-    description: Yup.string()
+    description: Yup.string().max(
+      800,
+      'Description must be at most 800 characters'
+    )
   });
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} className="dataFilesModal">
-      <ModalHeader toggle={toggle}>Edit Descriptions</ModalHeader>
+      <ModalHeader toggle={toggle} charCode="&#xe912;">
+        Edit Descriptions
+      </ModalHeader>
       <ModalBody>
         <Formik
           initialValues={initialValues}
@@ -79,14 +83,38 @@ const DataFilesProjectEditDescriptionModal = () => {
         >
           {({ isValid, dirty }) => (
             <Form>
-              <FormField name="title" label="Workspace Title" />
+              <FormField
+                name="title"
+                aria-label="title"
+                label={
+                  <div>
+                    Workspace Title{' '}
+                    <small>
+                      <em>(Maximum 150 characters)</em>
+                    </small>
+                  </div>
+                }
+              />
               <FormField
                 name="description"
-                label="Workspace Description"
+                aria-label="description"
+                label={
+                  <div>
+                    Workspace Description{' '}
+                    <small>
+                      <em>(Maximum 800 characters)</em>
+                    </small>
+                  </div>
+                }
                 type="textarea"
                 styleName="description-textarea"
               />
               <div styleName="button-container">
+                {updatingError && (
+                  <Message type="error" dataTestid="updating-error">
+                    Something went wrong.
+                  </Message>
+                )}
                 <Button
                   type="submit"
                   className="data-files-btn"
@@ -94,12 +122,6 @@ const DataFilesProjectEditDescriptionModal = () => {
                   disabled={isUpdating || !isValid || !dirty}
                 >
                   {isUpdating && <LoadingSpinner placement="inline" />}
-                  {updatingError && (
-                    <FontAwesomeIcon
-                      icon={faExclamationCircle}
-                      data-testid="updating-error"
-                    />
-                  )}
                   Update Changes
                 </Button>
               </div>

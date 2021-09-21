@@ -13,6 +13,8 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+pytestmark = pytest.mark.django_db
+
 
 @pytest.fixture()
 def agave_client(mocker):
@@ -25,29 +27,11 @@ def mock_signal(mocker):
 
 
 @pytest.fixture()
-def service_account(mocker):
-    yield mocker.patch('portal.apps.projects.models.base.service_account')
-
-
-@pytest.fixture()
-def project_model(mocker):
-    mocker.patch('portal.apps.projects.models.base.Project._create_dir')
-    mocker.patch('portal.apps.projects.models.base.Project._delete_dir')
-    yield Project
-
-
-@pytest.fixture()
-def mock_storage_system(mocker):
-    yield mocker.patch('portal.apps.projects.models.base.StorageSystem')
-
-
-@pytest.fixture()
 def mock_owner(django_user_model):
     return django_user_model.objects.create_user(username='username',
                                                  password='password')
 
 
-@pytest.mark.django_db
 def test_project_init(mock_agave_client, mock_storage_system, project_model, mock_signal):
     'Test project model init.'
     mock_storage_system.return_value.description = 'my title'
@@ -87,17 +71,9 @@ def test_project_create(mock_owner, mock_agave_client, service_account, mock_sto
                                                     '-----END RSA PRIVATE KEY-----')
 
 
-def test_listing(mock_owner, service_account, mock_agave_client, mock_storage_system, project_model, mock_signal):
+def test_listing(mock_storage_system, mock_signal, mock_projects_storage_systems):
     'Test projects listing.'
-    prj1 = project_model.create(mock_agave_client, 'First Project', 'PRJ-123', mock_owner)
-    prj1.storage.name = 'PRJ-123'
-    prj2 = project_model.create(mock_agave_client, 'Second Project', 'PRJ-124', mock_owner)
-    prj2.storage.name = 'PRJ-123'
-
-    mock_storage_system.search.return_value = [
-        prj1.storage,
-        prj2.storage,
-    ]
+    mock_storage_system.search.return_value = mock_projects_storage_systems
 
     lst = list(Project.listing(agave_client))
 

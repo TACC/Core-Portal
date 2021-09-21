@@ -1,3 +1,4 @@
+/* FP-993: Allow use by DataFilesUploadModal */
 import React from 'react';
 import { useField } from 'formik';
 import { FormGroup, FormText, Label } from 'reactstrap';
@@ -15,7 +16,10 @@ function FileInputDropZoneFormField({
   const [field, , helpers] = useField(id);
 
   const onSetFiles = acceptedFiles => {
-    helpers.setValue([...field.value, ...acceptedFiles]);
+    const newAcceptedFiles = acceptedFiles.filter(
+      f => field.value.filter(af => af.path === f.path).length === 0
+    );
+    helpers.setValue([...field.value, ...newAcceptedFiles]);
   };
   const onRemoveFile = fileIndex => {
     const files = field.value;
