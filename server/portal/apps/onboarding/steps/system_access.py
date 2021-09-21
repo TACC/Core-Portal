@@ -12,7 +12,6 @@ class SystemAccessStep(ProjectMembershipStep):
         Call super class constructor
         """
         super(SystemAccessStep, self).__init__(user)
-        self.project = self.get_tas_project()
         self.user_confirm = "Request System Access"
         self.staff_deny = "Deny System Access Request"
 
@@ -36,9 +35,9 @@ class SystemAccessStep(ProjectMembershipStep):
         resources = []
         try:
             resources = get_allocations(self.user.username)['hosts'].keys()
-            # If the intersection of the set of systems and resources has items,
+            # If the required systems are a subset of the user's resources,
             # the user has the necessary allocation
-            return len(set(systems).intersection(resources)) > 0
+            return set(systems).issubset(set(resources))
         except Exception as e:
             logger.error(e)
             self.fail("We were unable to retrieve your allocations.")
