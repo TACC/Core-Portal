@@ -34,13 +34,13 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
     try:
         filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).__next__()
         index_level(filePath, folders, files, systemId, reindex=reindex)
-        if recurse:
-            for child in folders:
-                self.delay(systemId, filePath=child.path, reindex=reindex)
     except Exception as exc:
         logger.error("Error walking files under system {} and path {}".format(systemId, filePath))
         raise self.retry(exc=exc)
 
+    if recurse:
+        for child in folders:
+            self.delay(systemId, filePath=child.path, reindex=reindex)
 
 @shared_task(bind=True, max_retries=3, queue='default')
 def agave_listing_indexer(self, listing):
