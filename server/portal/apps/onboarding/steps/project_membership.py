@@ -222,7 +222,7 @@ class ProjectMembershipStep(AbstractStep):
                     )
                 )
             except Exception as err:
-                logger.exception(msg="Error during staff_approve on {}".format(self.__class__.step_name()))
+                logger.exception(msg="Error during staff_approve on {}".format(self.step_name()))
                 logger.error(err.args)
                 self.fail(
                     "An error occurred while trying to add this user to the project"
