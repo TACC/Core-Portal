@@ -192,13 +192,6 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'settings': {}
     },
     {
-        'step': 'portal.apps.onboarding.steps.system_access.SystemAccessStep',
-        'settings': {
-            'required_systems': ['stampede2.tacc.utexas.edu', 'ls5.tacc.utexas.edu'],
-            'project_sql_id': 40534,
-        }
-    },
-    {
         'step': 'portal.apps.onboarding.steps.key_service_creation.KeyServiceCreationStep',
         'settings': {}
     }
