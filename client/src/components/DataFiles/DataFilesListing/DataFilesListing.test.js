@@ -246,7 +246,7 @@ describe('DataFilesListing', () => {
     );
   });
 
-  it('does not render the Shared Workspaces component', () => {
+  it('does not render the DataFilesSearchbar in the Shared Workspaces component when hideSearchBar is true', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/projects/');
 
