@@ -486,14 +486,15 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'name': 'Shared Workspaces',
         'scheme': 'projects',
         'api': 'tapis',
-        'icon': None
+        'icon': 'publications'
     },
     {
         'name': 'Google Drive',
         'system': 'googledrive',
         'scheme': 'private',
         'api': 'googledrive',
-        'icon': None
+        'icon': None,
+        'integration': 'portal.apps.googledrive_integration'
     },
     {
         'name': 'Public Data',

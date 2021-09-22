@@ -1,9 +1,10 @@
 from importlib import import_module
+from django.conf import settings
 import logging
 
 
 logger = logging.getLogger(__name__)
-INTEGRATION_APPS = ['portal.apps.googledrive_integration']
+INTEGRATION_APPS = [s['integration'] for s in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS if 'integration' in s]
 
 
 def get_integrations(request):

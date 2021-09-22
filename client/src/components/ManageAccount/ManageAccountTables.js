@@ -4,7 +4,7 @@ import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { shape, string, arrayOf, bool } from 'prop-types';
 import { SectionHeader, SectionTableWrapper } from '_common';
-import { GoogleDriveModal } from './ManageAccountModals';
+import { IntegrationModal } from './ManageAccountModals';
 import './ManageAccount.scss';
 
 export const TableTemplate = ({ attributes }) => {
@@ -172,6 +172,7 @@ LicenseCell.propTypes = {
 /* eslint-enable react/no-danger */
 export const Licenses = () => {
   const { licenses } = useSelector(state => state.profile.data);
+
   const columns = useMemo(
     () =>
       licenses.map(license => {
@@ -195,24 +196,7 @@ export const Licenses = () => {
 };
 
 export const IntegrationCell = ({ cell: { value } }) => {
-  const { activated, label } = value;
-  switch (label) {
-    case 'Google Drive':
-      return <GoogleDriveIntegrationCell activated={activated} />;
-    default:
-      return <></>;
-  }
-};
-IntegrationCell.propTypes = {
-  cell: shape({
-    value: shape({
-      activated: bool.isRequired,
-      label: string.isRequired
-    })
-  }).isRequired
-};
-
-export const GoogleDriveIntegrationCell = ({ activated }) => {
+  const { activated, label, disconnect, connect } = value;
   const [modal, setModal] = React.useState(false);
   const toggle = () => setModal(!modal);
   return (
@@ -224,10 +208,7 @@ export const GoogleDriveIntegrationCell = ({ activated }) => {
     >
       {activated ? (
         <div>
-          <a
-            className="wb-link"
-            href="/accounts/applications/googledrive/disconnect/"
-          >
+          <a className="wb-link" href={disconnect}>
             Disconnect
           </a>
         </div>
@@ -239,16 +220,28 @@ export const GoogleDriveIntegrationCell = ({ activated }) => {
             onClick={toggle}
             className="license-button"
           >
-            Setup Google Drive
+            Setup {label}
           </Button>
         </div>
       )}
-      <GoogleDriveModal active={modal} toggle={toggle} />
+      <IntegrationModal
+        active={modal}
+        toggle={toggle}
+        connect={connect}
+        label={label}
+      />
     </div>
   );
 };
-GoogleDriveIntegrationCell.propTypes = {
-  activated: bool.isRequired
+IntegrationCell.propTypes = {
+  cell: shape({
+    value: shape({
+      activated: bool.isRequired,
+      label: string.isRequired,
+      disconnect: string.isRequired,
+      connect: string.isRequired
+    })
+  }).isRequired
 };
 
 export const Integrations = () => {

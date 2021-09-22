@@ -32,7 +32,6 @@ const DataFilesSidebar = ({ readOnly }) => {
     state => state.systems.storage.configuration,
     shallowEqual
   );
-  const { user } = useSelector(state => state.authenticatedUser);
 
   const sharedWorkspaces = systems.find(e => e.scheme === 'projects');
 
@@ -51,16 +50,10 @@ const DataFilesSidebar = ({ readOnly }) => {
       type: 'PROJECTS_CLEAR_OPERATION'
     });
     dispatch({
-      type: 'PROJECTS_MEMBER_LIST_SET',
-      payload: [{ user, access: 'owner' }]
-    });
-    dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'addproject', props: {} }
     });
   };
-
-  const writeItemStyle = readOnly ? 'read-only' : '';
 
   const match = useRouteMatch();
 
@@ -69,6 +62,8 @@ const DataFilesSidebar = ({ readOnly }) => {
     err !== false ||
     api !== 'tapis' ||
     (scheme !== 'private' && scheme !== 'projects');
+
+  const writeItemStyle = disabled ? 'read-only' : '';
 
   return (
     <div styleName="root">

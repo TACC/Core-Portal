@@ -46,32 +46,30 @@ const initialMockState = {
 };
 
 describe('CheckBoxCell', () => {
-  it('shows checkbox when checked', () => {
+  it('box is checked when selected', () => {
     const history = createMemoryHistory();
     const store = mockStore({ files: { selected: { FilesListing: [0] } } });
-    const { getAllByRole } = renderComponent(
+    const { getByRole } = renderComponent(
       <CheckboxCell index={0} />,
       store,
       history
     );
     expect(
-      getAllByRole('img', { hidden: true })[1].getAttribute('data-icon')
-    ).toEqual('check-square');
+      getByRole('checkbox').getAttribute('aria-checked')
+    ).toEqual('true');
   });
 
-  it('shows square when unchecked', () => {
+  it('box is unchecked when not selected', () => {
     const history = createMemoryHistory();
     const store = mockStore({ files: { selected: { FilesListing: [] } } });
-    const { getAllByRole } = renderComponent(
+    const { getByRole } = renderComponent(
       <CheckboxCell index={0} />,
       store,
       history
     );
     expect(
-      getAllByRole('img', { hidden: true })
-        .pop()
-        .getAttribute('data-icon')
-    ).toEqual('square');
+      getByRole('checkbox').getAttribute('aria-checked')
+    ).toEqual('false');
   });
 });
 

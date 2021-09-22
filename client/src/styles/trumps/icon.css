@@ -1,13 +1,24 @@
 /* TRUMPS: Icons */
 @import url('./icon.fonts.css');
 
-.icon {
+.icon,
+.icon-set {
   width: 1em;
   height: 1em;
   font-size: 1.125rem; /* ~18px (16px design * 1.2 design-to-app ratio) (rounded) */
   vertical-align: middle;
   display: inline-flex; /* `flex` to align `::before`; `inline` to not trigger new line */
                         /* a modern slimmer alternative to `&::before { display: block; }` */
+}
+
+/* To layer multiple icons atop each other, wrap them in this */
+.icon-set { position: relative; }
+.icon-set > .icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }
 
 /* Aliases */
@@ -25,3 +36,22 @@
 .btn .loading-icon + span {
   vertical-align: middle;
 }
+
+
+
+/* Placeholders */
+/* FAQ: Some icons do not exist, but can be faked (with caveats) */
+
+/* To create a small "chevron" */
+/* CAVEAT: Use `--color` to set color */
+[class*="icon-nav-"] {
+  border: solid var(--color, var(--global-color-primary--xx-dark));
+  border-width: 0 0.25em 0.25em 0;
+  font-size: 8px;
+  /* display: inline-block; *//* let `.icon`'s `display: inline-flex;` do it */
+  /* padding: var(--size); *//* let `.icon`'s equal `width` & `height` do it */
+}
+.icon-nav-up { transform: rotate(-135deg); }
+.icon-nav-left { transform: rotate(135deg); }
+.icon-nav-down { transform: rotate(45deg); }
+.icon-nav-right { transform: rotate(-45deg); }

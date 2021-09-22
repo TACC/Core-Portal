@@ -135,7 +135,6 @@ const DataFilesBreadcrumbs = ({
       pathComps.push(curr);
       return comp;
     }, '');
-
   const root = findSystemOrProjectDisplayName(
     scheme,
     systemList,

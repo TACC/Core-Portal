@@ -3,19 +3,19 @@ import { render } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import WelcomeMessage from './WelcomeMessage';
+import IntroMessage from './IntroMessage';
 
 const mockStore = configureStore();
 const store = mockStore({});
 
-describe('WelcomeMessage', () => {
+describe('IntroMessage', () => {
   describe('elements', () => {
     it('includes class, message, and role appropriately', () => {
       const { container, getByRole, getByText } = render(
         <Provider store={store}>
-          <WelcomeMessage className="test-class" messageName="TEST">
+          <IntroMessage className="test-class" messageName="TEST">
             <p>Test Message</p>
-          </WelcomeMessage>
+          </IntroMessage>
         </Provider>
       );
       expect(container.getElementsByClassName('test-class').length).toEqual(1);
