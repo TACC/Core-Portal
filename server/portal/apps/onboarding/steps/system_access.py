@@ -35,9 +35,9 @@ class SystemAccessStep(ProjectMembershipStep):
         resources = []
         try:
             resources = get_allocations(self.user.username)['hosts'].keys()
-            # If the required systems are a subset of the user's resources,
-            # the user has the necessary allocation
-            return set(systems).issubset(set(resources))
+            # If the intersection of the set of systems and resources has
+            # items, the user has the necessary allocation
+            return len(set(systems).intersection(resources)) > 0
         except Exception as e:
             logger.error(e)
             self.fail("We were unable to retrieve your allocations.")
