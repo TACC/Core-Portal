@@ -16,6 +16,7 @@ const AppsLayout = () => {
     }),
     shallowEqual
   );
+
   return (
     <>
       {loading && !Object.keys(categoryDict).length ? (
@@ -52,6 +53,7 @@ const AppsRoutes = () => {
     state => state.apps.categoryDict,
     shallowEqual
   );
+
   return (
     <Section
       bodyClassName="has-loaded-applications"

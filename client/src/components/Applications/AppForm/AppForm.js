@@ -93,14 +93,17 @@ export const AppDetail = () => {
     }),
     shallowEqual
   );
+
   const categoryDict = useSelector(state => state.apps.categoryDict);
   const hasApps = Object.keys(categoryDict).some(
     category => categoryDict[category] && categoryDict[category].length > 0
   );
+
   if (app.error.isError) {
     const errorText = app.error.message
       ? app.error.message
       : 'Something went wrong.';
+
     return (
       <div id="appDetail-wrapper" className="has-message  appDetail-error">
         <SectionMessage type="warning">{errorText}</SectionMessage>
