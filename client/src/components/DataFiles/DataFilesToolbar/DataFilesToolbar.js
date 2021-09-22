@@ -7,7 +7,6 @@ import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
   const iconClassName = `icon-action icon-${iconName}`;
-
   return (
     <Button
       disabled={disabled}
@@ -38,7 +37,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
       i => state.files.listing.FilesListing[i]
     )
   );
-
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';
 
@@ -259,5 +257,4 @@ DataFilesToolbar.propTypes = {
   scheme: PropTypes.string.isRequired,
   api: PropTypes.string.isRequired
 };
-
 export default DataFilesToolbar;

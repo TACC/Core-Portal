@@ -12,7 +12,7 @@ import SiteSearch from '../SiteSearch';
 function AppRouter() {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch({ type: 'FETCH_WELCOME' });
+    dispatch({ type: 'FETCH_INTRO' });
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
   }, []);
   return (
