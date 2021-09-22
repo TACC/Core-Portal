@@ -9,7 +9,13 @@ import {
   Input,
   InputGroupAddon
 } from 'reactstrap';
-import { LoadingSpinner, FormField, Icon, InlineMessage, SectionMessage } from '_common';
+import {
+  LoadingSpinner,
+  FormField,
+  Icon,
+  InlineMessage,
+  SectionMessage
+} from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
@@ -106,6 +112,8 @@ const DataFilesDownloadMessageModal = () => {
       toggle={toggle}
       className="dataFilesModal"
     >
+      {/* { console.log(`operationStatus =`) }
+      { console.log(operationStatus) } */}
       <ModalHeader toggle={toggle} charCode="&#xe912;">
         Download Folder
       </ModalHeader>
