@@ -184,6 +184,7 @@ export default function projects(state = initialState, action) {
           result: null
         }
       };
+
     case 'PROJECTS_SET_TITLE_DESCRIPTION_STARTED':
       return {
         ...state,

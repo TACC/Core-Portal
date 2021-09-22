@@ -103,7 +103,6 @@ const DataFilesBreadcrumbs = ({
     system,
     projectTitle
   );
-
   return (
     <div className={`breadcrumbs ${className}`}>
       {scheme === 'projects' && (
