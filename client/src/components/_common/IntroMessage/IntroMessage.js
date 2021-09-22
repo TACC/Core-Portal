@@ -4,13 +4,13 @@ import { Alert } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 /**
- * Whether the name is of a known welcome message
+ * Whether the name is of a known intro message
  * @param {String} messageName - The name of the message to check
  */
 export function isKnownMessage(messageName) {
-  const welcomeMessages = useSelector(state => state.welcomeMessages);
+  const introMessages = useSelector(state => state.introMessages);
 
-  return welcomeMessages && welcomeMessages[messageName];
+  return introMessages && introMessages[messageName];
 }
 
 /**
@@ -20,24 +20,24 @@ export function isKnownMessage(messageName) {
  *
  * @example
  * // message with custom text, class, and identifier
- * <WelcomeMessage
+ * <IntroMessage
  *   className="external-message-class"
  *   messageName={identifierForMessageLikeRouteName}
  * >
  *   Introductory text (defined externally).
- * </WelcomeMessage>
+ * </IntroMessage>
  */
-function WelcomeMessage({ children, className, messageName }) {
+function IntroMessage({ children, className, messageName }) {
   const dispatch = useDispatch();
-  const welcomeMessages = useSelector(state => state.welcomeMessages);
+  const introMessages = useSelector(state => state.introMessages);
   const shouldShow = isKnownMessage(messageName);
 
   function onDismiss(name) {
     const newMessagesState = {
-      ...welcomeMessages,
+      ...introMessages,
       [name]: false
     };
-    dispatch({ type: 'SAVE_WELCOME', payload: newMessagesState });
+    dispatch({ type: 'SAVE_INTRO', payload: newMessagesState });
   }
 
   return (
@@ -51,7 +51,7 @@ function WelcomeMessage({ children, className, messageName }) {
     </Alert>
   );
 }
-WelcomeMessage.propTypes = {
+IntroMessage.propTypes = {
   /** Message as text or element(s) */
   children: PropTypes.node.isRequired,
   /** Additional className for the root element */
@@ -59,8 +59,8 @@ WelcomeMessage.propTypes = {
   /** A unique identifier for the message */
   messageName: PropTypes.string.isRequired
 };
-WelcomeMessage.defaultProps = {
+IntroMessage.defaultProps = {
   className: ''
 };
 
-export default WelcomeMessage;
+export default IntroMessage;
