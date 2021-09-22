@@ -90,15 +90,13 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
           </div>
         );
       }
-      else {
-        return (
-           <div className="h-100 listing-placeholder">
-             <SectionMessage type="warning">
-               {<GenericMessage />}
-             </SectionMessage>
-           </div>
-         );
-      }
+      return (
+        <div className="h-100 listing-placeholder">
+          <SectionMessage type="warning">
+            <GenericMessage />
+          </SectionMessage>
+        </div>
+      );
     }
     if (err === '404') {
       return (
