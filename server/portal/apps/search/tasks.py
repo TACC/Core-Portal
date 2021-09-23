@@ -42,6 +42,7 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
         for child in folders:
             self.delay(systemId, filePath=child.path, reindex=reindex)
 
+
 @shared_task(bind=True, max_retries=3, queue='default')
 def agave_listing_indexer(self, listing):
     index_listing(listing)
