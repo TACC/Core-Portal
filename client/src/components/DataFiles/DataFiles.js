@@ -144,7 +144,7 @@ const DataFiles = () => {
   return (
     <Section
       bodyClassName="has-loaded-datafiles"
-      welcomeMessageName="DATA"
+      introMessageName="DATA"
       header={
         <DataFilesBreadcrumbs
           api={listingParams.api}
@@ -171,5 +171,4 @@ const DataFiles = () => {
     />
   );
 };
-
 export default DataFiles;
