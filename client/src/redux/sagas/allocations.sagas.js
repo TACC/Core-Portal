@@ -227,6 +227,10 @@ export const teamPayloadUtil = (
 
 export function* getUsernamesManage(action) {
   try {
+    yield put({
+      type: 'MANAGE_USERS_INIT',
+      payload: { loading: { [action.payload.projectId]: { loading: true } } }
+    });
     const json = yield call(getTeamsUtil, action.payload.name);
     const payload = {
       data: { [action.payload.projectId]: json },
@@ -261,6 +265,7 @@ export const searchUsersUtil = async (field, term) => {
 };
 export function* searchUsers(action) {
   try {
+    yield put({ type: 'CLEAR_SEARCH_ERROR' });
     const { term } = action.payload;
     const fields = ['lastName', 'username', 'email'];
     const result = yield all(
@@ -269,12 +274,13 @@ export function* searchUsers(action) {
     const uniqueUsers = flatten(result).filter(
       (value, index, array) => array.findIndex(u => u.id === value.id) === index
     );
+
     yield put({
       type: 'ADD_SEARCH_RESULTS',
       payload: { data: uniqueUsers }
     });
   } catch (error) {
-    console.log(error);
+    yield put({ type: 'SEARCH_ERROR' });
   }
 }
 
@@ -289,9 +295,28 @@ export const manageUtil = async (pid, uid, add = true) => {
 
 export function* addUser(action) {
   try {
+    yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_INIT' });
     yield call(manageUtil, action.payload.projectId, action.payload.id);
+    yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_COMPLETE' });
+    const { projectId, projectName } = action.payload;
+    yield put({
+      type: 'GET_MANAGE_TEAMS',
+      payload: {
+        projectId,
+        name: projectName
+      }
+    });
   } catch (error) {
-    console.log(error);
+    yield put({
+      type: 'ALLOCATION_OPERATION_ADD_USER_ERROR',
+      payload: {
+        addingUserOperation: {
+          loading: false,
+          error: true,
+          userName: action.payload.id
+        }
+      }
+    });
   }
 }
 

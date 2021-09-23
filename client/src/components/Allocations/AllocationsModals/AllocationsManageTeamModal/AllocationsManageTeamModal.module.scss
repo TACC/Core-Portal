@@ -1,6 +1,17 @@
 .root {
+  max-width: 700px;
   .modal-body {
     overflow-y: initial !important;
+  }
+  .update-button {
+    display: flex;
+    width: fit-content;
+    border-radius: 0;
+    font: bold 12px Roboto, sans-serif;
+    padding: 0.5rem 1rem;
+    border: 0 !important; /* override `.workbench-content .btn-secondary` */
+    background-color: #9d85ef !important; /* override `.workbench-content .btn-secondary` */
+    color: white !important; /* override `.workbench-content .btn-secondary` */
   }
 }
 .listing-wrapper {
@@ -14,4 +25,30 @@
   display: flex;
   padding: 1em;
   overflow: auto;
+}
+.manage-team-table {
+  font-size: 0.875rem;
+  line-height: 2rem;
+  margin: 0 1rem;
+  thead {
+    border-bottom: 1px solid black;
+  }
+  td,
+  th {
+    padding: 0;
+    vertical-align: middle;
+  }
+  th {
+    font-weight: bold;
+  }
+  td {
+    padding: 0.25rem;
+    font-weight: normal;
+  }
+  tr:nth-child(even) td {
+    background-color: rgba(112, 112, 112, 0.15);
+  }
+}
+.search-bar-wrapper {
+  margin: 0 1rem;
 }

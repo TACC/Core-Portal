@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { Modal, ModalHeader, ModalBody, Table, Button } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Button, ModalFooter } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner, UserSearchbar, Message } from '_common';
@@ -90,7 +90,7 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
     data
   });
   return (
-    <Table hover responsive borderless size="sm" {...getTableProps()}>
+    <table styleName="manage-team-table" {...getTableProps()}>
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -112,17 +112,24 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
           );
         })}
       </tbody>
-    </Table>
+    </table>
   );
 };
 
-const AllocationsManageTeamModal = ({ isOpen, toggle, projectId }) => {
+const AllocationsManageTeamModal = ({
+  isOpen,
+  toggle,
+  projectId,
+  projectName
+}) => {
   const dispatch = useDispatch();
-
   const { teams, loadingUsernames, search } = useSelector(
     state => state.allocations
   );
-
+  const addingUserOperation = useSelector(
+    state => state.allocations.addingUserOperation
+  );
+  const error = addingUserOperation.error || search.error;
   useEffect(() => {
     dispatch({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT'
@@ -138,7 +145,8 @@ const AllocationsManageTeamModal = ({ isOpen, toggle, projectId }) => {
         type: 'ADD_USER_TO_TAS_PROJECT',
         payload: {
           projectId,
-          id: newUser.user.username
+          id: newUser.user.username,
+          projectName
         }
       });
     },
@@ -161,15 +169,19 @@ const AllocationsManageTeamModal = ({ isOpen, toggle, projectId }) => {
     <Modal isOpen={isOpen} toggle={toggle} styleName="root">
       <ModalHeader>Manage Team</ModalHeader>
       <ModalBody className="p-2">
-        <UserSearchbar
-          members={teams[projectId]}
-          onAdd={onAdd}
-          addDisabled={isLoading}
-          searchDisable={isLoading}
-          onChange={onChange}
-          searchResults={search.results}
-          placeholder="Search by username, email, or last name"
-        />
+        <div styleName="search-bar-wrapper">
+          {error ? <Message type="error">Something went wrong.</Message> : null}
+          <UserSearchbar
+            members={teams[projectId]}
+            onAdd={onAdd}
+            addDisabled={isLoading || addingUserOperation.loading}
+            searchDisable={isLoading}
+            onChange={onChange}
+            searchResults={search.results}
+            placeholder="Search by username, email, or last name"
+            allocationManagerLoading={addingUserOperation.loading}
+          />
+        </div>
         <div styleName="listing-wrapper">
           {isLoading ? (
             <LoadingSpinner />
@@ -181,6 +193,9 @@ const AllocationsManageTeamModal = ({ isOpen, toggle, projectId }) => {
           )}
         </div>
       </ModalBody>
+      <ModalFooter>
+        <Button styleName="update-button">Close</Button>
+      </ModalFooter>
     </Modal>
   );
 };

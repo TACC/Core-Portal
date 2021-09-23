@@ -10,9 +10,15 @@ export const initialState = {
   errors: {},
   search: {
     results: [],
-    term: ''
+    term: '',
+    error: false
   },
   removingUserOperation: {
+    userName: '',
+    error: false,
+    loading: false
+  },
+  addingUserOperation: {
     userName: '',
     error: false,
     loading: false
@@ -68,18 +74,34 @@ export function allocations(state = initialState, action) {
           ...action.payload.loading
         }
       };
-    case 'SET_SEARCH_TERM':
+    case 'MANAGE_USERS_INIT':
+      return {
+        ...state,
+        loadingUsernames: {
+          ...state.loadingUsernames,
+          ...action.payload.loading
+        }
+      };
+    case 'CLEAR_SEARCH_ERROR':
       return {
         ...state,
         search: {
           ...state.search,
-          term: action.payload.term
+          error: false
         }
       };
     case 'ADD_SEARCH_RESULTS':
       return {
         ...state,
-        search: { ...state.search, results: action.payload.data }
+        search: { ...state.search, results: action.payload.data, error: false }
+      };
+    case 'SEARCH_ERROR':
+      return {
+        ...state,
+        search: {
+          ...state.search,
+          error: true
+        }
       };
     case 'ALLOCATION_OPERATION_REMOVE_USER_INIT': {
       return {
@@ -92,6 +114,32 @@ export function allocations(state = initialState, action) {
       };
     }
     case 'ALLOCATION_OPERATION_REMOVE_USER_STATUS': {
+      return {
+        ...state,
+        ...action.payload
+      };
+    }
+    case 'ALLOCATION_OPERATION_ADD_USER_INIT': {
+      return {
+        ...state,
+        addingUserOperation: {
+          userName: '',
+          error: false,
+          loading: true
+        }
+      };
+    }
+    case 'ALLOCATION_OPERATION_ADD_USER_COMPLETE': {
+      return {
+        ...state,
+        addingUserOperation: {
+          userName: '',
+          error: false,
+          loading: false
+        }
+      };
+    }
+    case 'ALLOCATION_OPERATION_ADD_USER_ERROR': {
       return {
         ...state,
         ...action.payload
