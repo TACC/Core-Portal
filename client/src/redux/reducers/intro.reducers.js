@@ -1,4 +1,4 @@
-export const initialWelcomeMessages = {
+export const initialIntroMessages = {
   DASHBOARD: true,
   APPLICATIONS: true,
   DATA: true,
@@ -8,31 +8,31 @@ export const initialWelcomeMessages = {
   TICKETS: true
 };
 
-function welcomeMessages(state = initialWelcomeMessages, action) {
+function introMessages(state = initialIntroMessages, action) {
   switch (action.type) {
-    case 'WELCOME_FETCH_STARTED':
+    case 'INTRO_FETCH_STARTED':
       return {
         ...state
       };
-    case 'WELCOME_FETCH_SUCCESS':
+    case 'INTRO_FETCH_SUCCESS':
       return {
         ...state,
         ...action.payload
       };
-    case 'WELCOME_FETCH_ERROR':
+    case 'INTRO_FETCH_ERROR':
       return {
         ...state
       };
-    case 'WELCOME_SAVE_STARTED':
+    case 'INTRO_SAVE_STARTED':
       return {
         ...state
       };
-    case 'WELCOME_SAVE_SUCCESS':
+    case 'INTRO_SAVE_SUCCESS':
       return {
         ...state,
         ...action.payload
       };
-    case 'WECOME_SAVE_ERROR':
+    case 'INTRO_SAVE_ERROR':
       return {
         ...state,
         ...action.paylod
@@ -42,4 +42,4 @@ function welcomeMessages(state = initialWelcomeMessages, action) {
   }
 }
 
-export default welcomeMessages;
+export default introMessages;

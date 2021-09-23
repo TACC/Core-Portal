@@ -25,27 +25,27 @@ function getLayoutClass(contentLayoutName) {
 /**
  * A section layout structure that supports:
  *
- * - messages (automatically loads welcome message)
+ * - messages (automatically loads intro message)
  * - header (with actions, e.g. links, buttons, form)
  * - content (that will be arranged in the layout you choose)
  * - manual or automatic sub-components (i.e. header, content)
  *
  * @example
- * // manually build messages, automatically build welcome message (by name)
+ * // manually build messages, automatically build intro message (by name)
  * <Section
- *   welcomeMessageName="DASHBOARD"
+ *   introMessageName="DASHBOARD"
  *   messages={<>…</>}
  * />
  * @example
- * // overwrite text of an automatic welcome message, no additional messages
+ * // overwrite text of an automatic intro message, no additional messages
  * <Section
- *   welcomeMessageName="DASHBOARD"
- *   welcomeMessageText={`We welcome you to the dashboard, ${givenName}`}
+ *   introMessageName="DASHBOARD"
+ *   introMessageText={`We welcome you to the dashboard, ${givenName}`}
  * />
  * @example
- * // define text for a manual welcome message, no additional messages
+ * // define text for a manual intro message, no additional messages
  * <Section
- *   welcomeMessageText={`We welcome you to this page, ${givenName}`}
+ *   introMessageText={`We welcome you to this page, ${givenName}`}
  * />
  * @example
  * // add class to <body>, automatically build sub-components
@@ -112,8 +112,8 @@ function Section({
   // sidebarClassName,
   messages,
   messagesClassName,
-  welcomeMessageName,
-  welcomeMessageText
+  introMessageName,
+  introMessageText
 }) {
   const shouldBuildHeader = header || headerClassName || headerActions;
   const layoutClass = getLayoutClass(contentLayoutName);
@@ -152,8 +152,8 @@ function Section({
       <SectionMessages
         styleName="messages"
         className={messagesClassName}
-        welcomeMessageName={welcomeMessageName}
-        welcomeMessageText={welcomeMessageText}
+        introMessageName={introMessageName}
+        introMessageText={introMessageText}
       >
         {messages}
       </SectionMessages>
@@ -228,16 +228,16 @@ Section.propTypes = {
   // sidebar: PropTypes.node,
   // /** Additional className for the sidebar element */
   // sidebarClassName: PropTypes.string,
-  /** Any message(s) (e.g. <Message>) (but NOT a welcome message) */
+  /** Any message(s) (e.g. <Message>) (but NOT a intro message) */
   messages: PropTypes.node,
   /** Any additional className(s) for the message list */
   messagesClassName: PropTypes.string,
-  /** The name of the welcome message to use */
-  welcomeMessageName: PropTypes.string,
+  /** The name of the intro message to use */
+  introMessageName: PropTypes.string,
   /** Any additional className(s) for the sidebar list */
   // sidebarClassName: '',
-  /** Custom welcome text (can overwrite message from `welcomeMessageName`) */
-  welcomeMessageText: PropTypes.string
+  /** Custom intro text (can overwrite message from `introMessageName`) */
+  introMessageText: PropTypes.string
 };
 Section.defaultProps = {
   bodyClassName: '',
@@ -254,9 +254,9 @@ Section.defaultProps = {
   manualHeader: undefined,
   messages: '',
   messagesClassName: '',
-  welcomeMessageName: '',
+  introMessageName: '',
   // sidebarClassName: '',
-  welcomeMessageText: ''
+  introMessageText: ''
 };
 
 export default Section;
