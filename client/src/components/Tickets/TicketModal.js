@@ -33,7 +33,18 @@ import './TicketModal.scss';
 const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
-
+const Attachment = ({ attachment }) => (
+  <div>
+    <ul>
+      {attachment.slice(1).map(attachmentName => (
+        <li> {attachmentName} </li>
+      ))}
+    </ul>
+  </div>
+);
+Attachment.propTypes = {
+  attachment: PropTypes.string.isRequired
+};
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
     () => ({
@@ -130,7 +141,8 @@ const TicketHistoryCard = ({
   created,
   creator,
   ticketCreator,
-  content
+  content,
+  attachments
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
@@ -170,6 +182,12 @@ const TicketHistoryCard = ({
       </CardHeader>
       <Collapse isOpen={isOpen}>
         <CardBody>{content}</CardBody>
+        <CardBody>
+          Attachments:{' '}
+          {attachments.map(attachment => (
+            <Attachment attachment={attachment} />
+          ))}
+        </CardBody>
       </Collapse>
     </Card>
   );
@@ -180,7 +198,8 @@ TicketHistoryCard.propTypes = {
   created: PropTypes.instanceOf(Date).isRequired,
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
-  content: PropTypes.string.isRequired
+  content: PropTypes.string.isRequired,
+  attachments: PropTypes.string.isRequired
 };
 
 const TicketHistory = () => {
@@ -212,6 +231,7 @@ const TicketHistory = () => {
           creator={d.Creator}
           ticketCreator={d.IsCreator}
           content={d.Content}
+          attachments={d.Attachments}
         />
       ))}
       <div ref={ticketHistoryEndRef} />
