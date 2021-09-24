@@ -183,7 +183,7 @@ const TicketHistoryCard = ({
       <Collapse isOpen={isOpen}>
         <CardBody>{content}</CardBody>
         <CardBody>
-          Attachments:{' '}
+          Attachments:
           {attachments.map(attachment => (
             <Attachment attachment={attachment} />
           ))}
