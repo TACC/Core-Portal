@@ -16,10 +16,6 @@ const DataFilesSelectedStatusCell = ({ row, operation }) => {
   switch (status[row.original.id]) {
     case 'RUNNING':
       return <LoadingSpinner placement="inline" />;
-    case 'SUCCESS':
-      return <span className="badge badge-success">SUCCESS</span>;
-    case 'ERROR':
-      return <span className="badge badge-danger">ERROR</span>;
     default:
       return <></>;
   }
