@@ -184,7 +184,7 @@ const TicketHistoryCard = ({
         <CardBody>{content}</CardBody>
         <CardBody>
           Attachments:
-          {attachments.map(attachment => (
+          {attachments && attachments.map(attachment => (
             <Attachment attachment={attachment} />
           ))}
         </CardBody>
