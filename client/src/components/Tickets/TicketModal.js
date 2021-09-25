@@ -185,7 +185,7 @@ const TicketHistoryCard = ({
         <CardBody>{content}</CardBody>
         <CardBody
           // eslint-disable-next-line react/jsx-props-no-spreading
-          {...(attachments = attachments.filter(
+          {...(attachments = (attachments || []).filter(
             a => !a[1].toString().startsWith('untitled (')
           ))}
         >
