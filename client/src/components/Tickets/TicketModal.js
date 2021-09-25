@@ -142,7 +142,8 @@ const TicketHistoryCard = ({
   creator,
   ticketCreator,
   content,
-  attachments
+  attachments,
+  fiterdAttachments
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
@@ -182,11 +183,16 @@ const TicketHistoryCard = ({
       </CardHeader>
       <Collapse isOpen={isOpen}>
         <CardBody>{content}</CardBody>
-        <CardBody>
+        <CardBody
+          fiterdAttachments={attachments.filter(
+            a => !a[1].toString().startsWith('untitled (')
+          )}
+        >
           Attachments:
-          {attachments && attachments.map(attachment => (
-            <Attachment attachment={attachment} />
-          ))}
+          {fiterdAttachments &&
+            fiterdAttachments.map(attachment => (
+              <Attachment attachment={attachment} />
+            ))}
         </CardBody>
       </Collapse>
     </Card>
@@ -199,7 +205,8 @@ TicketHistoryCard.propTypes = {
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
-  attachments: PropTypes.string.isRequired
+  attachments: PropTypes.string.isRequired,
+  fiterdAttachments: PropTypes.string.isRequired
 };
 
 const TicketHistory = () => {
