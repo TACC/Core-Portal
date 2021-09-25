@@ -143,7 +143,7 @@ const TicketHistoryCard = ({
   ticketCreator,
   content,
   attachments,
-  fiterdAttachments
+  filteredattachments
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
@@ -160,7 +160,7 @@ const TicketHistoryCard = ({
   const ticketHeaderClassName = ticketCreator
     ? 'ticket-creator'
     : 'ticket-responder';
-
+  /* eslint-disable no-param-reassign */
   return (
     <Card className="mt-1">
       <CardHeader
@@ -184,13 +184,14 @@ const TicketHistoryCard = ({
       <Collapse isOpen={isOpen}>
         <CardBody>{content}</CardBody>
         <CardBody
-          fiterdAttachments={attachments.filter(
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...(attachments = attachments.filter(
             a => !a[1].toString().startsWith('untitled (')
-          )}
+          ))}
         >
           Attachments:
-          {fiterdAttachments &&
-            fiterdAttachments.map(attachment => (
+          {attachments &&
+            attachments.map(attachment => (
               <Attachment attachment={attachment} />
             ))}
         </CardBody>
@@ -206,7 +207,7 @@ TicketHistoryCard.propTypes = {
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
   attachments: PropTypes.string.isRequired,
-  fiterdAttachments: PropTypes.string.isRequired
+  filteredattachments: PropTypes.string.isRequired
 };
 
 const TicketHistory = () => {
