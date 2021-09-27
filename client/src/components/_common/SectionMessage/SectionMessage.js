@@ -4,10 +4,29 @@ import Message from '_common/Message';
 
 /**
  * Show an event-based message to the user
- * @todo Document examples
  * @example
- * // Blah blah…
- * <Sample jsx>
+ * // Basic usage
+ * <SectionMessage type="warning">Uh oh.</Section>
+ * @example
+ * // Manage onDismiss via props
+ * // CAVEAT: Available through `<Message>` but (maybe) not `<SectionMessage>`
+ * ...
+ * const [isVisible, setIsVisible] = useState(...);
+ *
+ * const onDismiss = useCallback(() => {
+ *   setIsVisible(!isVisible);
+ * }, [isVisible]);
+ *
+ * return (
+ *   <Message
+ *     type="warning"
+ *     isVisible={isVisible}
+ *     onDismiss={onDismiss}
+ *   >
+ *     Uh oh.
+ *   </Message>
+ * );
+ * ...
  */
 const SectionMessage = props => {
   const [isVisible, setIsVisible] = useState(true);
