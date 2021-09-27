@@ -1,10 +1,10 @@
 import React from 'react';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
+import renderComponent from 'utils/testing';
 import PublicData from './PublicData';
 import filesFixture from '../DataFiles/fixtures/DataFiles.files.fixture';
 import systemsFixture from '../DataFiles/fixtures/DataFiles.systems.fixture';
-import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 
@@ -39,7 +39,8 @@ describe('PublicData', () => {
           title: ''
         }
       },
-      pushKeys: { target: {} }
+      pushKeys: { target: {} },
+      workbench: { config: { systemPrefix: 'cep.local.project' } }
     });
     const { getByText } = renderComponent(<PublicData />, store, history);
 
