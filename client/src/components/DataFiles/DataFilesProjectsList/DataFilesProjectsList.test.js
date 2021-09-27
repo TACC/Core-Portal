@@ -11,7 +11,6 @@ const mockStore = configureStore();
 const initialMockState = {
   projects: projectsFixture,
   systems: systemsFixture,
-  workbench: { config: { systemPrefix: 'cep.local.project' } }
 };
 
 function renderProjectsListComponent(store) {
