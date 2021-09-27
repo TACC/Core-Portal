@@ -47,6 +47,7 @@ function IntroMessage({ children, className, messageName }) {
 
   return (
     <Message
+      aria-label={messageName}
       type="info"
       scope="section"
       canDismiss

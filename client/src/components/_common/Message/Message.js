@@ -63,6 +63,7 @@ export const DEFAULT_SCOPE = 'inline'; // FAQ: Historical support for default
  * <Sample jsx>
  */
 const Message = ({
+  ariaLabel,
   children,
   className,
   dataTestid,
@@ -122,6 +123,7 @@ const Message = ({
       className={className}
       role={role}
       in={isVisible}
+      aria-label={ariaLabel}
       data-testid={dataTestid}
     >
       <Icon styleName="icon type-icon" name={iconName}>
@@ -144,6 +146,8 @@ const Message = ({
   );
 };
 Message.propTypes = {
+  /** How to label this message for accessibility (via `aria-label`) */
+  ariaLabel: PropTypes.string,
   /** Whether an action can be dismissed (requires scope equals `section`) */
   canDismiss: PropTypes.bool,
   /** Message text (as child node) */
@@ -163,6 +167,7 @@ Message.propTypes = {
   type: PropTypes.oneOf(TYPES).isRequired
 };
 Message.defaultProps = {
+  ariaLabel: 'message',
   className: '',
   canDismiss: false,
   dataTestid: '',
