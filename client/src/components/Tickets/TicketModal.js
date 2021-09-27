@@ -142,8 +142,7 @@ const TicketHistoryCard = ({
   creator,
   ticketCreator,
   content,
-  attachments,
-  filteredattachments
+  attachments
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
@@ -206,8 +205,7 @@ TicketHistoryCard.propTypes = {
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
-  attachments: PropTypes.string.isRequired,
-  filteredattachments: PropTypes.string.isRequired
+  attachments: PropTypes.string.isRequired
 };
 
 const TicketHistory = () => {
