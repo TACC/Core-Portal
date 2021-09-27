@@ -59,16 +59,7 @@ const appShape = PropTypes.shape({
   appListing: PropTypes.arrayOf(PropTypes.shape({}))
 });
 
-export const AppPlaceholder = ({ apps, error }) => {
-  if (error.isError)
-    return (
-      <div
-        id="appDetail-wrapper"
-        className="has-message appDetail-placeholder-message"
-      >
-        Something went wrong
-      </div>
-    );
+export const AppPlaceholder = ({ apps }) => {
   return (
     <div
       id="appDetail-wrapper"
@@ -81,8 +72,7 @@ export const AppPlaceholder = ({ apps, error }) => {
   );
 };
 AppPlaceholder.propTypes = {
-  apps: PropTypes.bool.isRequired,
-  error: PropTypes.bool.isRequired
+  apps: PropTypes.bool.isRequired
 };
 
 export const AppDetail = () => {
