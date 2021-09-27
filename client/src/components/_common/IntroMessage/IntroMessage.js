@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Message } from '_common';
 
+import './IntroMessage.module.css';
+
 /**
  * Whether the name is of a known intro message
  * @param {String} messageName - The name of the message to check
@@ -51,6 +53,7 @@ function IntroMessage({ children, className, messageName }) {
       type="info"
       scope="section"
       canDismiss
+      styleName="root"
       className={className}
       isVisible={isVisible}
       onDismiss={onDismiss}
