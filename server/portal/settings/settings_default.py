@@ -122,7 +122,8 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'api': 'tapis',
         'icon': 'publications',
         'privilegeRequired': False,
-        'readOnly': False
+        'readOnly': False,
+        'hideSearchBar': False
     },
     {
         'name': 'Google Drive',
