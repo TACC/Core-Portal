@@ -116,6 +116,8 @@ class AppsView(BaseApiView):
             data = {'appListing': agave.apps.list(**list_kwargs)}
 
         return JsonResponse({"response": data})
+
+
 @method_decorator(login_required, name='dispatch')
 class MonitorsView(BaseApiView):
     def get(self, request, *args, **kwargs):
@@ -541,3 +543,4 @@ class AppsTrayView(BaseApiView):
         )
 
         return JsonResponse({"tabs": tabs, "definitions": definitions})
+        
