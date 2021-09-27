@@ -24,9 +24,9 @@ PaginatorPage.propTypes = {
 
 const Paginator = ({ pages, current, callback, spread }) => {
   let start, end;
-  if (pages === 1) {
+  if (pages === 1 || pages === 2) {
     end = 0;
-    start = 1;
+    start = pages;
   } else if (pages > 2 && pages <= spread) {
     start = 2;
     end = pages - 1;
