@@ -112,8 +112,6 @@ const DataFilesDownloadMessageModal = () => {
       toggle={toggle}
       className="dataFilesModal"
     >
-      {/* { console.log(`operationStatus =`) }
-      { console.log(operationStatus) } */}
       <ModalHeader toggle={toggle} charCode="&#xe912;">
         Download Folder
       </ModalHeader>
@@ -142,7 +140,7 @@ const DataFilesDownloadMessageModal = () => {
                   disabled={formDisabled}
                   addonType="append"
                   addon={
-                    <InputGroupAddon addonType="append">
+                    <InputGroupAddon addonType="append" styleName="input-field">
                       <Input
                         type="select"
                         name="filetype"
