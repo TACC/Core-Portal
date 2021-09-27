@@ -21,77 +21,79 @@ function renderOnboardingUserComponent(store) {
   );
 }
 
+const genericState = (error, loading) => {
+  return {
+    onboarding: {
+      ...initialMockState,
+      user: {
+        ...onboardingUserFixture,
+        error,
+        loading
+      }
+    },
+    authenticatedUser: {},
+    ticketCreate,
+    workbench: {
+      config: {}
+    }
+  };
+};
+
 describe('Onboarding User View', () => {
   it('renders onboarding steps', () => {
-    const store = mockStore({
-      onboarding: {
-        ...initialMockState,
-        user: {
-          ...onboardingUserFixture,
-          error: null,
-          loading: false
-        }
-      },
-      authenticatedUser: {},
-      ticketCreate
-    });
+    const store = mockStore(genericState(null, false));
 
     const { getByText } = renderOnboardingUserComponent(store);
-    expect(getByText(/must be completed before accessing the portal/)).toBeDefined();
+    expect(
+      getByText(/must be completed before accessing the portal/)
+    ).toBeDefined();
+    expect(
+      getByText(/Continue/)
+        .closest('a')
+        .getAttribute('href')
+    ).toEqual('/workbench/');
   });
 
   it('renders a loading screen', () => {
-    const store = mockStore({
-      onboarding: {
-        ...initialMockState,
-        user: {
-          ...onboardingUserFixture,
-          error: null,
-          loading: true
-        }
-      },
-      authenticatedUser: {},
-      ticketCreate
-    });
+    const store = mockStore(genericState(null, true));
     const { getByTestId } = renderOnboardingUserComponent(store);
     expect(getByTestId('loading')).toBeDefined();
   });
 
+  it('supports customizable route for continue button', () => {
+    const state = {
+      ...genericState(null, false),
+      workbench: {
+        config: { onboardingCompleteRedirect: '/custom_route/' }
+      }
+    };
+    const store = mockStore(state);
+
+    const { getByText } = renderOnboardingUserComponent(store);
+    expect(
+      getByText(/Continue/)
+        .closest('a')
+        .getAttribute('href')
+    ).toEqual('/custom_route/');
+  });
+
   it('renders errors when onboarding for a user cannot be retrieved', () => {
-    const store = mockStore({
-      onboarding: {
-        ...initialMockState,
-        user: {
-          ...onboardingUserFixture,
-          error: 'error',
-          loading: false
-        }
-      },
-      authenticatedUser: {},
-      ticketCreate
-    });
+    const store = mockStore(genericState(true, false));
 
     const { getByText } = renderOnboardingUserComponent(store);
     expect(getByText(/Unable to retrieve your onboarding steps/)).toBeDefined();
   });
 
   it('renders staff user interface', () => {
-    const store = mockStore({
-      onboarding: {
-        ...initialMockState,
-        user: {
-          ...onboardingUserFixture,
-          error: null,
-          loading: false
-        }
-      },
+    const state = {
+      ...genericState(null, false),
       authenticatedUser: {
         user: {
           isStaff: true
         }
-      },
-      ticketCreate
-    });
+      }
+    };
+    const store = mockStore(state);
     const { getByText } = renderOnboardingUserComponent(store);
     expect(getByText(/Last, First/)).toBeDefined();
     expect(getByText(/Approve/)).toBeDefined();

@@ -34,6 +34,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
       metadata.members.some(member => {
         return (
           member.access === 'owner' &&
+          member.user &&
           member.user.username === state.authenticatedUser.user.username
         );
       })
