@@ -503,7 +503,7 @@ class AppsTrayView(BaseApiView):
             categoryResult["apps"].sort(key=lambda app: app['label'])
             categories.append(categoryResult)
 
-        return categories, definitions
+        return categories, definitions, ApiException("made up error", status=500)
 
     def get(self, request):
         """
