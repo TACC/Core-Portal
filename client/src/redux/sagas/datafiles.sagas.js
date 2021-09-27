@@ -367,7 +367,9 @@ export function* moveFiles(action) {
     yield put({
       type: 'ADD_TOAST',
       payload: {
-        message: `Files moved to ${action.payload.dest.name}`
+        message: `${
+          result.length > 1 ? `${result.length} files` : 'File'
+        } moved to ${action.payload.dest.name}`
       }
     });
 
@@ -475,7 +477,9 @@ export function* copyFiles(action) {
     yield put({
       type: 'ADD_TOAST',
       payload: {
-        message: `Files copied to ${action.payload.dest.name}`
+        message: `${
+          result.length > 1 ? `${result.length} files` : 'File'
+        } copied to ${action.payload.dest.name}`
       }
     });
   yield call(action.payload.reloadCallback);
@@ -528,7 +532,9 @@ export function* uploadFiles(action) {
     yield put({
       type: 'ADD_TOAST',
       payload: {
-        message: `Files were successfully uploaded.`
+        message: `${
+          result.length > 0 ? `${result.length} files` : 'File'
+        } uploaded to ${action.payload.path}`
       }
     });
 
