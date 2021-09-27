@@ -250,5 +250,5 @@ _WORKBENCH_SETTINGS = {
     "makePublic": True,
     "hideApps": False,
     "hideDataFiles": False,
-    "onboardingSetupCompleteNext": '/workbench/'
+    "onboardingCompleteRedirect": '/workbench/'
 }

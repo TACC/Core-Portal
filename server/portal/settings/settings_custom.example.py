@@ -251,5 +251,5 @@ _WORKBENCH_SETTINGS = {
     "hideApps": False,
     "hideDataFiles": False,
     "systemPrefix": _PORTAL_PROJECTS_SYSTEM_PREFIX,
-    "onboardingSetupCompleteNext": '/workbench/'
+    "onboardingCompleteRedirect": '/workbench/'
 }

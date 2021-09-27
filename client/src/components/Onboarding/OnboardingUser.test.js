@@ -64,7 +64,7 @@ describe('Onboarding User View', () => {
     const state = {
       ...genericState(null, false),
       workbench: {
-        config: { onboardingSetupCompleteNext: '/custom_route/' }
+        config: { onboardingCompleteRedirect: '/custom_route/' }
       }
     };
     const store = mockStore(state);

@@ -17,10 +17,10 @@ const OnboardingUser = () => {
   );
   const loading = useSelector(state => state.onboarding.user.loading);
   const error = useSelector(state => state.onboarding.user.error);
-  const onboardingSetupCompleteNext = useSelector(
-    state => state.workbench.config.onboardingSetupCompleteNext
+  const onboardingCompleteRedirect = useSelector(
+    state => state.workbench.config.onboardingCompleteRedirect
   );
-  const continueLink = onboardingSetupCompleteNext || '/workbench/';
+  const continueLink = onboardingCompleteRedirect || '/workbench/';
 
   useEffect(() => {
     dispatch({
