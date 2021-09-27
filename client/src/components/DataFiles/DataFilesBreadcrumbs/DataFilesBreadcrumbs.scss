@@ -5,11 +5,9 @@
   @include truncate-with-ellipsis;
   margin-right: 2em;
 }
-.breadcrumb-link {
-  color: #9d85ef;
-}
+.breadcrumb-link,
 .breadcrumb-link:hover {
-  color: #9d85ef;
+  color: var(--global-color-accent--normal);
 }
 
 /* Breadcrumbs */

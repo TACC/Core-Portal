@@ -14,10 +14,10 @@ import {
 } from '../../redux/reducers/tickets.reducers';
 import { initialState as authenticatedUser } from '../../redux/reducers/authenticated_user.reducer';
 import { initialState as systemMonitor } from '../../redux/reducers/systemMonitor.reducers';
-import { initialWelcomeMessages as welcomeMessages } from '../../redux/reducers/welcome.reducers';
+import { initialIntroMessages as introMessages } from '../../redux/reducers/intro.reducers';
 import { initialSystemState as systems } from '../../redux/reducers/datafiles.reducers';
 
-import * as welcomeMessageText from '../../constants/messages';
+import * as introMessageText from '../../constants/messages';
 
 /* state required to render workbench/dashboard */
 const state = {
@@ -25,7 +25,7 @@ const state = {
   workbench,
   onboarding,
   notifications,
-  welcomeMessages,
+  introMessages,
   jobs,
   systemMonitor,
   ticketList,
@@ -65,7 +65,7 @@ describe('workbench', () => {
     });
 
     const { getByText } = renderComponent(<Workbench />, store, history);
-    expect(getByText(welcomeMessageText.DASHBOARD)).toBeDefined();
+    expect(getByText(introMessageText.DASHBOARD)).toBeDefined();
   });
   it('shows loading spinner if systems request not finished', () => {
     const history = createMemoryHistory();

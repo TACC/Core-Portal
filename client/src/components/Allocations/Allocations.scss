@@ -6,7 +6,7 @@
         border-radius: 0;
         border: 0;
         font: bold 12px Roboto, sans-serif;
-        background-color: #9D85EF;
+        background-color: var(--global-color-accent--normal);
         padding: 0.5rem 1rem;
     }
 }
@@ -20,7 +20,7 @@
     @include alloc-button();
 
         a {
-            color: #484848;
+            color: var(--global-color-primary--xx-dark);
         }
 }
 .allocations-sidebar {
@@ -44,17 +44,19 @@
 
         min-width: var(--min-width);
 
-        color: #707070;
+        color: var(--global-color-primary--dark);
         padding-left: var(--horizontal-buffer);
 
+        &.active,
+        &:hover {
+            background: var(--global-color-accent--weak);
+            color: var(--global-color-primary--x-dark);
+        }
         .link-text {
             font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
             font-weight: 500;
             padding-left: 16px;
         }
-    }
-    .active {
-        background: rgba(#9d85ef, 0.25);
     }
 }
 .allocations-content {
@@ -86,7 +88,7 @@
                 background-color: rgba(#c6c6c6, 0.1);
             }
             /* stylelint-enable no-descending-specificity */
-            color: #707070;
+            color: var(--global-color-primary--x-dark);
         }
         .sub-table-cell {
             background-color: white;

@@ -13,19 +13,29 @@
 
 :root {
     /* Primary (Text, Layout) */
+    /* !!!: If Design doc uses color on the left, then use color on the right
+       SEE: https://github.com/TACC/Core-Portal/pull/452
+            | #707070   "dark"       | #484848   "x-dark"
+            | #484848   "x-dark"     | #222222   "xx-dark"
+            | #9D85EF   old "normal" | #7754E8   new "normal"
+            | #9D85EF20 old "weak"   | #7754E840 new "weak"
+            | #DFDAF5   old "light"  | #7754E840 new "weak"
+    */
     --global-color-primary--xx-light: #FFFFFF;
     --global-color-primary--x-light: #F4F4F4;
     --global-color-primary--light: #C6C6C6;
     --global-color-primary--normal: #AFAFAF;
     --global-color-primary--dark: #707070;
-    --global-color-primary--x-dark: #484848;
-    --global-color-primary--xx-dark: #222222;
+    --global-color-primary--x-dark: #484848; /* ¹ */
+    --global-color-primary--xx-dark: #222222; /* ¹ */
+    /* ¹ REQ: Use of this color for text may have result darker than design
+              (designer approved for accessibile color contrast via FP-1082) */
 
     /* Distinct Hues */
-    --global-color-accent--normal: #9D85EF;
-        --global-color-accent--weak: #9D85EF20;
-        --global-color-accent--light: #dfdaf5;
-        --global-color-accent--x-light: #D2CCE7;
+    --global-color-accent--normal: #7754E8;
+        --global-color-accent--weak: #7754E840; /* =25% opacity */
+                                                /* on white, eq. to #DFD7FA */
+        --global-color-accent--alt: #D2CCE7;
     --global-color-info--normal: var(--global-color-primary--x-dark);
         --global-color-info--weak: var(--global-color-primary--x-light);
     --global-color-success--normal: #43D130;

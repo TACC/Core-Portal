@@ -18,7 +18,6 @@ import {
   SectionMessage,
   LoadingSpinner
 } from '_common';
-import Work2Message from './Work2Message';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
@@ -145,7 +144,7 @@ const DataFiles = () => {
   return (
     <Section
       bodyClassName="has-loaded-datafiles"
-      welcomeMessageName="DATA"
+      introMessageName="DATA"
       header={
         <DataFilesBreadcrumbs
           api={listingParams.api}
@@ -169,9 +168,7 @@ const DataFiles = () => {
           <DataFilesModals />
         </>
       }
-      messages={<Work2Message />}
     />
   );
 };
-
 export default DataFiles;
