@@ -23,7 +23,8 @@ const initialMockState = {
     params: {
       FilesListing: {
         system: 'test.system',
-        path: 'test/path'
+        path: 'test/path',
+        scheme: 'private'
       }
     },
     loadingScroll: {
@@ -183,20 +184,28 @@ describe('DataFilesListing', () => {
   });
 
   it.each([
-    ['500', /There was a problem accessing this file system./],
+    ['500', /There was a problem accessing this file system./,'private'],
     [
       '502',
-      /There was a problem accessing this file system. If this is your first time logging in/
+      /An error occurred loading this directory. For help, please submit/,
+      'public'
+    ],
+    [
+      '502',
+      /There was a problem accessing this file system. If this is your/, 
+      'private'
     ],
     [
       '404',
-      'The file or folder that you are attempting to access does not exist.'
+      'The file or folder that you are attempting to access does not exist.',
+      'private'
     ]
-  ])('Renders "%s" error message correctly', (errorCode, message) => {
+  ])('Renders "%s" error message correctly', (errorCode, message, scheme) => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
     const errorMockState = { ...initialMockState };
     errorMockState.files.error.FilesListing = errorCode;
+    errorMockState.files.params.FilesListing.scheme = scheme;
     const store = mockStore(errorMockState);
 
     const { getByText } = renderComponent(
