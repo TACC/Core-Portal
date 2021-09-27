@@ -182,6 +182,8 @@ IMPERSONATE = {
     'REQUIRE_SUPERUSER': True
 }
 
+# this can be set to just '/' if we're not using core portal to create cms sessions
+LOGOUT_REDIRECT_URL = getattr(settings_custom, '_LOGOUT_REDIRECT_URL', '/')
 LOGIN_REDIRECT_URL = getattr(settings_custom, '_LOGIN_REDIRECT_URL', '/')
 LOGIN_URL = '/auth/agave/'
 
@@ -495,12 +497,13 @@ PORTAL_EXEC_SYSTEMS = {
 """
 SETTINGS: DATA DEPOT
 """
-PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = settings_custom.\
-    _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS
+PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS = getattr(
+    settings_custom, '_PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEMS', {}
+)
 PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT = settings_custom.\
     _PORTAL_DATA_DEPOT_LOCAL_STORAGE_SYSTEM_DEFAULT
 PORTAL_DATAFILES_STORAGE_SYSTEMS = getattr(
-    settings_custom, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', {}
+    settings_custom, '_PORTAL_DATAFILES_STORAGE_SYSTEMS', []
 )
 
 PORTAL_SEARCH_MANAGERS = {

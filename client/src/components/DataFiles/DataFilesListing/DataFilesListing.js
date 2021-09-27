@@ -28,6 +28,13 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     }),
     shallowEqual
   );
+  const systems = useSelector(
+    state => state.systems.storage.configuration,
+    shallowEqual
+  );
+  const sharedWorkspaces = systems.find(e => e.scheme === 'projects');
+  const isPortalProject = scheme === 'projects';
+  const hideSearchBar = isPortalProject && sharedWorkspaces.hideSearchBar;
 
   const [filterType, setFilterType] = useState();
   const [filteredFiles, setFilteredFiles] = useState(files);
@@ -145,16 +152,18 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
 
   return (
     <>
-      <DataFilesSearchbar
-        api={api}
-        scheme={scheme}
-        system={system}
-        filterType={filterType}
-        setFilterType={setFilterType}
-        resultCount={filteredFiles.length}
-        publicData={isPublic}
-        disabled={loading || !!error}
-      />
+      {!hideSearchBar && (
+        <DataFilesSearchbar
+          api={api}
+          scheme={scheme}
+          system={system}
+          filterType={filterType}
+          setFilterType={setFilterType}
+          resultCount={filteredFiles.length}
+          publicData={isPublic}
+          disabled={loading || !!error}
+        />
+      )}
       <div className="o-flex-item-table-wrap">
         <DataFilesTable
           data={filteredFiles}
