@@ -45,7 +45,7 @@ CheckboxCell.propTypes = {
 };
 
 export const FileNavCell = React.memo(
-  ({ system, path, name, format, api, scheme, href, isPublic }) => {
+  ({ system, path, name, format, api, scheme, href, isPublic, length }) => {
     const dispatch = useDispatch();
     const previewCallback = e => {
       e.stopPropagation();
@@ -58,7 +58,7 @@ export const FileNavCell = React.memo(
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'preview',
-          props: { api, scheme, system, path, name, href }
+          props: { api, scheme, system, path, name, href, length }
         }
       });
     };
@@ -91,7 +91,8 @@ FileNavCell.propTypes = {
   api: PropTypes.string.isRequired,
   scheme: PropTypes.string.isRequired,
   href: PropTypes.string.isRequired,
-  isPublic: PropTypes.bool
+  isPublic: PropTypes.bool,
+  length: PropTypes.number.isRequired
 };
 FileNavCell.defaultProps = {
   isPublic: false
