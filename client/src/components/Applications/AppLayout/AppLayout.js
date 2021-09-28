@@ -31,9 +31,7 @@ const AppsLayout = () => {
         <>
           {Boolean(Object.keys(categoryDict).length) && <AppBrowser />}
           {!params.appId && (
-            <AppPlaceholder
-              apps={Boolean(Object.keys(categoryDict).length)}
-            />
+            <AppPlaceholder apps={Boolean(Object.keys(categoryDict).length)} />
           )}
         </>
       )}
