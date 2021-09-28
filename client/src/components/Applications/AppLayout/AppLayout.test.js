@@ -36,7 +36,6 @@ describe('AppsLayout', () => {
     expect(getByText('My Apps [1]')).toBeDefined();
     expect(getByTestId('loading-spinner')).toBeDefined();
   })});
-
 describe('AppHeader', () => {
   it('renders breadcrumbs', () => {
     const store = mockStore({
