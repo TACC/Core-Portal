@@ -11,7 +11,7 @@ from django.conf import settings
 from portal.libs.agave.exceptions import ValidationError
 from portal.libs.agave.models.base import BaseAgaveResource
 from portal.libs.agave.models.systems.roles import Roles
-
+from json.decoder import JSONDecodeError
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger('metrics.{}'.format(__name__))
@@ -361,21 +361,20 @@ class BaseSystem(BaseAgaveResource):
             by doing a `files-listing` on it.
             What is a good way to test exec systems?
         """
-        result = 'FAIL'
         success = True
-        # if self.type == self.TYPES.STORAGE:
+        result = 'SUCCESS'
         try:
             self._ac.files.list(
                 systemId=self.id,
                 filePath=''
             )
-            result = 'SUCCESS'
         except HTTPError as err:
+            logger.info("Test of system '{}' failed. Listing of system returned: {}".format(self.id, str(err)))
             success = False
-            result = err.response.json()
-        # elif self.type == self.TYPES.EXECUTION:
-        #     result = 'SUCCESS'
-
+            try:
+                result = err.response.json()
+            except JSONDecodeError:
+                result = 'FAIL'
         return success, result
 
     def enable(self):
