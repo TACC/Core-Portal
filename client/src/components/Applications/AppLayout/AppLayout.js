@@ -33,7 +33,6 @@ const AppsLayout = () => {
           {!params.appId && (
             <AppPlaceholder
               apps={Boolean(Object.keys(categoryDict).length)}
-              error={error}
             />
           )}
         </>
