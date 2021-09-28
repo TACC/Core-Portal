@@ -55,7 +55,7 @@ class KeyServiceCreationStep(AbstractStep):
         # Create only storage systems that are not currently accessible
         systemList = []
         for systemId in systems.keys():
-            success, result = StorageSystem(self.user.agave_oauth.client, id=systemId).test()
+            success, _ = StorageSystem(self.user.agave_oauth.client, id=systemId, load=False).test()
             if success:
                 self.logger.info(
                     "{username} has valid configuration for {systemId}, skipping creation".format(
