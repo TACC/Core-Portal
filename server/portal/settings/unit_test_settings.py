@@ -493,7 +493,8 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'googledrive',
         'scheme': 'private',
         'api': 'googledrive',
-        'icon': None
+        'icon': None,
+        'integration': 'portal.apps.googledrive_integration'
     },
     {
         'name': 'Public Data',

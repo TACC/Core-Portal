@@ -21,6 +21,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   const currentListing = useSelector(
     state => state.files.params.FilesListing.api
   );
+  const scheme = useSelector(state => state.files.params.FilesListing.scheme);
   const system = useSelector(state => state.pushKeys.target);
   const loading = useSelector(state => state.files.loading[section]);
   const err = useSelector(state => state.files.error[section]);
@@ -58,23 +59,41 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     );
   }
   if (err) {
+    const GenericMessage = () => (
+      <>
+        An error occurred loading this directory. For help, please submit
+        a&nbsp;
+        <Link to="/workbench/dashboard/tickets/create" className="wb-link">
+          ticket
+        </Link>
+        .
+      </>
+    );
     if (err === '502') {
-      const link = strings => (
-        <a
-          className="data-files-nav-link"
-          type="button"
-          href="#"
-          onClick={pushKeys}
-        >
-          {strings[0]}
-        </a>
-      );
-
+      if (scheme === 'private') {
+        const link = strings => (
+          <a
+            className="data-files-nav-link"
+            type="button"
+            href="#"
+            onClick={pushKeys}
+          >
+            {strings[0]}
+          </a>
+        );
+        return (
+          <div className="h-100 listing-placeholder">
+            <SectionMessage type="warning">
+              There was a problem accessing this file system. If this is your
+              first time logging in, you may need to {link`push your keys`}.
+            </SectionMessage>
+          </div>
+        );
+      }
       return (
         <div className="h-100 listing-placeholder">
           <SectionMessage type="warning">
-            There was a problem accessing this file system. If this is your
-            first time logging in, you may need to {link`push your keys`}.
+            <GenericMessage />
           </SectionMessage>
         </div>
       );
@@ -103,16 +122,6 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       );
     }
     if (err === '400') {
-      const GenericMessage = () => (
-        <>
-          An error occurred loading this directory. For help, please submit
-          a&nbsp;
-          <Link to="/workbench/dashboard/tickets/create" className="wb-link">
-            ticket
-          </Link>
-          .
-        </>
-      );
       const GDriveMessage = () => (
         <>
           Connect your Google Drive account under the &quot;3rd Party Apps&quot;

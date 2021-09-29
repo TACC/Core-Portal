@@ -31,7 +31,8 @@ const DataFilesPreviewModal = () => {
         scheme: params.scheme,
         system: params.system,
         path: params.path,
-        href: params.href
+        href: params.href,
+        length: params.length
       }
     });
   };

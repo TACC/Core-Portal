@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { Alert } from 'reactstrap';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { LoadingSpinner, Section, SectionMessage } from '_common';
 import {
@@ -20,32 +19,43 @@ import {
 import './ManageAccount.scss';
 import './ManageAccount.global.css';
 import './ManageAccount.module.css';
-import { GOOGLE_DRIVE_SETUP_ERROR } from '../../constants/messages';
+import { INTEGRATION_SETUP_ERROR } from '../../constants/messages';
 
 const ManageAccountView = () => {
   const {
-    isLoading,
-    errors,
-    data: { licenses, integrations }
-  } = useSelector(state => state.profile);
-
-  const { hideDataFiles } = useSelector(state => state.workbench.config);
+    config: { hideApps, hideDataFiles },
+    profile: {
+      isLoading,
+      errors,
+      data: { licenses, integrations }
+    }
+  } = useSelector(
+    state => ({
+      config: state.workbench.config,
+      profile: state.profile
+    }),
+    shallowEqual
+  );
 
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch({ type: 'GET_PROFILE_DATA' });
-  }, [dispatch, isLoading]);
+  }, [dispatch]);
   return (
     <Section
       bodyClassName="has-loaded-account"
-      welcomeMessageName="ACCOUNT"
+      introMessageName="ACCOUNT"
       header="Manage Account"
       messages={
         !isLoading &&
-        integrations[0].error === 'SETUP_ERROR' && (
-          <SectionMessage type="warning" canDismiss>
-            {GOOGLE_DRIVE_SETUP_ERROR}
-          </SectionMessage>
+        integrations.map(
+          integration =>
+            integration &&
+            integration.error === 'SETUP_ERROR' && (
+              <SectionMessage key={integration.label} type="warning" canDismiss>
+                {INTEGRATION_SETUP_ERROR(integration.label)}
+              </SectionMessage>
+            )
         )
       }
       headerActions={
@@ -59,17 +69,21 @@ const ManageAccountView = () => {
         ) : (
           <>
             {errors.data && (
-              <Alert color="danger">Unable to get your profile data</Alert>
+              <SectionMessage type="error">
+                Unable to get your profile data
+              </SectionMessage>
             )}
             {errors.fields && (
-              <Alert color="danger">Unable to get form fields</Alert>
+              <SectionMessage type="error">
+                Unable to get form fields
+              </SectionMessage>
             )}
             <RequiredInformation />
             <OptionalInformation />
             <ChangePasswordModal />
             <EditOptionalInformationModal />
             <EditRequiredInformationModal />
-            {!hideDataFiles && !isEmpty(licenses) && <Licenses />}
+            {!hideApps && !isEmpty(licenses) && <Licenses />}
             {!hideDataFiles && !isEmpty(integrations) && <Integrations />}
             <ChangePassword />
           </>

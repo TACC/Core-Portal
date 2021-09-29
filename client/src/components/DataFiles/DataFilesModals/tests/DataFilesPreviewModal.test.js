@@ -14,7 +14,8 @@ const files = {
       system: 'test.site.project.PROJECT-3',
       path: 'something/test.txt',
       href: 'href',
-      name: 'test.txt'
+      name: 'test.txt',
+      length: 1234
     }
   }
 };
