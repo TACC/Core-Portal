@@ -33,7 +33,6 @@ describe('AppsLayout', () => {
     });
     const { getByText,getByTestId} = renderComponent(<AppsLayout/>, store);
     expect(getByTestId('loading-spinner')).toBeDefined();
-    
   });
   it('Display the correct error message', () => {
     const store = mockStore({
@@ -41,7 +40,6 @@ describe('AppsLayout', () => {
     });
     const { getByText} = renderComponent(<AppsLayout/>, store);
     expect(getByText('Something went wrong.')).toBeDefined();
-    
   });
 });
 describe('AppHeader', () => {
