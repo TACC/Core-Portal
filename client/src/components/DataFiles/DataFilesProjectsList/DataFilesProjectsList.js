@@ -16,7 +16,6 @@ const DataFilesProjectsList = ({ modal }) => {
   const { error, loading, projects } = useSelector(
     state => state.projects.listing
   );
-
   const query = queryStringParser.parse(useLocation().search);
 
   const infiniteScrollCallback = useCallback(() => {});

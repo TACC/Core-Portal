@@ -1,7 +1,10 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent, wait, render } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import renderComponent from 'utils/testing';
 import DataFilesListing from './DataFilesListing';
 import { CheckboxCell, FileNavCell } from './DataFilesListingCells';
@@ -43,7 +46,8 @@ const initialMockState = {
       FilesListing: true
     }
   },
-  systems: systemsFixture
+  systems: systemsFixture,
+  workbench: { config: { systemPrefix: 'cep.local.project' } }
 };
 
 describe('CheckBoxCell', () => {
@@ -55,9 +59,7 @@ describe('CheckBoxCell', () => {
       store,
       history
     );
-    expect(
-      getByRole('checkbox').getAttribute('aria-checked')
-    ).toEqual('true');
+    expect(getByRole('checkbox').getAttribute('aria-checked')).toEqual('true');
   });
 
   it('box is unchecked when not selected', () => {
@@ -68,9 +70,7 @@ describe('CheckBoxCell', () => {
       store,
       history
     );
-    expect(
-      getByRole('checkbox').getAttribute('aria-checked')
-    ).toEqual('false');
+    expect(getByRole('checkbox').getAttribute('aria-checked')).toEqual('false');
   });
 });
 
@@ -87,6 +87,7 @@ describe('FileNavCell', () => {
         api="tapis"
         scheme="private"
         href="href"
+        length={1234}
       />,
       store,
       history
@@ -111,6 +112,7 @@ describe('FileNavCell', () => {
         api="tapis"
         scheme="private"
         href="href"
+        length={1234}
       />,
       store,
       history
@@ -192,7 +194,7 @@ describe('DataFilesListing', () => {
     ],
     [
       '502',
-      /There was a problem accessing this file system. If this is your/, 
+      /There was a problem accessing this file system. If this is your/,
       'private'
     ],
     [
@@ -250,6 +252,36 @@ describe('DataFilesListing', () => {
     fireEvent.change(dropdownSelector, { target: { value: 'Folders' } });
     expect(getAllByTestId('file-listing-item').length).toBe(4);
     fireEvent.change(dropdownSelector, { target: { value: 'All Types' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(filesFixture.listing.FilesListing.length);
-  })
+    expect(getAllByTestId('file-listing-item').length).toBe(
+      filesFixture.listing.FilesListing.length
+    );
+  });
+
+  it('does not render the DataFilesSearchbar in the Shared Workspaces component when hideSearchBar is true', () => {
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/projects/');
+
+    systemsFixture.storage.configuration[5].hideSearchBar = true;
+
+    const store = mockStore({
+      ...initialMockState,
+      systems: systemsFixture
+    });
+
+    const { queryByText } = render(
+      <Provider store={store}>
+        <BrowserRouter history={history}>
+          <DataFilesListing
+            api="tapis"
+            scheme="projects"
+            system="test.system"
+            resultCount={0}
+            path="/"
+            isPublic={false}
+          />
+        </BrowserRouter>
+      </Provider>
+    );
+    expect(queryByText(/Search/)).toBeNull();
+  });
 });
