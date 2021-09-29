@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from "redux-mock-store";
-import {AppsHeader,AppsLayout} from "./AppLayout";
+import  AppsLayout from "./AppLayout";
 import { MemoryRouter, Route } from 'react-router-dom';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
@@ -20,7 +20,7 @@ function renderAppsHeader(store, appId) {
     <Provider store={store}>
       <MemoryRouter initialEntries={[`/applications/${appId}`]}>
         <Route path='/:appId?'>
-          <AppsHeader categoryDict={appTrayExpectedFixture}/>
+          <AppsLayout categoryDict={appTrayExpectedFixture}/>
         </Route>
       </MemoryRouter>
     </Provider>
@@ -29,13 +29,21 @@ function renderAppsHeader(store, appId) {
 describe('AppsLayout', () => {
   it('should show a loading spinner while fetching data', () => {
     const store = mockStore({
-      apps: appTrayExpectedFixture
+      apps: {...appTrayExpectedFixture, loading: true}
+    });
+    const { getByText,getByTestId} = renderComponent(<AppsLayout/>, store);
+    expect(getByTestId('loading-spinner')).toBeDefined();
+    
+  });
+  it('Display the correct error message', () => {
+    const store = mockStore({
+      apps: {...appTrayExpectedFixture, error: {isError:true}}
     });
     const { getByText} = renderComponent(<AppsLayout/>, store);
-
-    expect(getByText('My Apps [1]')).toBeDefined();
-    expect(getByTestId('loading-spinner')).toBeDefined();
-  })});
+    expect(getByText('Something went wrong.')).toBeDefined();
+    
+  });
+});
 describe('AppHeader', () => {
   it('renders breadcrumbs', () => {
     const store = mockStore({
