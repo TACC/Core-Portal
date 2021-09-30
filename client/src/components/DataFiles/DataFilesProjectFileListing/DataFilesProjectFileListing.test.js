@@ -61,7 +61,6 @@ const initialMockState = {
       username: 'username'
     }
   },
-  workbench: { config: { systemPrefix: 'cep.local.project' } }
 };
 
 describe('DataFilesProjectFileListing', () => {
