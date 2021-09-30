@@ -182,6 +182,8 @@ IMPERSONATE = {
     'REQUIRE_SUPERUSER': True
 }
 
+# this can be set to just '/' if we're not using core portal to create cms sessions
+LOGOUT_REDIRECT_URL = getattr(settings_custom, '_LOGOUT_REDIRECT_URL', '/')
 LOGIN_REDIRECT_URL = getattr(settings_custom, '_LOGIN_REDIRECT_URL', '/')
 LOGIN_URL = '/auth/agave/'
 

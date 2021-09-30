@@ -1,20 +1,23 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
-import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture'
+import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
-import { projectsFixture, projectMetadataFixture } from '../../../redux/sagas/fixtures/projects.fixture';
+import {
+  projectsFixture,
+  projectMetadataFixture
+} from '../../../redux/sagas/fixtures/projects.fixture';
 import DataFilesProjectFileListing from './DataFilesProjectFileListing';
 
 // Mock ResizeObserver
-const {ResizeObserver} = window;
+const { ResizeObserver } = window;
 
 beforeEach(() => {
   delete window.ResizeObserver;
   window.ResizeObserver = jest.fn().mockImplementation(() => ({
     observe: jest.fn(),
     unobserve: jest.fn(),
-    disconnect: jest.fn(),
+    disconnect: jest.fn()
   }));
 });
 
@@ -34,7 +37,7 @@ jest.mock('react-resize-detector', () => ({
           scrollHeight: 50
         }
       }
-    }
+    };
   }
 }));
 
@@ -57,14 +60,17 @@ const initialMockState = {
       last_name: 'Lastname',
       username: 'username'
     }
-  }
+  },
 };
 
 describe('DataFilesProjectFileListing', () => {
   it('shows uses the Show More component for long descriptions', () => {
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
-      <DataFilesProjectFileListing system="test.site.project.PROJECT-3" path="/" />,
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
       store
     );
 
@@ -86,9 +92,12 @@ describe('DataFilesProjectFileListing', () => {
     };
     const store = mockStore(initialMockStateUnknownUser);
     const { queryByText } = renderComponent(
-      <DataFilesProjectFileListing system="test.site.project.PROJECT-3" path="/" />,
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
       store
-    )
+    );
 
     expect(queryByText(/Edit Descriptions/)).toBeNull();
     expect(queryByText(/Manage Team/)).toBeNull();
@@ -99,9 +108,12 @@ describe('DataFilesProjectFileListing', () => {
     initialMockState.systems.storage.configuration[5].privilegeRequired = true;
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
-      <DataFilesProjectFileListing system="test.site.project.PROJECT-3" path="/" />,
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
       store
-    )
+    );
 
     expect(getByText(/Edit Descriptions/)).toBeDefined();
     expect(getByText(/Manage Team/)).toBeDefined();
@@ -112,9 +124,12 @@ describe('DataFilesProjectFileListing', () => {
     initialMockState.systems.storage.configuration[5].privilegeRequired = false;
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
-      <DataFilesProjectFileListing system="test.site.project.PROJECT-3" path="/" />,
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
       store
-    )
+    );
 
     expect(getByText(/Edit Descriptions/)).toBeDefined();
     expect(getByText(/Manage Team/)).toBeDefined();
@@ -125,9 +140,12 @@ describe('DataFilesProjectFileListing', () => {
     initialMockState.systems.storage.configuration[5].privilegeRequired = false;
     const store = mockStore(initialMockState);
     const { getByText } = renderComponent(
-      <DataFilesProjectFileListing system="test.site.project.PROJECT-3" path="/" />,
+      <DataFilesProjectFileListing
+        system="test.site.project.PROJECT-3"
+        path="/"
+      />,
       store
-    )
+    );
 
     expect(getByText(/Edit Descriptions/)).toBeDefined();
     expect(getByText(/Manage Team/)).toBeDefined();
