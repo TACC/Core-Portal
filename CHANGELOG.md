@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.0] - 2021-09-30: CMS Login; UTRC Conversion; Styling Fixes
+
+### Added
+
+- FP-1194: Support CMS login (#494)
+- FP-1214: Add HPC System Access Onboarding Step (#503)
+- FP-1130: Add Shared Workspaces Search Toggle (#464)
+- FP-1195: Allow Customization of onboarding route (#498)
+- FP-1102: Add ability to compress folder to folder download message modal (#499)
+
+### Changed
+
+- FP-1132: ReadMore component adjustments (#481)
+- FP-1082/FP-1083: Fix Color Contrast of Accent Color & Body Text (#452)
+- FP-1116: Replace Bootstrap Alerts with SectionMessage in ManageAccount.js (#496)
+- FP-1016: Disabled Trash button for files in .Trash. (#483)
+- FP-212/FP-1171: Make 3rd party integrations more dynamic (#484)
+- FP-1096: Update search text when not enough characters (#486)
+- FP-1165: Changed all welcome files and components to intro (#485)
+- FP-1202: changed close button color (#497)
+- FP-1170: Add filesize to datafiles preview logs (#510)
+- FP-1006: Compress/Extract Toolbar App Adjustments (#508)
+
+### Fixed
+
+- FP-1034: Better Handle 400s on File Listings (#431)
+- FP-1171: Expand Data Files toggle (#476)
+- FP-1201: handle missing pi in project metadata (#492)
+- Reduce Elasticsearch load time (#478)
+- FP-1008: Fix disabled Data Files dropdown styles (#491)
+- FP-1071: Hide "Return to Shared Workspaces" in File Selector Modal (#493)
+- FP-1111: Dashboard Job History "Job Status" column overflow (#502)
+- FP-1169: Fix Paginator component (#500)
+- FP-1059: Fix "Shared Workspaces" Breadcrumb in File Selector Modal (#470)
+- FP-1196: Prevent Push Keys Modal on Files Listing 400 for non-public systems (#506)
+- FP-1011: Fix large image preview loading artifact (#490)
+
+### Removed
+
+- FP-1052: Remove work2 Welcome Message (#489)
+
 ## [2.9.0] - 2021-09-01: Shared Workspace Updates; Cortal Icons
 
 ### Changed
@@ -454,7 +495,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.9.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.10.0...HEAD
+[2.10.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.10.0
 [2.9.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.9.0
 [2.8.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.8.0
 [2.7.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.7.0

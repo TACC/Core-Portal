@@ -249,5 +249,6 @@ _WORKBENCH_SETTINGS = {
     "extractApp": 'extract',
     "makePublic": True,
     "hideApps": False,
-    "hideDataFiles": False
+    "hideDataFiles": False,
+    "onboardingCompleteRedirect": '/workbench/'
 }
