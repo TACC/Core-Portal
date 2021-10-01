@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import renderHtml from 'utils/renderHtml';
 import { InlineMessage, LoadingSpinner, InfiniteScrollTable } from '_common';
@@ -10,7 +10,6 @@ import {
 import SiteSearchPaginator from './SiteSearchPaginator/SiteSearchPaginator';
 import DataFilesPreviewModal from '../../DataFiles/DataFilesModals/DataFilesPreviewModal';
 import DataFilesSearchbar from '../../DataFiles/DataFilesSearchbar/DataFilesSearchbar';
-import fileTypes from '../../DataFiles/DataFilesSearchbar/FileTypes';
 import './SiteSearchListing.module.scss';
 import './SiteSearchListing.css';
 
@@ -89,23 +88,6 @@ SiteSearchFileListing.propTypes = {
 
 const SiteSearchListing = ({ results, loading, error, filter }) => {
   const { listing, count, type } = results;
-  const [fileFilterType, setFileFilterType] = useState();
-
-  const filterFiles = () => {
-    const fileFilter = fileTypes.find(f => f.type === fileFilterType);
-    let filteredFiles = listing;
-    if (!fileFilter) {
-      return filteredFiles;
-    }
-    if (fileFilter.type === 'Folders') {
-      filteredFiles = listing.filter(f => f.format === 'folder');
-    } else {
-      filteredFiles = listing.filter(f =>
-        fileFilter.extensions.some(ext => f.name.endsWith(ext))
-      );
-    }
-    return filteredFiles;
-  };
 
   const FILTER_MAPPING = {
     cms: 'Web Content',
@@ -125,8 +107,6 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
         api="tapis"
         scheme={filter}
         system=""
-        filterType={fileFilterType}
-        setFilterType={setFileFilterType}
         siteSearch
         disabled={loading || !!error}
       />
@@ -167,7 +147,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
             ))}
 
           {type === 'file' && (
-            <SiteSearchFileListing listing={filterFiles()} filter={filter} />
+            <SiteSearchFileListing listing={listing} filter={filter} />
           )}
 
           <div styleName="paginator-container">
