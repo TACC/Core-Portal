@@ -33,17 +33,29 @@ import './TicketModal.scss';
 const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
-const Attachment = ({ attachment }) => (
-  <div>
-    <ul>
-      {attachment.slice(1).map(attachmentName => (
-        <li> {attachmentName} </li>
-      ))}
-    </ul>
-  </div>
-);
+const Attachment = ({ attachments, ticketId }) => {
+  if (attachments.length === 0) return <></>;
+  return (
+    <div>
+      Attachments:
+      <ul>
+        {attachments.map(attach => (
+          <a
+            href={`https://cep.dev/api/tickets/${ticketId}/attachment/${attach[0]}`}
+            styleName="link"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <li> {attach[1]} </li>
+          </a>
+        ))}
+      </ul>
+    </div>
+  );
+};
 Attachment.propTypes = {
-  attachment: PropTypes.string.isRequired
+  attachments: PropTypes.objectOf(PropTypes.any).isRequired,
+  ticketId: PropTypes.string.isRequired
 };
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
@@ -142,7 +154,8 @@ const TicketHistoryCard = ({
   creator,
   ticketCreator,
   content,
-  attachments
+  attachments,
+  ticketId
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
@@ -188,11 +201,7 @@ const TicketHistoryCard = ({
             a => !a[1].toString().startsWith('untitled (')
           ))}
         >
-          Attachments:
-          {attachments &&
-            attachments.map(attachment => (
-              <Attachment attachment={attachment} />
-            ))}
+          <Attachment attachments={attachments} ticketId={ticketId} />
         </CardBody>
       </Collapse>
     </Card>
@@ -205,7 +214,8 @@ TicketHistoryCard.propTypes = {
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
-  attachments: PropTypes.string.isRequired
+  attachments: PropTypes.objectOf(PropTypes.any).isRequired,
+  ticketId: PropTypes.string.isRequired
 };
 
 const TicketHistory = () => {
@@ -238,6 +248,7 @@ const TicketHistory = () => {
           ticketCreator={d.IsCreator}
           content={d.Content}
           attachments={d.Attachments}
+          ticketId={d.Ticket}
         />
       ))}
       <div ref={ticketHistoryEndRef} />
