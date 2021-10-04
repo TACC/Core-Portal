@@ -17,6 +17,10 @@ const OnboardingUser = () => {
   );
   const loading = useSelector(state => state.onboarding.user.loading);
   const error = useSelector(state => state.onboarding.user.error);
+  const onboardingCompleteRedirect = useSelector(
+    state => state.workbench.config.onboardingCompleteRedirect
+  );
+  const continueLink = onboardingCompleteRedirect || '/workbench/';
 
   useEffect(() => {
     dispatch({
@@ -78,10 +82,10 @@ const OnboardingUser = () => {
             <Button
               color="primary"
               styleName="button"
-              href="/workbench/"
+              href={continueLink}
               disabled={!user.setupComplete}
             >
-              Access Dashboard
+              Continue
             </Button>
           </div>
         </>
