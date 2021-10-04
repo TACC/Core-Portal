@@ -9,7 +9,7 @@ import {
   SectionTableWrapper
 } from '_common';
 import DataFilesProjectsSearchbar from './DataFilesProjectsSearchbar/DataFilesProjectsSearchbar';
-import './DataFilesProjectsList.module.scss';
+import styles from './DataFilesProjectsList.module.scss';
 import './DataFilesProjectsList.scss';
 
 const DataFilesProjectsList = ({ modal }) => {
@@ -93,7 +93,7 @@ const DataFilesProjectsList = ({ modal }) => {
 
   if (error) {
     return (
-      <div styleName="root-placeholder">
+      <div className={styles['root-placeholder']}>
         <SectionMessage type="error">
           There was a problem retrieving your Shared Workspaces.
         </SectionMessage>
@@ -111,7 +111,7 @@ const DataFilesProjectsList = ({ modal }) => {
 
   return (
     <SectionTableWrapper
-      styleName={`root ${modal ? 'is-in-modal' : ''}`}
+      className={`${styles['root']} ${modal ? styles['is-in-modal'] : ''}`}
       contentShouldScroll
       manualContent
     >

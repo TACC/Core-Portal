@@ -26,8 +26,7 @@ const DataFilesTrashModal = React.memo(() => {
       state.files.selected.FilesListing.map(i => ({
         ...state.files.listing.FilesListing[i],
         id: uuidv4()
-      })),
-    () => true
+      }))
   );
   const selected = useMemo(() => selectedFiles, [isOpen]);
   const status = useSelector(state => state.files.operationStatus.trash);

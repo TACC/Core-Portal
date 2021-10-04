@@ -1,9 +1,9 @@
 import React from 'react';
-import { parse } from 'bowser';
+import Bowser from 'bowser';
 import { UncontrolledAlert } from 'reactstrap';
 
 const BrowserChecker = () => {
-  const { browser } = parse(navigator.userAgent);
+  const { browser } = Bowser.parse(navigator.userAgent);
   const unsupported = ![
     'Chrome',
     'Firefox',

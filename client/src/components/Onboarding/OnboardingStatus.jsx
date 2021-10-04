@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pill, LoadingSpinner } from '_common';
 import { stepPropType } from './OnboardingPropTypes';
-import './OnboardingStatus.module.scss';
+import styles from './OnboardingStatus.module.scss';
 import './OnboardingStatus.scss';
 
 const getContents = step => {
@@ -42,7 +42,7 @@ const getContents = step => {
       return <Pill type={type}>Completed</Pill>;
     case 'processing':
       return (
-        <span styleName="processing">
+        <span className={styles.processing}>
           <Pill type={type}>Processing</Pill>
           <LoadingSpinner
             placement="inline"
@@ -63,7 +63,7 @@ const OnboardingStatus = ({ step }) => {
   if (!contents) {
     return null;
   }
-  return <span styleName="root">{getContents(step)}</span>;
+  return <span className={styles.root}>{getContents(step)}</span>;
 };
 
 OnboardingStatus.propTypes = {

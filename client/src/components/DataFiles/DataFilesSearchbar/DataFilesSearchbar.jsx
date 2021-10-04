@@ -8,7 +8,7 @@ import { findSystemDisplayName } from 'utils/systems';
 import { useSelector } from 'react-redux';
 import fileTypes from './FileTypes';
 
-import './DataFilesSearchbar.module.scss';
+import styles from './DataFilesSearchbar.module.scss';
 
 const DataFilesSearchbar = ({
   api,
@@ -86,15 +86,14 @@ const DataFilesSearchbar = ({
   return (
     <form
       aria-label={`${sectionName} Search`}
-      className={className}
-      styleName="container"
+      className={`${className} ${styles['container']}`}
       onSubmit={onSubmit}
     >
-      <div className="input-group" styleName="query-fieldset">
+      <div className={`input-group ${styles['query-fieldset']}`}>
         <div className="input-group-prepend">
-          <Button type="submit" styleName="submit-button" disabled={disabled}>
-            <Icon name="search" styleName="button__icon" />
-            <span styleName="button__text">Search</span>
+          <Button type="submit" className={styles['submit-button']} disabled={disabled}>
+            <Icon name="search" className={styles['button__icon']} />
+            <span className={styles['button__text']}>Search</span>
           </Button>
         </div>
         <input
@@ -110,8 +109,7 @@ const DataFilesSearchbar = ({
           value={query || ''}
           name="query"
           aria-label={`Search ${sectionName}`}
-          styleName="input"
-          className="form-control"
+          className={`form-control ${styles['input']}`}
           placeholder={`Search ${sectionName}`}
           data-testid="input"
           autoComplete="off"
@@ -119,7 +117,7 @@ const DataFilesSearchbar = ({
         />
       </div>
       {scheme !== 'cms' && (
-        <div styleName="file-filter">
+        <div className={styles['file-filter']}>
           <span>File Type:</span>
           <DropdownSelector
             onChange={e => setFilterType(e.target.value)}
@@ -134,7 +132,7 @@ const DataFilesSearchbar = ({
         </div>
       )}
       {hasQuery && !siteSearch && (
-        <div aria-label="Summary of Search Results" styleName="results">
+        <div aria-label="Summary of Search Results" className={styles['results']}>
           {resultCount} Results Found for <span>{hasQuery}</span>
         </div>
       )}
@@ -143,7 +141,7 @@ const DataFilesSearchbar = ({
         <Button
           type="reset"
           color="link"
-          styleName="clear-button"
+          className={styles['clear-button']}
           onClick={onClear}
           data-testid="reset"
         >

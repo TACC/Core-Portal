@@ -7,7 +7,7 @@ import { LoadingSpinner, InlineMessage } from '_common';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
-import './DataFilesAddProjectModal.module.scss';
+import styles from './DataFilesAddProjectModal.module.scss';
 
 const DataFilesAddProjectModal = () => {
   const history = useHistory();
@@ -119,9 +119,8 @@ const DataFilesAddProjectModal = () => {
               ) : null}
               <Button
                 type="submit"
-                className="data-files-btn"
+                className={`data-files-btn ${styles['add-workspace-btn']}`}
                 disabled={isCreating}
-                styleName="add-workspace-btn"
               >
                 {isCreating ? <LoadingSpinner placement="inline" /> : null} Add
                 Workspace

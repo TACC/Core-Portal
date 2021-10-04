@@ -4,7 +4,7 @@ import { useTable } from 'react-table';
 import { LoadingSpinner, Message } from '_common';
 import { Display, Operational, Load } from './SystemMonitorCells';
 
-import './SystemMonitor.module.scss';
+import styles from './SystemMonitor.module.scss';
 
 const SystemsList = () => {
   const systemList = useSelector(state => state.systemMonitor.list);
@@ -41,7 +41,7 @@ const SystemsList = () => {
 
   if (loadingError) {
     return (
-      <Message type="warn" styleName="error">
+      <Message type="warn" className={styles['error']}>
         Unable to gather system information
       </Message>
     );
@@ -60,21 +60,20 @@ const SystemsList = () => {
   return (
     <table
       {...getTableProps()}
-      styleName="root"
       // Emulate <InfiniteScrollTable> and its use of `o-fixed-header-table`
       // TODO: Create global table styles & Make <InfiniteScrollTable> use them
-      className="multi-system InfiniteScrollTable o-fixed-header-table"
+      className={`multi-system InfiniteScrollTable o-fixed-header-table ${styles['root']}`}
     >
       <thead>
         {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()} styleName="header">
+          <tr {...headerGroup.getHeaderGroupProps()} className={styles['header']}>
             {headerGroup.headers.map(column => (
               <th key={column.Header}>{column.render('Header')}</th>
             ))}
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()} styleName="rows">
+      <tbody {...getTableBodyProps()} className={styles['rows']}>
         {rows.length ? (
           rows.map((row, idx) => {
             prepareRow(row);

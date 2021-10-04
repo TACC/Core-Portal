@@ -3,15 +3,15 @@ import renderHtml from 'utils/renderHtml';
 import { stepPropType } from './OnboardingPropTypes';
 import OnboardingStatus from './OnboardingStatus';
 import OnboardingActions from './OnboardingActions';
-import './OnboardingStep.module.scss';
+import styles from './OnboardingStep.module.scss';
 
 const OnboardingStep = ({ step }) => {
-  const styleName = `root ${step.state === 'pending' ? 'disabled' : ''}`;
+  const styleName = `${styles.root} ${step.state === styles.pending ? 'disabled' : ''}`;
   return (
-    <div styleName={styleName}>
-      <div styleName="name">{step.displayName}</div>
-      <div styleName="description">{renderHtml(step.description)}</div>
-      <div styleName="status">
+    <div className={styleName}>
+      <div className={styles.name}>{step.displayName}</div>
+      <div className={styles.description}>{renderHtml(step.description)}</div>
+      <div className={styles.status}>
         <OnboardingStatus step={step} />
         <OnboardingActions step={step} />
       </div>

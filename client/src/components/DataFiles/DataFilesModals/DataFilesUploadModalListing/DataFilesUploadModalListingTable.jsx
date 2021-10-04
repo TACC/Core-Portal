@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Table } from 'reactstrap';
 import { LoadingSpinner, InlineMessage } from '_common';
 import { FileLengthCell } from '../../DataFilesListing/DataFilesListingCells';
-import './DataFilesUploadModalListingTable.module.scss';
+import styles from './DataFilesUploadModalListingTable.module.scss';
 
 const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
   if (rejectedFiles.filter(f => f.id === i).length > 0) {
@@ -46,7 +46,7 @@ function DataFilesUploadModalListingTable({
   };
 
   return (
-    <div styleName="table-wrapper">
+    <div className={styles['table-wrapper']}>
       <Table striped>
         <thead>
           <tr>

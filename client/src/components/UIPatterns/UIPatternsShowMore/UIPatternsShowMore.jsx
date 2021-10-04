@@ -1,10 +1,10 @@
 import React from 'react';
 import { ShowMore } from '_common';
-import './UIPatternsShowMore.module.scss';
+import styles from './UIPatternsShowMore.module.scss';
 
 function UIPatternsShowMore() {
   return (
-    <div styleName="root">
+    <div className={styles.root}>
       <ShowMore>
         Long text beyond 4 lines should be clamped. Short text should not be
         clamped. This element is responsive to line number changes due to window

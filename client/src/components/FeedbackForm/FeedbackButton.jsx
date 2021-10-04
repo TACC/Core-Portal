@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Button } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import FeedbackModal from './FeedbackModal';
-import './FeedbackButton.module.scss';
+import styles from './FeedbackButton.module.scss';
 
 const FeedbackButton = () => {
   const [openModal, setOpenModal] = React.useState(false);
@@ -30,7 +30,7 @@ const FeedbackButton = () => {
   return (
     <>
       <Button
-        styleName="container"
+        className={styles['container']}
         color="link"
         onClick={() => setOpenModal(true)}
       >

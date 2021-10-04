@@ -4,7 +4,7 @@ import { Formik, Form } from 'formik';
 import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
 import { FormField } from '_common';
 import * as Yup from 'yup';
-import './FeedbackForm.module.scss';
+import styles from './FeedbackForm.module.scss';
 
 const formSchema = Yup.object().shape({
   problem_description: Yup.string().required('Required')
@@ -44,13 +44,13 @@ const FeedbackForm = () => {
     >
       {({ isSubmitting, dirty, isValid, submitCount }) => {
         return (
-          <Form styleName="container">
+          <Form className={styles.container}>
             <FormGroup>
               <FormField
                 name="problem_description"
                 label="Feedback"
                 type="textarea"
-                styleName="comments-textarea"
+                className={styles['comments-textarea']}
                 required
               />
             </FormGroup>
@@ -69,7 +69,7 @@ const FeedbackForm = () => {
                   <Spinner
                     size="sm"
                     color="white"
-                    styleName="submit-spinner"
+                    className={styles['submit-spinner']}
                     data-testid="creating-spinner"
                   />
                 )}

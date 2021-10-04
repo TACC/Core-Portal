@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { SectionHeader } from '_common';
 
-import './SectionTableWrapper.module.css';
+import styles from './SectionTableWrapper.module.css';
 
 /**
  * A wrapper required (for a table within a `Section[…]` component) that supports:
@@ -88,12 +88,12 @@ function SectionTableWrapper({
   tagName
 }) {
   let styleName = '';
-  const styleNameList = ['root'];
+  const styleNameList = [styles['root']];
   const TagName = tagName;
   const shouldBuildHeader = header || headerClassName || headerActions;
 
-  if (contentShouldScroll) styleNameList.push('should-scroll');
-  if (!manualContent) styleNameList.push('has-wrap');
+  if (contentShouldScroll) styleNameList.push(styles['should-scroll']);
+  if (!manualContent) styleNameList.push(styles['has-wrap']);
 
   // Do not join inside JSX (otherwise arcane styleName error occurs)
   styleName = styleNameList.join(' ');
@@ -114,14 +114,13 @@ function SectionTableWrapper({
   return (
     /* FAQ: Using {styleName} will cause unit test to unexpectedly fail */
     /* SEE: https://github.com/gajus/babel-plugin-react-css-modules/issues/72 */
-    <TagName styleName={`${styleName}`} className={className}>
+    <TagName className={`${styleName} ${className}`}>
       {manualHeader ? (
         <>{manualHeader}</>
       ) : (
         shouldBuildHeader && (
           <SectionHeader
-            styleName="header"
-            className={headerClassName}
+            className={`${styles['header']} ${headerClassName}`}
             actions={headerActions}
             isForTable
           >

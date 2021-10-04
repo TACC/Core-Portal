@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { LoadingSpinner, Message } from '_common';
-import './DataFilesPreviewModal.module.scss';
+import styles from './DataFilesPreviewModal.module.scss';
 
 const DataFilesPreviewModal = () => {
   const dispatch = useDispatch();
@@ -60,16 +60,16 @@ const DataFilesPreviewModal = () => {
       <ModalHeader toggle={toggle} charCode="&#xe912;">
         File Preview: {params.name}
       </ModalHeader>
-      <ModalBody styleName="root">
+      <ModalBody className={styles.root}>
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
-          <div styleName="loading-style">
+          <div className={styles['loading-style']}>
             <LoadingSpinner />
           </div>
         )}
         {previewUsingTextContent && (
           <div>
             <code>
-              <pre styleName="text-preview">{content}</pre>
+              <pre className={styles['text-preview']}>{content}</pre>
             </code>
           </div>
         )}
@@ -85,7 +85,7 @@ const DataFilesPreviewModal = () => {
           </div>
         )}
         {hasError && (
-          <Message type="warning" styleName="error">
+          <Message type="warning" className={styles.error}>
             {error}
           </Message>
         )}

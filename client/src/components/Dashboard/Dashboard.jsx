@@ -8,7 +8,7 @@ import Tickets, { TicketModal } from '../Tickets';
 import Sysmon from '../SystemMonitor';
 import * as ROUTES from '../../constants/routes';
 import './Dashboard.global.css';
-import './Dashboard.module.css';
+import styles from './Dashboard.module.css';
 
 function Dashboard() {
   const hideApps = useSelector(state => state.workbench.config.hideApps);
@@ -23,7 +23,7 @@ function Dashboard() {
           Manage Account
         </Link>
       }
-      contentStyleName="panels"
+      contentClassName={styles['panels']}
       contentLayoutName="twoColumnUnequal"
       contentShouldScroll
       content={
@@ -70,7 +70,7 @@ function DashboardSysmon() {
   return (
     <SectionTableWrapper
       header="System Status"
-      styleName="sysmon-panel"
+      className={styles['sysmon-panel']}
       contentShouldScroll
     >
       <Sysmon />

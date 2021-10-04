@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, wait } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
@@ -62,7 +62,7 @@ describe('AppSchemaForm', () => {
     });
 
     const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
     });
   });
@@ -81,7 +81,7 @@ describe('AppSchemaForm', () => {
         }
       }
     });
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/TACC-ACI/)).toBeDefined();
     });
   });
@@ -100,7 +100,7 @@ describe('AppSchemaForm', () => {
         }
       }
     });
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/Error/)).toBeDefined();
     });
   });
@@ -116,7 +116,7 @@ describe('AppSchemaForm', () => {
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdAppFixture
     });
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/You need an allocation on Frontera/)).toBeDefined();
     });
   });
@@ -128,7 +128,7 @@ describe('AppSchemaForm', () => {
     const { getByText } = renderAppSchemaFormComponent(store, {
       ...namdAppMissingKeysFixture
     });
-    await wait(() => {
+    await waitFor(() => {
       expect(
         getByText(
           /There was a problem accessing your default My Data file system/
@@ -143,7 +143,7 @@ describe('AppSchemaForm', () => {
       jobs: jobsSubmissionSuccessFixture
     });
     const { getByText } = renderAppSchemaFormComponent(store, namdAppFixture);
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/Your job has submitted successfully./)).toBeDefined();
     });
   });
@@ -166,7 +166,7 @@ describe('AppSchemaForm', () => {
       store,
       appFixture
     );
-    await wait(() => {
+    await waitFor(() => {
       expect(
         getByText(
           /Node Count must be greater than or equal to 3 for the normal queue/
@@ -194,7 +194,7 @@ describe('AppSchemaForm', () => {
       appFixture
     );
 
-    await wait(() => {
+    await waitFor(() => {
       expect(
         getByText(
           /Node Count must be less than or equal to 2 for the small queue/
@@ -227,7 +227,7 @@ describe('AppSchemaForm', () => {
       ...namdAppFixture
     });
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/No storage systems enabled for this portal./)).toBeDefined();
     });
   });
@@ -252,7 +252,7 @@ describe('AppSchemaForm', () => {
       appFixture
     );
 
-    await wait(() => {
+    await waitFor(() => {
       expect(
         getByText(/The normal queue does not support serial apps/)
       ).toBeDefined();
@@ -269,7 +269,7 @@ describe('AppSchemaForm', () => {
         type: 'Application Name'
       }
     });
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText(/Activate your Application Name license/)).toBeDefined();
     });
   });

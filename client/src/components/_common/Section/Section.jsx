@@ -5,7 +5,7 @@ import { SectionHeader, SectionContent } from '_common';
 import SectionMessages from './SectionMessages';
 import { LAYOUTS, DEFAULT_LAYOUT, LAYOUT_CLASS_MAP } from '../SectionContent';
 
-import './Section.module.css';
+import styles from './Section.module.css';
 
 /**
  * Get class names based on the layout classes for <SectionContent>
@@ -148,10 +148,9 @@ function Section({
 
   return (
     /* FAQ: Global class because some content layout styles require access */
-    <section styleName="root" className={`${className} ${layoutClass}`}>
+    <section className={`${styles['root']} ${className} ${layoutClass}`}>
       <SectionMessages
-        styleName="messages"
-        className={messagesClassName}
+        className={`${styles['messages']} ${messagesClassName}`}
         introMessageName={introMessageName}
         introMessageText={introMessageText}
       >
@@ -169,8 +168,7 @@ function Section({
       ) : (
         shouldBuildHeader && (
           <SectionHeader
-            styleName="header"
-            className={headerClassName}
+            className={`${headerClassName} ${styles['header']}`}
             actions={headerActions}
           >
             {header}
@@ -185,8 +183,7 @@ function Section({
       ) : (
         <SectionContent
           tagName="main"
-          styleName="content"
-          className={contentClassName}
+          className={`${contentClassName} ${styles['content']}`}
           layoutName={contentLayoutName}
           shouldScroll={contentShouldScroll}
         >

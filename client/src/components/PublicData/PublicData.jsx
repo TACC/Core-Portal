@@ -15,7 +15,7 @@ import DataFilesListing from '../DataFiles/DataFilesListing/DataFilesListing';
 import DataFilesPreviewModal from '../DataFiles/DataFilesModals/DataFilesPreviewModal';
 import { ToolbarButton } from '../DataFiles/DataFilesToolbar/DataFilesToolbar';
 
-import './PublicData.module.css';
+import styles from './PublicData.module.css';
 
 const PublicData = () => {
   const history = useHistory();
@@ -116,7 +116,7 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
         />
       }
     >
-      <SectionTableWrapper styleName="content" manualContent>
+      <SectionTableWrapper className={styles.content} manualContent>
         <DataFilesListing
           api={api}
           scheme={scheme}

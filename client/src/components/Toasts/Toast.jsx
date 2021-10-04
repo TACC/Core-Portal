@@ -58,7 +58,7 @@ const NotificationToast = () => {
       open={open}
       autoHideDuration={3500}
       onClose={handleClose}
-      onExited={handleExited}
+      TransitionProps={{onExited: handleExited}}
       classes={{
         anchorOriginBottomLeft: 'notification-toast-container'
       }}

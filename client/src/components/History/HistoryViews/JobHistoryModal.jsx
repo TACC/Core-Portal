@@ -13,7 +13,7 @@ import { isOutputState } from 'utils/jobsUtil';
 import { getStatusText } from '../../Jobs/JobsStatus';
 
 import * as ROUTES from '../../../constants/routes';
-import './JobHistoryModal.module.scss';
+import styles from './JobHistoryModal.module.scss';
 import './JobHistoryModal.css';
 
 const placeHolder = '...';
@@ -24,7 +24,7 @@ function DataFilesLink({ path, children, disabled }) {
     <NavLink
       tag={RRNavLink}
       to={`${ROUTES.WORKBENCH}${ROUTES.DATA}/tapis/private/${path}`}
-      styleName="link"
+      className={styles.link}
       disabled={disabled}
     >
       {text}
@@ -108,7 +108,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   return (
     <>
       <DescriptionList
-        styleName="left-panel panel-content"
+        className={`${styles['left-panel']} ${styles['panel-content']}`}
         density="compact"
         data={{
           Output: !hideDataFiles && (
@@ -121,7 +121,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
           )
         }}
       />
-      <DescriptionList styleName="right-panel panel-content" data={data} />
+      <DescriptionList className={`${styles['right-panel']} ${styles['panel-content']}`} data={data} />
     </>
   );
 }
@@ -167,25 +167,24 @@ function JobHistoryModal({ jobId }) {
   return (
     <Modal
       isOpen
-      styleName="root"
-      className="job-history-modal"
+      className={`${styles.root} job-history-modal`}
       toggle={close}
       size="lg"
     >
-      <ModalHeader styleName="header" toggle={close} charCode="&#xe912;">
+      <ModalHeader className={styles.header} toggle={close} charCode="&#xe912;">
         <div className="d-inline-block text-truncate">{jobName}</div>
         <DescriptionList
           data={headerData}
           direction="horizontal"
-          styleName="header-details"
+          className={styles['header-details']}
         />
       </ModalHeader>
 
       <ModalBody>
-        <div styleName="modal-body-container">
+        <div className={styles['modal-body-container']}>
           {loading && <LoadingSpinner />}
           {loadingError && (
-            <Message type="warn" styleName="error">
+            <Message type="warn" className={styles.error}>
               Unable to retrieve job information.
             </Message>
           )}

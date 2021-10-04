@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { InfiniteScrollTable, LoadingSpinner } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 import { Input, Label, Button } from 'reactstrap';
-import './DataFilesProjectMembers.module.scss';
+import styles from './DataFilesProjectMembers.module.scss';
 import './DataFilesProjectMembers.scss';
 
 const DataFilesProjectMembers = ({
@@ -74,7 +74,7 @@ const DataFilesProjectMembers = ({
     className: 'project-members__cell',
     Cell: el => (
       <span>
-        <span styleName="printed-name">{`${el.value.first_name} ${el.value.last_name}`}</span>
+        <span className={styles['printed-name']}>{`${el.value.first_name} ${el.value.last_name}`}</span>
         {` ${el.value.username} (${el.value.email})`}
       </span>
     )
@@ -86,7 +86,7 @@ const DataFilesProjectMembers = ({
       Header: 'Access',
       accessor: 'access',
       className: 'project-members__cell',
-      Cell: el => <span styleName="access">{el.value}</span>
+      Cell: el => <span className={styles.access}>{el.value}</span>
     },
     {
       Header: loading ? (
@@ -105,7 +105,7 @@ const DataFilesProjectMembers = ({
             <Button
               onClick={e => onRemove(el.row.original)}
               color="link"
-              styleName="member-action"
+              className={styles['member-action']}
               disabled={loading}
             >
               <h6>Remove</h6>
@@ -116,7 +116,7 @@ const DataFilesProjectMembers = ({
           transferUser === null ? (
             <Button
               onClick={() => setTransferUser(el.row.original)}
-              styleName="ownership-button"
+              className={styles['ownership-button']}
             >
               Transfer Ownership
             </Button>
@@ -141,15 +141,15 @@ const DataFilesProjectMembers = ({
       className: 'project-members__cell',
       Cell: el =>
         mode === 'transfer' && el.row.original === transferUser ? (
-          <div styleName="confirm-controls">
+          <div className={styles['confirm-controls']}>
             <span>Confirm Ownership Transfer:</span>
-            <Button onClick={confirmTransfer} styleName="ownership-button">
+            <Button onClick={confirmTransfer} className={styles['ownership-button']}>
               Confirm
             </Button>
             <Button
               onClick={() => setTransferUser(null)}
               color="link"
-              styleName="member-action"
+              className={styles['member-action']}
             >
               <h6>Cancel</h6>
             </Button>
@@ -164,15 +164,15 @@ const DataFilesProjectMembers = ({
   const existingMembers = members.filter(member => member.user);
 
   return (
-    <div styleName="root">
+    <div className={styles.root}>
       <Label className="form-field__label" size="sm">
         Add Member
       </Label>
-      <div styleName="user-search">
-        <div className="input-group" styleName="member-search-group">
+      <div className={styles['user-search']}>
+        <div className={`input-group ${styles['member-search-group']}`}>
           <div className="input-group-prepend">
             <Button
-              styleName="add-button member-search"
+              className={styles['add-button member-search']}
               onClick={() =>
                 onAddCallback({ user: selectedUser, access: 'edit' })
               }
@@ -191,7 +191,7 @@ const DataFilesProjectMembers = ({
             type="text"
             onChange={e => userSearch(e)}
             placeholder="Search by name"
-            styleName="member-search"
+            className={styles['member-search']}
             disabled={loading || mode === 'transfer'}
             autoComplete="false"
             value={inputUser}
@@ -212,7 +212,7 @@ const DataFilesProjectMembers = ({
       <InfiniteScrollTable
         tableColumns={isTransferring ? transferColumns : columns}
         tableData={existingMembers}
-        styleName={listStyle}
+        className={styles[listStyle]}
         columnMemoProps={[loading, mode, transferUser]}
       />
     </div>

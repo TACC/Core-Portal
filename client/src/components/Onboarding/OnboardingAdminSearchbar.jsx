@@ -4,7 +4,7 @@ import { Button } from 'reactstrap';
 import { Icon } from '_common';
 import { useDispatch, useSelector } from 'react-redux';
 
-import './OnboardingAdminSearchbar.module.scss';
+import styles from './OnboardingAdminSearchbar.module.scss';
 
 const OnboardingAdminSearchbar = ({ className, disabled }) => {
   const { query } = useSelector(state => state.onboarding.admin);
@@ -44,15 +44,14 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
   return (
     <form
       aria-label="Search"
-      className={className}
-      styleName="container"
+      className={`${className} ${styles.container}`}
       onSubmit={onSubmit}
     >
-      <div className="input-group" styleName="query-fieldset">
+      <div className={`input-group ${styles['query-fieldset']}`}>
         <div className="input-group-prepend">
-          <Button type="submit" styleName="submit-button" disabled={disabled}>
-            <Icon name="search" styleName="button__icon" />
-            <span styleName="button__text">Search</span>
+          <Button type="submit" className={styles['submit-button']} disabled={disabled}>
+            <Icon name="search" className={styles['button__icon']} />
+            <span className={styles['button__text']}>Search</span>
           </Button>
         </div>
         <input
@@ -61,8 +60,7 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
           value={search || ''}
           name="query"
           aria-label="Search for users"
-          styleName="input"
-          className="form-control"
+          className={`form-control ${styles.input}`}
           placeholder="Search for users"
           data-testid="input"
           autoComplete="off"
@@ -74,7 +72,7 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
 };
 
 OnboardingAdminSearchbar.propTypes = {
-  /** Additional `className` (or transpiled `styleName`) for the root element */
+  /** Additional `className` for the root element */
   className: PropTypes.string,
   disabled: PropTypes.bool
 };

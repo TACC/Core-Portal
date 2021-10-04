@@ -6,7 +6,7 @@ import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import OnboardingStep from './OnboardingStep';
 
-import './OnboardingUser.module.scss';
+import styles from './OnboardingUser.module.scss';
 
 const OnboardingUser = () => {
   const { params } = useRouteMatch();
@@ -54,7 +54,7 @@ const OnboardingUser = () => {
           ? `Onboarding Administration for ${user.username} - ${user.lastName}, ${user.firstName}`
           : 'The following steps must be completed before accessing the portal'
       }
-      contentStyleName="content"
+      contentClassName={styles.content}
       contentLayoutName="oneColumn"
       contentShouldScroll
       content={
@@ -62,10 +62,10 @@ const OnboardingUser = () => {
           {user.steps.map(step => (
             <OnboardingStep step={step} key={uuidv4()} />
           ))}
-          <div styleName="access">
+          <div className={styles.access}>
             <Button
               color="link"
-              styleName="button"
+              className={styles.button}
               onClick={() =>
                 dispatch({
                   type: 'TICKET_CREATE_OPEN_MODAL',
@@ -81,7 +81,7 @@ const OnboardingUser = () => {
             </Button>
             <Button
               color="primary"
-              styleName="button"
+              className={styles.button}
               href={continueLink}
               disabled={!user.setupComplete}
             >

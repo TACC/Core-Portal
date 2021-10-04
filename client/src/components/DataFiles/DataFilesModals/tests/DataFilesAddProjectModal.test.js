@@ -3,7 +3,7 @@ import { createMemoryHistory } from "history";
 import  DataFilesAddProjectModal  from "../DataFilesAddProjectModal";
 import configureStore from "redux-mock-store";
 import renderComponent from 'utils/testing';
-import {fireEvent, waitForElement} from '@testing-library/react';
+import {fireEvent, waitFor} from '@testing-library/react';
 import {
   projectsListingFixture,
   projectMetadataFixture
@@ -75,7 +75,7 @@ describe("DataFilesAddProjectModal", () => {
     });
     fireEvent.click(button);
 
-    await waitForElement(() => getAllByText(/Title must be at least 3 characters/));
+    await waitFor(() => getAllByText(/Title must be at least 3 characters/));
   });
 
   it("disallows title input over 150 characters", async () => {
@@ -97,6 +97,6 @@ describe("DataFilesAddProjectModal", () => {
     });
     fireEvent.click(button);
 
-    await waitForElement(() => getAllByText(/Title must be at most 150 characters/));
+    await waitFor(() => getAllByText(/Title must be at most 150 characters/));
   });
 });

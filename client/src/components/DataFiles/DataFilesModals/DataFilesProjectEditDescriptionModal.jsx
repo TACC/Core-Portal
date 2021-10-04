@@ -5,7 +5,7 @@ import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
 import { LoadingSpinner, Message } from '_common';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import './DataFilesProjectEditDescription.module.scss';
+import styles from './DataFilesProjectEditDescription.module.scss';
 
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
@@ -107,9 +107,9 @@ const DataFilesProjectEditDescriptionModal = () => {
                   </div>
                 }
                 type="textarea"
-                styleName="description-textarea"
+                className={styles['description-textarea']}
               />
-              <div styleName="button-container">
+              <div className={styles['button-container']}>
                 {updatingError && (
                   <Message type="error" dataTestid="updating-error">
                     Something went wrong.
@@ -117,8 +117,7 @@ const DataFilesProjectEditDescriptionModal = () => {
                 )}
                 <Button
                   type="submit"
-                  className="data-files-btn"
-                  styleName="update-button"
+                  className={`data-files-btn ${styles['update-button']}`}
                   disabled={isUpdating || !isValid || !dirty}
                 >
                   {isUpdating && <LoadingSpinner placement="inline" />}

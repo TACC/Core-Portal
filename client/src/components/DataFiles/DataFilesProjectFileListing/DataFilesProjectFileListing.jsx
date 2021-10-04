@@ -9,7 +9,7 @@ import {
   SectionTableWrapper
 } from '_common';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
-import './DataFilesProjectFileListing.module.scss';
+import styles from './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({ system, path }) => {
   const dispatch = useDispatch();
@@ -60,7 +60,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   if (metadata.loading) {
     return (
-      <div styleName="root-placeholder">
+      <div className={styles['root-placeholder']}>
         <LoadingSpinner />
       </div>
     );
@@ -68,7 +68,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   if (metadata.error) {
     return (
-      <div styleName="root-placeholder">
+      <div className={styles['root-placeholder']}>
         <SectionMessage type="warning">
           We were unable to retrieve this shared workspace.
         </SectionMessage>
@@ -78,16 +78,16 @@ const DataFilesProjectFileListing = ({ system, path }) => {
 
   return (
     <SectionTableWrapper
-      styleName="root"
-      header={<div styleName="title">{metadata.title}</div>}
+      className={styles.root}
+      header={<div className={styles.title}>{metadata.title}</div>}
       headerActions={
         editable && (
-          <div styleName="controls">
-            <Button color="link" styleName="edit" onClick={onEdit}>
+          <div className={styles.controls}>
+            <Button color="link" className={styles.edit} onClick={onEdit}>
               Edit Descriptions
             </Button>
-            <span styleName="separator">|</span>
-            <Button color="link" styleName="edit" onClick={onManage}>
+            <span className={styles.separator}>|</span>
+            <Button color="link" className={styles.edit} onClick={onManage}>
               Manage Team
             </Button>
           </div>
@@ -101,7 +101,7 @@ const DataFilesProjectFileListing = ({ system, path }) => {
                - (C) an independent component <SectionDescription>
                - (D) __both__ (A) or (B) __and__ (C)
       */}
-      <div styleName="description">
+      <div className={styles.description}>
         {metadata.description && <ShowMore>{metadata.description}</ShowMore>}
       </div>
       <DataFilesListing

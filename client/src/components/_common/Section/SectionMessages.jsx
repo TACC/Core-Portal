@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { IntroMessage, isKnownIntroMessage } from '_common';
 import * as MESSAGES from '../../../constants/messages';
 
-import './SectionMessages.module.css';
+import styles from './SectionMessages.module.css';
 import './SectionMessages.css';
 
 /**
@@ -71,7 +71,7 @@ function SectionMessages({
   }, [hasMessage]);
 
   return (
-    <aside styleName="root" className={className}>
+    <aside className={`${styles['root']} ${className}`}>
       {introMessage}
       {children}
     </aside>

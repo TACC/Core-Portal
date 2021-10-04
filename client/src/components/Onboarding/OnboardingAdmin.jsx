@@ -14,15 +14,14 @@ import { onboardingUserPropType } from './OnboardingPropTypes';
 import OnboardingEventLogModal from './OnboardingEventLogModal';
 import OnboardingStatus from './OnboardingStatus';
 import OnboardingAdminSearchbar from './OnboardingAdminSearchbar';
-import './OnboardingAdmin.module.scss';
+import styles from './OnboardingAdmin.module.scss';
 import './OnboardingAdmin.scss';
 
 const OnboardingApproveActions = ({ callback, disabled, action }) => {
   return (
-    <div styleName="approve-container">
+    <div className={styles['approve-container']}>
       <Button
-        className="c-button--secondary"
-        styleName="approve"
+        className={`c-button--secondary ${styles.approve}`}
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_approve')}
         disabled={disabled}
@@ -38,8 +37,7 @@ const OnboardingApproveActions = ({ callback, disabled, action }) => {
         <>Approve</>
       </Button>
       <Button
-        className="c-button--secondary"
-        styleName="approve"
+        className={`c-button--secondary ${styles.approve}`}
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_deny')}
         disabled={disabled}
@@ -71,10 +69,10 @@ OnboardingApproveActions.defaultProps = {
 
 const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
   return (
-    <div styleName="reset">
+    <div className={styles.reset}>
       <Button
         color="link"
-        styleName="action-link"
+        className={styles['action-link']}
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('reset')}
         disabled={disabled}
@@ -90,7 +88,7 @@ const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
       <>|</>
       <Button
         color="link"
-        styleName="action-link"
+        className={styles['action-link']}
         disabled={disabled || disableSkip}
         // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('complete')}
@@ -141,25 +139,25 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   return (
     <>
       {user.steps.map((step, index) => (
-        <tr styleName="user" key={uuidv4()}>
+        <tr className={styles.user} key={uuidv4()}>
           {index === 0 && (
-            <td rowSpan={stepCount} styleName="name">
+            <td rowSpan={stepCount} className={styles.name}>
               {`${user.firstName} ${user.lastName}`}
             </td>
           )}
-          <td styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
+          <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
             {step.displayName}
           </td>
           <td
-            styleName={`status ${
-              step.state === 'staffwait' ? 'staffwait' : ''
+            className={`${styles.status} ${
+              step.state === 'staffwait' ? styles.staffwait : ''
             }`}
           >
             <OnboardingStatus step={step} />
           </td>
           <td
-            styleName={`has-wrappable-content ${
-              step.state === 'staffwait' ? 'staffwait' : ''
+            className={`${styles['has-wrappable-content']} ${
+              step.state === 'staffwait' ? styles.staffwait : ''
             }`}
           >
             {step.state === 'staffwait' && (
@@ -181,7 +179,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               />
             )}
           </td>
-          <td styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
+          <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
             <OnboardingResetLinks
               callback={action =>
                 actionCallback(step.step, user.username, action)
@@ -196,10 +194,10 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               }
             />
           </td>
-          <td styleName={step.state === 'staffwait' ? 'staffwait' : ''}>
+          <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
             <Button
               color="link"
-              styleName="action-link"
+              className={styles['action-link']}
               onClick={() => viewLogCallback(user, step)}
             >
               View Log
@@ -224,7 +222,7 @@ const OnboardingAdminList = ({ users, viewLogCallback }) => {
   }
 
   return (
-    <table styleName="users">
+    <table className={styles.users}>
       <colgroup>{colElements}</colgroup>
       <thead>
         <tr>
@@ -300,7 +298,7 @@ const OnboardingAdmin = () => {
   }
   if (error) {
     return (
-      <div styleName="root-placeholder">
+      <div className={styles['root-placeholder']}>
         <SectionMessage type="warn">
           Unable to access Onboarding administration
         </SectionMessage>
@@ -308,18 +306,18 @@ const OnboardingAdmin = () => {
     );
   }
   return (
-    <div styleName="root">
-      <div styleName="container">
-        <div styleName="container-header">
+    <div className={styles.root}>
+      <div className={styles['container']}>
+        <div className={styles['container-header']}>
           <h5>Administrator Controls</h5>
           <OnboardingAdminSearchbar />
         </div>
         {users.length === 0 && (
-          <div styleName="no-users-placeholder">
+          <div className={styles['no-users-placeholder']}>
             <Message type="warn">No users to show.</Message>
           </div>
         )}
-        <div styleName="user-container">
+        <div className={styles['user-container']}>
           {users.length > 0 && (
             <OnboardingAdminList
               users={users}
@@ -328,7 +326,7 @@ const OnboardingAdmin = () => {
           )}
         </div>
         {users.length > 0 && (
-          <div styleName="paginator-container">
+          <div className={styles['paginator-container']}>
             <Paginator
               current={current}
               pages={pages}

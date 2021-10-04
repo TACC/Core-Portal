@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, wait, fireEvent } from '@testing-library/react';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import {
@@ -101,7 +101,7 @@ describe('Change Password', () => {
       }
     });
 
-    await wait(() => {
+    await waitFor(() => {
       expect(
         getByText(/Your new password must be different from your old password/)
       ).toBeDefined();
@@ -126,7 +126,7 @@ describe('Change Password', () => {
 
     // Dispatch
     fireEvent.submit(submit);
-    await wait(() => {
+    await waitFor(() => {
       expect(testStore.getActions()).toHaveLength(1);
     });
 
@@ -166,7 +166,7 @@ describe('Change Password', () => {
     // Close Modal
     const closeButton = getByLabelText(/Close/);
     fireEvent.click(closeButton);
-    await wait(() => {
+    await waitFor(() => {
       const [close, reload] = successStore.getActions();
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
       expect(reload.type).toEqual('LOAD_PROFILE_DATA');
@@ -226,7 +226,7 @@ describe('Edit Optional Information', () => {
       /edit-optional-information-submit-button/
     );
     fireEvent.click(submitButton);
-    await wait(() => {
+    await waitFor(() => {
       expect(storeWithFields.getActions()).toHaveLength(1);
     });
   });
@@ -282,7 +282,7 @@ describe('Edit Optional Information', () => {
     expect(getByText(/Successfully Edited/)).toBeDefined();
     const closeButton = getByLabelText(/Close/);
     fireEvent.click(closeButton);
-    await wait(() => {
+    await waitFor(() => {
       const [close, reload] = store.getActions();
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
       expect(reload.type).toEqual('LOAD_PROFILE_DATA');
@@ -387,7 +387,7 @@ describe('Edit Required Information', () => {
     const clickSpy = () => jest.fn();
     submitButton.addEventListener('click', clickSpy, false);
     fireEvent.click(submitButton);
-    wait(() => {
+    waitFor(() => {
       expect(getByText(/Please enter a valid email address/)).toBeDefined();
       expect(getByText(/Phone number is not valid/)).toBeDefined();
       expect(clickSpy).not.toHaveBeenCalled();
@@ -443,7 +443,7 @@ describe('Edit Required Information', () => {
     expect(getByText(/Successfully Edited/)).toBeDefined();
     const closeButton = getByLabelText(/Close/);
     fireEvent.click(closeButton);
-    await wait(() => {
+    await waitFor(() => {
       const [close, reload] = store.getActions();
       expect(close.type).toEqual('CLOSE_PROFILE_MODAL');
       expect(reload.type).toEqual('LOAD_PROFILE_DATA');

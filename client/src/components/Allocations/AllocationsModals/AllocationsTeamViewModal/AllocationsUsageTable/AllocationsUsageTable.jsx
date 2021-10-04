@@ -4,7 +4,7 @@ import { capitalize } from 'lodash';
 import { useLocation } from 'react-router-dom';
 import { arrayOf, shape, string } from 'prop-types';
 import { getSystemName } from 'utils/systems';
-import './AllocationsUsageTable.module.scss';
+import styles from './AllocationsUsageTable.module.scss';
 
 const AllocationsUsageTable = ({ rawData }) => {
   const location = useLocation();
@@ -53,9 +53,9 @@ const AllocationsUsageTable = ({ rawData }) => {
     data
   });
   return (
-    <div styleName="container">
-      <table {...getTableProps()} styleName="root">
-        <thead styleName="header">
+    <div className={styles.container}>
+      <table {...getTableProps()} className={styles.root}>
+        <thead className={styles.header}>
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
@@ -64,14 +64,14 @@ const AllocationsUsageTable = ({ rawData }) => {
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()} styleName="body">
+        <tbody {...getTableBodyProps()} className={styles.body}>
           {rows.map(row => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()} styleName="row">
+              <tr {...row.getRowProps()} className={styles.row}>
                 {row.cells.map(cell => (
-                  <td {...cell.getCellProps()} styleName="cell">
-                    <span styleName="content">{cell.render('Cell')}</span>
+                  <td {...cell.getCellProps()} className={styles.cell}>
+                    <span className={styles.content}>{cell.render('Cell')}</span>
                   </td>
                 ))}
               </tr>

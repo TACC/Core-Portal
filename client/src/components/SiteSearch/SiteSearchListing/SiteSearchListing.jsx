@@ -11,11 +11,11 @@ import SiteSearchPaginator from './SiteSearchPaginator/SiteSearchPaginator';
 import DataFilesPreviewModal from '../../DataFiles/DataFilesModals/DataFilesPreviewModal';
 import DataFilesSearchbar from '../../DataFiles/DataFilesSearchbar/DataFilesSearchbar';
 import fileTypes from '../../DataFiles/DataFilesSearchbar/FileTypes';
-import './SiteSearchListing.module.scss';
+import styles from './SiteSearchListing.module.scss';
 import './SiteSearchListing.css';
 
 export const CMSListingItem = ({ title, url, highlight }) => (
-  <article styleName="sitesearch-cms-item" data-testid="sitesearch-cms-item">
+  <article className={styles['sitesearch-cms-item"']} data-testid="sitesearch-cms-item">
     <a href={url}>{title}</a>
     {(highlight.body || highlight.title).map(function renderCMSItem(h, i) {
       const key = `${title}-${i}`;
@@ -115,12 +115,12 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
 
   const hasResults = !loading && !error && count > 0;
 
-  let containerStyleNames = `container for-${filter}`;
-  if (!hasResults) containerStyleNames += ' is-empty';
+  let containerStyleNames = styles[`container for-${filter}`];
+  if (!hasResults) containerStyleNames += ` ${styles['is-empty']}`;
 
   const lastPageIndex = Math.ceil(count / 10);
   return (
-    <div styleName={containerStyleNames}>
+    <div className={containerStyleNames}>
       <DataFilesSearchbar
         api="tapis"
         scheme={filter}
@@ -130,16 +130,16 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
         siteSearch
         disabled={loading || !!error}
       />
-      <h5 styleName="header">{FILTER_MAPPING[filter]}</h5>
+      <h5 className={styles.header}>{FILTER_MAPPING[filter]}</h5>
 
       {loading && (
-        <div styleName="placeholder">
+        <div className={styles.placeholder}>
           <LoadingSpinner />
         </div>
       )}
 
       {!loading && !error && !hasResults && (
-        <div styleName="placeholder">
+        <div className={styles.placeholder}>
           <InlineMessage type="info" className="small">
             No results found in {FILTER_MAPPING[filter]}.
           </InlineMessage>
@@ -147,7 +147,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
       )}
 
       {!loading && error && (
-        <div styleName="placeholder">
+        <div className={styles.placeholder}>
           <InlineMessage type="error">
             There was an error retrieving your search results.
           </InlineMessage>
@@ -170,7 +170,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
             <SiteSearchFileListing listing={filterFiles()} filter={filter} />
           )}
 
-          <div styleName="paginator-container">
+          <div className={styles['paginator-container']}>
             <SiteSearchPaginator lastPageIndex={lastPageIndex} />
           </div>
         </>

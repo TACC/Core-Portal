@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { Message } from '_common';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import DataFilesProjectMembers from '../DataFilesProjectMembers/DataFilesProjectMembers';
-import './DataFilesManageProject.module.scss';
+import styles from './DataFilesManageProject.module.scss';
 
 const DataFilesManageProjectModal = () => {
   const dispatch = useDispatch();
@@ -102,7 +102,7 @@ const DataFilesManageProjectModal = () => {
   );
 
   return (
-    <div styleName="root">
+    <div className={styles.root}>
       <Modal
         size="lg"
         isOpen={isOpen}
@@ -122,16 +122,16 @@ const DataFilesManageProjectModal = () => {
             mode={transferMode ? 'transfer' : 'addremove'}
           />
           {error ? (
-            <div styleName="error">
+            <div className={styles.error}>
               <Message type="warn">
                 An error occurred while modifying team members
               </Message>
             </div>
           ) : null}
-          <div styleName="owner-controls">
+          <div className={styles['owner-controls']}>
             {isOwner ? (
               <Button color="link" onClick={toggleTransferMode}>
-                <h6 styleName="ownership-toggle">
+                <h6 className={styles['ownership-toggle']}>
                   {transferMode
                     ? 'Cancel Change Ownership'
                     : 'Change Ownership'}

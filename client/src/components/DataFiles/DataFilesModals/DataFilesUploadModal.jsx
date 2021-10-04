@@ -9,7 +9,7 @@ import { FileInputDropZone } from '_common';
 import { findSystemOrProjectDisplayName } from 'utils/systems';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
 
-import './DataFilesUploadModal.module.scss';
+import styles from './DataFilesUploadModal.module.scss';
 
 export const LAYOUT_CLASS_MAP = {
   compact: 'is-compact',
@@ -63,7 +63,7 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const modifierClasses = [];
   if (hasFilesToList) modifierClasses.push('has-entries');
   modifierClasses.push(LAYOUT_CLASS_MAP[layout || DEFAULT_LAYOUT]);
-  const containerStyleNames = ['container', ...modifierClasses].join(' ');
+  const containerStyleNames = ['container', ...modifierClasses].map(s => styles[s]).join(' ');
 
   const systemDisplayName = findSystemOrProjectDisplayName(
     params.scheme,
@@ -125,8 +125,8 @@ const DataFilesUploadModal = ({ className, layout }) => {
       <ModalHeader toggle={toggle} charCode="&#xe912;">
         Upload Files
       </ModalHeader>
-      <ModalBody styleName={containerStyleNames}>
-        <div styleName="dropzone" disabled={dropZoneDisabled}>
+      <ModalBody className={containerStyleNames}>
+        <div className={styles.dropzone} disabled={dropZoneDisabled}>
           <FileInputDropZone
             onSetFiles={selectFiles}
             onRejectedFiles={onRejectedFiles}
@@ -135,8 +135,8 @@ const DataFilesUploadModal = ({ className, layout }) => {
           />
         </div>
         {showListing && (
-          <div styleName="listing">
-            <span styleName="listing-header">
+          <div className={styles.listing}>
+            <span className={styles['listing-header']}>
               Uploading to {systemDisplayName}/{params.path}
             </span>
             <DataFilesUploadModalListingTable

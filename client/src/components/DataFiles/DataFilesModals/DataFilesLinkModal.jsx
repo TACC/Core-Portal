@@ -13,7 +13,7 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { LoadingSpinner, Message, TextCopyField, InlineMessage } from '_common';
-import './DataFilesLinkModal.module.scss';
+import styles from './DataFilesLinkModal.module.scss';
 import './DataFilesLinkModal.scss';
 
 const statusPropType = PropTypes.shape({
@@ -31,9 +31,8 @@ const DataFilesLinkActions = ({ status, onClick }) => {
       <>
         <Button
           disabled={disabled}
-          className="data-files-btn"
+          className={`data-files-btn ${styles.action}`}
           onClick={e => onClick('delete')}
-          styleName="action"
         >
           Delete
         </Button>
@@ -195,7 +194,7 @@ const DataFilesLinkModal = () => {
         <ModalFooter>
           {confirming ? (
             <>
-              <span styleName="warning">
+              <span className={styles.warning}>
                 The original link will be disabled.
               </span>
               <Button

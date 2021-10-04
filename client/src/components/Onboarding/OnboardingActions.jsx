@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { LoadingSpinner, Message } from '_common';
 import { Button } from 'reactstrap';
 import { stepPropType } from './OnboardingPropTypes';
-import './OnboardingActions.module.scss';
+import styles from './OnboardingActions.module.scss';
 import './OnboardingActions.scss';
 
 const OnboardingActions = ({ step }) => {
@@ -50,12 +50,12 @@ const OnboardingActions = ({ step }) => {
   }
 
   return (
-    <span styleName="root">
+    <span className={styles.root}>
       {isStaff && step.state === 'staffwait' ? (
         <>
           <Button
             color="link"
-            styleName="action"
+            className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('staff_approve', username)}
           >
@@ -63,7 +63,7 @@ const OnboardingActions = ({ step }) => {
           </Button>
           <Button
             color="link"
-            styleName="action"
+            className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('staff_deny', username)}
           >
@@ -74,7 +74,7 @@ const OnboardingActions = ({ step }) => {
       {step.state === 'userwait' ? (
         <Button
           color="link"
-          styleName="action"
+          className={styles.action}
           disabled={isSending}
           onClick={() => actionCallback('user_confirm', username)}
         >
@@ -85,7 +85,7 @@ const OnboardingActions = ({ step }) => {
         <>
           <Button
             color="link"
-            styleName="action"
+            className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('reset', username)}
           >
@@ -93,7 +93,7 @@ const OnboardingActions = ({ step }) => {
           </Button>
           <Button
             color="link"
-            styleName="action"
+            className={styles.action}
             disabled={isSending}
             onClick={() => actionCallback('complete', username)}
           >

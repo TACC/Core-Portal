@@ -4,7 +4,7 @@ import { Badge } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { Icon } from '_common';
 import JobsSessionModal from '../JobsSessionModal';
-import './JobsStatus.module.scss';
+import styles from './JobsStatus.module.scss';
 
 export const STATUS_TEXT_MAP = {
   ACCEPTED: 'Processing',
@@ -96,7 +96,7 @@ function JobsStatus({ status, fancy, jobId }) {
   }
 
   return (
-    <div styleName="root">
+    <div className={styles.root}>
       {fancy && color ? (
         <Badge color={color}>{userStatus}</Badge>
       ) : (
@@ -106,11 +106,11 @@ function JobsStatus({ status, fancy, jobId }) {
         <>
           <button
             type="button"
-            styleName="open-button"
+            className={styles['open-button']}
             onClick={toggleModal}
             data-testid="interactive-session-button"
           >
-            <Icon name="new-browser" styleName="open-icon" />
+            <Icon name="new-browser" className={styles['open-icon']} />
             Open Session
           </button>
           <JobsSessionModal

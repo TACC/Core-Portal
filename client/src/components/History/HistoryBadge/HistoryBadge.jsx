@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes, { number } from 'prop-types';
-import './HistoryBadge.module.scss';
+import styles from './HistoryBadge.module.scss';
 
 const HistoryBadge = ({ unread, disabled }) => {
   const rootStyle = disabled ? 'root disabled' : 'root';
   if (unread) {
     return (
-      <span styleName={rootStyle} role="status">
+      <span className={styles[rootStyle]} role="status">
         {unread < 1000 ? unread : '999+'}
       </span>
     );

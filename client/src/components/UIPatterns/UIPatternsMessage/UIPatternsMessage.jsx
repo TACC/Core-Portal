@@ -1,7 +1,7 @@
 import React from 'react';
 import { InlineMessage, SectionMessage } from '_common';
 
-import './UIPatternsMessage.module.scss';
+import styles from './UIPatternsMessage.module.scss';
 
 const EXAMPLE_LINK = {
   short: (
@@ -57,10 +57,10 @@ const NOTIFICATION_TEXT = (
 
 function UIPatternsMessages() {
   return (
-    <table styleName="container">
+    <table className={styles.container}>
       <thead>
         <tr>
-          <th scope="row" styleName="secondary">
+          <th scope="row" className={styles.secondary}>
             component
           </th>
           <th scope="col">
@@ -79,7 +79,7 @@ function UIPatternsMessages() {
           </th>
         </tr>
         <tr>
-          <th scope="row" styleName="secondary">
+          <th scope="row" className={styles.secondary}>
             <code>scope</code>
           </th>
           <th scope="col">
@@ -93,7 +93,7 @@ function UIPatternsMessages() {
           </th>
         </tr>
         <tr>
-          <th scope="col" styleName="secondary">
+          <th scope="col" className={styles.secondary}>
             <code>type</code>
           </th>
           <td>
@@ -189,7 +189,7 @@ function UIPatternsMessages() {
               {EXAMPLE_TEXT.warn.short} {EXAMPLE_LINK.long}
             </SectionMessage>
           </td>
-          <td rowSpan="2" styleName="is-row-end">
+          <td rowSpan="2" className={styles['is-row-end']}>
             {NOTIFICATION_TEXT}
           </td>
         </tr>

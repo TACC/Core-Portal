@@ -11,7 +11,7 @@ import {
 import { Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 
-import './UIPatternsSection.module.css';
+import styles from './UIPatternsSection.module.css';
 
 function UIPatternsSection() {
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ function UIPatternsSection() {
       <dt>
         Minimal
         <DescriptionList
-          styleName="term-details"
+          className={styles['term-details']}
           density="compact"
           direction="horizontal"
           data={{
@@ -43,11 +43,11 @@ function UIPatternsSection() {
       <dt>
         Scrollable
         <DescriptionList
-          styleName="term-details"
+          className={styles['term-details']}
           density="compact"
           direction="horizontal"
           data={{
-            contentStyleName: 'content--has-list-to-illustrate-scrolling',
+            contentClassName: styles['content--has-list-to-illustrate-scrolling'],
             header: 'Milk',
             content: 'Cow, Soy, Nut',
             contentShouldScroll: <code>true</code>
@@ -56,7 +56,7 @@ function UIPatternsSection() {
       </dt>
       <dd>
         <Section
-          contentStyleName="content--has-list-to-illustrate-scrolling"
+          contentClassName={styles['content--has-list-to-illustrate-scrolling']}
           header="Milk"
           content={
             <ul>
@@ -71,10 +71,10 @@ function UIPatternsSection() {
       <dt>
         With a Complex Table
         <DescriptionList
-          styleName="term-details"
+          className={styles['term-details']}
           direction="vertical"
           data={{
-            contentStyleName: 'content--has-table-to-illustrate-scrolling',
+            contentClassName: styles['content--has-table-to-illustrate-scrolling'],
             header:
               'Section with <SectionTableWrapper> and <InfiniteScrollTable>',
             content: '(paragraph, table, paragraph)',
@@ -85,7 +85,7 @@ function UIPatternsSection() {
       </dt>
       <dd>
         <Section
-          contentStyleName="content--has-table-to-illustrate-scrolling"
+          contentClassName={styles['content--has-table-to-illustrate-scrolling']}
           header={
             <>
               Section with <code>{`<SectionTableWrapper>`}</code> and &nbsp;
@@ -94,12 +94,12 @@ function UIPatternsSection() {
           }
           content={
             <>
-              <InlineMessage type="info" styleName="notice">
+              <InlineMessage type="info" className={styles.notice}>
                 The header will not be sticky until the branch &nbsp;
                 <code>task/FP-385-section-comp-welcome-msg--sections</code>
                 &nbsp;refactors <code>InfiniteScrollTable</code>.
               </InlineMessage>
-              <SectionTableWrapper styleName="table" contentShouldScroll>
+              <SectionTableWrapper className={styles.table} contentShouldScroll>
                 <UIPatternsSectionTableInfinite />
               </SectionTableWrapper>
             </>
@@ -115,11 +115,11 @@ function UIPatternsSection() {
       <dt>
         All Properties
         <DescriptionList
-          styleName="term-details"
+          className={styles['term-details']}
           direction="vertical"
           data={{
-            styleName: 'is-resizable',
-            contentStyleName: 'content--should-always-show-scrollbar',
+            className: styles['is-resizable'],
+            contentClassName: styles['content--should-always-show-scrollbar'],
             header: 'Header',
             content: (
               <>
@@ -140,8 +140,8 @@ function UIPatternsSection() {
       </dt>
       <dd>
         <Section
-          styleName="is-resizable"
-          contentStyleName="content--should-always-show-scrollbar"
+          className={styles['is-resizable']}
+          contentClassName={styles['content--should-always-show-scrollbar']}
           header="Header"
           content={
             <>
@@ -169,7 +169,7 @@ function UIPatternsSection() {
                   show that the section stretches.
                 </small>
               </p>
-              <UIPatternsSectionTablePlain styleName="table" />
+              <UIPatternsSectionTablePlain className={styles.table} />
             </>
           }
           contentLayoutName="oneColumn"

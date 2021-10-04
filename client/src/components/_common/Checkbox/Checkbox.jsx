@@ -3,18 +3,17 @@ import PropTypes from 'prop-types';
 
 import Icon from '../Icon';
 
-import './Checkbox.module.css';
+import styles from './Checkbox.module.css';
 
 // RFE: Use (and style) an actual checkbox… `<input type="checkbox">`
 //      and still support `DataFilesListingCells`'s button usage (how?)
 //      (this would also resolve the aria/lint complications noted below)
 const Checkbox = ({ className, isChecked, tabIndex, role, ...props }) => {
-  const rootStyleNames = ['root', isChecked ? ['is-checked'] : ''].join(' ');
+  const rootStyleNames = [styles['root'], isChecked ? styles['is-checked'] : ''].join(' ');
 
   return (
     <span
-      styleName={rootStyleNames}
-      className={`icon-set ${className}`}
+      className={`icon-set ${className} ${rootStyleNames}`}
       aria-checked={isChecked}
       // HELP: Should use `tabIndex={0}`, but that causes unable-to-disable
       //       lint error `jsx-ally/no-noninteractive-tabindex`
@@ -26,8 +25,8 @@ const Checkbox = ({ className, isChecked, tabIndex, role, ...props }) => {
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
     >
-      <Icon styleName="check" name="approved-boxed-reverse" />
-      <Icon styleName="box" name="boxed" />
+      <Icon className={styles['check']} name="approved-boxed-reverse" />
+      <Icon className={styles['box']} name="boxed" />
     </span>
   );
 };

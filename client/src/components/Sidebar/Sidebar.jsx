@@ -8,7 +8,7 @@ import { FeedbackButton } from '../FeedbackForm';
 import * as ROUTES from '../../constants/routes';
 import HistoryBadge from '../History/HistoryBadge';
 import './Sidebar.global.scss'; // XXX: Global stylesheet imported in component
-import './Sidebar.module.scss';
+import styles from './Sidebar.module.scss';
 
 /** Navigation list item **/
 const SidebarItem = ({ to, label, iconName, children, disabled }) => {
@@ -17,16 +17,15 @@ const SidebarItem = ({ to, label, iconName, children, disabled }) => {
       <NavLink
         tag={RRNavLink}
         to={to}
-        styleName="link"
-        activeStyleName="link--active"
+        className={styles['link']}
+        activeClassName={styles['link--active']}
         disabled={disabled}
       >
         <div
-          styleName={disabled ? 'content disabled' : 'content'}
-          className="nav-content"
+          className={`${disabled && styles['disabled']} ${styles['content']} nav-content`}
         >
           <Icon name={iconName} />
-          <span styleName="text">{label}</span>
+          <span className={styles['text']}>{label}</span>
           {children}
         </div>
       </NavLink>
@@ -59,7 +58,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
   );
 
   return (
-    <Nav styleName="root" vertical>
+    <Nav className={styles['root']} vertical>
       {!loading && (
         <>
           <SidebarItem
@@ -110,7 +109,7 @@ const Sidebar = ({ disabled, showUIPatterns, loading }) => {
           )}
         </>
       )}
-      <NavItem styleName="feedback-nav-item">
+      <NavItem className={styles['feedback-nav-item']}>
         <FeedbackButton />
       </NavItem>
     </Nav>

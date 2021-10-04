@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import { DropdownSelector } from '_common';
-import './DataFilesSystemSelector.module.scss';
+import styles from './DataFilesSystemSelector.module.scss';
 
 const DataFilesSystemSelector = ({
   systemId,
@@ -71,7 +71,7 @@ const DataFilesSystemSelector = ({
       <DropdownSelector
         onChange={openSystem}
         value={selectedSystem}
-        styleName="system-select"
+        className={styles['system-select']}
         disabled={disabled}
       >
         {systemList
@@ -92,8 +92,7 @@ const DataFilesSystemSelector = ({
       {selectedSystem === 'shared' && !showProjects && (
         <button
           type="button"
-          className="btn btn-link"
-          styleName="btn-shared"
+          className={`btn btn-link ${styles['btn-shared']}`}
           onClick={resetProjects}
         >
           Return to Shared Workspaces

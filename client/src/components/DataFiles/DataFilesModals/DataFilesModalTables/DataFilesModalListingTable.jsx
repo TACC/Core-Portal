@@ -10,7 +10,7 @@ import { findSystemDisplayName } from 'utils/systems';
 
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
-import './DataFilesModalListingTable.module.scss';
+import styles from './DataFilesModalListingTable.module.scss';
 
 export function getCurrentDirectory(path) {
   return path.split('/').pop();
@@ -36,9 +36,9 @@ const BackLink = ({ api, scheme, system, currentPath }) => {
     });
   };
   return (
-    <Button styleName="link" color="link" onClick={onClick}>
-      <Icon styleName="link-icon" name="nav-left" />
-      <span styleName="path">Back</span>
+    <Button className={styles.link} color="link" onClick={onClick}>
+      <Icon className={styles['link-icon']} name="nav-left" />
+      <span className={styles['path']}>Back</span>
     </Button>
   );
 };
@@ -74,8 +74,8 @@ const DataFilesModalListingNameCell = ({
 
   return (
     <div
-      styleName={`container ${
-        indentSubFilesFolders && !isCurrentDirectory ? 'children' : ''
+      className={`${styles.container} ${
+        indentSubFilesFolders && !isCurrentDirectory ? styles.children : ''
       }`}
     >
       <FileIcon format={format} />
@@ -83,14 +83,13 @@ const DataFilesModalListingNameCell = ({
         <a
           href=""
           onClick={onClick}
-          styleName="path"
-          className="data-files-name data-files-nav-link"
+          className={`${styles.path} data-files-name data-files-nav-link`}
         >
           {name}
         </a>
       )}
       {!isFolderButNotCurrentFolder && (
-        <span styleName="path" className="data-files-name">
+        <span className={`data-files-name ${styles.path}`}>
           {name}
         </span>
       )}

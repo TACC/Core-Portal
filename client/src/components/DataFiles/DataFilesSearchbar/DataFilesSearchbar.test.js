@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
@@ -67,7 +67,7 @@ describe('DataFilesSearchbar', () => {
     fireEvent.change(input, { target: { value: 'testquery' } });
     expect(input.value).toBe('testquery');
 
-    await wait(() => history.push('/workbench/data/api/scheme/system2/path/'));
+    await waitFor(() => history.push('/workbench/data/api/scheme/system2/path/'));
 
     input = getByRole('searchbox');
     expect(input.value).toBe('');

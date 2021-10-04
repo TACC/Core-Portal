@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
 import queryStringParser from 'query-string';
 import PropTypes from 'prop-types';
-import './SiteSearchPaginator.module.css';
+import styles from './SiteSearchPaginator.module.css';
 
 const SiteSearchPaginator = ({ lastPageIndex }) => {
   const { pathname, search } = useLocation();
@@ -36,7 +36,7 @@ const SiteSearchPaginator = ({ lastPageIndex }) => {
               aria-label="Previous"
               onClick={currentPage === 1 ? disabledLinkCallback : () => {}}
             >
-              <span styleName="paginator-link" aria-hidden="true">
+              <span className={styles['paginator-link']} aria-hidden="true">
                 &lsaquo;
               </span>
               <span className="sr-only">Previous</span>
@@ -45,11 +45,10 @@ const SiteSearchPaginator = ({ lastPageIndex }) => {
           {pageRange.map(i => (
             <li key={i} className="page-item">
               <NavLink
-                className="page-link"
                 to={pageHref(i)}
-                styleName={currentPage === i && 'active'}
+                className={`page-link ${currentPage === i && styles.active}`}
               >
-                <span styleName="paginator-link">{i}</span>
+                <span clasName={styles['paginator-link']}>{i}</span>
               </NavLink>
             </li>
           ))}
@@ -66,7 +65,7 @@ const SiteSearchPaginator = ({ lastPageIndex }) => {
                 currentPage === lastPageIndex ? disabledLinkCallback : () => {}
               }
             >
-              <span styleName="paginator-link" aria-hidden="true">
+              <span className={styles['paginator-link']} aria-hidden="true">
                 &rsaquo;
               </span>
               <span className="sr-only">Next</span>

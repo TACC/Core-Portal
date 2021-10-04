@@ -4,7 +4,7 @@ import { Button } from 'reactstrap';
 import queryString from 'query-string';
 import { Icon } from '_common';
 
-import './DataFilesProjectsSearchbar.module.css';
+import styles from './DataFilesProjectsSearchbar.module.css';
 
 const DataFilesProjectsSearchbar = () => {
   const history = useHistory();
@@ -26,12 +26,12 @@ const DataFilesProjectsSearchbar = () => {
   const onChange = e => setQuery(e.target.value);
 
   return (
-    <form aria-label="search" styleName="container" onSubmit={onSubmit}>
-      <div className="input-group" styleName="query-fieldset">
+    <form aria-label="search" className={styles.container} onSubmit={onSubmit}>
+      <div className={`input-group ${styles['query-fieldset']}`}>
         <div className="input-group-prepend">
-          <Button type="submit" styleName="submit-button">
-            <Icon name="search" styleName="button__icon" />
-            <span styleName="button__text">Search</span>
+          <Button type="submit" className={styles['submit-button']}>
+            <Icon name="search" className={styles['button__icon']}/>
+            <span className={styles['button__text']}>Search</span>
           </Button>
         </div>
         <input
@@ -40,8 +40,7 @@ const DataFilesProjectsSearchbar = () => {
           value={query}
           name="query"
           aria-label="Search"
-          styleName="input"
-          className="form-control"
+          className={`form-control ${styles.input}`}
           placeholder="Search"
           data-testid="input"
           autoComplete="off"

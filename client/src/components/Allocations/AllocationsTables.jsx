@@ -6,7 +6,7 @@ import { Message } from '_common';
 import { Team, Systems, Awarded, Remaining, Expires } from './AllocationsCells';
 import systemAccessor from './AllocationsUtils';
 
-import './AllocationsTables.module.scss';
+import styles from './AllocationsTables.module.scss';
 
 export const useAllocations = page => {
   const allocations = useSelector(state => {
@@ -111,8 +111,7 @@ export const AllocationsTable = ({ page }) => {
       {...getTableProps()}
       // Emulate <InfiniteScrollTable> and its use of `o-fixed-header-table`
       // TODO: Create global table styles & Make <InfiniteScrollTable> use them
-      className="allocations-table InfiniteScrollTable o-fixed-header-table"
-      styleName="root"
+      className={`allocations-table InfiniteScrollTable o-fixed-header-table ${styles.root}`}
     >
       <thead>
         {headerGroups.map(headerGroup => (

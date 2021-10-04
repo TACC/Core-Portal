@@ -13,7 +13,7 @@ import { LoadingSpinner, FormField, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
-import './DataFilesCompressModal.module.scss';
+import styles from './DataFilesCompressModal.module.scss';
 
 const DataFilesCompressModal = () => {
   const history = useHistory();
@@ -127,7 +127,7 @@ const DataFilesCompressModal = () => {
                   disabled={formDisabled}
                   addonType="append"
                   addon={
-                    <InputGroupAddon addonType="append" styleName="input-field">
+                    <InputGroupAddon addonType="append" className={styles['input-field']}>
                       <Input
                         type="select"
                         name="filetype"
@@ -151,13 +151,12 @@ const DataFilesCompressModal = () => {
                   Successfully started compress job
                 </InlineMessage>
                 <Button
-                  className="data-files-btn"
+                  className={`data-files-btn ${styles['submit-button']}`}
                   disabled={buttonDisabled}
-                  styleName="submit-button"
                   type="submit"
                 >
                   {buttonIcon}
-                  <span styleName={buttonIcon ? 'with-icon' : ''}>
+                  <span className={buttonIcon ? styles['with-icon'] : ''}>
                     Compress
                   </span>
                 </Button>

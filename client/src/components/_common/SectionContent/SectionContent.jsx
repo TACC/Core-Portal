@@ -17,17 +17,17 @@ export const LAYOUT_CLASS_MAP = {
    *
    * CAVEAT: No sidebar styles provided (until a <SectionSidebar> exists)
    */
-  hasSidebar: 'has-sidebar',
+  hasSidebar: layoutStyles['has-sidebar'],
   /**
    * Each child element is a flexible block inside one full-height column
    */
-  oneColumn: 'one-column',
+  oneColumn: layoutStyles['one-column'],
   /**
    * Each child element is a panel stacked into two full-height columns
    * (on narrow screens, there is only one column)
    * @see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns
    */
-  twoColumn: 'two-column',
+  twoColumn: layoutStyles['two-column'],
   /**
    * Like `twoColumn`, but supports unequal column widths (assembly required)
    * (when there are two columns, the widths are: large on left, small on right)
@@ -35,7 +35,7 @@ export const LAYOUT_CLASS_MAP = {
    * @see https://stackoverflow.com/a/29156418/11817077
    * @tutorial SectionContent.layouts.unequalColumns
    */
-  twoColumnUnequal: 'two-column with-unequal-columns',
+  twoColumnUnequal: `${layoutStyles['two-column']} ${layoutStyles['with-unequal-columns']}`,
   /**
    * Each child element is a panel stacked into two or more full-height columns
    * (on short wide screens, there are three equal-width columns)
@@ -43,7 +43,7 @@ export const LAYOUT_CLASS_MAP = {
    * (on narrow screens, there is only one column)
    * @see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns
    */
-  multiColumn: 'multi-column',
+  multiColumn: layoutStyles['multi-column'],
   /**
    * Like `multiColumn`, but supports unequal column widths (assembly required)
    * (when there are two columns, the widths are: large on left, small on right)
@@ -51,7 +51,7 @@ export const LAYOUT_CLASS_MAP = {
    * @see https://stackoverflow.com/a/29156418/11817077
    * @tutorial SectionContent.layouts.unequalColumns
    */
-  multiColumnUnequal: 'multi-column with-unequal-columns'
+  multiColumnUnequal: `${layoutStyles['multi-column']} ${layoutStyles['with-unequal-columns']}`
 };
 export const DEFAULT_LAYOUT = 'hasSidebar';
 export const LAYOUTS = [...Object.keys(LAYOUT_CLASS_MAP)];
@@ -84,18 +84,18 @@ function SectionContent({
   tagName
 }) {
   let styleName = '';
-  const styleNameList = ['styles.root', 'layoutStyles.root'];
+  const styleNameList = [styles['root'], layoutStyles['root']];
   const layoutClass = LAYOUT_CLASS_MAP[layoutName];
   const TagName = tagName;
 
-  if (shouldScroll) styleNameList.push('styles.should-scroll');
-  if (layoutClass) styleNameList.push(`layoutStyles.${layoutClass}`);
+  if (shouldScroll) styleNameList.push(styles['should-scroll']);
+  if (layoutClass) styleNameList.push(layoutClass);
 
   // Do not join inside JSX (otherwise arcane styleName error occurs)
   styleName = styleNameList.join(' ');
 
   return (
-    <TagName styleName={styleName} className={className}>
+    <TagName className={`${className} ${styleName}`}>
       {children}
     </TagName>
   );

@@ -3,7 +3,7 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
-import './DataFilesCompressModal.module.scss';
+import styles from './DataFilesCompressModal.module.scss';
 
 const DataFilesExtractModal = () => {
   const history = useHistory();
@@ -90,12 +90,11 @@ const DataFilesExtractModal = () => {
         </InlineMessage>
         <Button
           onClick={extractCallback}
-          className="data-files-btn"
+          className={`data-files-btn ${styles['submit-button']}`}
           disabled={status === 'RUNNING' || status === 'SUCCESS'}
-          styleName="submit-button"
         >
           {buttonIcon}
-          <span styleName={buttonIcon ? 'with-icon' : ''}>Extract</span>
+          <span className={buttonIcon ? styles['with-icon'] : ''}>Extract</span>
         </Button>
       </ModalFooter>
     </Modal>

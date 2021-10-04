@@ -17,7 +17,7 @@ import * as ROUTES from '../../constants/routes';
 import HistoryBadge from './HistoryBadge';
 
 import './History.global.css';
-import './History.module.scss';
+import styles from './History.module.scss';
 
 const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
 
@@ -49,16 +49,16 @@ const Actions = () => {
 const Sidebar = () => {
   const { unreadJobs } = useSelector(state => state.notifications.list);
   return (
-    <Nav styleName="sidebar" vertical>
+    <Nav className={styles.sidebar} vertical>
       <NavItem>
         <NavLink
           tag={RRNavLink}
           to={`${root}/jobs`}
-          activeStyleName="active"
+          activeClassName={styles.active}
           className="nav-content"
         >
           <i className="icon icon-jobs" />
-          <span styleName="link-text">Jobs</span>
+          <span className={styles['link-text']}>Jobs</span>
           <HistoryBadge unread={unreadJobs} />
         </NavLink>
       </NavItem>
@@ -105,7 +105,7 @@ export const Routes = () => {
           }
           return (
             <>
-              <JobHistory styleName="content" />
+              <JobHistory className={styles.content} />
               <Route
                 path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
                 render={({
@@ -145,7 +145,7 @@ const Layout = () => {
       bodyClassName="has-loaded-history"
       introMessageName="HISTORY"
       header={`History / ${historyType}`}
-      headerStyleName="header"
+      headerClasName={styles['header']}
       headerActions={<Actions />}
       content={
         <>

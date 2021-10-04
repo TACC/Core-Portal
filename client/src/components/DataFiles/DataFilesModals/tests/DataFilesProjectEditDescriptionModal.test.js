@@ -2,7 +2,7 @@ import React from 'react';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from "history";
 import renderComponent from 'utils/testing';
-import {fireEvent, waitForElement} from '@testing-library/react';
+import {fireEvent, waitFor, screen} from '@testing-library/react';
 import DataFilesProjectEditDescriptionModal from '../DataFilesProjectEditDescriptionModal';
 import {
   projectsListingFixture,
@@ -116,7 +116,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
     });
     fireEvent.click(button);
 
-    await waitForElement(() => getAllByText(/Title must be at least 3 characters/));
+    await waitFor(() => getAllByText(/Title must be at least 3 characters/));
   });
 
   it("disallows title input over 150 characters and description over 800 characters", async () => {
@@ -128,7 +128,7 @@ describe('DataFilesProjectEditDescriptionModal', () => {
       store,
       history
     )
-
+    const button = getByRole('button', { name: 'Update Changes' });
     const titleField = getByRole('textbox', {name: 'title'});
     const descriptionField = getByRole('textbox', {name: 'description'});
 
@@ -153,14 +153,11 @@ describe('DataFilesProjectEditDescriptionModal', () => {
       }
     });
 
-    // Blur each field for error
-    titleField.focus();
-    descriptionField.focus();
-    titleField.focus();
+    fireEvent.click(button);
 
-    await waitForElement(() =>
+    await waitFor(() =>
       getAllByText(/Title must be at most 150 characters/));
-    await waitForElement(() => 
+    await waitFor(() =>
       getAllByText(/Description must be at most 800 characters/));
   });
 });

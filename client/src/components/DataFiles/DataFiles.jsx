@@ -10,7 +10,7 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { parse } from 'query-string';
 
 import './DataFiles.global.css';
-import './DataFiles.module.css';
+import styles from './DataFiles.module.css';
 
 import {
   Section,
@@ -83,7 +83,7 @@ const DataFilesSwitch = React.memo(() => {
             }
           });
           return (
-            <SectionTableWrapper styleName="content" manualContent>
+            <SectionTableWrapper className={styles['content']} manualContent>
               <DataFilesListing
                 api={params.api}
                 scheme={params.scheme}
@@ -119,7 +119,7 @@ const DataFiles = () => {
 
   if (error) {
     return (
-      <div styleName="error">
+      <div className={styles['error']}>
         <SectionMessage type="warning">
           There was a problem retrieving your systems
         </SectionMessage>
@@ -133,7 +133,7 @@ const DataFiles = () => {
 
   if (!systems.length) {
     return (
-      <div styleName="error">
+      <div className={styles['error']}>
         <SectionMessage type="warning">
           No storage systems enabled for this portal
         </SectionMessage>

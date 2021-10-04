@@ -13,7 +13,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { Link } from 'react-router-dom';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
-import './DataFilesTable.module.scss';
+import styles from './DataFilesTable.module.scss';
 
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
@@ -321,7 +321,7 @@ const DataFilesTable = ({
       onResize={resizeCallback}
       disableHeight={process.env.NODE_ENV === 'test'}
       disableWidth={process.env.NODE_ENV === 'test'}
-      styleName="root"
+      className={styles.root}
     >
       {({ width, height }) => (
         <div {...getTableProps()}>

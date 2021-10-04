@@ -7,41 +7,41 @@ import UIPatternsDropdownSelector from './UIPatternsDropdownSelector';
 import UIPatternsPill from './UIPatternsPill';
 import UIPatternsShowMore from './UIPatternsShowMore';
 import UIPatternsPaginator from './UIPatternsPaginator';
-import './UIPatterns.module.scss';
+import styles from './UIPatterns.module.scss';
 
 function UIPatterns() {
   return (
     <Section
       introMessageName="UI"
-      styleName="container"
+      className={styles.container}
       header="UI Patterns"
       content={
         <>
-          <div styleName="list-item">
+          <div className={styles['list-item']}>
             <h6>Section</h6>
             <UIPatternsSection />
           </div>
-          <div styleName="list-item">
+          <div className={styles['list-item']}>
             <h6>Message &amp; Notification</h6>
             <UIPatternsMessage />
           </div>
-          <div styleName="list-item">
+          <div className={styles['list-item']}>
             <h6>DropdownSelector</h6>
             <UIPatternsDropdownSelector />
           </div>
-          <div styleName="list-item">
+          <div className={styles['list-item']}>
             <h6>DescriptionList</h6>
             <UIPatternsDescriptionList />
           </div>
-          <div styleName="list-item">
+          <div className={styles['list-item']}>
             <h6>Pills</h6>
             <UIPatternsPill />
           </div>
-          <div styleName="list-item">
+          <div className={styles['list-item']}>
             <h6>Show More</h6>
             <UIPatternsShowMore />
           </div>
-          <div styleName="list-item">
+          <div className={styles['list-item']}>
             <h6>Paginator</h6>
             <UIPatternsPaginator />
           </div>

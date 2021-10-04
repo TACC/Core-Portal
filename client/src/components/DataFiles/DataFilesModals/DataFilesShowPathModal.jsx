@@ -46,8 +46,9 @@ const DataFilesShowPathModal = React.memo(() => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
   };
 
-  return (
-    file && (
+
+
+  if (file) return (
       <Modal
         isOpen={isOpen}
         onClosed={onClosed}
@@ -87,8 +88,8 @@ const DataFilesShowPathModal = React.memo(() => {
           </dl>
         </ModalBody>
       </Modal>
-    )
-  );
+    );
+  else return <></>
 });
 
 export default DataFilesShowPathModal;

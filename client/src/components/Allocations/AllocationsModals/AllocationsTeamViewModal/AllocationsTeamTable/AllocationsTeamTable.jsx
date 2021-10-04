@@ -3,7 +3,7 @@ import { string, func, shape, arrayOf } from 'prop-types';
 import { Table } from 'reactstrap';
 import { useTable } from 'react-table';
 import { capitalize } from 'lodash';
-import './AllocationsTeamTable.module.scss';
+import styles from './AllocationsTeamTable.module.scss';
 
 const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
   const data = React.useMemo(() => rawData, [rawData]);
@@ -15,7 +15,7 @@ const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
         Cell: el => {
           const { firstName, lastName } = el.value;
           return (
-            <span styleName="content">
+            <span className={styles.content}>
               {capitalize(firstName)} {capitalize(lastName)}
             </span>
           );
@@ -25,8 +25,8 @@ const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
     [rawData]
   );
   const getStyleName = listing => {
-    if (visible && listing.username === visible.username) return 'active-user';
-    return 'row';
+    if (visible && listing.username === visible.username) return styles['active-user'];
+    return styles['row'];
   };
   const { getTableProps, getTableBodyProps, rows, prepareRow } = useTable({
     columns,
@@ -44,7 +44,7 @@ const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
                   clickHandler(row.values.listing);
                 }
               })}
-              styleName={getStyleName(row.values.listing)}
+              className={getStyleName(row.values.listing)}
             >
               {row.cells.map(cell => (
                 <td {...cell.getCellProps()}>{cell.render('Cell')}</td>

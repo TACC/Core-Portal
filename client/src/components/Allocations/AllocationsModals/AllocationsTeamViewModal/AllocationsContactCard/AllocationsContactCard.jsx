@@ -3,7 +3,7 @@ import { string, shape, arrayOf } from 'prop-types';
 import { capitalize } from 'lodash';
 import { DescriptionList } from '_common';
 import AllocationsUsageTable from '../AllocationsUsageTable';
-import './AllocationsContactCard.module.scss';
+import styles from './AllocationsContactCard.module.scss';
 
 const AllocationsContactCard = ({ listing }) => {
   if (!listing)
@@ -11,12 +11,12 @@ const AllocationsContactCard = ({ listing }) => {
   const { firstName, lastName, email, username } = listing;
 
   return (
-    <div styleName="root">
-      <div styleName="title">
+    <div className={styles.root}>
+      <div className={styles.title}>
         {capitalize(firstName)} {capitalize(lastName)}
       </div>
       <DescriptionList
-        styleName="details"
+        className={styles.details}
         data={{
           Username: username,
           Email: email

@@ -1,6 +1,6 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
@@ -66,7 +66,7 @@ describe('Allocations Table', () => {
     expect(getByText(/Unable to retrieve your allocations./)).toBeDefined();
     const reloadLink = getByText(/Try reloading the page./);
     fireEvent.click(reloadLink);
-    await wait(() => {
+    await waitFor(() => {
       const [reload] = storeWithError.getActions();
       expect(reload.type).toBe('GET_ALLOCATIONS');
     })

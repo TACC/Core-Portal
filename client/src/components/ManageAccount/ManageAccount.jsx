@@ -18,7 +18,7 @@ import {
 
 import './ManageAccount.scss';
 import './ManageAccount.global.css';
-import './ManageAccount.module.css';
+import styles from './ManageAccount.module.css';
 import { INTEGRATION_SETUP_ERROR } from '../../constants/messages';
 
 const ManageAccountView = () => {
@@ -89,8 +89,7 @@ const ManageAccountView = () => {
           </>
         )
       }
-      contentStyleName="panels"
-      contentClassName="manage-account-content"
+      contentClassName={`manage-account-content ${styles.panels}`}
       contentLayoutName={isLoading ? `oneColumn` : `multiColumnUnequal`}
       contentShouldScroll
     />

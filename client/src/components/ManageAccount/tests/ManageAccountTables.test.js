@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, wait, fireEvent } from '@testing-library/react';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { initialState as workbench } from '../../../redux/reducers/workbench.reducers';
 import configureStore from 'redux-mock-store';
@@ -93,7 +93,7 @@ describe('Required Information Component', () => {
   test('Button to open form modal', async () => {
     const button = getByText(/Edit Required Information/);
     fireEvent.click(button);
-    await wait(() => {
+    await waitFor(() => {
       const { type, payload } = testStore.getActions()[0];
       expect(type).toEqual('OPEN_PROFILE_MODAL');
       expect(payload).toEqual({ required: true });
@@ -125,7 +125,7 @@ describe('Change Password Component', () => {
     expect(getAllByText(/Change Password/)).toHaveLength(2);
     const button = getAllByText(/Change Password/)[1];
     fireEvent.click(button);
-    await wait(() => {
+    await waitFor(() => {
       const { type, payload } = testStore.getActions()[0];
       expect(type).toEqual('OPEN_PROFILE_MODAL');
       expect(payload).toEqual({ password: true });
@@ -204,7 +204,7 @@ describe('Optional Information Component', () => {
   it('should have a button that opens a redux controlled modal', async () => {
     const button = getByText(/Edit Optional Information/);
     fireEvent.click(button);
-    await wait(() => {
+    await waitFor(() => {
       const [action] = testStore.getActions();
       expect(action.type).toEqual('OPEN_PROFILE_MODAL');
       expect(action.payload).toEqual({ optional: true });

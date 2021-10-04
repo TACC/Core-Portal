@@ -10,7 +10,7 @@ import {
   DropdownToggle,
   DropdownItem
 } from 'reactstrap';
-import './DataFilesSidebar.module.scss';
+import styles from './DataFilesSidebar.module.scss';
 
 import { NavLink as RRNavLink, useRouteMatch } from 'react-router-dom';
 import { Icon } from '_common';
@@ -64,9 +64,8 @@ const DataFilesSidebar = ({ readOnly }) => {
     (scheme !== 'private' && scheme !== 'projects');
 
   const writeItemStyle = disabled ? 'read-only' : '';
-
   return (
-    <div styleName="root">
+    <div className={styles['root']}>
       <div className="data-files-sidebar">
         <div id="add-button-wrapper">
           <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
@@ -79,7 +78,7 @@ const DataFilesSidebar = ({ readOnly }) => {
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem onClick={toggleMkdirModal} disabled={disabled}>
-                <span styleName={writeItemStyle}>
+                <span className={styles[writeItemStyle]}>
                   <i className="icon-folder" /> Folder
                 </span>
               </DropdownItem>
@@ -93,10 +92,10 @@ const DataFilesSidebar = ({ readOnly }) => {
                 onClick={toggleUploadModal}
                 disabled={disabled}
               >
-                <i className="icon-upload" styleName={writeItemStyle} />
+                <i className={`icon-upload ${styles[writeItemStyle]}`}/>
                 <span className="multiline-menu-item-wrapper">
-                  <span styleName={writeItemStyle}>Upload</span>
-                  <small styleName={writeItemStyle}> Up to 500mb </small>
+                  <span className={styles[writeItemStyle]}>Upload</span>
+                  <small className={styles[writeItemStyle]}> Up to 500mb </small>
                 </span>
               </DropdownItem>
             </DropdownMenu>

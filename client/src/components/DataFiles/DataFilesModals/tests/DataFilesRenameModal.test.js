@@ -5,7 +5,7 @@ import configureStore from 'redux-mock-store';
 import DataFilesRenameModalFixture from './DataFilesRenameModal.fixture';
 import systemsFixture from '../../fixtures/DataFiles.systems.fixture';
 import renderComponent from 'utils/testing';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 
 const mockStore = configureStore();
 
@@ -51,7 +51,7 @@ describe('DataFilesCopyModal', () => {
     const input = getByRole('textbox');
     fireEvent.change(input, { target: { value: 'abc123' } });
 
-    await wait(() => {
+    await waitFor(() => {
       const submitButton = getByText('Rename');
       fireEvent.click(submitButton);
     });
@@ -98,7 +98,7 @@ describe('DataFilesCopyModal', () => {
     const input = getByRole('textbox');
     fireEvent.change(input, { target: { value: 'abc123?' } });
 
-    await wait(() => {
+    await waitFor(() => {
       const submitButton = getByText('Rename');
       fireEvent.click(submitButton);
     });

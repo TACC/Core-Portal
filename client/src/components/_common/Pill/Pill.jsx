@@ -1,14 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './Pill.module.scss';
+import styles from './Pill.module.scss';
 
 function Pill({ children, type, className, shouldTruncate }) {
-  let pillStyleName = `root is-${type}`;
 
-  if (shouldTruncate) pillStyleName += ' should-truncate';
+  let pillStyleName = `${styles['root']} ${styles[`is-${type}`]}`;
+
+  if (shouldTruncate) pillStyleName += ` ${styles['should-truncate']}`;
 
   return (
-    <span styleName={pillStyleName} className={className} title={children}>
+    <span className={`${className} ${pillStyleName}`} title={children}>
       {children}
     </span>
   );
