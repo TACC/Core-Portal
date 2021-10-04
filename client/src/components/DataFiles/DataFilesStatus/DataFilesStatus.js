@@ -52,12 +52,8 @@ const OPERATION_MAP = {
         let op = mappedOp;
         let dest;
 
-        if (srcSystem !== destSystem) {
-          if (mappedOp === 'copied') {
-            op = 'started copying';
-          } else {
-            op = 'started moving';
-          }
+        if (srcSystem !== destSystem && mappedOp === 'copied') {
+          op = 'started copying';
         }
 
         if (projectName) {
