@@ -22,6 +22,7 @@ const DataFilesPreviewModal = () => {
       payload: { operation: 'preview', props: {} }
     });
 
+
   const onOpen = () => {
     setIsFrameLoading(true);
     dispatch({
