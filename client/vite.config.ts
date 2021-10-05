@@ -17,11 +17,6 @@ export default defineConfig({
     },
   },
 
-  optimizeDeps: {
-    // Need to explicitly include commonJS dependencies of Reactstrap
-    include: ['has-symbols']
-  },
-
   server: {
     hmr: {
       protocol: 'ws',

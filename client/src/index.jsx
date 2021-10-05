@@ -1,13 +1,15 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import AppRouter from './components/Workbench';
+const AppRouter = React.lazy(() => import('./components/Workbench'));
 import './index.css';
 import store from './redux/store';
 
 ReactDOM.render(
   <Provider store={store}>
-    <AppRouter />
+    <Suspense fallback={<div>Lazy loading the app...</div>}>
+      <AppRouter/>
+    </Suspense>
   </Provider>,
   document.getElementById('react-root')
 );

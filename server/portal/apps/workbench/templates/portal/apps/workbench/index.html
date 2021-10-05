@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Workbench {% endblock %}
+{% block head_extra %}
+  <base href="{% url 'workbench:index' %}">
+{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="">
+  <link rel="stylesheet" href="">
+{% endblock %}
+{% block content %}
+  <div id="react-root"></div>
+{% endblock %}
+{% block scripts %}
+  <script type="module"> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
+
+  <script type="module">
+    import RefreshRuntime from "http://localhost:3000/core/static/@react-refresh"
+    RefreshRuntime.injectIntoGlobalHook(window)
+    window.$RefreshReg$ = () => {}
+    window.$RefreshSig$ = () => (type) => type
+    window.__vite_plugin_react_preamble_installed__ = true
+  </script>
+  <script type="module" src="http://localhost:3000/core/static/@vite/client"></script>
+  <script type="module" src="http://localhost:3000/core/static/src/index.jsx"></script>
+
+<!--
+Production settings
+<script type="module" crossorigin src="/core/static/assets/index.c61fbf46.js"></script>
+<link rel="modulepreload" href="/core/static/assets/react.b913921f.js">
+<link rel="stylesheet" href="/core/static/assets/index.da1e7a87.css">
+
+Preview settings (vite preview serves the production bundle at port 5000)
+<script type="module" crossorigin src="/core/static/assets/index.31c8a8a6.js"></script>
+<link rel="modulepreload" href="/core/static/assets/vendor.615de6f6.js">
+<link rel="stylesheet" href="/core/static/assets/index.55414389.css">
+-->
+
+
+
+{% endblock %}
