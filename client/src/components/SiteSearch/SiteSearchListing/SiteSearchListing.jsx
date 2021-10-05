@@ -115,9 +115,8 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
 
   const hasResults = !loading && !error && count > 0;
 
-  let containerStyleNames = styles[`container for-${filter}`];
+  let containerStyleNames = `${styles.container} ${styles[`for-${filter}`]}`;
   if (!hasResults) containerStyleNames += ` ${styles['is-empty']}`;
-
   const lastPageIndex = Math.ceil(count / 10);
   return (
     <div className={containerStyleNames}>

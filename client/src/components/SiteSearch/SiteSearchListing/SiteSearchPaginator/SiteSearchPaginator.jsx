@@ -48,7 +48,7 @@ const SiteSearchPaginator = ({ lastPageIndex }) => {
                 to={pageHref(i)}
                 className={`page-link ${currentPage === i && styles.active}`}
               >
-                <span clasName={styles['paginator-link']}>{i}</span>
+                <span className={styles['paginator-link']}>{i}</span>
               </NavLink>
             </li>
           ))}

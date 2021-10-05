@@ -145,7 +145,7 @@ const Layout = () => {
       bodyClassName="has-loaded-history"
       introMessageName="HISTORY"
       header={`History / ${historyType}`}
-      headerClasName={styles['header']}
+      headerClassName={styles['header']}
       headerActions={<Actions />}
       content={
         <>

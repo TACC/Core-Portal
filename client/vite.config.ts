@@ -12,14 +12,13 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      src: resolve(__dirname, 'src'),
       _common: resolve(__dirname, 'src/components/_common'),
       utils: resolve(__dirname, 'src/utils')
     },
   },
 
   optimizeDeps: {
-    // Need to explicitly include this reactstrap dependency
+    // Need to explicitly include commonJS dependencies of Reactstrap
     include: ['has-symbols']
   },
 
