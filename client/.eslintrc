@@ -1,9 +1,7 @@
 {
-    "root": true,
     "env": {
         "browser": true,
-        "es6": true,
-        "jest": true
+        "node": true
     },
     "extends": [
         "airbnb",
@@ -12,23 +10,12 @@
         "prettier/react",
         "prettier/standard"
     ],
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
-    },
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 2018,
-        "sourceType": "module"
-    },
     "plugins": [
+        "import",
         "react",
-        "prettier",
-        "jest"
+        "prettier"
     ],
-    "parser": "babel-eslint",
+    "parser": "@typescript-eslint/parser",
     "ignorePatterns": ["*.test.js"],
     "rules": {
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
@@ -45,14 +32,7 @@
         "jsx-a11y/anchor-is-valid": 0
     },
     "settings": {
-        "import/resolver": {
-            // Prevent `path` resolution error in Webpack configs.
-            // SEE: https://github.com/benmosher/eslint-plugin-import/issues/1396#issuecomment-511007063
-            "node": {},
-            // Support Webpack aliases
-            "webpack": {
-                "config": "webpack.common.js"
-            }
-        }
-    }
+        "react": { "version": "detect" },
+        "import/resolver": {"typescript": {}}
+      }
 }
