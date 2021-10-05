@@ -12,7 +12,7 @@
   <div id="react-root"></div>
 {% endblock %}
 {% block scripts %}
-  <script type="module"> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
+  <script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
 
   <script type="module">
     import RefreshRuntime from "http://localhost:3000/core/static/@react-refresh"
