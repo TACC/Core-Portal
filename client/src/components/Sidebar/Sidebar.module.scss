@@ -11,12 +11,13 @@ $width: 215px;
     padding-top: 20px;
 }
 
-.link,
-.link:hover {
-  color: #707070;
+.link {
+  color: var(--global-color-primary--dark);
 }
+.link:hover,
 .link--active {
-  background-color: #dfdaf5;
+  color: var(--global-color-primary--x-dark); /* to pass color contrast test */
+  background-color: var(--global-color-accent--weak);
 }
 
 .content {

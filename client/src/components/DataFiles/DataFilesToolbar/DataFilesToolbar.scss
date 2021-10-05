@@ -1,8 +1,8 @@
 .data-files-toolbar-button {
     height: 2rem;
     background-color: #F4F4F4;
-    color: #484848;
-    border-color: #484848;
+    color: var(--global-color-primary--xx-dark);
+    border-color: var(--global-color-primary--xx-dark);
     border-radius: 0;
     display: flex;
     align-items: center;
@@ -17,8 +17,8 @@
 }
 .data-files-toolbar-button:not(.disabled):hover {
     background-color: #AFAFAF;
-    color: #484848;
-    border-color: #484848;
+    color: var(--global-color-primary--xx-dark);
+    border-color: var(--global-color-primary--xx-dark);
     border-radius: 0;
 }
 

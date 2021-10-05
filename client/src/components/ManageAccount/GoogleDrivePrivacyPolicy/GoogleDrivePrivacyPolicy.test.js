@@ -7,7 +7,7 @@ import GoogleDrivePrivacyPolicy from './GoogleDrivePrivacyPolicy';
 const mockStore = configureStore();
 describe('ToolbarButton', () => {
   const store = mockStore({});
-  it('render button with correct text', () => {
+  it('renders Google Drive Policy', () => {
     const { getByText } = renderComponent(
       <GoogleDrivePrivacyPolicy />,
       store,

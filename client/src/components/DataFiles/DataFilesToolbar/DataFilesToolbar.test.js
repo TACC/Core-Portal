@@ -1,13 +1,15 @@
 import React from 'react';
-import { toHaveClass } from '@testing-library/jest-dom/dist/matchers';
+import { toHaveClass, toBeDisabled } from '@testing-library/jest-dom/dist/matchers';
 import DataFilesToolbar, { ToolbarButton } from './DataFilesToolbar';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
 import renderComponent from 'utils/testing';
 import systemsFixture from '../fixtures/DataFiles.systems.fixture';
+import DatafilesFixture from '../fixtures/DataFiles.files.fixture';
+import filesFixture from '../fixtures/DataFiles.files.fixture';
 
 const mockStore = configureStore();
-expect.extend({ toHaveClass });
+expect.extend({ toHaveClass, toBeDisabled });
 describe('ToolbarButton', () => {
   const store = mockStore({});
   it('renders button with correct text', () => {
@@ -129,5 +131,31 @@ describe('DataFilesToolbar', () => {
     );
 
     expect(getByText(/Make Public/)).toBeDefined();
+  });
+
+  it('disables Trash button for files in .Trash', () => {
+    const testFile = {
+      name: 'test.txt',
+      path: '/.Trash/test.txt',
+      lastModified: '2020-08-01T00:00:00-05:00',
+      type: 'file',
+    };
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: { config: {
+          extract: '',
+          compress: ''
+        } },
+        files: { 
+          listing: { FilesListing: [ testFile ] },
+          selected: { FilesListing: [ 0 ] } 
+       },
+        //listing: {  } },
+        systems: systemsFixture
+      }),
+      createMemoryHistory()
+    );
+    expect(getByText(/Trash/).closest('button')).toBeDisabled();
   });
 });
