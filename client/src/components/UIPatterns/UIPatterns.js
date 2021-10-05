@@ -5,14 +5,14 @@ import UIPatternsSection from './UIPatternsSection';
 import UIPatternsDescriptionList from './UIPatternsDescriptionList';
 import UIPatternsDropdownSelector from './UIPatternsDropdownSelector';
 import UIPatternsPill from './UIPatternsPill';
-import UIPatternsReadMore from './UIPatternsReadMore';
+import UIPatternsShowMore from './UIPatternsShowMore';
 import UIPatternsPaginator from './UIPatternsPaginator';
 import './UIPatterns.module.scss';
 
 function UIPatterns() {
   return (
     <Section
-      welcomeMessageName="UI"
+      introMessageName="UI"
       styleName="container"
       header="UI Patterns"
       content={
@@ -38,8 +38,8 @@ function UIPatterns() {
             <UIPatternsPill />
           </div>
           <div styleName="list-item">
-            <h6>Read More</h6>
-            <UIPatternsReadMore />
+            <h6>Show More</h6>
+            <UIPatternsShowMore />
           </div>
           <div styleName="list-item">
             <h6>Paginator</h6>

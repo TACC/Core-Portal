@@ -118,6 +118,7 @@ ngrok http 443
 ### Setup local access to the portal:
 
   1. Add a record to your local `hosts` file for `127.0.0.1 cep.dev`
+      - `sudo vim /etc/hosts`
 
      _WARNING: This name **must** match the **agave callback URL** defined for the client in `settings_secret.py` for `_AGAVE_TENANT_ID`._
 

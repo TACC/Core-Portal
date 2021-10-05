@@ -30,7 +30,7 @@ const removeProjectMember = (members, removedMember) => {
 
 const transformMetadata = project => {
   const members = [];
-  members.push({ user: project.pi, access: 'owner' });
+  if (project.pi) members.push({ user: project.pi, access: 'owner' });
   project.coPis.forEach(coPi => {
     members.push({ user: coPi, access: 'edit' });
   });

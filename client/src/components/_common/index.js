@@ -19,11 +19,11 @@ export { default as DescriptionList } from './DescriptionList';
 export { default as DropdownSelector } from './DropdownSelector';
 export { default as BrowserChecker } from './BrowserChecker';
 export {
-  default as WelcomeMessage,
-  isKnownMessage as isKnownWelcomeMessage
-} from './WelcomeMessage';
+  default as IntroMessage,
+  isKnownMessage as isKnownIntroMessage
+} from './IntroMessage';
 export { default as Pill } from './Pill';
 export { default as TextCopyField } from './TextCopyField';
-export { default as ReadMore } from './ReadMore';
+export { default as ShowMore } from './ShowMore';
 export { default as Paginator } from './Paginator';
 export { default as UserSearchbar } from './UserSearchbar';

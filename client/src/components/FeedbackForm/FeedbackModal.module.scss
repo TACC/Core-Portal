@@ -1,6 +1,6 @@
 .container {
   a {
-    color: #9d85ef;
+    color: var(--global-color-accent--normal);
   }
 
   @media (min-width: 1200px) {
@@ -9,6 +9,6 @@
 }
 .header {
   background-color: #f4f4f4;
-  color: #484848;
+  color: var(--global-color-primary--xx-dark);
   font-size: 1.25rem;
 }

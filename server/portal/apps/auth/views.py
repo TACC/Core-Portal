@@ -140,12 +140,13 @@ def agave_oauth_callback(request):
 
         return HttpResponseRedirect(reverse('portal_accounts:logout'))
 
+    redirect = getattr(settings, 'LOGIN_REDIRECT_URL', '/')
+    next = ''
     if 'next' in request.session:
-        next_uri = request.session.pop('next')
-        return HttpResponseRedirect(next_uri)
-    else:
-        login_url = getattr(settings, 'LOGIN_REDIRECT_URL')
-        return HttpResponseRedirect(login_url)
+        next = '?next=' + request.session.pop('next')
+
+    response = HttpResponseRedirect(redirect + next)
+    return response
 
 
 def agave_session_error(request):
