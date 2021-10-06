@@ -57,8 +57,15 @@ const DataFilesTrashModal = React.memo(() => {
         reloadCallback: reloadPage
       }
     });
+    toggle(); 
   }, [selected, reloadPage]);
 
+  //if (selected.every((f)=>status[f.id]==='SUCCESS') && selected.length !== 0) {
+    //dispatch({
+    //  type: 'DATA_FILES_TOGGLE_MODAL',
+     // payload: { operation: 'trash', props: {} }
+    //}) 
+  //};
   return (
     <Modal
       isOpen={isOpen}

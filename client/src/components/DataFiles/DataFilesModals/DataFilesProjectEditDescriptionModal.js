@@ -55,6 +55,7 @@ const DataFilesProjectEditDescriptionModal = () => {
           }
         }
       });
+      toggle();
     },
     [projectId, dispatch]
   );

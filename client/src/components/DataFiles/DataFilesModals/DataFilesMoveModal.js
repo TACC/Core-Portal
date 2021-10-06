@@ -81,6 +81,7 @@ const DataFilesMoveModal = React.memo(() => {
           reloadCallback: reloadPage
         }
       });
+      toggle();
     },
     [selected, reloadPage, status]
   );

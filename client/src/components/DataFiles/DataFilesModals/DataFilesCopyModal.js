@@ -104,6 +104,7 @@ const DataFilesCopyModal = React.memo(() => {
           reloadCallback: reloadPage
         }
       });
+      toggle();
     },
     [selected, reloadPage, status]
   );
