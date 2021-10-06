@@ -19,6 +19,7 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "16.12.0",
     "react-dropzone": "^10.2.1",
+    "react-google-recaptcha": "^2.1.0",
     "react-hot-loader": "^4.12.18",
     "react-redux": "^7.2.1",
     "react-resize-detector": "^6.1.0",
