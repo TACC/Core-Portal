@@ -41,7 +41,7 @@ describe('Allocations Table', () => {
 
   it("should have relevant columns for data for the Allocations Table", () => {
     expect(getByText(/Title/)).toBeDefined();
-    expect(getByText(/Principal Investigator/));
+    expect(getByText(/PI/));
     expect(getByText(/Team/)).toBeDefined();
     expect(getByText(/Systems/)).toBeDefined();
     expect(getByText(/Awarded/)).toBeDefined();
