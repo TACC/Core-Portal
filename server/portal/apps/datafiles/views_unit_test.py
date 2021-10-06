@@ -249,7 +249,7 @@ def test_tapis_file_view_preview_supported_non_text_files(client, authenticated_
         else "https://view.officeapps.live.com/op/view.aspx?src={}".format(POSTIT_HREF)
 
     assert response.status_code == 200
-    assert response.json() == {"data": {"href": href, "fileType": TYPE}}
+    assert response.json() == {"data": {"href": href, "fileType": TYPE, 'content': None, 'error': None}}
 
 
 def test_tapis_file_view_preview_text_file(client, authenticated_user, mock_agave_client, agave_file_listing_mock,
