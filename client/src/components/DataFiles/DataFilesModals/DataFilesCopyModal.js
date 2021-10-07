@@ -126,7 +126,7 @@ const DataFilesCopyModal = React.memo(() => {
   );
 
   const actionString = `${
-    params.system === modalParams.system ? 'Copying' : 'Start copying'
+    params.system === modalParams.system ? 'Copying' : 'Start Copying'
   } ${selected.length} File${selected.length > 1 ? 's' : ''}`;
 
   return (
