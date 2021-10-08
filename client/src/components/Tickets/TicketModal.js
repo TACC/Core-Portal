@@ -34,16 +34,17 @@ const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
 
-const Attachment = ({ attachment }) => (
+const Attachments = ({ attachments }) => (
   <div>
+    Attachments:
     <ul>
-      {attachment.slice(1).map(attachmentName => (
+      {attachments.map(attachmentName => (
         <li> {attachmentName} </li>
       ))}
     </ul>
   </div>
 );
-Attachment.propTypes = {
+Attachments.propTypes = {
   attachment: PropTypes.string.isRequired
 };
 
@@ -190,11 +191,7 @@ const TicketHistoryCard = ({
             a => !a[1].toString().startsWith('untitled (')
           ))}
         >
-          Attachments:
-          {attachments &&
-            attachments.map(attachment => (
-              <Attachment attachment={attachment} />
-            ))}
+          <Attachments attachments={attachments} />
         </CardBody>
       </Collapse>
     </Card>
