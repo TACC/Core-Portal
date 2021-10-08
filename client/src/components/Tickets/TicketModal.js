@@ -33,6 +33,7 @@ import './TicketModal.scss';
 const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
+
 const Attachment = ({ attachment }) => (
   <div>
     <ul>
@@ -45,6 +46,7 @@ const Attachment = ({ attachment }) => (
 Attachment.propTypes = {
   attachment: PropTypes.string.isRequired
 };
+
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
     () => ({
