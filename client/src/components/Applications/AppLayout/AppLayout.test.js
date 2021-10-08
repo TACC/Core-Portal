@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from "redux-mock-store";
-import {AppsLayout,AppsRoutes} from "./AppLayout";
+import AppsRoutes from "./AppLayout";
 import { MemoryRouter, Route } from 'react-router-dom';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
@@ -31,14 +31,14 @@ describe('AppsLayout', () => {
     const store = mockStore({
       apps: {...appTrayExpectedFixture, loading: true}
     });
-    const { getByText,getByTestId} = renderComponent(<AppsLayout/>, store);
+    const { getByText,getByTestId} = renderComponent(<AppsRoutes/>, store);
     expect(getByTestId('loading-spinner')).toBeDefined();
   });
   it('Display the correct error message', () => {
     const store = mockStore({
       apps: {...appTrayExpectedFixture, error: {isError:true}}
     });
-    const { getByText} = renderComponent(<AppsLayout/>, store);
+    const { getByText} = renderComponent(<AppsRoutes/>, store);
     expect(getByText('Something went wrong.')).toBeDefined();
   });
 });

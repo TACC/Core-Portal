@@ -6,7 +6,7 @@ import './AppLayout.global.css';
 import AppBrowser from '../AppBrowser/AppBrowser';
 import { AppDetail, AppPlaceholder } from '../AppForm/AppForm';
 
-export const AppsLayout = () => {
+const AppsLayout = () => {
   const { params } = useRouteMatch();
   const { loading, categoryDict, error } = useSelector(
     state => ({
@@ -39,7 +39,7 @@ export const AppsLayout = () => {
   );
 };
 
-export const AppsHeader = categoryDict => {
+const AppsHeader = categoryDict => {
   const { params } = useRouteMatch();
   const appMeta = Object.values(categoryDict.categoryDict)
     .flatMap(e => e)
@@ -48,7 +48,7 @@ export const AppsHeader = categoryDict => {
   return `Applications ${path}`;
 };
 
-export const AppsRoutes = () => {
+const AppsRoutes = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
   const appDict = useSelector(state => state.apps.appDict, shallowEqual);
@@ -101,3 +101,5 @@ export const AppsRoutes = () => {
     />
   );
 };
+
+export default AppsRoutes;
