@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Modal, ModalHeader } from 'reactstrap';
@@ -41,11 +40,7 @@ function TicketCreateModal() {
       history.push(`${ROUTES.WORKBENCH}${ROUTES.DASHBOARD}`);
     }
   };
-  const recaptchaRef = React.createRef();
-  const onSubmit = () => {
-    const recaptchaValue = recaptchaRef.current.getValue();
-    onSubmit(recaptchaValue);
-  }
+
   return (
     <Modal
       modalClassName="ticket-create-modal"
@@ -61,12 +56,6 @@ function TicketCreateModal() {
         authenticatedUser={authenticatedUser}
         provideDashBoardLinkOnSuccess={provideDashBoardLinkOnSuccess}
         initialSubject={subject}
-        onSubmit={onSubmit}
-      />
-      <ReCAPTCHA
-        ref={recaptchaRef}
-        sitekey= "6LcJa68cAAAAAB7_1ZgWxkDX4-mg9aQ0_M4DLbOk"
-        onChange={onChange}
       />
     </Modal>
   );

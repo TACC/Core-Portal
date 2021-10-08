@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { useDispatch, useSelector, useState, useCallback } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Formik, Form } from 'formik';
@@ -106,7 +107,7 @@ function TicketCreateForm({
   const dispatch = useDispatch();
 
   const isAuthenticated = authenticatedUser != null;
-
+  const recaptchaRef = React.createRef();
   return (
     <Formik
       enableReinitialize
@@ -206,6 +207,12 @@ function TicketCreateForm({
                     Ticket creating error: {creatingErrorMessage}
                   </Alert>
                 )}
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey="6LcJa68cAAAAAB7_1ZgWxkDX4-mg9aQ0_M4DLbOk"
+                  onChange={(e) => console.log(e)}
+                  className="g-recaptcha"
+                />
                 <Button
                   type="submit"
                   color="primary"
