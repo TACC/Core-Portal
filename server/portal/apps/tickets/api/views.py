@@ -10,6 +10,7 @@ from django.core.exceptions import PermissionDenied
 from portal.apps.tickets import rtUtil
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
+from django.contrib import messages
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,23 @@ class TicketsView(BaseApiView):
         else:
             user_tickets = rt.getUserTickets(request.user.email)
             return JsonResponse({'tickets': user_tickets})
+    def grecaptcha_verify(request):
+        data = request.POST
+        captcha_rs = data.get('g-recaptcha-response')
+        url = "https://www.google.com/recaptcha/api/siteverify"
+        headers = {'User-Agent': 'DebuguearApi-Browser',}
+        params = {'secret': "6LcJa68cAAAAAI5buG-nJS-kQhJN-_n9spbo3Tzd", 'response': captcha_rs}
+        verify_rs = requests.post(url,params, headers=headers)
+        verify_rs = verify_rs.json()
+        response = verify_rs.get("success", False)
+        return response 
+    def greatsuccess(request):
+        messages.success(request, "Email sent!")
+        return render(request, 'personal/contact.html')
+
+    def greatfail(request): 
+        messages.error(request, "Invalid Captcha!")
+        return render(request, 'personal/contact.html')
 
     def post(self, request):
         """Post a new ticket
@@ -74,6 +92,11 @@ class TicketsView(BaseApiView):
                                      requestor=email,
                                      cc=cc,
                                      attachments=attachments)
+        response=grecaptcha_verify(request)
+        if response == True :
+            return greatsuccess(request)
+        else:
+            greatfail(request)
 
         return JsonResponse({'ticket_id': ticket_id})
 
