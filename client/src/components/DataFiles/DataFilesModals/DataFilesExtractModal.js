@@ -55,7 +55,6 @@ const DataFilesExtractModal = () => {
       type: 'DATA_FILES_EXTRACT',
       payload: { file: selected[0] }
     });
-    toggle();
   };
 
   let buttonIcon;

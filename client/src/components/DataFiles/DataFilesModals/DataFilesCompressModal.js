@@ -70,7 +70,6 @@ const DataFilesCompressModal = () => {
       type: 'DATA_FILES_COMPRESS',
       payload: { filename, files: selected }
     });
-    toggle();
   };
 
   let buttonIcon;
@@ -95,9 +94,7 @@ const DataFilesCompressModal = () => {
       .strict(true)
       .required('The filename is required')
   });
-  //if (status==='SUCCESS') {
-    
-  //};
+
   return (
     <Modal
       isOpen={isOpen}
