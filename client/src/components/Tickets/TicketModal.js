@@ -56,7 +56,9 @@ const Attachment = ({ attachments, ticketId }) => {
 Attachment.propTypes = {
   attachments: PropTypes.objectOf(PropTypes.any).isRequired,
   ticketId: PropTypes.string.isRequired
+
 };
+
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
     () => ({
@@ -201,7 +203,9 @@ const TicketHistoryCard = ({
             a => !a[1].toString().startsWith('untitled (')
           ))}
         >
+
           <Attachment attachments={attachments} ticketId={ticketId} />
+
         </CardBody>
       </Collapse>
     </Card>
