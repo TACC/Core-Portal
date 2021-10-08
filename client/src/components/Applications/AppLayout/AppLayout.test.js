@@ -32,8 +32,7 @@ describe('AppsLayout', () => {
       apps: {...appTrayExpectedFixture, loading: true, categoryDict: {}}
     });
     const { getByText,getByTestId} = renderComponent(<AppsRoutes/>, store);
-    
-     (expect(getByTestId('loading-spinner')).toBeDefined());
+    expect(getByTestId('loading-spinner')).toBeDefined();
   });
   it('Display the correct error message', () => {
     const store = mockStore({
