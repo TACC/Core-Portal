@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import configureStore from "redux-mock-store";
 import AppsRoutes from "./AppLayout";
 import { MemoryRouter, Route } from 'react-router-dom';
@@ -29,11 +29,10 @@ function renderAppsHeader(store, appId) {
 describe('AppsLayout', () => {
   it('should show a loading spinner while fetching data', () => {
     const store = mockStore({
-      apps: {...appTrayExpectedFixture, loading: true}
+      apps: {...appTrayExpectedFixture, loading: true, categoryDict: {}}
     });
     const { getByText,getByTestId} = renderComponent(<AppsRoutes/>, store);
     
-    if(categoryDict.isEmptyObject)
      (expect(getByTestId('loading-spinner')).toBeDefined());
   });
   it('Display the correct error message', () => {
