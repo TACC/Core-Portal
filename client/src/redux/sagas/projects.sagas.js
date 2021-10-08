@@ -162,6 +162,10 @@ export function* setTitleDescription(action) {
       type: 'PROJECTS_SET_TITLE_DESCRIPTION_SUCCESS',
       payload: metadata
     });
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'editproject', props: {} }
+    });
   } catch (error) {
     yield put({
       type: 'PROJECTS_SET_TITLE_DESCRIPTION_FAILED',

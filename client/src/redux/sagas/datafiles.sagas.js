@@ -317,7 +317,7 @@ export function* watchMove() {
   yield takeLeading('DATA_FILES_MOVE', moveFiles);
 }
 
-export function* moveFile(src, dest, index) {
+export function* moveFile(src, dest, index, keepModalOpen = false) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'RUNNING', key: index, operation: 'move' }
@@ -338,6 +338,7 @@ export function* moveFile(src, dest, index) {
       payload: { status: 'SUCCESS', key: index, operation: 'move' }
     });
   } catch (e) {
+    yield (keepModalOpen = true);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: index, operation: 'move' }
@@ -354,6 +355,12 @@ export function* moveFiles(action) {
     result: all(moveCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
+  if (moveCalls.every(moveCall => !moveCall.payload.args[-1])) {
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'move', props: {} }
+    });
+  }
 
   yield call(action.payload.reloadCallback);
 }
@@ -412,7 +419,7 @@ export function* watchCopy() {
   yield takeLeading('DATA_FILES_COPY', copyFiles);
 }
 
-export function* copyFile(src, dest, index) {
+export function* copyFile(src, dest, index, keepModalOpen = false) {
   const filetype = src.type === 'dir' ? 'dir' : 'file';
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
@@ -438,6 +445,7 @@ export function* copyFile(src, dest, index) {
       payload: { status: 'SUCCESS', key: index, operation: 'copy' }
     });
   } catch (e) {
+    yield (keepModalOpen = true);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: index, operation: 'copy' }
@@ -453,6 +461,12 @@ export function* copyFiles(action) {
     result: all(copyCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
+  if (copyCalls.every(copyCall => !copyCall.payload.args[-1])) {
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'copy', props: {} }
+    });
+  }
   yield call(action.payload.reloadCallback);
 }
 
@@ -746,10 +760,16 @@ export function* trashFiles(action) {
     result: all(trashCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
+  if (trashCalls.every(trashCall => !trashCall.payload.args[-1])) {
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'trash', props: {} }
+    });
+  }
   yield call(action.payload.reloadCallback);
 }
 
-export function* trashFile(system, path, id) {
+export function* trashFile(system, path, id, keepModalOpen = false) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
     payload: { status: 'RUNNING', key: id, operation: 'trash' }
@@ -762,6 +782,7 @@ export function* trashFile(system, path, id) {
       payload: { status: 'SUCCESS', key: id, operation: 'trash' }
     });
   } catch (e) {
+    yield (keepModalOpen = true);
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: id, operation: 'trash' }
@@ -853,6 +874,10 @@ export function* extractFiles(action) {
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' }
       });
+      yield put({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'extract', props: {} }
+      });
     } else {
       throw new Error('Unable to extract files');
     }
@@ -938,6 +963,10 @@ export function* compressFiles(action) {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'compress' }
+      });
+      yield put({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'compress', props: {} }
       });
     } else {
       throw new Error('Unable to compress files');
