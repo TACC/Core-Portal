@@ -110,6 +110,7 @@ const DataFilesDownloadMessageModal = () => {
       onOpened={onOpened}
       onClosed={onClosed}
       toggle={toggle}
+      size="md"
       className="dataFilesModal"
     >
       <ModalHeader toggle={toggle} charCode="&#xe912;">
@@ -132,7 +133,8 @@ const DataFilesDownloadMessageModal = () => {
             <Form>
               <ModalBody>
                 <SectionMessage type="warning">
-                  Folders must be compressed before downloading
+                  Folders and multiple files must be compressed before
+                  downloading.
                 </SectionMessage>
                 <FormField
                   label="Compressed File Name"
@@ -147,6 +149,7 @@ const DataFilesDownloadMessageModal = () => {
                         bsSize="sm"
                         onChange={handleSelectChange}
                         disabled={formDisabled}
+                        styleName="bg-color"
                       >
                         <option value=".zip">.zip</option>
                         <option value=".tar.gz">.tar.gz</option>
@@ -156,9 +159,9 @@ const DataFilesDownloadMessageModal = () => {
                 />
                 <p>
                   <em>
-                    A job to compress this folder will be submitted. The
-                    compressed file will appear in this directory for you to
-                    download.
+                    A job to compress the folder(s) and/or files will be
+                    submitted. The compressed file will appear in this directory
+                    for you to download.
                   </em>
                 </p>
               </ModalBody>
