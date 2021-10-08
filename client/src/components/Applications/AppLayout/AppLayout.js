@@ -25,7 +25,7 @@ const AppsLayout = () => {
   }
   return (
     <>
-      {loading ? (
+      {loading && !Object.keys(categoryDict).length ? (
         <LoadingSpinner />
       ) : (
         <>
