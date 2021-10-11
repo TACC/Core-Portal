@@ -12,6 +12,7 @@ import {
   select
 } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
+import truncateMiddle from '../../utils/truncateMiddle';
 
 /**
  * Utility function to replace instances of 2 or more slashes in a URL with
@@ -287,7 +288,10 @@ export function* renameFile(action) {
     yield put({
       type: 'ADD_TOAST',
       payload: {
-        message: `${file.name} renamed to ${action.payload.newName}`
+        message: `${file.name} renamed to ${truncateMiddle(
+          action.payload.newName,
+          20
+        )}`
       }
     });
   } catch (e) {
@@ -369,7 +373,7 @@ export function* moveFiles(action) {
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } moved to ${action.payload.dest.name}`
+        } moved to ${truncateMiddle(action.payload.dest.name, 20)}`
       }
     });
 
@@ -479,7 +483,7 @@ export function* copyFiles(action) {
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } copied to ${action.payload.dest.name}`
+        } copied to ${truncateMiddle(action.payload.dest.name, 20)}`
       }
     });
   yield call(action.payload.reloadCallback);
@@ -534,7 +538,7 @@ export function* uploadFiles(action) {
       payload: {
         message: `${
           result.length > 0 ? `${result.length} files` : 'File'
-        } uploaded to ${action.payload.path}`
+        } uploaded to ${truncateMiddle(action.payload.path, 20)}`
       }
     });
 
