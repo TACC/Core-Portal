@@ -1,13 +1,17 @@
-import React from "react"
+import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import DataFilesProjectsList from "./DataFilesProjectsList";
-import configureStore from "redux-mock-store";
+import configureStore from 'redux-mock-store';
+import DataFilesProjectsList from './DataFilesProjectsList';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
+import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 
 const mockStore = configureStore();
-const initialMockState = projectsFixture;
+const initialMockState = {
+  projects: projectsFixture,
+  systems: systemsFixture,
+};
 
 function renderProjectsListComponent(store) {
   return render(
@@ -21,12 +25,7 @@ function renderProjectsListComponent(store) {
 
 describe('DataProjectsList', () => {
   it('renders shared workspaces', () => {
-    const store = mockStore({
-      projects: {
-        ...initialMockState,
-      }
-    });
-
+    const store = mockStore(initialMockState);
     const { getByText } = renderProjectsListComponent(store);
     expect(getByText(/Test Project Title/)).toBeDefined();
   });

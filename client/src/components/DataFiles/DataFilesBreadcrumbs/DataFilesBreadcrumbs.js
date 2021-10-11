@@ -71,12 +71,52 @@ BreadcrumbLink.defaultProps = {
   isPublic: false
 };
 
+const RootProjectsLink = ({ api, section, operation, label }) => {
+  const dispatch = useDispatch();
+  if (section === 'modal') {
+    const onClick = e => {
+      e.stopPropagation();
+      e.preventDefault();
+      dispatch({
+        type: 'DATA_FILES_SET_MODAL_PROPS',
+        payload: {
+          operation,
+          props: { showProjects: true }
+        }
+      });
+    };
+    return (
+      <span>
+        <a
+          className="breadcrumb-link"
+          href={`/workbench/data/${api}/projects/`}
+          onClick={onClick}
+        >
+          {label}
+        </a>
+      </span>
+    );
+  }
+  return (
+    <Link className="breadcrumb-link" to={`/workbench/data/${api}/projects/`}>
+      {label}
+    </Link>
+  );
+};
+RootProjectsLink.propTypes = {
+  api: PropTypes.string.isRequired,
+  section: PropTypes.string.isRequired,
+  operation: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired
+};
+
 const DataFilesBreadcrumbs = ({
   api,
   scheme,
   system,
   path,
   section,
+  operation,
   isPublic,
   className
 }) => {
@@ -107,12 +147,12 @@ const DataFilesBreadcrumbs = ({
     <div className={`breadcrumbs ${className}`}>
       {scheme === 'projects' && (
         <>
-          <Link
-            className="breadcrumb-link"
-            to={`/workbench/data/${api}/${scheme}/`}
-          >
-            Shared Workspaces
-          </Link>{' '}
+          <RootProjectsLink
+            api={api}
+            section={section}
+            operation={operation}
+            label="Shared Workspaces"
+          />{' '}
           {system && `/ `}
         </>
       )}
@@ -158,13 +198,15 @@ DataFilesBreadcrumbs.propTypes = {
   system: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
+  operation: PropTypes.string,
   isPublic: PropTypes.bool,
   /** Additional className for the root element */
   className: PropTypes.string
 };
 DataFilesBreadcrumbs.defaultProps = {
   isPublic: false,
-  className: ''
+  className: '',
+  operation: 'select'
 };
 
 export default DataFilesBreadcrumbs;

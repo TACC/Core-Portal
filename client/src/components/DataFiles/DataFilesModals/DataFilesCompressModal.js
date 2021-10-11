@@ -128,7 +128,7 @@ const DataFilesCompressModal = () => {
                   disabled={formDisabled}
                   addonType="append"
                   addon={
-                    <InputGroupAddon addonType="append">
+                    <InputGroupAddon addonType="append" styleName="input-field">
                       <Input
                         type="select"
                         name="filetype"

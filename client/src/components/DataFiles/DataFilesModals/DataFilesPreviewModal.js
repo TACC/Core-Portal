@@ -31,7 +31,8 @@ const DataFilesPreviewModal = () => {
         scheme: params.scheme,
         system: params.system,
         path: params.path,
-        href: params.href
+        href: params.href,
+        length: params.length
       }
     });
   };
@@ -61,7 +62,9 @@ const DataFilesPreviewModal = () => {
       </ModalHeader>
       <ModalBody styleName="root">
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
-          <LoadingSpinner />
+          <div styleName="loading-style">
+            <LoadingSpinner />
+          </div>
         )}
         {previewUsingTextContent && (
           <div>

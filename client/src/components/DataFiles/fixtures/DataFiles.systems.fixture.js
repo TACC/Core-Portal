@@ -40,7 +40,8 @@ const systemsFixture = {
         name: 'Shared Workspaces',
         scheme: 'projects',
         api: 'tapis',
-        icon: null
+        icon: null,
+        hideSearchBar: false
       },
       {
         name: 'Google Drive',
