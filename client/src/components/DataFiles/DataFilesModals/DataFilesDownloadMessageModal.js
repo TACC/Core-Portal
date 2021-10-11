@@ -110,7 +110,7 @@ const DataFilesDownloadMessageModal = () => {
       onOpened={onOpened}
       onClosed={onClosed}
       toggle={toggle}
-      size="md"
+      size="lg"
       className="dataFilesModal"
     >
       <ModalHeader toggle={toggle} charCode="&#xe912;">
