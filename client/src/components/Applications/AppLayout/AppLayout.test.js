@@ -20,7 +20,7 @@ function renderAppsRoutes(store, appId) {
     <Provider store={store}>
       <MemoryRouter initialEntries={[`/applications/${appId}`]}>
         <Route path='/:appId?'>
-          <AppsRoutes categoryDict={appTrayExpectedFixture}/>
+          <AppsRoutes/>
         </Route>
       </MemoryRouter>
     </Provider>
