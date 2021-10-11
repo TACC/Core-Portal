@@ -15,7 +15,7 @@ import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 
-function renderAppsHeader(store, appId) {
+function renderAppsRoutes(store, appId) {
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[`/applications/${appId}`]}>
@@ -62,7 +62,7 @@ describe('AppsHeader', () => {
         modalProps: filesFixture.modalProps
       }
     });
-    let {getByText} = renderAppsHeader(store, 'arraytest-0.1');
+    let {getByText} = renderAppsRoutes(store, 'arraytest-0.1');
     expect(getByText(/Applications \/ Array Test/)).toBeDefined();
   });
 });
