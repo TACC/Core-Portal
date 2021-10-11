@@ -250,6 +250,5 @@ _WORKBENCH_SETTINGS = {
     "makePublic": False,
     "hideApps": False,
     "hideDataFiles": False,
-    "systemPrefix": _PORTAL_PROJECTS_SYSTEM_PREFIX,
     "onboardingCompleteRedirect": '/workbench/'
 }
