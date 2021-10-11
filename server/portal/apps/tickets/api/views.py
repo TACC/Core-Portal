@@ -57,6 +57,12 @@ class TicketsView(BaseApiView):
         """Post a new ticket
 
         """
+        response=grecaptcha_verify(request)
+        if response == True :
+            return greatsuccess(request)
+        else:
+            greatfail(request)
+
         rt = rtUtil.DjangoRt()
 
         data = request.POST.copy()
@@ -92,11 +98,6 @@ class TicketsView(BaseApiView):
                                      requestor=email,
                                      cc=cc,
                                      attachments=attachments)
-        response=grecaptcha_verify(request)
-        if response == True :
-            return greatsuccess(request)
-        else:
-            greatfail(request)
 
         return JsonResponse({'ticket_id': ticket_id})
 
