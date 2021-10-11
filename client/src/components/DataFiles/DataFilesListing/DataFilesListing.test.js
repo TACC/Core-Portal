@@ -47,7 +47,6 @@ const initialMockState = {
     }
   },
   systems: systemsFixture,
-  workbench: { config: { systemPrefix: 'cep.local.project' } }
 };
 
 describe('CheckBoxCell', () => {
@@ -87,6 +86,7 @@ describe('FileNavCell', () => {
         api="tapis"
         scheme="private"
         href="href"
+        length={1234}
       />,
       store,
       history
@@ -111,6 +111,7 @@ describe('FileNavCell', () => {
         api="tapis"
         scheme="private"
         href="href"
+        length={1234}
       />,
       store,
       history
@@ -192,7 +193,7 @@ describe('DataFilesListing', () => {
     ],
     [
       '502',
-      /There was a problem accessing this file system. If this is your/, 
+      /There was a problem accessing this file system. If this is your/,
       'private'
     ],
     [
