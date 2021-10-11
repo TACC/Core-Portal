@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider, useSelector } from 'react-redux';
 import configureStore from "redux-mock-store";
-import AppsRoutes from "./AppLayout";
+import AppsRoutes,{AppsLayout} from "./AppLayout";
 import { MemoryRouter, Route } from 'react-router-dom';
 import systemsFixture from '../../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../../redux/sagas/fixtures/projects.fixture';
@@ -31,14 +31,14 @@ describe('AppsLayout', () => {
     const store = mockStore({
       apps: {...appTrayExpectedFixture, loading: true, categoryDict: {}}
     });
-    const { getByText,getByTestId} = renderComponent(<AppsRoutes/>, store);
+    const { getByText,getByTestId} = renderComponent(<AppsLayout/>, store);
     expect(getByTestId('loading-spinner')).toBeDefined();
   });
   it('Display the correct error message', () => {
     const store = mockStore({
       apps: {...appTrayExpectedFixture, error: {isError:true}}
     });
-    const { getByText} = renderComponent(<AppsRoutes/>, store);
+    const { getByText} = renderComponent(<AppsLayout/>, store);
     expect(getByText('Something went wrong.')).toBeDefined();
   });
 });
@@ -62,7 +62,6 @@ describe('AppsHeader', () => {
         modalProps: filesFixture.modalProps
       }
     });
-
     let {getByText} = renderAppsHeader(store, 'arraytest-0.1');
     expect(getByText(/Applications \/ Array Test/)).toBeDefined();
   });
