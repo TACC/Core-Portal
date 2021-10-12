@@ -14,7 +14,8 @@ const files = {
       system: 'test.site.project.PROJECT-3',
       path: 'something/test.txt',
       href: 'href',
-      name: 'test.txt'
+      name: 'test.txt',
+      length: 1234
     }
   }
 };
@@ -65,5 +66,6 @@ describe('Data Files Preview Modal', () => {
     expect(getByText(/File Preview:/)).toBeDefined();
     expect(getByText(/test\.txt/)).toBeDefined();
     expect(getByText('Unable to show preview.')).toBeDefined();
+    expect(getByText(/Preview File/)).toBeDefined();
   });
 });
