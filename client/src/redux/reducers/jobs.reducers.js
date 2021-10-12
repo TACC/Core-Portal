@@ -39,6 +39,13 @@ export function jobs(state = initialState, action) {
         list: state.list.concat(action.payload.list),
         reachedEnd: action.payload.reachedEnd
       };
+    case 'JOBS_LIST_UPDATE_JOB':
+      return {
+        ...state,
+        list: state.list.map(job =>
+          job.id === action.payload.job.id ? action.payload.job : job
+        )
+      };
     case 'JOBS_LIST_ERROR':
       return {
         ...state,
