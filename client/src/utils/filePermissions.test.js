@@ -35,8 +35,10 @@ describe('getFilePermissions utility function', () => {
     'copy',
     'trash',
     'compress',
+    'areMultipleFilesOrFolderSelected'
   ])('Correctly evaluate %s permission', (pem) => {
-    if (pem !== 'compress') {
+    // if (pem !== 'compress') {
+    if (!['compress', 'areMultipleFilesOrFolderSelected'].includes(pem)) {
       expect(getFilePermissions(pem, privateFixture)).toEqual(true);
     } else {
       expect(getFilePermissions(pem, privateFixture)).toEqual(false);
