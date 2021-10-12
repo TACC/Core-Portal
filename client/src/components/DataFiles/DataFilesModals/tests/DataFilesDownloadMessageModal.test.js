@@ -1,15 +1,12 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
+import DataFilesDownloadMessageModalFixture from './DataFilesDownloadMessageModal.fixture';
 import DataFilesDownloadMessageModal from '../DataFilesDownloadMessageModal';
 
 const mockStore = configureStore();
 const initialMockState = {
-  files: {
-    modals: {
-      downloadMessage: true
-    }
-  }
+  files: DataFilesDownloadMessageModalFixture
 };
 
 describe('DataFilesDownloadMessageModal', () => {
