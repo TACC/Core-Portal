@@ -390,6 +390,18 @@ class BaseSystem(BaseAgaveResource):
         self.available = True
         return self
 
+    def disable(self):
+        """Disables a system
+        """
+
+        clone_body = {
+            'action': 'DISABLE'
+        }
+
+        self._ac.systems.manage(body=clone_body, systemId=self.id)
+        self.available = False
+        return self
+
     def __str__(self):
         """String -> self.id: self.type"""
         return '{sys_id}: {sys_type}'.format(
