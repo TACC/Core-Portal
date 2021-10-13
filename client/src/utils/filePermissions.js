@@ -33,10 +33,9 @@ export default function getFilePermissions(name, { files, scheme, api }) {
         files[0].format !== 'folder' &&
         api !== 'googledrive'
       );
-    case 'isFolderSelected':
+    case 'areMultipleFilesOrFolderSelected':
       return (
-        files.length > 0 &&
-        files.some(file => file.format === 'folder') &&
+        (files.length > 1 || files.some(file => file.format === 'folder')) &&
         api !== 'googledrive'
       );
     case 'extract':
