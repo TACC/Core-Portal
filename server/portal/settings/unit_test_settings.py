@@ -400,7 +400,7 @@ SUPPORTED_IMAGE_PREVIEW_EXTS = [
 SUPPORTED_TEXT_PREVIEW_EXTS = [
     '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp',
     '.cs', '.css', '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml',
-    '.hh', '.htm', '.html', '.java', '.js', '.less', '.m', '.make', '.md',
+    '.hh', '.java', '.js', '.less', '.m', '.make', '.md',
     '.ml', '.mm', '.msg', '.php', '.pl', '.properties', '.py', '.rb',
     '.sass', '.scala', '.script', '.sh', '.sml', '.sql', '.txt', '.vi',
     '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl', '.json',
@@ -413,6 +413,10 @@ SUPPORTED_OBJECT_PREVIEW_EXTS = [
 
 SUPPORTED_IPYNB_PREVIEW_EXTS = [
     '.ipynb'
+]
+
+SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
+    '.htm', '.html'
 ]
 
 SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
