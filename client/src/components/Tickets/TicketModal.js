@@ -45,7 +45,7 @@ const Attachments = ({ attachments }) => (
   </div>
 );
 Attachments.propTypes = {
-  attachments: PropTypes.string.isRequired
+  attachments: PropTypes.object.isRequired
 };
 
 function TicketHistoryReply({ ticketId }) {
@@ -162,7 +162,7 @@ const TicketHistoryCard = ({
   const ticketHeaderClassName = ticketCreator
     ? 'ticket-creator'
     : 'ticket-responder';
-  const filteredattachment = (attachments || []).filter(
+  const attachmentTitles = (attachments || []).filter(
     a => !a[1].toString().startsWith('untitled (')
   );
   /* eslint-disable no-param-reassign */
@@ -189,7 +189,7 @@ const TicketHistoryCard = ({
       <Collapse isOpen={isOpen}>
         <CardBody>{content}</CardBody>
         <CardBody>
-          <Attachments attachments={filteredattachment} />
+          <Attachments attachments={attachmentTitles} />
         </CardBody>
       </Collapse>
     </Card>
@@ -202,7 +202,7 @@ TicketHistoryCard.propTypes = {
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
-  attachments: PropTypes.string.isRequired
+  attachments: PropTypes.object.isRequired
 };
 
 const TicketHistory = () => {
