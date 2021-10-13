@@ -165,7 +165,6 @@ const TicketHistoryCard = ({
   const attachmentTitles = (attachments || []).filter(
     a => !a[1].toString().startsWith('untitled (')
   );
-  /* eslint-disable no-param-reassign */
   return (
     <Card className="mt-1">
       <CardHeader
