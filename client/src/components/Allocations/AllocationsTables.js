@@ -26,7 +26,7 @@ export const useAllocations = page => {
         sortType: 'alphanumeric'
       },
       {
-        Header: 'Principal Investigator',
+        Header: 'PI',
         accessor: 'pi'
       },
       {
