@@ -56,7 +56,9 @@ const Attachment = ({ attachments, ticketId }) => {
 Attachment.propTypes = {
   attachments: PropTypes.objectOf(PropTypes.any).isRequired,
   ticketId: PropTypes.string.isRequired
+
 };
+
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
     () => ({
