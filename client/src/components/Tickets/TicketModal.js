@@ -45,7 +45,7 @@ const Attachments = ({ attachments }) => (
   </div>
 );
 Attachments.propTypes = {
-  attachments: PropTypes.object.isRequired
+  attachments: PropTypes.objectOf(PropTypes.any).isRequired
 };
 
 function TicketHistoryReply({ ticketId }) {
@@ -202,7 +202,7 @@ TicketHistoryCard.propTypes = {
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
-  attachments: PropTypes.object.isRequired
+  attachments: PropTypes.objectOf(PropTypes.any).isRequired
 };
 
 const TicketHistory = () => {
