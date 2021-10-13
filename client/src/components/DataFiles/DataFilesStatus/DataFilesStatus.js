@@ -52,7 +52,7 @@ const OPERATION_MAP = {
         let op = mappedOp;
         let dest;
 
-        if (srcSystem !== destSystem && mappedOp === 'copied') {
+        if (srcSystem !== destSystem) {
           op = 'started copying';
         }
 
