@@ -172,6 +172,9 @@ const TicketHistoryCard = ({
   const ticketHeaderClassName = ticketCreator
     ? 'ticket-creator'
     : 'ticket-responder';
+  const attachmentTitles = (attachments || []).filter(
+    a => !a[1].toString().startsWith('untitled (')
+  );
   /* eslint-disable no-param-reassign */
   return (
     <Card className="mt-1">
@@ -195,13 +198,8 @@ const TicketHistoryCard = ({
       </CardHeader>
       <Collapse isOpen={isOpen}>
         <CardBody>{content}</CardBody>
-        <CardBody
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...(attachments = (attachments || []).filter(
-            a => !a[1].toString().startsWith('untitled (')
-          ))}
-        >
-          <Attachment attachments={attachments} ticketId={ticketId} />
+        <CardBody>
+          <Attachment attachments={attachmentTitles} ticketId={ticketId} />
         </CardBody>
       </Collapse>
     </Card>
