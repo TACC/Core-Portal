@@ -34,16 +34,20 @@ const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
 
-const Attachments = ({ attachments }) => (
-  <div>
-    Attachments:
-    <ul>
-      {attachments.map(attachmentName => (
-        <li> {attachmentName} </li>
-      ))}
-    </ul>
-  </div>
-);
+const Attachments = ({ attachments }) => {
+  if (!attachments.length) return null;
+  return (
+    <div>
+      Attachments:
+      <ul>
+        {attachments.map(attachmentName => (
+          <li> {attachmentName} </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
 Attachments.propTypes = {
   attachments: PropTypes.arrayOf(PropTypes.object).isRequired
 };
