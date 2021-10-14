@@ -12,6 +12,7 @@ from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from django.contrib import messages
 import requests
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -41,26 +42,18 @@ class TicketsView(BaseApiView):
         """Post a new ticket
 
         """
-       
-        
 
-        rt = rtUtil.DjangoRt()
-
+        rt = rtUtil.DjangoRt()        
+        recaptcha_response = request.POST.get('recaptchaResponse')
+        print(recaptcha_response)
+        data = {
+        'secret' : "6LcJa68cAAAAAI5buG-nJS-kQhJN-_n9spbo3Tzd",
+        'response' :  recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        print(result)
         data = request.POST.copy()
-        captcha_rs = data.get('g-recaptcha-response')
-        url = "https://www.google.com/recaptcha/api/siteverify"
-        headers = {'User-Agent': 'DebuguearApi-Browser', }
-        params = {'secret': '6LcJa68cAAAAAI5buG-nJS-kQhJN-_n9spbo3Tzd', 'response': captcha_rs}
-        verify_rs = requests.post(url, params, headers=headers)
-        verify_rs = verify_rs.json()
-        print(verify_rs,"verify_rs")
-        response = verify_rs.get("success", False)
-        print(response, "response")
-        if response:
-            print(  "valid!")
-        else:
-            print("Invalid Captcha!")
-        verify_rs={}
         email = request.user.email if request.user.is_authenticated else data.get('email')
         subject = data.get('subject')
         problem_description = data.get('problem_description')

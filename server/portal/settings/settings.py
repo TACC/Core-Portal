@@ -727,3 +727,4 @@ if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
 SETTINGS: reCAPTCHA
 """
 
+reCAPTCHA_SECRET_KEY = settings_secret._reCAPTCHA_SECRET_KEY
