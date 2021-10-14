@@ -108,6 +108,11 @@ function TicketCreateForm({
 
   const isAuthenticated = authenticatedUser != null;
   const recaptchaRef = React.createRef();
+  /* const resetRecaptcha = () => {
+    recaptchaInstance.reset();
+  };*/
+
+  const [recaptchaResponse, setRecaptchaResponse] = React.useState('');
   return (
     <Formik
       enableReinitialize
@@ -126,9 +131,11 @@ function TicketCreateForm({
           payload: {
             formData,
             resetSubmittedForm: resetForm,
-            refreshTickets: isAuthenticated
+            refreshTickets: isAuthenticated,
+            recaptchaResponse: recaptchaResponse
           }
-        });
+        })
+        console.log(recaptchaResponse);
       }}
     >
       {({ isSubmitting, isValid }) => {
@@ -209,8 +216,9 @@ function TicketCreateForm({
                 )}
                 <ReCAPTCHA
                   ref={recaptchaRef}
+                  value={recaptchaResponse}
                   sitekey="6LcJa68cAAAAAB7_1ZgWxkDX4-mg9aQ0_M4DLbOk"
-                  onChange={(e) => console.log(e)}
+                  onChange={e =>  setRecaptchaResponse(e)}
                   className="g-recaptcha"
                 />
                 <Button

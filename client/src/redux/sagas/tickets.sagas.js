@@ -155,6 +155,10 @@ export function* watchPostTicketReply() {
 export function* postTicketCreate(action) {
   yield put({ type: 'TICKET_CREATE_STARTED' });
   try {
+    yield put({
+      type: 'recaptchaResponse',
+      payload: json.recaptchaResponse
+    });
     const res = yield call(fetch, `/api/tickets/`, {
       method: 'POST',
       headers: {
@@ -176,7 +180,6 @@ export function* postTicketCreate(action) {
       });
 
       action.payload.resetSubmittedForm();
-
       if (action.payload.refreshTickets) {
         yield put({ type: 'TICKET_LIST_FETCH' });
       }
