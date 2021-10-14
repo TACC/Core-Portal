@@ -35,7 +35,6 @@ const formSchema = Yup.object().shape({
 });
 
 const Attachments = ({ attachments }) => {
-  if (!attachments.length) return null;
   return (
     <div>
       Attachments:
@@ -192,7 +191,11 @@ const TicketHistoryCard = ({
       <Collapse isOpen={isOpen}>
         <CardBody>{content}</CardBody>
         <CardBody>
-          <Attachments attachments={attachmentTitles} />
+          {attachmentTitles.length ? (
+            <Attachments attachments={attachmentTitles} />
+          ) : (
+            <></>
+          )}
         </CardBody>
       </Collapse>
     </Card>
