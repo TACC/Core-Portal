@@ -135,7 +135,6 @@ function TicketCreateForm({
             recaptchaResponse: recaptchaResponse
           }
         })
-        console.log(recaptchaResponse);
       }}
     >
       {({ isSubmitting, isValid }) => {

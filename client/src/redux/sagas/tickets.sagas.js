@@ -155,17 +155,14 @@ export function* watchPostTicketReply() {
 export function* postTicketCreate(action) {
   yield put({ type: 'TICKET_CREATE_STARTED' });
   try {
-    yield put({
-      type: 'recaptchaResponse',
-      payload: json.recaptchaResponse
-    });
+    console.log(action.payload.recaptchaResponse)
     const res = yield call(fetch, `/api/tickets/`, {
       method: 'POST',
       headers: {
         'X-CSRFToken': Cookies.get('csrftoken')
       },
       credentials: 'same-origin',
-      body: action.payload.formData
+      body: action.payload.formData,
     });
     const json = yield res.json();
     if (!res.ok) {
