@@ -200,7 +200,7 @@ TicketHistoryCard.propTypes = {
   created: PropTypes.instanceOf(Date).isRequired,
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
-  content: PropTypes.string.isRequired,
+  content: PropTypes.string.isRequired
 };
 
 const TicketHistory = () => {
