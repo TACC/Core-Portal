@@ -1,0 +1,27 @@
+.request-access-form {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  padding-top: 1.1rem;
+  padding-bottom: 1.5rem;
+}
+
+.request-access-text-area {
+  min-height: 5em;
+}
+
+.request-access-button-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: right;
+}
+
+.button-primary {
+  margin-left: auto;
+  background-color: #7754e8 !important;
+  border-radius: 0;
+  color: white;
+  border: none;
+  font-size: 0.75rem;
+}
