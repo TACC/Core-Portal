@@ -150,6 +150,7 @@ const DataFilesCopyModal = React.memo(() => {
               scheme={params.scheme}
               system={params.system}
               path={params.path || '/'}
+              operation="copy"
               section=""
             />
             <div className="filesListing">
@@ -176,6 +177,7 @@ const DataFilesCopyModal = React.memo(() => {
                 scheme={modalParams.scheme}
                 system={modalParams.system}
                 path={modalParams.path || '/'}
+                operation="copy"
                 section="modal"
               />
             )}

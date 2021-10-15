@@ -472,6 +472,8 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
     result = client.postits.create(body=args)
     url = result['_links']['self']['href']
     txt = None
+    error = None
+    file_type = None
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
@@ -486,6 +488,8 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
         file_type = 'ipynb'
         tmp = url.replace('https://', '')
         url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
+    elif file_ext in settings.SUPPORTED_NEW_WINDOW_PREVIEW_EXTS:
+        error = "This file type must be previewed in a new window."
     else:
         file_type = 'other'
 
@@ -493,13 +497,12 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
         if get_file_size(client, system, path) < 5000000:
             try:
                 txt = text_preview(url)
-                return {'href': url, 'fileType': file_type, 'content': txt, 'error': None}
             except ValueError:
                 # unable to get text content
-                pass
-        return {'href': url, 'fileType': file_type, 'content': txt, 'error': "Unable to show preview"}
-    else:
-        return {'href': url, 'fileType': file_type }
+                error = "Unable to show preview."
+        else:
+            error = "File too large to preview in this window."
+    return {'href': url, 'fileType': file_type, 'content': txt, 'error': error }
 
 
 def download_bytes(client, system, path):
