@@ -108,10 +108,6 @@ function TicketCreateForm({
 
   const isAuthenticated = authenticatedUser != null;
   const recaptchaRef = React.createRef();
-  /* const resetRecaptcha = () => {
-    recaptchaInstance.reset();
-  };*/
-
   const [recaptchaResponse, setRecaptchaResponse] = React.useState('');
   return (
     <Formik
@@ -126,13 +122,15 @@ function TicketCreateForm({
             formData.append('attachments', attach)
           );
         }
+        if (recaptchaResponse) {
+          formData.append('recaptchaResponse',recaptchaResponse)
+        }
         dispatch({
           type: 'TICKET_CREATE',
           payload: {
             formData,
             resetSubmittedForm: resetForm,
-            refreshTickets: isAuthenticated,
-            recaptchaResponse: recaptchaResponse
+            refreshTickets: isAuthenticated
           }
         })
       }}
@@ -195,6 +193,13 @@ function TicketCreateForm({
                       />
                     </Col>
                   </Row>
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  value={recaptchaResponse}
+                  sitekey="6LcJa68cAAAAAB7_1ZgWxkDX4-mg9aQ0_M4DLbOk"
+                  onChange={e =>  setRecaptchaResponse(e)}
+                  className="g-recaptcha"
+                />
                 </Container>
               </FormGroup>
             </ModalBody>
@@ -213,13 +218,6 @@ function TicketCreateForm({
                     Ticket creating error: {creatingErrorMessage}
                   </Alert>
                 )}
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  value={recaptchaResponse}
-                  sitekey="6LcJa68cAAAAAB7_1ZgWxkDX4-mg9aQ0_M4DLbOk"
-                  onChange={e =>  setRecaptchaResponse(e)}
-                  className="g-recaptcha"
-                />
                 <Button
                   type="submit"
                   color="primary"

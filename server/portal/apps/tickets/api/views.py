@@ -44,15 +44,7 @@ class TicketsView(BaseApiView):
         """
 
         rt = rtUtil.DjangoRt()        
-        recaptcha_response = request.POST.get('recaptchaResponse')
-        print(recaptcha_response)
-        data = {
-        'secret' : "6LcJa68cAAAAAI5buG-nJS-kQhJN-_n9spbo3Tzd",
-        'response' :  recaptcha_response
-        }
-        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-        result = r.json()
-        print(result)
+        
         data = request.POST.copy()
         email = request.user.email if request.user.is_authenticated else data.get('email')
         subject = data.get('subject')
@@ -80,14 +72,24 @@ class TicketsView(BaseApiView):
             metadata += "user_last_name:\n{}\n\n".format(data.get('last_name'))
 
         problem_description += "\n\n" + metadata
-
-        ticket_id = rt.create_ticket(subject=subject,
-                                     problem_description=problem_description,
-                                     requestor=email,
-                                     cc=cc,
-                                     attachments=attachments)
-
-        return JsonResponse({'ticket_id': ticket_id})
+        recaptcha_response = request.POST.get('recaptchaResponse')
+        print(recaptcha_response)
+        data = {
+        'secret' : "6LcJa68cAAAAAI5buG-nJS-kQhJN-_n9spbo3Tzd",
+        'response' :  recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        print(result)
+        if result['success']:
+            ticket_id = rt.create_ticket(subject=subject,
+                                         problem_description=problem_description,
+                                         requestor=email,
+                                         cc=cc,
+                                         attachments=attachments)
+            return JsonResponse({'ticket_id': ticket_id})
+        else:
+            raise ApiException( 'Invalid reCAPTCHA. Please try again.')
 
 
 def has_access_to_ticket(function):
