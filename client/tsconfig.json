@@ -4,6 +4,7 @@
     "target": "ESNext",
     "paths": {
       "_common/*": ["components/_common/*"],
+      "_common": ["components/_common"],
       "utils/*": ["utils/*"]
     },
     "useDefineForClassFields": true,
