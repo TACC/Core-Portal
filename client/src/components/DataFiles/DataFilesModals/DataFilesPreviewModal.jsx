@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { LoadingSpinner, Message } from '_common';
+import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
+import { LoadingSpinner, SectionMessage } from '_common';
 import styles from './DataFilesPreviewModal.module.scss';
 
 const DataFilesPreviewModal = () => {
@@ -85,9 +85,15 @@ const DataFilesPreviewModal = () => {
           </div>
         )}
         {hasError && (
-          <Message type="warning" className={styles.error}>
-            {error}
-          </Message>
+          <div className={styles.error}>
+            <SectionMessage type="warning" className={styles['error-message']}>
+              {error}
+            </SectionMessage>
+            <Button className={styles.button} href={href} target="_blank">
+              <i className="icon-exit" />
+              <span className="toolbar-button-text">Preview File</span>
+            </Button>
+          </div>
         )}
       </ModalBody>
     </Modal>
