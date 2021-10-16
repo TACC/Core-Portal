@@ -1,6 +1,6 @@
 from portal.libs.agave.utils import service_account
 from django.conf import settings
-
+from requests.exceptions import ConnectTimeout
 from portal.libs.agave.models.systems.storage import StorageSystem
 
 
@@ -31,4 +31,9 @@ def test_system_failure_with_json_response(requests_mock):
     assert result == json_response
 
 
-
+def test_system_failure_connection_timeout(requests_mock):
+    requests_mock.get(SYSTEM_LISTING_URL, exc=ConnectTimeout)
+    storage = StorageSystem(service_account(), id="systemId", load=False)
+    success, result = storage.test()
+    assert not success
+    assert result == 'FAIL'
