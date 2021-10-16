@@ -354,12 +354,12 @@ class BaseSystem(BaseAgaveResource):
         )
 
     def test(self):
-        """Test system
+        """Test storage system system
 
-        .. todo::
-            As of 05/2018 this only tests storage systems
-            by doing a `files-listing` on it.
-            What is a good way to test exec systems?
+        Test is a file listing of the system. If a system is missing, TAPIS *should* return
+        a 404.  Note though, that TAPIS sometimes returns an error that isn't a 404.
+
+        Execution systems are not supported.
         """
         success = True
         result = 'SUCCESS'
