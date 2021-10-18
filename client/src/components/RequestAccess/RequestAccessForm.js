@@ -31,7 +31,7 @@ const RequestAccessForm = () => {
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach(key => formData.append(key, values[key]));
-        formData.append('subject', `Feedback for ${portalName}`);
+        formData.append('subject', `Access request for ${portalName}`);
         dispatch({
           type: 'TICKET_CREATE',
           payload: {
@@ -47,7 +47,7 @@ const RequestAccessForm = () => {
           <Form styleName="request-access-form">
             <FormGroup>
               <FormField
-                name="userName"
+                name="username"
                 label="TACC Username"
                 disabled={isSubmitting}
                 required
