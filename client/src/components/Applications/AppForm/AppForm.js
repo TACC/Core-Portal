@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, FormGroup } from 'reactstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Formik, Form } from 'formik';
@@ -154,13 +154,18 @@ AppInfo.propTypes = {
 
 export const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch({ type: 'GET_SYSTEM_MONITOR' });
+  }, [dispatch]);
   const {
     allocations,
     portalAlloc,
     jobSubmission,
     hasDefaultAllocation,
     defaultStorageHost,
-    hasStorageSystems
+    hasStorageSystems,
+    downSystems,
+    execSystem
   } = useSelector(state => {
     const matchingExecutionHost = Object.keys(state.allocations.hosts).find(
       host =>
@@ -185,10 +190,15 @@ export const AppSchemaForm = ({ app }) => {
         state.allocations.hosts[defaultHost] ||
         hasCorral,
       defaultStorageHost: defaultHost,
-      hasStorageSystems: configuration.length
+      hasStorageSystems: configuration.length,
+      downSystems: state.systemMonitor
+        ? state.systemMonitor.list
+            .filter(currSystem => !currSystem.is_operational)
+            .map(downSys => downSys.hostname.split('.')[0])
+        : [],
+      execSystem: state.app ? state.app.exec_sys.id.split('.').slice(-1)[0] : ''
     };
   }, shallowEqual);
-
   const { systemHasKeys, pushKeysSystem } = app;
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = e => {
@@ -258,7 +268,6 @@ export const AppSchemaForm = ({ app }) => {
   } else {
     initialValues.allocation = app.exec_sys.scheduler;
   }
-
   return (
     <div id="appForm-wrapper">
       {/* The !! is needed because the second value of this shorthand 
@@ -298,6 +307,17 @@ export const AppSchemaForm = ({ app }) => {
               Manage Account
             </Link>
             , then return to this form.
+          </SectionMessage>
+        </div>
+      )}
+      {downSystems.includes(execSystem) && (
+        <div className="appDetail-error">
+          <SectionMessage type="warning">
+            System down for maintenance. Check System Status in the&nbsp;
+            <Link to="/workbench/dashboard" className="wb-link">
+              Dashboard
+            </Link>
+            &nbsp;for updates.
           </SectionMessage>
         </div>
       )}
