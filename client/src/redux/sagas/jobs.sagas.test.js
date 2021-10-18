@@ -53,6 +53,12 @@ describe('getJobDetails Saga', () => {
           job: jobDetailFixture
         }
       })
+      .put({
+        type: 'JOBS_LIST_UPDATE_JOB',
+        payload: {
+          job: jobDetailFixture
+        }
+      })
 
       .hasFinalState({
         ...initialJobDetail,
