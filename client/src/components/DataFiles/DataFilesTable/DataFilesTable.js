@@ -33,12 +33,13 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
-  const sysMon = useSelector(state => state.systemMonitor);
-  const downSysList = sysMon
-    ? sysMon.list
-        .filter(currSystem => !currSystem.is_operational)
-        .map(downSys => downSys.hostname.split('.')[0])
-    : [];
+  const downSysList = useSelector(state =>
+    state.systemMonitor
+      ? state.systemMonitor.list
+          .filter(currSystem => !currSystem.is_operational)
+          .map(downSys => downSys.hostname.split('.')[0])
+      : []
+  );
   const pushKeys = e => {
     e.preventDefault();
     const props = {
