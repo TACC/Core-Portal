@@ -124,13 +124,15 @@ export async function fetchFilesUtil(
   offset = 0,
   limit = 100,
   queryString = '',
+  filter = undefined,
   nextPageToken = null
 ) {
-  const operation = queryString ? 'search' : 'listing';
+  const operation = queryString || filter ? 'search' : 'listing';
   const q = stringify({
     limit,
     offset,
     query_string: queryString,
+    filter,
     nextPageToken
   });
   const url = removeDuplicateSlashes(
@@ -172,7 +174,8 @@ export function* fetchFiles(action) {
       action.payload.path || '',
       action.payload.offset,
       action.payload.limit,
-      action.payload.queryString
+      action.payload.queryString,
+      action.payload.filter
     );
     yield put({
       type: 'FETCH_FILES_SUCCESS',
@@ -224,6 +227,7 @@ export function* scrollFiles(action) {
       action.payload.offset,
       action.payload.limit,
       action.payload.queryString,
+      action.payload.filter,
       action.payload.nextPageToken
     );
     yield put({

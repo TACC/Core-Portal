@@ -35,9 +35,9 @@ def cms_search(query_string, offset=0, limit=10):
     return total, results
 
 
-def files_search(query_string, system, offset=0, limit=10):
-    res = search_operation(None, system, '/', offset=offset,
-                           limit=limit, query_string=query_string)
+def files_search(query_string, system, filter=None, offset=0, limit=10):
+    res = search_operation(None, system, '/', offset=offset, limit=limit,
+                           query_string=query_string, filter=filter)
     return (res['count'], res['listing'])
 
 
@@ -45,6 +45,7 @@ class SiteSearchApiView(BaseApiView):
 
     def get(self, request, *args, **kwargs):
         qs = request.GET.get('query_string', '')
+        filter = request.GET.get('filter', None)
         page = request.GET.get('page', 1)
         limit = 10
         offset = (int(page) - 1) * limit
@@ -61,7 +62,8 @@ class SiteSearchApiView(BaseApiView):
                                in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
                                if conf['scheme'] == 'public')
             (public_total, public_results) = \
-                files_search(qs, public_conf['system'], offset, limit)
+                files_search(qs, public_conf['system'], filter=filter,
+                             offset=offset, limit=limit)
             response['public'] = {'count': public_total,
                                   'listing': public_results,
                                   'type': 'file',
