@@ -728,3 +728,4 @@ SETTINGS: reCAPTCHA
 """
 
 reCAPTCHA_SECRET_KEY = settings_secret._reCAPTCHA_SECRET_KEY
+reCAPTCHA_SITE_KEY = settings_secret._reCAPTCHA_SITE_KEY

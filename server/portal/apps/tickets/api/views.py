@@ -11,8 +11,11 @@ from portal.apps.tickets import rtUtil
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from django.contrib import messages
-import requests
+from django.conf import settings
 import json
+from django.shortcuts import render
+from django.http import HttpResponse
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +84,7 @@ class TicketsView(BaseApiView):
         r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = r.json()
         print(result)
+        siteKey = getattr(settings, 'reCAPTCHA_SITE_KEY')
         if result['success']:
             ticket_id = rt.create_ticket(subject=subject,
                                          problem_description=problem_description,
@@ -196,3 +200,12 @@ class TicketsHistoryView(BaseApiView):
         rt = rtUtil.DjangoRt()
         ticket_history = self._get_ticket_history(rt, request.user.username, ticket_id)
         return JsonResponse({'ticket_history': ticket_history})
+class SiteKeyView(BaseApiView):
+    def get(self, request,settings):
+        """Get ticket history
+        """
+
+        site_key = settings.reCAPTCHA_SITE_KEY
+        siteKey =JsonResponse({'sitekey':site_key})
+        return HttpResponse(siteKey)
+
