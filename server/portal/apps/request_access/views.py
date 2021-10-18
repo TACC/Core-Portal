@@ -18,7 +18,7 @@ class IndexView(TemplateView):
     """
     Main workbench view.
     """
-    template_name = 'workbench/dashboard'
+    template_name = 'portal/apps/workbench/index.html'
 
     def dispatch(self, request, *args, **kwargs):
         return super(IndexView, self).dispatch(request, *args, **kwargs)

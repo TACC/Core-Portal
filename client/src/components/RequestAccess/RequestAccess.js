@@ -85,7 +85,6 @@ function RequestAccess() {
           <a
             styleName="request-access-link"
             href="/tickets/new/"
-            target="_blank"
           >
             here
           </a>

@@ -1,4 +1,4 @@
-import { put, call } from 'redux-saga/effects';
+import { put, call, takeLatest } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 import 'cross-fetch';
 
@@ -36,5 +36,5 @@ export function* postRequestAccess(action) {
 }
 
 export function* watchPostRequestAccessCreate() {
-  yield takeLatest('REQUEST_ACCESS_CREATE', postTicketCreate);
+  yield takeLatest('REQUEST_ACCESS_CREATE', postRequestAccess);
 }
