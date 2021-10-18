@@ -359,7 +359,7 @@ class BaseSystem(BaseAgaveResource):
         Test is a file listing of the system. If a system is missing, TAPIS *should* return
         a 404.  Note though, that TAPIS sometimes returns an error that isn't a 404.
 
-        Execution systems are not supported.
+        Execution systems are supported if the system uses the same storage block as the login block.
         """
         success = True
         result = 'SUCCESS'
