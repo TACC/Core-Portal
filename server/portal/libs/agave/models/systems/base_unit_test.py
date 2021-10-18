@@ -2,6 +2,7 @@ from portal.libs.agave.utils import service_account
 from django.conf import settings
 from requests.exceptions import ConnectTimeout
 from portal.libs.agave.models.systems.storage import StorageSystem
+import pytest
 
 
 def test_system_success(mock_agave_client):
@@ -31,9 +32,14 @@ def test_system_failure_with_json_response(requests_mock):
     assert result == json_response
 
 
-def test_system_failure_connection_timeout(requests_mock):
-    requests_mock.get(SYSTEM_LISTING_URL, exc=ConnectTimeout)
-    storage = StorageSystem(service_account(), id="systemId", load=False)
-    success, result = storage.test()
-    assert not success
-    assert result == 'FAIL'
+@pytest.fixture
+def logging_error_mock(mocker):
+    yield mocker.patch('portal.libs.agave.models.systems.base.logging.Logger.error')
+
+
+def test_system_raises_non_http_errors(requests_mock, logging_error_mock):
+    with pytest.raises(ConnectTimeout):
+        requests_mock.get(SYSTEM_LISTING_URL, exc=ConnectTimeout("We timed out"))
+        storage = StorageSystem(service_account(), id="systemId", load=False)
+        storage.test()
+    logging_error_mock.assert_called_with("Test of system 'systemId' failed unexpectedly! Listing of system returned: We timed out")

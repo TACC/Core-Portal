@@ -377,8 +377,7 @@ class BaseSystem(BaseAgaveResource):
                 result = 'FAIL'
         except RequestException as err:
             logger.error("Test of system '{}' failed unexpectedly! Listing of system returned: {}".format(self.id, str(err)))
-            success = False
-            result = "FAIL"
+            raise err
         return success, result
 
     def enable(self):
