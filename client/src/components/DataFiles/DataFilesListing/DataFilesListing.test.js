@@ -224,38 +224,6 @@ describe('DataFilesListing', () => {
     expect(getByText(message)).toBeDefined();
   });
 
-  it('filters by file type', () => {
-    const store = mockStore({
-      ...initialMockState,
-      files: filesFixture
-    });
-    const history = createMemoryHistory();
-    history.push('/workbench/data/tapis/private/test.system/');
-
-    const { getByTestId, getAllByTestId } = renderComponent(
-      <DataFilesListing
-        api="tapis"
-        scheme="private"
-        system="frontera.home.username"
-        path="/"
-      />,
-      store,
-      history
-    );
-
-    const dropdownSelector = getByTestId('selector');
-    fireEvent.change(dropdownSelector, { target: { value: 'Images' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(1);
-    fireEvent.change(dropdownSelector, { target: { value: 'Text' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(2);
-    fireEvent.change(dropdownSelector, { target: { value: 'Folders' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(4);
-    fireEvent.change(dropdownSelector, { target: { value: 'All Types' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(
-      filesFixture.listing.FilesListing.length
-    );
-  });
-
   it('does not render the DataFilesSearchbar in the Shared Workspaces component when hideSearchBar is true', () => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/projects/');
