@@ -10,8 +10,12 @@ const SiteSearch = () => {
   const location = useLocation();
   const { filter } = useParams();
   const history = useHistory();
-  // eslint-disable-next-line camelcase
-  const { query_string, page } = queryStringParser.parse(location.search);
+  const {
+    // eslint-disable-next-line camelcase
+    query_string,
+    page,
+    filter: filetypeFilter
+  } = queryStringParser.parse(location.search);
 
   const { loading, error, completed, results } = useSelector(
     state => state.siteSearch
@@ -20,8 +24,11 @@ const SiteSearch = () => {
 
   /* eslint-disable camelcase */
   useLayoutEffect(() => {
-    dispatch({ type: 'FETCH_SITE_SEARCH', payload: { page, query_string } });
-  }, [query_string, page]);
+    dispatch({
+      type: 'FETCH_SITE_SEARCH',
+      payload: { page, query_string, filter: filetypeFilter }
+    });
+  }, [query_string, page, filetypeFilter]);
   /* eslint-disable camelcase */
 
   const FILTER_PRIORITY = ['cms', 'community', 'public'];
