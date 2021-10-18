@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Formik, Form } from 'formik';
@@ -123,7 +123,7 @@ function TicketCreateForm({
           );
         }
         if (recaptchaResponse) {
-          formData.append('recaptchaResponse',recaptchaResponse)
+          formData.append('recaptchaResponse', recaptchaResponse);
         }
         dispatch({
           type: 'TICKET_CREATE',
@@ -132,7 +132,7 @@ function TicketCreateForm({
             resetSubmittedForm: resetForm,
             refreshTickets: isAuthenticated
           }
-        })
+        });
       }}
     >
       {({ isSubmitting, isValid }) => {
@@ -193,17 +193,17 @@ function TicketCreateForm({
                       />
                     </Col>
                   </Row>
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  value={recaptchaResponse}
-                  sitekey="6LcJa68cAAAAAB7_1ZgWxkDX4-mg9aQ0_M4DLbOk"
-                  onChange={e =>  setRecaptchaResponse(e)}
-                  className="g-recaptcha"
-                />
                 </Container>
               </FormGroup>
             </ModalBody>
             <ModalFooter>
+            <ReCAPTCHA
+                    ref={recaptchaRef}
+                    value={recaptchaResponse}
+                    sitekey="6LcJa68cAAAAAB7_1ZgWxkDX4-mg9aQ0_M4DLbOk"
+                    onChange={e => setRecaptchaResponse(e)}
+                    className="g-recaptcha"
+                  />
               <div className="ticket-create-button-row">
                 {creatingSuccess && (
                   <CreatedTicketInformation

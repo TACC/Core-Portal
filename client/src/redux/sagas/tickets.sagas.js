@@ -110,6 +110,7 @@ export function* watchTicketDetailedViewFetchHistory() {
 
 export function* postTicketReply(action) {
   const { ticketId } = action.payload;
+
   yield put({ type: 'TICKET_DETAILED_VIEW_REPLY_STARTED' });
   try {
     const res = yield call(fetch, `/api/tickets/${ticketId}/history`, {
@@ -120,6 +121,16 @@ export function* postTicketReply(action) {
       credentials: 'same-origin',
       body: action.payload.formData
     });
+    const siteKey = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken'),
+      },
+      credentials: 'same-origin',
+      body: action.payload.siteKey
+    });
+
+    
     if (!res.ok) {
       yield put({
         type: 'TICKET_DETAILED_VIEW_REPLY_FAILED',
@@ -154,17 +165,19 @@ export function* watchPostTicketReply() {
 
 export function* postTicketCreate(action) {
   yield put({ type: 'TICKET_CREATE_STARTED' });
+  
   try {
-    console.log(action.payload.recaptchaResponse)
     const res = yield call(fetch, `/api/tickets/`, {
       method: 'POST',
       headers: {
         'X-CSRFToken': Cookies.get('csrftoken')
       },
       credentials: 'same-origin',
-      body: action.payload.formData,
+      body: action.payload.formData
     });
     const json = yield res.json();
+    console.log(json.ticket_id);
+    console.log(json.siteKey);
     if (!res.ok) {
       yield put({
         type: 'TICKET_CREATE_FAILED',
@@ -175,7 +188,7 @@ export function* postTicketCreate(action) {
         type: 'TICKET_CREATE_SUCCESS',
         payload: json.ticket_id
       });
-
+      console.log(json.siteKey);
       action.payload.resetSubmittedForm();
       if (action.payload.refreshTickets) {
         yield put({ type: 'TICKET_LIST_FETCH' });

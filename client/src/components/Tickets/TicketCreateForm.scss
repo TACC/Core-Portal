@@ -23,7 +23,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: right;
+  text-align: rihgt;
 }
 
 .ticket-create-spinner {
@@ -62,5 +62,8 @@
   }
 }
 .g-recaptcha > div {
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
