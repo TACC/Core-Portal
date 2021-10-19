@@ -5,7 +5,7 @@
 from collections import namedtuple
 import logging
 import requests
-from requests.exceptions import HTTPError, RequestException
+from requests.exceptions import HTTPError
 from cached_property import cached_property, cached_property_with_ttl
 from django.conf import settings
 from portal.libs.agave.exceptions import ValidationError
@@ -375,9 +375,6 @@ class BaseSystem(BaseAgaveResource):
                 result = err.response.json()
             except JSONDecodeError:
                 result = 'FAIL'
-        except RequestException as err:
-            logger.error("Test of system '{}' failed unexpectedly! Listing of system returned: {}".format(self.id, str(err)))
-            raise err
         return success, result
 
     def enable(self):

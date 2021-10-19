@@ -30,16 +30,3 @@ def test_system_failure_with_json_response(requests_mock):
     success, result = storage.test()
     assert not success
     assert result == json_response
-
-
-@pytest.fixture
-def logging_error_mock(mocker):
-    yield mocker.patch('portal.libs.agave.models.systems.base.logging.Logger.error')
-
-
-def test_system_raises_non_http_errors(requests_mock, logging_error_mock):
-    with pytest.raises(ConnectTimeout):
-        requests_mock.get(SYSTEM_LISTING_URL, exc=ConnectTimeout("We timed out"))
-        storage = StorageSystem(service_account(), id="systemId", load=False)
-        storage.test()
-    logging_error_mock.assert_called_with("Test of system 'systemId' failed unexpectedly! Listing of system returned: We timed out")
