@@ -180,6 +180,21 @@ export const initialTicketCreateModalState = {
   provideDashBoardLinkOnSuccess: true
 };
 
+export const sitekeyState = {
+  sitekeyset: ''
+};
+export function sitekey(state = sitekeyState, action) {
+  switch (action.type) {
+    case 'TICKET_SITE_KEY':
+      return {
+        ...state,
+        sitekeyset: action.payload.sitekey
+      };
+    default:
+      return state;
+  }
+}
+
 export function ticketCreateModal(
   state = initialTicketCreateModalState,
   action

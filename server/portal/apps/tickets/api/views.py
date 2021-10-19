@@ -16,6 +16,8 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse
 import requests
+from portal.settings import settings_secret
+
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +42,6 @@ class TicketsView(BaseApiView):
         else:
             user_tickets = rt.getUserTickets(request.user.email)
             return JsonResponse({'tickets': user_tickets})
-
     def post(self, request):
         """Post a new ticket
 
@@ -76,7 +77,6 @@ class TicketsView(BaseApiView):
 
         problem_description += "\n\n" + metadata
         recaptcha_response = request.POST.get('recaptchaResponse')
-        print(recaptcha_response)
         data = {
         'secret' : "6LcJa68cAAAAAI5buG-nJS-kQhJN-_n9spbo3Tzd",
         'response' :  recaptcha_response
@@ -84,7 +84,8 @@ class TicketsView(BaseApiView):
         r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = r.json()
         print(result)
-        siteKey = getattr(settings, 'reCAPTCHA_SITE_KEY')
+        
+   
         if result['success']:
             ticket_id = rt.create_ticket(subject=subject,
                                          problem_description=problem_description,
@@ -201,11 +202,10 @@ class TicketsHistoryView(BaseApiView):
         ticket_history = self._get_ticket_history(rt, request.user.username, ticket_id)
         return JsonResponse({'ticket_history': ticket_history})
 class SiteKeyView(BaseApiView):
-    def get(self, request,settings):
-        """Get ticket history
+    def get(self, request):
+        """Get sitekey
         """
 
-        site_key = settings.reCAPTCHA_SITE_KEY
+        site_key = getattr(settings, 'RECAPTCHA_SITE_KEY')
         siteKey =JsonResponse({'sitekey':site_key})
-        return HttpResponse(siteKey)
-
+        return siteKey

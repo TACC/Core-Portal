@@ -494,6 +494,7 @@ PORTAL_EXEC_SYSTEMS = {
     }
 }
 
+
 """
 SETTINGS: DATA DEPOT
 """
@@ -717,15 +718,17 @@ CHANNEL_LAYERS = {
 SETTINGS: WORKBENCH SETTINGS
 """
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
-
+"""
+SETTINGS: reCAPTCHA
+"""
+RECAPTCHA_SECRET_KEY = settings_secret._reCAPTCHA_SECRET_KEY
+RECAPTCHA_SITE_KEY =  settings_secret._reCAPTCHA_SITE_KEY
 """
 SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
     from .settings_local import *
-"""
-SETTINGS: reCAPTCHA
-"""
 
-reCAPTCHA_SECRET_KEY = settings_secret._reCAPTCHA_SECRET_KEY
-reCAPTCHA_SITE_KEY = settings_secret._reCAPTCHA_SITE_KEY
+
+
+
