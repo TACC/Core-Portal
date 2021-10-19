@@ -21,7 +21,7 @@ function renderJobsStatus(store, props) {
   );
 }
 
-expect.extend({ toHaveClass });
+//expect.extend({ toHaveClass });
 describe('JobsStatus', () => {
   it('converts status to proper UI strings', () => {
     expect(getStatusText('ACCEPTED')).toEqual('Processing');

@@ -1,38 +1,15 @@
 {
-    "env": {
-        "browser": true,
-        "node": true
-    },
-    "extends": [
-        "airbnb",
-        "standard",
-        "prettier",
-        "prettier/react",
-        "prettier/standard"
-    ],
-    "plugins": [
-        "import",
-        "react",
-        "prettier"
-    ],
     "parser": "@typescript-eslint/parser",
-    "ignorePatterns": ["*.test.js"],
-    "rules": {
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/webpack.*.js", "**/*.test.js", "**/*.spec.js", "**/utils/testing.js"]}],
-        "semi": [1, "always"],
-        "no-underscore-dangle": 0,
-        "react/jsx-props-no-spreading": [2, {
-            "html": "enforce" ,
-            "custom": "enforce",
-            "exceptions": ["input", "Input", "FormField", "Table", "table", "thead", "tbody", "th", "tr", "td", "div", "Slide"],
-            "explicitSpread": "ignore"
-        }],
-        "prettier/prettier": ["error", { "singleQuote": true }],
-        "jsx-a11y/anchor-is-valid": 0
+    "extends": [
+      "plugin:react/recommended",
+      "plugin:jsx-a11y/recommended",
+      "plugin:react-hooks/recommended"
+    ],
+    "env": {
+      "browser": true,
+      "node": true
     },
     "settings": {
-        "react": { "version": "detect" },
-        "import/resolver": {"typescript": {}}
-      }
-}
+      "react": { "version": "detect" }
+    }
+  }
