@@ -1,202 +1,218 @@
 [
-  {
-    "id": "1174996",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "Create",
-    "Field": "",
-    "OldValue": "",
-    "NewValue": "",
-    "Data": "",
-    "Description": "Ticket created by portal",
-    "Content": "User nathanf is requesting access to Portal.",
-    "Creator": "portal",
-    "Created": "2019-01-28 20:43:36",
-    "Attachments": [
-      [
-        743181,
-        "untitled (44b)"
-      ]
-    ]
-  },
-  {
-    "id": "1174997",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "EmailRecord",
-    "Field": "",
-    "OldValue": "",
-    "NewValue": "",
-    "Data": "<rt-4.2.1-2365-1548708216-302.50124-4-0@tacc.utexas.edu>",
-    "Description": "Outgoing email recorded by RT_System",
-    "Content": "A ticket has been created in the Web & Mobile Apps Queue.\n\nTicket <URL: https://consult.tacc.utexas.edu/Ticket/Display.html?id=50124 >\nSubject: New User Access Request\n\nUser nathanf is requesting access to Portal. ",
-    "Creator": "RT_System",
-    "Created": "2019-01-28 20:43:36",
-    "Attachments": [
-      [
-        743182,
-        "untitled (215b)"
-      ]
-    ]
-  },
-  {
-    "id": "1174998",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "AddWatcher",
-    "Field": "Requestor",
-    "OldValue": "",
-    "NewValue": "212211",
-    "Data": "",
-    "Description": "Requestor nathanf (Nathan Franklin) added by portal",
-    "Content": "This transaction appears to have no content",
-    "Creator": "portal",
-    "Created": "2019-01-28 20:43:36",
-    "Attachments": []
-  },
-  {
-    "id": "1174999",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "Comment",
-    "Field": "",
-    "OldValue": "",
-    "NewValue": "",
-    "Data": "No Subject",
-    "Description": "Comments added by rtbot",
-    "Content": "RTBot, on behest of TACCBot, at your service...\nFor beautiful viewing: Logged in as <your-username> -> Settings -> Preferences -> Ticket Display -> Display plain-text attachments in fixed-width font -> Yes\nDate: 2019-01-28T14:45:33.108743\nTicket ID: 50124\n\nExpand text below for analysis:\n>METRICS Total Ticket Count in last year: 1\n>METRICS No. New Tickets: 1\n>METRICS No. Open Tickets: 0\n>METRICS No. User Wait Tickets: 0\n>METRICS No. Internal Wait Tickets: 0\n>METRICS No. Resolved Tickets: 0\n>================================================================================\n>Recognized TAS user with given username: 'None' or email:\n>'nfranklin@tacc.utexas.edu'\n>................................................................................\n>................................................................................\n>TASBot Report:..................................................................\n>................................................................................\n>................................................................................\n>Name:......................... Nathan Franklin .................................\n>Username:..................... nathanf .........................................\n>Email:........................ nfranklin@tacc.utexas.edu .......................\n>Institution:.................. University of Texas at Austin ...................\n>Status:....................... Active ..........................................\n>PI Eligibility:............... Ineligible ......................................\n>MFA Paired:................... True ............................................\n>No. of Projects:.............. 8 ...............................................\n>No. of Active Allocations:.... 36 ..............................................\n>No. of Suspensions > 5 mins:.. 0 ...............................................\n>................................................................................\n>Resources with Active Allocations and SU Counts Above 100:......................\n>Lonestar5, Maverick2, Stampede4 ................................................\n>................................................................................\n>Resources with Active Allocations and SU Counts Below 100:......................\n>Corral2, Maverick3 .............................................................\n>................................................................................\n>Projects with Active Allocations Ending in Less Than 30 Days:...................\n>None ...........................................................................\n>................................................................................\n>Projects with Inactive Allocations that Ended Less Than 30 Days Ago:............\n>None ...........................................................................\n>................................................................................\n>PI of Projects:.................................................................\n>None ...........................................................................\n>................................................................................\n>................................................................................\n>================================================================================\n>\n>Corral2 is not in Mfabot.HOST_DICT\n>Lonestar5 LDAP   No LDAP MFA AuthorizedService\n>Lonestar5 INFO   No TACCinfo\n>Lonestar5 SANITY No sanitycheck\n>Lonestar5 SHELL  No shell check\n>Lonestar5 FILTER No TACC filter check\n>Lonestar5 REPORT No Job Report\n>Maverick2 is not in Mfabot.HOST_DICT\n>Maverick3 is not in Mfabot.HOST_DICT\n>Rodeo2 is not in Mfabot.HOST_DICT\n>MFA Cooldown...\n>Stampede4 LDAP   Soft Token Found\n>Stampede4 SHELL  User's default shell: /bin/bash\n>Stampede4 SHELL  User's home directory: /home1/05724/nathanf\n>\n>>Stampede4 REPORT \"nathanf\" Queue Stats -- All Jobs:\n>>Stampede4 REPORT total 31 development 2 skx-dev 29\n>>Stampede4 REPORT \"nathanf\" Completion Stats -- All Jobs:\n>>Stampede4 REPORT total 31 completed 7 timeout 19 failed 5\n>>Stampede4 REPORT \"nathanf\" Node Stats -- All Jobs:\n>>Stampede4 REPORT \n>>Stampede4 REPORT No. Jobs|  31|   0|   0|   0|   0|   0|   0|   0|   0|   0|   0|   0|   0|   0|\n>>Stampede4 REPORT N >=    |   1|   2|   4|   8|  16|  32|  64| 128| 256| 512|1024|2048|4096|8192|\n>>Stampede4 REPORT \n>>Stampede4 REPORT \"nathanf\" Core Stats -- All Jobs:\n>>Stampede4 REPORT No. Jobs|  12|   0|   0|   0|  19|   0|   0|   0|   0|   0|   0|\n>>Stampede4 REPORT n >=    |   1|   2|   4|   8|  16|  32|  64| 128| 256| 512|1024|\n>>Stampede4 REPORT \n>>Stampede4 REPORT No. Jobs|   0|   0|   0|   0|   0|   0|   0|   0|   0|   0|   0|\n>>Stampede4 REPORT n >=    |2048|4096|8192|2^14|2^15|2^16|2^17|2^18|2^19|2^20|2^21|\n>>Stampede4 REPORT \n>>Stampede4 REPORT \"nathanf\" Queue Wait Time Stats -- All Jobs:\n>>Stampede4 REPORT No. Jobs           |  30|   1|   0|   0|   0|   0|   0|   0|   0|   0|   0|   0|   0|   0|   0|\n>>Stampede4 REPORT >= Wait Time (min) |   0|   1|   2|   4|   8|  16|  32|  64| 128| 256| 512|1024|2048|4096|8192|\n>>Stampede4 REPORT \n>>Stampede4 REPORT \"nathanf\" Queue Run Time Stats -- All Jobs:\n>>Stampede4 REPORT No. Jobs          |   8|   2|   1|  11|   0|   1|   0|   8|   0|   0|   0|   0|   0|   0|   0|\n>>Stampede4 REPORT >= Run Time (min) |   0|   1|   2|   4|   8|  16|  32|  64| 128| 256| 512|1024|2048|4096|8192|\n>>Stampede4 REPORT ",
-    "Creator": "rtbot",
-    "Created": "2019-01-28 20:45:33",
-    "Attachments": [
-      [
-        743183,
-        "untitled (5.3k)"
-      ]
-    ]
-  },
-  {
-    "id": "1175005",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "Correspond",
-    "Field": "",
-    "OldValue": "",
-    "NewValue": "",
-    "Data": "No Subject",
-    "Description": "Correspondence added by nathanf",
-    "Content": "This was a test",
-    "Creator": "nathanf",
-    "Created": "2019-01-28 20:51:39",
-    "Attachments": [
-      [
-        743188,
-        "untitled (15b)"
-      ]
-    ]
-  },
-  {
-    "id": "1175006",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "Status",
-    "Field": "Status",
-    "OldValue": "new",
-    "NewValue": "resolved",
-    "Data": "",
-    "Description": "Status changed from 'new' to 'resolved' by nathanf",
-    "Content": "This transaction appears to have no content",
-    "Creator": "nathanf",
-    "Created": "2019-01-28 20:51:39",
-    "Attachments": []
-  },
-  {
-    "id": "1358647",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "Correspond",
-    "Field": "",
-    "OldValue": "",
-    "NewValue": "",
-    "Data": "No Subject",
-    "Description": "Correspondence added by portal",
-    "Content": "this is a test",
-    "Creator": "portal",
-    "Created": "2019-10-29 01:49:03",
-    "Attachments": [
-      [
-        859572,
-        "untitled (14b)"
-      ]
-    ]
-  },
-  {
-    "id": "1358648",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "EmailRecord",
-    "Field": "",
-    "OldValue": "",
-    "NewValue": "",
-    "Data": "<rt-4.2.1-19286-1572313743-41.50124-6-0@tacc.utexas.edu>",
-    "Description": "Outgoing email recorded by RT_System",
-    "Content": "this is a test",
-    "Creator": "RT_System",
-    "Created": "2019-10-29 01:49:03",
-    "Attachments": [
-      [
-        859573,
-        "untitled (15b)"
-      ]
-    ]
-  },
-  {
-    "id": "1358649",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "Status",
-    "Field": "Status",
-    "OldValue": "resolved",
-    "NewValue": "open",
-    "Data": "",
-    "Description": "Status changed from 'resolved' to 'open' by RT_System",
-    "Content": "This transaction appears to have no content",
-    "Creator": "RT_System",
-    "Created": "2019-10-29 01:49:03",
-    "Attachments": []
-  },
-  {
-    "id": "1358765",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "Comment",
-    "Field": "",
-    "OldValue": "",
-    "NewValue": "",
-    "Data": "No Subject",
-    "Description": "Comments added by afields",
-    "Content": "Changing this to a user wait to not confuse anyone. Per Nathans follow up messages on this ticket this is just a test. \n\nOn Mon Jan 28 14:43:36 2019, portal wrote:\n> User nathanf is requesting access to Portal.\n",
-    "Creator": "afields",
-    "Created": "2019-10-29 13:13:19",
-    "Attachments": [
-      [
-        859651,
-        "untitled (212b)"
-      ]
-    ]
-  },
-  {
-    "id": "1358766",
-    "Ticket": "50124",
-    "TimeTaken": "0",
-    "Type": "Status",
-    "Field": "Status",
-    "OldValue": "open",
-    "NewValue": "user_wait",
-    "Data": "",
-    "Description": "Status changed from 'open' to 'user_wait' by afields",
-    "Content": "This transaction appears to have no content",
-    "Creator": "afields",
-    "Created": "2019-10-29 13:13:19",
-    "Attachments": []
-  }
+    {
+        "id": "1787648",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "Create",
+        "Field": "",
+        "OldValue": "",
+        "NewValue": "",
+        "Data": "",
+        "Description": "Ticket created by portal",
+        "Content": "test problem\n\n*** Ticket Metadata ***\n\nClient info:\nNone\n\nHTTP_REFERER:\nhttps://cep.dev/workbench/dashboard/tickets/create\n\nHTTP_USER_AGENT:\nMozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36\n\nSERVER_NAME:\nc2d062b2fa36\n\nauthenticated_user:\nusername\n\nauthenticated_user_email:\nuser@user.com\n\nauthenticated_user_first_name:\nNathan\n\nauthenticated_user_last_name:\nFranklin",
+        "Creator": "portal",
+        "Created": "2021-01-29T01:58:28",
+        "Attachments": [
+            [
+                1131710,
+                "untitled (0b)"
+            ],
+            [
+                1131711,
+                "untitled (450b)"
+            ],
+            [
+                1131712,
+                "README.md (10.4k)"
+            ]
+        ]
+    },
+    {
+        "id": "1787649",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "EmailRecord",
+        "Field": "",
+        "OldValue": "",
+        "NewValue": "",
+        "Data": "<rt-4.4.4-102627-1611885508-1845.67616-4-0@tacc.utexas.edu>",
+        "Description": "Outgoing email recorded by RT_System",
+        "Content": "A ticket has been created in the Web & Mobile Apps Queue.\n\nTicket <URL: https://consult.tacc.utexas.edu/Ticket/Display.html?id=67616 >\nSubject: test ticket for nathan\n\ntest problem\n\n*** Ticket Metadata ***\n\nClient info:\nNone\n\nHTTP_REFERER:\nhttps://cep.dev/workbench/dashboard/tickets/create\n\nHTTP_USER_AGENT:\nMozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36\n\nSERVER_NAME:\nc2d062b2fa36\n\nauthenticated_user:\nusername\n\nauthenticated_user_email:\nuser@user.com\n\nauthenticated_user_first_name:\nNathan\n\nauthenticated_user_last_name:\nFranklin\n ",
+        "Creator": "RT_System",
+        "Created": "2021-01-29T01:58:28",
+        "Attachments": [
+            [
+                1131713,
+                "untitled (620b)"
+            ]
+        ]
+    },
+    {
+        "id": "1787650",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "AddWatcher",
+        "Field": "Requestor",
+        "OldValue": "",
+        "NewValue": "212211",
+        "Data": "",
+        "Description": "Requestor username (User Name) added by portal",
+        "Content": "This transaction appears to have no content",
+        "Creator": "portal",
+        "Created": "2021-01-29T01:58:28",
+        "Attachments": []
+    },
+    {
+        "id": "1787660",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "CustomField",
+        "Field": "1",
+        "OldValue": "frontera_portal",
+        "NewValue": "",
+        "Data": "",
+        "Description": "Resource frontera_portal deleted by username",
+        "Content": "This transaction appears to have no content",
+        "Creator": "username",
+        "Created": "2021-01-29T02:00:41",
+        "Attachments": []
+    },
+    {
+        "id": "1787661",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "Status",
+        "Field": "Status",
+        "OldValue": "new",
+        "NewValue": "resolved",
+        "Data": "",
+        "Description": "Status changed from 'new' to 'resolved' by username",
+        "Content": "This transaction appears to have no content",
+        "Creator": "username",
+        "Created": "2021-01-29T02:00:41",
+        "Attachments": []
+    },
+    {
+        "id": "1787664",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "Comment",
+        "Field": "",
+        "OldValue": "",
+        "NewValue": "",
+        "Data": "No Subject",
+        "Description": "Comments added by rtbot",
+        "Content": "RTBot, on behest of TACCBot, at your service...\nFor beautiful viewing: Logged in as <your-username> -> Settings -> Preferences -> Ticket Display -> Display plain-text attachments in fixed-width font -> Yes\nDate: 2021-01-28T20:01:03.936987\nTicket ID: 67616\n\nExpand text below for analysis:\n>METRICS Total Ticket Count in last year: 27\n>METRICS No. New Tickets: 1\n>METRICS No. Open Tickets: 1\n>METRICS No. User Wait Tickets: 1\n>METRICS No. Internal Wait Tickets: 0\n>METRICS No. Resolved Tickets: 24\n>================================================================================\n>Recognized TAS user with given username: 'None' or email:\n>'user@user.com'\n>................................................................................\n>................................................................................\n>TASBot Report:..................................................................\n>................................................................................\n>................................................................................\n>Name:......................... User Name .................................\n>Username:..................... username .........................................\n>Email:........................ user@user.com .......................\n>Institution:.................. University of Texas at Austin ...................\n>Status:....................... Active ..........................................\n>PI Eligibility:............... Ineligible ......................................\n>MFA Paired:................... True ............................................\n>No. of Projects:.............. 32 ..............................................\n>No. of Active Allocations:.... 211 .............................................\n>No. of Suspensions > 5 mins:.. 0 ...............................................\n>................................................................................\n>Resources with Active Allocations and SU Counts Above 100:......................\n>Frontera, Lonestar5, Stampede4 .................................................\n>................................................................................\n>Resources with Active Allocations and SU Counts Below 100:......................\n>Maverick3, Longhorn3, Corral2, Corral-Protected ................................\n>................................................................................\n>Projects with Active Allocations Ending in Less Than 30 Days:...................\n>None ...........................................................................\n>................................................................................\n>Projects with Inactive Allocations that Ended Less Than 30 Days Ago:............\n>CENTRAL ........................................................................\n>................................................................................\n>PI of Projects:.................................................................\n>None ...........................................................................\n>................................................................................\n>................................................................................\n>================================================================================\n>\n>Corral-Protected is not in Mfabot.HOST_DICT\n>Corral2 is not in Mfabot.HOST_DICT\n>Frontera is not in Mfabot.HOST_DICT\n>Lonestar5 LDAP   No LDAP MFA AuthorizedService\n>Lonestar5 INFO   No TACCinfo\n>Lonestar5 SANITY No sanitycheck\n>Lonestar5 SHELL  No shell check\n>Lonestar5 FILTER No TACC filter check\n>Lonestar5 REPORT No Job Report\n>Longhorn3 is not in Mfabot.HOST_DICT\n>Maverick3 is not in Mfabot.HOST_DICT\n>Ranch is not in Mfabot.HOST_DICT\n>Rodeo2 is not in Mfabot.HOST_DICT\n>MFA Cooldown...\n>Stampede4 LDAP   No LDAP MFA AuthorizedService\n>Stampede4 INFO   No TACCinfo\n>Stampede4 SANITY No sanitycheck\n>Stampede4 SHELL  No shell check\n>Stampede4 FILTER No TACC filter check\n>Stampede4 REPORT No Job Report",
+        "Creator": "rtbot",
+        "Created": "2021-01-29T02:01:04",
+        "Attachments": [
+            [
+                1131716,
+                "untitled (3.9k)"
+            ]
+        ]
+    },
+    {
+        "id": "2098297",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "Correspond",
+        "Field": "",
+        "OldValue": "",
+        "NewValue": "",
+        "Data": "No Subject",
+        "Description": "Correspondence added by rtprod",
+        "Content": "this is a reply\n[Reply submitted on behalf of username]",
+        "Creator": "rtprod",
+        "Created": "2021-10-14T15:52:29",
+        "Attachments": [
+            [
+                1327176,
+                "untitled (54b)"
+            ]
+        ]
+    },
+    {
+        "id": "2098298",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "EmailRecord",
+        "Field": "",
+        "OldValue": "",
+        "NewValue": "",
+        "Data": "<rt-5.0.1-660766-1634226749-988.67616-6-0@tacc.utexas.edu>",
+        "Description": "Outgoing email recorded by RT_System",
+        "Content": "this is a reply\n[Reply submitted on behalf of username]",
+        "Creator": "RT_System",
+        "Created": "2021-10-14T15:52:29",
+        "Attachments": [
+            [
+                1327177,
+                "untitled (55b)"
+            ]
+        ]
+    },
+    {
+        "id": "2098299",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "Status",
+        "Field": "Status",
+        "OldValue": "resolved",
+        "NewValue": "open",
+        "Data": "",
+        "Description": "Status changed from 'resolved' to 'open' by RT_System",
+        "Content": "This transaction appears to have no content",
+        "Creator": "RT_System",
+        "Created": "2021-10-14T15:52:29",
+        "Attachments": []
+    },
+    {
+        "id": "2098323",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "Correspond",
+        "Field": "",
+        "OldValue": "",
+        "NewValue": "",
+        "Data": "No Subject",
+        "Description": "Correspondence added by rtdev",
+        "Content": "test again using rtdev service account\n[Reply submitted on behalf of username]",
+        "Creator": "rtdev",
+        "Created": "2021-10-14T16:08:45",
+        "Attachments": [
+            [
+                1327194,
+                "untitled (0b)"
+            ],
+            [
+                1327195,
+                "untitled (77b)"
+            ],
+            [
+                1327196,
+                "Screen Shot 2021-10-14 at 11.04.16 AM.png (15.1k)"
+            ]
+        ]
+    },
+    {
+        "id": "2098324",
+        "Ticket": "67616",
+        "TimeTaken": "0",
+        "Type": "EmailRecord",
+        "Field": "",
+        "OldValue": "",
+        "NewValue": "",
+        "Data": "<rt-5.0.1-679530-1634227725-600.67616-6-0@tacc.utexas.edu>",
+        "Description": "Outgoing email recorded by RT_System",
+        "Content": "test again using rtdev service account\n[Reply submitted on behalf of username]",
+        "Creator": "RT_System",
+        "Created": "2021-10-14T16:08:45",
+        "Attachments": [
+            [
+                1327197,
+                "untitled (78b)"
+            ]
+        ]
+    }
 ]
