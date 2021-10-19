@@ -40,7 +40,7 @@ const Attachments = ({ attachments }) => {
       Attachments:
       <ul>
         {attachments.map(attachmentName => (
-          <li> {attachmentName} </li>
+          <li> {attachmentName[1]} </li>
         ))}
       </ul>
     </div>
@@ -142,7 +142,7 @@ TicketHistoryReply.propTypes = {
   ticketId: PropTypes.number.isRequired
 };
 
-const TicketHistoryCard = ({
+export const TicketHistoryCard = ({
   historyId,
   created,
   creator,
@@ -209,7 +209,7 @@ TicketHistoryCard.propTypes = {
   attachments: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
-const TicketHistory = () => {
+export const TicketHistory = () => {
   const loading = useSelector(state => state.ticketDetailedView.loading);
   const history = useSelector(state => state.ticketDetailedView.content);
   const loadingError = useSelector(
