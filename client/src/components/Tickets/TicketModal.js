@@ -142,7 +142,7 @@ TicketHistoryReply.propTypes = {
   ticketId: PropTypes.number.isRequired
 };
 
-export const TicketHistoryCard = ({
+const TicketHistoryCard = ({
   historyId,
   created,
   creator,
