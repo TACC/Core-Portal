@@ -43,18 +43,20 @@ const OPERATION_MAP = {
           .join('/');
         const projectName = findProjectTitle(projectList, response.systemId);
 
-        const srcSystem =
-          response.source.split('/')[0] === 'https:'
-            ? response.source.split('/')[7]
-            : response.source.split('/')[2];
-        const destSystem = response.systemId;
-
         let op = mappedOp;
-        let dest;
 
-        if (srcSystem !== destSystem) {
-          op = 'started copying';
+        if (mappedOp === 'copied') {
+          const srcSystem =
+            response.source.split('/')[0] === 'https:'
+              ? response.source.split('/')[7]
+              : response.source.split('/')[2];
+          const destSystem = response.systemId;
+          if (srcSystem !== destSystem) {
+            op = 'started copying';
+          }
         }
+
+        let dest;
 
         if (projectName) {
           dest =
