@@ -22,7 +22,6 @@ const OnboardingApproveActions = ({ callback, disabled, action }) => {
     <div className={styles['approve-container']}>
       <Button
         className={`c-button--secondary ${styles.approve}`}
-        // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_approve')}
         disabled={disabled}
       >
@@ -38,7 +37,6 @@ const OnboardingApproveActions = ({ callback, disabled, action }) => {
       </Button>
       <Button
         className={`c-button--secondary ${styles.approve}`}
-        // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('staff_deny')}
         disabled={disabled}
       >
@@ -73,7 +71,6 @@ const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
       <Button
         color="link"
         className={styles['action-link']}
-        // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('reset')}
         disabled={disabled}
       >
@@ -90,7 +87,6 @@ const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
         color="link"
         className={styles['action-link']}
         disabled={disabled || disableSkip}
-        // eslint-disable-next-line standard/no-callback-literal
         onClick={() => callback('complete')}
       >
         {action === 'complete' && (

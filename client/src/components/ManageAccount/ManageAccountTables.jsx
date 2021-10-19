@@ -301,7 +301,6 @@ export const ChangePassword = () => {
         )}
       </div>
     </article>
-    /* eslint-enable prettier/prettier */
   );
 };
 const WebsiteCell = ({ cell: { value } }) => {
