@@ -35,6 +35,6 @@ export function* postRequestAccess(action) {
   }
 }
 
-export function* watchPostRequestAccessCreate() {
-  yield takeLatest('REQUEST_ACCESS_CREATE', postRequestAccess);
+export function* watchPostRequestAccess() {
+  yield takeLatest('REQUEST_ACCESS', postRequestAccess);
 }

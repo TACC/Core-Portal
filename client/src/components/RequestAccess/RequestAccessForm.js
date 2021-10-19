@@ -11,16 +11,18 @@ const formSchema = Yup.object().shape({
 });
 
 const defaultValues = {
+  username: '',
+  password: '',
   problem_description: ''
 };
 
 const RequestAccessForm = () => {
   const dispatch = useDispatch();
   const portalName = useSelector(state => state.workbench.portalName);
-  const creating = useSelector(state => state.ticketCreate.creating);
-  const creatingError = useSelector(state => state.ticketCreate.creatingError);
+  const creating = useSelector(state => state.requestAccess.creating);
+  const creatingError = useSelector(state => state.requestAccess.creatingError);
   const creatingErrorMessage = useSelector(
-    state => state.ticketCreate.creatingErrorMessage
+    state => state.requestAccess.creatingErrorMessage
   );
 
   return (
@@ -33,11 +35,10 @@ const RequestAccessForm = () => {
         Object.keys(values).forEach(key => formData.append(key, values[key]));
         formData.append('subject', `Access request for ${portalName}`);
         dispatch({
-          type: 'TICKET_CREATE',
+          type: 'REQUEST_ACCESS',
           payload: {
             formData,
-            resetSubmittedForm: resetForm,
-            refreshTickets: true
+            resetSubmittedForm: resetForm
           }
         });
       }}
