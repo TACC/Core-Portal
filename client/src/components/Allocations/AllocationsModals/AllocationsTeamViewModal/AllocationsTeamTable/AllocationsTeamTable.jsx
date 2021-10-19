@@ -11,42 +11,43 @@ const AllocationsTeamTable = ({ rawData, clickHandler, visible }) => {
     () => [
       {
         Header: 'listing',
-        accessor: el => el,
-        Cell: el => {
+        accessor: (el) => el,
+        Cell: (el) => {
           const { firstName, lastName } = el.value;
           return (
             <span className={styles.content}>
               {capitalize(firstName)} {capitalize(lastName)}
             </span>
           );
-        }
-      }
+        },
+      },
     ],
     [rawData]
   );
-  const getStyleName = listing => {
-    if (visible && listing.username === visible.username) return styles['active-user'];
+  const getStyleName = (listing) => {
+    if (visible && listing.username === visible.username)
+      return styles['active-user'];
     return styles['row'];
   };
   const { getTableProps, getTableBodyProps, rows, prepareRow } = useTable({
     columns,
-    data
+    data,
   });
   return (
     <Table hover responsive borderless size="sm" {...getTableProps()}>
       <tbody {...getTableBodyProps()}>
-        {rows.map(row => {
+        {rows.map((row) => {
           prepareRow(row);
           return (
             <tr
               {...row.getRowProps({
                 onClick: () => {
                   clickHandler(row.values.listing);
-                }
+                },
               })}
               className={getStyleName(row.values.listing)}
             >
-              {row.cells.map(cell => (
+              {row.cells.map((cell) => (
                 <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
               ))}
             </tr>
@@ -63,8 +64,8 @@ AllocationsTeamTable.propTypes = {
     firstName: string.isRequired,
     lastName: string.isRequired,
     email: string.isRequired,
-    username: string.isRequired
-  })
+    username: string.isRequired,
+  }),
 };
 AllocationsTeamTable.defaultProps = { visible: {}, rawData: [] };
 export default AllocationsTeamTable;

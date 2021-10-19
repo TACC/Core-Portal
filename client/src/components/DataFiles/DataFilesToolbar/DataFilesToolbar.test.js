@@ -1,5 +1,8 @@
 import React from 'react';
-import { toHaveClass, toBeDisabled } from '@testing-library/jest-dom/dist/matchers';
+import {
+  toHaveClass,
+  toBeDisabled,
+} from '@testing-library/jest-dom/dist/matchers';
 import DataFilesToolbar, { ToolbarButton } from './DataFilesToolbar';
 import configureStore from 'redux-mock-store';
 import { createMemoryHistory } from 'history';
@@ -30,13 +33,15 @@ describe('DataFilesToolbar', () => {
     const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
         files: { selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
-        systems: systemsFixture
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );
@@ -50,16 +55,18 @@ describe('DataFilesToolbar', () => {
   });
 
   it('does not render unnecessary buttons in Community Data', () => {
-    const {getByText, queryByText} = renderComponent(
+    const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="community" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
         files: { selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
-        systems: systemsFixture
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );
@@ -73,16 +80,18 @@ describe('DataFilesToolbar', () => {
   });
 
   it('does not render unnecessary buttons in Public Data', () => {
-    const {getByText, queryByText} = renderComponent(
+    const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="public" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
         files: { selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
-        systems: systemsFixture
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );
@@ -96,16 +105,18 @@ describe('DataFilesToolbar', () => {
   });
 
   it('does not render unnecessary buttons in Google Drive', () => {
-    const {getByText, queryByText} = renderComponent(
+    const { getByText, queryByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="googledrive" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
         files: { selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
-        systems: systemsFixture
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );
@@ -125,7 +136,7 @@ describe('DataFilesToolbar', () => {
         files: { selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture,
-        workbench: { config: { makePublic: true } }
+        workbench: { config: { makePublic: true } },
       }),
       createMemoryHistory()
     );
@@ -143,16 +154,18 @@ describe('DataFilesToolbar', () => {
     const { getByText } = renderComponent(
       <DataFilesToolbar scheme="private" api="tapis" />,
       mockStore({
-        workbench: { config: {
-          extract: '',
-          compress: ''
-        } },
-        files: { 
-          listing: { FilesListing: [ testFile ] },
-          selected: { FilesListing: [ 0 ] } 
-       },
+        workbench: {
+          config: {
+            extract: '',
+            compress: '',
+          },
+        },
+        files: {
+          listing: { FilesListing: [testFile] },
+          selected: { FilesListing: [0] },
+        },
         //listing: {  } },
-        systems: systemsFixture
+        systems: systemsFixture,
       }),
       createMemoryHistory()
     );

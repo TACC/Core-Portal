@@ -6,7 +6,9 @@ import OnboardingActions from './OnboardingActions';
 import styles from './OnboardingStep.module.scss';
 
 const OnboardingStep = ({ step }) => {
-  const styleName = `${styles.root} ${step.state === styles.pending ? 'disabled' : ''}`;
+  const styleName = `${styles.root} ${
+    step.state === styles.pending ? 'disabled' : ''
+  }`;
   return (
     <div className={styleName}>
       <div className={styles.name}>{step.displayName}</div>
@@ -20,7 +22,7 @@ const OnboardingStep = ({ step }) => {
 };
 
 OnboardingStep.propTypes = {
-  step: stepPropType.isRequired
+  step: stepPropType.isRequired,
 };
 
 OnboardingStep.defaultProps = {};

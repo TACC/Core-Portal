@@ -15,22 +15,22 @@ const OnboardingActions = ({ step }) => {
       payload: {
         step: step.step,
         action,
-        username
-      }
+        username,
+      },
     });
   });
-  const isStaff = useSelector(state =>
+  const isStaff = useSelector((state) =>
     state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
   );
   const isSending = useSelector(
-    state =>
+    (state) =>
       state.onboarding.action.loading &&
       state.onboarding.action.step === step.step
   );
-  const error = useSelector(state => state.onboarding.action.error);
-  const actionStep = useSelector(state => state.onboarding.action.step);
+  const error = useSelector((state) => state.onboarding.action.error);
+  const actionStep = useSelector((state) => state.onboarding.action.step);
   const { params } = useRouteMatch();
-  const authUsername = useSelector(state =>
+  const authUsername = useSelector((state) =>
     state.authenticatedUser.user ? state.authenticatedUser.user.username : ''
   );
 
@@ -112,7 +112,7 @@ const OnboardingActions = ({ step }) => {
 };
 
 OnboardingActions.propTypes = {
-  step: stepPropType.isRequired
+  step: stepPropType.isRequired,
 };
 
 OnboardingActions.defaultProps = {};

@@ -16,7 +16,9 @@
   --max-item-count: 5;
   --item-height: 35px; /* (~30px design * 1.2 design-to-app ratio) */
   /* i.e. ( items * item height ) + ( top space & bottom space ) */
-  --height: calc(( var(--max-item-count) * var(--item-height) ) + ( var(--vertical-buffer) * 2 ));
+  --height: calc(
+    (var(--max-item-count) * var(--item-height)) + (var(--vertical-buffer) * 2)
+  );
 
   display: inline-grid;
   grid-auto-flow: column;

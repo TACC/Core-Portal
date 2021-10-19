@@ -5,20 +5,20 @@ import { default as jobsList } from './Jobs.fixture';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
-import {BrowserRouter} from 'react-router-dom';
-import {initialState as notifications} from '../../redux/reducers/notifications.reducers';
+import { BrowserRouter } from 'react-router-dom';
+import { initialState as notifications } from '../../redux/reducers/notifications.reducers';
 import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 
 const mockStore = configureStore();
 const initialMockState = {
   list: jobsList,
-  loading: false
+  loading: false,
 };
 
 // Provide mock state for AppIcon
 const appIconMockState = {
-  appIcons: { }
-}
+  appIcons: {},
+};
 
 function renderJobsComponent(store) {
   return render(
@@ -41,30 +41,32 @@ describe('Jobs View', () => {
       },
       notifications,
       workbench: {
-        ...workbench, config: {hideDataFiles: false}
-      }
+        ...workbench,
+        config: { hideDataFiles: false },
+      },
     });
 
     const { getByText } = renderJobsComponent(store);
     expect(getByText(/test-job-name-1/)).toBeDefined();
-    expect(getByText("05/01/2020 09:44")).toBeDefined();
+    expect(getByText('05/01/2020 09:44')).toBeDefined();
   });
 
   it('renders errors when jobs cannot be retrieved', () => {
     const store = mockStore({
       jobs: {
         ...initialMockState,
-        error: "error"
+        error: 'error',
       },
       apps: {
-        ...appIconMockState
+        ...appIconMockState,
       },
       workbench: {
-        ...workbench, config: {hideDataFiles: false}
-      }
+        ...workbench,
+        config: { hideDataFiles: false },
+      },
     });
 
     const { getByText } = renderJobsComponent(store);
     expect(getByText(/unable to retrieve your jobs/)).toBeDefined();
-  })
+  });
 });

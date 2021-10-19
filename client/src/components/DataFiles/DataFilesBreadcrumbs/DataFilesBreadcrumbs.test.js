@@ -13,7 +13,7 @@ describe('DataFilesBreadcrumbs', () => {
   it('render breadcrumbs', () => {
     const store = mockStore({
       systems: systemsFixture,
-      projects: projectsFixture
+      projects: projectsFixture,
     });
     const history = createMemoryHistory();
     const { getByText, debug } = renderComponent(
@@ -34,11 +34,7 @@ describe('DataFilesBreadcrumbs', () => {
         .closest('a')
         .getAttribute('href')
     ).toEqual('/workbench/data/tapis/private/frontera.home.username/');
-    expect(
-      getByText(/the/)
-        .closest('a')
-        .getAttribute('href')
-    ).toEqual(
+    expect(getByText(/the/).closest('a').getAttribute('href')).toEqual(
       '/workbench/data/tapis/private/frontera.home.username/path/to/the/'
     );
     expect(getByText(/files/).closest('a')).toBeNull();
@@ -47,7 +43,7 @@ describe('DataFilesBreadcrumbs', () => {
   it('render breadcrumbs with initial empty systems', () => {
     const store = mockStore({
       systems: initialSystemState,
-      projects: projectsFixture
+      projects: projectsFixture,
     });
     const history = createMemoryHistory();
     const { getByText, debug } = renderComponent(
@@ -73,7 +69,7 @@ describe('DataFilesBreadcrumbs', () => {
   it('render breadcrumbs for projects', () => {
     const store = mockStore({
       systems: systemsFixture,
-      projects: projectsFixture
+      projects: projectsFixture,
     });
     const history = createMemoryHistory();
     const { getByText, debug } = renderComponent(

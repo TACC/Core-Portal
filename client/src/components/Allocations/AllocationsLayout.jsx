@@ -4,7 +4,7 @@ import {
   Link,
   NavLink as RRNavLink,
   Route,
-  useHistory
+  useHistory,
 } from 'react-router-dom';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { string } from 'prop-types';
@@ -62,7 +62,7 @@ export const Sidebar = () => (
 );
 
 export const Layout = ({ page }) => {
-  const loading = useSelector(state => state.allocations.loading);
+  const loading = useSelector((state) => state.allocations.loading);
   const history = useHistory();
   const root = `${ROUTES.WORKBENCH}${ROUTES.ALLOCATIONS}/${page}`;
   return (
@@ -99,5 +99,5 @@ export const Layout = ({ page }) => {
   );
 };
 Layout.propTypes = {
-  page: string.isRequired
+  page: string.isRequired,
 };

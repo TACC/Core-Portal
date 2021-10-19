@@ -9,7 +9,10 @@ import styles from './Checkbox.module.css';
 //      and still support `DataFilesListingCells`'s button usage (how?)
 //      (this would also resolve the aria/lint complications noted below)
 const Checkbox = ({ className, isChecked, tabIndex, role, ...props }) => {
-  const rootStyleNames = [styles['root'], isChecked ? styles['is-checked'] : ''].join(' ');
+  const rootStyleNames = [
+    styles['root'],
+    isChecked ? styles['is-checked'] : '',
+  ].join(' ');
 
   return (
     <span
@@ -38,13 +41,13 @@ Checkbox.propTypes = {
   /** Standard HTML attribute [tabindex] */
   tabIndex: PropTypes.number,
   /** Standard HTML attribute [role] */
-  role: PropTypes.string
+  role: PropTypes.string,
 };
 Checkbox.defaultProps = {
   className: '',
   isChecked: false,
   tabIndex: 0,
-  role: 'checkbox'
+  role: 'checkbox',
 };
 
 export default Checkbox;

@@ -5,53 +5,51 @@
 }
 */
 
-
-
 /* Elements */
 
 .content {
-    /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
-    padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
-    padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
+  /* WARNING: Mimicked on: History, Allocation, DataFiles, DataFilesProjectsList, DataFilesProjectFileListing, PublicData */
+  padding-top: 1.75rem; /* ~28px (22.5px * design * 1.2 design-to-app ratio) */
+  padding-left: 1.5em; /* ~24px (20px * design * 1.2 design-to-app ratio) */
 
-    /* As a flex child */
-    flex-grow: 1;
+  /* As a flex child */
+  flex-grow: 1;
 }
 
 .header {
-    button {
-        padding: 0;
-        font-size: 0.78em;
-        font-weight: bold;
-    }
+  button {
+    padding: 0;
+    font-size: 0.78em;
+    font-weight: bold;
+  }
 }
 .sidebar {
-    --horizontal-buffer: var(--global-space--section-left);
-    /* FAQ: Design is inconsistent across sections, but averages about `10.5px` */
-    --vertical-buffer: 0.75rem; /* ~12px (avg. 10.5px design * 1.2 design-to-app ratio */
+  --horizontal-buffer: var(--global-space--section-left);
+  /* FAQ: Design is inconsistent across sections, but averages about `10.5px` */
+  --vertical-buffer: 0.75rem; /* ~12px (avg. 10.5px design * 1.2 design-to-app ratio */
 
-    --min-width: 200px;
+  --min-width: 200px;
 
-    margin-left: calc(var(--horizontal-buffer) * -1);
-    border-right: 1px solid rgba(112, 112, 112, 0.25);
+  margin-left: calc(var(--horizontal-buffer) * -1);
+  border-right: 1px solid rgba(112, 112, 112, 0.25);
 
-    padding-top: var(--vertical-buffer);
+  padding-top: var(--vertical-buffer);
 
-    a {
-        min-width: var(--min-width);
+  a {
+    min-width: var(--min-width);
 
-        color: var(--global-color-primary--dark);
-        padding-left: var(--horizontal-buffer);
+    color: var(--global-color-primary--dark);
+    padding-left: var(--horizontal-buffer);
 
-        &.active,
-        &:hover {
-            background: var(--global-color-accent--weak);
-            color: var(--global-color-primary--x-dark);
-        }
-        .link-text {
-            font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
-            font-weight: 500;
-            padding-left: 16px;
-        }
+    &.active,
+    &:hover {
+      background: var(--global-color-accent--weak);
+      color: var(--global-color-primary--x-dark);
     }
+    .link-text {
+      font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
+      font-weight: 500;
+      padding-left: 16px;
+    }
+  }
 }

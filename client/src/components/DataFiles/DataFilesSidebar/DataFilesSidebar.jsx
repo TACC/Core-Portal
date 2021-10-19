@@ -8,7 +8,7 @@ import {
   ButtonDropdown,
   DropdownMenu,
   DropdownToggle,
-  DropdownItem
+  DropdownItem,
 } from 'reactstrap';
 import styles from './DataFilesSidebar.module.scss';
 
@@ -23,35 +23,37 @@ const DataFilesSidebar = ({ readOnly }) => {
   const toggleUploadModal = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'upload', props: {} }
+      payload: { operation: 'upload', props: {} },
     });
   };
-  const err = useSelector(state => state.files.error.FilesListing);
-  const { api, scheme } = useSelector(state => state.files.params.FilesListing);
+  const err = useSelector((state) => state.files.error.FilesListing);
+  const { api, scheme } = useSelector(
+    (state) => state.files.params.FilesListing
+  );
   const systems = useSelector(
-    state => state.systems.storage.configuration,
+    (state) => state.systems.storage.configuration,
     shallowEqual
   );
 
-  const sharedWorkspaces = systems.find(e => e.scheme === 'projects');
+  const sharedWorkspaces = systems.find((e) => e.scheme === 'projects');
 
   const toggleMkdirModal = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'mkdir', props: {} }
+      payload: { operation: 'mkdir', props: {} },
     });
   };
 
   const toggleAddProjectModal = () => {
     dispatch({
-      type: 'USERS_CLEAR_SEARCH'
+      type: 'USERS_CLEAR_SEARCH',
     });
     dispatch({
-      type: 'PROJECTS_CLEAR_OPERATION'
+      type: 'PROJECTS_CLEAR_OPERATION',
     });
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'addproject', props: {} }
+      payload: { operation: 'addproject', props: {} },
     });
   };
 
@@ -92,10 +94,13 @@ const DataFilesSidebar = ({ readOnly }) => {
                 onClick={toggleUploadModal}
                 disabled={disabled}
               >
-                <i className={`icon-upload ${styles[writeItemStyle]}`}/>
+                <i className={`icon-upload ${styles[writeItemStyle]}`} />
                 <span className="multiline-menu-item-wrapper">
                   <span className={styles[writeItemStyle]}>Upload</span>
-                  <small className={styles[writeItemStyle]}> Up to 500mb </small>
+                  <small className={styles[writeItemStyle]}>
+                    {' '}
+                    Up to 500mb{' '}
+                  </small>
                 </span>
               </DropdownItem>
             </DropdownMenu>
@@ -104,7 +109,7 @@ const DataFilesSidebar = ({ readOnly }) => {
         <div className="data-files-nav">
           <Nav vertical>
             {systems
-              ? systems.map(sys => (
+              ? systems.map((sys) => (
                   <NavItem key={`${sys.name}`}>
                     <NavLink
                       tag={RRNavLink}
@@ -129,11 +134,11 @@ const DataFilesSidebar = ({ readOnly }) => {
 };
 
 DataFilesSidebar.propTypes = {
-  readOnly: PropTypes.bool
+  readOnly: PropTypes.bool,
 };
 
 DataFilesSidebar.defaultProps = {
-  readOnly: false
+  readOnly: false,
 };
 
 export default DataFilesSidebar;

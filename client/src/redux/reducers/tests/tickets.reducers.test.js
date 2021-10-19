@@ -2,7 +2,7 @@ import {
   ticketCreate,
   ticketCreateModal,
   initialTicketCreateState,
-  initialTicketCreateModalState
+  initialTicketCreateModalState,
 } from '../tickets.reducers';
 
 describe('ticketCreate Reducer', () => {
@@ -22,14 +22,14 @@ describe('ticketCreate Reducer', () => {
     expect(
       ticketCreate(initialTicketCreateState, {
         type: `TICKET_CREATE_SUCCESS`,
-        payload: 42
+        payload: 42,
       })
     ).toEqual({
       creating: false,
       creatingError: false,
       creatingErrorMessage: '',
       creatingSuccess: true,
-      createdTicketId: 42
+      createdTicketId: 42,
     });
   });
 
@@ -37,14 +37,14 @@ describe('ticketCreate Reducer', () => {
     expect(
       ticketCreate(initialTicketCreateState, {
         type: `TICKET_CREATE_FAILED`,
-        payload: 'failed message'
+        payload: 'failed message',
       })
     ).toEqual({
       creating: false,
       creatingError: true,
       creatingErrorMessage: 'failed message',
       creatingSuccess: false,
-      createdTicketId: null
+      createdTicketId: null,
     });
   });
 });
@@ -53,13 +53,13 @@ describe('TicketCreateModal Reducer', () => {
   test('Ticket creation modal is opened with default parameters', () => {
     expect(
       ticketCreateModal(initialTicketCreateModalState, {
-        type: `TICKET_CREATE_SET_MODAL_OPEN`
+        type: `TICKET_CREATE_SET_MODAL_OPEN`,
       })
     ).toEqual({
       modalOpen: true,
       subject: '',
       showAsModalOnDashboard: true,
-      provideDashBoardLinkOnSuccess: true
+      provideDashBoardLinkOnSuccess: true,
     });
   });
   test('Ticket creation modal is opened with custum parameters', () => {
@@ -69,20 +69,20 @@ describe('TicketCreateModal Reducer', () => {
         payload: {
           subject: 'my custom subject',
           showAsModalOnDashboard: false,
-          provideDashBoardLinkOnSuccess: false
-        }
+          provideDashBoardLinkOnSuccess: false,
+        },
       })
     ).toEqual({
       modalOpen: true,
       subject: 'my custom subject',
       showAsModalOnDashboard: false,
-      provideDashBoardLinkOnSuccess: false
+      provideDashBoardLinkOnSuccess: false,
     });
   });
   test('Ticket creation modal is closed', () => {
     expect(
       ticketCreateModal(initialTicketCreateModalState, {
-        type: `TICKET_CREATE_SET_MODAL_CLOSE`
+        type: `TICKET_CREATE_SET_MODAL_CLOSE`,
       })
     ).toEqual({
       ...initialTicketCreateModalState,

@@ -4,7 +4,7 @@ import {
   Switch,
   Route,
   useParams,
-  useLocation
+  useLocation,
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,14 +22,14 @@ const PublicData = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const publicDataSystem = useSelector(
-    state =>
+    (state) =>
       state.systems.storage.configuration.find(
-        sys => sys.scheme === 'public'
+        (sys) => sys.scheme === 'public'
       ) || {}
   );
-  const selectedFiles = useSelector(state =>
+  const selectedFiles = useSelector((state) =>
     state.files.selected.FilesListing.map(
-      i => state.files.listing.FilesListing[i]
+      (i) => state.files.listing.FilesListing[i]
     )
   );
 
@@ -38,7 +38,7 @@ const PublicData = () => {
   const download = () => {
     dispatch({
       type: 'DATA_FILES_DOWNLOAD',
-      payload: { file: selectedFiles[0] }
+      payload: { file: selectedFiles[0] },
     });
   };
 
@@ -88,8 +88,8 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
         path: path || '',
         queryString,
         filter,
-        section: 'FilesListing'
-      }
+        section: 'FilesListing',
+      },
     });
   }, [path, queryString, filter]);
 
@@ -131,7 +131,7 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
 };
 PublicDataListing.propTypes = {
   canDownload: PropTypes.bool.isRequired,
-  downloadCallback: PropTypes.func.isRequired
+  downloadCallback: PropTypes.func.isRequired,
 };
 
 export default PublicData;

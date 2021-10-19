@@ -9,7 +9,7 @@ import { bool } from 'prop-types';
 import { ManageAccountInput } from './ManageAccountFields';
 
 const RequiredInformationFormBody = ({ canSubmit }) => {
-  const isEditing = useSelector(state => state.profile.editing);
+  const isEditing = useSelector((state) => state.profile.editing);
   return (
     <Form>
       {/* TAS Fields - Text */}
@@ -49,11 +49,11 @@ const RequiredInformationFormBody = ({ canSubmit }) => {
   );
 };
 RequiredInformationFormBody.propTypes = {
-  canSubmit: bool.isRequired
+  canSubmit: bool.isRequired,
 };
 
-export default function() {
-  const { initialValues, fields } = useSelector(state => {
+export default function () {
+  const { initialValues, fields } = useSelector((state) => {
     const { data } = state.profile;
     const { demographics } = data;
     const initial = pick(demographics, [
@@ -67,26 +67,22 @@ export default function() {
       'countryId',
       'citizenshipId',
       'title',
-      'institutionId'
+      'institutionId',
     ]);
     return {
       fields: state.profile.fields,
       initialValues: {
         ...initial,
         institution: initial.institutionId,
-        country: initial.countryId
+        country: initial.countryId,
       },
-      isEditing: state.profile.editing
+      isEditing: state.profile.editing,
     };
   });
   const dispatch = useDispatch();
   const formSchema = obj().shape({
-    firstName: str()
-      .min(2)
-      .required('Please enter your first name'),
-    lastName: str()
-      .min(1)
-      .required('Please enter your last name'),
+    firstName: str().min(2).required('Please enter your first name'),
+    lastName: str().min(1).required('Please enter your last name'),
     email: str()
       .required('Please enter your email address')
       .email('Please enter a valid email address'),
@@ -101,17 +97,17 @@ export default function() {
     ethnicity: str().required('Please select an option'),
     countryId: str().required('Please select a country'),
     institutionId: str().required('Please select an institution'),
-    title: str().required('Please select your title')
+    title: str().required('Please select your title'),
   });
   const handleSubmit = (values, { setSubmitting }) => {
     dispatch({ type: 'CLEAR_FORM_MESSAGES' });
     dispatch({
       type: 'EDIT_REQUIRED_INFORMATION',
-      values
+      values,
     });
     setSubmitting(false);
   };
-  const hasErrors = errors => isEmpty(Object.keys(errors));
+  const hasErrors = (errors) => isEmpty(Object.keys(errors));
   if (!fields.ethnicities) return <LoadingSpinner />;
   return (
     <Formik

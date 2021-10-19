@@ -46,7 +46,7 @@ export const AllocationsRequestModal = ({ isOpen, toggle }) => (
 );
 AllocationsRequestModal.propTypes = {
   isOpen: bool.isRequired,
-  toggle: func.isRequired
+  toggle: func.isRequired,
 };
 
 export default AllocationsRequestModal;

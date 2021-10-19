@@ -7,7 +7,7 @@ const initialState = {
   hosts: {},
   portal_alloc: '',
   loadingPage: false,
-  errors: {}
+  errors: {},
 };
 function allocations(state = initialState, action) {
   switch (action.type) {
@@ -15,7 +15,7 @@ function allocations(state = initialState, action) {
       return {
         ...state,
         errors: { ...state.errors, listing: undefined },
-        loading: true
+        loading: true,
       };
     case 'ADD_ALLOCATIONS':
       return { ...state, ...action.payload, loading: false };
@@ -23,7 +23,7 @@ function allocations(state = initialState, action) {
       return {
         ...state,
         errors: { ...state.errors, listing: action.payload },
-        loading: false
+        loading: false,
       };
     case 'POPULATE_TEAMS':
       return {
@@ -31,23 +31,23 @@ function allocations(state = initialState, action) {
         teams: { ...state.teams, ...action.payload.teams },
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loadingTeams
-        }
+          ...action.payload.loadingTeams,
+        },
       };
     case 'POPULATE_TEAMS_ERROR':
       return {
         ...state,
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loading
+          ...action.payload.loading,
         },
         errors: {
           ...state.errors,
           teams: {
             ...state.errors.teams,
-            ...action.payload.errors
-          }
-        }
+            ...action.payload.errors,
+          },
+        },
       };
     case 'ADD_USERNAMES_TO_TEAM':
       return {
@@ -55,8 +55,8 @@ function allocations(state = initialState, action) {
         teams: { ...state.teams, ...action.payload.data },
         loadingUsernames: {
           ...state.loadingUsernames,
-          ...action.payload.loading
-        }
+          ...action.payload.loading,
+        },
       };
     default:
       return state;

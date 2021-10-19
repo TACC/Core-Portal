@@ -8,12 +8,14 @@ import './TicketStandaloneCreate.scss';
 
 function TicketStandaloneCreate() {
   const dispatch = useDispatch();
-  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
-  const introMessages = useSelector(state => state.introMessages);
-  const onDismissIntro = section => {
+  const authenticatedUser = useSelector(
+    (state) => state.authenticatedUser.user
+  );
+  const introMessages = useSelector((state) => state.introMessages);
+  const onDismissIntro = (section) => {
     const newMessagesState = {
       ...introMessages,
-      [section]: false
+      [section]: false,
     };
     dispatch({ type: 'SAVE_INTRO', payload: newMessagesState });
   };

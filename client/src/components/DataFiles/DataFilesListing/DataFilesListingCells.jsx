@@ -10,19 +10,19 @@ import formatSize from 'utils/sizeFormat';
 import { formatDateTimeFromValue } from 'utils/timeFormat';
 
 export const CheckboxHeaderCell = () => {
-  const selected = useSelector(state => state.files.selectAll.FilesListing);
+  const selected = useSelector((state) => state.files.selectAll.FilesListing);
   const listingLength = useSelector(
-    state => state.files.listing.FilesListing.length
+    (state) => state.files.listing.FilesListing.length
   );
   const dispatch = useDispatch();
   const toggleSelect = () => {
     listingLength &&
       dispatch({
         type: 'DATA_FILES_TOGGLE_SELECT_ALL',
-        payload: { section: 'FilesListing' }
+        payload: { section: 'FilesListing' },
       });
   };
-  const handleKeyPress = e => e.key === 'enter' && toggleSelect();
+  const handleKeyPress = (e) => e.key === 'enter' && toggleSelect();
   return (
     <Checkbox
       isChecked={selected}
@@ -35,19 +35,19 @@ export const CheckboxHeaderCell = () => {
 };
 
 export const CheckboxCell = React.memo(({ index }) => {
-  const selected = useSelector(state =>
+  const selected = useSelector((state) =>
     state.files.selected.FilesListing.includes(index)
   );
   return <Checkbox isChecked={selected} />;
 });
 CheckboxCell.propTypes = {
-  index: PropTypes.number.isRequired
+  index: PropTypes.number.isRequired,
 };
 
 export const FileNavCell = React.memo(
   ({ system, path, name, format, api, scheme, href, isPublic, length }) => {
     const dispatch = useDispatch();
-    const previewCallback = e => {
+    const previewCallback = (e) => {
       e.stopPropagation();
       e.preventDefault();
       if (api === 'googledrive') {
@@ -58,8 +58,8 @@ export const FileNavCell = React.memo(
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'preview',
-          props: { api, scheme, system, path, name, href, length }
-        }
+          props: { api, scheme, system, path, name, href, length },
+        },
       });
     };
 
@@ -92,10 +92,10 @@ FileNavCell.propTypes = {
   scheme: PropTypes.string.isRequired,
   href: PropTypes.string.isRequired,
   isPublic: PropTypes.bool,
-  length: PropTypes.number.isRequired
+  length: PropTypes.number.isRequired,
 };
 FileNavCell.defaultProps = {
-  isPublic: false
+  isPublic: false,
 };
 
 export const FileLengthCell = ({ cell }) => {
@@ -104,7 +104,7 @@ export const FileLengthCell = ({ cell }) => {
   return <span>{formatSize(bytes)}</span>;
 };
 FileLengthCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.number }).isRequired
+  cell: PropTypes.shape({ value: PropTypes.number }).isRequired,
 };
 
 export const LastModifiedCell = ({ cell }) => {
@@ -113,7 +113,7 @@ export const LastModifiedCell = ({ cell }) => {
   return <span>{formatDateTimeFromValue(timeValue)}</span>;
 };
 LastModifiedCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.string }).isRequired
+  cell: PropTypes.shape({ value: PropTypes.string }).isRequired,
 };
 
 export const FileIcon = ({ format }) => {
@@ -124,24 +124,24 @@ export const FileIcon = ({ format }) => {
   return <Icon name={iconName}>{iconLabel}</Icon>;
 };
 FileIcon.propTypes = {
-  format: PropTypes.string.isRequired
+  format: PropTypes.string.isRequired,
 };
 
 export const FileIconCell = ({ cell }) => {
   return <FileIcon format={cell.value} />;
 };
 FileIconCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.string }).isRequired
+  cell: PropTypes.shape({ value: PropTypes.string }).isRequired,
 };
 
 export const ViewPathCell = ({ file }) => {
   const dispatch = useDispatch();
-  const onClick = e => {
+  const onClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'showpath', props: { file } }
+      payload: { operation: 'showpath', props: { file } },
     });
   };
   return (
@@ -152,5 +152,5 @@ export const ViewPathCell = ({ file }) => {
 };
 
 ViewPathCell.propTypes = {
-  file: PropTypes.shape({}).isRequired
+  file: PropTypes.shape({}).isRequired,
 };

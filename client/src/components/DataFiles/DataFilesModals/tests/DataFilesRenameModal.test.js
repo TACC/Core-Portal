@@ -14,9 +14,9 @@ const initialMockState = {
   systems: systemsFixture,
   pushKeys: {
     modalProps: {
-      pushKeys: false
-    }
-  }
+      pushKeys: false,
+    },
+  },
 };
 
 describe('DataFilesCopyModal', () => {
@@ -69,18 +69,18 @@ describe('DataFilesCopyModal', () => {
             format: 'folder',
             system: 'test.system',
             mimeType: 'text/directory',
-            type: 'dir'
+            type: 'dir',
           },
           api: 'tapis',
           scheme: 'private',
           newName: 'abc123',
-          reloadCallback: expect.any(Function)
-        }
+          reloadCallback: expect.any(Function),
+        },
       },
       {
         type: 'DATA_FILES_TOGGLE_MODAL',
-        payload: { props: {}, operation: 'rename' }
-      }
+        payload: { props: {}, operation: 'rename' },
+      },
     ]);
   });
 

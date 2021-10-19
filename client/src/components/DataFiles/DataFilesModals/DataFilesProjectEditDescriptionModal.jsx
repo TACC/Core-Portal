@@ -9,18 +9,18 @@ import styles from './DataFilesProjectEditDescription.module.scss';
 
 const DataFilesProjectEditDescriptionModal = () => {
   const dispatch = useDispatch();
-  const isOpen = useSelector(state => state.files.modals.editproject);
+  const isOpen = useSelector((state) => state.files.modals.editproject);
   const { title, description, projectId } = useSelector(
-    state => state.projects.metadata
+    (state) => state.projects.metadata
   );
-  const isUpdating = useSelector(state => {
+  const isUpdating = useSelector((state) => {
     return (
       state.projects.operation &&
       state.projects.operation.name === 'titleDescription' &&
       state.projects.operation.loading
     );
   });
-  const updatingError = useSelector(state => {
+  const updatingError = useSelector((state) => {
     return (
       state.projects.operation &&
       state.projects.operation.name === 'titleDescription' &&
@@ -31,7 +31,7 @@ const DataFilesProjectEditDescriptionModal = () => {
   const initialValues = useMemo(
     () => ({
       title,
-      description: description || ''
+      description: description || '',
     }),
     [title, description]
   );
@@ -39,21 +39,21 @@ const DataFilesProjectEditDescriptionModal = () => {
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'editproject', props: {} }
+      payload: { operation: 'editproject', props: {} },
     });
   };
 
   const setProjectTitleDescription = useCallback(
-    values => {
+    (values) => {
       dispatch({
         type: 'PROJECTS_SET_TITLE_DESCRIPTION',
         payload: {
           projectId,
           data: {
             title: values.title,
-            description: values.description || ''
-          }
-        }
+            description: values.description || '',
+          },
+        },
       });
     },
     [projectId, dispatch]
@@ -67,7 +67,7 @@ const DataFilesProjectEditDescriptionModal = () => {
     description: Yup.string().max(
       800,
       'Description must be at most 800 characters'
-    )
+    ),
   });
 
   return (

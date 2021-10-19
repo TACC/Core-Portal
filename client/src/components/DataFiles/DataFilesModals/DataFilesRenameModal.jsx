@@ -7,18 +7,20 @@ import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
 
 const DataFilesRenameModal = () => {
-  const isOpen = useSelector(state => state.files.modals.rename);
+  const isOpen = useSelector((state) => state.files.modals.rename);
 
   const selected = useSelector(
-    state => state.files.modalProps.rename.selectedFile || {}
+    (state) => state.files.modalProps.rename.selectedFile || {}
   );
-  const { api, scheme } = useSelector(state => state.files.params.FilesListing);
+  const { api, scheme } = useSelector(
+    (state) => state.files.params.FilesListing
+  );
 
   const dispatch = useDispatch();
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'rename', props: {} }
+      payload: { operation: 'rename', props: {} },
     });
   };
 
@@ -39,13 +41,13 @@ const DataFilesRenameModal = () => {
         [selected.name],
         'The new name must differ from the current name.'
       )
-      .required('Please enter a valid file name.')
+      .required('Please enter a valid file name.'),
   });
 
   const onClosed = () => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: null, operation: 'rename' }
+      payload: { status: null, operation: 'rename' },
     });
   };
 
@@ -57,8 +59,8 @@ const DataFilesRenameModal = () => {
         newName,
         reloadCallback: reloadPage,
         api,
-        scheme
-      }
+        scheme,
+      },
     });
     toggle();
   };

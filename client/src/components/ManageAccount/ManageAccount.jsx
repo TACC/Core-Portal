@@ -8,12 +8,12 @@ import {
   ChangePassword,
   Licenses,
   OptionalInformation,
-  Integrations
+  Integrations,
 } from './ManageAccountTables';
 import {
   ChangePasswordModal,
   EditOptionalInformationModal,
-  EditRequiredInformationModal
+  EditRequiredInformationModal,
 } from './ManageAccountModals';
 
 import './ManageAccount.scss';
@@ -27,12 +27,12 @@ const ManageAccountView = () => {
     profile: {
       isLoading,
       errors,
-      data: { licenses, integrations }
-    }
+      data: { licenses, integrations },
+    },
   } = useSelector(
-    state => ({
+    (state) => ({
       config: state.workbench.config,
-      profile: state.profile
+      profile: state.profile,
     }),
     shallowEqual
   );
@@ -49,7 +49,7 @@ const ManageAccountView = () => {
       messages={
         !isLoading &&
         integrations.map(
-          integration =>
+          (integration) =>
             integration &&
             integration.error === 'SETUP_ERROR' && (
               <SectionMessage key={integration.label} type="warning" canDismiss>

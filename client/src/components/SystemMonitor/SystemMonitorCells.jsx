@@ -4,8 +4,8 @@ import { shape, string, bool, number } from 'prop-types';
 
 const CELL_PROPTYPES = {
   cell: shape({
-    value: string.isRequired
-  }).isRequired
+    value: string.isRequired,
+  }).isRequired,
 };
 
 export const Display = ({ cell: { value } }) => (
@@ -24,8 +24,8 @@ export const Operational = ({ cell: { value } }) => (
 );
 Operational.propTypes = {
   cell: shape({
-    value: bool.isRequired
-  }).isRequired
+    value: bool.isRequired,
+  }).isRequired,
 };
 
 export const Load = ({ cell: { value } }) => (

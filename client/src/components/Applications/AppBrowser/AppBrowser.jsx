@@ -8,8 +8,8 @@ import './AppBrowser.scss';
 import * as ROUTES from '../../../constants/routes';
 
 const findAppTab = (categoryDict, appId) => {
-  return Object.keys(categoryDict).find(category =>
-    categoryDict[category].some(app => app.appId === appId)
+  return Object.keys(categoryDict).find((category) =>
+    categoryDict[category].some((app) => app.appId === appId)
   );
 };
 
@@ -17,12 +17,12 @@ const AppBrowser = () => {
   const { params } = useRouteMatch();
   const [activeTab, setActiveTab] = useState();
 
-  const toggle = tab => {
+  const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
   const { categoryDict, defaultTab, error } = useSelector(
-    state => ({ ...state.apps }),
+    (state) => ({ ...state.apps }),
     shallowEqual
   );
 
@@ -46,7 +46,7 @@ const AppBrowser = () => {
   return (
     <div id="appBrowser-wrapper">
       <Nav id="appBrowser-sidebar">
-        {Object.keys(categoryDict).map(category => (
+        {Object.keys(categoryDict).map((category) => (
           <NavItem key={category}>
             <NavLink
               className={activeTab === category ? 'active' : null}
@@ -66,10 +66,10 @@ const AppBrowser = () => {
         ))}
       </Nav>
       <TabContent id="appBrowser-tray" activeTab={activeTab}>
-        {Object.keys(categoryDict).map(category => (
+        {Object.keys(categoryDict).map((category) => (
           <TabPane tabId={category} key={`${category}tabPane`}>
             <div className="apps-grid-list">
-              {categoryDict[category].map(app => (
+              {categoryDict[category].map((app) => (
                 <div key={app.appId} className="apps-grid-item">
                   <NavLink
                     tag={RRNavLink}

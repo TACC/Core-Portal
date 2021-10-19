@@ -20,21 +20,21 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
 };
 ToolbarButton.defaultProps = {
   onClick: () => {},
-  disabled: true
+  disabled: true,
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   text: PropTypes.string.isRequired,
-  iconName: PropTypes.string.isRequired
+  iconName: PropTypes.string.isRequired,
 };
 
 const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
 
-  const selectedFiles = useSelector(state =>
+  const selectedFiles = useSelector((state) =>
     state.files.selected.FilesListing.map(
-      i => state.files.listing.FilesListing[i]
+      (i) => state.files.listing.FilesListing[i]
     )
   );
   const modifiableUserData =
@@ -49,7 +49,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const showDownload = api === 'tapis';
 
   const showMakeLink = useSelector(
-    state =>
+    (state) =>
       state.workbench &&
       state.workbench.config.makeLink &&
       api === 'tapis' &&
@@ -57,15 +57,15 @@ const DataFilesToolbar = ({ scheme, api }) => {
   );
 
   const showCompress = !!useSelector(
-    state => state.workbench.config.extractApp && modifiableUserData
+    (state) => state.workbench.config.extractApp && modifiableUserData
   );
 
   const showExtract = !!useSelector(
-    state => state.workbench.config.compressApp && modifiableUserData
+    (state) => state.workbench.config.compressApp && modifiableUserData
   );
 
   const showMakePublic = useSelector(
-    state =>
+    (state) =>
       state.workbench &&
       state.workbench.config.makePublic &&
       api === 'tapis' &&
@@ -77,26 +77,26 @@ const DataFilesToolbar = ({ scheme, api }) => {
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
         operation: 'rename',
-        props: { selectedFile: selectedFiles[0] }
-      }
+        props: { selectedFile: selectedFiles[0] },
+      },
     });
 
   const toggleMoveModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'move', props: { selectedFiles } }
+      payload: { operation: 'move', props: { selectedFiles } },
     });
 
   const toggleCopyModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'copy', props: { selectedFiles } }
+      payload: { operation: 'copy', props: { selectedFiles } },
     });
 
   const toggleCompressModal = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'compress', props: { selectedFiles } }
+      payload: { operation: 'compress', props: { selectedFiles } },
     });
   };
 
@@ -105,8 +105,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
         operation: 'extract',
-        props: { selectedFile: selectedFiles[0] }
-      }
+        props: { selectedFile: selectedFiles[0] },
+      },
     });
   };
 
@@ -115,16 +115,16 @@ const DataFilesToolbar = ({ scheme, api }) => {
       type: 'DATA_FILES_LINK',
       payload: {
         file: selectedFiles[0],
-        scheme
+        scheme,
       },
-      method: 'get'
+      method: 'get',
     });
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
         operation: 'link',
-        props: { selectedFile: selectedFiles[0] }
-      }
+        props: { selectedFile: selectedFiles[0] },
+      },
     });
   };
 
@@ -133,8 +133,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
         operation: 'makePublic',
-        props: { selectedFile: selectedFiles[0] }
-      }
+        props: { selectedFile: selectedFiles[0] },
+      },
     });
   };
 
@@ -142,15 +142,15 @@ const DataFilesToolbar = ({ scheme, api }) => {
     if (canDownload) {
       dispatch({
         type: 'DATA_FILES_DOWNLOAD',
-        payload: { file: selectedFiles[0] }
+        payload: { file: selectedFiles[0] },
       });
     } else {
       dispatch({
         type: 'DATA_FILES_TOGGLE_MODAL',
         payload: {
           operation: 'downloadMessage',
-          props: {}
-        }
+          props: {},
+        },
       });
     }
   };
@@ -158,7 +158,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const trash = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'trash', props: { selectedFiles } }
+      payload: { operation: 'trash', props: { selectedFiles } },
     });
   };
 
@@ -255,6 +255,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
 };
 DataFilesToolbar.propTypes = {
   scheme: PropTypes.string.isRequired,
-  api: PropTypes.string.isRequired
+  api: PropTypes.string.isRequired,
 };
 export default DataFilesToolbar;

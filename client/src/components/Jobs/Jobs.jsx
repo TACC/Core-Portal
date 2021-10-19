@@ -11,11 +11,11 @@ import * as ROUTES from '../../constants/routes';
 
 function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const dispatch = useDispatch();
-  const isLoading = useSelector(state => state.jobs.loading);
-  const jobs = useSelector(state => state.jobs.list);
-  const error = useSelector(state => state.jobs.error);
+  const isLoading = useSelector((state) => state.jobs.loading);
+  const jobs = useSelector((state) => state.jobs.list);
+  const error = useSelector((state) => state.jobs.error);
   const hideDataFiles = useSelector(
-    state => state.workbench.config.hideDataFiles
+    (state) => state.workbench.config.hideDataFiles
   );
 
   const noDataText = (
@@ -34,20 +34,20 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
   const infiniteScrollCallback = useCallback(() => {
     dispatch({
       type: 'GET_JOBS',
-      params: { offset: jobs.length }
+      params: { offset: jobs.length },
     });
   }, [jobs]);
 
   const jobDetailLink = useCallback(
     ({
       row: {
-        original: { id, name }
-      }
+        original: { id, name },
+      },
     }) => (
       <Link
         to={{
           pathname: `${ROUTES.WORKBENCH}${ROUTES.HISTORY}/jobs/${id}`,
-          state: { jobName: name }
+          state: { jobName: name },
         }}
         className="wb-link"
       >
@@ -69,16 +69,16 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
     {
       Header: '',
       accessor: 'appId',
-      Cell: el => (
+      Cell: (el) => (
         <span>
           <AppIcon appId={el.value} />
         </span>
-      )
+      ),
     },
     {
       Header: 'Job Name',
       accessor: 'name',
-      Cell: el => (
+      Cell: (el) => (
         <span
           title={el.value}
           id={`jobID${el.row.index}`}
@@ -86,32 +86,32 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
         >
           {el.value}
         </span>
-      )
+      ),
     },
     {
       Header: 'Job Status',
       headerStyle: { textAlign: 'left' },
       accessor: 'status',
-      Cell: el => (
+      Cell: (el) => (
         <JobsStatus
           status={el.value}
           fancy={showFancyStatus}
           jobId={el.row.original.id}
         />
       ),
-      id: 'jobStatusCol'
+      id: 'jobStatusCol',
     },
     {
       Header: 'Job Details',
       accessor: 'id',
       show: showDetails,
-      Cell: jobDetailLink
+      Cell: jobDetailLink,
     },
     {
       Header: 'Output Location',
       headerStyle: { textAlign: 'left' },
       accessor: '_links.archiveData.href',
-      Cell: el => {
+      Cell: (el) => {
         const outputPath =
           el.row.original.outputLocation || getOutputPathFromHref(el.value);
         return outputPath && !hideDataFiles ? (
@@ -122,20 +122,20 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
             {outputPath}
           </Link>
         ) : null;
-      }
+      },
     },
     {
       Header: 'Date Submitted',
       headerStyle: { textAlign: 'left' },
-      accessor: d => new Date(d.created),
-      Cell: el => (
+      accessor: (d) => new Date(d.created),
+      Cell: (el) => (
         <span id={`jobDate${el.index}`}>{`${formatDateTime(el.value)}`}</span>
       ),
-      id: 'jobDateCol'
-    }
+      id: 'jobDateCol',
+    },
   ];
 
-  const filterColumns = columns.filter(f => f.show !== false);
+  const filterColumns = columns.filter((f) => f.show !== false);
 
   return (
     <InfiniteScrollTable
@@ -153,12 +153,12 @@ function JobsView({ showDetails, showFancyStatus, rowProps }) {
 JobsView.propTypes = {
   showDetails: PropTypes.bool,
   showFancyStatus: PropTypes.bool,
-  rowProps: PropTypes.func
+  rowProps: PropTypes.func,
 };
 JobsView.defaultProps = {
   showDetails: false,
   showFancyStatus: false,
-  rowProps: row => {}
+  rowProps: (row) => {},
 };
 
 export default JobsView;

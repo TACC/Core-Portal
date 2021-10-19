@@ -16,7 +16,7 @@ const OnboardingEventLogModal = ({ toggle, params }) => {
           {`${params.user.firstName} ${params.user.lastName} - ${params.step.displayName}`}
         </h6>
         <div className={styles['event-list']}>
-          {params.step.events.map(event => (
+          {params.step.events.map((event) => (
             <div key={event.time}>
               <div>{formatDateTime(new Date(event.time))}</div>
               <div>{event.message}</div>
@@ -32,8 +32,8 @@ OnboardingEventLogModal.propTypes = {
   toggle: PropTypes.func.isRequired,
   params: PropTypes.shape({
     user: onboardingUserPropType,
-    step: stepPropType
-  }).isRequired
+    step: stepPropType,
+  }).isRequired,
 };
 
 export default OnboardingEventLogModal;

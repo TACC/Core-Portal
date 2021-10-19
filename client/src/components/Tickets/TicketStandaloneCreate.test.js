@@ -14,18 +14,20 @@ describe('TicketStandaloneCreate', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      introMessages: initialIntroMessages
+      introMessages: initialIntroMessages,
     });
 
     const { getByRole } = renderComponent(<TicketStandaloneCreate />, store);
-    expect(getByRole('alert', {class: /introMessageGeneral/i})).toBeInTheDocument();
+    expect(
+      getByRole('alert', { class: /introMessageGeneral/i })
+    ).toBeInTheDocument();
   });
 
   it('renders ticket creation and hides intro message if already dismissed', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      introMessages: {...initialIntroMessages, TICKETS: false}
+      introMessages: { ...initialIntroMessages, TICKETS: false },
     });
 
     const { queryByRole } = renderComponent(<TicketStandaloneCreate />, store);

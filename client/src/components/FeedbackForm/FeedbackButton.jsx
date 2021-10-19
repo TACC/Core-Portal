@@ -7,7 +7,7 @@ import styles from './FeedbackButton.module.scss';
 const FeedbackButton = () => {
   const [openModal, setOpenModal] = React.useState(false);
   const creatingSuccess = useSelector(
-    state => state.ticketCreate.creatingSuccess
+    (state) => state.ticketCreate.creatingSuccess
   );
   const dispatch = useDispatch();
 
@@ -17,11 +17,11 @@ const FeedbackButton = () => {
         pk: 'feedback-toast',
         event_type: 'generic',
         message: 'Feedback submitted',
-        extra: {}
+        extra: {},
       };
       dispatch({
         type: 'ADD_TOAST',
-        payload: toast
+        payload: toast,
       });
       setOpenModal(false);
     }

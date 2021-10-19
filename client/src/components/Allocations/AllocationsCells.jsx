@@ -7,8 +7,8 @@ import { AllocationsTeamViewModal } from './AllocationsModals';
 
 const CELL_PROPTYPES = {
   cell: shape({
-    value: arrayOf(shape({})).isRequired
-  }).isRequired
+    value: arrayOf(shape({})).isRequired,
+  }).isRequired,
 };
 
 export const Team = ({ cell: { value } }) => {
@@ -23,7 +23,7 @@ export const Team = ({ cell: { value } }) => {
         onClick={() => {
           dispatch({
             type: 'GET_TEAMS',
-            payload: { ...value }
+            payload: { ...value },
           });
           setOpenModal(true);
         }}
@@ -43,9 +43,9 @@ Team.propTypes = {
   cell: shape({
     value: shape({
       projectId: number.isRequired,
-      name: string.isRequired
-    }).isRequired
-  }).isRequired
+      name: string.isRequired,
+    }).isRequired,
+  }).isRequired,
 };
 
 export const Systems = ({ cell }) => (
@@ -71,7 +71,7 @@ export const Awarded = ({ cell }) => (
 Awarded.propTypes = CELL_PROPTYPES;
 
 export const Remaining = ({ cell }) => {
-  const getColor = val => {
+  const getColor = (val) => {
     if (val > 0.33) {
       if (val > 0.66) return 'success';
       return 'warning';
@@ -109,6 +109,6 @@ export const Expires = ({ row: { values } }) => (
 );
 Expires.propTypes = {
   row: shape({
-    values: shape({}).isRequired
-  }).isRequired
+    values: shape({}).isRequired,
+  }).isRequired,
 };

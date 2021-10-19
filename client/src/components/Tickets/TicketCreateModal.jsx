@@ -10,13 +10,15 @@ function TicketCreateModal() {
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
-  const authenticatedUser = useSelector(state => state.authenticatedUser.user);
+  const authenticatedUser = useSelector(
+    (state) => state.authenticatedUser.user
+  );
   const {
     modalOpen,
     subject,
     showAsModalOnDashboard,
-    provideDashBoardLinkOnSuccess
-  } = useSelector(state => state.ticketCreateModal);
+    provideDashBoardLinkOnSuccess,
+  } = useSelector((state) => state.ticketCreateModal);
 
   useEffect(() => {
     if (
@@ -33,7 +35,7 @@ function TicketCreateModal() {
 
   const close = () => {
     dispatch({
-      type: 'TICKET_CREATE_CLOSE_MODAL'
+      type: 'TICKET_CREATE_CLOSE_MODAL',
     });
 
     if (showAsModalOnDashboard) {

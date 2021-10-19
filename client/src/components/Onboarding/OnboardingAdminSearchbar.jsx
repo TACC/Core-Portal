@@ -7,22 +7,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import styles from './OnboardingAdminSearchbar.module.scss';
 
 const OnboardingAdminSearchbar = ({ className, disabled }) => {
-  const { query } = useSelector(state => state.onboarding.admin);
+  const { query } = useSelector((state) => state.onboarding.admin);
   const [search, setSearch] = useState(query);
   const dispatch = useDispatch();
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     dispatch({
       type: 'FETCH_ONBOARDING_ADMIN_LIST',
       payload: {
         limit: 25,
         offset: 0,
-        query: search
-      }
+        query: search,
+      },
     });
   };
-  const onClear = e => {
+  const onClear = (e) => {
     e.preventDefault();
     setSearch('');
     dispatch({
@@ -30,11 +30,11 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
       payload: {
         limit: 25,
         offset: 0,
-        query: null
-      }
+        query: null,
+      },
     });
   };
-  const onChange = e => {
+  const onChange = (e) => {
     setSearch(e.target.value);
     if (!e.target.value) {
       onClear(e);
@@ -49,7 +49,11 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
     >
       <div className={`input-group ${styles['query-fieldset']}`}>
         <div className="input-group-prepend">
-          <Button type="submit" className={styles['submit-button']} disabled={disabled}>
+          <Button
+            type="submit"
+            className={styles['submit-button']}
+            disabled={disabled}
+          >
             <Icon name="search" className={styles['button__icon']} />
             <span className={styles['button__text']}>Search</span>
           </Button>
@@ -74,11 +78,11 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
 OnboardingAdminSearchbar.propTypes = {
   /** Additional `className` for the root element */
   className: PropTypes.string,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
 };
 OnboardingAdminSearchbar.defaultProps = {
   className: '',
-  disabled: false
+  disabled: false,
 };
 
 export default OnboardingAdminSearchbar;

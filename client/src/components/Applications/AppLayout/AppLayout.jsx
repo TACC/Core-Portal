@@ -9,10 +9,10 @@ import { AppDetail, AppPlaceholder } from '../AppForm/AppForm';
 export const AppsLayout = () => {
   const { params } = useRouteMatch();
   const { loading, categoryDict, error } = useSelector(
-    state => ({
+    (state) => ({
       loading: state.apps.loading,
       error: state.apps.error,
-      categoryDict: state.apps.categoryDict
+      categoryDict: state.apps.categoryDict,
     }),
     shallowEqual
   );
@@ -39,11 +39,11 @@ export const AppsLayout = () => {
   );
 };
 
-const AppsHeader = categoryDict => {
+const AppsHeader = (categoryDict) => {
   const { params } = useRouteMatch();
   const appMeta = Object.values(categoryDict.categoryDict)
-    .flatMap(e => e)
-    .find(app => app.appId === params.appId);
+    .flatMap((e) => e)
+    .find((app) => app.appId === params.appId);
   const path = appMeta ? ` / ${appMeta.label}` : '';
   return `Applications ${path}`;
 };
@@ -51,9 +51,9 @@ const AppsHeader = categoryDict => {
 const AppsRoutes = () => {
   const { path } = useRouteMatch();
   const dispatch = useDispatch();
-  const appDict = useSelector(state => state.apps.appDict, shallowEqual);
+  const appDict = useSelector((state) => state.apps.appDict, shallowEqual);
   const categoryDict = useSelector(
-    state => state.apps.categoryDict,
+    (state) => state.apps.categoryDict,
     shallowEqual
   );
 
@@ -80,14 +80,14 @@ const AppsRoutes = () => {
                 if (appDef && 'html' in appDef) {
                   dispatch({
                     type: 'LOAD_APP',
-                    payload: { definition: appDict[params.appId] }
+                    payload: { definition: appDict[params.appId] },
                   });
                 } else {
                   dispatch({
                     type: 'GET_APP',
                     payload: {
-                      appId: params.appId
-                    }
+                      appId: params.appId,
+                    },
                   });
                 }
                 return <AppDetail />;

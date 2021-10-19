@@ -2,7 +2,7 @@ import React from 'react';
 import {
   useHistory,
   useLocation,
-  NavLink as RRNavLink
+  NavLink as RRNavLink,
 } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
@@ -35,15 +35,15 @@ function DataFilesLink({ path, children, disabled }) {
 DataFilesLink.propTypes = {
   path: PropTypes.string.isRequired,
   children: PropTypes.string,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
 };
 
 DataFilesLink.defaultProps = {
   children: null,
-  disabled: false
+  disabled: false,
 };
 
-const reduceInputParameters = data =>
+const reduceInputParameters = (data) =>
   data.reduce((acc, item) => {
     acc[item.label] = item.value;
     return acc;
@@ -55,21 +55,21 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
   const hasFailedStatus = jobDetails.status === 'FAILED';
   const hideDataFiles = useSelector(
-    state => state.workbench.config.hideDataFiles
+    (state) => state.workbench.config.hideDataFiles
   );
 
   const statusDataObj = {
     Submitted: created,
-    [`${getStatusText(jobDetails.status)}`]: lastUpdated
+    [`${getStatusText(jobDetails.status)}`]: lastUpdated,
   };
   const inputAndParamsDataObj = {
     ...reduceInputParameters(jobDisplay.inputs),
-    ...reduceInputParameters(jobDisplay.parameters)
+    ...reduceInputParameters(jobDisplay.parameters),
   };
   const configDataObj = {};
   const outputDataObj = {
     'Job Name': jobName,
-    'Output Location': outputPath
+    'Output Location': outputPath,
   };
 
   statusDataObj[hasFailedStatus ? 'Failure Report' : 'Last Status Message'] = (
@@ -102,7 +102,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     Status: <DescriptionList data={statusDataObj} />,
     Inputs: <DescriptionList data={inputAndParamsDataObj} />,
     Configuration: <DescriptionList data={configDataObj} />,
-    Output: <DescriptionList data={outputDataObj} />
+    Output: <DescriptionList data={outputDataObj} />,
   };
 
   return (
@@ -118,10 +118,13 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
             >
               View in Data Files
             </DataFilesLink>
-          )
+          ),
         }}
       />
-      <DescriptionList className={`${styles['right-panel']} ${styles['panel-content']}`} data={data} />
+      <DescriptionList
+        className={`${styles['right-panel']} ${styles['panel-content']}`}
+        data={data}
+      />
     </>
   );
 }
@@ -131,16 +134,16 @@ JobHistoryContent.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   jobDetails: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  jobDisplay: PropTypes.object.isRequired
+  jobDisplay: PropTypes.object.isRequired,
 };
 JobHistoryContent.defaultProps = {
-  jobName: ''
+  jobName: '',
 };
 
 function JobHistoryModal({ jobId }) {
-  const loading = useSelector(state => state.jobDetail.loading);
-  const loadingError = useSelector(state => state.jobDetail.loadingError);
-  const { job, display } = useSelector(state => state.jobDetail);
+  const loading = useSelector((state) => state.jobDetail.loading);
+  const loadingError = useSelector((state) => state.jobDetail.loadingError);
+  const { job, display } = useSelector((state) => state.jobDetail);
   const { state } = useLocation();
 
   let jobName = job ? job.name : placeHolder;
@@ -154,14 +157,14 @@ function JobHistoryModal({ jobId }) {
   const history = useHistory();
   const close = () => {
     history.push(`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}`, {
-      fromJobHistoryModal: true
+      fromJobHistoryModal: true,
     });
   };
 
   const headerData = {
     'Job ID': jobId,
     Application: display ? display.applicationName : placeHolder,
-    System: display ? display.systemName : placeHolder
+    System: display ? display.systemName : placeHolder,
   };
 
   return (
@@ -202,7 +205,7 @@ function JobHistoryModal({ jobId }) {
 }
 
 JobHistoryModal.propTypes = {
-  jobId: PropTypes.string.isRequired
+  jobId: PropTypes.string.isRequired,
 };
 
 export default JobHistoryModal;

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import styles from './Pill.module.scss';
 
 function Pill({ children, type, className, shouldTruncate }) {
-
   let pillStyleName = `${styles['root']} ${styles[`is-${type}`]}`;
 
   if (shouldTruncate) pillStyleName += ` ${styles['should-truncate']}`;
@@ -19,13 +18,13 @@ Pill.propTypes = {
   children: PropTypes.string.isRequired,
   type: PropTypes.string,
   className: PropTypes.string,
-  shouldTruncate: PropTypes.bool
+  shouldTruncate: PropTypes.bool,
 };
 
 Pill.defaultProps = {
   type: 'normal',
   className: '',
-  shouldTruncate: true
+  shouldTruncate: true,
 };
 
 export default Pill;

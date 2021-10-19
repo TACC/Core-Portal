@@ -17,29 +17,26 @@ export const dataFilesRename = {
       nativeFormat: 'raw',
       _links: {
         self: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//test2.png'
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//test2.png',
         },
         system: {
-          href:
-            'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
+          href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
         },
         profile: {
-          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
         },
         history: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//test2.png'
-        }
-      }
-    }
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//test2.png',
+        },
+      },
+    },
   },
   message: '',
   operation: 'rename',
   pk: 51,
   read: false,
   status: 'SUCCESS',
-  user: 'username'
+  user: 'username',
 };
 
 export const dataFilesMove = {
@@ -61,29 +58,26 @@ export const dataFilesMove = {
       nativeFormat: 'raw',
       _links: {
         self: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//testfol/test.png'
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//testfol/test.png',
         },
         system: {
-          href:
-            'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
+          href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
         },
         profile: {
-          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
         },
         history: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//testfol/test.png'
-        }
-      }
-    }
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//testfol/test.png',
+        },
+      },
+    },
   },
   message: '',
   operation: 'move',
   pk: 51,
   read: false,
   status: 'SUCCESS',
-  user: 'username'
+  user: 'username',
 };
 
 export const dataFilesError = {
@@ -97,7 +91,7 @@ export const dataFilesError = {
   pk: 51,
   read: false,
   status: 'ERROR',
-  user: 'username'
+  user: 'username',
 };
 
 export const dataFilesCopy = {
@@ -119,29 +113,26 @@ export const dataFilesCopy = {
       nativeFormat: 'raw',
       _links: {
         self: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//testfol/test.png'
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//testfol/test.png',
         },
         system: {
-          href:
-            'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
+          href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
         },
         profile: {
-          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
         },
         history: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//testfol/test.png'
-        }
-      }
-    }
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//testfol/test.png',
+        },
+      },
+    },
   },
   message: '',
   operation: 'copy',
   pk: 51,
   read: false,
   status: 'SUCCESS',
-  user: 'username'
+  user: 'username',
 };
 
 export const dataFilesTrash = {
@@ -164,29 +155,26 @@ export const dataFilesTrash = {
       nativeFormat: 'raw',
       _links: {
         self: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//.Trash/test_2020-11-19%2020-54-46.png'
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//.Trash/test_2020-11-19%2020-54-46.png',
         },
         system: {
-          href:
-            'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
+          href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
         },
         profile: {
-          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
         },
         history: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//.Trash/test_2020-11-19%2020-54-46.png'
-        }
-      }
-    }
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//.Trash/test_2020-11-19%2020-54-46.png',
+        },
+      },
+    },
   },
   message: '',
   operation: 'trash',
   pk: 51,
   read: false,
   status: 'SUCCESS',
-  user: 'username'
+  user: 'username',
 };
 
 export const dataFilesMkdir = {
@@ -208,29 +196,26 @@ export const dataFilesMkdir = {
       nativeFormat: 'dir',
       _links: {
         self: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//testfol'
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//testfol',
         },
         system: {
-          href:
-            'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
+          href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
         },
         profile: {
-          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
         },
         history: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//testfol'
-        }
-      }
-    }
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//testfol',
+        },
+      },
+    },
   },
   message: '',
   operation: 'mkdir',
   pk: 51,
   read: false,
   status: 'SUCCESS',
-  user: 'username'
+  user: 'username',
 };
 
 export const dataFilesUpload = {
@@ -252,30 +237,27 @@ export const dataFilesUpload = {
       nativeFormat: 'raw',
       _links: {
         self: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//test.png.png'
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//test.png.png',
         },
         system: {
-          href:
-            'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
+          href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
         },
         profile: {
-          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
         },
         history: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//test.png.png'
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/history/system/frontera.home.username//test.png.png',
         },
-        notification: []
-      }
-    }
+        notification: [],
+      },
+    },
   },
   message: '',
   operation: 'upload',
   pk: 51,
   read: false,
   status: 'SUCCESS',
-  user: 'username'
+  user: 'username',
 };
 
 export const dataFilesUploadToSharedWorkSpace = {
@@ -298,27 +280,24 @@ export const dataFilesUploadToSharedWorkSpace = {
       nativeFormat: 'raw',
       _links: {
         self: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/media/system/test.site.project.PROJECT-3//test7.txt'
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/test.site.project.PROJECT-3//test7.txt',
         },
         system: {
-          href:
-            'https://portals-api.tacc.utexas.edu/systems/v2/test.site.project.PROJECT-3'
+          href: 'https://portals-api.tacc.utexas.edu/systems/v2/test.site.project.PROJECT-3',
         },
         profile: {
-          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+          href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
         },
         history: {
-          href:
-            'https://portals-api.tacc.utexas.edu/files/v2/history/system/test.site.project.PROJECT-3//test7.txt'
+          href: 'https://portals-api.tacc.utexas.edu/files/v2/history/system/test.site.project.PROJECT-3//test7.txt',
         },
-        notification: []
-      }
-    }
+        notification: [],
+      },
+    },
   },
   pk: 1,
   action_link: '',
   user: 'username',
   read: true,
-  deleted: false
+  deleted: false,
 };

@@ -49,7 +49,7 @@ function SectionMessages({
   children,
   className,
   introMessageName,
-  introMessageText
+  introMessageText,
 }) {
   const introMessageContent = introMessageText || MESSAGES[introMessageName];
   const introMessage = introMessageContent && (
@@ -85,13 +85,13 @@ SectionMessages.propTypes = {
   /** The name of the route section (to search for required intro message) */
   introMessageName: PropTypes.string,
   /** Custom intro text (can overwrite message from `introMessageName`) */
-  introMessageText: PropTypes.string
+  introMessageText: PropTypes.string,
 };
 SectionMessages.defaultProps = {
   children: '',
   className: '',
   introMessageName: '',
-  introMessageText: ''
+  introMessageText: '',
 };
 
 export default SectionMessages;

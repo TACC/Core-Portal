@@ -6,7 +6,7 @@ import {
   DescriptionList,
   InfiniteScrollTable,
   InlineMessage,
-  SectionMessage
+  SectionMessage,
 } from '_common';
 import { Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
@@ -33,7 +33,7 @@ function UIPatternsSection() {
           direction="horizontal"
           data={{
             header: 'Header',
-            content: 'Content'
+            content: 'Content',
           }}
         />
       </dt>
@@ -47,10 +47,11 @@ function UIPatternsSection() {
           density="compact"
           direction="horizontal"
           data={{
-            contentClassName: styles['content--has-list-to-illustrate-scrolling'],
+            contentClassName:
+              styles['content--has-list-to-illustrate-scrolling'],
             header: 'Milk',
             content: 'Cow, Soy, Nut',
-            contentShouldScroll: <code>true</code>
+            contentShouldScroll: <code>true</code>,
           }}
         />
       </dt>
@@ -74,18 +75,21 @@ function UIPatternsSection() {
           className={styles['term-details']}
           direction="vertical"
           data={{
-            contentClassName: styles['content--has-table-to-illustrate-scrolling'],
+            contentClassName:
+              styles['content--has-table-to-illustrate-scrolling'],
             header:
               'Section with <SectionTableWrapper> and <InfiniteScrollTable>',
             content: '(paragraph, table, paragraph)',
             headerActions: '(a button to trigger sample action)',
-            contentLayoutName: 'oneColumn'
+            contentLayoutName: 'oneColumn',
           }}
         />
       </dt>
       <dd>
         <Section
-          contentClassName={styles['content--has-table-to-illustrate-scrolling']}
+          contentClassName={
+            styles['content--has-table-to-illustrate-scrolling']
+          }
           header={
             <>
               Section with <code>{`<SectionTableWrapper>`}</code> and &nbsp;
@@ -134,7 +138,7 @@ function UIPatternsSection() {
               <>
                 <code>true</code> (must resize to scroll)
               </>
-            )
+            ),
           }}
         />
       </dt>
@@ -181,8 +185,8 @@ function UIPatternsSection() {
                   type: 'TICKET_CREATE_OPEN_MODAL',
                   payload: {
                     provideDashBoardLinkOnSuccess: false,
-                    showAsModalOnDashboard: false
-                  }
+                    showAsModalOnDashboard: false,
+                  },
                 })
               }
             >
@@ -207,27 +211,27 @@ function UIPatternsSectionTableInfinite({ className }) {
   const tableData = [
     {
       col1: 'Hello',
-      col2: 'World'
+      col2: 'World',
     },
     {
       col1: 'react-table',
-      col2: 'rocks'
+      col2: 'rocks',
     },
     {
       col1: 'whatever',
-      col2: 'you want'
-    }
+      col2: 'you want',
+    },
   ];
 
   const tableColumns = [
     {
       Header: 'Column 1',
-      accessor: 'col1' // accessor is the "key" in the data
+      accessor: 'col1', // accessor is the "key" in the data
     },
     {
       Header: 'Column 2',
-      accessor: 'col2'
-    }
+      accessor: 'col2',
+    },
   ];
 
   return (
@@ -240,10 +244,10 @@ function UIPatternsSectionTableInfinite({ className }) {
 }
 UIPatternsSectionTableInfinite.propTypes = {
   /** Additional className for the root element */
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 UIPatternsSectionTableInfinite.defaultProps = {
-  className: ''
+  className: '',
 };
 
 function UIPatternsSectionTablePlain({ className }) {
@@ -274,8 +278,8 @@ function UIPatternsSectionTablePlain({ className }) {
 }
 UIPatternsSectionTablePlain.propTypes = {
   /** Additional className for the root element */
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 UIPatternsSectionTablePlain.defaultProps = {
-  className: ''
+  className: '',
 };

@@ -19,26 +19,26 @@ const initialMockState = {
   loadingErrorMessage: '',
   replying: false,
   replyingError: false,
-  replyingErrorMessage: ''
+  replyingErrorMessage: '',
 };
 
 const exampleTicketHistory = [
   {
     id: '1',
-    Type: "create",
+    Type: 'create',
     Content: 'ticket creation content from user',
     IsCreator: true,
-    Creator: "Max Munstermann",
-    Created: 'Fri Mar 22 09:17:27 2019'
+    Creator: 'Max Munstermann',
+    Created: 'Fri Mar 22 09:17:27 2019',
   },
   {
     id: '2',
-    Type: "Correspond",
+    Type: 'Correspond',
     Content: 'this is admin reply content',
     IsCreator: false,
-    Creator: "Ad Min",
-    Created: 'Fri Mar 23 10:17:00 2019'
-  }
+    Creator: 'Ad Min',
+    Created: 'Fri Mar 23 10:17:00 2019',
+  },
 ];
 
 function renderTicketsModelComponent(store) {
@@ -52,7 +52,7 @@ function renderTicketsModelComponent(store) {
 }
 
 // mock as we use scrollIntoView in TicketModal
-window.HTMLElement.prototype.scrollIntoView = jest.fn()
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 describe('TicketModal', () => {
   it('render modal', () => {
@@ -60,9 +60,9 @@ describe('TicketModal', () => {
       ticketDetailedView: {
         ...initialMockState,
         ticketId: 42,
-        ticketSubject: "Subject",
-        content: exampleTicketHistory
-      }
+        ticketSubject: 'Subject',
+        content: exampleTicketHistory,
+      },
     });
 
     const { getByText, getAllByText } = renderTicketsModelComponent(store);
@@ -77,9 +77,9 @@ describe('TicketModal', () => {
       ticketDetailedView: {
         ...initialMockState,
         ticketId: 42,
-        ticketSubject: "Subject",
-        loading: true
-      }
+        ticketSubject: 'Subject',
+        loading: true,
+      },
     });
 
     const { getByText, getByTestId } = renderTicketsModelComponent(store);

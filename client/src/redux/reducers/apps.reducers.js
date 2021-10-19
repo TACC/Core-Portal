@@ -4,13 +4,13 @@ export const initialState = {
   appIcons: {},
   error: { isError: false },
   loading: false,
-  defaultTab: ''
+  defaultTab: '',
 };
 
 function unpackAppIcons(tabs) {
   const appIcons = {};
-  tabs.forEach(tab => {
-    tab.apps.forEach(appEntry => {
+  tabs.forEach((tab) => {
+    tab.apps.forEach((appEntry) => {
       if ('icon' in appEntry && appEntry.icon && appEntry.icon.length > 0) {
         appIcons[appEntry.appId] = appEntry.icon;
       }
@@ -21,7 +21,7 @@ function unpackAppIcons(tabs) {
 
 function unpackCategoryDict(tabs) {
   const categoryDict = {};
-  tabs.forEach(tab => {
+  tabs.forEach((tab) => {
     categoryDict[tab.title] = tab.apps;
   });
   return categoryDict;
@@ -35,14 +35,14 @@ export function apps(state = initialState, action) {
         categoryDict: unpackCategoryDict(action.payload.tabs),
         appDict: action.payload.definitions,
         appIcons: unpackAppIcons(action.payload.tabs),
-        loading: false
+        loading: false,
       };
     }
     case 'GET_APPS_START':
       return {
         ...state,
         loading: true,
-        error: { isError: false }
+        error: { isError: false },
       };
     case 'GET_APPS_ERROR':
       return {
@@ -50,9 +50,9 @@ export function apps(state = initialState, action) {
         error: {
           ...action.payload,
           message: action.payload,
-          isError: true
+          isError: true,
         },
-        loading: false
+        loading: false,
       };
     default:
       return state;
@@ -67,7 +67,7 @@ export const initialAppState = {
   pushKeysSystem: {},
   exec_sys: {},
   license: {},
-  appListing: []
+  appListing: [],
 };
 export function app(state = initialAppState, action) {
   switch (action.type) {
@@ -80,7 +80,7 @@ export function app(state = initialAppState, action) {
         exec_sys: action.payload.exec_sys,
         license: action.payload.license,
         appListing: action.payload.appListing,
-        loading: false
+        loading: false,
       };
     case 'GET_APP_START':
       return {
@@ -92,7 +92,7 @@ export function app(state = initialAppState, action) {
         pushKeysSystem: {},
         exec_sys: {},
         license: {},
-        appListing: []
+        appListing: [],
       };
     case 'GET_APP_ERROR':
       return {
@@ -100,9 +100,9 @@ export function app(state = initialAppState, action) {
         error: {
           ...action.payload,
           message: action.payload.message,
-          isError: true
+          isError: true,
         },
-        loading: false
+        loading: false,
       };
     default:
       return state;

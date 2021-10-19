@@ -2,7 +2,7 @@ export const notificationsListEmptyFixture = {
   notifs: [],
   page: 0,
   total: 0,
-  unread: 0
+  unread: 0,
 };
 
 export const notificationsListFixture = {
@@ -53,14 +53,14 @@ export const notificationsListFixture = {
         blockedCount: 0,
         visible: true,
         target_path:
-          '/workbench/data/agave/frontera.home.username/archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007'
+          '/workbench/data/agave/frontera.home.username/archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
       },
       pk: 37,
       action_link:
         '/workbench/data/agave/frontera.home.username/archive/jobs/2020-09-20/rstudio-stampede2-1-1-423u3_2020-09-20t12-25-10-dcvserver-ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
@@ -106,13 +106,13 @@ export const notificationsListFixture = {
         failedStatusChecks: 0,
         lastStatusCheck: '2020-09-20T12:33:06.792Z',
         blockedCount: 0,
-        visible: true
+        visible: true,
       },
       pk: 36,
       action_link: '',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'interactive_session_ready',
@@ -149,11 +149,11 @@ export const notificationsListFixture = {
         memoryPerNode: 1.0,
         maxHours: 0.1,
         inputs: {
-          workingDirectory: 'agave://frontera.home.username/5MB.txt'
+          workingDirectory: 'agave://frontera.home.username/5MB.txt',
         },
         parameters: {
           desktop_resolution: '1280x800',
-          _webhook_base_url: 'http://320a61b9b96e.ngrok.io/webhooks/'
+          _webhook_base_url: 'http://320a61b9b96e.ngrok.io/webhooks/',
         },
         remoteJobId: '6477330',
         schedulerJobId: null,
@@ -170,51 +170,42 @@ export const notificationsListFixture = {
         visible: true,
         _links: {
           self: {
-            href:
-              'https://portals-api.tacc.utexas.edu/jobs/v2/ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007'
+            href: 'https://portals-api.tacc.utexas.edu/jobs/v2/ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
           },
           app: {
-            href:
-              'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0'
+            href: 'https://portals-api.tacc.utexas.edu/apps/v2/prtl.clone.username.TACC-ACI.RStudio-Stampede2-1.1.423u3-3.0',
           },
           executionSystem: {
-            href:
-              'https://portals-api.tacc.utexas.edu/systems/v2/username.TACC-ACI.exec.stampede2.HPC'
+            href: 'https://portals-api.tacc.utexas.edu/systems/v2/username.TACC-ACI.exec.stampede2.HPC',
           },
           archiveSystem: {
-            href:
-              'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username'
+            href: 'https://portals-api.tacc.utexas.edu/systems/v2/frontera.home.username',
           },
           archiveData: {
-            href:
-              'https://portals-api.tacc.utexas.edu/jobs/v2/ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007/outputs/listings'
+            href: 'https://portals-api.tacc.utexas.edu/jobs/v2/ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007/outputs/listings',
           },
           owner: {
-            href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username'
+            href: 'https://portals-api.tacc.utexas.edu/profiles/v2/username',
           },
           permissions: {
-            href:
-              'https://portals-api.tacc.utexas.edu/jobs/v2/ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007/pems'
+            href: 'https://portals-api.tacc.utexas.edu/jobs/v2/ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007/pems',
           },
           history: {
-            href:
-              'https://portals-api.tacc.utexas.edu/jobs/v2/ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007/history'
+            href: 'https://portals-api.tacc.utexas.edu/jobs/v2/ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007/history',
           },
           metadata: {
-            href:
-              'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%22ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007%22%7D'
+            href: 'https://portals-api.tacc.utexas.edu/meta/v2/data/?q=%7B%22associationIds%22%3A%22ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007%22%7D',
           },
           notifications: {
-            href:
-              'https://portals-api.tacc.utexas.edu/notifications/v2/?associatedUuid=ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007'
-          }
-        }
+            href: 'https://portals-api.tacc.utexas.edu/notifications/v2/?associatedUuid=ca48197a-4e9c-4ffc-868c-29a3113cd5e7-007',
+          },
+        },
       },
       pk: 35,
       action_link: 'https://stampede2.tacc.utexas.edu:10401',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
@@ -260,13 +251,13 @@ export const notificationsListFixture = {
         failedStatusChecks: 0,
         lastStatusCheck: '2020-09-20T12:25:50.945Z',
         blockedCount: 0,
-        visible: true
+        visible: true,
       },
       pk: 34,
       action_link: '',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
@@ -312,13 +303,13 @@ export const notificationsListFixture = {
         failedStatusChecks: 0,
         lastStatusCheck: null,
         blockedCount: 0,
-        visible: true
+        visible: true,
       },
       pk: 33,
       action_link: '',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
@@ -364,13 +355,13 @@ export const notificationsListFixture = {
         failedStatusChecks: 0,
         lastStatusCheck: null,
         blockedCount: 0,
-        visible: true
+        visible: true,
       },
       pk: 32,
       action_link: '',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
@@ -415,13 +406,13 @@ export const notificationsListFixture = {
         failedStatusChecks: 0,
         lastStatusCheck: null,
         blockedCount: 0,
-        visible: true
+        visible: true,
       },
       pk: 31,
       action_link: '',
       user: 'username',
       read: false,
-      deleted: false
+      deleted: false,
     },
     {
       event_type: 'job',
@@ -466,16 +457,16 @@ export const notificationsListFixture = {
         failedStatusChecks: 0,
         lastStatusCheck: null,
         blockedCount: 0,
-        visible: true
+        visible: true,
       },
       pk: 30,
       action_link: '',
       user: 'maxmustermann',
       read: false,
-      deleted: false
-    }
+      deleted: false,
+    },
   ],
   page: 0,
   total: 8,
-  unread: 8
+  unread: 8,
 };

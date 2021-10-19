@@ -9,11 +9,13 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const DataFilesMkdirModal = () => {
   const dispatch = useDispatch();
-  const systemList = useSelector(state => state.systems.storage.configuration);
-  const projectsList = useSelector(state => state.projects.listing.projects);
-  const isOpen = useSelector(state => state.files.modals.mkdir);
+  const systemList = useSelector(
+    (state) => state.systems.storage.configuration
+  );
+  const projectsList = useSelector((state) => state.projects.listing.projects);
+  const isOpen = useSelector((state) => state.files.modals.mkdir);
   const params = useSelector(
-    state => state.files.params.FilesListing,
+    (state) => state.files.params.FilesListing,
     shallowEqual
   );
   const systemDisplayName = findSystemOrProjectDisplayName(
@@ -25,7 +27,7 @@ const DataFilesMkdirModal = () => {
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'mkdir', props: {} }
+      payload: { operation: 'mkdir', props: {} },
     });
   };
 
@@ -36,7 +38,7 @@ const DataFilesMkdirModal = () => {
         /^[\d\w\s\-_.]+$/,
         'Please enter a valid directory name (accepted characters are A-Z a-z 0-9 - _ .)'
       )
-      .required('Please enter a valid directory name.')
+      .required('Please enter a valid directory name.'),
   });
 
   const history = useHistory();
@@ -54,8 +56,8 @@ const DataFilesMkdirModal = () => {
         system: params.system,
         path: params.path || '/',
         dirname,
-        reloadCallback: reloadPage
-      }
+        reloadCallback: reloadPage,
+      },
     });
   };
 

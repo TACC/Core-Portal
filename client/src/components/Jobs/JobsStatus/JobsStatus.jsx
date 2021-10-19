@@ -38,7 +38,7 @@ export const STATUS_TEXT_MAP = {
       default:
         return `is ${mappedStatus.toLowerCase()}`;
     }
-  }
+  },
 };
 
 export function getStatusText(status) {
@@ -70,7 +70,7 @@ function JobsStatus({ status, fancy, jobId }) {
   const color = getBadgeColor(status);
   const userStatus = getStatusText(status);
 
-  const notifs = useSelector(state => state.notifications.list.notifs);
+  const notifs = useSelector((state) => state.notifications.list.notifs);
   let interactiveSessionLink;
 
   const jobConcluded = [
@@ -78,7 +78,7 @@ function JobsStatus({ status, fancy, jobId }) {
     'ARCHIVING',
     'FINISHED',
     'STOPPED',
-    'FAILED'
+    'FAILED',
   ];
 
   /* Check if job is not ended AND has interactive session. */
@@ -87,11 +87,11 @@ function JobsStatus({ status, fancy, jobId }) {
   */
   if (!jobConcluded.includes(status)) {
     const interactiveNotifs = notifs.filter(
-      n =>
+      (n) =>
         n.event_type === 'interactive_session_ready' &&
         !jobConcluded.includes(n.extra.status) // need to account for the possibility of session ready and job status notifs coming out of order
     );
-    const notif = interactiveNotifs.find(n => n.extra.id === jobId);
+    const notif = interactiveNotifs.find((n) => n.extra.id === jobId);
     interactiveSessionLink = notif ? notif.action_link : null;
   }
 
@@ -127,10 +127,10 @@ function JobsStatus({ status, fancy, jobId }) {
 JobsStatus.propTypes = {
   status: PropTypes.string.isRequired,
   fancy: PropTypes.bool,
-  jobId: PropTypes.string.isRequired
+  jobId: PropTypes.string.isRequired,
 };
 JobsStatus.defaultProps = {
-  fancy: false
+  fancy: false,
 };
 
 export default JobsStatus;

@@ -1,54 +1,83 @@
 .root {
-    --table-border: 1px solid black;
+  --table-border: 1px solid black;
 
-    margin: 0;
-    width: 100%;
+  margin: 0;
+  width: 100%;
 
-    font-size: 0.875rem; /* 14px (approved deviation from design) */
+  font-size: 0.875rem; /* 14px (approved deviation from design) */
 }
 
 .rows {
-    tr:nth-child(even) {
-        background-color: rgba(0, 0, 0, 0.03);
-    }
-    tr:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-    td {
-        padding: 5px 8px;
-    }
+  tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+  tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  td {
+    padding: 5px 8px;
+  }
 }
 
 .header {
-    border-bottom: var(--table-border);
+  border-bottom: var(--table-border);
 }
 
 /* Columns */
 @media only screen and (min-width: 1200px) {
-    .root {
-    /* name */    tr > *:nth-child(1) { width: 22%; }
-    /* status */  tr > *:nth-child(2) { width: 30%; }
-    /* load */    tr > *:nth-child(3) { width: 16%; }
-    /* run */     tr > *:nth-child(4) { width: 16%; }
-    /* queue */   tr > *:nth-child(5) { width: 16%; }
+  .root {
+    /* name */
+    tr > *:nth-child(1) {
+      width: 22%;
     }
+    /* status */
+    tr > *:nth-child(2) {
+      width: 30%;
+    }
+    /* load */
+    tr > *:nth-child(3) {
+      width: 16%;
+    }
+    /* run */
+    tr > *:nth-child(4) {
+      width: 16%;
+    }
+    /* queue */
+    tr > *:nth-child(5) {
+      width: 16%;
+    }
+  }
 }
 @media only screen and (max-width: 1199px) {
-    .root {
-    /* name */    tr > *:nth-child(1) { width: 22%; }
-    /* status */  tr > *:nth-child(2) { width: 24%; }
-    /* load */    tr > *:nth-child(3) { width: 18%; }
-    /* run */     tr > *:nth-child(4) { width: 18%; }
-    /* queue */   tr > *:nth-child(5) { width: 18%; }
+  .root {
+    /* name */
+    tr > *:nth-child(1) {
+      width: 22%;
     }
+    /* status */
+    tr > *:nth-child(2) {
+      width: 24%;
+    }
+    /* load */
+    tr > *:nth-child(3) {
+      width: 18%;
+    }
+    /* run */
+    tr > *:nth-child(4) {
+      width: 18%;
+    }
+    /* queue */
+    tr > *:nth-child(5) {
+      width: 18%;
+    }
+  }
 }
 
 /* Messaging */
 .error {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--global-color-accent--normal);
-    padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--global-color-accent--normal);
+  padding: 30px;
 }
-

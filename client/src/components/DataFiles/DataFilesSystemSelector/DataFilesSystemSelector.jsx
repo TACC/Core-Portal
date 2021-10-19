@@ -11,23 +11,25 @@ const DataFilesSystemSelector = ({
   disabled,
   operation,
   showProjects,
-  excludedSystems // System names to exclude (as in cep.home.xxx).
+  excludedSystems, // System names to exclude (as in cep.home.xxx).
 }) => {
   const dispatch = useDispatch();
-  const systemList = useSelector(state => state.systems.storage.configuration);
-  const findSystem = id => systemList.find(system => system.system === id);
+  const systemList = useSelector(
+    (state) => state.systems.storage.configuration
+  );
+  const findSystem = (id) => systemList.find((system) => system.system === id);
   const [selectedSystem, setSelectedSystem] = useState(systemId);
 
   const openSystem = useCallback(
-    event => {
+    (event) => {
       if (event.target.value === 'shared') {
         setSelectedSystem('shared');
         dispatch({
           type: 'DATA_FILES_SET_MODAL_PROPS',
           payload: {
             operation,
-            props: { showProjects: true }
-          }
+            props: { showProjects: true },
+          },
         });
         return;
       }
@@ -38,15 +40,15 @@ const DataFilesSystemSelector = ({
         type: 'FETCH_FILES',
         payload: {
           ...system,
-          section
-        }
+          section,
+        },
       });
       dispatch({
         type: 'DATA_FILES_SET_MODAL_PROPS',
         payload: {
           operation,
-          props: { showProjects: false }
-        }
+          props: { showProjects: false },
+        },
       });
     },
     [dispatch, section, findSystem, setSelectedSystem]
@@ -57,8 +59,8 @@ const DataFilesSystemSelector = ({
       type: 'DATA_FILES_SET_MODAL_PROPS',
       payload: {
         operation,
-        props: { showProjects: true }
-      }
+        props: { showProjects: true },
+      },
     });
   };
 
@@ -76,14 +78,15 @@ const DataFilesSystemSelector = ({
       >
         {systemList
           .filter(
-            s => s.scheme !== 'projects' && !excludedSystems.includes(s.system)
+            (s) =>
+              s.scheme !== 'projects' && !excludedSystems.includes(s.system)
           )
-          .map(system => (
+          .map((system) => (
             <option key={uuidv4()} value={system.system}>
               {system.name}
             </option>
           ))}
-        {systemList.find(s => s.scheme === 'projects') ? (
+        {systemList.find((s) => s.scheme === 'projects') ? (
           <option value="shared">Shared Workspaces</option>
         ) : (
           <></>
@@ -108,14 +111,14 @@ DataFilesSystemSelector.propTypes = {
   disabled: PropTypes.bool,
   operation: PropTypes.string.isRequired,
   showProjects: PropTypes.bool,
-  excludedSystems: PropTypes.arrayOf(PropTypes.string)
+  excludedSystems: PropTypes.arrayOf(PropTypes.string),
 };
 
 DataFilesSystemSelector.defaultProps = {
   systemId: '',
   disabled: false,
   showProjects: false,
-  excludedSystems: []
+  excludedSystems: [],
 };
 
 export default DataFilesSystemSelector;

@@ -7,10 +7,10 @@ import { FileLengthCell } from '../../DataFilesListing/DataFilesListingCells';
 import styles from './DataFilesUploadModalListingTable.module.scss';
 
 const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
-  if (rejectedFiles.filter(f => f.id === i).length > 0) {
+  if (rejectedFiles.filter((f) => f.id === i).length > 0) {
     return <InlineMessage type="error">Exceeds File Size Limit</InlineMessage>;
   }
-  const status = useSelector(state => state.files.operationStatus.upload[i]);
+  const status = useSelector((state) => state.files.operationStatus.upload[i]);
   switch (status) {
     case 'UPLOADING':
       return <LoadingSpinner placement="inline" />;
@@ -33,16 +33,16 @@ const DataFilesUploadStatus = ({ i, removeCallback, rejectedFiles }) => {
 DataFilesUploadStatus.propTypes = {
   i: PropTypes.string.isRequired,
   removeCallback: PropTypes.func.isRequired,
-  rejectedFiles: PropTypes.arrayOf(PropTypes.object).isRequired
+  rejectedFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 function DataFilesUploadModalListingTable({
   uploadedFiles,
   rejectedFiles,
-  setUploadedFiles
+  setUploadedFiles,
 }) {
-  const removeFile = id => {
-    setUploadedFiles(uploadedFiles.filter(f => f.id !== id));
+  const removeFile = (id) => {
+    setUploadedFiles(uploadedFiles.filter((f) => f.id !== id));
   };
 
   return (
@@ -83,7 +83,7 @@ DataFilesUploadModalListingTable.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   uploadedFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   rejectedFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  setUploadedFiles: PropTypes.func.isRequired
+  setUploadedFiles: PropTypes.func.isRequired,
 };
 
 export default DataFilesUploadModalListingTable;

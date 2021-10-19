@@ -11,14 +11,14 @@ import styles from './OnboardingUser.module.scss';
 const OnboardingUser = () => {
   const { params } = useRouteMatch();
   const dispatch = useDispatch();
-  const user = useSelector(state => state.onboarding.user);
-  const isStaff = useSelector(state =>
+  const user = useSelector((state) => state.onboarding.user);
+  const isStaff = useSelector((state) =>
     state.authenticatedUser.user ? state.authenticatedUser.user.isStaff : false
   );
-  const loading = useSelector(state => state.onboarding.user.loading);
-  const error = useSelector(state => state.onboarding.user.error);
+  const loading = useSelector((state) => state.onboarding.user.loading);
+  const error = useSelector((state) => state.onboarding.user.error);
   const onboardingCompleteRedirect = useSelector(
-    state => state.workbench.config.onboardingCompleteRedirect
+    (state) => state.workbench.config.onboardingCompleteRedirect
   );
   const continueLink = onboardingCompleteRedirect || '/workbench/';
 
@@ -26,11 +26,11 @@ const OnboardingUser = () => {
     dispatch({
       type: 'FETCH_ONBOARDING_ADMIN_INDIVIDUAL_USER',
       payload: {
-        user: params.username || ''
-      }
+        user: params.username || '',
+      },
     });
     dispatch({
-      type: 'FETCH_AUTHENTICATED_USER'
+      type: 'FETCH_AUTHENTICATED_USER',
     });
   }, [dispatch, params]);
 
@@ -59,7 +59,7 @@ const OnboardingUser = () => {
       contentShouldScroll
       content={
         <>
-          {user.steps.map(step => (
+          {user.steps.map((step) => (
             <OnboardingStep step={step} key={uuidv4()} />
           ))}
           <div className={styles.access}>
@@ -72,8 +72,8 @@ const OnboardingUser = () => {
                   payload: {
                     provideDashBoardLinkOnSuccess: false,
                     showAsModalOnDashboard: false,
-                    subject: `Onboarding`
-                  }
+                    subject: `Onboarding`,
+                  },
                 })
               }
             >

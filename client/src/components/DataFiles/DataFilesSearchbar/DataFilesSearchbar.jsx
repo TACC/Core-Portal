@@ -21,7 +21,7 @@ const fileTypes = [
   'Shape File',
   'Text',
   'ZIP',
-  '3D Visualization'
+  '3D Visualization',
 ];
 
 const DataFilesSearchbar = ({
@@ -31,9 +31,11 @@ const DataFilesSearchbar = ({
   resultCount,
   className,
   siteSearch,
-  disabled
+  disabled,
 }) => {
-  const systemList = useSelector(state => state.systems.storage.configuration);
+  const systemList = useSelector(
+    (state) => state.systems.storage.configuration
+  );
   const urlQueryParam = queryString.parse(window.location.search).query_string;
   const [query, setQuery] = useState(urlQueryParam);
   const history = useHistory();
@@ -51,12 +53,12 @@ const DataFilesSearchbar = ({
     sectionName = findSystemDisplayName(systemList, system);
   }
 
-  const applyFilter = newFilter => {
+  const applyFilter = (newFilter) => {
     const prevQuery = queryString.parse(location.search);
     const updatedQuery = queryString.stringify({
       ...prevQuery,
       filter: newFilter || undefined,
-      page: siteSearch ? 1 : undefined
+      page: siteSearch ? 1 : undefined,
     });
     history.push(`${location.pathname}?${updatedQuery}`);
   };
@@ -67,7 +69,7 @@ const DataFilesSearchbar = ({
     const updatedQuery = queryString.stringify({
       ...prevQuery,
       query_string: query || undefined,
-      page: siteSearch ? 1 : undefined
+      page: siteSearch ? 1 : undefined,
     });
     history.push(`${location.pathname}?${updatedQuery}`);
 
@@ -79,18 +81,18 @@ const DataFilesSearchbar = ({
     !hasQuery && !siteSearch && setQuery('');
   }, [hasQuery, location, siteSearch]);
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     routeSearch();
     e.preventDefault();
   };
-  const onClear = e => {
+  const onClear = (e) => {
     e.preventDefault();
     if (!siteSearch) {
       setQuery('');
       history.push(location.pathname);
     } else applyFilter(undefined);
   };
-  const onChange = e => setQuery(e.target.value);
+  const onChange = (e) => setQuery(e.target.value);
 
   return (
     <form
@@ -100,7 +102,11 @@ const DataFilesSearchbar = ({
     >
       <div className={`input-group ${styles['query-fieldset']}`}>
         <div className="input-group-prepend">
-          <Button type="submit" className={styles['submit-button']} disabled={disabled}>
+          <Button
+            type="submit"
+            className={styles['submit-button']}
+            disabled={disabled}
+          >
             <Icon name="search" className={styles['button__icon']} />
             <span className={styles['button__text']}>Search</span>
           </Button>
@@ -108,8 +114,8 @@ const DataFilesSearchbar = ({
         <input
           type="search"
           minLength="3"
-          onInput={e => e.target.setCustomValidity('')}
-          onInvalid={e =>
+          onInput={(e) => e.target.setCustomValidity('')}
+          onInvalid={(e) =>
             e.target.setCustomValidity(
               'Include at least 3 characters in your search.'
             )
@@ -129,19 +135,22 @@ const DataFilesSearchbar = ({
         <div className={styles['file-filter']}>
           <span>File Type:</span>
           <DropdownSelector
-            onChange={e => applyFilter(e.target.value)}
+            onChange={(e) => applyFilter(e.target.value)}
             value={filterType ?? ''}
             disabled={disabled}
           >
             <option value="">All Types</option>
-            {fileTypes.map(item => (
+            {fileTypes.map((item) => (
               <option key={`fileTypeFilter${item}`}>{item}</option>
             ))}
           </DropdownSelector>
         </div>
       )}
       {hasQuery && !siteSearch && (
-        <div aria-label="Summary of Search Results" className={styles['results']}>
+        <div
+          aria-label="Summary of Search Results"
+          className={styles['results']}
+        >
           {resultCount} Results Found for <span>{hasQuery}</span>
         </div>
       )}
@@ -169,13 +178,13 @@ DataFilesSearchbar.propTypes = {
   /** Additional `className` (or transpiled `styleName`) for the root element */
   className: PropTypes.string,
   siteSearch: PropTypes.bool,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
 };
 DataFilesSearchbar.defaultProps = {
   className: '',
   resultCount: 0,
   siteSearch: false,
-  disabled: false
+  disabled: false,
 };
 
 export default DataFilesSearchbar;

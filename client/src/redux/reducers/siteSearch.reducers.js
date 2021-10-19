@@ -5,8 +5,8 @@ const initialState = {
   results: {
     cms: { count: 0, listing: [], type: 'cms', include: true },
     community: { count: 0, listing: [], type: 'file', include: false },
-    public: { count: 0, listing: [], type: 'file', include: false }
-  }
+    public: { count: 0, listing: [], type: 'file', include: false },
+  },
 };
 
 const siteSearch = (state = initialState, action) => {
@@ -18,7 +18,7 @@ const siteSearch = (state = initialState, action) => {
         ...state,
         error: action.payload.error,
         completed: true,
-        loading: false
+        loading: false,
       };
     case 'FETCH_SITE_SEARCH_SUCCESS':
       return {
@@ -26,7 +26,7 @@ const siteSearch = (state = initialState, action) => {
         loading: false,
         error: null,
         completed: true,
-        results: { ...state.results, ...action.payload.results }
+        results: { ...state.results, ...action.payload.results },
       };
     default:
       return state;

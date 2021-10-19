@@ -13,10 +13,10 @@ const BreadcrumbLink = ({
   path,
   children,
   section,
-  isPublic
+  isPublic,
 }) => {
   const dispatch = useDispatch();
-  const onClick = e => {
+  const onClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
     dispatch({
@@ -26,8 +26,8 @@ const BreadcrumbLink = ({
         scheme,
         system,
         path,
-        section
-      }
+        section,
+      },
     });
   };
   const basePath = isPublic ? '/public-data' : '/workbench/data';
@@ -65,24 +65,24 @@ BreadcrumbLink.propTypes = {
   path: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
   children: PropTypes.element.isRequired,
-  isPublic: PropTypes.bool
+  isPublic: PropTypes.bool,
 };
 BreadcrumbLink.defaultProps = {
-  isPublic: false
+  isPublic: false,
 };
 
 const RootProjectsLink = ({ api, section, operation, label }) => {
   const dispatch = useDispatch();
   if (section === 'modal') {
-    const onClick = e => {
+    const onClick = (e) => {
       e.stopPropagation();
       e.preventDefault();
       dispatch({
         type: 'DATA_FILES_SET_MODAL_PROPS',
         payload: {
           operation,
-          props: { showProjects: true }
-        }
+          props: { showProjects: true },
+        },
       });
     };
     return (
@@ -107,7 +107,7 @@ RootProjectsLink.propTypes = {
   api: PropTypes.string.isRequired,
   section: PropTypes.string.isRequired,
   operation: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired
+  label: PropTypes.string.isRequired,
 };
 
 const DataFilesBreadcrumbs = ({
@@ -118,17 +118,19 @@ const DataFilesBreadcrumbs = ({
   section,
   operation,
   isPublic,
-  className
+  className,
 }) => {
   const paths = [];
   const pathComps = [];
-  const systemList = useSelector(state => state.systems.storage.configuration);
-  const projectsList = useSelector(state => state.projects.listing.projects);
-  const projectTitle = useSelector(state => state.projects.metadata.title);
+  const systemList = useSelector(
+    (state) => state.systems.storage.configuration
+  );
+  const projectsList = useSelector((state) => state.projects.listing.projects);
+  const projectTitle = useSelector((state) => state.projects.metadata.title);
 
   path
     .split('/')
-    .filter(x => x)
+    .filter((x) => x)
     .reduce((prev, curr) => {
       const comp = `${prev}/${curr}`;
       paths.push(comp);
@@ -201,12 +203,12 @@ DataFilesBreadcrumbs.propTypes = {
   operation: PropTypes.string,
   isPublic: PropTypes.bool,
   /** Additional className for the root element */
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 DataFilesBreadcrumbs.defaultProps = {
   isPublic: false,
   className: '',
-  operation: 'select'
+  operation: 'select',
 };
 
 export default DataFilesBreadcrumbs;

@@ -6,7 +6,7 @@ import {
   ChangePasswordModal,
   EditOptionalInformationModal,
   EditRequiredInformationModal,
-  IntegrationModal
+  IntegrationModal,
 } from '../ManageAccountModals';
 
 const dummyState = {
@@ -16,7 +16,7 @@ const dummyState = {
   success: {
     optional: false,
     required: false,
-    password: false
+    password: false,
   },
   data: {
     demographics: {
@@ -39,16 +39,16 @@ const dummyState = {
       bio: '',
       website: '',
       orcid_id: '',
-      professional_level: ''
-    }
+      professional_level: '',
+    },
   },
   errors: {},
   fields: {},
   modals: {
     required: false,
     optional: false,
-    password: true
-  }
+    password: true,
+  },
 };
 
 const mockStore = configureStore({});
@@ -57,17 +57,12 @@ describe('Change Password', () => {
   test('Change Password Form', async () => {
     // Render Modal
     const testStore = mockStore({ profile: dummyState });
-    const {
-      getAllByText,
-      getByText,
-      getByLabelText,
-      getByTestId,
-      rerender
-    } = render(
-      <Provider store={testStore}>
-        <ChangePasswordModal />
-      </Provider>
-    );
+    const { getAllByText, getByText, getByLabelText, getByTestId, rerender } =
+      render(
+        <Provider store={testStore}>
+          <ChangePasswordModal />
+        </Provider>
+      );
     // Check for Modal Header to Be Visible
     expect(getAllByText(/Change Password/)).toBeDefined();
 
@@ -87,18 +82,18 @@ describe('Change Password', () => {
 
     fireEvent.change(current, {
       target: {
-        value: 'testuser'
-      }
+        value: 'testuser',
+      },
     });
     fireEvent.change(newPassword, {
       target: {
-        value: 'testuser'
-      }
+        value: 'testuser',
+      },
     });
     fireEvent.change(confirm, {
       target: {
-        value: 'testuser'
-      }
+        value: 'testuser',
+      },
     });
 
     await waitFor(() => {
@@ -110,18 +105,18 @@ describe('Change Password', () => {
     // Submit
     fireEvent.change(current, {
       target: {
-        value: 'testpassword'
-      }
+        value: 'testpassword',
+      },
     });
     fireEvent.change(newPassword, {
       target: {
-        value: 'Newpassword1'
-      }
+        value: 'Newpassword1',
+      },
     });
     fireEvent.change(confirm, {
       target: {
-        value: 'Newpassword1'
-      }
+        value: 'Newpassword1',
+      },
     });
 
     // Dispatch
@@ -136,8 +131,8 @@ describe('Change Password', () => {
         store={mockStore({
           profile: {
             ...dummyState,
-            checkingPassword: true
-          }
+            checkingPassword: true,
+          },
         })}
       >
         <ChangePasswordModal />
@@ -150,9 +145,9 @@ describe('Change Password', () => {
       profile: {
         ...dummyState,
         success: {
-          password: true
-        }
-      }
+          password: true,
+        },
+      },
     });
     rerender(
       <Provider store={successStore}>
@@ -180,8 +175,8 @@ describe('Edit Optional Information', () => {
     const testState = {
       ...dummyState,
       modals: {
-        optional: true
-      }
+        optional: true,
+      },
     };
     const testStore = mockStore({ profile: testState });
     const utils = render(
@@ -207,8 +202,8 @@ describe('Edit Optional Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+        titles: [['Other User', 'Other User']],
+      },
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
     rerender(
@@ -218,7 +213,7 @@ describe('Edit Optional Information', () => {
     );
 
     // Check for labels
-    ['Website', 'Orcid ID', 'Professional Level', 'Bio'].forEach(label => {
+    ['Website', 'Orcid ID', 'Professional Level', 'Bio'].forEach((label) => {
       expect(getByText(label)).toBeDefined();
     });
 
@@ -240,16 +235,16 @@ describe('Edit Optional Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+        titles: [['Other User', 'Other User']],
+      },
     };
     rerender(
       <Provider
         store={mockStore({
           profile: {
             ...stateWithFields,
-            editing: true
-          }
+            editing: true,
+          },
         })}
       >
         <EditOptionalInformationModal />
@@ -268,11 +263,11 @@ describe('Edit Optional Information', () => {
           ethnicities: [['Decline', 'Decline to Identify']],
           genders: [['Other', 'Other']],
           professionalLevels: [['Other', 'Other']],
-          titles: [['Other User', 'Other User']]
+          titles: [['Other User', 'Other User']],
         },
         editing: false,
-        success: { optional: true }
-      }
+        success: { optional: true },
+      },
     });
     rerender(
       <Provider store={store}>
@@ -295,7 +290,7 @@ describe('Edit Required Information', () => {
   let getByText, rerender, getByLabelText;
   beforeEach(() => {
     const testStore = mockStore({
-      profile: testState
+      profile: testState,
     });
     const utils = render(
       <Provider store={testStore}>
@@ -321,8 +316,8 @@ describe('Edit Required Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+        titles: [['Other User', 'Other User']],
+      },
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
 
@@ -341,8 +336,8 @@ describe('Edit Required Information', () => {
       'Position/Title',
       'Residence',
       'Ethnicity',
-      'Gender'
-    ].forEach(label => {
+      'Gender',
+    ].forEach((label) => {
       expect(getByText(label)).toBeDefined();
     });
 
@@ -358,8 +353,8 @@ describe('Edit Required Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+        titles: [['Other User', 'Other User']],
+      },
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
 
@@ -376,13 +371,13 @@ describe('Edit Required Information', () => {
     // Invalid Entries
     fireEvent.change(emailField, {
       target: {
-        value: 'email'
-      }
+        value: 'email',
+      },
     });
     fireEvent.change(phoneField, {
       target: {
-        value: '123'
-      }
+        value: '123',
+      },
     });
     const clickSpy = () => jest.fn();
     submitButton.addEventListener('click', clickSpy, false);
@@ -404,8 +399,8 @@ describe('Edit Required Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+        titles: [['Other User', 'Other User']],
+      },
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
 
@@ -427,11 +422,11 @@ describe('Edit Required Information', () => {
           ethnicities: [['Decline', 'Decline to Identify']],
           genders: [['Other', 'Other']],
           professionalLevels: [['Other', 'Other']],
-          titles: [['Other User', 'Other User']]
+          titles: [['Other User', 'Other User']],
         },
         editing: false,
-        success: { required: true }
-      }
+        success: { required: true },
+      },
     });
     // Mock scrollIntoView (not a part of jsdom)
     window.HTMLElement.prototype.scrollIntoView = jest.fn();
@@ -454,7 +449,12 @@ describe('Edit Required Information', () => {
 describe('connect google drive', () => {
   it('should render privacy policy and link', () => {
     const { getByText, getByRole } = render(
-      <IntegrationModal active={true} toggle={() => {}} connect={'/accounts/applications/googledrive/initialize/'} label={'Google Drive'}/>
+      <IntegrationModal
+        active={true}
+        toggle={() => {}}
+        connect={'/accounts/applications/googledrive/initialize/'}
+        label={'Google Drive'}
+      />
     );
     expect(getByText(/Google Drive Privacy Policy/)).toBeDefined();
     const expectedHref = `${window.location.href}accounts/applications/googledrive/initialize/`;

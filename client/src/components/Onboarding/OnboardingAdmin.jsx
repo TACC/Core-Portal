@@ -5,7 +5,7 @@ import {
   LoadingSpinner,
   SectionMessage,
   Message,
-  Paginator
+  Paginator,
 } from '_common';
 import { Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
@@ -57,12 +57,12 @@ const OnboardingApproveActions = ({ callback, disabled, action }) => {
 OnboardingApproveActions.propTypes = {
   callback: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-  action: PropTypes.string
+  action: PropTypes.string,
 };
 
 OnboardingApproveActions.defaultProps = {
   disabled: false,
-  action: null
+  action: null,
 };
 
 const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
@@ -105,13 +105,13 @@ OnboardingResetLinks.propTypes = {
   callback: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   disableSkip: PropTypes.bool,
-  action: PropTypes.string
+  action: PropTypes.string,
 };
 
 OnboardingResetLinks.defaultProps = {
   disabled: false,
   disableSkip: false,
-  action: null
+  action: null,
 };
 
 const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
@@ -123,13 +123,13 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
         payload: {
           step,
           action,
-          username
-        }
+          username,
+        },
       });
     },
     [dispatch]
   );
-  const adminAction = useSelector(state => state.onboarding.action);
+  const adminAction = useSelector((state) => state.onboarding.action);
   const stepCount = user.steps.length;
 
   return (
@@ -158,7 +158,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
           >
             {step.state === 'staffwait' && (
               <OnboardingApproveActions
-                callback={action =>
+                callback={(action) =>
                   actionCallback(step.step, user.username, action)
                 }
                 disabled={
@@ -177,7 +177,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
           </td>
           <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
             <OnboardingResetLinks
-              callback={action =>
+              callback={(action) =>
                 actionCallback(step.step, user.username, action)
               }
               disabled={adminAction.loading}
@@ -207,7 +207,7 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
 
 OnboardingAdminListUser.propTypes = {
   user: onboardingUserPropType.isRequired,
-  viewLogCallback: PropTypes.func.isRequired
+  viewLogCallback: PropTypes.func.isRequired,
 };
 
 const OnboardingAdminList = ({ users, viewLogCallback }) => {
@@ -230,7 +230,7 @@ const OnboardingAdminList = ({ users, viewLogCallback }) => {
         </tr>
       </thead>
       <tbody>
-        {users.map(user => (
+        {users.map((user) => (
           <OnboardingAdminListUser
             user={user}
             key={user.username}
@@ -244,7 +244,7 @@ const OnboardingAdminList = ({ users, viewLogCallback }) => {
 
 OnboardingAdminList.propTypes = {
   users: PropTypes.arrayOf(onboardingUserPropType).isRequired,
-  viewLogCallback: PropTypes.func.isRequired
+  viewLogCallback: PropTypes.func.isRequired,
 };
 
 const OnboardingAdmin = () => {
@@ -252,18 +252,18 @@ const OnboardingAdmin = () => {
   const [eventLogModalParams, setEventLogModalParams] = useState(null);
 
   const { users, offset, limit, total, query, loading, error } = useSelector(
-    state => state.onboarding.admin
+    (state) => state.onboarding.admin
   );
 
   const paginationCallback = useCallback(
-    page => {
+    (page) => {
       dispatch({
         type: 'FETCH_ONBOARDING_ADMIN_LIST',
         payload: {
           offset: (page - 1) * limit,
           limit,
-          query
-        }
+          query,
+        },
       });
     },
     [offset, limit, query]
@@ -283,7 +283,7 @@ const OnboardingAdmin = () => {
   useEffect(() => {
     dispatch({
       type: 'FETCH_ONBOARDING_ADMIN_LIST',
-      payload: { offset, limit, query: null }
+      payload: { offset, limit, query: null },
     });
   }, [dispatch]);
 

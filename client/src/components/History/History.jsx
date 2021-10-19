@@ -4,7 +4,7 @@ import {
   Switch,
   Redirect,
   useRouteMatch,
-  NavLink as RRNavLink
+  NavLink as RRNavLink,
 } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
@@ -24,7 +24,7 @@ const root = `${ROUTES.WORKBENCH}${ROUTES.HISTORY}`;
 const Actions = () => {
   // Only display "Mark All as Viewed" button if there are purple (unread) notifs
   const unread = useSelector(
-    state => state.notifications.list.notifs.filter(n => !n.read).length
+    (state) => state.notifications.list.notifs.filter((n) => !n.read).length
   );
   const dispatch = useDispatch();
 
@@ -35,8 +35,8 @@ const Actions = () => {
         dispatch({
           type: 'NOTIFICATIONS_READ',
           payload: {
-            onSuccess: { type: 'FETCH_NOTIFICATIONS' }
-          }
+            onSuccess: { type: 'FETCH_NOTIFICATIONS' },
+          },
         });
       }}
       disabled={!unread}
@@ -47,7 +47,7 @@ const Actions = () => {
 };
 
 const Sidebar = () => {
-  const { unreadJobs } = useSelector(state => state.notifications.list);
+  const { unreadJobs } = useSelector((state) => state.notifications.list);
   return (
     <Nav className={styles.sidebar} vertical>
       <NavItem>
@@ -83,7 +83,7 @@ export const Routes = () => {
           ) {
             dispatch({
               type: 'GET_JOBS',
-              params: { offset: 0 }
+              params: { offset: 0 },
             });
 
             // Chain events to properly update UI based on read action
@@ -91,21 +91,21 @@ export const Routes = () => {
               type: 'FETCH_NOTIFICATIONS',
               payload: {
                 queryString: queryString.stringify({
-                  eventTypes: ['job', 'interactive_session_ready']
+                  eventTypes: ['job', 'interactive_session_ready'],
                 }),
                 onSuccess: {
                   type: 'NOTIFICATIONS_READ',
                   payload: {
                     body: {
-                      eventTypes: ['job', 'interactive_session_ready']
+                      eventTypes: ['job', 'interactive_session_ready'],
                     },
                     onSuccess: {
                       type: 'UPDATE_BADGE_COUNT',
-                      payload: { type: 'unreadJobs' }
-                    }
-                  }
-                }
-              }
+                      payload: { type: 'unreadJobs' },
+                    },
+                  },
+                },
+              },
             });
           }
           return (
@@ -115,12 +115,12 @@ export const Routes = () => {
                 path={`${ROUTES.WORKBENCH}${ROUTES.HISTORY}${ROUTES.JOBS}/:jobId`}
                 render={({
                   match: {
-                    params: { jobId }
-                  }
+                    params: { jobId },
+                  },
                 }) => {
                   dispatch({
                     type: 'GET_JOB_DETAILS',
-                    payload: { jobId }
+                    payload: { jobId },
                   });
                   return <JobHistoryModal jobId={jobId} />;
                 }}

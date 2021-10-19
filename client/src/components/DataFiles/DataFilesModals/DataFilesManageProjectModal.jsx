@@ -10,10 +10,12 @@ const DataFilesManageProjectModal = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [transferMode, setTransferMode] = useState(false);
-  const isOpen = useSelector(state => state.files.modals.manageproject);
-  const { members, projectId } = useSelector(state => state.projects.metadata);
-  const { user } = useSelector(state => state.authenticatedUser);
-  const { loading, error } = useSelector(state => {
+  const isOpen = useSelector((state) => state.files.modals.manageproject);
+  const { members, projectId } = useSelector(
+    (state) => state.projects.metadata
+  );
+  const { user } = useSelector((state) => state.authenticatedUser);
+  const { loading, error } = useSelector((state) => {
     if (
       state.projects.operation &&
       state.projects.operation.name === 'member'
@@ -22,7 +24,7 @@ const DataFilesManageProjectModal = () => {
     }
     return {
       loading: false,
-      error: false
+      error: false,
     };
   });
 
@@ -30,37 +32,37 @@ const DataFilesManageProjectModal = () => {
     setTransferMode(false);
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'manageproject', props: {} }
+      payload: { operation: 'manageproject', props: {} },
     });
   }, [setTransferMode]);
 
   const onAdd = useCallback(
-    newUser => {
+    (newUser) => {
       dispatch({
         type: 'PROJECTS_SET_MEMBER',
         payload: {
           projectId,
           data: {
             action: 'add_member',
-            username: newUser.user.username
-          }
-        }
+            username: newUser.user.username,
+          },
+        },
       });
     },
     [projectId, dispatch]
   );
 
   const onRemove = useCallback(
-    removedUser => {
+    (removedUser) => {
       dispatch({
         type: 'PROJECTS_SET_MEMBER',
         payload: {
           projectId,
           data: {
             action: 'remove_member',
-            username: removedUser.user.username
-          }
-        }
+            username: removedUser.user.username,
+          },
+        },
       });
       if (removedUser.user.username === user.username) {
         toggle();
@@ -71,8 +73,8 @@ const DataFilesManageProjectModal = () => {
   );
 
   const onTransfer = useCallback(
-    newOwner => {
-      const oldOwner = members.find(member => member.access === 'owner');
+    (newOwner) => {
+      const oldOwner = members.find((member) => member.access === 'owner');
       dispatch({
         type: 'PROJECTS_SET_MEMBER',
         payload: {
@@ -80,9 +82,9 @@ const DataFilesManageProjectModal = () => {
           data: {
             action: 'transfer_ownership',
             oldOwner: oldOwner.user.username,
-            newOwner: newOwner.user.username
-          }
-        }
+            newOwner: newOwner.user.username,
+          },
+        },
       });
       setTransferMode(false);
     },
@@ -94,7 +96,7 @@ const DataFilesManageProjectModal = () => {
   }, [transferMode, setTransferMode]);
 
   const isOwner = members.some(
-    member =>
+    (member) =>
       member.user &&
       user &&
       member.user.username === user.username &&

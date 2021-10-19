@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 export const eventPropType = PropTypes.shape({
   time: PropTypes.string,
-  message: PropTypes.string
+  message: PropTypes.string,
 });
 
 export const stepPropType = PropTypes.shape({
@@ -14,7 +14,7 @@ export const stepPropType = PropTypes.shape({
   staffApprove: PropTypes.string,
   staffDeny: PropTypes.string,
   customStatus: PropTypes.string,
-  events: PropTypes.arrayOf(eventPropType)
+  events: PropTypes.arrayOf(eventPropType),
 });
 
 export const onboardingUserPropType = PropTypes.shape({
@@ -22,5 +22,5 @@ export const onboardingUserPropType = PropTypes.shape({
   lastName: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
   isStaff: PropTypes.bool.isRequired,
-  steps: PropTypes.arrayOf(stepPropType)
+  steps: PropTypes.arrayOf(stepPropType),
 });

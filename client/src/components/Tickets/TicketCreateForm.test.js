@@ -14,15 +14,15 @@ const exampleAuthenticatedUser = {
   email: 'max@munster.mann',
   oauth: {
     expires_in: 14400,
-    scope: 'default'
+    scope: 'default',
   },
-  isStaff: false
+  isStaff: false,
 };
 
 describe('TicketCreateForm', () => {
   it('renders form for un-authenticated users', () => {
     const store = mockStore({
-      ticketCreate
+      ticketCreate,
     });
 
     const { getAllByText } = renderComponent(<TicketCreateForm />, store);
@@ -32,8 +32,8 @@ describe('TicketCreateForm', () => {
   it('renders form with authenticated user information', () => {
     const store = mockStore({
       ticketCreate: {
-        ...ticketCreate
-      }
+        ...ticketCreate,
+      },
     });
 
     const { getAllByText, getByDisplayValue } = renderComponent(
@@ -50,8 +50,8 @@ describe('TicketCreateForm', () => {
     const store = mockStore({
       ticketCreate: {
         ...ticketCreate,
-        creating: true
-      }
+        creating: true,
+      },
     });
 
     const { getByTestId } = renderComponent(
@@ -66,8 +66,8 @@ describe('TicketCreateForm', () => {
       ticketCreate: {
         ...ticketCreate,
         creatingSuccess: true,
-        createdTicketId: 1234
-      }
+        createdTicketId: 1234,
+      },
     });
 
     const { getByText } = renderComponent(
@@ -82,8 +82,8 @@ describe('TicketCreateForm', () => {
       ticketCreate: {
         ...ticketCreate,
         creatingError: true,
-        creatingErrorMessage: 'Mock error'
-      }
+        creatingErrorMessage: 'Mock error',
+      },
     });
 
     const { getByText } = renderComponent(

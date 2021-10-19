@@ -8,13 +8,17 @@ import styles from './FeedbackModal.module.scss';
 
 const MODAL_PROPTYPES = {
   isOpen: bool.isRequired,
-  toggle: func.isRequired
+  toggle: func.isRequired,
 };
 
 const FeedbackModal = React.memo(({ isOpen, toggle }) => {
   return (
     <Modal className={styles.container} isOpen={isOpen} toggle={() => toggle()}>
-      <ModalHeader className={styles.header} toggle={toggle} charCode="&#xe912;">
+      <ModalHeader
+        className={styles.header}
+        toggle={toggle}
+        charCode="&#xe912;"
+      >
         Feedback
       </ModalHeader>
       <ModalBody>

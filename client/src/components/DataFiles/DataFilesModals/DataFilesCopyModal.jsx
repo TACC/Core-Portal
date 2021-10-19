@@ -16,67 +16,66 @@ const DataFilesCopyModal = React.memo(() => {
 
   const dispatch = useDispatch();
   const params = useSelector(
-    state => state.files.params.FilesListing,
+    (state) => state.files.params.FilesListing,
     shallowEqual
   );
   const modalParams = useSelector(
-    state => state.files.params.modal,
+    (state) => state.files.params.modal,
     shallowEqual
   );
   const reloadPage = () => {
     history.push(location.pathname);
     dispatch({
       type: 'FETCH_FILES_MODAL',
-      payload: { ...modalParams, section: 'modal' }
+      payload: { ...modalParams, section: 'modal' },
     });
   };
-  const files = useSelector(state => state.files.listing.modal, shallowEqual);
-  const isOpen = useSelector(state => state.files.modals.copy);
-  const { showProjects } = useSelector(state => state.files.modalProps.copy);
+  const files = useSelector((state) => state.files.listing.modal, shallowEqual);
+  const isOpen = useSelector((state) => state.files.modals.copy);
+  const { showProjects } = useSelector((state) => state.files.modalProps.copy);
   const status = useSelector(
-    state => state.files.operationStatus.copy,
+    (state) => state.files.operationStatus.copy,
     shallowEqual
   );
   const [disabled, setDisabled] = useState(false);
   const systems = useSelector(
-    state => state.systems.storage.configuration,
+    (state) => state.systems.storage.configuration,
     shallowEqual
   );
 
-  const selectedFiles = useSelector(
-    state =>
-      state.files.selected.FilesListing.map(i => ({
-        ...state.files.listing.FilesListing[i],
-        id: uuidv4()
-      }))
+  const selectedFiles = useSelector((state) =>
+    state.files.selected.FilesListing.map((i) => ({
+      ...state.files.listing.FilesListing[i],
+      id: uuidv4(),
+    }))
   );
   const selected = useMemo(() => selectedFiles, [isOpen]);
 
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'copy', props: {} }
+      payload: { operation: 'copy', props: {} },
     });
 
   const onOpened = () => {
     const systemParams = {
       api: 'tapis',
       scheme: 'private',
-      system: systems[0].system
+      system: systems[0].system,
     };
     dispatch({
       type: 'FETCH_FILES_MODAL',
       payload: {
         ...systemParams,
-        section: 'modal'
-      }
+        section: 'modal',
+      },
     });
     dispatch({
       type: 'DATA_FILES_SET_MODAL_PROPS',
       payload: {
         operation: 'copy',
-        props: {}
-      }
+        props: {},
+      },
     });
   };
 
@@ -84,7 +83,7 @@ const DataFilesCopyModal = React.memo(() => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'copy', status: {} }
+      payload: { operation: 'copy', status: {} },
     });
     setDisabled(false);
   };
@@ -93,15 +92,15 @@ const DataFilesCopyModal = React.memo(() => {
     (system, path, name) => {
       setDisabled(true);
       const filteredSelected = selected
-        .filter(f => status[f.id] !== 'SUCCESS')
-        .map(f => ({ ...f, api: params.api }));
+        .filter((f) => status[f.id] !== 'SUCCESS')
+        .map((f) => ({ ...f, api: params.api }));
       dispatch({
         type: 'DATA_FILES_COPY',
         payload: {
           dest: { system, path, api: modalParams.api, name },
           src: filteredSelected,
-          reloadCallback: reloadPage
-        }
+          reloadCallback: reloadPage,
+        },
       });
     },
     [selected, reloadPage, status]
@@ -114,8 +113,8 @@ const DataFilesCopyModal = React.memo(() => {
         !(
           // Remove files from the listing if they have been selected.
           (
-            selectedFiles.map(f => f.system).includes(system) &&
-            selectedFiles.map(f => f.path).includes(path)
+            selectedFiles.map((f) => f.system).includes(system) &&
+            selectedFiles.map((f) => f.path).includes(path)
           )
         )
       );
@@ -166,8 +165,8 @@ const DataFilesCopyModal = React.memo(() => {
                 disabled={disabled}
                 showProjects={showProjects}
                 excludedSystems={systems
-                  .filter(s => s.scheme !== 'private')
-                  .map(s => s.system)}
+                  .filter((s) => s.scheme !== 'private')
+                  .map((s) => s.system)}
               />
             </div>
             {!showProjects && (

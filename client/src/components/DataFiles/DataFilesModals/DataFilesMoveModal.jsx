@@ -14,11 +14,11 @@ const DataFilesMoveModal = React.memo(() => {
 
   const dispatch = useDispatch();
   const params = useSelector(
-    state => state.files.params.FilesListing,
+    (state) => state.files.params.FilesListing,
     shallowEqual
   );
   const modalParams = useSelector(
-    state => state.files.params.modal,
+    (state) => state.files.params.modal,
     shallowEqual
   );
 
@@ -26,22 +26,21 @@ const DataFilesMoveModal = React.memo(() => {
     history.push(location.pathname);
     dispatch({
       type: 'FETCH_FILES_MODAL',
-      payload: { ...modalParams, section: 'modal' }
+      payload: { ...modalParams, section: 'modal' },
     });
   };
 
-  const files = useSelector(state => state.files.listing.modal, shallowEqual);
-  const isOpen = useSelector(state => state.files.modals.move);
-  const selectedFiles = useSelector(
-    state =>
-      state.files.selected.FilesListing.map(i => ({
-        ...state.files.listing.FilesListing[i],
-        id: uuidv4()
-      }))
+  const files = useSelector((state) => state.files.listing.modal, shallowEqual);
+  const isOpen = useSelector((state) => state.files.modals.move);
+  const selectedFiles = useSelector((state) =>
+    state.files.selected.FilesListing.map((i) => ({
+      ...state.files.listing.FilesListing[i],
+      id: uuidv4(),
+    }))
   );
   const selected = useMemo(() => selectedFiles, [isOpen]);
   const status = useSelector(
-    state => state.files.operationStatus.move,
+    (state) => state.files.operationStatus.move,
     shallowEqual
   );
   const [disabled, setDisabled] = useState(false);
@@ -49,13 +48,13 @@ const DataFilesMoveModal = React.memo(() => {
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'move', props: {} }
+      payload: { operation: 'move', props: {} },
     });
 
   const onOpened = () => {
     dispatch({
       type: 'FETCH_FILES_MODAL',
-      payload: { ...params, section: 'modal' }
+      payload: { ...params, section: 'modal' },
     });
   };
 
@@ -63,7 +62,7 @@ const DataFilesMoveModal = React.memo(() => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'move', status: {} }
+      payload: { operation: 'move', status: {} },
     });
     setDisabled(false);
   };
@@ -71,14 +70,16 @@ const DataFilesMoveModal = React.memo(() => {
   const moveCallback = useCallback(
     (system, path) => {
       setDisabled(true);
-      const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
+      const filteredSelected = selected.filter(
+        (f) => status[f.id] !== 'SUCCESS'
+      );
       dispatch({
         type: 'DATA_FILES_MOVE',
         payload: {
           dest: { system, path },
           src: filteredSelected,
-          reloadCallback: reloadPage
-        }
+          reloadCallback: reloadPage,
+        },
       });
     },
     [selected, reloadPage, status]
@@ -91,8 +92,8 @@ const DataFilesMoveModal = React.memo(() => {
         !(
           // Remove files from the listing if they have been selected.
           (
-            selectedFiles.map(f => f.system).includes(system) &&
-            selectedFiles.map(f => f.path).includes(path)
+            selectedFiles.map((f) => f.system).includes(system) &&
+            selectedFiles.map((f) => f.path).includes(path)
           )
         )
       );

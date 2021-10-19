@@ -10,7 +10,7 @@ import styles from './AllocationsTeamViewModal.module.scss';
 
 const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
   const { teams, loadingUsernames, errors } = useSelector(
-    state => state.allocations
+    (state) => state.allocations
   );
   const error = has(errors.teams, pid);
   const [card, setCard] = useState(null);
@@ -71,7 +71,7 @@ const AllocationsTeamViewModal = ({ isOpen, toggle, pid }) => {
 AllocationsTeamViewModal.propTypes = {
   isOpen: bool.isRequired,
   toggle: func.isRequired,
-  pid: number.isRequired
+  pid: number.isRequired,
 };
 
 export default AllocationsTeamViewModal;

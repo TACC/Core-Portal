@@ -12,11 +12,11 @@ const DataFilesProjectMembers = ({
   onRemove,
   onTransfer,
   mode,
-  loading
+  loading,
 }) => {
   const dispatch = useDispatch();
 
-  const userSearchResults = useSelector(state => state.users.search.users);
+  const userSearchResults = useSelector((state) => state.users.search.users);
 
   const [selectedUser, setSelectedUser] = useState('');
 
@@ -26,23 +26,23 @@ const DataFilesProjectMembers = ({
 
   /* eslint-disable */
   // The backend needs to camelcase this
-  const formatUser = ({ first_name, last_name, email }) => 
+  const formatUser = ({ first_name, last_name, email }) =>
     `${first_name} ${last_name} (${email})`;
   /* eslint-enable */
 
-  const userSearch = e => {
+  const userSearch = (e) => {
     setInputUser(e.target.value);
     if (!e.target.value || e.target.value.trim().length < 1) return;
     // Try to set the selectedUser to something matching current search results
     setSelectedUser(
-      userSearchResults.find(user => formatUser(user) === e.target.value)
+      userSearchResults.find((user) => formatUser(user) === e.target.value)
     );
     if (!selectedUser) {
       dispatch({
         type: 'USERS_SEARCH',
         payload: {
-          q: e.target.value
-        }
+          q: e.target.value,
+        },
       });
     }
   };
@@ -53,16 +53,16 @@ const DataFilesProjectMembers = ({
   }, [transferUser, setTransferUser]);
 
   const onAddCallback = useCallback(
-    user => {
+    (user) => {
       onAdd(user);
       setInputUser('');
     },
     [setInputUser, onAdd]
   );
 
-  const alreadyMember = user => {
+  const alreadyMember = (user) => {
     return members.some(
-      existingMember =>
+      (existingMember) =>
         existingMember.user && existingMember.user.username === user.username
     );
   };
@@ -72,12 +72,14 @@ const DataFilesProjectMembers = ({
     headerStyle: { textAlign: 'left' },
     accessor: 'user',
     className: 'project-members__cell',
-    Cell: el => (
+    Cell: (el) => (
       <span>
-        <span className={styles['printed-name']}>{`${el.value.first_name} ${el.value.last_name}`}</span>
+        <span
+          className={styles['printed-name']}
+        >{`${el.value.first_name} ${el.value.last_name}`}</span>
         {` ${el.value.username} (${el.value.email})`}
       </span>
-    )
+    ),
   };
 
   const columns = [
@@ -86,7 +88,7 @@ const DataFilesProjectMembers = ({
       Header: 'Access',
       accessor: 'access',
       className: 'project-members__cell',
-      Cell: el => <span className={styles.access}>{el.value}</span>
+      Cell: (el) => <span className={styles.access}>{el.value}</span>,
     },
     {
       Header: loading ? (
@@ -99,11 +101,11 @@ const DataFilesProjectMembers = ({
       ),
       accessor: 'username',
       className: 'project-members__cell',
-      Cell: el => (
+      Cell: (el) => (
         <>
           {mode === 'addremove' && el.row.original.access !== 'owner' ? (
             <Button
-              onClick={e => onRemove(el.row.original)}
+              onClick={(e) => onRemove(el.row.original)}
               color="link"
               className={styles['member-action']}
               disabled={loading}
@@ -122,8 +124,8 @@ const DataFilesProjectMembers = ({
             </Button>
           ) : null}
         </>
-      )
-    }
+      ),
+    },
   ];
 
   const transferColumns = [
@@ -139,11 +141,14 @@ const DataFilesProjectMembers = ({
       ),
       accessor: 'username',
       className: 'project-members__cell',
-      Cell: el =>
+      Cell: (el) =>
         mode === 'transfer' && el.row.original === transferUser ? (
           <div className={styles['confirm-controls']}>
             <span>Confirm Ownership Transfer:</span>
-            <Button onClick={confirmTransfer} className={styles['ownership-button']}>
+            <Button
+              onClick={confirmTransfer}
+              className={styles['ownership-button']}
+            >
               Confirm
             </Button>
             <Button
@@ -154,14 +159,14 @@ const DataFilesProjectMembers = ({
               <h6>Cancel</h6>
             </Button>
           </div>
-        ) : null
-    }
+        ) : null,
+    },
   ];
 
   const isTransferring = mode === 'transfer' && transferUser;
   const listStyle = isTransferring ? 'transfer-list' : 'addremove-list';
 
-  const existingMembers = members.filter(member => member.user);
+  const existingMembers = members.filter((member) => member.user);
 
   return (
     <div className={styles.root}>
@@ -189,7 +194,7 @@ const DataFilesProjectMembers = ({
           <Input
             list="user-search-list"
             type="text"
-            onChange={e => userSearch(e)}
+            onChange={(e) => userSearch(e)}
             placeholder="Search by name"
             className={styles['member-search']}
             disabled={loading || mode === 'transfer'}
@@ -197,14 +202,15 @@ const DataFilesProjectMembers = ({
             value={inputUser}
           />
           <datalist id="user-search-list">
-            {/* eslint-disable */
-            // Need to replace this component with a generalized solution from FP-743
-            userSearchResults
-              .filter(user => !alreadyMember(user))
-              .map(user => (
-              <option value={formatUser(user)} key={user.username} />
-            ))
-            /* eslint-enable */
+            {
+              /* eslint-disable */
+              // Need to replace this component with a generalized solution from FP-743
+              userSearchResults
+                .filter((user) => !alreadyMember(user))
+                .map((user) => (
+                  <option value={formatUser(user)} key={user.username} />
+                ))
+              /* eslint-enable */
             }
           </datalist>
         </div>
@@ -225,20 +231,20 @@ DataFilesProjectMembers.propTypes = {
       username: PropTypes.string,
       last_name: PropTypes.string,
       first_name: PropTypes.string,
-      email: PropTypes.string
+      email: PropTypes.string,
     })
   ).isRequired,
   onAdd: PropTypes.func.isRequired,
   onRemove: PropTypes.func.isRequired,
   onTransfer: PropTypes.func,
   mode: PropTypes.string,
-  loading: PropTypes.bool
+  loading: PropTypes.bool,
 };
 
 DataFilesProjectMembers.defaultProps = {
   onTransfer: () => {},
   mode: 'addremove',
-  loading: false
+  loading: false,
 };
 
 export default DataFilesProjectMembers;

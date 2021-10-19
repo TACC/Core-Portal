@@ -5,7 +5,7 @@ import { InlineMessage, LoadingSpinner, InfiniteScrollTable } from '_common';
 import {
   FileNavCell,
   FileLengthCell,
-  FileIconCell
+  FileIconCell,
 } from '../../DataFiles/DataFilesListing/DataFilesListingCells';
 import SiteSearchPaginator from './SiteSearchPaginator/SiteSearchPaginator';
 import DataFilesPreviewModal from '../../DataFiles/DataFilesModals/DataFilesPreviewModal';
@@ -14,7 +14,10 @@ import styles from './SiteSearchListing.module.scss';
 import './SiteSearchListing.css';
 
 export const CMSListingItem = ({ title, url, highlight }) => (
-  <article className={styles['sitesearch-cms-item"']} data-testid="sitesearch-cms-item">
+  <article
+    className={styles['sitesearch-cms-item"']}
+    data-testid="sitesearch-cms-item"
+  >
     <a href={url}>{title}</a>
     {(highlight.body || highlight.title).map(function renderCMSItem(h, i) {
       const key = `${title}-${i}`;
@@ -28,8 +31,8 @@ CMSListingItem.propTypes = {
   url: PropTypes.string.isRequired,
   highlight: PropTypes.shape({
     body: PropTypes.arrayOf(PropTypes.string),
-    title: PropTypes.arrayOf(PropTypes.string)
-  }).isRequired
+    title: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
 };
 
 export const SiteSearchFileListing = ({ listing, filter }) => {
@@ -56,18 +59,18 @@ export const SiteSearchFileListing = ({ listing, filter }) => {
       id: 'icon',
       accessor: 'format',
       Cell: FileIconCell,
-      className: 'site-search__icons'
+      className: 'site-search__icons',
     },
     {
       accessor: 'name',
       Cell: fileNavCellCallback,
-      className: 'site-search__full-width-result'
+      className: 'site-search__full-width-result',
     },
     {
       accessor: 'length',
       Cell: FileLengthCell,
-      className: 'site-search__no-overflow'
-    }
+      className: 'site-search__no-overflow',
+    },
   ];
 
   return (
@@ -83,7 +86,7 @@ export const SiteSearchFileListing = ({ listing, filter }) => {
 };
 SiteSearchFileListing.propTypes = {
   listing: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  filter: PropTypes.string.isRequired
+  filter: PropTypes.string.isRequired,
 };
 
 const SiteSearchListing = ({ results, loading, error, filter }) => {
@@ -92,7 +95,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
   const FILTER_MAPPING = {
     cms: 'Web Content',
     public: 'Public Files',
-    community: 'Community Data'
+    community: 'Community Data',
   };
 
   const hasResults = !loading && !error && count > 0;
@@ -136,7 +139,7 @@ const SiteSearchListing = ({ results, loading, error, filter }) => {
       {hasResults && (
         <>
           {type === 'cms' &&
-            listing.map(item => (
+            listing.map((item) => (
               <CMSListingItem
                 key={item.id}
                 highlight={item.highlight}
@@ -162,17 +165,17 @@ SiteSearchListing.propTypes = {
   results: PropTypes.shape({
     count: PropTypes.number,
     type: PropTypes.string,
-    listing: PropTypes.arrayOf(PropTypes.shape({}))
+    listing: PropTypes.arrayOf(PropTypes.shape({})),
   }).isRequired,
   error: PropTypes.shape({
     status: PropTypes.number,
-    message: PropTypes.string
+    message: PropTypes.string,
   }),
   loading: PropTypes.bool.isRequired,
-  filter: PropTypes.string.isRequired
+  filter: PropTypes.string.isRequired,
 };
 SiteSearchListing.defaultProps = {
-  error: null
+  error: null,
 };
 
 export default SiteSearchListing;

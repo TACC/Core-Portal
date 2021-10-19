@@ -11,11 +11,11 @@ import {
   dataFilesRename,
   dataFilesError,
   dataFilesUpload,
-  dataFilesUploadToSharedWorkSpace
+  dataFilesUploadToSharedWorkSpace,
 } from '../../redux/sagas/fixtures/notificationsDataFilesEvents.fixture';
 import {
   jobStatusUpdatePending,
-  jobInteractiveSessionReady
+  jobInteractiveSessionReady,
 } from '../../redux/sagas/fixtures/notificationsJobsEvents.fixture';
 
 const mockStore = configureStore();
@@ -27,8 +27,8 @@ const exampleToasts = [
     message: 'This is a test message',
     extra: {
       name: 'RStudio-Stampede2-1.1.423u4_2020-08-04T22:55:35-dcvserver',
-      status: 'RUNNING'
-    }
+      status: 'RUNNING',
+    },
   },
   {
     pk: '2',
@@ -36,12 +36,12 @@ const exampleToasts = [
     message: 'This is another test message',
     extra: {
       name: 'RStudio-Stampede2-1.1.423u4_2020-08-04T22:55:35-dcvserver',
-      status: 'FINISHED'
-    }
-  }
+      status: 'FINISHED',
+    },
+  },
 ];
 
-const getToastStore = eventToasts => {
+const getToastStore = (eventToasts) => {
   return {
     systems: systemsFixture,
     projects: projectsFixture,
@@ -49,9 +49,9 @@ const getToastStore = eventToasts => {
       ...notifications,
       list: {
         ...notifications.list,
-        toasts: eventToasts
-      }
-    }
+        toasts: eventToasts,
+      },
+    },
   };
 };
 

@@ -9,7 +9,7 @@ import { LoadingSpinner, Message } from '_common';
 import { ManageAccountInput } from './ManageAccountFields';
 
 const ChangePasswordFormBody = ({ canSubmit, formRef }) => {
-  const isChecking = useSelector(state => state.profile.checkingPassword);
+  const isChecking = useSelector((state) => state.profile.checkingPassword);
   const Requirements = () => (
     <div style={{ color: '#707070', fontStyle: 'italic' }}>
       <span>Passwords must meet the following criteria:</span>
@@ -63,21 +63,21 @@ ChangePasswordFormBody.propTypes = {
   formRef: oneOfType([
     func,
     shape({
-      current: instanceOf(Element)
-    })
-  ]).isRequired
+      current: instanceOf(Element),
+    }),
+  ]).isRequired,
 };
 
-export default function() {
-  const { restrictions, checks } = useSelector(state => {
+export default function () {
+  const { restrictions, checks } = useSelector((state) => {
     const { data } = state.profile;
     const { username, firstName, lastName } = data.demographics;
     return {
       restrictions: { username, firstName, lastName },
       checks: {
         error: state.profile.errors.password,
-        success: state.profile.success.password
-      }
+        success: state.profile.success.password,
+      },
     };
   });
   const dispatch = useDispatch();
@@ -85,7 +85,7 @@ export default function() {
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
     dispatch({
       type: 'CHANGE_PASSWORD',
-      values
+      values,
     });
     setSubmitting(false);
   };
@@ -104,15 +104,15 @@ export default function() {
     currentPW: str().required('Please enter your current password'),
     newPW: str()
       .min(8, 'Must be a minimum of 8 characters in length')
-      .test('check-first-name', 'Can not contain your first name', value => {
+      .test('check-first-name', 'Can not contain your first name', (value) => {
         const matcher = new RegExp(restrictions.firstName, 'i');
         return !matcher.test(value);
       })
-      .test('check-last-name', 'Can not contain your last name', value => {
+      .test('check-last-name', 'Can not contain your last name', (value) => {
         const matcher = new RegExp(restrictions.lastName, 'i');
         return !matcher.test(value);
       })
-      .test('check-username', 'Can not contain your username', value => {
+      .test('check-username', 'Can not contain your username', (value) => {
         const matcher = new RegExp(restrictions.username, 'i');
         return !matcher.test(value);
       })
@@ -127,14 +127,14 @@ export default function() {
       .required('Required'),
     confirmNewPW: str()
       .oneOf([ref('newPW')], 'Passwords do not match')
-      .required('Required')
+      .required('Required'),
   });
   const initialValues = {
     currentPW: '',
     newPW: '',
-    confirmNewPW: ''
+    confirmNewPW: '',
   };
-  const hasErrors = errors => isEmpty(Object.keys(errors));
+  const hasErrors = (errors) => isEmpty(Object.keys(errors));
   return (
     <>
       <Message type="warn">

@@ -5,13 +5,13 @@ function* getSystemMonitor(action) {
   yield put({ type: 'SYSTEM_MONITOR_LOAD' });
   try {
     const result = yield call(fetchUtil, {
-      url: '/api/system-monitor/'
+      url: '/api/system-monitor/',
     });
     yield put({ type: 'SYSTEM_MONITOR_SUCCESS', payload: result });
   } catch (error) {
     yield put({
       type: 'SYSTEM_MONITOR_ERROR',
-      payload: error
+      payload: error,
     });
   }
 }

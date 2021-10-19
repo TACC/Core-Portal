@@ -9,34 +9,34 @@ const mockStore = configureStore();
 const initialMockState = {
   files: {
     modals: {
-      upload: true
+      upload: true,
     },
     params: {
       FilesListing: {
         api: 'tapis',
         scheme: 'private',
         system: 'test.system',
-        path: ''
+        path: '',
       },
       modal: {
         api: 'tapis',
         scheme: 'private',
         system: 'test.system',
-        path: ''
-      }
+        path: '',
+      },
     },
     operationStatus: {
-      upload: true
-    }
+      upload: true,
+    },
   },
   projects: {
     listing: {
       project: projectsListingFixture,
       loading: false,
-      error: null
-    }
+      error: null,
+    },
   },
-  systems: systemsFixture
+  systems: systemsFixture,
 };
 
 describe('DataFilesUploadModal', () => {

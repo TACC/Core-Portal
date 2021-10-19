@@ -5,16 +5,16 @@ const jobDetailDisplayFixture = {
     {
       label: 'Target Path to be Compressed',
       id: 'workingDirectory',
-      value: 'agave://cep.home.username/COE332'
-    }
+      value: 'agave://cep.home.username/COE332',
+    },
   ],
   parameters: [
     {
       label: 'Compression Type',
       id: 'compression_type',
-      value: 'tgz'
-    }
-  ]
+      value: 'tgz',
+    },
+  ],
 };
 
 export default jobDetailDisplayFixture;

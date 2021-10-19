@@ -15,7 +15,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  Spinner
+  Spinner,
 } from 'reactstrap';
 import * as Yup from 'yup';
 
@@ -24,21 +24,21 @@ import {
   FormField,
   FileInputDropZoneFormField,
   LoadingSpinner,
-  Message
+  Message,
 } from '_common';
 import { Formik, Form } from 'formik';
 import * as ROUTES from '../../constants/routes';
 import './TicketModal.scss';
 
 const formSchema = Yup.object().shape({
-  reply: Yup.string().required('Required')
+  reply: Yup.string().required('Required'),
 });
 
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
     () => ({
       reply: '',
-      attachments: []
+      attachments: [],
     }),
     []
   );
@@ -46,14 +46,14 @@ function TicketHistoryReply({ ticketId }) {
   const dispatch = useDispatch();
 
   const gettingTicketHistory = useSelector(
-    state => state.ticketDetailedView.loading
+    (state) => state.ticketDetailedView.loading
   );
   const loadingError = useSelector(
-    state => state.ticketDetailedView.loadingError
+    (state) => state.ticketDetailedView.loadingError
   );
-  const isReplying = useSelector(state => state.ticketDetailedView.replying);
+  const isReplying = useSelector((state) => state.ticketDetailedView.replying);
   const replyingError = useSelector(
-    state => state.ticketDetailedView.replyingError
+    (state) => state.ticketDetailedView.replyingError
   );
   return (
     <Formik
@@ -62,9 +62,9 @@ function TicketHistoryReply({ ticketId }) {
       validationSchema={formSchema}
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
-        Object.keys(values).forEach(key => formData.append(key, values[key]));
+        Object.keys(values).forEach((key) => formData.append(key, values[key]));
         if (values.attachments) {
-          values.attachments.forEach(attach =>
+          values.attachments.forEach((attach) =>
             formData.append('attachments', attach)
           );
         }
@@ -74,8 +74,8 @@ function TicketHistoryReply({ ticketId }) {
           payload: {
             ticketId,
             formData,
-            resetSubmittedForm: resetForm
-          }
+            resetSubmittedForm: resetForm,
+          },
         });
       }}
     >
@@ -122,7 +122,7 @@ function TicketHistoryReply({ ticketId }) {
 }
 
 TicketHistoryReply.propTypes = {
-  ticketId: PropTypes.number.isRequired
+  ticketId: PropTypes.number.isRequired,
 };
 
 const TicketHistoryCard = ({
@@ -130,10 +130,10 @@ const TicketHistoryCard = ({
   created,
   creator,
   ticketCreator,
-  content
+  content,
 }) => {
   const dispatch = useDispatch();
-  const isOpen = useSelector(state =>
+  const isOpen = useSelector((state) =>
     state.ticketDetailedView.showItems.includes(historyId)
   );
 
@@ -154,7 +154,7 @@ const TicketHistoryCard = ({
         onClick={() =>
           dispatch({
             type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
-            payload: { index: historyId }
+            payload: { index: historyId },
           })
         }
       >
@@ -180,14 +180,14 @@ TicketHistoryCard.propTypes = {
   created: PropTypes.instanceOf(Date).isRequired,
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
-  content: PropTypes.string.isRequired
+  content: PropTypes.string.isRequired,
 };
 
 const TicketHistory = () => {
-  const loading = useSelector(state => state.ticketDetailedView.loading);
-  const history = useSelector(state => state.ticketDetailedView.content);
+  const loading = useSelector((state) => state.ticketDetailedView.loading);
+  const history = useSelector((state) => state.ticketDetailedView.content);
   const loadingError = useSelector(
-    state => state.ticketDetailedView.loadingError
+    (state) => state.ticketDetailedView.loadingError
   );
   const ticketHistoryEndRef = useRef();
 
@@ -204,7 +204,7 @@ const TicketHistory = () => {
           Something went wrong.
         </Message>
       )}
-      {history.map(d => (
+      {history.map((d) => (
         <TicketHistoryCard
           key={d.id}
           historyId={Number(d.id)}
@@ -221,9 +221,9 @@ const TicketHistory = () => {
 
 function TicketModal({ history }) {
   const modalAlwaysOpen = true;
-  const ticketId = useSelector(state => state.ticketDetailedView.ticketId);
+  const ticketId = useSelector((state) => state.ticketDetailedView.ticketId);
   const ticketSubject = useSelector(
-    state => state.ticketDetailedView.ticketSubject
+    (state) => state.ticketDetailedView.ticketSubject
   );
 
   const close = () => {
@@ -259,7 +259,7 @@ function TicketModal({ history }) {
 
 TicketModal.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
 };
 
 export default withRouter(TicketModal);

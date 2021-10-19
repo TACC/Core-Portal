@@ -10,18 +10,42 @@
 /* SEE: https://confluence.tacc.utexas.edu/x/b4AZCg */
 @media only screen and (min-width: 1680px) {
   .tickets-view {
-    /* number */  tr > *:nth-child(1) { width: 7%; }
-    /* subject */ tr > *:nth-child(2) { width: 70%; }
-    /* date */    tr > *:nth-child(3) { width: 11%; }
-    /* status */  tr > *:nth-child(4) { width: 12%; }
+    /* number */
+    tr > *:nth-child(1) {
+      width: 7%;
+    }
+    /* subject */
+    tr > *:nth-child(2) {
+      width: 70%;
+    }
+    /* date */
+    tr > *:nth-child(3) {
+      width: 11%;
+    }
+    /* status */
+    tr > *:nth-child(4) {
+      width: 12%;
+    }
   }
 }
 @media only screen and (max-width: 1679px) {
   .tickets-view {
-    /* number */  tr > *:nth-child(1) { width: 12.5%; }
-    /* subject */ tr > *:nth-child(2) { width: 52.5%; }
-    /* date */    tr > *:nth-child(3) { width: 20%; }
-    /* status */  tr > *:nth-child(4) { width: 15%; }
+    /* number */
+    tr > *:nth-child(1) {
+      width: 12.5%;
+    }
+    /* subject */
+    tr > *:nth-child(2) {
+      width: 52.5%;
+    }
+    /* date */
+    tr > *:nth-child(3) {
+      width: 20%;
+    }
+    /* status */
+    tr > *:nth-child(4) {
+      width: 15%;
+    }
   }
 }
 

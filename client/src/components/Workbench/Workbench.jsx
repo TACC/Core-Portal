@@ -28,16 +28,16 @@ function Workbench() {
     showUIPatterns,
     isStaff,
     hideApps,
-    hideDataFiles
+    hideDataFiles,
   } = useSelector(
-    state => ({
+    (state) => ({
       loading: state.workbench.loading || state.systems.storage.loading,
       setupComplete: state.workbench.setupComplete,
       showUIPatterns: state.workbench.config.debug,
       isStaff:
         state.authenticatedUser.user && state.authenticatedUser.user.isStaff,
       hideApps: state.workbench.config.hideApps,
-      hideDataFiles: state.workbench.config.hideDataFiles
+      hideDataFiles: state.workbench.config.hideDataFiles,
     }),
     shallowEqual
   );
@@ -49,9 +49,9 @@ function Workbench() {
       type: 'FETCH_NOTIFICATIONS',
       payload: {
         body: {
-          eventTypes: ['job', 'interactive_session_ready']
-        }
-      }
+          eventTypes: ['job', 'interactive_session_ready'],
+        },
+      },
     });
 
     if (setupComplete) {

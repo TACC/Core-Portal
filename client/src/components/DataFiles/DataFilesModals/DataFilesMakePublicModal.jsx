@@ -4,24 +4,24 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { SectionMessage } from '_common';
 
 const DataFilesMakePublicModal = () => {
-  const isOpen = useSelector(state => state.files.modals.makePublic);
+  const isOpen = useSelector((state) => state.files.modals.makePublic);
 
   const selected = useSelector(
-    state => state.files.modalProps.makePublic.selectedFile || {}
+    (state) => state.files.modalProps.makePublic.selectedFile || {}
   );
 
   const dispatch = useDispatch();
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'makePublic', props: {} }
+      payload: { operation: 'makePublic', props: {} },
     });
   };
 
   const onClosed = () => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: null, operation: 'makePublic' }
+      payload: { status: null, operation: 'makePublic' },
     });
   };
 
@@ -30,8 +30,8 @@ const DataFilesMakePublicModal = () => {
       type: 'DATA_FILES_MAKE_PUBLIC',
       payload: {
         system: selected.system,
-        path: selected.path
-      }
+        path: selected.path,
+      },
     });
     toggle();
   };
