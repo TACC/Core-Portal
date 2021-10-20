@@ -48,7 +48,7 @@ const Attachments = ({ attachments }) => {
 };
 
 Attachments.propTypes = {
-  attachments: PropTypes.arrayOf(PropTypes.object).isRequired
+  attachments: PropTypes.arrayOf(PropTypes.array).isRequired
 };
 
 function TicketHistoryReply({ ticketId }) {
