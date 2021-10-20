@@ -190,7 +190,7 @@ const TicketHistoryCard = ({
       </CardHeader>
       <Collapse isOpen={isOpen}>
         <CardBody>{content}</CardBody>
-        {attachmentTitles && (
+        {!!attachmentTitles.length && (
           <CardBody>
             <Attachments attachments={attachmentTitles} />
           </CardBody>
