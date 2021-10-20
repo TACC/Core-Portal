@@ -175,10 +175,12 @@ export function* postTicketCreate(action) {
     });
     const json = yield res.json();
     const jsonsitekey = yield sitekey.json();
-    yield put({
-      type: 'SITE_KEY',
-      paylaod: { sitekey: jsonsitekey }
-    });
+    if (jsonsitekey){
+      yield put({
+        type: 'TICKET_SITE_KEY',
+        paylaod: { sitekey: jsonsitekey }
+      });
+    }
     if (!res.ok) {
       yield put({
         type: 'TICKET_CREATE_FAILED',
