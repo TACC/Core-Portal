@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import DataFilesTable from './DataFilesTable';
 import filesFixture from '../fixtures/DataFiles.files.fixture';
@@ -281,7 +281,7 @@ describe('DataFilesTable', () => {
     expect(getByText(/There was a problem accessing this file system./)).toBeDefined();
 
     fireEvent.click(getByText(/push your keys/));
-    await wait(() => {
+    await waitFor(() => {
       expect(storeWithError.getActions()).toEqual([{
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
