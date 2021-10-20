@@ -40,7 +40,7 @@ const Attachments = ({ attachments }) => {
       Attachments:
       <ul>
         {attachments.map(attachmentName => (
-          <li> {attachmentName[1]} </li>
+          <li key={attachmentName[0]}>{attachmentName[1]} </li>
         ))}
       </ul>
     </div>
