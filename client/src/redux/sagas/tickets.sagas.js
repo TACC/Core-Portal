@@ -4,8 +4,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 import 'cross-fetch';
 
 export function* fetchTickets(action) {
-  yield put({ type: 'TICKET_LIST_FETCH_STARTED'
- });
+  yield put({ type: 'TICKET_LIST_FETCH_STARTED' });
   try {
     const res = yield call(fetchUtil, {
       url: `/api/tickets/`
@@ -81,8 +80,7 @@ export function* watchTicketDetailedViewFetchSubject() {
 }
 
 export function* fetchTicketHistory(action) {
-yield put({ type: 'TICKET_DETAILED_VIEW_FETCH_HISTORY_STARTED'
-});
+  yield put({ type: 'TICKET_DETAILED_VIEW_FETCH_HISTORY_STARTED' });
   try {
     const res = yield call(fetchUtil, {
       url: `/api/tickets/${action.payload.ticketId}/history`
@@ -208,7 +206,10 @@ export function* openTicketModal(action) {
   });
   const jsonsitekey = yield sitekey.json();
   yield put({ type: 'TICKET_CREATE_INIT' });
-  yield put({ type: 'TICKET_CREATE_SET_MODAL_OPEN', payload: { openTicketModal :action.payload, sitekey: jsonsitekey } });
+  yield put({
+    type: 'TICKET_CREATE_SET_MODAL_OPEN',
+    payload: { openTicketModal: action.payload, sitekey: jsonsitekey }
+  });
 }
 
 export function* closeTicketModal(action) {

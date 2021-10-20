@@ -90,11 +90,8 @@ function TicketCreateForm({
   const createdTicketId = useSelector(
     state => state.ticketCreate.createdTicketId
   );
-  const sitekey = useSelector(
-    state => state.ticketCreateModal.sitekey
-   );
-  console.log(sitekey['sitekey'])
-
+  const sitekey = useSelector(state => state.ticketCreateModal.sitekey);
+  console.log(sitekey.sitekey);
 
   const defaultValues = useMemo(
     () => ({
@@ -205,7 +202,7 @@ function TicketCreateForm({
               <ReCAPTCHA
                 ref={recaptchaRef}
                 value={recaptchaResponse}
-                sitekey= {sitekey['sitekey']}
+                sitekey={sitekey.sitekey}
                 onChange={e => setRecaptchaResponse(e)}
                 className="g-recaptcha"
               />

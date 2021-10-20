@@ -145,7 +145,6 @@ export const initialTicketCreateState = {
   createdTicketId: null
 };
 
-
 export function ticketCreate(state = initialTicketCreateState, action) {
   switch (action.type) {
     case 'TICKET_CREATE_INIT':

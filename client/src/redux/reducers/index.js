@@ -6,8 +6,7 @@ import {
   ticketList,
   ticketDetailedView,
   ticketCreate,
-  ticketCreateModal,
-  
+  ticketCreateModal
 } from './tickets.reducers';
 import systemMonitor from './systemMonitor.reducers';
 import allocations from './allocations.reducers';
