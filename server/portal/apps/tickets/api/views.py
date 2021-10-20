@@ -42,13 +42,14 @@ class TicketsView(BaseApiView):
         else:
             user_tickets = rt.getUserTickets(request.user.email)
             return JsonResponse({'tickets': user_tickets})
+
     def post(self, request):
         """Post a new ticket
 
         """
 
-        rt = rtUtil.DjangoRt()        
-        
+        rt = rtUtil.DjangoRt()
+
         data = request.POST.copy()
         email = request.user.email if request.user.is_authenticated else data.get('email')
         subject = data.get('subject')
@@ -78,16 +79,15 @@ class TicketsView(BaseApiView):
         problem_description += "\n\n" + metadata
         recaptcha_response = request.POST.get('recaptchaResponse')
         secret_key = getattr(settings, 'RECAPTCHA_SECRET_KEY')
-        print("secret key",secret_key)
+        print("secret key", secret_key)
         data = {
-        'secret' : secret_key,
-        'response' :  recaptcha_response
+            'secret': secret_key,
+            'response': recaptcha_response
         }
         r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = r.json()
         print(result)
-        
-   
+
         if result['success']:
             ticket_id = rt.create_ticket(subject=subject,
                                          problem_description=problem_description,
@@ -96,7 +96,7 @@ class TicketsView(BaseApiView):
                                          attachments=attachments)
             return JsonResponse({'ticket_id': ticket_id})
         else:
-            raise ApiException( 'Invalid reCAPTCHA. Please try again.')
+            raise ApiException('Invalid reCAPTCHA. Please try again.')
 
 
 def has_access_to_ticket(function):
@@ -203,11 +203,13 @@ class TicketsHistoryView(BaseApiView):
         rt = rtUtil.DjangoRt()
         ticket_history = self._get_ticket_history(rt, request.user.username, ticket_id)
         return JsonResponse({'ticket_history': ticket_history})
+
+
 class SiteKeyView(BaseApiView):
     def get(self, request):
         """Get sitekey
         """
 
         site_key = getattr(settings, 'RECAPTCHA_SITE_KEY')
-        siteKey =JsonResponse({'sitekey':site_key})
+        siteKey = JsonResponse({'sitekey': site_key})
         return siteKey
