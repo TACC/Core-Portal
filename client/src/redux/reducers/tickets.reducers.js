@@ -145,6 +145,7 @@ export const initialTicketCreateState = {
   createdTicketId: null
 };
 
+
 export function ticketCreate(state = initialTicketCreateState, action) {
   switch (action.type) {
     case 'TICKET_CREATE_INIT':
@@ -166,7 +167,7 @@ export function ticketCreate(state = initialTicketCreateState, action) {
         ...state,
         creating: false,
         creatingSuccess: true,
-        createdTicketId: action.payload
+        createdTicketId: action.payload.ticketId
       };
     default:
       return state;
@@ -180,21 +181,6 @@ export const initialTicketCreateModalState = {
   provideDashBoardLinkOnSuccess: true
 };
 
-export const sitekeyState = {
-  sitekeyset: ''
-};
-export function sitekey(state = sitekeyState, action) {
-  switch (action.type) {
-    case 'TICKET_SITE_KEY':
-      return {
-        ...state,
-        sitekeyset: action.payload.sitekey
-      };
-    default:
-      return state;
-  }
-}
-
 export function ticketCreateModal(
   state = initialTicketCreateModalState,
   action
@@ -203,8 +189,9 @@ export function ticketCreateModal(
     case 'TICKET_CREATE_SET_MODAL_OPEN':
       return {
         ...state,
-        ...action.payload,
-        modalOpen: true
+        ...action.payload.openTicketModal,
+        modalOpen: true,
+        sitekey: action.payload.sitekey
       };
     case 'TICKET_CREATE_SET_MODAL_CLOSE':
       return {

@@ -77,8 +77,10 @@ class TicketsView(BaseApiView):
 
         problem_description += "\n\n" + metadata
         recaptcha_response = request.POST.get('recaptchaResponse')
+        secret_key = getattr(settings, 'RECAPTCHA_SECRET_KEY')
+        print("secret key",secret_key)
         data = {
-        'secret' : "6LcJa68cAAAAAI5buG-nJS-kQhJN-_n9spbo3Tzd",
+        'secret' : secret_key,
         'response' :  recaptcha_response
         }
         r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)

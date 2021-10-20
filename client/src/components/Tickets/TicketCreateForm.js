@@ -20,8 +20,6 @@ import { FileInputDropZoneFormField, FormField } from '_common';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateForm.scss';
 
-const site_key = useSelector(state => state.sitekey.sitekeyset);
-console.log(site_key);
 const formSchema = Yup.object().shape({
   subject: Yup.string().required('Required'),
   problem_description: Yup.string().required('Required'),
@@ -92,6 +90,11 @@ function TicketCreateForm({
   const createdTicketId = useSelector(
     state => state.ticketCreate.createdTicketId
   );
+  const sitekey = useSelector(
+    state => state.ticketCreateModal.sitekey
+   );
+  console.log(sitekey['sitekey'])
+
 
   const defaultValues = useMemo(
     () => ({
@@ -202,7 +205,7 @@ function TicketCreateForm({
               <ReCAPTCHA
                 ref={recaptchaRef}
                 value={recaptchaResponse}
-                sitekey="6LcJa68cAAAAAB7_1ZgWxkDX4-mg9aQ0_M4DLbOk"
+                sitekey= {sitekey['sitekey']}
                 onChange={e => setRecaptchaResponse(e)}
                 className="g-recaptcha"
               />

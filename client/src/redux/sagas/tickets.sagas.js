@@ -4,7 +4,8 @@ import { fetchUtil } from 'utils/fetchUtil';
 import 'cross-fetch';
 
 export function* fetchTickets(action) {
-  yield put({ type: 'TICKET_LIST_FETCH_STARTED' });
+  yield put({ type: 'TICKET_LIST_FETCH_STARTED'
+ });
   try {
     const res = yield call(fetchUtil, {
       url: `/api/tickets/`
@@ -80,7 +81,8 @@ export function* watchTicketDetailedViewFetchSubject() {
 }
 
 export function* fetchTicketHistory(action) {
-  yield put({ type: 'TICKET_DETAILED_VIEW_FETCH_HISTORY_STARTED' });
+yield put({ type: 'TICKET_DETAILED_VIEW_FETCH_HISTORY_STARTED'
+});
   try {
     const res = yield call(fetchUtil, {
       url: `/api/tickets/${action.payload.ticketId}/history`
@@ -154,7 +156,9 @@ export function* watchPostTicketReply() {
 }
 
 export function* postTicketCreate(action) {
-  yield put({ type: 'TICKET_CREATE_STARTED' });
+  yield put({
+    type: 'TICKET_CREATE_STARTED'
+  });
 
   try {
     const res = yield call(fetch, `/api/tickets/`, {
@@ -165,22 +169,7 @@ export function* postTicketCreate(action) {
       credentials: 'same-origin',
       body: action.payload.formData
     });
-    const sitekey = yield call(fetch, `/api/tickets/sitekey`, {
-      method: 'GET',
-      headers: {
-        'X-CSRFToken': Cookies.get('csrftoken')
-      },
-      credentials: 'same-origin',
-      body: action.payload.sitekey
-    });
     const json = yield res.json();
-    const jsonsitekey = yield sitekey.json();
-    if (jsonsitekey){
-      yield put({
-        type: 'TICKET_SITE_KEY',
-        paylaod: { sitekey: jsonsitekey }
-      });
-    }
     if (!res.ok) {
       yield put({
         type: 'TICKET_CREATE_FAILED',
@@ -189,7 +178,7 @@ export function* postTicketCreate(action) {
     } else {
       yield put({
         type: 'TICKET_CREATE_SUCCESS',
-        payload: json.ticket_id
+        payload: { ticketId: json.ticket_id }
       });
       action.payload.resetSubmittedForm();
       if (action.payload.refreshTickets) {
@@ -209,8 +198,17 @@ export function* watchPostTicketCreate() {
 }
 
 export function* openTicketModal(action) {
+  const sitekey = yield call(fetch, `/api/tickets/sitekey`, {
+    method: 'GET',
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken')
+    },
+    credentials: 'same-origin',
+    body: action.payload
+  });
+  const jsonsitekey = yield sitekey.json();
   yield put({ type: 'TICKET_CREATE_INIT' });
-  yield put({ type: 'TICKET_CREATE_SET_MODAL_OPEN', payload: action.payload });
+  yield put({ type: 'TICKET_CREATE_SET_MODAL_OPEN', payload: { openTicketModal :action.payload, sitekey: jsonsitekey } });
 }
 
 export function* closeTicketModal(action) {

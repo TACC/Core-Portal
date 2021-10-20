@@ -7,7 +7,7 @@ import {
   ticketDetailedView,
   ticketCreate,
   ticketCreateModal,
-  sitekey
+  
 } from './tickets.reducers';
 import systemMonitor from './systemMonitor.reducers';
 import allocations from './allocations.reducers';
@@ -34,7 +34,6 @@ export default combineReducers({
   ticketDetailedView,
   ticketCreate,
   ticketCreateModal,
-  sitekey,
   authenticatedUser,
   app,
   apps,
