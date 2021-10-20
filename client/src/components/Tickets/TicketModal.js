@@ -206,7 +206,7 @@ TicketHistoryCard.propTypes = {
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
-  attachments: PropTypes.arrayOf(PropTypes.object).isRequired
+  attachments: PropTypes.arrayOf(PropTypes.array).isRequired
 };
 
 export const TicketHistory = () => {
