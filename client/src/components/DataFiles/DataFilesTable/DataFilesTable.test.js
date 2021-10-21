@@ -10,16 +10,16 @@ import systemsFixture from '../fixtures/DataFiles.systems.fixture';
 const mockStore = configureStore();
 const initialMockState = {
   pushKeys: {
-    target: {}
+    target: {},
   },
   files: {
     ...filesFixture,
     refs: {
       FileSelector: {
         props: {
-          toggle: jest.fn()
-        }
-      }
+          toggle: jest.fn(),
+        },
+      },
     },
   },
   systems: systemsFixture,
@@ -44,20 +44,20 @@ const columns = [
     accessor: 'name',
     width: 0.5,
   },
-  { 
-    Header: 'Size', 
-    accessor: 'length', 
-    width: 0.15 
+  {
+    Header: 'Size',
+    accessor: 'length',
+    width: 0.15,
   },
   {
     Header: 'Last Modified',
     accessor: 'lastModified',
-    width: 0.15
+    width: 0.15,
   },
   {
     Header: 'Path',
     width: 0.1,
-  }
+  },
 ];
 
 describe('DataFilesTable', () => {
@@ -66,21 +66,23 @@ describe('DataFilesTable', () => {
 
   let getByText, rerender;
   beforeEach(() => {
-    ({getByText, rerender} = render(
-        <Provider store={store}>
-          <BrowserRouter>
-            <DataFilesTable
-              data={filesFixture.listing.FilesListing}
-              columns={columns}
-              rowSelectCallback={mockCallback}
-              scrollBottomCallback={mockCallback}
-              section="FilesListing"/>,
-          </BrowserRouter>
-        </Provider>
+    ({ getByText, rerender } = render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <DataFilesTable
+            data={filesFixture.listing.FilesListing}
+            columns={columns}
+            rowSelectCallback={mockCallback}
+            scrollBottomCallback={mockCallback}
+            section="FilesListing"
+          />
+          ,
+        </BrowserRouter>
+      </Provider>
     ));
   });
 
-  it("should have relevant columns for data for the Data Files Table", () => {
+  it('should have relevant columns for data for the Data Files Table', () => {
     expect(getByText(/^Name/)).toBeDefined();
     expect(getByText(/^Size/)).toBeDefined();
     expect(getByText(/^Last Modified/)).toBeDefined();
@@ -93,14 +95,14 @@ describe('DataFilesTable', () => {
       files: {
         ...initialMockState.files,
         error: {
-          FilesListing: '502'
+          FilesListing: '502',
         },
         params: {
           FilesListing: {
             system: 'test.system',
             path: 'test/path',
-            scheme: 'public'
-          }
+            scheme: 'public',
+          },
         },
       },
     });
@@ -112,11 +114,17 @@ describe('DataFilesTable', () => {
             columns={columns}
             rowSelectCallback={mockCallback}
             scrollBottomCallback={mockCallback}
-            section="FilesListing"/>,
+            section="FilesListing"
+          />
+          ,
         </BrowserRouter>
       </Provider>
     );
-    expect(getByText(/An error occurred loading this directory. For help, please submit/)).toBeDefined();
+    expect(
+      getByText(
+        /An error occurred loading this directory. For help, please submit/
+      )
+    ).toBeDefined();
   });
 
   it('should display an error for 404', async () => {
@@ -125,14 +133,14 @@ describe('DataFilesTable', () => {
       files: {
         ...initialMockState.files,
         error: {
-          FilesListing: '404'
+          FilesListing: '404',
         },
         params: {
           FilesListing: {
             system: 'test.system',
             path: 'test/path',
-            scheme: 'public'
-          }
+            scheme: 'public',
+          },
         },
       },
     });
@@ -144,11 +152,17 @@ describe('DataFilesTable', () => {
             columns={columns}
             rowSelectCallback={mockCallback}
             scrollBottomCallback={mockCallback}
-            section="FilesListing"/>,
+            section="FilesListing"
+          />
+          ,
         </BrowserRouter>
       </Provider>
     );
-    expect(getByText(/The file or folder that you are attempting to access does not exist./)).toBeDefined();
+    expect(
+      getByText(
+        /The file or folder that you are attempting to access does not exist./
+      )
+    ).toBeDefined();
   });
 
   it('should display an error for 403', async () => {
@@ -157,14 +171,14 @@ describe('DataFilesTable', () => {
       files: {
         ...initialMockState.files,
         error: {
-          FilesListing: '403'
+          FilesListing: '403',
         },
         params: {
           FilesListing: {
             system: 'test.system',
             path: 'test/path',
-            scheme: 'public'
-          }
+            scheme: 'public',
+          },
         },
       },
     });
@@ -176,11 +190,15 @@ describe('DataFilesTable', () => {
             columns={columns}
             rowSelectCallback={mockCallback}
             scrollBottomCallback={mockCallback}
-            section="FilesListing"/>,
+            section="FilesListing"
+          />
+          ,
         </BrowserRouter>
       </Provider>
     );
-    expect(getByText(/You are missing the required allocation for this system./)).toBeDefined();
+    expect(
+      getByText(/You are missing the required allocation for this system./)
+    ).toBeDefined();
   });
 
   it('should display an error for 400 when the api is Google Drive', async () => {
@@ -189,15 +207,15 @@ describe('DataFilesTable', () => {
       files: {
         ...initialMockState.files,
         error: {
-          FilesListing: '400'
+          FilesListing: '400',
         },
         params: {
           FilesListing: {
             system: 'test.system',
             path: 'test/path',
             scheme: 'public',
-            api: 'googledrive'
-          }
+            api: 'googledrive',
+          },
         },
       },
     });
@@ -209,11 +227,15 @@ describe('DataFilesTable', () => {
             columns={columns}
             rowSelectCallback={mockCallback}
             scrollBottomCallback={mockCallback}
-            section="FilesListing"/>,
+            section="FilesListing"
+          />
+          ,
         </BrowserRouter>
       </Provider>
     );
-    expect(getByText(/Connect your Google Drive account under the/)).toBeDefined();
+    expect(
+      getByText(/Connect your Google Drive account under the/)
+    ).toBeDefined();
   });
 
   it('should display an error for no data', async () => {
@@ -222,14 +244,14 @@ describe('DataFilesTable', () => {
       files: {
         ...initialMockState.files,
         error: {
-          FilesListing: false
+          FilesListing: false,
         },
         params: {
           FilesListing: {
             system: 'test.system',
             path: 'test/path',
             scheme: 'private',
-          }
+          },
         },
       },
     });
@@ -241,7 +263,9 @@ describe('DataFilesTable', () => {
             columns={columns}
             rowSelectCallback={mockCallback}
             scrollBottomCallback={mockCallback}
-            section="FilesListing"/>,
+            section="FilesListing"
+          />
+          ,
         </BrowserRouter>
       </Provider>
     );
@@ -254,14 +278,14 @@ describe('DataFilesTable', () => {
       files: {
         ...initialMockState.files,
         error: {
-          FilesListing: '502'
+          FilesListing: '502',
         },
         params: {
           FilesListing: {
             system: 'test.system',
             path: 'test/path',
-            scheme: 'private'
-          }
+            scheme: 'private',
+          },
         },
       },
     });
@@ -273,26 +297,32 @@ describe('DataFilesTable', () => {
             columns={columns}
             rowSelectCallback={mockCallback}
             scrollBottomCallback={mockCallback}
-            section="FilesListing"/>,
+            section="FilesListing"
+          />
+          ,
         </BrowserRouter>
       </Provider>
     );
 
-    expect(getByText(/There was a problem accessing this file system./)).toBeDefined();
+    expect(
+      getByText(/There was a problem accessing this file system./)
+    ).toBeDefined();
 
     fireEvent.click(getByText(/push your keys/));
     await waitFor(() => {
-      expect(storeWithError.getActions()).toEqual([{
-        type: 'SYSTEMS_TOGGLE_MODAL',
-        payload: {
-          operation: 'pushKeys',
-          props: {
-            callback: expect.any(Function), 
-            onSuccess: expect.any(Object),
-            system: expect.any(Object)
-          }
-        }
-      }]);
+      expect(storeWithError.getActions()).toEqual([
+        {
+          type: 'SYSTEMS_TOGGLE_MODAL',
+          payload: {
+            operation: 'pushKeys',
+            props: {
+              callback: expect.any(Function),
+              onSuccess: expect.any(Object),
+              system: expect.any(Object),
+            },
+          },
+        },
+      ]);
     });
   });
 });

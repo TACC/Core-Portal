@@ -8,8 +8,8 @@ import store from './redux/store';
 
 ReactDOM.render(
   <Provider store={store}>
-    <Suspense fallback={<LoadingSpinner/>}>
-      <AppRouter/>
+    <Suspense fallback={<LoadingSpinner />}>
+      <AppRouter />
     </Suspense>
   </Provider>,
   document.getElementById('react-root')
