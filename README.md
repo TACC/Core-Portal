@@ -177,16 +177,6 @@ NOTE: This may require a computer restart to take effect.
     Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
     Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
 
-### Creating Local CA and signed cert
-
-1. Generate RSA-2048 key for CA: `openssl genrsa -des3 -out ca.key 2048` (This file should already be in the repo)
-2. Generate root CA certificate: `openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.pem` (Root CA cert is valid for 365 days. Keep any form values to "CEP CA")
-3. Generate RSA-2048 key for local dev site: `openssl genrsa out cep.dev.key 2048` (This file should already be in the repo)
-4. Generate Cert Request (CSR): `openssql req -new -key -cep.dev.key -out cep.dev.csr` (Keep any form values to "CEP CA")
-5. Make sure `cep.dev.ext` is correct
-6. Generate Cert: `openssl x509 -req -in cep.dev.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out cep.dev.crt -days 365 -sha256 -extfile cep.dev.ext` (Cert is valid for 365 days. Keep default form values defined in .conf file)
-7. Files created: `cep.dev.key` (site private key), `cep.dev.csr` (site certificate signing request), `cep.dev.crt` (actual site certificate), `ca.key` (CA private key) and `ca.pem` (CA certificate).
-
 ### Additional Setup
 
 Follow the Confluence pages below to set up Projects, Notifications, and Elastic Search.
