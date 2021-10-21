@@ -206,3 +206,4 @@ class SiteKeyView(BaseApiView):
         site_key = getattr(settings, 'RECAPTCHA_SITE_KEY')
         siteKey = JsonResponse({'sitekey': site_key})
         return siteKey
+        
