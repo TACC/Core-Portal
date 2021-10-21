@@ -189,7 +189,7 @@ export function ticketCreateModal(
     case 'TICKET_CREATE_SET_MODAL_OPEN':
       return {
         ...state,
-        ...action.payload.openTicketModal,
+        ...action.payload.CreateTicketModal,
         modalOpen: true,
         sitekey: action.payload.sitekey
       };

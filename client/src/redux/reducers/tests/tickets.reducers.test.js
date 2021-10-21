@@ -59,7 +59,8 @@ describe('TicketCreateModal Reducer', () => {
       modalOpen: true,
       subject: '',
       showAsModalOnDashboard: true,
-      provideDashBoardLinkOnSuccess: true
+      provideDashBoardLinkOnSuccess: true,
+      sitekey: ''
     });
   });
   test('Ticket creation modal is opened with custum parameters', () => {
@@ -69,14 +70,16 @@ describe('TicketCreateModal Reducer', () => {
         payload: {
           subject: 'my custom subject',
           showAsModalOnDashboard: false,
-          provideDashBoardLinkOnSuccess: false
+          provideDashBoardLinkOnSuccess: false,
+          sitekey: ''
         }
       })
     ).toEqual({
       modalOpen: true,
       subject: 'my custom subject',
       showAsModalOnDashboard: false,
-      provideDashBoardLinkOnSuccess: false
+      provideDashBoardLinkOnSuccess: false,
+      sitekey: ''
     });
   });
   test('Ticket creation modal is closed', () => {

@@ -3,7 +3,7 @@ import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import TicketStandaloneCreate from './TicketStandaloneCreate';
-import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
+import { initialTicketCreateState as ticketCreate,initialTicketCreateModalState as ticketCreateModal } from '../../redux/reducers/tickets.reducers';
 import initialIntroMessages from '../../redux/reducers/intro.reducers';
 import { initialState as user } from '../../redux/reducers/authenticated_user.reducer';
 
@@ -14,8 +14,12 @@ describe('TicketStandaloneCreate', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      introMessages: initialIntroMessages
+      introMessages: initialIntroMessages,
+      ticketCreateModal:{
+        ...ticketCreateModal
+      }
     });
+
 
     const { getByRole } = renderComponent(<TicketStandaloneCreate />, store);
     expect(getByRole('alert', {class: /introMessageGeneral/i})).toBeInTheDocument();
@@ -25,7 +29,10 @@ describe('TicketStandaloneCreate', () => {
     const store = mockStore({
       ticketCreate,
       authenticatedUser: user,
-      introMessages: {...initialIntroMessages, TICKETS: false}
+      introMessages: {...initialIntroMessages, TICKETS: false},
+      ticketCreateModal:{
+        ...ticketCreateModal
+      }
     });
 
     const { queryByRole } = renderComponent(<TicketStandaloneCreate />, store);
