@@ -177,15 +177,6 @@ NOTE: This may require a computer restart to take effect.
     Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
     Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
 
-### Additional Setup
-
-Follow the Confluence pages below to set up Projects, Notifications, and Elastic Search.
-
-- Projects: https://confluence.tacc.utexas.edu/x/pQCPAQ
-- Notifications: https://confluence.tacc.utexas.edu/x/3QnG
-- ElasticSearch: https://confluence.tacc.utexas.edu/x/aARkAQ
-
-
 ### Linting and Formatting Conventions
 
 Client-side code is linted (JavaScript via `eslint`, CSS via `stylelint`), and is enforced on commits to the repo. To see a list of linting issues, in the console:
