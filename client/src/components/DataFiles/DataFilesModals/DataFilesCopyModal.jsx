@@ -23,6 +23,7 @@ const DataFilesCopyModal = React.memo(() => {
     (state) => state.files.params.modal,
     shallowEqual
   );
+
   const reloadPage = () => {
     history.push(location.pathname);
     dispatch({
@@ -122,9 +123,9 @@ const DataFilesCopyModal = React.memo(() => {
     [selectedFiles]
   );
 
-  const actionString = `Copying ${selected.length} File${
-    selected.length > 1 ? 's' : ''
-  }`;
+  const actionString = `${
+    params.system === modalParams.system ? 'Copying' : 'Start Copying'
+  } ${selected.length} File${selected.length > 1 ? 's' : ''}`;
 
   return (
     <Modal
