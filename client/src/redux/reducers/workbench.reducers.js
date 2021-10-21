@@ -2,7 +2,8 @@ export const initialState = {
   loading: true,
   config: {},
   portalName: '',
-  setupComplete: window.__INITIAL_SETUP_COMPLETE__
+  setupComplete: window.__INITIAL_SETUP_COMPLETE__,
+  sitekey: ''
 };
 
 export default function workbench(state = initialState, action) {
@@ -16,7 +17,8 @@ export default function workbench(state = initialState, action) {
       return {
         ...state,
         ...action.payload,
-        loading: false
+        loading: false,
+        sitekey: action.payload.sitekey
       };
     case 'WORKBENCH_FAILURE':
       return initialState;

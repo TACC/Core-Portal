@@ -10,6 +10,9 @@ from django.core.exceptions import PermissionDenied
 from portal.apps.tickets import rtUtil
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
+from django.conf import settings
+import json
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -69,14 +72,26 @@ class TicketsView(BaseApiView):
             metadata += "user_last_name:\n{}\n\n".format(data.get('last_name'))
 
         problem_description += "\n\n" + metadata
+        recaptcha_response = request.POST.get('recaptchaResponse')
+        secret_key = getattr(settings, 'RECAPTCHA_SECRET_KEY')
+        print("secret key", secret_key)
+        data = {
+            'secret': secret_key,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        print(result)
 
-        ticket_id = rt.create_ticket(subject=subject,
-                                     problem_description=problem_description,
-                                     requestor=email,
-                                     cc=cc,
-                                     attachments=attachments)
-
-        return JsonResponse({'ticket_id': ticket_id})
+        if result['success']:
+            ticket_id = rt.create_ticket(subject=subject,
+                                         problem_description=problem_description,
+                                         requestor=email,
+                                         cc=cc,
+                                         attachments=attachments)
+            return JsonResponse({'ticket_id': ticket_id})
+        else:
+            raise ApiException('Invalid reCAPTCHA. Please try again.')
 
 
 def has_access_to_ticket(function):
@@ -183,3 +198,11 @@ class TicketsHistoryView(BaseApiView):
         rt = rtUtil.DjangoRt()
         ticket_history = self._get_ticket_history(rt, request.user.username, ticket_id)
         return JsonResponse({'ticket_history': ticket_history})
+class SiteKeyView(BaseApiView):
+    def get(self, request):
+        """Get sitekey
+        """
+
+        site_key = getattr(settings, 'RECAPTCHA_SITE_KEY')
+        siteKey = JsonResponse({'sitekey': site_key})
+        return siteKey

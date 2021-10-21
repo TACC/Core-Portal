@@ -6,4 +6,5 @@ urlpatterns = [
     path('<int:ticket_id>', views.TicketsView.as_view()),
     path('', views.TicketsView.as_view()),
     path('<int:ticket_id>/history', views.TicketsHistoryView.as_view()),
+    path('sitekey',views.SiteKeyView.as_view())
 ]

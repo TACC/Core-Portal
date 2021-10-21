@@ -16,6 +16,7 @@ import {
 } from 'reactstrap';
 import * as Yup from 'yup';
 import { FileInputDropZoneFormField, FormField } from '_common';
+import ReCAPTCHA from 'react-google-recaptcha';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateForm.scss';
 
@@ -107,6 +108,10 @@ function TicketCreateForm({
 
   const isAuthenticated = authenticatedUser != null;
 
+  const sitekey = useSelector(state => state.ticketCreateModal.sitekey);
+  const recaptchaRef = React.createRef();
+  const [recaptchaResponse, setRecaptchaResponse] = React.useState('');
+
   return (
     <Formik
       enableReinitialize
@@ -119,6 +124,9 @@ function TicketCreateForm({
           values.attachments.forEach(attach =>
             formData.append('attachments', attach)
           );
+        }
+        if (recaptchaResponse) {
+          formData.append('recaptchaResponse', recaptchaResponse);
         }
         dispatch({
           type: 'TICKET_CREATE',
@@ -188,6 +196,12 @@ function TicketCreateForm({
                       />
                     </Col>
                   </Row>
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    value={recaptchaResponse}
+                    sitekey={sitekey.sitekey}
+                    onChange={e => setRecaptchaResponse(e)}
+                  />
                 </Container>
               </FormGroup>
             </ModalBody>

@@ -194,8 +194,20 @@ export function* watchPostTicketCreate() {
 }
 
 export function* openTicketModal(action) {
+  const sitekey = yield call(fetch, `/api/tickets/sitekey`, {
+    method: 'GET',
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken')
+    },
+    credentials: 'same-origin',
+    body: action.payload
+  });
+  const jsonsitekey = yield sitekey.json();
   yield put({ type: 'TICKET_CREATE_INIT' });
-  yield put({ type: 'TICKET_CREATE_SET_MODAL_OPEN', payload: action.payload });
+  yield put({
+    type: 'TICKET_CREATE_SET_MODAL_OPEN',
+    payload: { openTicketModal: action.payload, sitekey: jsonsitekey }
+  });
 }
 
 export function* closeTicketModal(action) {

@@ -177,7 +177,8 @@ export const initialTicketCreateModalState = {
   modalOpen: false,
   subject: '',
   showAsModalOnDashboard: true,
-  provideDashBoardLinkOnSuccess: true
+  provideDashBoardLinkOnSuccess: true,
+  sitekey: ''
 };
 
 export function ticketCreateModal(
@@ -188,8 +189,9 @@ export function ticketCreateModal(
     case 'TICKET_CREATE_SET_MODAL_OPEN':
       return {
         ...state,
-        ...action.payload,
-        modalOpen: true
+        ...action.payload.openTicketModal,
+        modalOpen: true,
+        sitekey: action.payload.sitekey
       };
     case 'TICKET_CREATE_SET_MODAL_CLOSE':
       return {

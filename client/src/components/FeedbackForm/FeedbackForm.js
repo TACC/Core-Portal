@@ -5,6 +5,7 @@ import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
 import { FormField } from '_common';
 import * as Yup from 'yup';
 import './FeedbackForm.module.scss';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const formSchema = Yup.object().shape({
   problem_description: Yup.string().required('Required')
@@ -22,6 +23,9 @@ const FeedbackForm = () => {
   const creatingErrorMessage = useSelector(
     state => state.ticketCreate.creatingErrorMessage
   );
+  const sitekey = useSelector(state => state.workbench.sitekey);
+  const recaptchaRef = React.createRef();
+  const [recaptchaResponse, setRecaptchaResponse] = React.useState('');
 
   return (
     <Formik
@@ -31,6 +35,9 @@ const FeedbackForm = () => {
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach(key => formData.append(key, values[key]));
+        if (recaptchaResponse) {
+          formData.append('recaptchaResponse', recaptchaResponse);
+        }
         formData.append('subject', `Feedback for ${portalName}`);
         dispatch({
           type: 'TICKET_CREATE',
@@ -60,6 +67,12 @@ const FeedbackForm = () => {
                   Error submitting feedback: {creatingErrorMessage}
                 </Alert>
               )}
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                value={recaptchaResponse}
+                sitekey={sitekey.sitekey}
+                onChange={e => setRecaptchaResponse(e)}
+              />
               <Button
                 type="submit"
                 color="primary"
