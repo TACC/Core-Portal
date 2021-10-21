@@ -127,7 +127,7 @@ const DataFilesSearchbar = ({
           disabled={disabled}
         />
       </div>
-      {scheme !== 'cms' && (
+      {scheme !== 'cms' && api === 'tapis' && (
         <div styleName="file-filter">
           <span>File Type:</span>
           <DropdownSelector
