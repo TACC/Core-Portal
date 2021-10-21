@@ -1,8 +1,13 @@
 # TACC Core Portal
 
-* Working Design: https://xd.adobe.com/view/db2660cc-1011-4f26-5d31-019ce87c1fe8-ad17/
+The base Portal code for TACC WMA Workspace Portals
 
-[![codecov](https://codecov.io/gh/TACC/Core-Portal/branch/main/graph/badge.svg?token=TM9CH1AHJ1)](https://codecov.io/gh/TACC/Core-Portal)
+### Related Repositories:
+- [Camino], a Docker container-based deployment scheme
+- [Core CMS], the base CMS code for TACC WMA CMS Websites
+- [Core Portal Deployments], private repository that facilitates deployments of [Core Portal] images via [Camino] and Jenkins
+
+# Local Development Setup
 
 ## Prequisites for running the portal application
 
@@ -262,7 +267,9 @@ Sign your commits ([see this link](https://help.github.com/en/github/authenticat
 
 <!-- Link Aliases -->
 
-[Core-CMS]: https://github.com/TACC/Core-CMS "Core CMS"
-[Camino]: https://github.com/TACC/Camino "Camino (Deployment)"
+[Core Portal Deployments]: https://github.com/TACC/Core-Portal-Deployments
+[Camino]: https://github.com/TACC/Camino
+[Core CMS]: https://github.com/TACC/Core-CMS
+[Core Portal]: https://github.com/TACC/Core-Portal
 [1]: https://docs.docker.com/get-docker/
 [2]: https://docs.docker.com/compose/install/
