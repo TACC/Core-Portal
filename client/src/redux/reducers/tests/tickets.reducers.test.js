@@ -53,14 +53,15 @@ describe('TicketCreateModal Reducer', () => {
   test('Ticket creation modal is opened with default parameters', () => {
     expect(
       ticketCreateModal(initialTicketCreateModalState, {
-        type: `TICKET_CREATE_SET_MODAL_OPEN`
+        type: `TICKET_CREATE_SET_MODAL_OPEN`,
+        payload: {}
       })
     ).toEqual({
       modalOpen: true,
       subject: '',
       showAsModalOnDashboard: true,
       provideDashBoardLinkOnSuccess: true,
-      sitekey: ''
+      sitekey: undefined
     });
   });
   test('Ticket creation modal is opened with custum parameters', () => {
