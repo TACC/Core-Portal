@@ -207,7 +207,6 @@ export function* openTicketModal(action) {
   yield put({
     type: 'TICKET_CREATE_SET_MODAL_OPEN',
     payload: { ...action.payload, sitekey: jsonsitekey }
-    
   });
 }
 

@@ -184,7 +184,6 @@ export const initialTicketCreateModalState = {
 export function ticketCreateModal(
   state = initialTicketCreateModalState,
   action
- 
 ) {
   switch (action.type) {
     case 'TICKET_CREATE_SET_MODAL_OPEN':
