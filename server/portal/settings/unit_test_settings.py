@@ -307,7 +307,11 @@ HAYSTACK_CONNECTIONS = {
     }
 }
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
-
+"""
+SETTINGS: reCAPTCHA
+"""
+RECAPTCHA_SECRET_KEY = "test"
+RECAPTCHA_SITE_KEY =  "test"
 """
 SETTINGS: LOGGING
 """

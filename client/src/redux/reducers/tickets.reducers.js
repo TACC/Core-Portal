@@ -184,12 +184,13 @@ export const initialTicketCreateModalState = {
 export function ticketCreateModal(
   state = initialTicketCreateModalState,
   action
+ 
 ) {
   switch (action.type) {
     case 'TICKET_CREATE_SET_MODAL_OPEN':
       return {
         ...state,
-        ...action.payload.CreateTicketModal,
+        ...action.payload,
         modalOpen: true,
         sitekey: action.payload.sitekey
       };
