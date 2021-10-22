@@ -4,12 +4,12 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import getFilePermissions from 'utils/filePermissions';
+import { SectionMessage } from '_common';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
 import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
 import DataFilesSystemSelector from '../DataFilesSystemSelector/DataFilesSystemSelector';
 import DataFilesProjectsList from '../DataFilesProjectsList/DataFilesProjectsList';
-import { SectionMessage } from '_common';
 
 const DataFilesCopyModal = React.memo(() => {
   const history = useHistory();
@@ -81,12 +81,12 @@ const DataFilesCopyModal = React.memo(() => {
       }
     });
   };
-  const modifiableUserData = 
+  const modifiableUserData =
     modalParams.api === 'tapis' &&
     modalParams.scheme !== 'public' &&
     modalParams.scheme !== 'community';
   const showMakePublic = useSelector(
-      state =>
+       state =>
         state.workbench &&
         state.workbench.config.makePublic &&
         modalParams.api === 'tapis' &&
