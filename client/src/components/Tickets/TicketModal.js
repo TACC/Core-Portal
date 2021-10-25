@@ -58,6 +58,23 @@ Attachments.propTypes = {
   ticketId: PropTypes.string.isRequired
 };
 
+const Attachments = ({ attachments }) => {
+  return (
+    <div>
+      Attachments:
+      <ul>
+        {attachments.map(attachmentName => (
+          <li key={attachmentName[0]}>{attachmentName[1]} </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+Attachments.propTypes = {
+  attachments: PropTypes.arrayOf(PropTypes.array).isRequired
+};
+
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
     () => ({
@@ -155,8 +172,10 @@ const TicketHistoryCard = ({
   creator,
   ticketCreator,
   content,
+
   attachments,
   ticketId
+
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
@@ -176,7 +195,7 @@ const TicketHistoryCard = ({
   const attachmentTitles = (attachments || []).filter(
     a => !a[1].toString().startsWith('untitled (')
   );
-  /* eslint-disable no-param-reassign */
+
   return (
     <Card className="mt-1">
       <CardHeader
@@ -201,7 +220,9 @@ const TicketHistoryCard = ({
         <CardBody>{content}</CardBody>
         {!!attachmentTitles.length && (
           <CardBody>
+
             <Attachments attachments={attachmentTitles} ticketId={ticketId} />
+
           </CardBody>
         )}
       </Collapse>
@@ -215,8 +236,10 @@ TicketHistoryCard.propTypes = {
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
+
   attachments: PropTypes.arrayOf(PropTypes.array).isRequired,
   ticketId: PropTypes.string.isRequired
+
 };
 
 export const TicketHistory = () => {
@@ -249,7 +272,9 @@ export const TicketHistory = () => {
           ticketCreator={d.IsCreator}
           content={d.Content}
           attachments={d.Attachments}
+
           ticketId={d.Ticket}
+
         />
       ))}
       <div ref={ticketHistoryEndRef} />

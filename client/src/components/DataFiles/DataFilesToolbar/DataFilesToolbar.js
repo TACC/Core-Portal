@@ -164,8 +164,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const permissionParams = { files: selectedFiles, scheme, api };
   const canDownload = getFilePermissions('download', permissionParams);
-  const isFolderSelected = getFilePermissions(
-    'isFolderSelected',
+  const areMultipleFilesOrFolderSelected = getFilePermissions(
+    'areMultipleFilesOrFolderSelected',
     permissionParams
   );
   const canRename = getFilePermissions('rename', permissionParams);
@@ -222,7 +222,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
             text="Download"
             iconName="download"
             onClick={download}
-            disabled={!canDownload && !isFolderSelected}
+            disabled={!canDownload && !areMultipleFilesOrFolderSelected}
           />
         )}
         {showMakeLink && (

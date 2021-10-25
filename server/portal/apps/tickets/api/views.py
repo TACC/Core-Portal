@@ -14,6 +14,7 @@ from portal.exceptions.api import ApiException
 
 logger = logging.getLogger(__name__)
 
+SERVICE_ACCOUNTS = ["portal", "rtprod", "rtdev"]
 ALLOWED_HISTORY_TYPES = ["Correspond", "Create", "Status"]
 METADATA_HEADER = "*** Ticket Metadata ***"
 
@@ -114,7 +115,7 @@ class TicketsHistoryView(BaseApiView):
                 entry['Content'] = entry['Description']
 
             # Determine who created this message using portal
-            if entry['Creator'] == "portal":
+            if entry['Creator'] in SERVICE_ACCOUNTS:
                 # Check if its a reply submitted on behalf of a user
                 submitted_for_user = re.search(r'\[Reply submitted on behalf of (.*?)\]',
                                                entry['Content'].splitlines()[-1]) if entry['Content'] else False
@@ -157,7 +158,7 @@ class TicketsHistoryView(BaseApiView):
         if reply is None:
             return HttpResponseBadRequest()
 
-        # Add information on which user submitted this reply (as this is being done by `portal`)
+        # Add information on which user submitted this reply (as this is being done by a service account)
         modified_reply = reply + "\n[Reply submitted on behalf of {}]".format(request.user.username)
 
         attachments = [(f.name, ContentFile(f.read()), f.content_type) for f in request.FILES.getlist('attachments')]

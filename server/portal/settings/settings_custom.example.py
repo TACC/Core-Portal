@@ -122,7 +122,8 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'api': 'tapis',
         'icon': 'publications',
         'privilegeRequired': False,
-        'readOnly': False
+        'readOnly': False,
+        'hideSearchBar': False
     },
     {
         'name': 'Google Drive',
@@ -248,5 +249,6 @@ _WORKBENCH_SETTINGS = {
     "extractApp": 'extract',
     "makePublic": False,
     "hideApps": False,
-    "hideDataFiles": False
+    "hideDataFiles": False,
+    "onboardingCompleteRedirect": '/workbench/'
 }
