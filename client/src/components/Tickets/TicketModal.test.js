@@ -87,15 +87,7 @@ function renderTicketsModelComponent(store) {
   );
 }
 
-function renderTicketsHistoryComponent(store) {
-  return render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <TicketHistory/>
-      </BrowserRouter>
-    </Provider>
-  );
-}
+
 // mock as we use scrollIntoView in TicketModal
 window.HTMLElement.prototype.scrollIntoView = jest.fn()
 

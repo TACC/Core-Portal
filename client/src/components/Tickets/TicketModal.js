@@ -58,19 +58,6 @@ Attachments.propTypes = {
   ticketId: PropTypes.string.isRequired
 };
 
-const Attachments = ({ attachments }) => {
-  return (
-    <div>
-      Attachments:
-      <ul>
-        {attachments.map(attachmentName => (
-          <li key={attachmentName[0]}>{attachmentName[1]} </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
 Attachments.propTypes = {
   attachments: PropTypes.arrayOf(PropTypes.array).isRequired
 };
@@ -175,7 +162,6 @@ const TicketHistoryCard = ({
 
   attachments,
   ticketId
-
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
@@ -220,9 +206,7 @@ const TicketHistoryCard = ({
         <CardBody>{content}</CardBody>
         {!!attachmentTitles.length && (
           <CardBody>
-
             <Attachments attachments={attachmentTitles} ticketId={ticketId} />
-
           </CardBody>
         )}
       </Collapse>
@@ -239,7 +223,6 @@ TicketHistoryCard.propTypes = {
 
   attachments: PropTypes.arrayOf(PropTypes.array).isRequired,
   ticketId: PropTypes.string.isRequired
-
 };
 
 export const TicketHistory = () => {
@@ -272,9 +255,7 @@ export const TicketHistory = () => {
           ticketCreator={d.IsCreator}
           content={d.Content}
           attachments={d.Attachments}
-
           ticketId={d.Ticket}
-
         />
       ))}
       <div ref={ticketHistoryEndRef} />
