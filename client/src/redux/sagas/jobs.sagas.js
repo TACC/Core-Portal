@@ -124,6 +124,11 @@ export function* getJobDetails(action) {
       type: 'JOB_DETAILS_FETCH_SUCCESS',
       payload: { app, job }
     });
+
+    yield put({
+      type: 'JOBS_LIST_UPDATE_JOB',
+      payload: { job }
+    });
   } catch (error) {
     yield put({
       type: 'JOB_DETAILS_FETCH_ERROR',

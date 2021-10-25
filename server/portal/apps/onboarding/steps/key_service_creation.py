@@ -10,6 +10,7 @@ from portal.apps.onboarding.execute import (
     execute_setup_steps,
 )
 from portal.libs.agave.models.systems.storage import StorageSystem
+from requests.exceptions import RequestException
 from django.conf import settings
 import json
 import logging
@@ -55,7 +56,13 @@ class KeyServiceCreationStep(AbstractStep):
         # Create only storage systems that are not currently accessible
         systemList = []
         for systemId in systems.keys():
-            success, result = StorageSystem(self.user.agave_oauth.client, id=systemId).test()
+            try:
+                success, _ = StorageSystem(self.user.agave_oauth.client, id=systemId, load=False).test()
+            except RequestException as err:
+                self.logger.error("Test of system '{}' failed unexpectedly! Listing of system returned: {}".format(self.id, str(err)))
+                # we will assume that system needs to be created
+                success = False
+
             if success:
                 self.logger.info(
                     "{username} has valid configuration for {systemId}, skipping creation".format(

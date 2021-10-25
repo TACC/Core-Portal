@@ -42,16 +42,33 @@ const OPERATION_MAP = {
           .slice(0, -1)
           .join('/');
         const projectName = findProjectTitle(projectList, response.systemId);
-        if (projectName) {
-          const dest =
-            destPath === '/' || destPath === '' ? `${projectName}/` : destPath;
-          return `${type} ${mappedOp} to ${truncateMiddle(dest, 20)}`;
+
+        let op = mappedOp;
+
+        if (mappedOp === 'copied') {
+          const srcSystem =
+            response.source.split('/')[0] === 'https:'
+              ? response.source.split('/')[7]
+              : response.source.split('/')[2];
+          const destSystem = response.systemId;
+          if (srcSystem !== destSystem) {
+            op = 'started copying';
+          }
         }
-        const dest =
-          destPath === '/' || destPath === ''
-            ? `${findSystemDisplayName(systemList, response.systemId)}/`
-            : destPath;
-        return `${type} ${mappedOp} to ${truncateMiddle(dest, 20)}`;
+
+        let dest;
+
+        if (projectName) {
+          dest =
+            destPath === '/' || destPath === '' ? `${projectName}/` : destPath;
+        } else {
+          dest =
+            destPath === '/' || destPath === ''
+              ? `${findSystemDisplayName(systemList, response.systemId)}/`
+              : destPath;
+        }
+
+        return `${type} ${op} to ${truncateMiddle(dest, 20)}`;
       }
       case 'makepublic':
         return `${type} ${mappedOp} to Public Data`;
