@@ -9,6 +9,7 @@ import systemsFixture from '../DataFiles/fixtures/DataFiles.systems.fixture';
 import { projectsFixture } from '../../redux/sagas/fixtures/projects.fixture';
 import {
   dataFilesRename,
+  dataFilesCopy,
   dataFilesError,
   dataFilesUpload,
   dataFilesUploadToSharedWorkSpace
@@ -124,6 +125,61 @@ describe('getToastMessage', () => {
     expect(getToastMessage(dataFilesRename)).toEqual(
       'File renamed to test2.png'
     );
+
+    // Between same systems
+    expect(getToastMessage({
+      ...dataFilesCopy,
+      extra: {
+        ...dataFilesCopy.extra,
+        response: {
+          ...dataFilesCopy.extra.response,
+          source: 'agave://cloud.corral.work.username//testfol/test.png',
+          systemId: 'cloud.corral.work.username'
+        }
+      }
+    },
+      systemsFixture.storage.configuration, 
+      projectsFixture.listing.projects
+    )).toEqual(
+      'File copied to testfol'
+    );
+
+    // Between different systems
+    expect(getToastMessage({
+      ...dataFilesCopy,
+      extra: {
+        ...dataFilesCopy.extra,
+        response: {
+          ...dataFilesCopy.extra.response,
+          source: 'agave://cloud.corral.work.username//testfol/test.png',
+          systemId: 'cep.local.project.username.CEP-1'
+        }
+      }
+    },
+      systemsFixture.storage.configuration, 
+      projectsFixture.listing.projects
+    )).toEqual(
+      'File started copying to testfol'
+    );
+
+    // Between different systems and https source
+    expect(getToastMessage({
+      ...dataFilesCopy,
+      extra: {
+        ...dataFilesCopy.extra,
+        response: {
+          ...dataFilesCopy.extra.response,
+          source: 'https://portals-api.tacc.utexas.edu/files/v2/media/system/frontera.home.username//testfol/test.png',
+          systemId: 'cep.local.project.username.CEP-1'
+        }
+      }
+    },
+      systemsFixture.storage.configuration, 
+      projectsFixture.listing.projects
+    )).toEqual(
+      'File started copying to testfol'
+    );
+
     expect(getToastMessage(dataFilesError)).toEqual('Move failed');
   });
 });
