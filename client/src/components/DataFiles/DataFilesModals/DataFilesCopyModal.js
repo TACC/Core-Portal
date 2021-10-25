@@ -91,12 +91,12 @@ const DataFilesCopyModal = React.memo(() => {
       state.workbench.config.makePublic &&
       modalParams.api === 'tapis' &&
       modifiableUserData
-   );
+  );
   const permissionParams = {
     files: selectedFiles,
     scheme: modalParams.scheme,
     api: modalParams.api
-    };
+  };
   const canMakePublic =
     showMakePublic && getFilePermissions('public', permissionParams);
   const excludedSystems = systems
