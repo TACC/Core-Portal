@@ -86,17 +86,17 @@ const DataFilesCopyModal = React.memo(() => {
     modalParams.scheme !== 'public' &&
     modalParams.scheme !== 'community';
   const showMakePublic = useSelector(
-       state =>
-        state.workbench &&
-        state.workbench.config.makePublic &&
-        modalParams.api === 'tapis' &&
-        modifiableUserData
-    );
+      state =>
+      state.workbench &&
+      state.workbench.config.makePublic &&
+      modalParams.api === 'tapis' &&
+      modifiableUserData
+       );
     const permissionParams = {
-       files: selectedFiles,
+        files: selectedFiles,
         scheme: modalParams.scheme,
-         api: modalParams.api 
-        };
+        api: modalParams.api
+      };
     const canMakePublic =
     showMakePublic && getFilePermissions('public', permissionParams);
     const excludedSystems = systems
@@ -219,8 +219,8 @@ const DataFilesCopyModal = React.memo(() => {
       </ModalBody>
       <ModalFooter>
         <SectionMessage type="warning">
-            Files copied to Public Data will be avaliable to general public.{' '}
-            <b>This action cannot be reversed.</b>
+          Files copied to Public Data will be avaliable to general public.{' '}
+          <b>This action cannot be reversed.</b>
           </SectionMessage>
       </ModalFooter>
     </Modal>
