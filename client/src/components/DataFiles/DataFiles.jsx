@@ -60,6 +60,7 @@ const DataFilesSwitch = React.memo(() => {
               api: 'tapis',
               scheme: 'projects',
               queryString,
+              filter,
               section: 'FilesListing'
             }
           });

@@ -34,6 +34,23 @@ const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
 
+const Attachments = ({ attachments }) => {
+  return (
+    <div>
+      Attachments:
+      <ul>
+        {attachments.map(attachmentName => (
+          <li key={attachmentName[0]}>{attachmentName[1]} </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+Attachments.propTypes = {
+  attachments: PropTypes.arrayOf(PropTypes.array).isRequired
+};
+
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
     () => ({
@@ -130,7 +147,8 @@ const TicketHistoryCard = ({
   created,
   creator,
   ticketCreator,
-  content
+  content,
+  attachments
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
@@ -147,7 +165,9 @@ const TicketHistoryCard = ({
   const ticketHeaderClassName = ticketCreator
     ? 'ticket-creator'
     : 'ticket-responder';
-
+  const attachmentTitles = (attachments || []).filter(
+    a => !a[1].toString().startsWith('untitled (')
+  );
   return (
     <Card className="mt-1">
       <CardHeader
@@ -170,6 +190,11 @@ const TicketHistoryCard = ({
       </CardHeader>
       <Collapse isOpen={isOpen}>
         <CardBody>{content}</CardBody>
+        {!!attachmentTitles.length && (
+          <CardBody>
+            <Attachments attachments={attachmentTitles} />
+          </CardBody>
+        )}
       </Collapse>
     </Card>
   );
@@ -180,10 +205,11 @@ TicketHistoryCard.propTypes = {
   created: PropTypes.instanceOf(Date).isRequired,
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
-  content: PropTypes.string.isRequired
+  content: PropTypes.string.isRequired,
+  attachments: PropTypes.arrayOf(PropTypes.array).isRequired
 };
 
-const TicketHistory = () => {
+export const TicketHistory = () => {
   const loading = useSelector(state => state.ticketDetailedView.loading);
   const history = useSelector(state => state.ticketDetailedView.content);
   const loadingError = useSelector(
@@ -212,6 +238,7 @@ const TicketHistory = () => {
           creator={d.Creator}
           ticketCreator={d.IsCreator}
           content={d.Content}
+          attachments={d.Attachments}
         />
       ))}
       <div ref={ticketHistoryEndRef} />
