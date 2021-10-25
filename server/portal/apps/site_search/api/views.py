@@ -79,7 +79,9 @@ class SiteSearchApiView(BaseApiView):
                          in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
                          if conf['scheme'] == 'community')
                 (community_total, community_results) = \
-                    files_search(qs, community_conf['system'], offset, limit)
+                    files_search(qs, community_conf['system'], filter=filter,
+                                 offset=offset,
+                                 limit=limit)
                 response['community'] = {'count': community_total,
                                          'listing': community_results,
                                          'type': 'file',

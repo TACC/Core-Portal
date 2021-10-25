@@ -43,7 +43,7 @@ describe('DataFilesSearchbar', () => {
 
   it('changes route on dropdown select', () => {
     const history = createMemoryHistory();
-    history.push('/workbench/data/test-api/test-scheme/test-system/');
+    history.push('/workbench/data/tapis/test-scheme/test-system/');
     const store = mockStore({
       systems: systemsFixture,
       files: {
@@ -53,7 +53,7 @@ describe('DataFilesSearchbar', () => {
     });
     const { getByTestId } = renderComponent(
       <DataFilesSearchbar
-        api="test-api"
+        api="tapis"
         scheme="test-scheme"
         system="test-system"
       />,
