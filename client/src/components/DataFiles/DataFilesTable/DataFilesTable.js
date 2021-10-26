@@ -22,7 +22,10 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     state => state.files.params.FilesListing.api
   );
   const scheme = useSelector(state => state.files.params.FilesListing.scheme);
-  const system = useSelector(state => state.files.params.FilesListing.system);
+  const system = useSelector(state => state.pushKeys.target);
+  const systemString = useSelector(
+    state => state.files.params.FilesListing.system
+  );
   const loading = useSelector(state => state.files.loading[section]);
   const err = useSelector(state => state.files.error[section]);
   const modalRefs = useSelector(state => state.files.refs);
@@ -80,7 +83,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       </>
     );
     if (err === '502') {
-      if (downSysList.includes(system.split('.')[0])) {
+      if (downSysList.includes(systemString.split('.')[0])) {
         return (
           <div className="h-100 listing-placeholder">
             <SectionMessage type="warning">
