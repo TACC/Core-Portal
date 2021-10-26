@@ -26,6 +26,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   const loading = useSelector(state => state.files.loading[section]);
   const err = useSelector(state => state.files.error[section]);
   const modalRefs = useSelector(state => state.files.refs);
+  const systemDefErr = useSelector(state => state.systems.definitions.error);
 
   const filesLength = data.length;
   const isGDrive = currentListing === 'googledrive';
@@ -55,6 +56,15 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     return (
       <div className="h-100 listing-placeholder">
         <LoadingSpinner />
+      </div>
+    );
+  }
+  if (systemDefErr.status === 403) {
+    return (
+      <div className="h-100 listing-placeholder">
+        <SectionMessage type="warning">
+          Permission denied. You do not have permission to view this system.
+        </SectionMessage>
       </div>
     );
   }

@@ -46,10 +46,13 @@ export async function fetchSystemDefinitionUtil(systemId) {
   const response = await fetch(
     `/api/datafiles/systems/definition/${systemId}/`
   );
-  if (!response.ok) {
-    throw new Error(response.status);
-  }
   const responseJson = await response.json();
+  if (!response.ok) {
+    const err = new Error('Error fetching system definition');
+    err.status = response.status;
+    err.data = responseJson;
+    throw err;
+  }
   return responseJson;
 }
 
@@ -62,7 +65,10 @@ export function* fetchSystemDefinition(action) {
       payload: systemJson
     });
   } catch (e) {
-    yield put({ type: 'FETCH_SYSTEM_DEFINITION_ERROR', payload: e.message });
+    yield put({
+      type: 'FETCH_SYSTEM_DEFINITION_ERROR',
+      payload: { message: e.data.message, status: e.status }
+    });
   }
 }
 
