@@ -45,8 +45,9 @@ const Attachments = ({ attachments, ticketId }) => {
             styleName="link"
             target="_blank"
             rel="noreferrer noopener"
+            key={attachmentName[0]}
           >
-            <li key={attachmentName[0]}> {attachmentName[1]} </li>
+            <li> {attachmentName[1]} </li>
           </a>
         ))}
       </ul>
