@@ -1,8 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-
 import { default as TicketModal, TicketHistory }  from './TicketModal';
-
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
@@ -86,8 +84,6 @@ function renderTicketsModelComponent(store) {
     </Provider>
   );
 }
-
-
 // mock as we use scrollIntoView in TicketModal
 window.HTMLElement.prototype.scrollIntoView = jest.fn()
 
@@ -139,4 +135,3 @@ describe('Attachment', () => {
     expect(getAllByText('Screen Shot 2021-09-27 at 12.45.03 PM.png (46.2k)')).toBeDefined();
   });
 });
-

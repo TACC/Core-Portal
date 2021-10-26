@@ -34,8 +34,6 @@ const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
 const Attachments = ({ attachments, ticketId }) => {
-
-
   return (
     <div>
       Attachments:
