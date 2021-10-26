@@ -5,7 +5,9 @@ import { useHistory, useLocation, useParams } from 'react-router-dom';
 import SiteSearchSidebar from './SiteSearchSidebar/SiteSearchSidebar';
 import SiteSearchListing from './SiteSearchListing/SiteSearchListing';
 
-const SiteSearch = () => {
+const FILTER_PRIORITY = ['cms', 'community', 'public'];
+
+const SiteSearchComponent = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { filter } = useParams();
@@ -31,7 +33,6 @@ const SiteSearch = () => {
   }, [query_string, page, filetypeFilter]);
   /* eslint-disable camelcase */
 
-  const FILTER_PRIORITY = ['cms', 'community', 'public'];
   useEffect(() => {
     if (completed && !filter) {
       const activeFilter = FILTER_PRIORITY.find(f => results[f].count > 0);
@@ -63,6 +64,18 @@ const SiteSearch = () => {
       <div className="col-md-2" />
     </div>
   );
+};
+
+const SiteSearch = () => {
+  const location = useLocation();
+  const { filter } = useParams();
+  const history = useHistory();
+  if (!filter || !FILTER_PRIORITY.includes(filter)) {
+    history.push(`/search/${FILTER_PRIORITY[0]}/${location.search}`);
+    return <></>;
+  }
+
+  return <SiteSearchComponent />;
 };
 
 export default SiteSearch;
