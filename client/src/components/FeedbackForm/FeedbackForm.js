@@ -5,7 +5,6 @@ import { Alert, Button, FormGroup, Spinner } from 'reactstrap';
 import { FormField } from '_common';
 import * as Yup from 'yup';
 import './FeedbackForm.module.scss';
-import ReCAPTCHA from 'react-google-recaptcha';
 
 const formSchema = Yup.object().shape({
   problem_description: Yup.string().required('Required')
@@ -32,9 +31,6 @@ const FeedbackForm = () => {
       onSubmit={(values, { resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach(key => formData.append(key, values[key]));
-        if (recaptchaResponse) {
-          formData.append('recaptchaResponse', recaptchaResponse);
-        }
         formData.append('subject', `Feedback for ${portalName}`);
         dispatch({
           type: 'TICKET_CREATE',

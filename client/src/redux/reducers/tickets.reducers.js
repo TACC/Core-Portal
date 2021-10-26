@@ -177,7 +177,7 @@ export const initialTicketCreateModalState = {
   modalOpen: false,
   subject: '',
   showAsModalOnDashboard: true,
-  provideDashBoardLinkOnSuccess: true,
+  provideDashBoardLinkOnSuccess: true
 };
 
 export function ticketCreateModal(
