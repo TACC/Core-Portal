@@ -71,16 +71,14 @@ describe('TicketCreateModal Reducer', () => {
         payload: {
           subject: 'my custom subject',
           showAsModalOnDashboard: false,
-          provideDashBoardLinkOnSuccess: false,
-          sitekey: ''
+          provideDashBoardLinkOnSuccess: false
         }
       })
     ).toEqual({
       modalOpen: true,
       subject: 'my custom subject',
       showAsModalOnDashboard: false,
-      provideDashBoardLinkOnSuccess: false,
-      sitekey: ''
+      provideDashBoardLinkOnSuccess: false
     });
   });
   test('Ticket creation modal is closed', () => {

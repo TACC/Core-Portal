@@ -23,9 +23,6 @@ const FeedbackForm = () => {
   const creatingErrorMessage = useSelector(
     state => state.ticketCreate.creatingErrorMessage
   );
-  const sitekey = useSelector(state => state.workbench.sitekey);
-  const recaptchaRef = React.createRef();
-  const [recaptchaResponse, setRecaptchaResponse] = React.useState('');
 
   return (
     <Formik
@@ -67,12 +64,6 @@ const FeedbackForm = () => {
                   Error submitting feedback: {creatingErrorMessage}
                 </Alert>
               )}
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                value={recaptchaResponse}
-                sitekey={sitekey}
-                onChange={e => setRecaptchaResponse(e)}
-              />
               <Button
                 type="submit"
                 color="primary"
