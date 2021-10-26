@@ -77,8 +77,7 @@ def test_tickets_create_missing_required_description_or_subject(client, regular_
 def test_tickets_create(client, authenticated_user, mock_rtutil):
     response = client.post('/api/tickets/',
                            data={"problem_description": "problem_description",
-                                 "subject": "subject",
-                                 "success": True})
+                                 "subject": "subject"})
      
     assert response.status_code == 200
     result = json.loads(response.content)

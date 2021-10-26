@@ -190,8 +190,7 @@ export function ticketCreateModal(
       return {
         ...state,
         ...action.payload,
-        modalOpen: true,
-        sitekey: action.payload.sitekey
+        modalOpen: true
       };
     case 'TICKET_CREATE_SET_MODAL_CLOSE':
       return {

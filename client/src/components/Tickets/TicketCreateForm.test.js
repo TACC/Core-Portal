@@ -2,7 +2,8 @@ import React from 'react';
 import renderComponent from 'utils/testing';
 import configureStore from 'redux-mock-store';
 import TicketCreateForm from './TicketCreateForm';
-import { initialTicketCreateState as ticketCreate, initialTicketCreateModalState as ticketCreateModal} from '../../redux/reducers/tickets.reducers';
+import { initialTicketCreateState as ticketCreate} from '../../redux/reducers/tickets.reducers';
+import {initialState as workbench} from '../../redux/reducers/workbench.reducers';
 import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
@@ -23,7 +24,7 @@ describe('TicketCreateForm', () => {
   it('renders form for un-authenticated users', () => {
     const store = mockStore({
       ticketCreate,
-      ticketCreateModal
+      workbench
     });
 
     const { getAllByText } = renderComponent(<TicketCreateForm />, store);
@@ -35,8 +36,8 @@ describe('TicketCreateForm', () => {
       ticketCreate: {
         ...ticketCreate
       },
-      ticketCreateModal:{
-        ...ticketCreateModal
+      workbench:{
+        ...workbench
       }
     });
 
@@ -56,8 +57,8 @@ describe('TicketCreateForm', () => {
         ...ticketCreate,
         creating: true
       },
-      ticketCreateModal:{
-        ...ticketCreateModal
+      workbench:{
+        ...workbench
       }
     });
 
@@ -75,8 +76,8 @@ describe('TicketCreateForm', () => {
         creatingSuccess: true,
         createdTicketId: 1234
       },
-      ticketCreateModal:{
-        ...ticketCreateModal
+      workbench:{
+        ...workbench
       }
     });
 
@@ -94,8 +95,8 @@ describe('TicketCreateForm', () => {
         creatingError: true,
         creatingErrorMessage: 'Mock error'
       },
-      ticketCreateModal:{
-        ...ticketCreateModal
+      workbench:{
+        ...workbench
       }
     });
 

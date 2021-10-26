@@ -107,8 +107,10 @@ function TicketCreateForm({
   const dispatch = useDispatch();
 
   const isAuthenticated = authenticatedUser != null;
+  const isUnauthenticated = authenticatedUser == null;
+  console.log(isUnauthenticated);
 
-  const sitekey = useSelector(state => state.ticketCreateModal.sitekey);
+  const sitekey = useSelector(state => state.workbench.sitekey);
   const recaptchaRef = React.createRef();
   const [recaptchaResponse, setRecaptchaResponse] = React.useState('');
 
@@ -196,12 +198,14 @@ function TicketCreateForm({
                       />
                     </Col>
                   </Row>
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    value={recaptchaResponse}
-                    sitekey={sitekey.sitekey}
-                    onChange={e => setRecaptchaResponse(e)}
-                  />
+                  {!!isUnauthenticated && (
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      value={recaptchaResponse}
+                      sitekey={sitekey}
+                      onChange={e => setRecaptchaResponse(e)}
+                    />
+                  )}
                 </Container>
               </FormGroup>
             </ModalBody>

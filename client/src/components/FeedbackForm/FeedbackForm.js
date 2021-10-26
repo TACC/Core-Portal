@@ -70,7 +70,7 @@ const FeedbackForm = () => {
               <ReCAPTCHA
                 ref={recaptchaRef}
                 value={recaptchaResponse}
-                sitekey={sitekey.sitekey}
+                sitekey={sitekey}
                 onChange={e => setRecaptchaResponse(e)}
               />
               <Button

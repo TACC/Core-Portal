@@ -8,6 +8,7 @@ def workbench_state(request):
     data = {
         'setupComplete': request.user.profile.setup_complete,
         'config': settings.WORKBENCH_SETTINGS,
-        'portalName': settings.PORTAL_NAMESPACE
+        'portalName': settings.PORTAL_NAMESPACE,
+        'sitekey': getattr(settings, 'RECAPTCHA_SITE_KEY')
     }
     return JsonResponse({'response': data})

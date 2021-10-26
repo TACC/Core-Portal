@@ -17,8 +17,7 @@ export default function workbench(state = initialState, action) {
       return {
         ...state,
         ...action.payload,
-        loading: false,
-        sitekey: action.payload.sitekey
+        loading: false
       };
     case 'WORKBENCH_FAILURE':
       return initialState;

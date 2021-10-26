@@ -9,6 +9,7 @@ import './TicketStandaloneCreate.scss';
 function TicketStandaloneCreate() {
   const dispatch = useDispatch();
   const authenticatedUser = useSelector(state => state.authenticatedUser.user);
+  const sitekey = useSelector(state => state.workbench.sitekey);
   const introMessages = useSelector(state => state.introMessages);
   const onDismissIntro = section => {
     const newMessagesState = {
@@ -34,6 +35,7 @@ function TicketStandaloneCreate() {
         <TicketCreateForm
           authenticatedUser={authenticatedUser}
           provideDashBoardLinkOnSuccess={false}
+          sitekey={sitekey}
         />
       </div>
     </>

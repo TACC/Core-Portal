@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.exceptions import PermissionDenied
 from portal.apps.tickets import rtUtil
+from portal.apps.tickets import utils
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from django.conf import settings
@@ -72,25 +73,27 @@ class TicketsView(BaseApiView):
             metadata += "user_last_name:\n{}\n\n".format(data.get('last_name'))
 
         problem_description += "\n\n" + metadata
-        recaptcha_response = request.POST.get('recaptchaResponse')
-        secret_key = getattr(settings, 'RECAPTCHA_SECRET_KEY')
-        data = {
-            'secret': secret_key,
-            'response': recaptcha_response
-        }
-        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-        recap_result = r.json()
 
-        if recap_result['success']:
-            ticket_id = rt.create_ticket(subject=subject,
+        recap_util = utils.DjangoRecaptcha()
+        recap_result = recap_util.getRecaptchaVerification(request)
+
+        if not request.user.is_authenticated:
+            if recap_result['success']:
+                ticket_id = rt.create_ticket(subject=subject,
                                          problem_description=problem_description,
                                          requestor=email,
                                          cc=cc,
                                          attachments=attachments)
-            return JsonResponse({'ticket_id': ticket_id})
-        else:
-            raise ApiException('Invalid reCAPTCHA. Please try again.')
+                return JsonResponse({'ticket_id': ticket_id})
+            else:
+                raise ApiException('Invalid reCAPTCHA. Please try again.')
 
+        ticket_id = rt.create_ticket(subject=subject,
+                                    problem_description=problem_description,
+                                    requestor=email,
+                                    cc=cc,
+                                    attachments=attachments)
+        return JsonResponse({'ticket_id': ticket_id})
 
 def has_access_to_ticket(function):
     @wraps(function)
@@ -196,12 +199,3 @@ class TicketsHistoryView(BaseApiView):
         rt = rtUtil.DjangoRt()
         ticket_history = self._get_ticket_history(rt, request.user.username, ticket_id)
         return JsonResponse({'ticket_history': ticket_history})
-class SiteKeyView(BaseApiView):
-    def get(self, request):
-        """Get sitekey
-        """
-
-        site_key = getattr(settings, 'RECAPTCHA_SITE_KEY')
-        siteKey = JsonResponse({'sitekey': site_key})
-        return siteKey
-        
