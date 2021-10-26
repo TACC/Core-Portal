@@ -34,14 +34,15 @@ const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
 const Attachments = ({ attachments, ticketId }) => {
-  if (attachments.length === 0) return <></>;
+
+
   return (
     <div>
       Attachments:
       <ul>
         {attachments.map(attachmentName => (
           <a
-            href={`https://cep.dev/api/tickets/${ticketId}/attachment/${attachmentName[0]}`}
+            href={`/api/tickets/${ticketId}/attachment/${attachmentName[0]}`}
             target="_blank"
             rel="noreferrer noopener"
             key={attachmentName[0]}
