@@ -42,7 +42,6 @@ const Attachments = ({ attachments, ticketId }) => {
         {attachments.map(attachmentName => (
           <a
             href={`https://cep.dev/api/tickets/${ticketId}/attachment/${attachmentName[0]}`}
-            styleName="link"
             target="_blank"
             rel="noreferrer noopener"
             key={attachmentName[0]}
