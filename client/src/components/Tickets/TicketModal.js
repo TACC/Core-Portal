@@ -160,7 +160,6 @@ const TicketHistoryCard = ({
   creator,
   ticketCreator,
   content,
-
   attachments,
   ticketId
 }) => {
