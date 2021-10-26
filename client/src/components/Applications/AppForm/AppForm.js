@@ -194,9 +194,9 @@ export const AppSchemaForm = ({ app }) => {
       downSystems: state.systemMonitor
         ? state.systemMonitor.list
             .filter(currSystem => !currSystem.is_operational)
-            .map(downSys => downSys.hostname.split('.')[0])
+            .map(downSys => downSys.hostname)
         : [],
-      execSystem: state.app ? state.app.exec_sys.login.host.split('.')[0] : ''
+      execSystem: state.app ? state.app.exec_sys.login.host : ''
     };
   }, shallowEqual);
   const { systemHasKeys, pushKeysSystem } = app;
