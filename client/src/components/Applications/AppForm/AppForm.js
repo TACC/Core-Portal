@@ -196,7 +196,7 @@ export const AppSchemaForm = ({ app }) => {
             .filter(currSystem => !currSystem.is_operational)
             .map(downSys => downSys.hostname.split('.')[0])
         : [],
-      execSystem: state.app ? state.app.exec_sys.id.split('.').slice(-1)[0] : ''
+      execSystem: state.app ? state.app.exec_sys.login.host.split('.')[0] : ''
     };
   }, shallowEqual);
   const { systemHasKeys, pushKeysSystem } = app;
