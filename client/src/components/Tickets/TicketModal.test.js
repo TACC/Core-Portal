@@ -63,8 +63,6 @@ const exampleTicketHistoryCard = [
     ]
     ]
   }
-
-
 ];
 function renderTicketsHistoryComponent(store) {
   return render(
