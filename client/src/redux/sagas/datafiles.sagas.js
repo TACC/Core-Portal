@@ -379,7 +379,7 @@ export function* moveFiles(action) {
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } moved to ${truncateMiddle(action.payload.dest.name, 20)}`
+        } moved to ${truncateMiddle(action.payload.dest.path, 20) || '/'}`
       }
     });
   }
@@ -493,7 +493,7 @@ export function* copyFiles(action) {
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } copied to ${truncateMiddle(action.payload.dest.name, 20)}`
+        } copied to ${truncateMiddle(action.payload.dest.name, 20) || '/'}`
       }
     });
   }
@@ -548,8 +548,8 @@ export function* uploadFiles(action) {
       type: 'ADD_TOAST',
       payload: {
         message: `${
-          result.length > 0 ? `${result.length} files` : 'File'
-        } uploaded to ${truncateMiddle(action.payload.path, 20)}`
+          result.length > 1 ? `${result.length} files` : 'File'
+        } uploaded to ${truncateMiddle(action.payload.path, 20) || '/'}`
       }
     });
 
