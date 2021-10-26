@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { TextCopyField } from '_common';
@@ -10,15 +10,6 @@ const DataFilesShowPathModal = React.memo(() => {
     state => state.files.params.FilesListing,
     shallowEqual
   );
-
-  useEffect(() => {
-    if (params.api === 'tapis' && params.system) {
-      dispatch({
-        type: 'FETCH_SYSTEM_DEFINITION',
-        payload: params.system
-      });
-    }
-  }, [params, dispatch]);
 
   const { file } = useSelector(state => state.files.modalProps.showpath);
 
