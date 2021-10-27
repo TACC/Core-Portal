@@ -184,6 +184,8 @@ class TicketsHistoryView(BaseApiView):
         rt = rtUtil.DjangoRt()
         ticket_history = self._get_ticket_history(rt, request.user.username, ticket_id)
         return JsonResponse({'ticket_history': ticket_history})
+
+
 class TicketsAttachmentView(BaseApiView):
     @has_access_to_ticket
     def get(self, request, ticket_id, attachment_id):
