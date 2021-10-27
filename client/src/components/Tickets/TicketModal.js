@@ -218,7 +218,6 @@ TicketHistoryCard.propTypes = {
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
-
   attachments: PropTypes.arrayOf(PropTypes.array).isRequired,
   ticketId: PropTypes.string.isRequired
 };
