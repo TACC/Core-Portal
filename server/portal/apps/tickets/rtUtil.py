@@ -64,6 +64,7 @@ class DjangoRt:
                 return True
 
         return False
+
     def getAttachment(self, ticket_id, attachment_id ):
         ticketAttachment = self.tracker.get_attachment(ticket_id, attachment_id)
         return ticketAttachment
