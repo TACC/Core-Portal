@@ -41,6 +41,7 @@ const Attachments = ({ attachments, ticketId }) => {
         {attachments.map(attachmentName => (
           <a
             href={`/api/tickets/${ticketId}/attachment/${attachmentName[0]}`}
+            className="link"
             target="_blank"
             rel="noreferrer noopener"
             key={attachmentName[0]}

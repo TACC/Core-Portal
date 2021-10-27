@@ -64,20 +64,20 @@ const exampleTicketHistoryCard = [
     ]
   }
 ];
-function renderTicketsHistoryComponent(store) {
-  return render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <TicketHistory/>
-      </BrowserRouter>
-    </Provider>
-  );
-}
 function renderTicketsModelComponent(store) {
   return render(
     <Provider store={store}>
       <BrowserRouter>
         <TicketModal />
+      </BrowserRouter>
+    </Provider>
+  );
+}
+function renderTicketsHistoryComponent(store) {
+  return render(
+    <Provider store={store}>
+      <BrowserRouter>
+        <TicketHistory/>
       </BrowserRouter>
     </Provider>
   );
