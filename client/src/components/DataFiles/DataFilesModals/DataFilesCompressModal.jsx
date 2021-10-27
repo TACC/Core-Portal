@@ -94,6 +94,7 @@ const DataFilesCompressModal = () => {
       .strict(true)
       .required('The filename is required')
   });
+
   return (
     <Modal
       isOpen={isOpen}
