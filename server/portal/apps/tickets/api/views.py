@@ -2,7 +2,7 @@ import logging
 import re
 from functools import wraps
 from django.core.files.base import ContentFile
-from django.http import JsonResponse, HttpResponseBadRequest,HttpResponse
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponse
