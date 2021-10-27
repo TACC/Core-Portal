@@ -3,7 +3,7 @@ import { call, put, takeLeading } from 'redux-saga/effects';
 
 export async function fetchAuthenticatedUserUtil() {
   const result = await fetchUtil({ url: '/api/users/auth/' });
-  console.log('result');
+  console.log(result);
   return result;
   
 }
