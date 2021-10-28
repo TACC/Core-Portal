@@ -22,6 +22,10 @@ class AllocationStep(AbstractStep):
         self.state = SetupState.PENDING
         self.log("Awaiting allocation retrieval")
 
+    def client_action(self, action, data, request):
+        if action == "user_confirm" and request.user.username == self.user.username:
+            self.prepare()
+
     def process(self):
         self.state = SetupState.PROCESSING
         self.log("Retrieving your allocations")
