@@ -160,7 +160,6 @@ const DataFilesModalListingTable = ({
   const params = useSelector(state => state.files.params.modal, shallowEqual);
   const systemList = useSelector(state => state.systems.storage.configuration);
   const projectsList = useSelector(state => state.projects.listing.projects);
-  const projectTitle = useSelector(state => state.projects.metadata.title);
   const isNotRoot = params.path.length > 0;
 
   const alteredData = useMemo(() => {
@@ -175,7 +174,13 @@ const DataFilesModalListingTable = ({
       const currentFolderEntry = {
         name: isNotRoot
           ? getCurrentDirectory(params.path)
-          : findSystemOrProjectDisplayName(params.scheme, systemList, projectsList, params.system, !isNotRoot),
+          : findSystemOrProjectDisplayName(
+              params.scheme,
+              systemList,
+              projectsList,
+              params.system,
+              !isNotRoot
+            ),
         format: 'folder',
         system: params.system,
         path: params.path,
