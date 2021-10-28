@@ -5,7 +5,7 @@ import 'cross-fetch';
 export function* postRequestAccess(action) {
   yield put({ type: 'REQUEST_ACCESS_STARTED' });
   try {
-    const res = yield call(fetch, `/api/request_access/`, {
+    const res = yield call(fetch, `/api/request-access/`, {
       method: 'POST',
       headers: {
         'X-CSRFToken': Cookies.get('csrftoken')
@@ -27,10 +27,10 @@ export function* postRequestAccess(action) {
 
       action.payload.resetSubmittedForm();
     }
-  } catch {
+  } catch (error) {
     yield put({
-      type: 'REQUEST_ACCESS_FAILED',
-      payload: 'Unknown error occurred'
+      type: 'REQUEST_ACCESS_ERROR',
+      payload: error
     });
   }
 }

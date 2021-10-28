@@ -21,6 +21,10 @@ const RequestAccessForm = () => {
   const portalName = useSelector(state => state.workbench.portalName);
   const creating = useSelector(state => state.requestAccess.creating);
   const creatingError = useSelector(state => state.requestAccess.creatingError);
+  const creatingSuccess = useSelector(
+    state => state.requestAccess.creatingSuccess
+  );
+  const ticketId = useSelector(state => state.requestAccess.createdTicketId);
   const creatingErrorMessage = useSelector(
     state => state.requestAccess.creatingErrorMessage
   );
@@ -69,9 +73,15 @@ const RequestAccessForm = () => {
               />
             </FormGroup>
             <div styleName="request-access-button-row">
+              {creatingSuccess && (
+                <Alert color="success" className="ticket-creation-info-alert">
+                  Ticket (#{ticketId}) was created. Support staff will contact
+                  you via email regarding your Access Request.
+                </Alert>
+              )}
               {submitCount > 0 && creatingError && (
                 <Alert color="warning">
-                  Error submitting feedback: {creatingErrorMessage}
+                  Error requesting access: {creatingErrorMessage}
                 </Alert>
               )}
               <Button
