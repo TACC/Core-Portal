@@ -14,6 +14,8 @@ class AllocationStep(AbstractStep):
         return "Allocations"
 
     def description(self):
+        if self.state == SetupState.USERWAIT:
+            return """You do not have any active or inactive allocations on our system. Please contact your PI."""
         return """Accessing your allocations. No action required."""
 
     def prepare(self):
@@ -25,4 +27,10 @@ class AllocationStep(AbstractStep):
         self.log("Retrieving your allocations")
         # Force allocation retrieval from TAS and refresh elasticsearch
         allocations = get_allocations(self.user.username, force=True)
-        self.complete("Allocations retrieved", data=allocations)
+        if not allocations.get('active') and not allocations.get('inactive'):
+            self.state = SetupState.USERWAIT
+            self.log(
+                """User {0} does not have any allocations""".format(self.user.username),
+            )
+        else:
+            self.complete("Allocations retrieved", data=allocations)
