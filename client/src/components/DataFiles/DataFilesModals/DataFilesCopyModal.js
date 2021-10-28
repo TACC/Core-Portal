@@ -217,12 +217,14 @@ const DataFilesCopyModal = React.memo(() => {
           </div>
         </div>
       </ModalBody>
-      <ModalFooter>
-        <SectionMessage type="warning">
-          Files copied to Public Data will be avaliable to general public.{' '}
-          <b>This action cannot be reversed.</b>
-        </SectionMessage>
-      </ModalFooter>
+      <div className="d-flex">
+        <ModalFooter>
+          <SectionMessage type="warning">
+            Files copied to Public Data will be avaliable to general public.{' '}
+            <b>This action cannot be reversed.</b>
+          </SectionMessage>
+        </ModalFooter>
+      </div>
     </Modal>
   );
 });
