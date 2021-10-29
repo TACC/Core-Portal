@@ -23,8 +23,11 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   );
   const scheme = useSelector(state => state.files.params.FilesListing.scheme);
   const system = useSelector(state => state.pushKeys.target);
-  const systemString = useSelector(
-    state => state.files.params.FilesListing.system
+  const currSystemHost = useSelector(
+    state =>
+      state.systems.definitions.list
+        .filter(sysDef => sysDef.id === state.files.params.FilesListing.system)
+        .map(currSysDef => currSysDef.storage.host)[0]
   );
   const loading = useSelector(state => state.files.loading[section]);
   const err = useSelector(state => state.files.error[section]);
@@ -40,7 +43,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     state.systemMonitor
       ? state.systemMonitor.list
           .filter(currSystem => !currSystem.is_operational)
-          .map(downSys => downSys.hostname.split('.')[0])
+          .map(downSys => downSys.hostname)
       : []
   );
   const pushKeys = e => {
@@ -83,7 +86,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       </>
     );
     if (err === '502') {
-      if (downSysList.includes(systemString.split('.')[0])) {
+      if (downSysList.includes(currSystemHost)) {
         return (
           <div className="h-100 listing-placeholder">
             <SectionMessage type="warning">
