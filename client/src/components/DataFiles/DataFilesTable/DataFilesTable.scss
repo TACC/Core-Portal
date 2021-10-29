@@ -12,10 +12,10 @@
   border-bottom: 1px solid #e0e0e0;
 }
 .tr-background-shading:not(.-status) {
-  background: #F4F4F4;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 .tr:hover{
-  background-color: rgba(0, 0, 0, 0.05);
+  background: #e0e0e0
 }
 .tr-header {
   border-bottom: 1px solid #000000;
