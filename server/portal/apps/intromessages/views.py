@@ -7,6 +7,8 @@ import logging
 from portal.views.base import BaseApiView
 from django.http import JsonResponse
 from portal.apps.intromessages.models import IntroMessages
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 import json
 # Create your views here.
 
@@ -14,7 +16,7 @@ import json
 logger = logging.getLogger(__name__)
 
 
-
+@method_decorator(login_required, name='dispatch')
 class IntroMessagesView(BaseApiView):
     def get(self, request, *args, **kwargs):
         logger.error(' ======>> START GET LOGGING <<=====')
