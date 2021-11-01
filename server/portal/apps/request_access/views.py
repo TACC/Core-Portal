@@ -1,13 +1,6 @@
 import logging
-import rt
-import urllib
 from django.views.generic.base import TemplateView
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.conf import settings
-from django.http import HttpResponseRedirect
-from pytas.http import TASClient
-from portal.apps.request_access import forms
+from django.shortcuts import redirect
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name

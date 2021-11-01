@@ -1,6 +1,5 @@
 import React from 'react';
-import { Navbar, Alert } from 'reactstrap';
-import { useDispatch, useSelector } from 'react-redux';
+import { Navbar } from 'reactstrap';
 import RequestAccessForm from './RequestAccessForm';
 import BrowserChecker from '../_common/BrowserChecker';
 import './RequestAccess.module.scss';
@@ -26,7 +25,6 @@ function RequestAccess() {
             <a
               styleName="request-access-link"
               href="https://portal.tacc.utexas.edu/account-request"
-              target="_blank"
             >
               https://portal.tacc.utexas.edu/account-request
             </a>
@@ -82,10 +80,7 @@ function RequestAccess() {
         </p>
         <p>
           If you require further assistance, please submit a support ticket{' '}
-          <a
-            styleName="request-access-link"
-            href="/tickets/new/"
-          >
+          <a styleName="request-access-link" href="/tickets/new/">
             here
           </a>
           .
