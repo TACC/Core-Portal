@@ -3,7 +3,6 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-// import getFilePermissions from 'utils/filePermissions';
 import { SectionMessage } from '_common';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
@@ -33,7 +32,9 @@ const DataFilesCopyModal = React.memo(() => {
   };
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
   const isOpen = useSelector(state => state.files.modals.copy);
-  const { showProjects } = useSelector(state => state.files.modalProps.copy);
+  const { showProjects, canMakePublic } = useSelector(
+    state => state.files.modalProps.copy
+  );
   const status = useSelector(
     state => state.files.operationStatus.copy,
     shallowEqual
@@ -73,18 +74,11 @@ const DataFilesCopyModal = React.memo(() => {
         section: 'modal'
       }
     });
-    dispatch({
-      type: 'DATA_FILES_SET_MODAL_PROPS',
-      payload: {
-        operation: 'copy',
-        props: {}
-      }
-    });
   };
 
   const excludedSystems = systems
     .filter(s => s.scheme !== 'private')
-    .filter(s => s.scheme !== 'public')
+    .filter(s => s.scheme !== 'public' && !canMakePublic)
     .map(s => s.system);
 
   const onClosed = () => {
@@ -92,6 +86,13 @@ const DataFilesCopyModal = React.memo(() => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { operation: 'copy', status: {} }
+    });
+    dispatch({
+      type: 'DATA_FILES_SET_MODAL_PROPS',
+      payload: {
+        operation: 'copy',
+        props: {}
+      }
     });
     setDisabled(false);
   };
