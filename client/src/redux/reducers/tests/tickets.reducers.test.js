@@ -60,8 +60,7 @@ describe('TicketCreateModal Reducer', () => {
       modalOpen: true,
       subject: '',
       showAsModalOnDashboard: true,
-      provideDashBoardLinkOnSuccess: true,
-      sitekey: undefined
+      provideDashBoardLinkOnSuccess: true
     });
   });
   test('Ticket creation modal is opened with custum parameters', () => {

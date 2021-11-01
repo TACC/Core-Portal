@@ -11,8 +11,6 @@ function TicketStandaloneCreate() {
   const authenticatedUser = useSelector(state => state.authenticatedUser.user);
   const introMessages = useSelector(state => state.introMessages);
   const sitekey = useSelector(state => state.authenticatedUser);
-  console.log("auth",sitekey);
-  console.log("intro",introMessages)
 
   const onDismissIntro = section => {
     const newMessagesState = {
