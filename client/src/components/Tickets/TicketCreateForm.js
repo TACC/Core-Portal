@@ -195,7 +195,7 @@ function TicketCreateForm({
                       />
                     </Col>
                   </Row>
-                  {!isAuthenticated&& (
+                  {!isAuthenticated && (
                     <ReCAPTCHA
                       ref={recaptchaRef}
                       value={recaptchaResponse}
