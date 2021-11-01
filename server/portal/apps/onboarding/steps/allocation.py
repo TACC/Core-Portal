@@ -14,9 +14,8 @@ class AllocationStep(AbstractStep):
         return "Allocations"
 
     def description(self):
-        if self.state == SetupState.USERWAIT:
-            return """You do not have any active or inactive allocations on our system. Please contact your PI."""
-        return """Accessing your allocations. No action required."""
+        return """First, verify your PI has added you to the necessary allocations for this project. 
+                Once this has been confirmed we will access your allocations."""
 
     def prepare(self):
         self.state = SetupState.PENDING
