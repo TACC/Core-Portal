@@ -50,6 +50,47 @@ const dummyState = {
     password: true
   }
 };
+const mockState = {
+  isLoading: false,
+  checkingPassword: false,
+  editing: false,
+  success: {
+    optional: false,
+    required: false,
+    password: false
+  },
+  data: {
+    demographics: {
+      ethnicity: 'Asian',
+      gender: 'Male',
+      username: 'tuser',
+      email: 'testuser@gmail.com',
+      firstName: 'Test',
+      lastName: 'User',
+      phone: '(512) 475-6848',
+      title: 'Center Non-Researcher Staff',
+      // Required Information Fields Provided By TAS
+      institution: 'University of Texas at Austin',
+      institutionId: 1,
+      country: 'United States',
+      countryId: 230,
+      citizenship: 'United States',
+      citizenshipId: 230,
+      // Optional Information
+      bio: '',
+      website: '',
+      orcid_id: '',
+      professional_level: ''
+    }
+  },
+  errors: {},
+  fields: {},
+  modals: {
+    required: false,
+    optional: false,
+    password: true
+  }
+};
 
 const mockStore = configureStore({});
 
@@ -315,6 +356,48 @@ describe('Edit Required Information', () => {
   it('should render a form', () => {
     const stateWithFields = {
       ...testState,
+      fields: {
+        countries: [[230, 'United States']],
+        institutions: [[1, 'University of Texas at Austin']],
+        ethnicities: [['Decline', 'Decline to Identify']],
+        genders: [['Other', 'Other']],
+        professionalLevels: [['Other', 'Other']],
+        titles: [['Other User', 'Other User']]
+      }
+    };
+    const storeWithFields = mockStore({ profile: stateWithFields });
+
+    rerender(
+      <Provider store={storeWithFields}>
+        <EditRequiredInformationModal />
+      </Provider>
+    );
+
+    [
+      'First Name',
+      'Last Name',
+      'Email Address',
+      'Phone Number',
+      'Institution',
+      'Position/Title',
+      'Residence',
+      'Ethnicity',
+      'Gender'
+    ].forEach(label => {
+      expect(getByText(label)).toBeDefined();
+    });
+
+    expect(getByText(/Submit/)).toBeDefined();
+  });
+  it('should render a form with this phone number schema', () => {
+    const testState2 = {
+      ...mockState,
+      modals: {
+        optional: true
+      }
+    };
+    const stateWithFields = {
+      ...testState2,
       fields: {
         countries: [[230, 'United States']],
         institutions: [[1, 'University of Texas at Austin']],
