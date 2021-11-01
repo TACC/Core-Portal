@@ -7,6 +7,8 @@ import * as Yup from 'yup';
 import './RequestAccessForm.module.scss';
 
 const formSchema = Yup.object().shape({
+  username: Yup.string().required('Required'),
+  password: Yup.string().required('Required'),
   problem_description: Yup.string().required('Required')
 });
 
@@ -34,7 +36,7 @@ const RequestAccessForm = () => {
       enableReinitialize
       initialValues={defaultValues}
       validationSchema={formSchema}
-      onSubmit={(values, { resetForm }) => {
+      onSubmit={(values, { setSubmitting, resetForm }) => {
         const formData = new FormData();
         Object.keys(values).forEach(key => formData.append(key, values[key]));
         formData.append('subject', `Access request for ${portalName}`);
@@ -45,9 +47,10 @@ const RequestAccessForm = () => {
             resetSubmittedForm: resetForm
           }
         });
+        setSubmitting(false);
       }}
     >
-      {({ isSubmitting, dirty, isValid, submitCount }) => {
+      {({ isSubmitting, isValid, submitCount }) => {
         return (
           <Form styleName="request-access-form">
             <FormGroup>
@@ -88,7 +91,9 @@ const RequestAccessForm = () => {
                 type="submit"
                 color="primary"
                 styleName="button-primary"
-                disabled={!dirty || !isValid || isSubmitting || creating}
+                disabled={
+                  !isValid || isSubmitting || creating || creatingSuccess
+                }
               >
                 {creating && (
                   <Spinner
