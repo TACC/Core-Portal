@@ -3,7 +3,7 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import getFilePermissions from 'utils/filePermissions';
+// import getFilePermissions from 'utils/filePermissions';
 import { SectionMessage } from '_common';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
@@ -81,27 +81,10 @@ const DataFilesCopyModal = React.memo(() => {
       }
     });
   };
-  const modifiableUserData =
-    modalParams.api === 'tapis' &&
-    modalParams.scheme !== 'public' &&
-    modalParams.scheme !== 'community';
-  const showMakePublic = useSelector(
-    state =>
-      state.workbench &&
-      state.workbench.config.makePublic &&
-      modalParams.api === 'tapis' &&
-      modifiableUserData
-  );
-  const permissionParams = {
-    files: selectedFiles,
-    scheme: modalParams.scheme,
-    api: modalParams.api
-  };
-  const canMakePublic =
-    showMakePublic && getFilePermissions('public', permissionParams);
+  
   const excludedSystems = systems
     .filter(s => s.scheme !== 'private')
-    .filter(s => s.scheme !== 'public' && !canMakePublic)
+    .filter(s => s.scheme !== 'public')
     .map(s => s.system);
 
   const onClosed = () => {

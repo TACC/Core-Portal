@@ -64,6 +64,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
     state => state.workbench.config.compressApp && modifiableUserData
   );
 
+  const showMakePublic = useSelector(
+    state =>
+      state.workbench &&
+      state.workbench.config.makePublic &&
+      api === 'tapis' &&
+      modifiableUserData
+  );
+
   const toggleRenameModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
@@ -82,7 +90,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const toggleCopyModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'copy', props: { selectedFiles } }
+      payload: { operation: 'copy', props: { selectedFiles, canMakePublic } }
     });
 
   const toggleCompressModal = () => {
@@ -115,6 +123,16 @@ const DataFilesToolbar = ({ scheme, api }) => {
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: {
         operation: 'link',
+        props: { selectedFile: selectedFiles[0] }
+      }
+    });
+  };
+
+  const toggleMakePublicModal = () => {
+    dispatch({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: {
+        operation: 'makePublic',
         props: { selectedFile: selectedFiles[0] }
       }
     });
@@ -156,6 +174,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const canTrash = getFilePermissions('trash', permissionParams);
   const canCompress = getFilePermissions('compress', permissionParams);
   const canExtract = getFilePermissions('extract', permissionParams);
+  const canMakePublic =
+    showMakePublic && getFilePermissions('public', permissionParams);
   return (
     <>
       <div id="data-files-toolbar-button-row">
@@ -211,6 +231,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
             iconName="link"
             onClick={toggleLinkModal}
             disabled={!canDownload}
+          />
+        )}
+        {showMakePublic && (
+          <ToolbarButton
+            text="Make Public"
+            iconName="publications"
+            onClick={toggleMakePublicModal}
+            disabled={!canMakePublic}
           />
         )}
         {showTrash && (
