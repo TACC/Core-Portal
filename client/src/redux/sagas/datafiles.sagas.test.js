@@ -131,6 +131,7 @@ describe('fetchFiles', () => {
         'path/to/file',
         0,
         100,
+        undefined,
         undefined
       )
       .put({
@@ -183,6 +184,7 @@ describe('fetchFiles', () => {
         'path/to/file',
         0,
         100,
+        undefined,
         undefined
       )
       .put({
@@ -249,6 +251,7 @@ describe('scrollFiles', () => {
         0,
         100,
         undefined,
+        undefined,
         undefined
       )
       .put({
@@ -294,6 +297,7 @@ describe('scrollFiles', () => {
         'path/to/file',
         0,
         100,
+        undefined,
         undefined,
         undefined
       )

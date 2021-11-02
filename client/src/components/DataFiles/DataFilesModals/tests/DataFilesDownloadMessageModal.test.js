@@ -18,7 +18,7 @@ describe('DataFilesDownloadMessageModal', () => {
     );
 
     expect(
-      getAllByText(/Folders must be compressed before download/)
+      getAllByText(/Folders and multiple files must be compressed before downloading./)
     ).toBeDefined();
   });
 });

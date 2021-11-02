@@ -101,7 +101,7 @@ class UserApplicationsManager(AbstractApplicationsManager):
             logger.debug('Using current execution system {}'.format(cloned_exec_sys.id))
         else:
             cloned_exec_id = '{username}.{allocation}.exec.{resource}.{execType}.{revision}'.format(
-                username=self.user.username,
+                username=self.user.username.replace('_', '-'),
                 allocation=allocation,
                 resource=host_exec.login.host.replace('.tacc.utexas.edu', ''),
                 execType=host_exec.execution_type,
