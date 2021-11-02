@@ -68,14 +68,9 @@ const ManageAccountView = () => {
           <LoadingSpinner />
         ) : (
           <>
-            {errors.data && (
+            {(errors.data || errors.fields) && (
               <SectionMessage type="error">
-                Unable to get your profile data
-              </SectionMessage>
-            )}
-            {errors.fields && (
-              <SectionMessage type="error">
-                Unable to get form fields
+                An error occurred loading your profile information.
               </SectionMessage>
             )}
             <RequiredInformation />
