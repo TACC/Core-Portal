@@ -26,8 +26,33 @@ def mock_intromessages(scope="module"):
         },        
     ]
 
+@pytest.fixture
+def mock_intromessage(scope="module"):
+    yield [
+        {
+            "id": "2",
+            "user_id": "1",
+            "unread": False,
+            "component": "HISTORY",
+            "datetime": "2021-11-01T01:58:28",
+        }      
+    ]
+
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get(client, authenticated_user, mock_intromessages):
     response = client.get('/api/intromessages/msg/')
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_intromessages_put(client, authenticated_user):
+    body = {
+            "user_id": 1,
+            "unread": False,
+            "component": "HISTORY",
+    }
+    response = client.put('/api/intromessages/msg/', 
+                          content_type="application/json",
+                          data=body)
     assert response.status_code == 200
