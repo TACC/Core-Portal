@@ -36,9 +36,7 @@ describe('TicketCreateForm', () => {
       ticketCreate: {
         ...ticketCreate
       },
-      workbench:{
-        ...workbench
-      }
+      workbench
     });
 
     const { getAllByText, getByDisplayValue } = renderComponent(
