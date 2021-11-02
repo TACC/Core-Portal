@@ -23,12 +23,12 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   );
   const scheme = useSelector(state => state.files.params.FilesListing.scheme);
   const system = useSelector(state => state.pushKeys.target);
-  const currSystemHost = useSelector(
-    state =>
-      state.systems.definitions.list
-        .filter(sysDef => sysDef.id === state.files.params.FilesListing.system)
-        .map(currSysDef => currSysDef.storage.host)[0]
+  let currSystemHost = useSelector(state =>
+    state.systems.definitions.list.find(
+      sysDef => sysDef.id === state.files.params.FilesListing.system
+    )
   );
+  currSystemHost = currSystemHost ? currSystemHost.storage.host : '';
   const loading = useSelector(state => state.files.loading[section]);
   const err = useSelector(state => state.files.error[section]);
   const modalRefs = useSelector(state => state.files.refs);
