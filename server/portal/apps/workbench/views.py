@@ -18,5 +18,4 @@ class IndexView(TemplateView):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['setup_complete'] = self.request.user.profile.setup_complete
         context['site_key'] = getattr(settings, 'RECAPTCHA_SITE_KEY')
-        print(context)
         return context
