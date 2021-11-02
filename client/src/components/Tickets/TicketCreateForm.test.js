@@ -55,9 +55,7 @@ describe('TicketCreateForm', () => {
         ...ticketCreate,
         creating: true
       },
-      workbench:{
-        ...workbench
-      }
+      workbench
     });
 
     const { getByTestId } = renderComponent(
@@ -74,9 +72,7 @@ describe('TicketCreateForm', () => {
         creatingSuccess: true,
         createdTicketId: 1234
       },
-      workbench:{
-        ...workbench
-      }
+      workbench
     });
 
     const { getByText } = renderComponent(
@@ -93,9 +89,7 @@ describe('TicketCreateForm', () => {
         creatingError: true,
         creatingErrorMessage: 'Mock error'
       },
-      workbench:{
-        ...workbench
-      }
+      workbench
     });
 
     const { getByText } = renderComponent(

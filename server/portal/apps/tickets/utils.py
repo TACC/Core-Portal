@@ -3,7 +3,7 @@ import json
 import requests
 
 class DjangoRecaptcha:
-    def getRecaptchaVerification(self,request):
+    def get_recaptcha_verification(self,request):
         recaptcha_response = request.POST.get('recaptchaResponse')
         secret_key = getattr(settings, 'RECAPTCHA_SECRET_KEY')
         data = {

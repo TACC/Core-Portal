@@ -16,9 +16,7 @@ describe('TicketStandaloneCreate', () => {
       ticketCreate,
       authenticatedUser: user,
       introMessages: initialIntroMessages,
-      workbench:{
-        ...workbench
-      }
+      workbench
     });
 
 
@@ -31,9 +29,7 @@ describe('TicketStandaloneCreate', () => {
       ticketCreate,
       authenticatedUser: user,
       introMessages: {...initialIntroMessages, TICKETS: false},
-      workbench:{
-        ...workbench
-      }
+       workbench
     });
 
     const { queryByRole } = renderComponent(<TicketStandaloneCreate />, store);
