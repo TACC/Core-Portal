@@ -3,8 +3,8 @@ import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import renderComponent from 'utils/testing';
 import TicketStandaloneCreate from './TicketStandaloneCreate';
-import { initialTicketCreateState as ticketCreate} from '../../redux/reducers/tickets.reducers';
-import {initialState as workbench} from '../../redux/reducers/workbench.reducers';
+import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
+import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import initialIntroMessages from '../../redux/reducers/intro.reducers';
 import { initialState as user } from '../../redux/reducers/authenticated_user.reducer';
 
