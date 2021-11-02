@@ -12,8 +12,6 @@ from portal.apps.tickets import utils
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 from django.conf import settings
-import json
-import requests
 
 logger = logging.getLogger(__name__)
 
