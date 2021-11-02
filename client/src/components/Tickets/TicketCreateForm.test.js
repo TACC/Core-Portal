@@ -2,8 +2,8 @@ import React from 'react';
 import renderComponent from 'utils/testing';
 import configureStore from 'redux-mock-store';
 import TicketCreateForm from './TicketCreateForm';
-import { initialTicketCreateState as ticketCreate} from '../../redux/reducers/tickets.reducers';
-import {initialState as workbench} from '../../redux/reducers/workbench.reducers';
+import { initialTicketCreateState as ticketCreate } from '../../redux/reducers/tickets.reducers';
+import { initialState as workbench } from '../../redux/reducers/workbench.reducers';
 import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
