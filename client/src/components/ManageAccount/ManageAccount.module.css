@@ -5,7 +5,7 @@
 }
 
 /* "[…] Information" Panels */
-.panels > *:nth-child(-n+2) {
+.panels > *:nth-child(-n) {
   min-height: 160px; /* approx. "[…] Information" height with about 3.25 rows */
 }
 
@@ -32,7 +32,7 @@
   }
 
   /* "[…] Information" Panels */
-  .panels > *:nth-child(-n+2) {
+  .panels > *:nth-child(-n) {
     width: var(--column-width--large);
 
     /* CAVEAT: This is a dev value that just "looked good" */
@@ -56,7 +56,7 @@
 @media only screen and (max-height: 633px) and (min-width: 1200px) {
 
   /* "[…] Information" Panels */
-  .panels > *:nth-child(-n+2) {
+  .panels > *:nth-child(-n) {
     /* CAVEAT: This is a dev value that just "looked good" */
     height: calc(100% - var(--vertical-buffer));
   }
