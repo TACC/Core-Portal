@@ -75,9 +75,9 @@ class TicketsView(BaseApiView):
         problem_description += "\n\n" + metadata
 
         recap_util = utils.DjangoRecaptcha()
-        recap_result = recap_util.getRecaptchaVerification(request)
 
         if not request.user.is_authenticated:
+            recap_result = recap_util.getRecaptchaVerification(request)
             if recap_result['success']:
                 ticket_id = rt.create_ticket(subject=subject,
                                          problem_description=problem_description,

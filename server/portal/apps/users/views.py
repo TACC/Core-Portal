@@ -11,7 +11,7 @@ from django.conf import settings
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
-from portal.apps.users.utils import get_allocations, get_usernames, get_user_data
+from portal.apps.users.utils import get_allocations, get_usernames, get_user_data, get_per_user_allocation_usage
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class AuthenticatedView(BaseApiView):
 
             return JsonResponse(out)
         
-        return JsonResponse({'message': 'Unauthorized'},{'sitekey': getattr(settings, 'RECAPTCHA_SITE_KEY')}, status=401)
+        return JsonResponse({'message': 'Unauthorized'}, status=401)
 
 
 @method_decorator(login_required, name='dispatch')

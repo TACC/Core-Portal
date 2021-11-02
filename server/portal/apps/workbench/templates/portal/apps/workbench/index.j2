@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load terms_tags %}
 {% block title %} Workbench {% endblock %}
 {% block head_extra %}
   <base href="{% url 'workbench:index' %}">
@@ -12,7 +13,8 @@
   <div id="react-root"></div>
 {% endblock %}
 {% block scripts %}
-  <script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete|yesno:"true,false" }}; </script>
+  <script> window.__INITIAL_SETUP_COMPLETE__ = {{ site_key }}; </script>
+  <script> window.site_key = {{recaptcha_site_key}}; </script>
   <script src="<%= htmlWebpackPlugin.files.js[0] %>"></script>
   <script src="<%= htmlWebpackPlugin.files.js[1] %>"></script>
 {% endblock %}

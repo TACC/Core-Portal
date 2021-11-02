@@ -11,6 +11,6 @@ describe('AppRouter', () => {
     const store = mockStore();
 
     renderComponent(<AppRouter />, store);
-    expect(store.getActions()).toEqual([{ type: 'FETCH_INTRO' }, { type: 'FETCH_AUTHENTICATED_USER' }]);
+    expect(store.getActions()).toEqual([{ type: 'FETCH_INTRO' }, { type: 'FETCH_AUTHENTICATED_USER' },{ type: 'FETCH_WORKBENCH' }]);
   });
 });
