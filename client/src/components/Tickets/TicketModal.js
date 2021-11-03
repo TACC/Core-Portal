@@ -24,7 +24,8 @@ import {
   FormField,
   FileInputDropZoneFormField,
   LoadingSpinner,
-  Message
+  Message,
+  InfiniteScrollTable
 } from '_common';
 import { Formik, Form } from 'formik';
 import * as ROUTES from '../../constants/routes';
@@ -61,7 +62,7 @@ Attachments.propTypes = {
 Attachments.propTypes = {
   attachments: PropTypes.arrayOf(PropTypes.array).isRequired
 };
-
+const isLoading = useSelector(state => state.jobs.loading);
 function TicketHistoryReply({ ticketId }) {
   const defaultValues = useMemo(
     () => ({
@@ -180,7 +181,20 @@ const TicketHistoryCard = ({
   const attachmentTitles = (attachments || []).filter(
     a => !a[1].toString().startsWith('untitled (')
   );
-
+  const columns = [
+    {
+      Header: 'Attachment Files',
+      accessor: 'name',
+      Cell: "attachment"
+    },
+    {
+      Header: 'Job Details',
+      headerStyle: { textAlign: 'left' },
+      accessor: 'id',
+      Cell: "attachment"
+    },
+  ];
+  const filterColumns = columns.filter(f => f.show !== false);
   return (
     <Card className="mt-1">
       <CardHeader
@@ -206,6 +220,11 @@ const TicketHistoryCard = ({
         {!!attachmentTitles.length && (
           <CardBody>
             <Attachments attachments={attachmentTitles} ticketId={ticketId} />
+            <InfiniteScrollTable
+              tableColumns={filterColumns}
+              isLoading={isLoading}
+              className="attachments-table"
+            />
           </CardBody>
         )}
       </Collapse>
