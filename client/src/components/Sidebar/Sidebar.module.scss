@@ -13,11 +13,18 @@ $width: 215px;
 
 .link {
   color: var(--global-color-primary--dark);
+  font-weight: 500;
 }
 .link:hover,
 .link--active {
   color: var(--global-color-primary--x-dark); /* to pass color contrast test */
   background-color: var(--global-color-accent--weak);
+}
+.link--active {
+  font-weight: 700;
+}
+.link:active {
+  font-weight: 700;
 }
 
 .content {
@@ -27,7 +34,6 @@ $width: 215px;
 .text {
   padding-left: 20px;
   font-size: 0.75em; /* ~20px (16px design * 1.2 design-to-app ratio) */
-  font-weight: 500;
 }
 
 .feedback-nav-item {
