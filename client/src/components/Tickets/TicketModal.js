@@ -185,14 +185,14 @@ const TicketHistoryCard = ({
     {
       Header: 'Attachment Files',
       accessor: 'name',
-      Cell: "attachment"
+      Cell: 'attachment'
     },
     {
       Header: 'Job Details',
       headerStyle: { textAlign: 'left' },
       accessor: 'id',
-      Cell: "attachment"
-    },
+      Cell: 'attachment'
+    }
   ];
   const filterColumns = columns.filter(f => f.show !== false);
   return (
