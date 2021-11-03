@@ -90,7 +90,7 @@ function TicketCreateForm({
   const createdTicketId = useSelector(
     state => state.ticketCreate.createdTicketId
   );
-  
+
   const defaultValues = useMemo(
     () => ({
       subject: initialSubject,
