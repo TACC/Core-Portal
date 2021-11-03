@@ -106,7 +106,7 @@ function TicketCreateForm({
   const dispatch = useDispatch();
 
   const isAuthenticated = authenticatedUser != null;
-  const sitekey = useSelector(state => state.workbench);
+  const sitekey = useSelector(state => state.workbench.sitekey);
 
   const recaptchaRef = React.createRef();
   const [recaptchaResponse, setRecaptchaResponse] = React.useState('');

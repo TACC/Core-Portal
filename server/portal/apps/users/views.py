@@ -34,8 +34,7 @@ class AuthenticatedView(BaseApiView):
                 "isStaff": u.is_staff
             }
 
-            return JsonResponse(out)
-        
+            return JsonResponse(out)  
         return JsonResponse({'message': 'Unauthorized'}, status=401)
 
 
