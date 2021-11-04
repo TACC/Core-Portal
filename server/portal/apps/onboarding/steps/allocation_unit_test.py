@@ -38,7 +38,7 @@ def test_get_allocations(regular_user, get_allocations_mock, allocation_step_com
             'active': [{'allocation'}],
             'inactive': [{'allocation'}] })
 
-def test_get_allocations_failure(regular_user, get_allocations_mock, allocation_step_complete_mock):
+def test_get_allocations_failure(regular_user, get_allocations_failure_mock, allocation_step_userwait_mock):
     step = AllocationStep(regular_user)
     step.process()
     get_allocations_failure_mock.assert_called_with("username", force=True)
