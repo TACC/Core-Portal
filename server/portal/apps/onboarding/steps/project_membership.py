@@ -85,7 +85,7 @@ class ProjectMembershipStep(AbstractStep):
         try:
             if tracker.login():
                 result = tracker.create_ticket(
-                    Queue='Accounting',
+                    Queue=self.settings.get('rt_queue') or 'Accounting',
                     Subject='{project} Project Membership Request for {username}'.format(
                         project=self.project['title'],
                         username=self.user.username
