@@ -14,8 +14,7 @@ class AllocationStep(AbstractStep):
         return "Allocations"
 
     def description(self):
-        return """First, verify your PI has added you to the necessary allocations for this project. 
-                Once this has been confirmed we will access your allocations."""
+        return """Accessing your allocations. If unsuccessful, verify the PI has added you to the allocations for this project."""
 
     def prepare(self):
         self.state = SetupState.PENDING
