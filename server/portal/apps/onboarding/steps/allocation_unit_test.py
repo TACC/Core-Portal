@@ -1,5 +1,5 @@
 from portal.apps.onboarding.steps.allocation import AllocationStep
-from portal.apps.onboarding.state import SetupState
+from mock import ANY
 import pytest
 
 
@@ -43,4 +43,4 @@ def test_get_allocations_failure(regular_user, get_allocations_failure_mock, all
     step = AllocationStep(regular_user)
     step.process()
     get_allocations_failure_mock.assert_called_with("username", force=True)
-    allocation_step_log_mock.assert_called_with()
+    allocation_step_log_mock.assert_called_with(ANY)
