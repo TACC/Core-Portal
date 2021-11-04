@@ -27,8 +27,8 @@ def allocation_step_complete_mock(mocker):
     yield mocker.patch.object(AllocationStep, 'complete')
 
 @pytest.fixture
-def allocation_step_userwait_mock(mocker):
-    yield mocker.patch.object(SetupState, 'userwait')
+def allocation_step_log_mock(mocker):
+    yield mocker.patch.object(AllocationStep, 'log')
 
 def test_get_allocations(regular_user, get_allocations_mock, allocation_step_complete_mock):
     step = AllocationStep(regular_user)
@@ -39,8 +39,8 @@ def test_get_allocations(regular_user, get_allocations_mock, allocation_step_com
             'active': [{'allocation'}],
             'inactive': [{'allocation'}] })
 
-def test_get_allocations_failure(regular_user, get_allocations_failure_mock, allocation_step_userwait_mock):
+def test_get_allocations_failure(regular_user, get_allocations_failure_mock, allocation_step_log_mock):
     step = AllocationStep(regular_user)
     step.process()
     get_allocations_failure_mock.assert_called_with("username", force=True)
-    allocation_step_userwait_mock.assert_called_with()
+    allocation_step_log_mock.assert_called_with()
