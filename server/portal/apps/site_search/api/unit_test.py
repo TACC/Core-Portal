@@ -140,6 +140,7 @@ def test_file_search_util(mock_file_search):
 
     mock_file_search.assert_called_with(None, 'test_system', '/',
                                         query_string='test_query',
+                                        filter=None,
                                         offset=0,
                                         limit=10)
 

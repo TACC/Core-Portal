@@ -12,6 +12,7 @@ import {
   select
 } from 'redux-saga/effects';
 import { fetchUtil } from 'utils/fetchUtil';
+import truncateMiddle from '../../utils/truncateMiddle';
 
 /**
  * Utility function to replace instances of 2 or more slashes in a URL with
@@ -123,13 +124,15 @@ export async function fetchFilesUtil(
   offset = 0,
   limit = 100,
   queryString = '',
+  filter = undefined,
   nextPageToken = null
 ) {
-  const operation = queryString ? 'search' : 'listing';
+  const operation = queryString || filter ? 'search' : 'listing';
   const q = stringify({
     limit,
     offset,
     query_string: queryString,
+    filter,
     nextPageToken
   });
   const url = removeDuplicateSlashes(
@@ -171,7 +174,8 @@ export function* fetchFiles(action) {
       action.payload.path || '',
       action.payload.offset,
       action.payload.limit,
-      action.payload.queryString
+      action.payload.queryString,
+      action.payload.filter
     );
     yield put({
       type: 'FETCH_FILES_SUCCESS',
@@ -223,6 +227,7 @@ export function* scrollFiles(action) {
       action.payload.offset,
       action.payload.limit,
       action.payload.queryString,
+      action.payload.filter,
       action.payload.nextPageToken
     );
     yield put({
@@ -284,6 +289,15 @@ export function* renameFile(action) {
       payload: { status: 'SUCCESS', operation: 'rename' }
     });
     yield call(action.payload.reloadCallback, response.name, response.path);
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: `${file.name} renamed to ${truncateMiddle(
+          action.payload.newName,
+          20
+        )}`
+      }
+    });
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
@@ -342,19 +356,33 @@ export function* moveFile(src, dest, index) {
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: index, operation: 'move' }
     });
+    return 'ERR';
   }
+  return 'SUCCESS';
 }
 export function* moveFiles(action) {
   const { dest } = action.payload;
   const moveCalls = action.payload.src.map(file => {
     return call(moveFile, file, dest, file.id);
   });
-
-  yield race({
+  const { result } = yield race({
     result: all(moveCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
-
+  if (!result.includes('ERR')) {
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'move', props: {} }
+    });
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: `${
+          result.length > 1 ? `${result.length} files` : 'File'
+        } moved to ${truncateMiddle(action.payload.dest.path, 20) || '/'}`
+      }
+    });
+  }
   yield call(action.payload.reloadCallback);
 }
 
@@ -442,17 +470,33 @@ export function* copyFile(src, dest, index) {
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: index, operation: 'copy' }
     });
+    return 'ERR';
   }
+  return 'SUCCESS';
 }
 export function* copyFiles(action) {
   const { dest } = action.payload;
   const copyCalls = action.payload.src.map(file => {
     return call(copyFile, file, dest, file.id);
   });
-  yield race({
+  const { result } = yield race({
     result: all(copyCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
+  if (!result.includes('ERR')) {
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'copy', props: {} }
+    });
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: `${
+          result.length > 1 ? `${result.length} files` : 'File'
+        } copied to ${truncateMiddle(action.payload.dest.name, 20) || '/'}`
+      }
+    });
+  }
   yield call(action.payload.reloadCallback);
 }
 
@@ -494,10 +538,20 @@ export function* uploadFiles(action) {
     );
   });
 
-  yield race({
+  const { result } = yield race({
     result: all(uploadCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
+
+  if (!result.includes('ERR'))
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: `${
+          result.length > 1 ? `${result.length} files` : 'File'
+        } uploaded to ${truncateMiddle(action.payload.path, 20) || '/'}`
+      }
+    });
 
   yield call(action.payload.reloadCallback);
 }
@@ -518,7 +572,9 @@ export function* uploadFile(api, scheme, system, path, file, index) {
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: index, operation: 'upload' }
     });
+    return 'ERR';
   }
+  return 'SUCCESS';
 }
 
 export function* watchPreview() {
@@ -742,10 +798,24 @@ export function* trashFiles(action) {
   const trashCalls = action.payload.src.map(file => {
     return call(trashFile, file.system, file.path, file.id);
   });
-  yield race({
+  const { result } = yield race({
     result: all(trashCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
+  if (!result.includes('ERR')) {
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'trash', props: {} }
+    });
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: `${
+          result.length > 1 ? `${result.length} files` : 'File'
+        } moved to trash`
+      }
+    });
+  }
   yield call(action.payload.reloadCallback);
 }
 
@@ -766,7 +836,9 @@ export function* trashFile(system, path, id) {
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: id, operation: 'trash' }
     });
+    return 'ERR';
   }
+  return 'SUCCESS';
 }
 
 export const getLatestApp = async name => {
@@ -853,6 +925,10 @@ export function* extractFiles(action) {
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' }
       });
+      yield put({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'extract', props: {} }
+      });
     } else {
       throw new Error('Unable to extract files');
     }
@@ -938,6 +1014,10 @@ export function* compressFiles(action) {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'compress' }
+      });
+      yield put({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'compress', props: {} }
       });
     } else {
       throw new Error('Unable to compress files');
