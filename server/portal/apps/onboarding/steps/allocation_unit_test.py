@@ -1,4 +1,5 @@
 from portal.apps.onboarding.steps.allocation import AllocationStep
+from portal.apps.onboarding.state import SetupState
 import pytest
 
 
@@ -27,7 +28,7 @@ def allocation_step_complete_mock(mocker):
 
 @pytest.fixture
 def allocation_step_userwait_mock(mocker):
-    yield mocker.patch.object(AllocationStep, 'userwait')
+    yield mocker.patch.object(SetupState, 'userwait')
 
 def test_get_allocations(regular_user, get_allocations_mock, allocation_step_complete_mock):
     step = AllocationStep(regular_user)
