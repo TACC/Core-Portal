@@ -12,47 +12,43 @@ def mock_intromessages(scope="module"):
     yield [
         {
             "id": "2",
-            "user_id": "1",
+            "user_id": "2",
             "unread": False,
             "component": "HISTORY",
             "datetime": "2021-11-01T01:58:28",
         },
         {
             "id": "3",
-            "user_id": "1",
+            "user_id": "2",
             "unread": False,
-            "component": "DASHBOARD",
+            "component": "ALLOCATIONS",
             "datetime": "2021-10-29T02:58:28",
         },        
     ]
 
 @pytest.fixture
-def mock_intromessage(scope="module"):
-    yield [
-        {
-            "id": "2",
-            "user_id": "1",
-            "unread": False,
-            "component": "HISTORY",
-            "datetime": "2021-11-01T01:58:28",
-        }      
-    ]
+def intromessage_mock(authenticated_user):
+    IntroMessages.objects.create(user=authenticated_user, component="HISTORY", unread=False)
 
 
-# test get of "read" (not unread) IntroMessages for an authenticated user
+"""test get of "read" (not unread) IntroMessages for an authenticated user
+"""
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get(client, authenticated_user, mock_intromessages):
     response = client.get('/api/intromessages/msg/')
     assert response.status_code == 200
 
-# test get of "read" IntroMessages for an unauthenticated user
-# user should be redirected to login?
+
+"""Test get of "read" IntroMessages for an unauthenticated user
+user should be redirected to login? 
+"""
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get(client, regular_user, mock_intromessages):
     response = client.get('/api/intromessages/msg/')
     assert response.status_code == 302
 
-# test the marking of an IntroMessage as "read" by writing to the database
+
+"""Test the marking of an IntroMessage as "read" by writing to the database """
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_put(client, authenticated_user):
     body = {
@@ -64,3 +60,17 @@ def test_intromessages_put(client, authenticated_user):
                           content_type="application/json",
                           data=body)
     assert response.status_code == 200
+    
+
+
+"""Confirm that the JSON coming back is as expected
+"""
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def test_response_data(client, authenticated_user, intromessage_mock):
+    response = client.get('/api/intromessages/msg/')
+    data = response.json()
+    print(response.json())
+    print(data["response"][0])
+    assert response.status_code == 200
+    assert data["response"][0]["component"] == "HISTORY"
+    assert data["response"][0]["unread"] == False
