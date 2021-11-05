@@ -187,13 +187,25 @@ export function* fetchFiles(action) {
       }
     });
   } catch (e) {
-    yield put({
-      type: 'FETCH_FILES_ERROR',
-      payload: {
-        section: action.payload.section,
-        code: e.status.toString()
-      }
-    });
+    // When there isn't a status due to network connection error.
+    if (e.status) {
+      yield put({
+        type: 'FETCH_FILES_ERROR',
+        payload: {
+          section: action.payload.section,
+          code: e.status.toString()
+        }
+      });
+    } else {
+      // When there isn't a status due to network connection error.
+      yield put({
+        type: 'FETCH_FILES_ERROR',
+        payload: {
+          section: action.payload.section,
+          code: '503'
+        }
+      });
+    }
     // If listing returns 502, body should contain a system def for key pushing.
     yield e.status === 502 &&
       put({
@@ -723,6 +735,7 @@ export function* fileLink(action) {
       }
     });
   } catch (error) {
+    console.log("hehehe");
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: {
