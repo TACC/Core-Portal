@@ -187,7 +187,6 @@ export function* fetchFiles(action) {
       }
     });
   } catch (e) {
-    // When there isn't a status due to network connection error.
     if (e.status) {
       yield put({
         type: 'FETCH_FILES_ERROR',
@@ -735,7 +734,6 @@ export function* fileLink(action) {
       }
     });
   } catch (error) {
-    console.log("hehehe");
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: {
