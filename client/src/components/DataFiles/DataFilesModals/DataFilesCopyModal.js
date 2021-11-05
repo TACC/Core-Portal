@@ -78,7 +78,7 @@ const DataFilesCopyModal = React.memo(() => {
 
   const excludedSystems = systems
     .filter(s => s.scheme !== 'private')
-    .filter(s => s.scheme !== 'public' && !canMakePublic)
+    .filter(s => !(s.scheme === 'public' && canMakePublic))
     .map(s => s.system);
 
   const onClosed = () => {
