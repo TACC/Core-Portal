@@ -10,6 +10,8 @@ from portal.libs.elasticsearch.indexes import IndexedFile
 from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 from portal.exceptions.api import ApiException
 from portal.libs.agave.utils import text_preview, get_file_size, increment_file_name
+from portal.libs.agave.filter_mapping import filter_mapping
+
 logger = logging.getLogger(__name__)
 
 
@@ -74,7 +76,7 @@ def iterate_listing(client, system, path, limit=100):
             break
 
 
-def search(client, system, path, offset=0, limit=100, query_string='', **kwargs):
+def search(client, system, path='', offset=0, limit=100, query_string='', filter=None, **kwargs):
     """
     Perform a search for files using a query string.
 
@@ -97,6 +99,12 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
         List of dicts containing file metadata from Elasticsearch
 
     """
+    if filter == 'Folders':
+        filter_query = Q('term', **{'format': 'folder'})
+    else:
+        filter_extensions = filter_mapping.get(filter, [])
+        filter_query = Q('terms', **{'name._pattern': filter_extensions})
+
     ngram_query = Q("query_string", query=query_string,
                     fields=["name"],
                     minimum_should_match='100%',
@@ -107,7 +115,15 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
                     default_operator='and')
 
     search = IndexedFile.search()
-    search = search.query(ngram_query | match_query)
+    if query_string:
+        search = search.query(ngram_query | match_query)
+    else:
+        # search without a query should just filter current path
+        search = search.sort('name._exact')
+        search = search.filter('term', **{'basePath._exact': '/' + path.strip('/')})
+    if filter:
+        search = search.filter(filter_query)
+
     search = search.filter('term', **{'system._exact': system})
     search = search.extra(from_=int(offset), size=int(limit))
     res = search.execute()
@@ -472,6 +488,8 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
     result = client.postits.create(body=args)
     url = result['_links']['self']['href']
     txt = None
+    error = None
+    file_type = None
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
@@ -486,6 +504,8 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
         file_type = 'ipynb'
         tmp = url.replace('https://', '')
         url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
+    elif file_ext in settings.SUPPORTED_NEW_WINDOW_PREVIEW_EXTS:
+        error = "This file type must be previewed in a new window."
     else:
         file_type = 'other'
 
@@ -493,13 +513,12 @@ def preview(client, system, path, href, max_uses=3, lifetime=600, **kwargs):
         if get_file_size(client, system, path) < 5000000:
             try:
                 txt = text_preview(url)
-                return {'href': url, 'fileType': file_type, 'content': txt, 'error': None}
             except ValueError:
                 # unable to get text content
-                pass
-        return {'href': url, 'fileType': file_type, 'content': txt, 'error': "Unable to show preview"}
-    else:
-        return {'href': url, 'fileType': file_type }
+                error = "Unable to show preview."
+        else:
+            error = "File too large to preview in this window."
+    return {'href': url, 'fileType': file_type, 'content': txt, 'error': error }
 
 
 def download_bytes(client, system, path):

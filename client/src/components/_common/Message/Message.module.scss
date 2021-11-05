@@ -57,6 +57,7 @@ p.is-scope-section {
 
   -webkit-appearance: none;
   appearance: none;
+  color: #222222;
 }
 .close-icon {
   /* … */
@@ -96,22 +97,22 @@ p.is-scope-section {
   &.is-info {
     border-color: var(--global-color-info--normal);
     background-color: var(--global-color-info--weak);
-    & .icon { color: var(--global-color-info--normal); }
+    & .type-icon { color: var(--global-color-info--normal); }
   }
   &.is-warn {
     border-color: var(--global-color-warning--normal);
     background-color: var(--global-color-warning--weak);
-    & .icon { color: var(--global-color-warning--normal); }
+    & .type-icon { color: var(--global-color-warning--normal); }
   }
   &.is-error {
     border-color: var(--global-color-danger--normal);
     background-color: var(--global-color-danger--weak);
-    & .icon { color: var(--global-color-danger--normal); }
+    & .type-icon { color: var(--global-color-danger--normal); }
   }
   &.is-success {
     border-color: var(--global-color-success--normal);
     background-color: var(--global-color-success--weak);
-    & .icon { color: var(--global-color-success--normal); }
+    & .type-icon { color: var(--global-color-success--normal); }
   }
 }
 

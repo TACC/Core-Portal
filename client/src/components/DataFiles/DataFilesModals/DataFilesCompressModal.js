@@ -94,6 +94,7 @@ const DataFilesCompressModal = () => {
       .strict(true)
       .required('The filename is required')
   });
+
   return (
     <Modal
       isOpen={isOpen}
@@ -127,13 +128,14 @@ const DataFilesCompressModal = () => {
                   disabled={formDisabled}
                   addonType="append"
                   addon={
-                    <InputGroupAddon addonType="append">
+                    <InputGroupAddon addonType="append" styleName="input-field">
                       <Input
                         type="select"
                         name="filetype"
                         bsSize="sm"
                         onChange={handleSelectChange}
                         disabled={formDisabled}
+                        styleName="bg-color"
                       >
                         <option value=".zip">.zip</option>
                         <option value=".tar.gz">.tar.gz</option>
