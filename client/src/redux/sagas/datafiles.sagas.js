@@ -187,24 +187,15 @@ export function* fetchFiles(action) {
       }
     });
   } catch (e) {
-    if (e.status) {
-      yield put({
-        type: 'FETCH_FILES_ERROR',
-        payload: {
-          section: action.payload.section,
-          code: e.status.toString()
-        }
-      });
-    } else {
-      // When there isn't a status due to network connection error.
-      yield put({
-        type: 'FETCH_FILES_ERROR',
-        payload: {
-          section: action.payload.section,
-          code: '503'
-        }
-      });
-    }
+    yield put({
+      type: 'FETCH_FILES_ERROR',
+      payload: {
+        section: action.payload.section,
+        // When there isn't a status due to network connection error return 503.
+        code : e.status ? e.status.toString() : `503`
+      }
+    });
+
     // If listing returns 502, body should contain a system def for key pushing.
     yield e.status === 502 &&
       put({
