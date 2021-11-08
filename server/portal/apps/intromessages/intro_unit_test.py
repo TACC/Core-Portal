@@ -34,7 +34,7 @@ def intromessage_mock(authenticated_user):
 """test get of "read" (not unread) IntroMessages for an authenticated user
 """
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_intromessages_get(client, authenticated_user, mock_intromessages):
+def test_intromessages_get(client, authenticated_user):
     response = client.get('/api/intromessages/msg/')
     assert response.status_code == 200
 
@@ -43,7 +43,7 @@ def test_intromessages_get(client, authenticated_user, mock_intromessages):
 user should be redirected to login? 
 """
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_intromessages_get(client, regular_user, mock_intromessages):
+def test_intromessages_get_unauthenticated_user(client, regular_user):
     response = client.get('/api/intromessages/msg/')
     assert response.status_code == 302
 
@@ -52,7 +52,6 @@ def test_intromessages_get(client, regular_user, mock_intromessages):
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_put(client, authenticated_user):
     body = {
-            "user_id": 1,
             "unread": False,
             "component": "HISTORY",
     }
@@ -69,8 +68,8 @@ def test_intromessages_put(client, authenticated_user):
 def test_response_data(client, authenticated_user, intromessage_mock):
     response = client.get('/api/intromessages/msg/')
     data = response.json()
-    print(response.json())
-    print(data["response"][0])
     assert response.status_code == 200
-    assert data["response"][0]["component"] == "HISTORY"
-    assert data["response"][0]["unread"] == False
+    print(data)
+    assert data["response"] == [{"component": "HISTORY", "unread": False}]
+    # assert data["response"][0]["component"] == "HISTORY"
+    # assert data["response"][0]["unread"] == False

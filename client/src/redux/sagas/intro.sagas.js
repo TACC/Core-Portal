@@ -6,6 +6,7 @@ export async function getIntroMessages() {
     url: `/api/intromessages/msg/`,
     method: 'get'
   });
+  console.log(result);
   return result.response;
 }
 
@@ -22,7 +23,8 @@ export function* fetchIntroMessages() {
       DASHBOARD: true,
       DATA: true,
       HISTORY: true,
-      TICKETS: true
+      TICKETS: true,
+      UI: true
     };
 
     // update messages with messages that have been read
