@@ -69,7 +69,4 @@ def test_response_data(client, authenticated_user, intromessage_mock):
     response = client.get('/api/intromessages/msg/')
     data = response.json()
     assert response.status_code == 200
-    print(data)
     assert data["response"] == [{"component": "HISTORY", "unread": False}]
-    # assert data["response"][0]["component"] == "HISTORY"
-    # assert data["response"][0]["unread"] == False

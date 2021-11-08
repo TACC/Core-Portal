@@ -13,9 +13,9 @@ export async function getIntroMessages() {
 export function* fetchIntroMessages() {
   yield put({ type: 'INTRO_FETCH_STARTED' });
   try {
-    const componentArray = yield call(getIntroMessages);
-    console.log('componentArray = ');
-    console.log(componentArray);
+    const componentDictionary = yield call(getIntroMessages);
+    console.log('componentDictionary = ');
+    console.log(componentDictionary);
     const messages = {
       ACCOUNT: true,
       ALLOCATIONS: true,
@@ -28,8 +28,8 @@ export function* fetchIntroMessages() {
     };
 
     // update messages with messages that have been read
-    if (componentArray !== 'NULL') {
-      componentArray.forEach(element => {
+    if (componentDictionary !== 'NULL') {
+      componentDictionary.forEach(element => {
         console.log(element);
         messages[element.component] = element.unread;
       });
@@ -61,12 +61,23 @@ export function* saveIntroMessages(action) {
     console.log(' ==========>>>>> START SAVEINTROMESSAGES <<<<<==========');
     console.log('action.payload = ');
     console.log(action.payload);
+    const introMessages = {};
+    console.log('I am here.......');
+    Object.entries(action.payload).forEach(([component, unread]) => {
+      console.log(`component = ${component}`);
+      console.log(`unread = ${unread}`);
+      introMessages[component] = { unread };
+      console.log(introMessages);
+    });
+    console.log('introMessages = ');
+    console.log(introMessages);
+
     console.log(' ==========>>>>> -END- SAVEINTROMESSAGES <<<<<==========');
 
     yield call(fetchUtil, {
       url: '/api/intromessages/msg/',
       method: 'PUT',
-      body: JSON.stringify(action.payload)
+      body: JSON.stringify(introMessages)
     });
 
     yield put({

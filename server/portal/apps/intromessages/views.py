@@ -10,7 +10,6 @@ from portal.apps.intromessages.models import IntroMessages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 import json
-# Create your views here.
 
 
 logger = logging.getLogger(__name__)
@@ -26,11 +25,14 @@ class IntroMessagesView(BaseApiView):
 
     def put(self, request, *args):
         body = json.loads(request.body)  
+        logger.info(body)
         for component, unread_status in body.items():
-            if unread_status == False:
+            logger.info(component)
+            logger.info(unread_status['unread'])
+            if unread_status['unread'] == False:
                 db_message = IntroMessages.objects.filter(user=request.user, component=component).values()
                 if len(db_message) == 0:
-                    new_message_object = IntroMessages(user=request.user, component=component, unread=unread_status)
+                    new_message_object = IntroMessages(user=request.user, component=component, unread=unread_status['unread'])
                     new_message_object.save()
 
         return JsonResponse({'status': 'OK'})
