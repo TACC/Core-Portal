@@ -191,7 +191,8 @@ export function* fetchFiles(action) {
       type: 'FETCH_FILES_ERROR',
       payload: {
         section: action.payload.section,
-        code: e.status.toString()
+        // When there isn't a status due to network connection error return 503.
+        code: e.status ? e.status.toString() : '503'
       }
     });
     // If listing returns 502, body should contain a system def for key pushing.
