@@ -12,7 +12,7 @@ import './UIPatterns.module.scss';
 function UIPatterns() {
   return (
     <Section
-      welcomeMessageName="UI"
+      introMessageName="UI"
       styleName="container"
       header="UI Patterns"
       content={

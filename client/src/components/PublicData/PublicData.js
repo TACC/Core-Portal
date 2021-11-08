@@ -77,7 +77,7 @@ const PublicData = () => {
 const PublicDataListing = ({ canDownload, downloadCallback }) => {
   const { api, scheme, system, path } = useParams();
   const dispatch = useDispatch();
-  const queryString = parse(useLocation().search).query_string;
+  const { query_string: queryString, filter } = parse(useLocation().search);
   useLayoutEffect(() => {
     dispatch({
       type: 'FETCH_FILES',
@@ -87,10 +87,11 @@ const PublicDataListing = ({ canDownload, downloadCallback }) => {
         scheme,
         path: path || '',
         queryString,
+        filter,
         section: 'FilesListing'
       }
     });
-  }, [path, queryString]);
+  }, [path, queryString, filter]);
 
   return (
     <Section

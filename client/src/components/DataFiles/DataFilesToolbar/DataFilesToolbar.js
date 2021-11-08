@@ -7,7 +7,6 @@ import './DataFilesToolbar.scss';
 
 export const ToolbarButton = ({ text, iconName, onClick, disabled }) => {
   const iconClassName = `icon-action icon-${iconName}`;
-
   return (
     <Button
       disabled={disabled}
@@ -38,7 +37,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
       i => state.files.listing.FilesListing[i]
     )
   );
-
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';
 
@@ -166,8 +164,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const permissionParams = { files: selectedFiles, scheme, api };
   const canDownload = getFilePermissions('download', permissionParams);
-  const isFolderSelected = getFilePermissions(
-    'isFolderSelected',
+  const areMultipleFilesOrFolderSelected = getFilePermissions(
+    'areMultipleFilesOrFolderSelected',
     permissionParams
   );
   const canRename = getFilePermissions('rename', permissionParams);
@@ -224,7 +222,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
             text="Download"
             iconName="download"
             onClick={download}
-            disabled={!canDownload && !isFolderSelected}
+            disabled={!canDownload && !areMultipleFilesOrFolderSelected}
           />
         )}
         {showMakeLink && (
@@ -259,5 +257,4 @@ DataFilesToolbar.propTypes = {
   scheme: PropTypes.string.isRequired,
   api: PropTypes.string.isRequired
 };
-
 export default DataFilesToolbar;

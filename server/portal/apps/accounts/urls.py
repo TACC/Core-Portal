@@ -3,7 +3,8 @@
    :synopsis: Accounts URLs
 """
 from django.conf.urls import url
-from portal.apps.accounts.views import LogoutView, accounts
+from django.contrib.auth.views import LogoutView
+from portal.apps.accounts.views import accounts
 from portal.apps.accounts import views
 
 
