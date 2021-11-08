@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useCallback } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,7 +25,8 @@ import {
   FileInputDropZoneFormField,
   LoadingSpinner,
   Message,
-  InfiniteScrollTable
+  InfiniteScrollTable,
+  Icon
 } from '_common';
 import { Formik, Form } from 'formik';
 import * as ROUTES from '../../constants/routes';
@@ -35,22 +36,58 @@ const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
 const Attachments = ({ attachments, ticketId }) => {
+  const infiniteScrollCallback = useCallback(() => {});
+  const noDataText = 'No attachments to display.';
+  const loading = useSelector(state => state.workbench.loading);
+  const json = attachments.map(function attachmentAcessor(x) {
+    return {
+      attachment_id: x[0],
+      attachment_name: x[1]
+    };
+  });
+
+  const columns = [
+    {
+      Header: 'Attachment Files',
+      accessor: 'attachment_name',
+      Cell: el => (
+        <span
+          title={el.value}
+          id={`attachment${el.row.index}`}
+          className="attachment__name"
+        >
+          {el.value}
+        </span>
+      )
+    },
+    {
+      Header: '',
+      className: { tbody: 'link' },
+      accessor: 'attachment_id',
+      Cell: el => (
+        <a
+          href={`/api/tickets/${ticketId}/attachment/${el.value}`}
+          className="link"
+          target="_blank"
+          rel="noreferrer noopener"
+          key={el.value}
+        >
+          Download
+        </a>
+      )
+    }
+  ];
   return (
     <div>
-      Attachments:
-      <ul>
-        {attachments.map(attachmentName => (
-          <a
-            href={`/api/tickets/${ticketId}/attachment/${attachmentName[0]}`}
-            className="link"
-            target="_blank"
-            rel="noreferrer noopener"
-            key={attachmentName[0]}
-          >
-            <li> {attachmentName[1]} </li>
-          </a>
-        ))}
-      </ul>
+      <InfiniteScrollTable
+        tableColumns={columns}
+        className="attachment-table"
+        accessor="attachment"
+        tableData={json}
+        onInfiniteScroll={infiniteScrollCallback}
+        isLoading={loading}
+        noDataText={noDataText}
+      />
     </div>
   );
 };
@@ -84,20 +121,6 @@ function TicketHistoryReply({ ticketId }) {
   const replyingError = useSelector(
     state => state.ticketDetailedView.replyingError
   );
-  const columns = [
-    {
-      Header: 'Attachment Files',
-      accessor: 'name',
-      Cell: "attachment"
-    },
-    {
-      Header: 'Job Details',
-      headerStyle: { textAlign: 'left' },
-      accessor: 'id',
-      Cell: "attachment"
-    },
-  ];
-  const filterColumns = columns.filter(f => f.show !== false);
   return (
     <Formik
       enableReinitialize
@@ -211,6 +234,12 @@ const TicketHistoryCard = ({
             <span className={ticketHeaderClassName}>
               {creator} | {`${formatDateTime(created)}`}
             </span>
+            {!!attachmentTitles.length && (
+              <span>
+                {' '}
+                <Icon name="link" />{' '}
+              </span>
+            )}
           </strong>{' '}
           {isOpen ? '' : content}
         </span>
