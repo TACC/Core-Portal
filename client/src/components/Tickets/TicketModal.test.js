@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import TicketModal, {TicketHistory} from './TicketModal';
+import { default as TicketModal, TicketHistory }  from './TicketModal';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
@@ -63,10 +63,7 @@ const exampleTicketHistoryCard = [
     ]
     ]
   }
-
 ];
-
-
 function renderTicketsModelComponent(store) {
   return render(
     <Provider store={store}>
@@ -76,7 +73,6 @@ function renderTicketsModelComponent(store) {
     </Provider>
   );
 }
-
 function renderTicketsHistoryComponent(store) {
   return render(
     <Provider store={store}>
