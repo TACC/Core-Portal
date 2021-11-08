@@ -192,10 +192,9 @@ export function* fetchFiles(action) {
       payload: {
         section: action.payload.section,
         // When there isn't a status due to network connection error return 503.
-        code : e.status ? e.status.toString() : `503`
+        code: e.status ? e.status.toString() : '503'
       }
     });
-
     // If listing returns 502, body should contain a system def for key pushing.
     yield e.status === 502 &&
       put({
