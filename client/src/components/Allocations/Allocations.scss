@@ -54,8 +54,13 @@
         }
         .link-text {
             font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
-            font-weight: 500;
             padding-left: 16px;
+        }
+        &.active {
+            font-weight: 700;
+        }
+        &:active {
+            font-weight: 700;
         }
     }
 }
