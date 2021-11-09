@@ -38,7 +38,6 @@ const formSchema = Yup.object().shape({
 const Attachments = ({ attachments, ticketId }) => {
   const infiniteScrollCallback = useCallback(() => {});
   const noDataText = 'No attachments to display.';
-  const loading = useSelector(state => state.workbench.loading);
   const json = attachments.map(function attachmentAcessor(x) {
     return {
       attachment_id: x[0],
@@ -85,7 +84,6 @@ const Attachments = ({ attachments, ticketId }) => {
         accessor="attachment"
         tableData={json}
         onInfiniteScroll={infiniteScrollCallback}
-        isLoading={loading}
         noDataText={noDataText}
       />
     </div>
