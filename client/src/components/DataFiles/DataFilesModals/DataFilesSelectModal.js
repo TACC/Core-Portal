@@ -65,6 +65,7 @@ const DataFilesSelectModal = ({ isOpen, toggle, onSelect }) => {
                 systemId={(systems[0] || modalParams).system}
                 section="modal"
                 excludedSystems={['googledrive']}
+                showProjects={showProjects}
               />
             </div>
             <div>

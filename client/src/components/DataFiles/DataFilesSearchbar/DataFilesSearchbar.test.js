@@ -12,7 +12,7 @@ describe('DataFilesSearchbar', () => {
   it('submits', () => {
     // Render the searchbar, enter a query string, and submit form
     const history = createMemoryHistory();
-    history.push('/workbench/data/api/scheme/system/path');
+    history.push('/workbench/data/test-api/test-scheme/test-system/');
     const store = mockStore({
       systems: systemsFixture,
       files: {
@@ -39,6 +39,30 @@ describe('DataFilesSearchbar', () => {
       '/workbench/data/test-api/test-scheme/test-system/'
     );
     expect(history.location.search).toEqual(`?query_string=querystring`);
+  });
+
+  it('changes route on dropdown select', () => {
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/test-scheme/test-system/');
+    const store = mockStore({
+      systems: systemsFixture,
+      files: {
+        error: {},
+        loading: {}
+      }
+    });
+    const { getByTestId } = renderComponent(
+      <DataFilesSearchbar
+        api="tapis"
+        scheme="test-scheme"
+        system="test-system"
+      />,
+      store,
+      history
+    );
+    const dropdownSelector = getByTestId('selector');
+    fireEvent.change(dropdownSelector, { target: { value: 'Images' } });
+    expect(history.location.search).toEqual(`?filter=Images`);
   });
 
   it('clears field on route change', async () => {
