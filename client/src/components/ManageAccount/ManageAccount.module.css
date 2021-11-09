@@ -5,7 +5,7 @@
 }
 
 /* "[…] Information" Panels */
-.panels > *:nth-child(-n) {
+.panels > *:nth-child(-n+2) {
   min-height: 160px; /* approx. "[…] Information" height with about 3.25 rows */
 }
 
@@ -32,7 +32,7 @@
   }
 
   /* "[…] Information" Panels */
-  .panels > *:nth-child(-n) {
+  .panels > *:nth-child(-n+2) {
     width: var(--column-width--large);
 
     /* CAVEAT: This is a dev value that just "looked good" */
@@ -44,7 +44,7 @@
     width: var(--column-width--small);
 
     /* To ensure these 3 panels are always in the same column together */
-    max-height: calc(33% - var(--vertical-buffer));
+    max-height: calc(50% - var(--vertical-buffer));
   }
 }
 
@@ -56,7 +56,7 @@
 @media only screen and (max-height: 633px) and (min-width: 1200px) {
 
   /* "[…] Information" Panels */
-  .panels > *:nth-child(-n) {
+  .panels > *:nth-child(-n+2) {
     /* CAVEAT: This is a dev value that just "looked good" */
     height: calc(100% - var(--vertical-buffer));
   }
