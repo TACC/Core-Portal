@@ -85,7 +85,7 @@ class ProjectMembershipStep(AbstractStep):
         try:
             if tracker.login():
                 result = tracker.create_ticket(
-                    Queue='Accounting',
+                    Queue=self.settings.get('rt_queue') or 'Accounting',
                     Subject='{project} Project Membership Request for {username}'.format(
                         project=self.project['title'],
                         username=self.user.username
@@ -175,7 +175,7 @@ class ProjectMembershipStep(AbstractStep):
                 ticket_id = event.data["ticket"]
         tracker = self.get_tracker()
         request_text = """Your request for membership on the {project} project has been
-        granted. Please login at {base_url}/onboarding/setup to continue setting up your account.
+        granted. Please login at {base_url}/workbench/onboarding/setup to continue setting up your account.
         """.format(
             project=self.project['title'],
             base_url=settings.WH_BASE_URL

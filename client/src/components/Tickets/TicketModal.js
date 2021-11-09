@@ -33,18 +33,29 @@ import './TicketModal.scss';
 const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
-
-const Attachments = ({ attachments }) => {
+const Attachments = ({ attachments, ticketId }) => {
   return (
     <div>
       Attachments:
       <ul>
         {attachments.map(attachmentName => (
-          <li key={attachmentName[0]}>{attachmentName[1]} </li>
+          <a
+            href={`/api/tickets/${ticketId}/attachment/${attachmentName[0]}`}
+            className="link"
+            target="_blank"
+            rel="noreferrer noopener"
+            key={attachmentName[0]}
+          >
+            <li> {attachmentName[1]} </li>
+          </a>
         ))}
       </ul>
     </div>
   );
+};
+Attachments.propTypes = {
+  attachments: PropTypes.arrayOf(PropTypes.array).isRequired,
+  ticketId: PropTypes.string.isRequired
 };
 
 Attachments.propTypes = {
@@ -148,7 +159,8 @@ const TicketHistoryCard = ({
   creator,
   ticketCreator,
   content,
-  attachments
+  attachments,
+  ticketId
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
@@ -168,6 +180,7 @@ const TicketHistoryCard = ({
   const attachmentTitles = (attachments || []).filter(
     a => !a[1].toString().startsWith('untitled (')
   );
+
   return (
     <Card className="mt-1">
       <CardHeader
@@ -192,7 +205,7 @@ const TicketHistoryCard = ({
         <CardBody>{content}</CardBody>
         {!!attachmentTitles.length && (
           <CardBody>
-            <Attachments attachments={attachmentTitles} />
+            <Attachments attachments={attachmentTitles} ticketId={ticketId} />
           </CardBody>
         )}
       </Collapse>
@@ -206,7 +219,8 @@ TicketHistoryCard.propTypes = {
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
-  attachments: PropTypes.arrayOf(PropTypes.array).isRequired
+  attachments: PropTypes.arrayOf(PropTypes.array).isRequired,
+  ticketId: PropTypes.string.isRequired
 };
 
 export const TicketHistory = () => {
@@ -239,6 +253,7 @@ export const TicketHistory = () => {
           ticketCreator={d.IsCreator}
           content={d.Content}
           attachments={d.Attachments}
+          ticketId={d.Ticket}
         />
       ))}
       <div ref={ticketHistoryEndRef} />
