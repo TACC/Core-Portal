@@ -36,7 +36,6 @@ const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
 const Attachments = ({ attachments, ticketId }) => {
-
   const infiniteScrollCallback = useCallback(() => {});
   const noDataText = 'No attachments to display.';
   const json = attachments.map(function attachmentAcessor(x) {
@@ -87,7 +86,6 @@ const Attachments = ({ attachments, ticketId }) => {
         onInfiniteScroll={infiniteScrollCallback}
         noDataText={noDataText}
       />
-
     </div>
   );
 };
