@@ -14,7 +14,9 @@ const DataFilesAddProjectModal = () => {
   const match = useRouteMatch();
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.authenticatedUser);
-  const [members, setMembers] = useState([{ user, access: 'owner' }]);
+  const [members, setMembers] = useState(
+    user ? [{ user, access: 'owner' }] : []
+  );
   const isOpen = useSelector(state => state.files.modals.addproject);
   const isCreating = useSelector(state => {
     return (
