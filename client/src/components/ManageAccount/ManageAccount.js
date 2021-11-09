@@ -69,9 +69,11 @@ const ManageAccountView = () => {
         ) : (
           <>
             {(errors.data || errors.fields) && (
-              <SectionMessage type="error">
-                An error occurred loading your profile information.
-              </SectionMessage>
+              <div className="manage-account-error">
+                <SectionMessage type="error">
+                  An error occurred loading your profile information.
+                </SectionMessage>
+              </div>
             )}
             <RequiredInformation />
             <OptionalInformation />
