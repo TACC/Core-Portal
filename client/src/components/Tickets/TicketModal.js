@@ -49,6 +49,7 @@ const Attachments = ({ attachments, ticketId }) => {
     {
       Header: 'Attachment Files',
       accessor: 'attachment_name',
+      className: 'attachment-title',
       Cell: el => (
         <span
           title={el.value}
@@ -61,7 +62,7 @@ const Attachments = ({ attachments, ticketId }) => {
     },
     {
       Header: '',
-      className: { tbody: 'link' },
+      className: 'link',
       accessor: 'attachment_id',
       Cell: el => (
         <a
