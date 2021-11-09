@@ -199,6 +199,7 @@ export const AppSchemaForm = ({ app }) => {
       execSystem: state.app ? state.app.exec_sys.login.host : ''
     };
   }, shallowEqual);
+
   const { systemHasKeys, pushKeysSystem } = app;
   const missingLicense = app.license.type && !app.license.enabled;
   const pushKeys = e => {

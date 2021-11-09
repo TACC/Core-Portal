@@ -39,7 +39,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
-  const downSysList = useSelector(state =>
+  const downSystems = useSelector(state =>
     state.systemMonitor
       ? state.systemMonitor.list
           .filter(currSystem => !currSystem.is_operational)
@@ -86,7 +86,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       </>
     );
     if (err === '502') {
-      if (downSysList.includes(currSystemHost)) {
+      if (downSystems.includes(currSystemHost)) {
         return (
           <div className="h-100 listing-placeholder">
             <SectionMessage type="warning">
