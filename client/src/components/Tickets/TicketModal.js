@@ -36,6 +36,7 @@ const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
 const Attachments = ({ attachments, ticketId }) => {
+
   const infiniteScrollCallback = useCallback(() => {});
   const noDataText = 'No attachments to display.';
   const loading = useSelector(state => state.workbench.loading);
@@ -88,6 +89,7 @@ const Attachments = ({ attachments, ticketId }) => {
         isLoading={loading}
         noDataText={noDataText}
       />
+
     </div>
   );
 };
