@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 @method_decorator(login_required, name='dispatch')
 class IntroMessagesView(BaseApiView):
+    # Get all of the IntroMessages that have been read (unread = False)
     def get(self, request, *args, **kwargs):
         messages_array = IntroMessages.objects.filter(user=request.user).values('component', 'unread').values()
         messages = [{'component': message['component'], 'unread': message['unread']} for message in messages_array]
@@ -24,15 +25,18 @@ class IntroMessagesView(BaseApiView):
 
 
     def put(self, request, *args):
-        body = json.loads(request.body)  
-        logger.info(body)
-        for component, unread_status in body.items():
-            logger.info(component)
-            logger.info(unread_status['unread'])
-            if unread_status['unread'] == False:
-                db_message = IntroMessages.objects.filter(user=request.user, component=component).values()
-                if len(db_message) == 0:
-                    new_message_object = IntroMessages(user=request.user, component=component, unread=unread_status['unread'])
+        body = json.loads(request.body)     # IntroMessages data from front end 
+        # get all of the IntroMessages stored in the database (meaning that those messages have been read/dismissed) for the user
+        db_messages = IntroMessages.objects.filter(user=request.user).values()
+        for component_name, component_value in body.items():
+            if component_value['unread'] == False:      # if message has been read/dismissed
+                found = False
+                for db_message in db_messages:          # Check to see if it's already stored in database
+                    if db_message['component'] == component_name:
+                        found = True                    # Yes, we don't have to do anything
+                        break
+                if not found:                           # No, so we need to store in database
+                    new_message_object = IntroMessages(user=request.user, component=component_name, unread=False)
                     new_message_object.save()
 
         return JsonResponse({'status': 'OK'})

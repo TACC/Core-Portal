@@ -6,7 +6,6 @@ export async function getIntroMessages() {
     url: `/api/intromessages/msg/`,
     method: 'get'
   });
-  console.log(result);
   return result.response;
 }
 
@@ -14,8 +13,8 @@ export function* fetchIntroMessages() {
   yield put({ type: 'INTRO_FETCH_STARTED' });
   try {
     const componentDictionary = yield call(getIntroMessages);
-    console.log('componentDictionary = ');
-    console.log(componentDictionary);
+    // create complete list of IntroMessages for the user with status
+    // for all messages set to unread (true)
     const messages = {
       ACCOUNT: true,
       ALLOCATIONS: true,
@@ -27,23 +26,19 @@ export function* fetchIntroMessages() {
       UI: true
     };
 
-    // update messages with messages that have been read
+    // update messages dictionary with messages from the database
+    // that have been read/dismissed (unread = false)
     if (componentDictionary !== 'NULL') {
       componentDictionary.forEach(element => {
-        console.log(element);
         messages[element.component] = element.unread;
       });
     }
-
-    console.log(messages);
 
     yield put({
       type: 'INTRO_FETCH_SUCCESS',
       payload: messages
     });
   } catch (error) {
-    console.log('=====> ERROR <=====');
-    console.log(error);
     yield put({
       type: 'INTRO_FETCH_ERROR'
     });
@@ -54,25 +49,15 @@ export function* watchFetchIntroMessages() {
   yield takeLeading('FETCH_INTRO', fetchIntroMessages);
 }
 
+// Write IntroMessages that have been read to the database and
+// update the redux store.
 export function* saveIntroMessages(action) {
   yield put({ type: 'INTRO_SAVE_STARTED' });
   try {
-    // localStorage.setItem('introMessages', JSON.stringify(action.payload));
-    console.log(' ==========>>>>> START SAVEINTROMESSAGES <<<<<==========');
-    console.log('action.payload = ');
-    console.log(action.payload);
     const introMessages = {};
-    console.log('I am here.......');
     Object.entries(action.payload).forEach(([component, unread]) => {
-      console.log(`component = ${component}`);
-      console.log(`unread = ${unread}`);
       introMessages[component] = { unread };
-      console.log(introMessages);
     });
-    console.log('introMessages = ');
-    console.log(introMessages);
-
-    console.log(' ==========>>>>> -END- SAVEINTROMESSAGES <<<<<==========');
 
     yield call(fetchUtil, {
       url: '/api/intromessages/msg/',
