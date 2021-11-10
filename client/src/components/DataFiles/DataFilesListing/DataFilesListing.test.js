@@ -1,7 +1,10 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import configureStore from 'redux-mock-store';
-import { fireEvent, wait } from '@testing-library/react';
+import { fireEvent, wait, render } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import renderComponent from 'utils/testing';
 import DataFilesListing from './DataFilesListing';
 import { CheckboxCell, FileNavCell } from './DataFilesListingCells';
@@ -20,7 +23,8 @@ const initialMockState = {
     params: {
       FilesListing: {
         system: 'test.system',
-        path: 'test/path'
+        path: 'test/path',
+        scheme: 'private'
       }
     },
     loadingScroll: {
@@ -42,7 +46,7 @@ const initialMockState = {
       FilesListing: true
     }
   },
-  systems: systemsFixture
+  systems: systemsFixture,
 };
 
 describe('CheckBoxCell', () => {
@@ -54,9 +58,7 @@ describe('CheckBoxCell', () => {
       store,
       history
     );
-    expect(
-      getByRole('checkbox').getAttribute('aria-checked')
-    ).toEqual('true');
+    expect(getByRole('checkbox').getAttribute('aria-checked')).toEqual('true');
   });
 
   it('box is unchecked when not selected', () => {
@@ -67,9 +69,7 @@ describe('CheckBoxCell', () => {
       store,
       history
     );
-    expect(
-      getByRole('checkbox').getAttribute('aria-checked')
-    ).toEqual('false');
+    expect(getByRole('checkbox').getAttribute('aria-checked')).toEqual('false');
   });
 });
 
@@ -86,6 +86,7 @@ describe('FileNavCell', () => {
         api="tapis"
         scheme="private"
         href="href"
+        length={1234}
       />,
       store,
       history
@@ -110,6 +111,7 @@ describe('FileNavCell', () => {
         api="tapis"
         scheme="private"
         href="href"
+        length={1234}
       />,
       store,
       history
@@ -183,20 +185,28 @@ describe('DataFilesListing', () => {
   });
 
   it.each([
-    ['500', /There was a problem accessing this file system./],
+    ['500', /There was a problem accessing this file system./,'private'],
     [
       '502',
-      /There was a problem accessing this file system. If this is your first time logging in/
+      /An error occurred loading this directory. For help, please submit/,
+      'public'
+    ],
+    [
+      '502',
+      /There was a problem accessing this file system. If this is your/,
+      'private'
     ],
     [
       '404',
-      'The file or folder that you are attempting to access does not exist.'
+      'The file or folder that you are attempting to access does not exist.',
+      'private'
     ]
-  ])('Renders "%s" error message correctly', (errorCode, message) => {
+  ])('Renders "%s" error message correctly', (errorCode, message, scheme) => {
     const history = createMemoryHistory();
     history.push('/workbench/data/tapis/private/test.system/');
     const errorMockState = { ...initialMockState };
     errorMockState.files.error.FilesListing = errorCode;
+    errorMockState.files.params.FilesListing.scheme = scheme;
     const store = mockStore(errorMockState);
 
     const { getByText } = renderComponent(
@@ -214,33 +224,31 @@ describe('DataFilesListing', () => {
     expect(getByText(message)).toBeDefined();
   });
 
-  it('filters by file type', () => {
+  it('does not render the DataFilesSearchbar in the Shared Workspaces component when hideSearchBar is true', () => {
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/projects/');
+
+    systemsFixture.storage.configuration[5].hideSearchBar = true;
+
     const store = mockStore({
       ...initialMockState,
-      files: filesFixture
+      systems: systemsFixture
     });
-    const history = createMemoryHistory();
-    history.push('/workbench/data/tapis/private/test.system/');
 
-    const { getByTestId, getAllByTestId } = renderComponent(
-      <DataFilesListing
-        api="tapis"
-        scheme="private"
-        system="frontera.home.username"
-        path="/"
-      />,
-      store,
-      history
+    const { queryByText } = render(
+      <Provider store={store}>
+        <BrowserRouter history={history}>
+          <DataFilesListing
+            api="tapis"
+            scheme="projects"
+            system="test.system"
+            resultCount={0}
+            path="/"
+            isPublic={false}
+          />
+        </BrowserRouter>
+      </Provider>
     );
-
-    const dropdownSelector = getByTestId('selector');
-    fireEvent.change(dropdownSelector, { target: { value: 'Images' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(1);
-    fireEvent.change(dropdownSelector, { target: { value: 'Text' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(2);
-    fireEvent.change(dropdownSelector, { target: { value: 'Folders' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(4);
-    fireEvent.change(dropdownSelector, { target: { value: 'All Types' } });
-    expect(getAllByTestId('file-listing-item').length).toBe(filesFixture.listing.FilesListing.length);
-  })
+    expect(queryByText(/Search/)).toBeNull();
+  });
 });

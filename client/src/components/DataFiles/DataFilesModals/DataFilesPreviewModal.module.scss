@@ -2,17 +2,44 @@
   min-height: 30vh;
 }
 
-.text-preview{
+.text-preview {
   max-height: 75vh;
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
 }
 
+.error-message {
+  width: fit-content;
+}
+
+.loading-style {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .error {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
+  flex-direction: column;
   height: 100%;
 }
 
+.button {
+  background-color: var(--global-color-accent--normal);
+  border-color: var(--global-color-accent--normal);
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  white-space: nowrap;
+
+  i {
+    display: flex;
+    padding-right: 5px;
+    font-size: 1.3em;
+  }
+}
