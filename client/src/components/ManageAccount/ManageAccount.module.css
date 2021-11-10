@@ -44,7 +44,7 @@
     width: var(--column-width--small);
 
     /* To ensure these 3 panels are always in the same column together */
-    max-height: calc(50% - var(--vertical-buffer));
+    max-height: calc(33% - var(--vertical-buffer));
   }
 }
 
