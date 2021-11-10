@@ -6,7 +6,7 @@ import {
   ChangePasswordModal,
   EditOptionalInformationModal,
   EditRequiredInformationModal,
-  IntegrationModal
+  GoogleDriveModal
 } from '../ManageAccountModals';
 
 const dummyState = {
@@ -48,15 +48,6 @@ const dummyState = {
     required: false,
     optional: false,
     password: true
-  }
-};
-const mockState = {
-  ...dummyState,
-  data: {
-    demographics: {
-      ...dummyState.data.demographics,
-      phone: '1234567890'
-    }
   }
 };
 
@@ -357,34 +348,6 @@ describe('Edit Required Information', () => {
 
     expect(getByText(/Submit/)).toBeDefined();
   });
-  it('should render a form with this phone number schema', () => {
-    const testState2 = {
-      ...mockState,
-      modals: {
-        optional: true
-      }
-    };
-    const stateWithFields2 = {
-      ...testState2,
-      
-    };
-    console.log(stateWithFields2)
-    const storeWithFields2 = mockStore({ profile: stateWithFields2 });
-
-    rerender(
-      <Provider store={storeWithFields2}>
-        <EditRequiredInformationModal />
-      </Provider>
-    );
-
-    [
-      'Phone Number',
-    ].forEach(label => {
-      expect(getByText(label)).toBeDefined();
-    });
-
-    expect(getByText(/Submit/)).toBeDefined();
-  });
 
   it('should show users errors if the fields are missing or invalid', async () => {
     const stateWithFields = {
@@ -491,7 +454,7 @@ describe('Edit Required Information', () => {
 describe('connect google drive', () => {
   it('should render privacy policy and link', () => {
     const { getByText, getByRole } = render(
-      <IntegrationModal active={true} toggle={() => {}} connect={'/accounts/applications/googledrive/initialize/'} label={'Google Drive'}/>
+      <GoogleDriveModal active={true} toggle={() => {}} />
     );
     expect(getByText(/Google Drive Privacy Policy/)).toBeDefined();
     const expectedHref = `${window.location.href}accounts/applications/googledrive/initialize/`;
