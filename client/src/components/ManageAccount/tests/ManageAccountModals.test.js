@@ -51,44 +51,12 @@ const dummyState = {
   }
 };
 const mockState = {
-  isLoading: false,
-  checkingPassword: false,
-  editing: false,
-  success: {
-    optional: false,
-    required: false,
-    password: false
-  },
+  ...dummyState,
   data: {
     demographics: {
-      ethnicity: 'Asian',
-      gender: 'Male',
-      username: 'tuser',
-      email: 'testuser@gmail.com',
-      firstName: 'Test',
-      lastName: 'User',
-      phone: '(512) 475-6848',
-      title: 'Center Non-Researcher Staff',
-      // Required Information Fields Provided By TAS
-      institution: 'University of Texas at Austin',
-      institutionId: 1,
-      country: 'United States',
-      countryId: 230,
-      citizenship: 'United States',
-      citizenshipId: 230,
-      // Optional Information
-      bio: '',
-      website: '',
-      orcid_id: '',
-      professional_level: ''
+      ...dummyState.data.demographics,
+      phone: '1234567890'
     }
-  },
-  errors: {},
-  fields: {},
-  modals: {
-    required: false,
-    optional: false,
-    password: true
   }
 };
 
@@ -396,35 +364,21 @@ describe('Edit Required Information', () => {
         optional: true
       }
     };
-    const stateWithFields = {
+    const stateWithFields2 = {
       ...testState2,
-      fields: {
-        countries: [[230, 'United States']],
-        institutions: [[1, 'University of Texas at Austin']],
-        ethnicities: [['Decline', 'Decline to Identify']],
-        genders: [['Other', 'Other']],
-        professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
+      
     };
-    const storeWithFields = mockStore({ profile: stateWithFields });
+    console.log(stateWithFields2)
+    const storeWithFields2 = mockStore({ profile: stateWithFields2 });
 
     rerender(
-      <Provider store={storeWithFields}>
+      <Provider store={storeWithFields2}>
         <EditRequiredInformationModal />
       </Provider>
     );
 
     [
-      'First Name',
-      'Last Name',
-      'Email Address',
       'Phone Number',
-      'Institution',
-      'Position/Title',
-      'Residence',
-      'Ethnicity',
-      'Gender'
     ].forEach(label => {
       expect(getByText(label)).toBeDefined();
     });
