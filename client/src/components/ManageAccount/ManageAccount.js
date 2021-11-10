@@ -50,7 +50,7 @@ const ManageAccountView = () => {
         !isLoading && (errors.data || errors.fields) && (
           <div>
             <SectionMessage type="error">
-              An error occurred loading your profile information.
+              An error occurred loading your account information.
             </SectionMessage>
           </div>
         ),
