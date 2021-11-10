@@ -46,18 +46,27 @@ const ManageAccountView = () => {
       bodyClassName="has-loaded-account"
       introMessageName="ACCOUNT"
       header="Manage Account"
-      messages={
+      messages={[
+        !isLoading && (errors.data || errors.fields) && (
+          <SectionMessage type="error">
+            An error occurred loading your profile information.
+          </SectionMessage>
+        ),
         !isLoading &&
-        integrations.map(
-          integration =>
-            integration &&
-            integration.error === 'SETUP_ERROR' && (
-              <SectionMessage key={integration.label} type="warning" canDismiss>
-                {INTEGRATION_SETUP_ERROR(integration.label)}
-              </SectionMessage>
-            )
-        )
-      }
+          integrations.map(
+            integration =>
+              integration &&
+              integration.error === 'SETUP_ERROR' && (
+                <SectionMessage
+                  key={integration.label}
+                  type="warning"
+                  canDismiss
+                >
+                  {INTEGRATION_SETUP_ERROR(integration.label)}
+                </SectionMessage>
+              )
+          )
+      ]}
       headerActions={
         <Link to="/workbench/dashboard" className="wb-link">
           Back to Dashboard
@@ -68,13 +77,6 @@ const ManageAccountView = () => {
           <LoadingSpinner />
         ) : (
           <>
-            {(errors.data || errors.fields) && (
-              <div className="manage-account-error">
-                <SectionMessage type="error">
-                  An error occurred loading your profile information.
-                </SectionMessage>
-              </div>
-            )}
             <RequiredInformation />
             <OptionalInformation />
             <ChangePasswordModal />
