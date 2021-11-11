@@ -71,9 +71,7 @@ class TicketsView(BaseApiView):
             metadata += "user_last_name:\n{}\n\n".format(data.get('last_name'))
 
         problem_description += "\n\n" + metadata
-
         
-
         if not request.user.is_authenticated:
             recap_result = utils.get_recaptcha_verification(request)
             if recap_result['success']:
