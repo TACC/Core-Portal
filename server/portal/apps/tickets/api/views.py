@@ -76,14 +76,7 @@ class TicketsView(BaseApiView):
 
         if not request.user.is_authenticated:
             recap_result = recap_util.get_recaptcha_verification(request)
-            if recap_result['success']:
-                ticket_id = rt.create_ticket(subject=subject,
-                                         problem_description=problem_description,
-                                         requestor=email,
-                                         cc=cc,
-                                         attachments=attachments)
-                return JsonResponse({'ticket_id': ticket_id})
-            else:
+            if not recap_result['success']:
                 raise ApiException('Invalid reCAPTCHA. Please try again.')
 
         ticket_id = rt.create_ticket(subject=subject,
