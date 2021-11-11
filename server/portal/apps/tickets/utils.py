@@ -5,7 +5,7 @@ import requests
 class DjangoRecaptcha:
     def get_recaptcha_verification(self,request):
         recaptcha_response = request.POST.get('recaptchaResponse')
-        secret_key = getattr(settings, 'RECAPTCHA_SECRET_KEY')
+        secret_key = settings.RECAPTCHA_SECRET_KEY
         data = {
             'secret': secret_key,
             'response': recaptcha_response
