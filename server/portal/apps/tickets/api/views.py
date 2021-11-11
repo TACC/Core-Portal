@@ -72,10 +72,10 @@ class TicketsView(BaseApiView):
 
         problem_description += "\n\n" + metadata
 
-        recap_util = utils.DjangoRecaptcha()
+        
 
         if not request.user.is_authenticated:
-            recap_result = recap_util.get_recaptcha_verification(request)
+            recap_result = utils.get_recaptcha_verification(request)
             if recap_result['success']:
                 ticket_id = rt.create_ticket(subject=subject,
                                          problem_description=problem_description,
@@ -83,7 +83,7 @@ class TicketsView(BaseApiView):
                                          cc=cc,
                                          attachments=attachments)
                 return JsonResponse({'ticket_id': ticket_id})
-            else:
+            if not recap_result['success']:
                 raise ApiException('Invalid reCAPTCHA. Please try again.')
 
         ticket_id = rt.create_ticket(subject=subject,
