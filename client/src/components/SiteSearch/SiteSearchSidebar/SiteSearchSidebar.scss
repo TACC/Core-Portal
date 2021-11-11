@@ -10,6 +10,7 @@ $core-portal-color-primary: var(--global-color-accent--normal);
 .site-search-sidebar .nav-link {
   padding-left: $data-files-wrapper-horizontal-padding;
   color: var(--global-color-primary--dark);
+  font-weight: 500;
 }
 
 .site-search-sidebar .nav-link.active,

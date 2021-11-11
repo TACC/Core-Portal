@@ -54,6 +54,7 @@ ul#appBrowser-sidebar {
 }
 #appBrowser-sidebar .nav-link {
   /* RFE: Add `href` on links to: obviate this CSS, provide URL to app state */
+  font-weight: 500;
   cursor: pointer;
 }
 
