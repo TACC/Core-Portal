@@ -2,7 +2,7 @@
 .. module:: portal.apps.site_search.urls
    :synopsis: Site Search URLs
 """
-from django.urls import re_path
+from django.urls import path
 from portal.apps.request_access.views import IndexView
 
 app_name = 'request_access'
