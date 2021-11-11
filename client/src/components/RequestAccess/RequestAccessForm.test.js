@@ -20,7 +20,7 @@ describe('RequestAccessForm', () => {
     expect(getByText(/Request Access/)).toBeInTheDocument();
   });
 
-  it('renders spinner when creating a feedback', () => {
+  it('renders spinner when requesting access', () => {
     const store = mockStore({
       requestAccess: {
         ...requestAccess,
