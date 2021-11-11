@@ -47,7 +47,7 @@ const Attachments = ({ attachments, ticketId }) => {
 
   const columns = [
     {
-      Header: 'Attachment Files',
+      Header: 'Attached Files',
       accessor: 'attachment_name',
       className: 'attachment-title',
       Cell: el => (
