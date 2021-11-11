@@ -207,7 +207,7 @@ const DataFilesCopyModal = React.memo(() => {
       <div>
         {modalParams.scheme === 'public' && (
           <ModalFooter className="d-flex justify-content-start">
-            <SectionMessage type ="warning">
+            <SectionMessage type="warning">
               Files copied to Public Data will be avaliable to general public.{' '}
               <b>This action cannot be reversed.</b>
             </SectionMessage>
