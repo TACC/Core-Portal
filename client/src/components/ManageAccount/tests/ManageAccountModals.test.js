@@ -381,7 +381,7 @@ describe('Edit Required Information', () => {
     });
     fireEvent.change(phoneField, {
       target: {
-        value: '123'
+        value: '1234'
       }
     });
     const clickSpy = () => jest.fn();
