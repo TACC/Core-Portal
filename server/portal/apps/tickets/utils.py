@@ -1,7 +1,6 @@
 from django.conf import settings
 import json
 import requests
-
 class DjangoRecaptcha:
     def get_recaptcha_verification(self,request):
         recaptcha_response = request.POST.get('recaptchaResponse')

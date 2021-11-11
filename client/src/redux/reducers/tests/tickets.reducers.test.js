@@ -53,8 +53,7 @@ describe('TicketCreateModal Reducer', () => {
   test('Ticket creation modal is opened with default parameters', () => {
     expect(
       ticketCreateModal(initialTicketCreateModalState, {
-        type: `TICKET_CREATE_SET_MODAL_OPEN`,
-        payload: {}
+        type: `TICKET_CREATE_SET_MODAL_OPEN`
       })
     ).toEqual({
       modalOpen: true,
