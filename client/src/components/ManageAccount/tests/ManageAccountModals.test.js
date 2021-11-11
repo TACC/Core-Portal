@@ -6,7 +6,7 @@ import {
   ChangePasswordModal,
   EditOptionalInformationModal,
   EditRequiredInformationModal,
-  GoogleDriveModal
+  IntegrationModal
 } from '../ManageAccountModals';
 
 const dummyState = {
@@ -381,7 +381,7 @@ describe('Edit Required Information', () => {
     });
     fireEvent.change(phoneField, {
       target: {
-        value: '1234'
+        value: '123'
       }
     });
     const clickSpy = () => jest.fn();
@@ -454,7 +454,7 @@ describe('Edit Required Information', () => {
 describe('connect google drive', () => {
   it('should render privacy policy and link', () => {
     const { getByText, getByRole } = render(
-      <GoogleDriveModal active={true} toggle={() => {}} />
+      <IntegrationModal active={true} toggle={() => {}} connect={'/accounts/applications/googledrive/initialize/'} label={'Google Drive'}/>
     );
     expect(getByText(/Google Drive Privacy Policy/)).toBeDefined();
     const expectedHref = `${window.location.href}accounts/applications/googledrive/initialize/`;
