@@ -16,7 +16,6 @@ export default function requestAccess(
     case 'REQUEST_ACCESS_STARTED':
       return {
         ...state,
-
         creating: true
       };
     case 'REQUEST_ACCESS_FAILED':
