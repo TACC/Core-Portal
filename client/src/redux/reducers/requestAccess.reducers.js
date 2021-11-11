@@ -21,7 +21,6 @@ export default function requestAccess(
     case 'REQUEST_ACCESS_FAILED':
       return {
         ...state,
-
         creating: false,
         creatingError: true,
         creatingErrorMessage: action.payload
