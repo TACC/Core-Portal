@@ -6,7 +6,6 @@ logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
 
 
-
 class IndexView(TemplateView):
     """
     Request Access view.
