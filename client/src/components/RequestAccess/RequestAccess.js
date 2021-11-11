@@ -1,19 +1,21 @@
 import React from 'react';
 import { Navbar } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import RequestAccessForm from './RequestAccessForm';
 import BrowserChecker from '../_common/BrowserChecker';
 import './RequestAccess.module.scss';
 
 function RequestAccess() {
+  const portalName = useSelector(state => state.workbench.portalName);
   return (
     <>
       <Navbar styleName="request-access-title">Request Access</Navbar>
       <div styleName="request-access-wrapper">
         <h2 styleName="request-access-h2">
-          Request Access to the 3Dem Portal Platform
+          Request Access to the {portalName} Portal Platform
         </h2>
         <h4>
-          <i>The 3Dem Portal is for authorized users only.</i>
+          <i>The {portalName} Portal is for authorized users only.</i>
         </h4>
         <p>
           Please create a TACC username and password by following the
@@ -66,7 +68,7 @@ function RequestAccess() {
         <BrowserChecker />
         <RequestAccessForm />
         <p>
-          Once you have been granted access to the 3Dem portal, you can
+          Once you have been granted access to the {portalName} portal, you can
           configure{' '}
           <b>
             <a
@@ -76,7 +78,7 @@ function RequestAccess() {
               Multifactor Authentication (MFA)
             </a>
           </b>{' '}
-          to also gain command line access to 3Dem resources
+          to also gain command line access to {portalName} resources
         </p>
         <p>
           If you require further assistance, please submit a support ticket{' '}
