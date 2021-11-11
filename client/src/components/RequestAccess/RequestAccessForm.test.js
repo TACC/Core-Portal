@@ -9,7 +9,7 @@ import '@testing-library/jest-dom/extend-expect';
 
 const mockStore = configureStore();
 
-describe('FeedbackForm', () => {
+describe('RequestAccessForm', () => {
   it('renders form', () => {
     const store = mockStore({
       requestAccess,
