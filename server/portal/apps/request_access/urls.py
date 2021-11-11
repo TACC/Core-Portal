@@ -1,7 +1,3 @@
-"""
-.. module:: portal.apps.site_search.urls
-   :synopsis: Site Search URLs
-"""
 from django.urls import path
 from portal.apps.request_access.views import IndexView
 
