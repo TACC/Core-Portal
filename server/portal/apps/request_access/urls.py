@@ -7,5 +7,5 @@ from portal.apps.request_access.views import IndexView
 
 app_name = 'request_access'
 urlpatterns = [
-    re_path('', IndexView.as_view(), name='index'),
+    path('', IndexView.as_view(), name='index'),
 ]
