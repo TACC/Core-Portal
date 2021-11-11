@@ -102,9 +102,7 @@
   }
   .link {
     color: var(--global-color-accent--normal);
-    display: inline-flex;
-    position: relative;
-    float: right;
+    text-align: right;
     &:hover {
       color: var(--global-color-accent--normal);
       text-decoration: underline;
