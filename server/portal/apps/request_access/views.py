@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class IndexView(TemplateView):
     """
-    Main workbench view.
+    Request Access view.
     """
     template_name = 'portal/apps/workbench/index.html'
 
