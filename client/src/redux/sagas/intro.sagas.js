@@ -3,7 +3,7 @@ import { fetchUtil } from 'utils/fetchUtil';
 
 export async function getIntroMessages() {
   const result = await fetchUtil({
-    url: `/api/intromessages/msg/`,
+    url: `/api/intromessages/`,
     method: 'get'
   });
   return result.response;
@@ -60,7 +60,7 @@ export function* saveIntroMessages(action) {
     });
 
     yield call(fetchUtil, {
-      url: '/api/intromessages/msg/',
+      url: '/api/intromessages/',
       method: 'PUT',
       body: JSON.stringify(introMessages)
     });

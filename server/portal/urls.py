@@ -78,6 +78,7 @@ urlpatterns = [
     # intromessages
     path('api/intromessages/', include('portal.apps.intromessages.urls', namespace='intromessages')),
 
+
     # integrations
     path('accounts/applications/googledrive/', include('portal.apps.googledrive_integration.urls', namespace='googledrive_integration')),
 
