@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import getFilePermissions from 'utils/filePermissions';
@@ -31,6 +32,12 @@ ToolbarButton.propTypes = {
 
 const DataFilesToolbar = ({ scheme, api }) => {
   const dispatch = useDispatch();
+
+  const history = useHistory();
+  const location = useLocation();
+  const reloadPage = () => {
+    history.push(location.pathname);
+  };
 
   const selectedFiles = useSelector(state =>
     state.files.selected.FilesListing.map(
@@ -155,12 +162,20 @@ const DataFilesToolbar = ({ scheme, api }) => {
     }
   };
 
-  const trash = () => {
+  const trash = useCallback(() => {
+    const filteredSelected = selectedFiles.filter(f => status[f.id] !== 'SUCCESS');
     dispatch({
+      type: 'DATA_FILES_TRASH',
+      payload: {
+        src: filteredSelected,
+        reloadCallback: reloadPage
+      }
+    });
+/*    dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
       payload: { operation: 'trash', props: { selectedFiles } }
-    });
-  };
+    });*/
+  }, [selectedFiles, reloadPage]);
 
   const permissionParams = { files: selectedFiles, scheme, api };
   const canDownload = getFilePermissions('download', permissionParams);
