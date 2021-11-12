@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -14,7 +14,23 @@ const DataFilesAddProjectModal = () => {
   const match = useRouteMatch();
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.authenticatedUser);
-  const [members, setMembers] = useState([{ user, access: 'owner' }]);
+
+  user ??
+    useEffect(() => {
+      dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
+    }, [dispatch]);
+
+  const [members, setMembers] = useState(
+    user ? [{ user, access: 'owner' }] : []
+  );
+
+  useEffect(() => {
+    setMembers([
+      ...members.filter(member => member.user.username !== user.username),
+      { user, access: 'owner' }
+    ]);
+  }, [user]);
+
   const isOpen = useSelector(state => state.files.modals.addproject);
   const isCreating = useSelector(state => {
     return (
