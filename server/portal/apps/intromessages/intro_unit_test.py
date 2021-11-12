@@ -16,7 +16,7 @@ Test get of "read" (not unread) IntroMessages for an authenticated user
 """
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get(client, authenticated_user):
-    response = client.get('/api/intromessages/msg/')
+    response = client.get('/api/intromessages/')
     assert response.status_code == 200
 
 
@@ -26,7 +26,7 @@ User should be redirected to login
 """
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_get_unauthenticated_user(client, regular_user):
-    response = client.get('/api/intromessages/msg/')
+    response = client.get('/api/intromessages/')
     assert response.status_code == 302
 
 
@@ -37,7 +37,7 @@ def test_intromessages_put(client, authenticated_user):
     body = {
             'HISTORY': {'unread': False}
     }
-    response = client.put('/api/intromessages/msg/', 
+    response = client.put('/api/intromessages/', 
                           content_type="application/json",
                           data=body)
     assert response.status_code == 200
@@ -61,7 +61,7 @@ def test_intromessages_put_unread_true(client, authenticated_user):
     body = {
             'HISTORY': {'unread': True}
     }
-    response = client.put('/api/intromessages/msg/', 
+    response = client.put('/api/intromessages/', 
                           content_type="application/json",
                           data=body)
     assert response.status_code == 200
@@ -73,7 +73,7 @@ def test_intromessages_put_unread_true(client, authenticated_user):
 """Confirm that the JSON coming back is as expected"""
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_response_data(client, authenticated_user, intromessage_mock):
-    response = client.get('/api/intromessages/msg/')
+    response = client.get('/api/intromessages/')
     data = response.json()
     assert response.status_code == 200
     assert data["response"] == [{"component": "HISTORY", "unread": False}]
