@@ -11,7 +11,6 @@ from portal.apps.tickets import rtUtil
 from portal.apps.tickets import utils
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
