@@ -283,6 +283,8 @@ describe('DataFilesTable', () => {
     fireEvent.click(getByText(/push your keys/));
     await waitFor(() => {
       expect(storeWithError.getActions()).toEqual([{
+        type: 'GET_SYSTEM_MONITOR'
+      },{
         type: 'SYSTEMS_TOGGLE_MODAL',
         payload: {
           operation: 'pushKeys',

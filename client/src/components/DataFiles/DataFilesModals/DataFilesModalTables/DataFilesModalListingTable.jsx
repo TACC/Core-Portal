@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { parse } from 'query-string';
 
 import { Icon } from '_common';
-import { findSystemDisplayName } from 'utils/systems';
+import { findSystemOrProjectDisplayName } from 'utils/systems';
 
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
@@ -158,6 +158,7 @@ const DataFilesModalListingTable = ({
   const error = useSelector(state => state.files.error.modal);
   const params = useSelector(state => state.files.params.modal, shallowEqual);
   const systemList = useSelector(state => state.systems.storage.configuration);
+  const projectsList = useSelector(state => state.projects.listing.projects);
   const isNotRoot = params.path.length > 0;
 
   const alteredData = useMemo(() => {
@@ -172,7 +173,13 @@ const DataFilesModalListingTable = ({
       const currentFolderEntry = {
         name: isNotRoot
           ? getCurrentDirectory(params.path)
-          : findSystemDisplayName(systemList, params.system, !isNotRoot),
+          : findSystemOrProjectDisplayName(
+              params.scheme,
+              systemList,
+              projectsList,
+              params.system,
+              !isNotRoot
+            ),
         format: 'folder',
         system: params.system,
         path: params.path,
