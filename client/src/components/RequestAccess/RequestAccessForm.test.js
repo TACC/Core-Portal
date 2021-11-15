@@ -24,7 +24,7 @@ describe('RequestAccessForm', () => {
     const store = mockStore({
       requestAccess: {
         ...requestAccess,
-        creating: true
+        loading: true
       },
       workbench
     });
