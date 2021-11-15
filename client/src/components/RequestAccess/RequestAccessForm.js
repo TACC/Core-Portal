@@ -21,15 +21,9 @@ const defaultValues = {
 const RequestAccessForm = () => {
   const dispatch = useDispatch();
   const portalName = useSelector(state => state.workbench.portalName);
-  const creating = useSelector(state => state.requestAccess.creating);
-  const creatingError = useSelector(state => state.requestAccess.creatingError);
-  const creatingSuccess = useSelector(
-    state => state.requestAccess.creatingSuccess
-  );
+  const loading = useSelector(state => state.requestAccess.loading);
   const ticketId = useSelector(state => state.requestAccess.createdTicketId);
-  const creatingErrorMessage = useSelector(
-    state => state.requestAccess.creatingErrorMessage
-  );
+  const error = useSelector(state => state.requestAccess.error);
 
   return (
     <Formik
@@ -76,26 +70,22 @@ const RequestAccessForm = () => {
               />
             </FormGroup>
             <div styleName="request-access-button-row">
-              {creatingSuccess && (
+              {ticketId && (
                 <Alert color="success" className="ticket-creation-info-alert">
                   Ticket (#{ticketId}) was created. Support staff will contact
                   you via email regarding your Access Request.
                 </Alert>
               )}
-              {submitCount > 0 && creatingError && (
-                <Alert color="warning">
-                  Error requesting access: {creatingErrorMessage}
-                </Alert>
+              {submitCount > 0 && error && (
+                <Alert color="warning">Error requesting access: {error}</Alert>
               )}
               <Button
                 type="submit"
                 color="primary"
                 styleName="button-primary"
-                disabled={
-                  !isValid || isSubmitting || creating || creatingSuccess
-                }
+                disabled={!isValid || isSubmitting || loading || ticketId}
               >
-                {creating && (
+                {loading && (
                   <Spinner
                     size="sm"
                     color="white"

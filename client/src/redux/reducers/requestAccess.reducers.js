@@ -14,21 +14,18 @@ export default function requestAccess(
     case 'REQUEST_ACCESS_STARTED':
       return {
         ...state,
-        creating: true
+        loading: true
       };
     case 'REQUEST_ACCESS_FAILED':
       return {
         ...state,
-        creating: false,
-        creatingError: true,
-        creatingErrorMessage: action.payload
+        loading: false,
+        error: action.payload
       };
     case 'REQUEST_ACCESS_SUCCESS':
       return {
         ...state,
-
-        creating: false,
-        creatingSuccess: true,
+        loading: false,
         createdTicketId: action.payload
       };
     default:
