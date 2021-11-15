@@ -14,12 +14,6 @@ const DataFilesAddProjectModal = () => {
   const match = useRouteMatch();
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.authenticatedUser);
-
-  user ??
-    useEffect(() => {
-      dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
-    }, [dispatch]);
-
   const [members, setMembers] = useState(
     user ? [{ user, access: 'owner' }] : []
   );
