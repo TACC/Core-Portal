@@ -191,6 +191,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const canExtract = getFilePermissions('extract', permissionParams);
   const canMakePublic =
     showMakePublic && getFilePermissions('public', permissionParams);
+
+  const inTrash = useSelector(state => 
+    state.files.params.FilesListing.path.startsWith('.Trash'));
   return (
     <>
       <div id="data-files-toolbar-button-row">
@@ -258,7 +261,10 @@ const DataFilesToolbar = ({ scheme, api }) => {
         )}
         {showTrash && (
           <ToolbarButton
-            text="Trash"
+            text= { 
+              !inTrash ? 
+              "Trash" : "Empty"
+            }
             iconName="trash"
             onClick={trash}
             disabled={!canTrash}
