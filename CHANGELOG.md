@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.0] - 2021-09-30: CMS Login; UTRC Conversion; Styling Fixes
+
+### Changed
+
+- FP-181 Download Attachments in Ticket history (#517)
+- FP-1251: Shorten "Principal Investigator" to "PI" in Allocations view (#519)
+- FP-1258: Enable html and large file previews (#521)
+- FP-1130: Remove unused systemPrefix workbench settings (#512)
+- FP-1212: Use Download Modal for Multiple Files (#515)
+- FP-1236: Support multiple RT service accounts (#523)
+- FP-822: Batch notifications after move/copy/upload (#504)
+- FP-1248: Replace underscores in usernames when cloning/retrieving cloned exec system (#525)
+- FP-1308: Update README for server testing (#532)
+- FP-1307: Update ticket attachment design (#542)
+- FP-1079: Catch when a system is down for maintenance and alert user (#526)
+- FP-1264: Added hover effect to Data Files (#536)
+- FP-1166: Handle users who have no allocations (#537)
+- BM-21: Add project request queue setting (#539)
+- FP-180: List file names of attachments in Ticket history (#509)
+- FP-757: Close modals after success (#511)
+- FP-1197: Add unit test for DataFilesTable (#524)
+- FP-1155: Apply search filters on backend  using Elasticsearch (#516)
+
+### Fixed
+
+- FP-1003: Update Shared Workspace breadcrumb on title change (#505)
+- FP-1109: Update Job Status on View Detail and Job Listing (#507)
+- FP-1051: Applications: Better downtime message (#501)
+- FP-1242: Clarify text when copying between different systems. (#518)
+- Hotfix: Fix community data filters and remove 'Back to All Files' in site search (#528)
+- FP-1100: system creation failures (#513)
+- FP-822: hotfix: display slash instead of empty path (#529)
+- FP-1327: Fix onboarding link (#541)
+- FP-1292: File listing error handling when network connection failure. (#540)
+- Fix indexer exception when no project system to skip (#534)
+- FP-1211: Manage Account Section Errors Act like Giant Panels (#543)
+- FP-1295: Handle create workspace user error. (#544)
+- Fix listing path for shared workspaces in data files modal listings. (#535)
+- FP-1002: Manage Account input field Phone validation should match source validation (#533)
+
 ## [2.10.0] - 2021-09-30: CMS Login; UTRC Conversion; Styling Fixes
 
 ### Added
@@ -495,7 +535,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-02-28
 v1.0.0 Production release as of Feb 28, 2020.
 
-[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.10.0...HEAD
+[unreleased]: https://github.com/TACC/Core-Portal/compare/v2.11.0...HEAD
+[2.11.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.11.0
 [2.10.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.10.0
 [2.9.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.9.0
 [2.8.0]: https://github.com/TACC/Core-Portal/releases/tag/v2.8.0
