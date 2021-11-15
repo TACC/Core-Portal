@@ -1,9 +1,7 @@
 export const initialRequestAccessState = {
-  creating: false,
-  creatingError: false,
-  creatingErrorMessage: '',
-  creatingSuccess: false,
-  createdTicketId: null
+  loading: false,
+  error: null,
+  ticketId: null
 };
 
 export default function requestAccess(
