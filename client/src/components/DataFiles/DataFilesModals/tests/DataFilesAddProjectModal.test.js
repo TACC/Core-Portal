@@ -99,4 +99,25 @@ describe("DataFilesAddProjectModal", () => {
 
     await waitForElement(() => getAllByText(/Title must be at most 150 characters/));
   });
+
+  it("dispatches fetch authenticated user when authenticated user is null", () => {
+    const store = mockStore({
+      ...initialMockState,
+      authenticatedUser: {
+        user: null
+      }
+    });
+    const history = createMemoryHistory();
+    history.push('/workbench/data/tapis/private/test.system/');
+    const { getAllByText, getByRole } = renderComponent(
+      <DataFilesAddProjectModal />,
+      store,
+      history
+    )
+
+    expect(store.getActions()).toEqual([
+      {type: 'FETCH_AUTHENTICATED_USER'}
+    ]);
+  });
+
 });
