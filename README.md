@@ -194,7 +194,6 @@ Server-side Python code is linted via Flake8, and is also enforced on commits to
 To do so, run the following in the `core_portal_django` container:
 
 ```
-This requires you to run on the Core Portal container:
 git diff -U0 main | flake8 --diff
 ```
 
