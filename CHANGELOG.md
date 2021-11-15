@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.11.0] - 2021-09-30: CMS Login; UTRC Conversion; Styling Fixes
+## [2.11.0] - 2021-11-15: Bugfixes; UI Improvements
 
 ### Changed
 
