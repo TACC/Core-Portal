@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useCallback } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,7 +24,9 @@ import {
   FormField,
   FileInputDropZoneFormField,
   LoadingSpinner,
-  Message
+  Message,
+  InfiniteScrollTable,
+  Icon
 } from '_common';
 import { Formik, Form } from 'formik';
 import * as ROUTES from '../../constants/routes';
@@ -34,22 +36,57 @@ const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
 const Attachments = ({ attachments, ticketId }) => {
+  const infiniteScrollCallback = useCallback(() => {});
+  const noDataText = 'No attachments to display.';
+  const json = attachments.map(function attachmentAcessor(x) {
+    return {
+      attachment_id: x[0],
+      attachment_name: x[1]
+    };
+  });
+
+  const columns = [
+    {
+      Header: 'Attached Files',
+      accessor: 'attachment_name',
+      className: 'attachment-title',
+      Cell: el => (
+        <span
+          title={el.value}
+          id={`attachment${el.row.index}`}
+          className="attachment__name"
+        >
+          {el.value}
+        </span>
+      )
+    },
+    {
+      Header: '',
+      className: 'link',
+      accessor: 'attachment_id',
+      Cell: el => (
+        <a
+          href={`/api/tickets/${ticketId}/attachment/${el.value}`}
+          className="link"
+          target="_blank"
+          rel="noreferrer noopener"
+          key={el.value}
+        >
+          Download
+        </a>
+      )
+    }
+  ];
   return (
     <div>
-      Attachments:
-      <ul>
-        {attachments.map(attachmentName => (
-          <a
-            href={`/api/tickets/${ticketId}/attachment/${attachmentName[0]}`}
-            className="link"
-            target="_blank"
-            rel="noreferrer noopener"
-            key={attachmentName[0]}
-          >
-            <li> {attachmentName[1]} </li>
-          </a>
-        ))}
-      </ul>
+      <InfiniteScrollTable
+        tableColumns={columns}
+        className="attachment-table"
+        accessor="attachment"
+        tableData={json}
+        onInfiniteScroll={infiniteScrollCallback}
+        noDataText={noDataText}
+      />
     </div>
   );
 };
@@ -196,6 +233,12 @@ const TicketHistoryCard = ({
             <span className={ticketHeaderClassName}>
               {creator} | {`${formatDateTime(created)}`}
             </span>
+            {!!attachmentTitles.length && (
+              <span>
+                {' '}
+                <Icon name="link" />{' '}
+              </span>
+            )}
           </strong>{' '}
           {isOpen ? '' : content}
         </span>
