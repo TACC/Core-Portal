@@ -1,5 +1,7 @@
 from django.conf import settings
 import requests
+
+
 def get_recaptcha_verification(request):
     recaptcha_response = request.POST.get('recaptchaResponse')
     secret_key = getattr(settings, 'RECAPTCHA_SECRET_KEY')

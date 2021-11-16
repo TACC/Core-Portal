@@ -70,25 +70,26 @@ class TicketsView(BaseApiView):
             metadata += "user_last_name:\n{}\n\n".format(data.get('last_name'))
 
         problem_description += "\n\n" + metadata
-        
+
         if not request.user.is_authenticated:
             recap_result = utils.get_recaptcha_verification(request)
-            if recap_result.get('success',False):
+            if recap_result.get('success', False):
                 ticket_id = rt.create_ticket(subject=subject,
-                                         problem_description=problem_description,
-                                         requestor=email,
-                                         cc=cc,
-                                         attachments=attachments)
+                                             problem_description=problem_description,
+                                             requestor=email,
+                                             cc=cc,
+                                             attachments=attachments)
                 return JsonResponse({'ticket_id': ticket_id})
             else:
                 raise ApiException('Invalid reCAPTCHA. Please try again.')
 
         ticket_id = rt.create_ticket(subject=subject,
-                                    problem_description=problem_description,
-                                    requestor=email,
-                                    cc=cc,
-                                    attachments=attachments)
+                                     problem_description=problem_description,
+                                     requestor=email,
+                                     cc=cc,
+                                     attachments=attachments)
         return JsonResponse({'ticket_id': ticket_id})
+
 
 def has_access_to_ticket(function):
     @wraps(function)
