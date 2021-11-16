@@ -9,6 +9,7 @@ from django.http.response import HttpResponse
 from django.utils.decorators import method_decorator
 from django.core.exceptions import PermissionDenied
 from portal.apps.tickets import rtUtil
+from portal.apps.tickets import utils
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 
@@ -41,43 +42,7 @@ class TicketsView(BaseApiView):
         """Post a new ticket
 
         """
-        rt = rtUtil.DjangoRt()
-
-        data = request.POST.copy()
-        email = request.user.email if request.user.is_authenticated else data.get('email')
-        subject = data.get('subject')
-        problem_description = data.get('problem_description')
-        cc = data.get('cc', '')
-
-        attachments = [(f.name, ContentFile(f.read()), f.content_type) for f in request.FILES.getlist('attachments')]
-
-        if subject is None or email is None or problem_description is None:
-            return HttpResponseBadRequest()
-
-        metadata = "{}\n\n".format(METADATA_HEADER)
-        metadata += "Client info:\n{}\n\n".format(request.GET.get('info', "None"))
-
-        for meta in ['HTTP_REFERER', 'HTTP_USER_AGENT', 'SERVER_NAME']:
-            metadata += "{}:\n{}\n\n".format(meta, request.META.get(meta, "None"))
-
-        if request.user.is_authenticated:
-            metadata += "authenticated_user:\n{}\n\n".format(request.user.username)
-            metadata += "authenticated_user_email:\n{}\n\n".format(request.user.email)
-            metadata += "authenticated_user_first_name:\n{}\n\n".format(request.user.first_name)
-            metadata += "authenticated_user_last_name:\n{}\n\n".format(request.user.last_name)
-        else:
-            metadata += "user_first_name:\n{}\n\n".format(data.get('first_name'))
-            metadata += "user_last_name:\n{}\n\n".format(data.get('last_name'))
-
-        problem_description += "\n\n" + metadata
-
-        ticket_id = rt.create_ticket(subject=subject,
-                                     problem_description=problem_description,
-                                     requestor=email,
-                                     cc=cc,
-                                     attachments=attachments)
-
-        return JsonResponse({'ticket_id': ticket_id})
+        return utils.create_ticket(request, METADATA_HEADER)
 
 
 def has_access_to_ticket(function):
