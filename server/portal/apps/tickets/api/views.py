@@ -88,7 +88,6 @@ class TicketsView(BaseApiView):
                                      requestor=email,
                                      cc=cc,
                                      attachments=attachments)
-                                     
         return JsonResponse({'ticket_id': ticket_id})
 
 
