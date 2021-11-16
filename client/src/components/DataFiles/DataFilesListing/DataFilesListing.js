@@ -117,7 +117,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       },
       {
         id: 'icon',
-        accessor: 'format',
+        accessor: row => [row.format,row.path],
         width: 0.05,
         minWidth: 20,
         maxWidth: 25,
