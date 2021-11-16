@@ -45,6 +45,11 @@
   margin-bottom: 0; /* overwrite Bootstrap's `_code.scss` */
 }
 
+.submit-button {
+    composes: c-button--primary from '../../../styles/components/c-button.css';
+    margin: auto;
+}
+
 .left-panel {
   border-right: var(--border);
   min-width: 200px;
