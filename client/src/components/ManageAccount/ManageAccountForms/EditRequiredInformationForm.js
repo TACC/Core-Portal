@@ -90,9 +90,10 @@ export default function() {
     email: str()
       .required('Please enter your email address')
       .email('Please enter a valid email address'),
+    /* eslint-disable no-useless-escape */
     phone: str()
       .matches(
-        /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
+        /^[+]?(1\-|1\s|1|\d{3}\-|\d{3}\s|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/g,
         'Phone number is not valid'
       )
       .required('Please enter your phone number'),

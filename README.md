@@ -191,17 +191,15 @@ You may auto-fix your linting errors to conform with configured standards, for s
 - `npm run lint:css -- --fix`
 
 Server-side Python code is linted via Flake8, and is also enforced on commits to the repo. To see server side linting errors, run `git diff -U0 main | flake8 --diff` from the command line.
-This requires that you have a local python virtual environemnt setup with this project's dependencies installed:
+To do so, run the following in the `core_portal_django` container:
 
 ```
-python3 -m venv <path_to_local_venv_dir>
-. <path_to_local_venv_dir>/bin/activate
-pip install -r server/requirements.txt
+git diff -U0 main | flake8 --diff
 ```
 
 ### Testing
 
-Server-side python testing is run through pytest. Run `pytest -ra` from the `server` folder to run backend tests and display a report at the bottom of the output.
+Server-side python testing is run through pytest. Start docker container first by `docker exec -it core_portal_django bash`, Then run `pytest -ra` from the `server` folder to run backend tests and display a report at the bottom of the output.
 
 Client-side javascript testing is run through Jest. Run `npm run test`* from the `client` folder to ensure tests are running correctly.
 
