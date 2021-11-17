@@ -1,5 +1,6 @@
 from portal.apps.tickets import rtUtil
 from django.http import JsonResponse, HttpResponseBadRequest
+from django.core.files.base import ContentFile
 
 def create_ticket(request, METADATA_HEADER, **kargs):
     rt = rtUtil.DjangoRt()
