@@ -197,7 +197,8 @@ export function* fetchFiles(action) {
       type: 'FETCH_FILES_ERROR',
       payload: {
         section: action.payload.section,
-        code: e.status.toString()
+        // When there isn't a status due to network connection error return 503.
+        code: e.status ? e.status.toString() : '503'
       }
     });
     // If listing returns 502, body should contain a system def for key pushing.
@@ -371,22 +372,24 @@ export function* moveFiles(action) {
   const moveCalls = action.payload.src.map(file => {
     return call(moveFile, file, dest, file.id);
   });
-
   const { result } = yield race({
     result: all(moveCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
-
-  if (!result.includes('ERR'))
+  if (!result.includes('ERR')) {
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'move', props: {} }
+    });
     yield put({
       type: 'ADD_TOAST',
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } moved to ${truncateMiddle(action.payload.dest.name, 20)}`
+        } moved to ${truncateMiddle(action.payload.dest.path, 20) || '/'}`
       }
     });
-
+  }
   yield call(action.payload.reloadCallback);
 }
 
@@ -487,15 +490,20 @@ export function* copyFiles(action) {
     result: all(copyCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
-  if (!result.includes('ERR'))
+  if (!result.includes('ERR')) {
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'copy', props: {} }
+    });
     yield put({
       type: 'ADD_TOAST',
       payload: {
         message: `${
           result.length > 1 ? `${result.length} files` : 'File'
-        } copied to ${truncateMiddle(action.payload.dest.name, 20)}`
+        } copied to ${truncateMiddle(action.payload.dest.name, 20) || '/'}`
       }
     });
+  }
   yield call(action.payload.reloadCallback);
 }
 
@@ -547,8 +555,8 @@ export function* uploadFiles(action) {
       type: 'ADD_TOAST',
       payload: {
         message: `${
-          result.length > 0 ? `${result.length} files` : 'File'
-        } uploaded to ${truncateMiddle(action.payload.path, 20)}`
+          result.length > 1 ? `${result.length} files` : 'File'
+        } uploaded to ${truncateMiddle(action.payload.path, 20) || '/'}`
       }
     });
 
@@ -797,10 +805,24 @@ export function* trashFiles(action) {
   const trashCalls = action.payload.src.map(file => {
     return call(trashFile, file.system, file.path, file.id);
   });
-  yield race({
+  const { result } = yield race({
     result: all(trashCalls),
     cancel: take('DATA_FILES_MODAL_CLOSE')
   });
+  if (!result.includes('ERR')) {
+    yield put({
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'trash', props: {} }
+    });
+    yield put({
+      type: 'ADD_TOAST',
+      payload: {
+        message: `${
+          result.length > 1 ? `${result.length} files` : 'File'
+        } moved to trash`
+      }
+    });
+  }
   yield call(action.payload.reloadCallback);
 }
 
@@ -821,7 +843,9 @@ export function* trashFile(system, path, id) {
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
       payload: { status: 'ERROR', key: id, operation: 'trash' }
     });
+    return 'ERR';
   }
+  return 'SUCCESS';
 }
 
 export const getLatestApp = async name => {
@@ -908,6 +932,10 @@ export function* extractFiles(action) {
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'extract' }
       });
+      yield put({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'extract', props: {} }
+      });
     } else {
       throw new Error('Unable to extract files');
     }
@@ -993,6 +1021,10 @@ export function* compressFiles(action) {
       yield put({
         type: 'DATA_FILES_SET_OPERATION_STATUS',
         payload: { status: 'SUCCESS', operation: 'compress' }
+      });
+      yield put({
+        type: 'DATA_FILES_TOGGLE_MODAL',
+        payload: { operation: 'compress', props: {} }
       });
     } else {
       throw new Error('Unable to compress files');
