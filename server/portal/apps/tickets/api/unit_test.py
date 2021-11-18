@@ -20,10 +20,14 @@ def mock_unauthenticated_test(mocker):
     mock_unauthenticated_test.get_recaptcha_verification.return_value =  {'success': True}
     yield mock_unauthenticated_test
 
-@pytest.fixture
-def mock_utils_test(mocker,mock_unauthenticated_test):
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+def mock_utils_test(mocker,mock_unauthenticated_test,client):
     mocker.patch('portal.apps.tickets.api.views.utils.get_recaptcha_verification', return_value=mock_unauthenticated_test)
-    yield mock_unauthenticated_test
+    response = client.get('/api/tickets/')
+    assert response.status_code == 200
+    _, kwargs = mock_unauthenticated_test.get_recaptcha_verification.call_args
+    assert kwargs['success'] == True
+   
 
 @pytest.fixture
 def mock_rt(mocker, rt_tickets, rt_ticket_history):
