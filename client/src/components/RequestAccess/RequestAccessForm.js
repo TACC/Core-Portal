@@ -63,11 +63,15 @@ const RequestAccessForm = () => {
               />
               <FormField
                 name="problem_description"
-                label="Briefly describe your request including project and program name, PI name, institution/company, and your role"
+                label="Description of Work"
                 type="textarea"
                 required
                 styleName="request-access-text-area"
               />
+              <small styleName="help">
+                Briefly describe your request including project and program
+                name, PI name, institution/company, and your role.
+              </small>
             </FormGroup>
             <div styleName="request-access-button-row">
               {ticketId && (

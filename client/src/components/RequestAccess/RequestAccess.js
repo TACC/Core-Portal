@@ -21,7 +21,7 @@ function RequestAccess() {
           Please create a TACC username and password by following the
           instructions below:
         </p>
-        <ul>
+        <ol>
           <li>
             Visit{' '}
             <a
@@ -58,7 +58,7 @@ function RequestAccess() {
             </a>{' '}
             at least once.
           </li>
-        </ul>
+        </ol>
         <p>
           <i>
             Once you have created your <b>TACC Username and Password</b> you may
