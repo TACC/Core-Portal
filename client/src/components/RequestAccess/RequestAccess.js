@@ -65,8 +65,6 @@ function RequestAccess() {
             fill in the access request form below.
           </i>
         </p>
-        <BrowserChecker />
-        <RequestAccessForm />
         <p>
           Once you have been granted access to the {portalName} portal, you can
           configure{' '}
@@ -87,6 +85,8 @@ function RequestAccess() {
           </a>
           .
         </p>
+        <BrowserChecker />
+        <RequestAccessForm />
       </div>
     </>
   );
