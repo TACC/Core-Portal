@@ -15,6 +15,7 @@ const DataFilesSystemSelector = ({
 }) => {
   const dispatch = useDispatch();
   const systemList = useSelector(state => state.systems.storage.configuration);
+  const modalProps = useSelector(state => state.files.modalProps[operation]);
   const findSystem = id => systemList.find(system => system.system === id);
   const [selectedSystem, setSelectedSystem] = useState(systemId);
 
@@ -26,7 +27,7 @@ const DataFilesSystemSelector = ({
           type: 'DATA_FILES_SET_MODAL_PROPS',
           payload: {
             operation,
-            props: { showProjects: true }
+            props: { ...modalProps, showProjects: true }
           }
         });
         return;
@@ -45,7 +46,7 @@ const DataFilesSystemSelector = ({
         type: 'DATA_FILES_SET_MODAL_PROPS',
         payload: {
           operation,
-          props: { showProjects: false }
+          props: { ...modalProps, showProjects: false }
         }
       });
     },
