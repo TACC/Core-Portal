@@ -17,11 +17,15 @@
   text-align: right;
 }
 
-.button-primary {
-  margin-left: auto;
-  background-color: #7754e8 !important;
+.button {
   border-radius: 0;
+  margin-left: auto;
+}
+
+.button-primary {
+  background-color: #7754e8 !important;
   color: white;
+  border-radius: 0;
   border: none;
   font-size: 0.75rem;
 }

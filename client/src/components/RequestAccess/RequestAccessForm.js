@@ -83,6 +83,9 @@ const RequestAccessForm = () => {
               {submitCount > 0 && error && (
                 <Alert color="warning">Error requesting access: {error}</Alert>
               )}
+              <Button color="link" styleName="button" href="/tickets/new/">
+                Get Help
+              </Button>
               <Button
                 type="submit"
                 color="primary"

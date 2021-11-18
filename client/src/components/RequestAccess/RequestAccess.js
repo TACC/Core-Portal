@@ -60,14 +60,11 @@ function RequestAccess() {
           </li>
         </ol>
         <p>
-          <i>
-            Once you have created your <b>TACC Username and Password</b> you may
-            fill in the access request form below.
-          </i>
+          Once you have created your <b>TACC Username and Password</b> you may
+          fill in the access request form below.
         </p>
         <p>
-          Once you have been granted access to the {portalName} portal, you can
-          configure{' '}
+          After accessing the {portalName} portal, configure{' '}
           <b>
             <a
               styleName="request-access-link"
@@ -76,14 +73,7 @@ function RequestAccess() {
               Multifactor Authentication (MFA)
             </a>
           </b>{' '}
-          to also gain command line access to {portalName} resources
-        </p>
-        <p>
-          If you require further assistance, please submit a support ticket{' '}
-          <a styleName="request-access-link" href="/tickets/new/">
-            here
-          </a>
-          .
+          to use the command line.
         </p>
         <BrowserChecker />
         <RequestAccessForm />
