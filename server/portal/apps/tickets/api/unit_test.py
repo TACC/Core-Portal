@@ -14,6 +14,10 @@ def rt_tickets(scope="module"):
 def rt_ticket_history(scope="module"):
     yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/rt/ticket_history.json')))
 
+def mock_authenticated_test(mocker):
+    mock_authenticated_test = mocker.MagicMock()
+    mock_authenticated_test.get_recaptcha_verification.return_value =  {'success': True}
+    yield mock_authenticated_test
 
 @pytest.fixture
 def mock_rt(mocker, rt_tickets, rt_ticket_history):
