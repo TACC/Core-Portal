@@ -1,8 +1,4 @@
-from django.http import JsonResponse
-from portal.apps.intromessages.views import IntroMessagesView
-import json
 import pytest
-
 from portal.apps.intromessages.models import IntroMessages
 
 
