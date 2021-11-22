@@ -1,0 +1,28 @@
+.container {
+  /* FAQ: Needed because there are no cascading TACC button styles for `.btn`, yet:
+          - `.workbench-content .btn` (not defined in `Workbench.scss`, pending global test)
+          - `.btn` (available in `btn.css`, cannot be imported in `Workbench.scss`)
+  */
+  composes: btn from '../../../styles/components/bootstrap.button.css';
+
+  /* Align elements horizontally and vertically */
+  display: flex;
+  align-items: center; /* NOTE: `self-end` looks better in FF, but no change in other browsers */
+  justify-content: center;
+
+  font-weight: 700;
+
+  & + & {
+    margin-left: 7px; /* 7px (6px design * 1.2 design-to-app ratio) */
+  }
+}
+.icon {
+  margin-right: 12px; 
+
+  /* FAQ: The icons for the Data Files action buttons are smaller than others */
+  /* TODO: Ask design if this is intentional… */
+  // font-size: 1.05rem; /* 16.8px (14px design * 1.2 design-to-app ratio) */ /* 12px (10px design * 1.2 design-to-app ratio) */
+}
+.text {
+  /* … */
+}
