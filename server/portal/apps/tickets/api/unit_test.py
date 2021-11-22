@@ -15,20 +15,15 @@ def rt_ticket_history(scope="module"):
     yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/rt/ticket_history.json')))
 
 @pytest.fixture
-def mock_unauthenticated_test(mocker):
-    mock_unauthenticated_test = mocker.MagicMock()
-    mock_unauthenticated_test.get_recaptcha_verification.return_value =  {'success': True}
-    yield mock_unauthenticated_test
-
-@pytest.fixture
-def mock_utils_test(mocker,mock_unauthenticated_test,client):
-    mocker.patch('portal.apps.tickets.api.views.utils.get_recaptcha_verification', return_value=mock_unauthenticated_test)
-    yield mock_unauthenticated_test
+def mock_get_recaptcha_test(mocker):
+    mock_get_recaptcha_test = mocker.MagicMock()
+    mocker.patch('portal.apps.tickets.api.views.utils.get_recaptcha_verification', return_value={'success': True})
+    mock_get_recaptcha_test.get_recaptcha_verification.return_value =  {'success': True}
+    yield mock_get_recaptcha_test
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_utils(client,mock_unauthenticated_test):
-    
-    kwargs = mock_unauthenticated_test.get_recaptcha_verification.call_args
+def test_utils(client,mock_get_recaptcha_test):
+    kwargs = mock_get_recaptcha_test.get_recaptcha_verification.call_args
     assert kwargs['success'] == True
    
 
