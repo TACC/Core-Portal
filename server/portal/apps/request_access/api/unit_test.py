@@ -13,12 +13,6 @@ def mock_rtutil(mocker, mock_rt):
 
 
 @pytest.fixture
-def mock_rtutil_no_access(mocker, mock_rt):
-    mock_rt.hasAccess.return_value = False
-    mocker.patch('portal.apps.request_access.api.views.rtUtil.DjangoRt', return_value=mock_rt)
-    yield mock_rt
-
-@pytest.fixture
 def mock_rt(mocker):
     mock_rt = mocker.MagicMock()
     mock_rt.create_ticket.return_value = 1
