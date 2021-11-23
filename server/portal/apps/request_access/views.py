@@ -1,9 +1,6 @@
 import logging
 from django.views.generic.base import TemplateView
 from django.shortcuts import redirect
-# pylint: disable=invalid-name
-logger = logging.getLogger(__name__)
-# pylint: enable=invalid-name
 
 
 class IndexView(TemplateView):
