@@ -1,5 +1,8 @@
+from requests.api import request
 import pytest
 from django.http import HttpResponse
+from django.http import HttpRequest
+from portal.apps.tickets.utils import get_recaptcha_verification
 
 
 @pytest.fixture(autouse=True)
@@ -33,3 +36,11 @@ def test_ticket_create_authenticated_setup_incomplete(client, regular_user):
     client.force_login(regular_user)
     response = client.get('/tickets/new/')
     assert response.status_code == 200
+
+def test_get_recaptcha_verification(mocker):
+    mocker_rec=mocker.MagicMock()
+    recaptchaSuccess =  {'success': True, 'challenge_ts': '2021-11-18T15:22:03Z', 'hostname': 'cep.dev'}
+    mocker_rec.patch('https://www.google.com/recaptcha/api/siteverify', return_value=recaptchaSuccess)
+    request =  HttpRequest.POST = {'recaptchaResponse': 'wefeefw'}
+    result = get_recaptcha_verification(request)
+    assert result == recaptchaSuccess
