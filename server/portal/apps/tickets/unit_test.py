@@ -39,8 +39,10 @@ def test_ticket_create_authenticated_setup_incomplete(client, regular_user):
 
 def test_get_recaptcha_verification(mocker):
     mocker_rec=mocker.MagicMock()
-    recaptchaSuccess =  {'success': True, 'challenge_ts': '2021-11-18T15:22:03Z', 'hostname': 'cep.dev'}
+    recaptchaSuccess =  {'success': True, 'challenge_ts': '2021-11-23T17:58:27Z', 'hostname': 'testkey.google.com'}
     mocker_rec.patch('https://www.google.com/recaptcha/api/siteverify', return_value=recaptchaSuccess)
-    request =  HttpRequest.POST = {'recaptchaResponse': 'wefeefw'}
+    request = HttpRequest()
+    request.method = 'POST'
+    request.POST['recaptchaResponse'] = 'string'
     result = get_recaptcha_verification(request)
-    assert result == recaptchaSuccess
+    assert result['success'] == recaptchaSuccess['success']
