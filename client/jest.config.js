@@ -70,7 +70,8 @@ module.exports = {
   moduleNameMapper: {
     '.*\\.(css|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
     '^_common(.*)$': '<rootDir>/src/components/_common$1',
-    '^utils(.*)$': '<rootDir>/src/utils$1'
+    '^utils(.*)$': '<rootDir>/src/utils$1',
+    '^hooks(.*)$': '<rootDir>/src/hooks$1'
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader

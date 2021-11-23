@@ -4,8 +4,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Button } from 'reactstrap';
 import queryString from 'query-string';
 import { Icon, DropdownSelector } from '_common';
-import { findSystemDisplayName } from 'utils/systems';
-import { useSelector } from 'react-redux';
+import { useSystemDisplayName } from 'hooks/datafiles';
 import './DataFilesSearchbar.module.scss';
 
 const fileTypes = [
@@ -33,7 +32,6 @@ const DataFilesSearchbar = ({
   siteSearch,
   disabled
 }) => {
-  const systemList = useSelector(state => state.systems.storage.configuration);
   const urlQueryParam = queryString.parse(window.location.search).query_string;
   const [query, setQuery] = useState(urlQueryParam);
   const history = useHistory();
@@ -42,13 +40,15 @@ const DataFilesSearchbar = ({
     location.search
   );
 
+  const displayName = useSystemDisplayName({ system, scheme });
+
   let sectionName;
   if (siteSearch) {
     sectionName = 'Site';
   } else if (scheme === 'projects') {
     sectionName = 'Workspace';
   } else {
-    sectionName = findSystemDisplayName(systemList, system);
+    sectionName = displayName;
   }
 
   const applyFilter = newFilter => {

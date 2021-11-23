@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
-
+import { useSelectedFiles, useFileListing, useModal } from 'hooks/datafiles';
+import { useTrash } from 'hooks/datafiles/mutations';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
 
@@ -14,54 +14,32 @@ const DataFilesTrashModal = React.memo(() => {
     history.push(location.pathname);
   };
 
-  const dispatch = useDispatch();
-  const params = useSelector(
-    state => state.files.params.FilesListing,
-    shallowEqual
-  );
+  const { trash, status, setStatus } = useTrash();
 
-  const isOpen = useSelector(state => state.files.modals.trash);
-  const selectedFiles = useSelector(
-    state =>
-      state.files.selected.FilesListing.map(i => ({
-        ...state.files.listing.FilesListing[i],
-        id: uuidv4()
-      })),
-    () => true
-  );
+  const dispatch = useDispatch();
+  const { params } = useFileListing('FilesListing');
+
+  const { getStatus: isOpen, toggle: toggleModal } = useModal();
+  const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
-  const status = useSelector(state => state.files.operationStatus.trash);
   const [disabled, setDisabled] = useState(false);
-  const toggle = () =>
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'trash', props: {} }
-    });
+  const toggle = () => toggleModal({ operation: 'trash', props: {} });
 
   const onClosed = () => {
     setDisabled(false);
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'trash', status: {} }
-    });
+    setStatus({});
   };
 
   const trashCallback = useCallback(() => {
     setDisabled(true);
     const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
-    dispatch({
-      type: 'DATA_FILES_TRASH',
-      payload: {
-        src: filteredSelected,
-        reloadCallback: reloadPage
-      }
-    });
+    trash({selection: filteredSelected, callback: reloadPage})
   }, [selected, reloadPage]);
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={isOpen('trash')}
       onClosed={onClosed}
       toggle={toggle}
       size="lg"

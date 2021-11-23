@@ -5,22 +5,20 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
+import { useModal, useFileListing } from 'hooks/datafiles';
+import { useRename } from 'hooks/datafiles/mutations';
 
 const DataFilesRenameModal = () => {
-  const isOpen = useSelector(state => state.files.modals.rename);
+  const { getStatus, getProps, toggle: toggleModal } = useModal();
+  const isOpen = getStatus('rename');
+  const selected = getProps('rename').selectedFile ?? {};
+  const {
+    params: { api, scheme },
+  } = useFileListing('FilesListing');
 
-  const selected = useSelector(
-    state => state.files.modalProps.rename.selectedFile || {}
-  );
-  const { api, scheme } = useSelector(state => state.files.params.FilesListing);
+  const { rename: renameCallback, setStatus } = useRename();
 
-  const dispatch = useDispatch();
-  const toggle = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'rename', props: {} }
-    });
-  };
+  const toggle = () => toggleModal({ operation: 'rename', props: {} });
 
   const history = useHistory();
   const location = useLocation();
@@ -39,26 +37,20 @@ const DataFilesRenameModal = () => {
         [selected.name],
         'The new name must differ from the current name.'
       )
-      .required('Please enter a valid file name.')
+      .required('Please enter a valid file name.'),
   });
 
   const onClosed = () => {
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status: null, operation: 'rename' }
-    });
+    setStatus(null);
   };
 
   const rename = ({ newName }) => {
-    dispatch({
-      type: 'DATA_FILES_RENAME',
-      payload: {
-        selectedFile: selected,
-        newName,
-        reloadCallback: reloadPage,
-        api,
-        scheme
-      }
+    renameCallback({
+      selectedFile: selected,
+      newName,
+      callback: reloadPage,
+      api,
+      scheme,
     });
     toggle();
   };

@@ -8,17 +8,23 @@ import {
   SectionMessage,
   SectionTableWrapper
 } from '_common';
+import { useFileListing } from 'hooks/datafiles';
 import DataFilesListing from '../DataFilesListing/DataFilesListing';
 import './DataFilesProjectFileListing.module.scss';
 
 const DataFilesProjectFileListing = ({ system, path }) => {
   const dispatch = useDispatch();
+  const { fetchListing } = useFileListing('FilesListing');
   useEffect(() => {
     dispatch({
       type: 'PROJECTS_GET_METADATA',
       payload: system
     });
   }, [system]);
+
+  useEffect(() => {
+    fetchListing({ api: 'tapis', scheme: 'projects', system, path });
+  }, [system, path, fetchListing]);
 
   const metadata = useSelector(state => state.projects.metadata);
 

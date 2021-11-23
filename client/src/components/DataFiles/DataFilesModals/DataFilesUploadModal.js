@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FileInputDropZone } from '_common';
-import { findSystemOrProjectDisplayName } from 'utils/systems';
+import { useSystemDisplayName } from 'hooks/datafiles';
 import DataFilesUploadModalListingTable from './DataFilesUploadModalListing/DataFilesUploadModalListingTable';
 
 import './DataFilesUploadModal.module.scss';
@@ -29,8 +29,6 @@ const DataFilesUploadModal = ({ className, layout }) => {
   const isOpen = useSelector(state => state.files.modals.upload);
   const params = useSelector(state => state.files.params.FilesListing);
   const status = useSelector(state => state.files.operationStatus.upload);
-  const systemList = useSelector(state => state.systems.storage.configuration);
-  const projectsList = useSelector(state => state.projects.listing.projects);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [rejectedFiles, setRejectedFiles] = useState([]);
   const dispatch = useDispatch();
@@ -65,12 +63,8 @@ const DataFilesUploadModal = ({ className, layout }) => {
   modifierClasses.push(LAYOUT_CLASS_MAP[layout || DEFAULT_LAYOUT]);
   const containerStyleNames = ['container', ...modifierClasses].join(' ');
 
-  const systemDisplayName = findSystemOrProjectDisplayName(
-    params.scheme,
-    systemList,
-    projectsList,
-    params.system
-  );
+  const systemDisplayName = useSystemDisplayName(params);
+
   const onClosed = () => {
     setUploadedFiles([]);
     setRejectedFiles([]);

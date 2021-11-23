@@ -3,28 +3,20 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSelectedFiles, useFileListing, useModal } from 'hooks/datafiles';
+import { useExtract } from 'hooks/datafiles/mutations';
 import './DataFilesCompressModal.module.scss';
 
 const DataFilesExtractModal = () => {
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
-  const status = useSelector(
-    state => state.files.operationStatus.extract,
-    shallowEqual
-  );
+  const { extract, status, setStatus } = useExtract();
 
-  const params = useSelector(
-    state => state.files.params.FilesListing,
-    shallowEqual
-  );
+  const { params } =  useFileListing('FilesListing');
 
   const isOpen = useSelector(state => state.files.modals.extract);
-  const selectedFiles = useSelector(({ files: { selected, listing } }) =>
-    selected.FilesListing.map(i => ({
-      ...listing.FilesListing[i]
-    }))
-  );
+  const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
 
   const toggle = () =>
@@ -43,18 +35,12 @@ const DataFilesExtractModal = () => {
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     if (status) {
-      dispatch({
-        type: 'DATA_FILES_SET_OPERATION_STATUS',
-        payload: { status: {}, operation: 'extract' }
-      });
+      setStatus({});
       history.push(location.pathname);
     }
   };
   const extractCallback = () => {
-    dispatch({
-      type: 'DATA_FILES_EXTRACT',
-      payload: { file: selected[0] }
-    });
+    extract({file: selected[0]})
   };
 
   let buttonIcon;

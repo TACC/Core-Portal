@@ -1,12 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
-import { useLocation } from 'react-router-dom';
-import { parse } from 'query-string';
+import { useFileListing, useSystemDisplayName } from 'hooks/datafiles';
 
 import { Icon } from '_common';
-import { findSystemOrProjectDisplayName } from 'utils/systems';
 
 import DataFilesTable from '../../DataFilesTable/DataFilesTable';
 import { FileIcon } from '../../DataFilesListing/DataFilesListingCells';
@@ -21,18 +18,14 @@ export function getParentPath(currentPath) {
 }
 
 const BackLink = ({ api, scheme, system, currentPath }) => {
-  const dispatch = useDispatch();
+  const { fetchListing } = useFileListing('modal');
 
   const onClick = () => {
-    dispatch({
-      type: 'FETCH_FILES',
-      payload: {
-        api,
-        scheme,
-        system,
-        path: getParentPath(currentPath),
-        section: 'modal'
-      }
+    fetchListing({
+      api,
+      scheme,
+      system,
+      path: getParentPath(currentPath)
     });
   };
   return (
@@ -59,14 +52,11 @@ const DataFilesModalListingNameCell = ({
   isCurrentDirectory,
   indentSubFilesFolders
 }) => {
-  const dispatch = useDispatch();
+  const { fetchListing } = useFileListing('modal');
   const onClick = e => {
     e.preventDefault();
     e.stopPropagation();
-    dispatch({
-      type: 'FETCH_FILES',
-      payload: { api, scheme, system, path, section: 'modal' }
-    });
+    fetchListing({ api, scheme, system, path });
   };
 
   const isFolderButNotCurrentFolder =
@@ -154,13 +144,11 @@ const DataFilesModalListingTable = ({
   operationAllowedOnRootFolder,
   disabled
 }) => {
-  const dispatch = useDispatch();
-  const loading = useSelector(state => state.files.loading.modal);
-  const error = useSelector(state => state.files.error.modal);
-  const params = useSelector(state => state.files.params.modal, shallowEqual);
-  const systemList = useSelector(state => state.systems.storage.configuration);
-  const projectsList = useSelector(state => state.projects.listing.projects);
+
+  const { loading, error, params, fetchMore } = useFileListing('modal');
   const isNotRoot = params.path.length > 0;
+
+  const displayName = useSystemDisplayName(params);
 
   const alteredData = useMemo(() => {
     const result = data.map(d => {
@@ -174,13 +162,7 @@ const DataFilesModalListingTable = ({
       const currentFolderEntry = {
         name: isNotRoot
           ? getCurrentDirectory(params.path)
-          : findSystemOrProjectDisplayName(
-              params.scheme,
-              systemList,
-              projectsList,
-              params.system,
-              !isNotRoot
-            ),
+          : displayName,
         format: 'folder',
         system: params.system,
         path: params.path,
@@ -264,25 +246,14 @@ const DataFilesModalListingTable = ({
     [data]
   );
 
-  const queryString = parse(useLocation().search).query_string;
   const rowSelectCallback = () => {};
-  const scrollBottomCallback = useCallback(() => {
-    dispatch({
-      type: 'SCROLL_FILES',
-      payload: {
-        ...params,
-        queryString,
-        section: 'modal',
-        offset: data.length
-      }
-    });
-  }, [dispatch, data.length]);
+
   return (
     <DataFilesTable
       data={alteredData}
       columns={columns}
       rowSelectCallback={rowSelectCallback}
-      scrollBottomCallback={scrollBottomCallback}
+      scrollBottomCallback={fetchMore}
       section="modal"
       hideHeader={!hasBackButton}
       shadeEvenRows={hasBackButton}

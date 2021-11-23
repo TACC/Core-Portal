@@ -11,17 +11,18 @@ import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Link } from 'react-router-dom';
+import { useSelectedFiles, useFileListing } from 'hooks/datafiles';
 import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesTable.scss';
 import './DataFilesTable.module.scss';
 
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
+
+  const { params, error: err, loading } = useFileListing(section);
+  const { api: currentListing, scheme } = params ?? {};
+
   const dispatch = useDispatch();
-  const currentListing = useSelector(
-    state => state.files.params.FilesListing.api
-  );
-  const scheme = useSelector(state => state.files.params.FilesListing.scheme);
   const system = useSelector(state => state.pushKeys.target);
   let currSystemHost = useSelector(state =>
     state.systems.definitions.list.find(
@@ -29,8 +30,6 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     )
   );
   currSystemHost = currSystemHost ? currSystemHost.storage.host : '';
-  const loading = useSelector(state => state.files.loading[section]);
-  const err = useSelector(state => state.files.error[section]);
   const modalRefs = useSelector(state => state.files.refs);
 
   const filesLength = data.length;
@@ -207,15 +206,11 @@ const DataFilesTableRow = ({
     e => e.key === 'Enter' && rowSelectCallback(index),
     [index]
   );
-  const loadingScroll = useSelector(
-    state => state.files.loadingScroll[section]
-  );
 
-  const selected = useSelector(state =>
-    state.files.selected[section]
-      ? state.files.selected[section].includes(index)
-      : false
-  );
+  const { loadingScroll } = useFileListing(section);
+
+  const { isSelected } = useSelectedFiles();
+  const selected = section === 'FilesListing' ? isSelected(index) : false;
   const isShaded = shadeEvenRows ? index % 2 === 0 : index % 2 === 1;
   if (index < rowCount) {
     return (
@@ -290,7 +285,7 @@ const DataFilesTable = ({
     setTableHeight(height);
   };
 
-  const reachedEnd = useSelector(state => state.files.reachedEnd[section]);
+  const { reachedEnd } = useFileListing(section);
 
   const sizedColumns = useMemo(
     () => columns.map(col => ({ ...col, width: col.width * tableWidth })),

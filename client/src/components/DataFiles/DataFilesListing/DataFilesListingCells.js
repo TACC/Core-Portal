@@ -3,41 +3,30 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Checkbox, Icon } from '_common';
 import { Button } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
 
+import { useSelectedFiles } from 'hooks/datafiles';
 import formatSize from 'utils/sizeFormat';
 import { formatDateTimeFromValue } from 'utils/timeFormat';
 
 export const CheckboxHeaderCell = () => {
-  const selected = useSelector(state => state.files.selectAll.FilesListing);
-  const listingLength = useSelector(
-    state => state.files.listing.FilesListing.length
-  );
-  const dispatch = useDispatch();
-  const toggleSelect = () => {
-    listingLength &&
-      dispatch({
-        type: 'DATA_FILES_TOGGLE_SELECT_ALL',
-        payload: { section: 'FilesListing' }
-      });
-  };
-  const handleKeyPress = e => e.key === 'enter' && toggleSelect();
+  const { allSelected, selectAll } = useSelectedFiles();
+  const handleKeyPress = e => e.key === 'enter' && selectAll();
   return (
     <Checkbox
-      isChecked={selected}
+      isChecked={allSelected}
       role="button"
       tabIndex={0}
-      onClick={toggleSelect}
+      onClick={selectAll}
       onKeyDown={handleKeyPress}
     />
   );
 };
 
 export const CheckboxCell = React.memo(({ index }) => {
-  const selected = useSelector(state =>
-    state.files.selected.FilesListing.includes(index)
-  );
+  const { isSelected } = useSelectedFiles();
+  const selected = isSelected(index);
   return <Checkbox isChecked={selected} />;
 });
 CheckboxCell.propTypes = {

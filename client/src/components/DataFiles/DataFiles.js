@@ -1,13 +1,6 @@
 import React, { useEffect } from 'react';
-import {
-  Switch,
-  Route,
-  useRouteMatch,
-  useHistory,
-  useLocation
-} from 'react-router-dom';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { parse } from 'query-string';
+import { Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
+import { useSelector, shallowEqual } from 'react-redux';
 
 import './DataFiles.global.css';
 import './DataFiles.module.css';
@@ -18,6 +11,7 @@ import {
   SectionMessage,
   LoadingSpinner
 } from '_common';
+import { useFileListing, useSystems } from 'hooks/datafiles';
 import DataFilesToolbar from './DataFilesToolbar/DataFilesToolbar';
 import DataFilesListing from './DataFilesListing/DataFilesListing';
 import DataFilesSidebar from './DataFilesSidebar/DataFilesSidebar';
@@ -45,25 +39,12 @@ const DefaultSystemRedirect = () => {
 };
 
 const DataFilesSwitch = React.memo(() => {
-  const dispatch = useDispatch();
   const { path } = useRouteMatch();
-  const { query_string: queryString, filter } = parse(useLocation().search);
   return (
     <Switch>
       <Route
         path={`${path}/tapis/projects/:system/:path*`}
         render={({ match: { params } }) => {
-          dispatch({
-            type: 'FETCH_FILES',
-            payload: {
-              ...params,
-              api: 'tapis',
-              scheme: 'projects',
-              queryString,
-              filter,
-              section: 'FilesListing'
-            }
-          });
           return (
             <DataFilesProjectFileListing
               system={params.system}
@@ -75,15 +56,6 @@ const DataFilesSwitch = React.memo(() => {
       <Route
         path={`${path}/:api/:scheme/:system/:path*`}
         render={({ match: { params } }) => {
-          dispatch({
-            type: 'FETCH_FILES',
-            payload: {
-              ...params,
-              queryString,
-              filter,
-              section: 'FilesListing'
-            }
-          });
           return (
             <SectionTableWrapper styleName="content" manualContent>
               <DataFilesListing
@@ -107,13 +79,8 @@ const DataFilesSwitch = React.memo(() => {
 });
 
 const DataFiles = () => {
-  const listingParams = useSelector(
-    state => state.files.params.FilesListing,
-    shallowEqual
-  );
-  const loading = useSelector(state => state.systems.storage.loading);
-  const error = useSelector(state => state.systems.storage.error);
-  const systems = useSelector(state => state.systems.storage.configuration);
+  const { params: listingParams } = useFileListing('FilesListing');
+  const { data: systems, loading, error } = useSystems();
 
   const readOnly =
     listingParams.scheme === 'projects' &&

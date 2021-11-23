@@ -4,24 +4,17 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import FormField from '_common/Form/FormField';
-import { findSystemOrProjectDisplayName } from 'utils/systems';
+import { useSystemDisplayName } from 'hooks/datafiles';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const DataFilesMkdirModal = () => {
   const dispatch = useDispatch();
-  const systemList = useSelector(state => state.systems.storage.configuration);
-  const projectsList = useSelector(state => state.projects.listing.projects);
   const isOpen = useSelector(state => state.files.modals.mkdir);
   const params = useSelector(
     state => state.files.params.FilesListing,
     shallowEqual
   );
-  const systemDisplayName = findSystemOrProjectDisplayName(
-    params.scheme,
-    systemList,
-    projectsList,
-    params.system
-  );
+  const systemDisplayName = useSystemDisplayName(params);
   const toggle = () => {
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',

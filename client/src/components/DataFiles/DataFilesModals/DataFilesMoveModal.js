@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
+import { useSelectedFiles, useFileListing, useSystems, useModal } from 'hooks/datafiles';
 
+import { useMove } from 'hooks/datafiles/mutations';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
 import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
@@ -12,75 +13,52 @@ const DataFilesMoveModal = React.memo(() => {
   const history = useHistory();
   const location = useLocation();
 
+  const { params } = useFileListing('FilesListing');
+  const { params: modalParams, data: files, fetchListing } = useFileListing(
+    'modal'
+  );
+
+  const {move, status, setStatus} = useMove();
+
   const dispatch = useDispatch();
-  const params = useSelector(
-    state => state.files.params.FilesListing,
-    shallowEqual
-  );
-  const modalParams = useSelector(
-    state => state.files.params.modal,
-    shallowEqual
-  );
+  const { data: systems } = useSystems();
 
   const reloadPage = () => {
     history.push(location.pathname);
-    dispatch({
-      type: 'FETCH_FILES_MODAL',
-      payload: { ...modalParams, section: 'modal' }
-    });
+    fetchListing(modalParams);
   };
 
-  const files = useSelector(state => state.files.listing.modal, shallowEqual);
-  const isOpen = useSelector(state => state.files.modals.move);
-  const selectedFiles = useSelector(
-    state =>
-      state.files.selected.FilesListing.map(i => ({
-        ...state.files.listing.FilesListing[i],
-        id: uuidv4()
-      })),
-    () => true
-  );
+  const { getStatus, toggle: toggleModal } = useModal();
+
+  const isOpen = getStatus('movel');
+  const { selectedFiles } = useSelectedFiles();
   const selected = useMemo(() => selectedFiles, [isOpen]);
-  const status = useSelector(
-    state => state.files.operationStatus.move,
-    shallowEqual
-  );
   const [disabled, setDisabled] = useState(false);
 
-  const toggle = () =>
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'move', props: {} }
-    });
+  const toggle = () => toggleModal({ operation: 'move', props: {} });
 
   const onOpened = () => {
-    dispatch({
-      type: 'FETCH_FILES_MODAL',
-      payload: { ...params, section: 'modal' }
+    fetchListing({
+      api: 'tapis',
+      scheme: 'private',
+      system: systems[0].system
     });
   };
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
-    dispatch({
-      type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'move', status: {} }
-    });
+    setStatus({})
     setDisabled(false);
   };
 
   const moveCallback = useCallback(
     (system, path) => {
       setDisabled(true);
-      const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
-      dispatch({
-        type: 'DATA_FILES_MOVE',
-        payload: {
-          dest: { system, path },
-          src: filteredSelected,
-          reloadCallback: reloadPage
-        }
-      });
+      move({
+        destSystem: system,
+        destPath: path,
+        callback: reloadPage
+      })
     },
     [selected, reloadPage, status]
   );

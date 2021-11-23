@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { parse } from 'query-string';
+import { useSelector, shallowEqual } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { useSelectedFiles, useFileListing } from 'hooks/datafiles';
 import {
   CheckboxCell,
   CheckboxHeaderCell,
@@ -17,16 +17,7 @@ import DataFilesTable from '../DataFilesTable/DataFilesTable';
 
 const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   // Redux hooks
-  const dispatch = useDispatch();
-  const { query_string: queryString, filter } = parse(useLocation().search);
-  const { files, loading, error } = useSelector(
-    state => ({
-      files: state.files.listing.FilesListing,
-      loading: state.files.loading.FilesListing,
-      error: state.files.error.FilesListing
-    }),
-    shallowEqual
-  );
+  const location = useLocation();
   const systems = useSelector(
     state => state.systems.storage.configuration,
     shallowEqual
@@ -40,29 +31,18 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
       api === 'tapis' && state.workbench && state.workbench.config.viewPath
   );
 
-  const scrollBottomCallback = useCallback(() => {
-    dispatch({
-      type: 'SCROLL_FILES',
-      payload: {
-        api,
-        scheme,
-        system,
-        path: path || '/',
-        section: 'FilesListing',
-        offset: files.length,
-        queryString,
-        filter,
-        nextPageToken: files.nextPageToken
-      }
-    });
-  }, [dispatch, files.length]);
+  const {
+    data: files,
+    loading,
+    error,
+    fetchListing,
+    fetchMore
+  } = useFileListing('FilesListing');
+  const { selectFile } = useSelectedFiles();
 
-  const rowSelectCallback = useCallback(index => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_SELECT',
-      payload: { index, section: 'FilesListing' }
-    });
-  }, []);
+  useLayoutEffect(() => {
+    fetchListing({ api, scheme, system, path });
+  }, [api, scheme, system, path, location]);
 
   const checkboxCellCallback = useCallback(
     ({ row }) => <CheckboxCell index={row.index} />,
@@ -150,8 +130,8 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
         <DataFilesTable
           data={files}
           columns={columns}
-          rowSelectCallback={rowSelectCallback}
-          scrollBottomCallback={scrollBottomCallback}
+          rowSelectCallback={selectFile}
+          scrollBottomCallback={fetchMore}
           section="FilesListing"
         />
       </div>
