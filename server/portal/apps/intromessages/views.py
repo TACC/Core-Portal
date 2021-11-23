@@ -21,15 +21,14 @@ class IntroMessagesView(BaseApiView):
     def get(self, request, *args, **kwargs):
         messages_array = IntroMessages.objects.filter(user=request.user).values('component', 'unread').values()
         messages = [{'component': message['component'], 'unread': message['unread']} for message in messages_array]
-        return JsonResponse({ 'response': messages})
-
+        return JsonResponse({'response': messages})
 
     def put(self, request, *args):
-        body = json.loads(request.body)     # IntroMessages data from front end 
+        body = json.loads(request.body)     # IntroMessages data from front end
         # get all of the IntroMessages stored in the database (meaning that those messages have been read/dismissed) for the user
         db_messages = IntroMessages.objects.filter(user=request.user).values()
         for component_name, component_value in body.items():
-            if component_value['unread'] == False:      # if message has been read/dismissed
+            if not component_value['unread']:      # if message has been read/dismissed
                 found = False
                 for db_message in db_messages:          # Check to see if it's already stored in database
                     if db_message['component'] == component_name:
