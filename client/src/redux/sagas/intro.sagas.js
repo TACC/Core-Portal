@@ -12,7 +12,7 @@ export async function getIntroMessages() {
 export function* fetchIntroMessages() {
   yield put({ type: 'INTRO_FETCH_STARTED' });
   try {
-    const componentDictionary = yield call(getIntroMessages);
+    const introMessages = yield call(getIntroMessages);
     // create complete list of IntroMessages for the user with status
     // for all messages set to unread (true)
     const messages = {
@@ -28,11 +28,14 @@ export function* fetchIntroMessages() {
 
     // update messages dictionary with messages from the database
     // that have been read/dismissed (unread = false)
-    if (componentDictionary !== 'NULL') {
-      componentDictionary.forEach(element => {
-        messages[element.component] = element.unread;
-      });
-    }
+    // if (introMessages !== 'NULL') {
+    //   introMessages.forEach(element => {
+    //     messages[element.component] = element.unread;
+    //   });
+    // }
+    introMessages.forEach(element => {
+      messages[element.component] = element.unread;
+    });
 
     yield put({
       type: 'INTRO_FETCH_SUCCESS',
