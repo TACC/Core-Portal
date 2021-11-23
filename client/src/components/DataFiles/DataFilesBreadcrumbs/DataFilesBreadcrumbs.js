@@ -1,11 +1,13 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './DataFilesBreadcrumbs.scss';
-import { useSystemDisplayName } from 'hooks/datafiles';
-import { useFileListing, useModal } from 'hooks/datafiles';
+import {
+  useSystemDisplayName,
+  useFileListing,
+  useModal
+} from 'hooks/datafiles';
 
 const BreadcrumbLink = ({
   api,
@@ -21,11 +23,11 @@ const BreadcrumbLink = ({
     e.stopPropagation();
     e.preventDefault();
     fetchListing({
-        api,
-        scheme,
-        system,
-        path
-      });
+      api,
+      scheme,
+      system,
+      path
+    });
   };
   const basePath = isPublic ? '/public-data' : '/workbench/data';
   switch (section) {
@@ -75,9 +77,9 @@ const RootProjectsLink = ({ api, section, operation, label }) => {
       e.stopPropagation();
       e.preventDefault();
       setProps({
-          operation,
-          props: { showProjects: true }
-        })
+        operation,
+        props: { showProjects: true }
+      });
     };
     return (
       <span>

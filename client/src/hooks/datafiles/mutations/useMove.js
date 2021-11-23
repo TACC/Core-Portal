@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useSelectedFiles } from 'hooks/datafiles';
 
@@ -15,7 +14,7 @@ function useMove() {
   const setStatus = newStatus =>
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'move', status: newStatus },
+      payload: { operation: 'move', status: newStatus }
     });
 
   const move = ({ destSystem, destPath, callback }) => {
@@ -25,8 +24,8 @@ function useMove() {
       payload: {
         dest: { system: destSystem, path: destPath },
         src: filteredSelected,
-        reloadCallback: callback,
-      },
+        reloadCallback: callback
+      }
     });
   };
 

@@ -18,7 +18,6 @@ import './DataFilesTable.module.scss';
 
 // What to render if there are no files to display
 const DataFilesTablePlaceholder = ({ section, data }) => {
-
   const { params, error: err, loading } = useFileListing(section);
   const { api: currentListing, scheme } = params ?? {};
 

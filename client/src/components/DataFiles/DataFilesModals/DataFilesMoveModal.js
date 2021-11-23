@@ -2,7 +2,12 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useSelectedFiles, useFileListing, useSystems, useModal } from 'hooks/datafiles';
+import {
+  useSelectedFiles,
+  useFileListing,
+  useSystems,
+  useModal
+} from 'hooks/datafiles';
 
 import { useMove } from 'hooks/datafiles/mutations';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
@@ -18,7 +23,7 @@ const DataFilesMoveModal = React.memo(() => {
     'modal'
   );
 
-  const {move, status, setStatus} = useMove();
+  const { move, status, setStatus } = useMove();
 
   const dispatch = useDispatch();
   const { data: systems } = useSystems();
@@ -47,7 +52,7 @@ const DataFilesMoveModal = React.memo(() => {
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
-    setStatus({})
+    setStatus({});
     setDisabled(false);
   };
 
@@ -58,7 +63,7 @@ const DataFilesMoveModal = React.memo(() => {
         destSystem: system,
         destPath: path,
         callback: reloadPage
-      })
+      });
     },
     [selected, reloadPage, status]
   );

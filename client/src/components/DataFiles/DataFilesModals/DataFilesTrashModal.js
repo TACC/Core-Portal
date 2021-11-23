@@ -34,7 +34,7 @@ const DataFilesTrashModal = React.memo(() => {
   const trashCallback = useCallback(() => {
     setDisabled(true);
     const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
-    trash({selection: filteredSelected, callback: reloadPage})
+    trash({ selection: filteredSelected, callback: reloadPage });
   }, [selected, reloadPage]);
 
   return (

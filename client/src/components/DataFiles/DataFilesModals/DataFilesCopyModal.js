@@ -1,12 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { SectionMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
   useSelectedFiles,
   useFileListing,
   useSystems,
-  useModal,
+  useModal
 } from 'hooks/datafiles';
 import { useCopy } from 'hooks/datafiles/mutations';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
@@ -48,7 +49,7 @@ const DataFilesCopyModal = React.memo(() => {
     fetchListing({
       api: 'tapis',
       scheme: 'private',
-      system: systems[0].system,
+      system: systems[0].system
     });
   };
 
@@ -59,10 +60,10 @@ const DataFilesCopyModal = React.memo(() => {
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
-    setStatus({})
+    setStatus({});
     setProps({
       operation: 'copy',
-      props: {},
+      props: {}
     });
     setDisabled(false);
   };
@@ -76,7 +77,7 @@ const DataFilesCopyModal = React.memo(() => {
         destSystem: system,
         destPath: path,
         name,
-        callback: reloadPage,
+        callback: reloadPage
       });
     },
     [copy, reloadPage, setDisabled, params, modalParams]

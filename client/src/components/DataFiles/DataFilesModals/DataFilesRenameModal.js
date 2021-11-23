@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import * as Yup from 'yup';
@@ -13,7 +12,7 @@ const DataFilesRenameModal = () => {
   const isOpen = getStatus('rename');
   const selected = getProps('rename').selectedFile ?? {};
   const {
-    params: { api, scheme },
+    params: { api, scheme }
   } = useFileListing('FilesListing');
 
   const { rename: renameCallback, setStatus } = useRename();
@@ -37,7 +36,7 @@ const DataFilesRenameModal = () => {
         [selected.name],
         'The new name must differ from the current name.'
       )
-      .required('Please enter a valid file name.'),
+      .required('Please enter a valid file name.')
   });
 
   const onClosed = () => {
@@ -50,7 +49,7 @@ const DataFilesRenameModal = () => {
       newName,
       callback: reloadPage,
       api,
-      scheme,
+      scheme
     });
     toggle();
   };

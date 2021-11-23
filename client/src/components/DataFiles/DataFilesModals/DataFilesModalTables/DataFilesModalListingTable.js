@@ -144,7 +144,6 @@ const DataFilesModalListingTable = ({
   operationAllowedOnRootFolder,
   disabled
 }) => {
-
   const { loading, error, params, fetchMore } = useFileListing('modal');
   const isNotRoot = params.path.length > 0;
 
@@ -160,9 +159,7 @@ const DataFilesModalListingTable = ({
     /* Add an entry to represent the current sub-directory */
     if (!loading && !error && (isNotRoot || operationAllowedOnRootFolder)) {
       const currentFolderEntry = {
-        name: isNotRoot
-          ? getCurrentDirectory(params.path)
-          : displayName,
+        name: isNotRoot ? getCurrentDirectory(params.path) : displayName,
         format: 'folder',
         system: params.system,
         path: params.path,

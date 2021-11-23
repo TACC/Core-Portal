@@ -13,7 +13,7 @@ function useFileListing(section = 'FilesListing') {
     error,
     params,
     loadingScroll,
-    reachedEnd,
+    reachedEnd
   } = useSelector(
     state => ({
       data: state?.files?.listing?.[section],
@@ -21,7 +21,7 @@ function useFileListing(section = 'FilesListing') {
       loadingScroll: state?.files?.loadingScroll?.[section],
       error: state?.files?.error?.[section],
       params: state?.files?.params?.[section],
-      reachedEnd: state?.files?.reachedEnd?.[section],
+      reachedEnd: state?.files?.reachedEnd?.[section]
     }),
     shallowEqual
   );
@@ -38,8 +38,8 @@ function useFileListing(section = 'FilesListing') {
           limit: limit ?? 100,
           queryString: section === 'FilesListing' ? queryString : null,
           filter: section === 'FilesListing' ? filter : null,
-          section,
-        },
+          section
+        }
       });
     },
     [dispatch, queryString, filter, section]
@@ -57,12 +57,21 @@ function useFileListing(section = 'FilesListing') {
         offset: data.length,
         queryString,
         filter,
-        nextPageToken: data.nextPageToken,
-      },
+        nextPageToken: data.nextPageToken
+      }
     });
   }, [dispatch, params, section, data, queryString, filter]);
 
-  return { data, loading, error, params, loadingScroll, reachedEnd, fetchListing, fetchMore };
+  return {
+    data,
+    loading,
+    error,
+    params,
+    loadingScroll,
+    reachedEnd,
+    fetchListing,
+    fetchMore
+  };
 }
 
 export default useFileListing;

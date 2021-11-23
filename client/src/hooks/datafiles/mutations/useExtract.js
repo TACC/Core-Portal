@@ -7,21 +7,21 @@ function useExtract() {
     shallowEqual
   );
 
-  const setStatus = (status) => {
+  const setStatus = newStatus => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status, operation: 'extract' }
+      payload: { status: newStatus, operation: 'extract' }
     });
-  }
+  };
 
   const extract = ({ file }) => {
     dispatch({
-        type: 'DATA_FILES_EXTRACT',
-        payload: { file }
-      });
+      type: 'DATA_FILES_EXTRACT',
+      payload: { file }
+    });
   };
 
-  return { extract, status, setStatus }
+  return { extract, status, setStatus };
 }
 
 export default useExtract;

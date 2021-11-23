@@ -7,12 +7,12 @@ function useRename() {
     shallowEqual
   );
 
-  const setStatus = (status) => {
+  const setStatus = newStatus => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status, operation: 'rename' }
+      payload: { status: newStatus, operation: 'rename' }
     });
-  }
+  };
 
   const rename = ({ selectedFile, newName, api, scheme, callback }) => {
     dispatch({
@@ -22,12 +22,12 @@ function useRename() {
         newName,
         reloadCallback: callback,
         api,
-        scheme,
-      },
+        scheme
+      }
     });
   };
 
-  return { rename, status, setStatus }
+  return { rename, status, setStatus };
 }
 
-export default useRename
+export default useRename;

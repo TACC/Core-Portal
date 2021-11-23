@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { LoadingSpinner, Icon, InlineMessage } from '_common';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useSelectedFiles, useFileListing, useModal } from 'hooks/datafiles';
+import { useSelectedFiles, useFileListing } from 'hooks/datafiles';
 import { useExtract } from 'hooks/datafiles/mutations';
 import './DataFilesCompressModal.module.scss';
 
@@ -13,7 +13,7 @@ const DataFilesExtractModal = () => {
   const dispatch = useDispatch();
   const { extract, status, setStatus } = useExtract();
 
-  const { params } =  useFileListing('FilesListing');
+  const { params } = useFileListing('FilesListing');
 
   const isOpen = useSelector(state => state.files.modals.extract);
   const { selectedFiles } = useSelectedFiles();
@@ -40,7 +40,7 @@ const DataFilesExtractModal = () => {
     }
   };
   const extractCallback = () => {
-    extract({file: selected[0]})
+    extract({ file: selected[0] });
   };
 
   let buttonIcon;

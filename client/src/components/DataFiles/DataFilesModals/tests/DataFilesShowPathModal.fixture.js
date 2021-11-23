@@ -26,7 +26,8 @@ const DataFilesShowPathModalFixture = {
         mimeType: 'text/directory',
         type: 'dir'
       }
-    ]},
+    ]
+  },
   modalProps: {
     showpath: {
       file: {

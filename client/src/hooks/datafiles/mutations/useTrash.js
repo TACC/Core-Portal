@@ -7,20 +7,20 @@ function useTrash() {
     shallowEqual
   );
 
-  const setStatus = status => {
+  const setStatus = newStatus => {
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { status, operation: 'trash' },
+      payload: { status: newStatus, operation: 'trash' }
     });
   };
 
-  const trash = ({selection, callback}) =>
+  const trash = ({ selection, callback }) =>
     dispatch({
       type: 'DATA_FILES_TRASH',
       payload: {
         src: selection,
-        reloadCallback: callback,
-      },
+        reloadCallback: callback
+      }
     });
 
   return { trash, status, setStatus };
