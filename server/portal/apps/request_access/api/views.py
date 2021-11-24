@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 METADATA_HEADER = "*** Ticket Metadata ***"
 
+
 class RequestAccessView(BaseApiView):
     def post(self, request):
         """Post an access request
@@ -38,14 +39,17 @@ class RequestAccessView(BaseApiView):
             firstName = user['firstName']
             lastName = user['lastName']
         except Exception as e:
-            return JsonResponse({'message': 'Incorrect Username or Password'}, status=401)
+            logger.warning('Incorrect Username or Password for: {user}. {exc}'
+                           .format(user=username, exc=e))
+            return JsonResponse({'message': 'Incorrect Username or Password'},
+                                status=401)
 
         if email is None or problem_description is None:
             return HttpResponseBadRequest()
 
         return utils.create_ticket(request,
                                    METADATA_HEADER,
-                                   firstName = firstName,
-                                   lastName = lastName,
-                                   email = email,
+                                   firstName=firstName,
+                                   lastName=lastName,
+                                   email=email,
                                    subject=subject)
