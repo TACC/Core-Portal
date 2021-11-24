@@ -174,10 +174,12 @@ const DataFilesTableRow = ({
   shadeEvenRows
 }) => {
   const onClick = useCallback(() => rowSelectCallback(index), [index]);
-  const onKeyDown = useCallback(
-    e => e.key === 'Enter' && rowSelectCallback(index),
-    [index]
-  );
+  const onKeyDown = useCallback(e => {
+    if (e.keyCode === 32) {
+      rowSelectCallback(index);
+      e.preventDefault();
+    }
+  });
   const loadingScroll = useSelector(
     state => state.files.loadingScroll[section]
   );
