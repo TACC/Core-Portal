@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 SERVICE_ACCOUNTS = ["portal", "rtprod", "rtdev"]
 ALLOWED_HISTORY_TYPES = ["Correspond", "Create", "Status"]
-METADATA_HEADER = "*** Ticket Metadata ***"
 
 
 class TicketsView(BaseApiView):
@@ -42,7 +41,7 @@ class TicketsView(BaseApiView):
         """Post a new ticket
 
         """
-        return utils.create_ticket(request, METADATA_HEADER)
+        return utils.create_ticket(request)
 
 
 def has_access_to_ticket(function):

@@ -2,7 +2,10 @@ from portal.apps.tickets import rtUtil
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.core.files.base import ContentFile
 
-def create_ticket(request, METADATA_HEADER, **kargs):
+METADATA_HEADER = "*** Ticket Metadata ***"
+
+
+def create_ticket(request, **kargs):
     rt = rtUtil.DjangoRt()
 
     data = request.POST.copy()

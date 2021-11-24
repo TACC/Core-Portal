@@ -7,8 +7,6 @@ from pytas.http import TASClient
 
 logger = logging.getLogger(__name__)
 
-METADATA_HEADER = "*** Ticket Metadata ***"
-
 
 class RequestAccessView(BaseApiView):
     def post(self, request):
@@ -44,7 +42,6 @@ class RequestAccessView(BaseApiView):
             return HttpResponseBadRequest()
 
         return utils.create_ticket(request,
-                                   METADATA_HEADER,
                                    firstName=firstName,
                                    lastName=lastName,
                                    email=email,
