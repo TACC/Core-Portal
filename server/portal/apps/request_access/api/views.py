@@ -1,8 +1,6 @@
-from django.views.decorators.csrf import ensure_csrf_cookie
 import logging
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.conf import settings
-from portal.apps.tickets import rtUtil
 from portal.apps.tickets import utils
 from portal.views.base import BaseApiView
 from pytas.http import TASClient
@@ -17,8 +15,6 @@ class RequestAccessView(BaseApiView):
         """Post an access request
 
         """
-        rt = rtUtil.DjangoRt()
-
         data = request.POST.copy()
         username = data.get('username')
         password = data.get('password')
