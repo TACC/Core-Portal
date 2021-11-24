@@ -53,19 +53,6 @@ def test_request_access_wrong_user_password(client,
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_request_access_tas(client,
-                            regular_user,
-                            mock_rtutil,
-                            get_authenticate,
-                            get_user):
-    response = client.post('/api/request-access/',
-                           data={"problem_description": "This is the problem description",
-                                 "username": "testUsername",
-                                 "password": "testPassword"})
-    assert response.status_code == 200
-
-
-@pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_request_access(client,
                         regular_user,
                         mock_rtutil,
