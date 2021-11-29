@@ -41,6 +41,9 @@ const Button = ({
   if (iconAfterName) iconBefore = createIcon(iconAfterName, 'after');
   const colorType = color || type;
   const colorAttr = colorType === '' ? {} : { color: colorType };
+
+
+
   console.log("...props = ");
   console.log({...props});
   console.log("children = ");
@@ -49,8 +52,10 @@ const Button = ({
   console.log(iconBeforeName);
   console.log("iconAfterName = ");
   console.log(iconAfterName);
+  console.log("colorType = ");
+  console.log(colorType);
   console.log("colorAttr = ");
-  console.log(colorAttr);
+  console.log({...colorAttr})
 
 
   return (
@@ -60,7 +65,8 @@ const Button = ({
       {...props}
       // FAQ: Magic syntax for conditional property
       // eslint-disable-next-line react/jsx-props-no-spreading
-      {...colorAttr}
+      // {...colorAttr}
+      color={colorType}
       styleName="container"
       data-testid="button"
     >
