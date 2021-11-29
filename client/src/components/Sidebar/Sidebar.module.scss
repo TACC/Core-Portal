@@ -20,10 +20,9 @@ $width: 215px;
   color: var(--global-color-primary--x-dark); /* to pass color contrast test */
   background-color: var(--global-color-accent--weak);
 }
-.link--active {
-  font-weight: 700;
-}
-.link:active {
+.link--active,
+.link:active
+{
   font-weight: 700;
 }
 
