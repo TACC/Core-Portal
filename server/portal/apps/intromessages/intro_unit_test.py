@@ -9,14 +9,18 @@ def intromessage_mock(authenticated_user):
 
 
 """
-Test get of "read" (not unread) IntroMessages for an authenticated user
+Test get of "read" (not unread) IntroMessages for an authenticated user and
+confirm that the JSON is coming back as expected.
 """
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_intromessages_get(client, authenticated_user):
+def test_intromessages_get(client, authenticated_user, intromessage_mock):
     response = client.get('/api/intromessages/')
+    data = response.json()
     assert response.status_code == 200
+    print(data)
+    assert data["response"] == [{"component": "HISTORY", "unread": False}]
 
 
 """
@@ -71,14 +75,3 @@ def test_intromessages_put_unread_true(client, authenticated_user):
     assert response.status_code == 200
     # unread == True is not saved to the database
     assert len(IntroMessages.objects.all()) == 0
-
-
-"""Confirm that the JSON coming back is as expected"""
-
-
-@pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_response_data(client, authenticated_user, intromessage_mock):
-    response = client.get('/api/intromessages/')
-    data = response.json()
-    assert response.status_code == 200
-    assert data["response"] == [{"component": "HISTORY", "unread": False}]

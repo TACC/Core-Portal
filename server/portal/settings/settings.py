@@ -728,3 +728,4 @@ SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
     from .settings_local import *
+    
