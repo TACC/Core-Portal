@@ -19,11 +19,9 @@ $core-portal-color-primary: var(--global-color-accent--normal);
   background: var(--global-color-accent--weak);
 }
 
-.site-search-sidebar .nav-link.active {
-  font-weight: 700;
-}
-
-.site-search-sidebar .nav-link:active {
+.site-search-sidebar .nav-link:active,
+.site-search-sidebar .nav-link.active
+{
   font-weight: 700;
 }
 
