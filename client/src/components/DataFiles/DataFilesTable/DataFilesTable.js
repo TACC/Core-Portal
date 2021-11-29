@@ -175,7 +175,7 @@ const DataFilesTableRow = ({
 }) => {
   const onClick = useCallback(() => rowSelectCallback(index), [index]);
   const onKeyDown = useCallback(e => {
-    if (e => e.key === 32) {
+    if (e.key === ' ') {
       rowSelectCallback(index);
       e.preventDefault();
     }
