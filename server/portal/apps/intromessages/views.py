@@ -24,7 +24,11 @@ class IntroMessagesView(BaseApiView):
         return JsonResponse({'response': messages})
 
     def put(self, request, *args):
+<<<<<<< HEAD
         body = json.loads(request.body)     # IntroMessages data from front end
+=======
+        body = json.loads(request.body)
+>>>>>>> 545d50d90883cc8df49585d479f089073b348517
         # get all of the IntroMessages stored in the database (meaning that those messages have been read/dismissed) for the user
         db_messages = IntroMessages.objects.filter(user=request.user).values()
         for component_name, component_value in body.items():

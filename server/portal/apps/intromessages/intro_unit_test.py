@@ -1,5 +1,4 @@
 import pytest
-
 from portal.apps.intromessages.models import IntroMessages
 
 
