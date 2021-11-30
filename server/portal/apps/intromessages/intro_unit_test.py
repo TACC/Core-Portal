@@ -40,20 +40,34 @@ def test_intromessages_get_unauthenticated_user(client, regular_user):
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_put(client, authenticated_user):
     body = {
-            'HISTORY': {'unread': False}
+            'ACCOUNT': {'unread': True},
+            'ALLOCATIONS': {'unread': True},
+            'APPLICATIONS': {'unread': True},
+            'DASHBOARD': {'unread': True},
+            'DATA': {'unread': True},
+            'HISTORY': {'unread': False},
+            'TICKETS': {'unread': True},
+            'UI': {'unread': True}                  
     }
     response = client.put('/api/intromessages/',
                           content_type="application/json",
                           data=body)
     assert response.status_code == 200
-    # should be just one row in the database for the user
-    assert len(IntroMessages.objects.all()) == 1
-    row = IntroMessages.objects.all().first()
-    # assert one row in database
-    # assert row looks like data from body
-    assert row.component == 'HISTORY'
-    assert not row.unread
-    assert row.user == authenticated_user
+    # should be eight rows in the database for the user
+    assert len(IntroMessages.objects.all()) == 8
+    # let's check to see all rows exist correctly
+    db_messages = IntroMessages.objects.all().values()
+    for component_name, component_value in body.items():
+        found = False
+        correct_status = False
+        for db_message in db_messages:
+            if db_message['component'] == component_name:
+                found = True
+                if db_message['unread'] == component_value['unread']:
+                    correct_status = True
+                break
+        assert found
+        assert correct_status
 
 
 """
@@ -72,5 +86,5 @@ def test_intromessages_put_unread_true(client, authenticated_user):
                           content_type="application/json",
                           data=body)
     assert response.status_code == 200
-    # unread == True is not saved to the database
+    print("==========>> Length = " + str(len(IntroMessages.objects.all())))
     assert len(IntroMessages.objects.all()) == 0
