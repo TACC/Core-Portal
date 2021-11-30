@@ -240,9 +240,7 @@ export function* getUsernamesManage(action) {
       type: 'ADD_USERNAMES_TO_TEAM',
       payload
     });
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 }
 /**
  * Search for users in TAS
@@ -310,7 +308,7 @@ export function* addUser(action) {
     yield put({
       type: 'ALLOCATION_OPERATION_ADD_USER_ERROR',
       payload: {
-        addingUserOperation: {
+        addUserOperation: {
           loading: false,
           error: true,
           userName: action.payload.id

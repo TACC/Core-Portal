@@ -3,6 +3,7 @@ import { Modal, ModalHeader, ModalBody, Button, ModalFooter } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable } from 'react-table';
 import { LoadingSpinner, UserSearchbar, Message } from '_common';
+import PropTypes from 'prop-types';
 import './AllocationsManageTeamModal.module.scss';
 
 const AllocationsManageTeamTable = ({ rawData, projectId }) => {
@@ -52,7 +53,9 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
           return (
             <>
               {deleteOperationFailed && (
-                <Message type="error">Something went wrong.</Message>
+                <Message type="error">
+                  We were unable to delete the user.
+                </Message>
               )}
               {deleteOperationOccuring && <LoadingSpinner placement="inline" />}
               {removable && (
@@ -115,6 +118,10 @@ const AllocationsManageTeamTable = ({ rawData, projectId }) => {
     </table>
   );
 };
+AllocationsManageTeamTable.propTypes = {
+  rawData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  projectId: PropTypes.number.isRequired
+};
 
 const AllocationsManageTeamModal = ({
   isOpen,
@@ -126,10 +133,10 @@ const AllocationsManageTeamModal = ({
   const { teams, loadingUsernames, search } = useSelector(
     state => state.allocations
   );
-  const addingUserOperation = useSelector(
-    state => state.allocations.addingUserOperation
+  const addUserOperation = useSelector(
+    state => state.allocations.addUserOperation
   );
-  const error = addingUserOperation.error || search.error;
+  const error = addUserOperation.error || search.error;
   useEffect(() => {
     dispatch({
       type: 'ALLOCATION_OPERATION_REMOVE_USER_INIT'
@@ -174,12 +181,12 @@ const AllocationsManageTeamModal = ({
           <UserSearchbar
             members={teams[projectId]}
             onAdd={onAdd}
-            addDisabled={isLoading || addingUserOperation.loading}
+            addDisabled={isLoading || addUserOperation.loading}
             searchDisable={isLoading}
             onChange={onChange}
             searchResults={search.results}
             placeholder="Search by username, email, or last name"
-            allocationManagerLoading={addingUserOperation.loading}
+            onAddLoading={addUserOperation.loading}
           />
         </div>
         <div styleName="listing-wrapper">
@@ -198,6 +205,12 @@ const AllocationsManageTeamModal = ({
       </ModalFooter>
     </Modal>
   );
+};
+AllocationsManageTeamModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggle: PropTypes.func.isRequired,
+  projectId: PropTypes.number.isRequired,
+  projectName: PropTypes.string.isRequired
 };
 
 export default AllocationsManageTeamModal;

@@ -13,7 +13,7 @@ const UserSearchbar = ({
   searchDisabled,
   searchResults,
   placeholder,
-  allocationManagerLoading
+  onAddLoading
 }) => {
   const [selectedUser, setSelectedUser] = useState('');
   const [inputUser, setInputUser] = useState('');
@@ -68,11 +68,7 @@ const UserSearchbar = ({
               !selectedUser || addDisabled || alreadyMember(selectedUser)
             }
           >
-            {allocationManagerLoading ? (
-              <LoadingSpinner placement="inline" />
-            ) : (
-              'Add'
-            )}
+            {onAddLoading ? <LoadingSpinner placement="inline" /> : 'Add'}
           </Button>
         </div>
         <Input
@@ -123,13 +119,13 @@ UserSearchbar.propTypes = {
     })
   ).isRequired,
   placeholder: PropTypes.string,
-  allocationManagerLoading: PropTypes.bool
+  onAddLoading: PropTypes.bool
 };
 UserSearchbar.defaultProps = {
   addDisabled: false,
   searchDisabled: false,
   placeholder: 'Search by name',
-  allocationManagerLoading: false
+  onAddLoading: false
 };
 
 export default UserSearchbar;

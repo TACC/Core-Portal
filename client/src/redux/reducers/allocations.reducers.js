@@ -18,7 +18,7 @@ export const initialState = {
     error: false,
     loading: false
   },
-  addingUserOperation: {
+  addUserOperation: {
     userName: '',
     error: false,
     loading: false
@@ -122,7 +122,7 @@ export function allocations(state = initialState, action) {
     case 'ALLOCATION_OPERATION_ADD_USER_INIT': {
       return {
         ...state,
-        addingUserOperation: {
+        addUserOperation: {
           userName: '',
           error: false,
           loading: true
@@ -132,7 +132,7 @@ export function allocations(state = initialState, action) {
     case 'ALLOCATION_OPERATION_ADD_USER_COMPLETE': {
       return {
         ...state,
-        addingUserOperation: {
+        addUserOperation: {
           userName: '',
           error: false,
           loading: false

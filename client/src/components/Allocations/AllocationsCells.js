@@ -19,7 +19,6 @@ export const Team = ({ cell: { value } }) => {
   const [teamModal, setTeamModal] = useState(false);
   const [manageModal, setManageModal] = useState(false);
   const { projectId, isPi } = value;
-  console.log(value);
   return (
     <>
       <Button
