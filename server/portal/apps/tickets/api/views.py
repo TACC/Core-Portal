@@ -2,9 +2,10 @@ import logging
 import re
 from functools import wraps
 from django.core.files.base import ContentFile
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponse
 from django.utils.decorators import method_decorator
 from django.core.exceptions import PermissionDenied
 from portal.apps.tickets import rtUtil
@@ -13,6 +14,7 @@ from portal.exceptions.api import ApiException
 
 logger = logging.getLogger(__name__)
 
+SERVICE_ACCOUNTS = ["portal", "rtprod", "rtdev"]
 ALLOWED_HISTORY_TYPES = ["Correspond", "Create", "Status"]
 METADATA_HEADER = "*** Ticket Metadata ***"
 
@@ -113,7 +115,7 @@ class TicketsHistoryView(BaseApiView):
                 entry['Content'] = entry['Description']
 
             # Determine who created this message using portal
-            if entry['Creator'] == "portal":
+            if entry['Creator'] in SERVICE_ACCOUNTS:
                 # Check if its a reply submitted on behalf of a user
                 submitted_for_user = re.search(r'\[Reply submitted on behalf of (.*?)\]',
                                                entry['Content'].splitlines()[-1]) if entry['Content'] else False
@@ -156,7 +158,7 @@ class TicketsHistoryView(BaseApiView):
         if reply is None:
             return HttpResponseBadRequest()
 
-        # Add information on which user submitted this reply (as this is being done by `portal`)
+        # Add information on which user submitted this reply (as this is being done by a service account)
         modified_reply = reply + "\n[Reply submitted on behalf of {}]".format(request.user.username)
 
         attachments = [(f.name, ContentFile(f.read()), f.content_type) for f in request.FILES.getlist('attachments')]
@@ -182,3 +184,15 @@ class TicketsHistoryView(BaseApiView):
         rt = rtUtil.DjangoRt()
         ticket_history = self._get_ticket_history(rt, request.user.username, ticket_id)
         return JsonResponse({'ticket_history': ticket_history})
+
+
+class TicketsAttachmentView(BaseApiView):
+    @has_access_to_ticket
+    def get(self, request, ticket_id, attachment_id):
+        rt = rtUtil.DjangoRt()
+        attachment = rt.getAttachment(ticket_id, attachment_id)
+        content = attachment["Content"]
+        content_type = attachment["ContentType"]
+        response = HttpResponse(content, content_type=content_type)
+        response["Content-Disposition"] = attachment["Headers"]["Content-Disposition"]
+        return response

@@ -1,10 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import TicketModal from './TicketModal';
+import { default as TicketModal, TicketHistory }  from './TicketModal';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
+import renderComponent from 'utils/testing';
 
 const mockStore = configureStore();
 const initialMockState = {
@@ -40,7 +41,29 @@ const exampleTicketHistory = [
     Created: 'Fri Mar 23 10:17:00 2019'
   }
 ];
-
+const exampleTicketHistoryCard = [
+  {
+  id :"2077239",
+  Created : "2021-09-27T14:10:57",
+  Creator:'william',
+  IsCreator: true,
+  Content: '1 attachment',
+  Attachments:  [
+    [
+    1315069,
+    "untitled (0b)"
+    ],
+    [
+    1315070,
+    "untitled (50b)"
+    ],
+    [
+    1315071,
+    "Screen Shot 2021-09-27 at 12.45.03 PM.png (46.2k)"
+    ]
+    ]
+  }
+];
 function renderTicketsModelComponent(store) {
   return render(
     <Provider store={store}>
@@ -50,7 +73,15 @@ function renderTicketsModelComponent(store) {
     </Provider>
   );
 }
-
+function renderTicketsHistoryComponent(store) {
+  return render(
+    <Provider store={store}>
+      <BrowserRouter>
+        <TicketHistory/>
+      </BrowserRouter>
+    </Provider>
+  );
+}
 // mock as we use scrollIntoView in TicketModal
 window.HTMLElement.prototype.scrollIntoView = jest.fn()
 
@@ -86,5 +117,19 @@ describe('TicketModal', () => {
     /* for FP-251: expect(getByText(/42/)).toBeInTheDocument(); */
     expect(getByText(/Subject/)).toBeInTheDocument();
     expect(getByTestId('loading-spinner'));
+  });
+});
+describe('Attachment', () => {
+  it('should show a attachment', () => {
+    const store = mockStore({
+      ticketDetailedView: {
+        ...initialMockState,
+        ticketId: 42,
+        ticketSubject: "Subject",
+        content: exampleTicketHistoryCard
+      }
+    });
+    const { getAllByText} = renderTicketsHistoryComponent(store);
+    expect(getAllByText('Screen Shot 2021-09-27 at 12.45.03 PM.png (46.2k)')).toBeDefined();
   });
 });
