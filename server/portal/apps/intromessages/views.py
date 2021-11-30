@@ -23,19 +23,44 @@ class IntroMessagesView(BaseApiView):
         messages = [{'component': message['component'], 'unread': message['unread']} for message in messages_array]
         return JsonResponse({'response': messages})
 
+    # def put(self, request, *args):
+    #     body = json.loads(request.body)
+    #     # get all of the IntroMessages stored in the database (meaning that those messages have been read/dismissed) for the user
+    #     db_messages = IntroMessages.objects.filter(user=request.user).values()
+    #     for component_name, component_value in body.items():
+    #         if not component_value['unread']:      # if message has been read/dismissed
+    #             found = False
+    #             for db_message in db_messages:          # Check to see if it's already stored in database
+    #                 if db_message['component'] == component_name:
+    #                     found = True                    # Yes, we don't have to do anything
+    #                     break
+    #             if not found:                           # No, so we need to store in database
+    #                 new_message_object = IntroMessages(user=request.user, component=component_name, unread=False)
+    #                 new_message_object.save()
+
+    #     return JsonResponse({'status': 'OK'})
+
     def put(self, request, *args):
         body = json.loads(request.body)
+        logger.info('body = ')
+        logger.info(body)
         # get all of the IntroMessages stored in the database (meaning that those messages have been read/dismissed) for the user
         db_messages = IntroMessages.objects.filter(user=request.user).values()
         for component_name, component_value in body.items():
-            if not component_value['unread']:      # if message has been read/dismissed
-                found = False
-                for db_message in db_messages:          # Check to see if it's already stored in database
-                    if db_message['component'] == component_name:
-                        found = True                    # Yes, we don't have to do anything
-                        break
-                if not found:                           # No, so we need to store in database
-                    new_message_object = IntroMessages(user=request.user, component=component_name, unread=False)
-                    new_message_object.save()
+            found = False
+            logger.info('component_value = ' + str(component_value['unread']))
+            for db_message in db_messages:          # Check to see if it's already stored in database
+                if db_message['component'] == component_name:
+                    found = True                    # Yes, we don't have to do anything
+                    if db_message['unread'] != component_value['unread']:
+                        logger.info('db_message = ')
+                        logger.info(db_message)
+                        db_message['unread'] = component_value['unread']
+                        db_message_object = IntroMessages(user=request.user, id=db_message['id'], component=component_name, unread=component_value['unread'])
+                        db_message_object.save()
+                        # break
+            if not found:                           # No, so we need to store in database
+                new_message_object = IntroMessages(user=request.user, component=component_name, unread=component_value['unread'])
+                new_message_object.save()
 
         return JsonResponse({'status': 'OK'})
