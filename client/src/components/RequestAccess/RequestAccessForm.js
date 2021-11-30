@@ -74,7 +74,7 @@ const RequestAccessForm = () => {
               </small>
             </FormGroup>
             <div styleName="request-access-button-row">
-              {ticketId && (
+              {submitCount === 0 && ticketId && (
                 <Alert color="success" className="ticket-creation-info-alert">
                   Ticket (#{ticketId}) was created. Support staff will contact
                   you via email regarding your Access Request.
@@ -90,7 +90,7 @@ const RequestAccessForm = () => {
                 type="submit"
                 color="primary"
                 styleName="button-primary"
-                disabled={!isValid || isSubmitting || loading || ticketId}
+                disabled={!isValid || isSubmitting || loading}
               >
                 {loading && (
                   <Spinner

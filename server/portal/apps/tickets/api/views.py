@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 SERVICE_ACCOUNTS = ["portal", "rtprod", "rtdev"]
 ALLOWED_HISTORY_TYPES = ["Correspond", "Create", "Status"]
+METADATA_HEADER = "*** Ticket Metadata ***"
 
 
 class TicketsView(BaseApiView):
@@ -41,7 +42,37 @@ class TicketsView(BaseApiView):
         """Post a new ticket
 
         """
-        return utils.create_ticket(request)
+
+        data = request.POST.copy()
+        subject = data.get('subject')
+        problem_description = data.get('problem_description')
+        cc = data.get('cc', '')
+        attachments = [(f.name, ContentFile(f.read()), f.content_type)
+                       for f in request.FILES.getlist('attachments')]
+        info = request.GET.get('info', "None")
+        meta = request.META
+        is_authenticated = request.user.is_authenticated
+        username = None
+        if (is_authenticated):
+            username = request.user.username
+            email = request.user.email
+            first_name = request.user.first_name
+            last_name = request.user.last_name
+        else:
+            email = data.get('email')
+            first_name = data.get('first_name')
+            last_name = data.get('last_name')
+
+        return utils.create_ticket(username,
+                                   first_name,
+                                   last_name,
+                                   email,
+                                   cc,
+                                   subject,
+                                   problem_description,
+                                   attachments,
+                                   info,
+                                   meta)
 
 
 def has_access_to_ticket(function):

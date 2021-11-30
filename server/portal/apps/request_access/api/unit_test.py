@@ -23,7 +23,7 @@ def mock_rt(mocker):
 def get_authenticate(mocker):
     mock = mocker.patch(
             'portal.apps.request_access.api.views.TASClient.authenticate')
-    mock.return_value = {}
+    mock.return_value = True
     yield mock
 
 
@@ -31,7 +31,7 @@ def get_authenticate(mocker):
 def get_authenticate_error(mocker):
     mock = mocker.patch(
             'portal.apps.request_access.api.views.TASClient.authenticate')
-    mock.return_value = None
+    mock.return_value = False
     yield mock
 
 

@@ -26,23 +26,28 @@ class RequestAccessView(BaseApiView):
                         'password': settings.TAS_CLIENT_SECRET
                     }
                 )
+
         try:
             auth = tas.authenticate(username, password)
-            user = tas.get_user(username=username)
-            email = user['email']
-            firstName = user['firstName']
-            lastName = user['lastName']
+            if auth:
+                user = tas.get_user(username=username)
+                email = user['email']
+                first_name = user['firstName']
+                last_name = user['lastName']
+            else:
+                return JsonResponse({'message': 'Incorrect password'},
+                                    status=401)
         except Exception as e:
-            logger.warning('Incorrect Username or Password for: {user}. {exc}'
-                           .format(user=username, exc=e))
-            return JsonResponse({'message': 'Incorrect Username or Password'},
-                                status=401)
+            logger.error('Incorrect password for user: {user}. {exc}'
+                         .format(user=username, exc=e))
+            return JsonResponse({'message': 'Incorrect password'}, status=401)
 
         if email is None or problem_description is None:
             return HttpResponseBadRequest()
 
-        return utils.create_ticket(request,
-                                   firstName=firstName,
-                                   lastName=lastName,
-                                   email=email,
-                                   subject=subject)
+        info = request.GET.get('info', "None")
+        meta = request.META
+
+        return utils.create_ticket(None, first_name, last_name, email, '',
+                                   subject, problem_description, None, info,
+                                   meta)
