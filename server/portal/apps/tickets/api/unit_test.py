@@ -143,6 +143,29 @@ def test_tickets_create_with_attachments(client, authenticated_user, mock_rtutil
 def test_tickets_get_history(client, authenticated_user, mock_rtutil):
     response = client.get('/api/tickets/1/history')
     assert response.status_code == 200
+    result = json.loads(response.content)
+    assert len(result["ticket_history"]) == 5
+    full_name = "{} {}".format(authenticated_user.first_name, authenticated_user.last_name)
+    assert result["ticket_history"][2]["Creator"] == full_name
+    assert result["ticket_history"][3]["Creator"] == "RT_System"
+    assert result["ticket_history"][4]["Creator"] == full_name
+
+
+@pytest.mark.django_db(transaction=True, reset_sequences=True)
+@pytest.mark.parametrize("service_account", ["portal", "rtdev", "rtprod"])
+def test_tickets_get_history_handle_service_accounts(service_account, client, authenticated_user, mock_rtutil, rt_ticket_history):
+    for i in [6, 9]:  # two messages from service accounts
+        # set to different service account
+        rt_ticket_history[i]["Creator"] = service_account
+    mock_rtutil.getTicketHistory.return_value = rt_ticket_history
+
+    response = client.get('/api/tickets/1/history')
+    assert response.status_code == 200
+    result = json.loads(response.content)
+    full_name = "{} {}".format(authenticated_user.first_name, authenticated_user.last_name)
+    assert result["ticket_history"][2]["Creator"] == full_name
+    assert result["ticket_history"][3]["Creator"] == "RT_System"
+    assert result["ticket_history"][4]["Creator"] == full_name
 
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
