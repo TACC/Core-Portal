@@ -347,8 +347,45 @@ describe('Edit Required Information', () => {
     });
 
     expect(getByText(/Submit/)).toBeDefined();
-  });
+  });  
+ 
+  it('should render a multiple phone number',() => {
+    
+      const stateWithFields = {
+        ...testState,
+        fields: {
+          countries: [[230, 'United States']],
+          institutions: [[1, 'University of Texas at Austin']],
+          ethnicities: [['Decline', 'Decline to Identify']],
+          genders: [['Other', 'Other']],
+          professionalLevels: [['Other', 'Other']],
+          titles: [['Other User', 'Other User']]
+        }
+      };
+      const storeWithFields = mockStore({ profile: stateWithFields });
 
+      rerender(
+        <Provider store={storeWithFields}>
+          <EditRequiredInformationModal />
+        </Provider>
+      );
+
+      const phoneField = getByLabelText(/phone/);
+      const submitButton = getByLabelText(/required-submit/);
+      fireEvent.change(phoneField, {
+        target: {
+          value: '234-259-2959'
+        }
+      });
+      console.log(phoneField)
+      const clickSpy = () => jest.fn();
+      submitButton.addEventListener('click', clickSpy, false);
+      fireEvent.click(submitButton);
+      wait(() => {
+        expect(getByText(/Phone number is not valid/)).toBeDefined();
+      });
+    });
+   
   it('should show users errors if the fields are missing or invalid', async () => {
     const stateWithFields = {
       ...testState,
@@ -381,14 +418,13 @@ describe('Edit Required Information', () => {
     });
     fireEvent.change(phoneField, {
       target: {
-        value: '123'
+        value: '123-252-2525'
       }
     });
     const clickSpy = () => jest.fn();
     submitButton.addEventListener('click', clickSpy, false);
     fireEvent.click(submitButton);
     wait(() => {
-      expect(getByText(/Please enter a valid email address/)).toBeDefined();
       expect(getByText(/Phone number is not valid/)).toBeDefined();
       expect(clickSpy).not.toHaveBeenCalled();
     });
