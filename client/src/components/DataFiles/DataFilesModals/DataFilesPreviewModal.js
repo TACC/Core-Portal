@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { LoadingSpinner, Message } from '_common';
+import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
+import { LoadingSpinner, SectionMessage } from '_common';
 import './DataFilesPreviewModal.module.scss';
 
 const DataFilesPreviewModal = () => {
@@ -62,7 +62,9 @@ const DataFilesPreviewModal = () => {
       </ModalHeader>
       <ModalBody styleName="root">
         {(isLoading || (previewUsingHref && isFrameLoading)) && (
-          <LoadingSpinner />
+          <div styleName="loading-style">
+            <LoadingSpinner />
+          </div>
         )}
         {previewUsingTextContent && (
           <div>
@@ -83,9 +85,15 @@ const DataFilesPreviewModal = () => {
           </div>
         )}
         {hasError && (
-          <Message type="warning" styleName="error">
-            {error}
-          </Message>
+          <div styleName="error">
+            <SectionMessage type="warning" styleName="error-message">
+              {error}
+            </SectionMessage>
+            <Button styleName="button" href={href} target="_blank">
+              <i className="icon-exit" />
+              <span className="toolbar-button-text">Preview File</span>
+            </Button>
+          </div>
         )}
       </ModalBody>
     </Modal>

@@ -94,6 +94,7 @@ const DataFilesCompressModal = () => {
       .strict(true)
       .required('The filename is required')
   });
+
   return (
     <Modal
       isOpen={isOpen}
@@ -134,6 +135,7 @@ const DataFilesCompressModal = () => {
                         bsSize="sm"
                         onChange={handleSelectChange}
                         disabled={formDisabled}
+                        styleName="bg-color"
                       >
                         <option value=".zip">.zip</option>
                         <option value=".tar.gz">.tar.gz</option>
