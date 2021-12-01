@@ -35,4 +35,4 @@ def create_ticket(username, first_name, last_name, email, cc, subject,
                                  cc=cc,
                                  attachments=attachments)
 
-    return JsonResponse({'ticket_id': 1})
+    return JsonResponse({'ticket_id': ticket_id})
