@@ -374,15 +374,16 @@ describe('Edit Required Information', () => {
       const submitButton = getByLabelText(/required-submit/);
       fireEvent.change(phoneField, {
         target: {
-          value: '234-259-2959'
+          value: '234-242-2424'
         }
       });
-      console.log(phoneField)
       const clickSpy = () => jest.fn();
       submitButton.addEventListener('click', clickSpy, false);
       fireEvent.click(submitButton);
+      console.log(phoneField)
       wait(() => {
-        expect(getByText(/Phone number is not valid/)).toBeDefined();
+        expect(queryAllByText(/Phone number is not valid/)).toBeDefined();
+     
       });
     });
    
@@ -418,7 +419,7 @@ describe('Edit Required Information', () => {
     });
     fireEvent.change(phoneField, {
       target: {
-        value: '123-252-2525'
+        value: '123'
       }
     });
     const clickSpy = () => jest.fn();
