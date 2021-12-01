@@ -15,10 +15,9 @@ def rt_ticket_history(scope="module"):
     yield json.load(open(os.path.join(settings.BASE_DIR, 'fixtures/rt/ticket_history.json')))
 
 @pytest.fixture
-def mock_invalid_recaptcha(mocker):
-    mocker_rec=mocker.MagicMock()
+def mock_invalid_recaptcha(requests_mock):
     recaptchaSuccess =  {'success': False, 'challenge_ts': '2021-11-23T17:58:27Z', 'hostname': 'testkey.google.com'}
-    mocker_rec.patch('https://www.google.com/recaptcha/api/siteverify', return_value=recaptchaSuccess)
+    requests_mock.post('https://www.google.com/recaptcha/api/siteverify', json=recaptchaSuccess)
 
 @pytest.fixture
 def mock_rt(mocker, rt_tickets, rt_ticket_history):
@@ -118,7 +117,7 @@ def test_tickets_create_unauthencated(client, regular_user, mock_rtutil):
     assert "last_name" in kwargs['problem_description']
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_tickets_create_unauthencated_invalid_recaptcha(client, regular_user):
+def test_tickets_create_unauthencated_invalid_recaptcha(client, regular_user, mock_rtutil, mock_invalid_recaptcha):
     response = client.post('/api/tickets/',
                            data={"problem_description": "problem_description",
                                  "email": "email@test.com",
@@ -126,10 +125,9 @@ def test_tickets_create_unauthencated_invalid_recaptcha(client, regular_user):
                                  "first_name": "first_name",
                                  "last_name": "last_name"}
                            )
-    
-    assert response.status_code == 500
-  
-   
+    assert response.status_code == 400
+    assert json.loads(response.content) == {'message': 'Invalid reCAPTCHA. Please try again.'}
+
 
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_tickets_create_with_attachments(client, authenticated_user, mock_rtutil):
