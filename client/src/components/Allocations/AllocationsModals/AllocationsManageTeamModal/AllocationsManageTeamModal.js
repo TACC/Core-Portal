@@ -5,7 +5,7 @@ import { useTable } from 'react-table';
 import { LoadingSpinner, UserSearchbar, Message } from '_common';
 import './AllocationsManageTeamModal.module.scss';
 
-const AllocationsManageTeamTable = ({ rawData, projectId }) => {
+export const AllocationsManageTeamTable = ({ rawData, projectId }) => {
   const dispatch = useDispatch();
   const { removingUserOperation } = useSelector(state => state.allocations);
   const data = React.useMemo(() => rawData, [rawData]);
