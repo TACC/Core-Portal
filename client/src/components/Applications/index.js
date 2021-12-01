@@ -1,3 +1,1 @@
-import AppsRoutes from './AppLayout/AppLayout';
-
-export default AppsRoutes;
+export { default, AppsLayout } from './AppLayout/AppLayout';

@@ -40,7 +40,6 @@ describe('PublicData', () => {
         }
       },
       pushKeys: { target: {} },
-      workbench: { config: { systemPrefix: 'cep.local.project' } }
     });
     const { getByText } = renderComponent(<PublicData />, store, history);
 
