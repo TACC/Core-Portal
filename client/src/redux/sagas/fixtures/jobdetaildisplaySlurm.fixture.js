@@ -18,7 +18,8 @@ const jobDisplaySlurmFixture = {
   allocation: 'TACC-ACI',
   queue: 'normal',
   processorsPerNode: 20,
-  nodeCount: 1
+  nodeCount: 1,
+  interactive: true
 };
 
 export default jobDisplaySlurmFixture;

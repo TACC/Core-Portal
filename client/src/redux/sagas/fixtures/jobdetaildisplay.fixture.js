@@ -14,7 +14,8 @@ const jobDetailDisplayFixture = {
       id: 'compression_type',
       value: 'tgz'
     }
-  ]
+  ],
+  interactive: false
 };
 
 export default jobDetailDisplayFixture;
