@@ -144,7 +144,7 @@ const DataFilesSearchbar = ({
       )}
       {hasQuery && !siteSearch && (
         <div aria-label="Summary of Search Results" styleName="results">
-          {resultCount} Results Found for <span>{hasQuery}</span>
+          {resultCount} results in {sectionName}
         </div>
       )}
       {((hasQuery && !siteSearch) ||
