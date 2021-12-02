@@ -47,6 +47,7 @@
 
 .submit-button {
     composes: c-button--primary from '../../../styles/components/c-button.css';
+    font-size: 16px;
     margin: auto;
 }
 

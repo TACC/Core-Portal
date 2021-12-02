@@ -275,10 +275,6 @@ class JobsView(BaseApiView):
 
             if job_action == 'resubmit':
                 if "id" in data:
-                    # Remove previous job fom job list
-                    prev_job = JobSubmission.objects.get(jobId=job_id)
-                    prev_job.delete()
-
                     job = JobSubmission.objects.create(
                         user=request.user,
                         jobId=data["id"]

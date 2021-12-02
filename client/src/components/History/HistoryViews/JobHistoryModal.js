@@ -50,6 +50,7 @@ const reduceInputParameters = data =>
   }, {});
 
 function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
+  const history = useHistory();
   const dispatch = useDispatch();
   const outputPath = `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
   const created = formatDateTime(new Date(jobDetails.created));
@@ -80,20 +81,34 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     />
   );
 
-  const relaunchJob = () => {
-    dispatch({
-      type: 'SUBMIT_JOB',
-      payload: {
-        job_id: jobDetails.id,
-        action: 'resubmit',
-        onSuccess: {
-          type: 'GET_JOBS',
-          params: {
-            offset: 0
+  const resubmitJob = () => {
+    if (jobDisplay.interactive) {
+      dispatch({
+        type: 'SUBMIT_JOB',
+        payload: {
+          job_id: jobDetails.id,
+          action: 'resubmit',
+          onSuccess: {
+            type: 'GET_JOBS',
+            params: {
+              offset: 0
+            }
           }
         }
-      }
-    });
+      });
+    } else {
+      const appId = jobDetails.appId
+        .split('.')
+        .slice(4)
+        .join('.')
+        .split('-')
+        .slice(0, -1)
+        .join('-');
+      history.push(`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${appId}`, {
+        fromJobHistoryModal: true,
+        jobDetails
+      });
+    }
   };
 
   if ('queue' in jobDisplay) {
@@ -147,9 +162,9 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
             color="primary"
             type="submit"
             styleName="submit-button"
-            onClick={relaunchJob}
+            onClick={resubmitJob}
           >
-            Relaunch Job
+            Resubmit Job
           </Button>
         )}
       </div>

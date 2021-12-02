@@ -15,7 +15,7 @@ import parse from 'html-react-parser';
 import './AppForm.scss';
 import SystemsPushKeysModal from '_common/SystemsPushKeysModal';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { getSystemName } from 'utils/systems';
 import FormSchema from './AppFormSchema';
 import {
@@ -154,6 +154,11 @@ AppInfo.propTypes = {
 
 export const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const fromJobHistoryModal = location.state
+    ? location.state.fromJobHistoryModal
+    : false;
+
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
@@ -269,6 +274,17 @@ export const AppSchemaForm = ({ app }) => {
   } else {
     initialValues.allocation = app.exec_sys.scheduler;
   }
+
+  if (fromJobHistoryModal) {
+    const prevJobDetails = location.state.jobDetails;
+    initialValues.parameters = {
+      ...prevJobDetails.parameters
+    };
+    initialValues.inputs = {
+      ...prevJobDetails.inputs
+    };
+  }
+
   return (
     <div id="appForm-wrapper">
       {/* The !! is needed because the second value of this shorthand 
@@ -431,6 +447,7 @@ export const AppSchemaForm = ({ app }) => {
           if (app.definition.tags.includes('DCV')) {
             job.name += '-dcvserver';
           }
+
           dispatch({
             type: 'SUBMIT_JOB',
             payload: job
