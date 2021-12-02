@@ -26,13 +26,6 @@ export function* fetchIntroMessages() {
       UI: true
     };
 
-    // update messages dictionary with messages from the database
-    // that have been read/dismissed (unread = false)
-    // if (introMessages !== 'NULL') {
-    //   introMessages.forEach(element => {
-    //     messages[element.component] = element.unread;
-    //   });
-    // }
     introMessages.forEach(element => {
       messages[element.component] = element.unread;
     });
@@ -52,8 +45,7 @@ export function* watchFetchIntroMessages() {
   yield takeLeading('FETCH_INTRO', fetchIntroMessages);
 }
 
-// Write IntroMessages that have been read to the database and
-// update the redux store.
+// Write IntroMessages to the database and update the redux store.
 export function* saveIntroMessages(action) {
   yield put({ type: 'INTRO_SAVE_STARTED' });
   try {

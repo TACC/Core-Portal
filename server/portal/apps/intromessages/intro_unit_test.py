@@ -47,7 +47,7 @@ def test_intromessages_put(client, authenticated_user):
             'DATA': {'unread': True},
             'HISTORY': {'unread': False},
             'TICKETS': {'unread': True},
-            'UI': {'unread': True}                  
+            'UI': {'unread': True}
     }
     response = client.put('/api/intromessages/',
                           content_type="application/json",
@@ -68,23 +68,3 @@ def test_intromessages_put(client, authenticated_user):
                 break
         assert found
         assert correct_status
-
-
-"""
-Test to make sure rows are not saved where unread == True
-IntroMessages are only saved to the database when they have
-been read/dismissed (unread = False)
-"""
-
-
-@pytest.mark.django_db(transaction=True, reset_sequences=True)
-def test_intromessages_put_unread_true(client, authenticated_user):
-    body = {
-            'HISTORY': {'unread': True}
-    }
-    response = client.put('/api/intromessages/',
-                          content_type="application/json",
-                          data=body)
-    assert response.status_code == 200
-    print("==========>> Length = " + str(len(IntroMessages.objects.all())))
-    assert len(IntroMessages.objects.all()) == 0
