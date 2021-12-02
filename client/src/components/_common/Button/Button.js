@@ -38,12 +38,14 @@ const Button = ({
 }) => {
   let iconBefore, iconAfter;
   if (iconBeforeName) iconBefore = createIcon(iconBeforeName, 'before');
-  if (iconAfterName) iconBefore = createIcon(iconAfterName, 'after');
+  if (iconAfterName) iconAfter = createIcon(iconAfterName, 'after');
   const colorType = color || type;
   const colorAttr = colorType === '' ? {} : { color: colorType };
 
 
-
+  if (iconAfterName) {
+    console.log("iconAfterName = True")
+  }
   console.log("...props = ");
   console.log({...props});
   console.log("children = ");
@@ -55,7 +57,7 @@ const Button = ({
   console.log("colorType = ");
   console.log(colorType);
   console.log("colorAttr = ");
-  console.log({...colorAttr})
+  console.log(colorAttr)
 
 
   return (

@@ -46,10 +46,12 @@ function UIPatterns() {
             <h6>Paginator</h6>
             <UIPatternsPaginator />
           </div>
-          <div styleName="list-item">
+          <div styleName="list-item" className="mb-5">
             <h6>Button Component</h6>
             <UIPatternsButton />
           </div>
+          
+
         </>
       }
       contentLayoutName="oneColumn"
