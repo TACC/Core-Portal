@@ -349,44 +349,35 @@ describe('Edit Required Information', () => {
     expect(getByText(/Submit/)).toBeDefined();
   });  
  
-  it('should render a multiple phone number',() => {
-    
-      const stateWithFields = {
-        ...testState,
-        fields: {
-          countries: [[230, 'United States']],
-          institutions: [[1, 'University of Texas at Austin']],
-          ethnicities: [['Decline', 'Decline to Identify']],
-          genders: [['Other', 'Other']],
-          professionalLevels: [['Other', 'Other']],
-          titles: [['Other User', 'Other User']]
-        }
-      };
-      const storeWithFields = mockStore({ profile: stateWithFields });
+  it('should pass multiple valid phone numbers', async () => {
+    const stateWithFields = {
+      ...testState,
+      fields: {
+        countries: [[230, 'United States']],
+        institutions: [[1, 'University of Texas at Austin']],
+        ethnicities: [['Decline', 'Decline to Identify']],
+        genders: [['Other', 'Other']],
+        professionalLevels: [['Other', 'Other']],
+        titles: [['Other User', 'Other User']],
+      }
+    };
+    const storeWithFields = mockStore({ profile: stateWithFields });
+    stateWithFields['data']['demographics']['phone'] = ('223')
+    stateWithFields['data']['demographics']['email'] = 'wu';
 
-      rerender(
-        <Provider store={storeWithFields}>
-          <EditRequiredInformationModal />
-        </Provider>
-      );
-
-      const phoneField = getByLabelText(/phone/);
-      const submitButton = getByLabelText(/required-submit/);
-      fireEvent.change(phoneField, {
-        target: {
-          value: '234-242-2424'
-        }
-      });
-      const clickSpy = () => jest.fn();
-      submitButton.addEventListener('click', clickSpy, false);
-      fireEvent.click(submitButton);
-      console.log(phoneField)
-      wait(() => {
-        expect(queryAllByText(/Phone number is not valid/)).toBeDefined();
-     
-      });
+    rerender(
+      <Provider store={storeWithFields}>
+        <EditRequiredInformationModal />
+      </Provider>
+    );
+    const submitButton = getByLabelText(/required-submit/);
+    fireEvent.click(submitButton);
+    await wait(() => {
+      expect(/Phone Number/).not.toBeNull();
+      expect(/Email Address/).toBeDefined();
     });
-   
+  });
+
   it('should show users errors if the fields are missing or invalid', async () => {
     const stateWithFields = {
       ...testState,
@@ -396,40 +387,29 @@ describe('Edit Required Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
+        titles: [['Other User', 'Other User']],
       }
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
+    stateWithFields['data']['demographics']['phone'] = ('122','224','2942-292992');
+    stateWithFields['data']['demographics']['email'] = 'email';
 
     rerender(
       <Provider store={storeWithFields}>
         <EditRequiredInformationModal />
       </Provider>
     );
-
-    const emailField = getByLabelText(/email/);
-    const phoneField = getByLabelText(/phone/);
     const submitButton = getByLabelText(/required-submit/);
-
-    // Invalid Entries
-    fireEvent.change(emailField, {
-      target: {
-        value: 'email'
-      }
-    });
-    fireEvent.change(phoneField, {
-      target: {
-        value: '123'
-      }
-    });
-    const clickSpy = () => jest.fn();
-    submitButton.addEventListener('click', clickSpy, false);
+    const clickSpy = jest.spyOn(submitButton, 'click');
     fireEvent.click(submitButton);
-    wait(() => {
-      expect(getByText(/Phone number is not valid/)).toBeDefined();
+
+    await wait(() => {
+      expect(getByText('Phone number is not valid')).not.toBeNull();
+      expect(getByText('Please enter a valid email address')).toBeDefined();
       expect(clickSpy).not.toHaveBeenCalled();
     });
-  });
+  });  
+
 
   it('should render a loading spinner when the form data is being sent to the back-end', () => {
     const stateWithFields = {
