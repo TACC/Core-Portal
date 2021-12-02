@@ -83,18 +83,6 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
 
   const resubmitJob = () => {
     if (jobDisplay.interactive) {
-      const appId = jobDetails.appId
-        .split('.')
-        .slice(4)
-        .join('.')
-        .split('-')
-        .slice(0, -1)
-        .join('-');
-      history.push(`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${appId}`, {
-        fromJobHistoryModal: true,
-        jobDetails
-      });
-    } else {
       dispatch({
         type: 'SUBMIT_JOB',
         payload: {
@@ -107,6 +95,18 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
             }
           }
         }
+      });
+    } else {
+      const appId = jobDetails.appId
+        .split('.')
+        .slice(4)
+        .join('.')
+        .split('-')
+        .slice(0, -1)
+        .join('-');
+      history.push(`${ROUTES.WORKBENCH}${ROUTES.APPLICATIONS}/${appId}`, {
+        fromJobHistoryModal: true,
+        jobDetails
       });
     }
   };
