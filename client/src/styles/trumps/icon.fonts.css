@@ -2,7 +2,7 @@
   font-family: 'Cortal-Icons';
   /* TACC: Use `woff` because it is `ttf` optimized for web, and browser support */
   /* TACC: Renamed to include version and correct path */
-  src: url('../../fonts/Cortal-Icons-1.2.woff?vrusnv') format('woff');
+  src: url('../../fonts/Cortal-Icons-1.3.woff?vrusnv') format('woff');
   /*
   src:  url('fonts/Cortal-Icons.eot?vrusnv');
   src:  url('fonts/Cortal-Icons.eot?vrusnv#iefix') format('embedded-opentype'),
@@ -36,8 +36,20 @@
   content: "\e95a";
 }
 */
-.icon-jobs:before {
+.icon-matlab:before {
+  content: "\e95a";
+}
+.icon-notebook:before {
   content: "\e95b";
+}
+.icon-namd:before {
+  content: "\e95c";
+}
+.icon-jobs:before {
+  content: "\e960";
+}
+.icon-jobs-history:before {
+  content: "\e961";
 }
 .icon-zipped:before {
   content: "\e957";
@@ -195,7 +207,6 @@
 .icon-multiple-coversation:before {
   content: "\e930";
 }
-/* TACC: This is meant for non-published storage. regardless of which system it lives on */
 .icon-my-data:before {
   content: "\e931";
 }
