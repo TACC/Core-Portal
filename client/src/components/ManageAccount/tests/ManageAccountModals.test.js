@@ -349,7 +349,7 @@ describe('Edit Required Information', () => {
     expect(getByText(/Submit/)).toBeDefined();
   });  
  
-  it('should pass multiple valid phone numbers', async () => {
+  it('should pass multiple valid phone numbers and emails', async () => {
     const stateWithFields = {
       ...testState,
       fields: {
@@ -362,19 +362,22 @@ describe('Edit Required Information', () => {
       }
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
-    stateWithFields['data']['demographics']['phone'] = ('223')
-    stateWithFields['data']['demographics']['email'] = 'wu';
+    stateWithFields['data']['demographics']['phone'] = ('223-043-3406','(541) 754-3010','1-541-754-3010','001-541-754-3010')
+    stateWithFields['data']['demographics']['email'] = ('w@utexas.edu','w@gmail.com','w@yahoo.com');
 
-    rerender(
+
+    const {getByText,queryByText} = render(
       <Provider store={storeWithFields}>
         <EditRequiredInformationModal />
       </Provider>
     );
     const submitButton = getByLabelText(/required-submit/);
+    const clickSpy = jest.spyOn(submitButton, 'click');
     fireEvent.click(submitButton);
     await wait(() => {
-      expect(/Phone Number/).not.toBeNull();
-      expect(/Email Address/).toBeDefined();
+      expect(queryByText('Phone number is not valid')).toBeNull();
+      expect(queryByText('Please enter a valid email address')).toBeNull();
+      expect(clickSpy)
     });
   });
 
