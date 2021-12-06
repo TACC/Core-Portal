@@ -199,6 +199,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const canExtract = getFilePermissions('extract', permissionParams);
   const canMakePublic =
     showMakePublic && getFilePermissions('public', permissionParams);
+  const canEmpty = trashedFiles.length > 0;
 
   return (
     <>
@@ -265,7 +266,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
             }
             iconName="trash"
             onClick={!inTrash ? trash : empty}
-            disabled={!inTrash ? !canTrash : false}
+            disabled={!inTrash ? !canTrash : !canEmpty}
             buttonName={!inTrash ? "" : " empty-button btn-secondary"}
           />
         )}
