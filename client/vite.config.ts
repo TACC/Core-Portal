@@ -6,6 +6,7 @@ import { resolve } from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/core/static/',
+  css: { preprocessorOptions: { scss: { charset: false } } },
   plugins: [
     //{...eslint({include: 'src/**/*.+(js|jsx|ts|tsx)', fix: false}), enforce: 'pre', },
     react()],
