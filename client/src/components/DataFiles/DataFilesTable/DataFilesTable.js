@@ -23,6 +23,12 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   );
   const scheme = useSelector(state => state.files.params.FilesListing.scheme);
   const system = useSelector(state => state.pushKeys.target);
+  let currSystemHost = useSelector(state =>
+    state.systems.definitions.list.find(
+      sysDef => sysDef.id === state.files.params.FilesListing.system
+    )
+  );
+  currSystemHost = currSystemHost ? currSystemHost.storage.host : '';
   const loading = useSelector(state => state.files.loading[section]);
   const err = useSelector(state => state.files.error[section]);
   const modalRefs = useSelector(state => state.files.refs);
@@ -30,6 +36,16 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   const filesLength = data.length;
   const isGDrive = currentListing === 'googledrive';
 
+  useEffect(() => {
+    dispatch({ type: 'GET_SYSTEM_MONITOR' });
+  }, [dispatch]);
+  const downSystems = useSelector(state =>
+    state.systemMonitor
+      ? state.systemMonitor.list
+          .filter(currSystem => !currSystem.is_operational)
+          .map(downSys => downSys.hostname)
+      : []
+  );
   const pushKeys = e => {
     e.preventDefault();
     const props = {
@@ -70,6 +86,19 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
       </>
     );
     if (err === '502') {
+      if (downSystems.includes(currSystemHost)) {
+        return (
+          <div className="h-100 listing-placeholder">
+            <SectionMessage type="warning">
+              System down for maintenance. Check System Status in the&nbsp;
+              <Link to="/workbench/dashboard" className="wb-link">
+                Dashboard
+              </Link>
+              &nbsp;for updates.
+            </SectionMessage>
+          </div>
+        );
+      }
       if (scheme === 'private') {
         const link = strings => (
           <a

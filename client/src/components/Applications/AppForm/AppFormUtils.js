@@ -89,7 +89,7 @@ export const getProcessorsOnEachNodeValidation = queue => {
   }
   return Yup.number()
     .min(1)
-    .max(queue.maxProcessorsPerNode / queue.maxNodes);
+    .max(Math.ceil(queue.maxProcessorsPerNode / queue.maxNodes));
 };
 
 /**

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useCallback } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,7 +24,9 @@ import {
   FormField,
   FileInputDropZoneFormField,
   LoadingSpinner,
-  Message
+  Message,
+  InfiniteScrollTable,
+  Icon
 } from '_common';
 import { Formik, Form } from 'formik';
 import * as ROUTES from '../../constants/routes';
@@ -33,18 +35,64 @@ import './TicketModal.scss';
 const formSchema = Yup.object().shape({
   reply: Yup.string().required('Required')
 });
+const Attachments = ({ attachments, ticketId }) => {
+  const infiniteScrollCallback = useCallback(() => {});
+  const noDataText = 'No attachments to display.';
+  const json = attachments.map(function attachmentAcessor(x) {
+    return {
+      attachment_id: x[0],
+      attachment_name: x[1]
+    };
+  });
 
-const Attachments = ({ attachments }) => {
+  const columns = [
+    {
+      Header: 'Attached Files',
+      accessor: 'attachment_name',
+      className: 'attachment-title',
+      Cell: el => (
+        <span
+          title={el.value}
+          id={`attachment${el.row.index}`}
+          className="attachment__name"
+        >
+          {el.value}
+        </span>
+      )
+    },
+    {
+      Header: '',
+      className: 'link',
+      accessor: 'attachment_id',
+      Cell: el => (
+        <a
+          href={`/api/tickets/${ticketId}/attachment/${el.value}`}
+          className="link"
+          target="_blank"
+          rel="noreferrer noopener"
+          key={el.value}
+        >
+          Download
+        </a>
+      )
+    }
+  ];
   return (
     <div>
-      Attachments:
-      <ul>
-        {attachments.map(attachmentName => (
-          <li key={attachmentName[0]}>{attachmentName[1]} </li>
-        ))}
-      </ul>
+      <InfiniteScrollTable
+        tableColumns={columns}
+        className="attachment-table"
+        accessor="attachment"
+        tableData={json}
+        onInfiniteScroll={infiniteScrollCallback}
+        noDataText={noDataText}
+      />
     </div>
   );
+};
+Attachments.propTypes = {
+  attachments: PropTypes.arrayOf(PropTypes.array).isRequired,
+  ticketId: PropTypes.string.isRequired
 };
 
 Attachments.propTypes = {
@@ -148,7 +196,8 @@ const TicketHistoryCard = ({
   creator,
   ticketCreator,
   content,
-  attachments
+  attachments,
+  ticketId
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
@@ -168,6 +217,7 @@ const TicketHistoryCard = ({
   const attachmentTitles = (attachments || []).filter(
     a => !a[1].toString().startsWith('untitled (')
   );
+
   return (
     <Card className="mt-1">
       <CardHeader
@@ -183,6 +233,12 @@ const TicketHistoryCard = ({
             <span className={ticketHeaderClassName}>
               {creator} | {`${formatDateTime(created)}`}
             </span>
+            {!!attachmentTitles.length && (
+              <span>
+                {' '}
+                <Icon name="link" />{' '}
+              </span>
+            )}
           </strong>{' '}
           {isOpen ? '' : content}
         </span>
@@ -192,7 +248,7 @@ const TicketHistoryCard = ({
         <CardBody>{content}</CardBody>
         {!!attachmentTitles.length && (
           <CardBody>
-            <Attachments attachments={attachmentTitles} />
+            <Attachments attachments={attachmentTitles} ticketId={ticketId} />
           </CardBody>
         )}
       </Collapse>
@@ -206,7 +262,8 @@ TicketHistoryCard.propTypes = {
   creator: PropTypes.string.isRequired,
   ticketCreator: PropTypes.bool.isRequired,
   content: PropTypes.string.isRequired,
-  attachments: PropTypes.arrayOf(PropTypes.array).isRequired
+  attachments: PropTypes.arrayOf(PropTypes.array).isRequired,
+  ticketId: PropTypes.string.isRequired
 };
 
 export const TicketHistory = () => {
@@ -239,6 +296,7 @@ export const TicketHistory = () => {
           ticketCreator={d.IsCreator}
           content={d.Content}
           attachments={d.Attachments}
+          ticketId={d.Ticket}
         />
       ))}
       <div ref={ticketHistoryEndRef} />
