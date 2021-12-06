@@ -57,6 +57,8 @@ export function findProjectTitle(projectsList, projectSystem, projectTitle) {
  * @param {Array} systemList
  * @param {Array} projectsList
  * @param {string} system
+ * @param {string} projectTitle
+ * @param {boolean} isRoot
  * @return {string} display name of system or project
  */
 export function findSystemOrProjectDisplayName(
@@ -64,12 +66,13 @@ export function findSystemOrProjectDisplayName(
   systemList,
   projectsList,
   system,
-  projectTitle
+  projectTitle,
+  isRoot
 ) {
   switch (scheme) {
     case 'projects':
       return findProjectTitle(projectsList, system, projectTitle);
     default:
-      return findSystemDisplayName(systemList, system);
+      return findSystemDisplayName(systemList, system, isRoot);
   }
 }

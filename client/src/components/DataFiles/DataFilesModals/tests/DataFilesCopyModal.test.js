@@ -62,11 +62,13 @@ describe('DataFilesCopyModal', () => {
 
     expect(projectLink).toBeDefined();
     expect(store.getActions()).toEqual([
+      { type: 'GET_SYSTEM_MONITOR'},
       { type: 'PROJECTS_GET_LISTING', payload: { queryString: null } }
     ]);
     fireEvent.click(projectLink);
 
     expect(store.getActions()).toEqual([
+      { type: 'GET_SYSTEM_MONITOR'},
       { type: 'PROJECTS_GET_LISTING', payload: { queryString: null } },
       {
         type: 'FETCH_FILES',
@@ -102,6 +104,7 @@ describe('DataFilesCopyModal', () => {
     fireEvent.change(getByTestId('selector'), { target: { value: 'shared' } });
 
     expect(store.getActions()).toEqual([
+      { type: 'GET_SYSTEM_MONITOR'},
       {
         type: 'PROJECTS_GET_LISTING',
         payload: { queryString: null }

@@ -2,9 +2,10 @@ import logging
 import re
 from functools import wraps
 from django.core.files.base import ContentFile
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponse
 from django.utils.decorators import method_decorator
 from django.core.exceptions import PermissionDenied
 from portal.apps.tickets import rtUtil
@@ -189,3 +190,15 @@ class TicketsHistoryView(BaseApiView):
         rt = rtUtil.DjangoRt()
         ticket_history = self._get_ticket_history(rt, request.user.username, ticket_id)
         return JsonResponse({'ticket_history': ticket_history})
+
+
+class TicketsAttachmentView(BaseApiView):
+    @has_access_to_ticket
+    def get(self, request, ticket_id, attachment_id):
+        rt = rtUtil.DjangoRt()
+        attachment = rt.getAttachment(ticket_id, attachment_id)
+        content = attachment["Content"]
+        content_type = attachment["ContentType"]
+        response = HttpResponse(content, content_type=content_type)
+        response["Content-Disposition"] = attachment["Headers"]["Content-Disposition"]
+        return response

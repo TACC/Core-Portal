@@ -100,4 +100,12 @@
     font-size: 1.4em;
     display: flex;
   }
+  .link {
+    color: var(--global-color-accent--normal);
+    text-align: right;
+    &:hover {
+      color: var(--global-color-accent--normal);
+      text-decoration: underline;
+    }
+  }
 }
