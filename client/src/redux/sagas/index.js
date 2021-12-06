@@ -20,6 +20,7 @@ import {
   watchExtract,
   watchLink,
   watchTrash,
+  watchEmpty,
   watchMakePublic
 } from './datafiles.sagas';
 import watchAllocations from './allocations.sagas';
@@ -65,6 +66,7 @@ export default function* rootSaga() {
     watchDownload(),
     watchLink(),
     watchTrash(),
+    watchEmpty(),
     watchMakePublic(),
     ...watchAllocations,
     watchCompress(),

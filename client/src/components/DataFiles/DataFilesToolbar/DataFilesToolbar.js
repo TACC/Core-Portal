@@ -182,8 +182,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
         src: trashedFiles,
         reloadCallback: reloadPage
       }
-    })
-  })
+    });
+  }, [reloadPage, trashedFiles]);
 
   const permissionParams = { files: selectedFiles, scheme, api };
   const canDownload = getFilePermissions('download', permissionParams);

@@ -823,19 +823,69 @@ export function* trashFiles(action) {
 export function* trashFile(system, path, id) {
   yield put({
     type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-    payload: { status: 'RUNNING', key: id, operation: 'trash' }
+    payload: { status: 'RUNNING', key: system + path, operation: 'trash' }
   });
   try {
     yield call(trashUtil, 'tapis', 'private', system, path);
 
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'SUCCESS', key: id, operation: 'trash' }
+      payload: { status: 'SUCCESS', key: system + path, operation: 'trash' }
     });
   } catch (e) {
     yield put({
       type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
-      payload: { status: 'ERROR', key: id, operation: 'trash' }
+      payload: { status: 'ERROR', key: system + path, operation: 'trash' }
+    });
+  }
+}
+
+export async function emptyUtil(api, scheme, system, path) {
+  const url = `/api/datafiles/${api}/delete/${scheme}/${system}${path}/`;
+  const request = await fetch(url, {
+    method: 'PUT',
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken')},//, 'X-HTTP-Method': 'DELETE' },
+    credentials: 'same-origin',
+    body: JSON.stringify({})
+  });
+
+  if (!request.ok) {
+    throw new Error(request.status);
+  }
+  return request;
+}
+
+export function* watchEmpty() {
+  yield takeLeading('DATA_FILES_EMPTY', emptyFiles);
+}
+
+export function* emptyFiles(action) {
+  const emptyCalls = action.payload.src.map(file => {
+    return call(emptyFile, file.system, file.path, file.id);
+  });
+  yield race({
+    result: all(emptyCalls),
+    cancel: take('DATA_FILES_MODAL_CLOSE')
+  });
+  yield call(action.payload.reloadCallback);
+}
+
+export function* emptyFile(system, path, id) {
+  yield put({
+    type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+    payload: { status: 'RUNNING', key: system + path, operation: 'empty' }
+  });
+  try {
+    yield call(emptyUtil, 'tapis', 'private', system, path);
+
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'SUCCESS', key: system + path, operation: 'empty' }
+    });
+  } catch (e) {
+    yield put({
+      type: 'DATA_FILES_SET_OPERATION_STATUS_BY_KEY',
+      payload: { status: 'ERROR', key: system + path, operation: 'empty' }
     });
     return 'ERR';
   }
