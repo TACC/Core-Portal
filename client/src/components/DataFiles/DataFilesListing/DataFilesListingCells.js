@@ -22,7 +22,7 @@ export const CheckboxHeaderCell = () => {
         payload: { section: 'FilesListing' }
       });
   };
-  const handleKeyPress = e => e.key === 'enter' && toggleSelect();
+  const handleKeyPress = e => e.key === ' ' && toggleSelect();
   return (
     <Checkbox
       isChecked={selected}
