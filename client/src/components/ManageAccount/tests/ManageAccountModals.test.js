@@ -363,7 +363,6 @@ describe('Edit Required Information', () => {
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
     stateWithFields['data']['demographics']['phone'] = ('223-043-3406','(541) 754-3010','1-541-754-3010','001-541-754-3010')
-    stateWithFields['data']['demographics']['email'] = ('w@utexas.edu','w@gmail.com','w@yahoo.com');
 
 
     const {getByText,queryByText} = render(
@@ -376,7 +375,6 @@ describe('Edit Required Information', () => {
     fireEvent.click(submitButton);
     await wait(() => {
       expect(queryByText('Phone number is not valid')).toBeNull();
-      expect(queryByText('Please enter a valid email address')).toBeNull();
       expect(clickSpy)
     });
   });
