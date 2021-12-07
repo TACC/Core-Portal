@@ -1,12 +1,8 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import React, { useCallback, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
-import { SectionMessage} from '_common';
-import { v4 as uuidv4 } from 'uuid';
-
-import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
-import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
+import { SectionMessage } from '_common';
 
 const DataFilesEmptyModal = React.memo(() => {
   const history = useHistory();
@@ -16,18 +12,9 @@ const DataFilesEmptyModal = React.memo(() => {
   };
 
   const dispatch = useDispatch();
-  const params = useSelector(
-    state => state.files.params.FilesListing,
-    shallowEqual
-  );
 
   const isOpen = useSelector(state => state.files.modals.empty);
-  const trashedFiles = useSelector(
-    state =>
-      state.files.listing.FilesListing
-  );
-  const trash = useMemo(() => trashedFiles, [isOpen]);
-  const status = useSelector(state => state.files.operationStatus.trash);
+  const trashedFiles = useSelector(state => state.files.listing.FilesListing);
   const [disabled, setDisabled] = useState(false);
   const toggle = () =>
     dispatch({

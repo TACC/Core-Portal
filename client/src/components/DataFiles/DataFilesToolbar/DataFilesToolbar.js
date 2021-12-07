@@ -6,15 +6,17 @@ import { Button } from 'reactstrap';
 import getFilePermissions from 'utils/filePermissions';
 import './DataFilesToolbar.scss';
 
-export const ToolbarButton = ({ text, iconName, onClick, disabled, buttonName }) => {
+export const ToolbarButton = ({
+  text,
+  iconName,
+  onClick,
+  disabled,
+  buttonName
+}) => {
   const iconClassName = `icon-action icon-${iconName}`;
-  const buttonClassName = `data-files-toolbar-button${buttonName}`
+  const buttonClassName = `data-files-toolbar-button${buttonName}`;
   return (
-    <Button
-      disabled={disabled}
-      onClick={onClick}
-      className={buttonClassName}
-    >
+    <Button disabled={disabled} onClick={onClick} className={buttonClassName}>
       <i className={iconClassName} data-testid="toolbar-icon" />
       <span className="toolbar-button-text">{text}</span>
     </Button>
@@ -23,7 +25,7 @@ export const ToolbarButton = ({ text, iconName, onClick, disabled, buttonName })
 ToolbarButton.defaultProps = {
   onClick: () => {},
   disabled: true,
-  buttonName: ""
+  buttonName: ''
 };
 ToolbarButton.propTypes = {
   onClick: PropTypes.func,
@@ -48,10 +50,14 @@ const DataFilesToolbar = ({ scheme, api }) => {
     )
   );
 
-  const inTrash = useSelector(state => 
-    state.files.params.FilesListing.path.startsWith('.Trash'));
-  const trashedFiles = useSelector(state => inTrash ?
-    state.files.listing.FilesListing : []);
+  const inTrash = useSelector(state =>
+    state.files.params.FilesListing.path.startsWith('.Trash')
+  );
+  const trashedFiles = useSelector(state =>
+    inTrash ? state.files.listing.FilesListing : []
+  );
+
+  const status = useSelector(state => state.files.operationStatus.trash);
 
   const modifiableUserData =
     api === 'tapis' && scheme !== 'public' && scheme !== 'community';
@@ -161,7 +167,9 @@ const DataFilesToolbar = ({ scheme, api }) => {
   };
 
   const trash = useCallback(() => {
-    const filteredSelected = selectedFiles.filter(f => status[f.id] !== 'SUCCESS');
+    const filteredSelected = selectedFiles.filter(
+      f => status[f.id] !== 'SUCCESS'
+    );
     dispatch({
       type: 'DATA_FILES_TRASH',
       payload: {
@@ -253,14 +261,11 @@ const DataFilesToolbar = ({ scheme, api }) => {
         )}
         {showTrash && (
           <ToolbarButton
-            text= { 
-              !inTrash ? 
-              "Trash" : "Empty"
-            }
+            text={!inTrash ? 'Trash' : 'Empty'}
             iconName="trash"
             onClick={!inTrash ? trash : empty}
             disabled={!inTrash ? !canTrash : !canEmpty}
-            buttonName={!inTrash ? "" : " empty-button btn-secondary"}
+            buttonName={!inTrash ? '' : ' empty-button btn-secondary'}
           />
         )}
       </div>

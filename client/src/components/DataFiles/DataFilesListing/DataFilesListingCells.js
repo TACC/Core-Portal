@@ -5,7 +5,7 @@ import { Checkbox, Icon, LoadingSpinner } from '_common';
 import { Button } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import './DataFilesListingCells.scss';
-import '../../Onboarding/OnboardingStep.module.scss'
+import '../../Onboarding/OnboardingStep.module.scss';
 
 import formatSize from 'utils/sizeFormat';
 import { formatDateTimeFromValue } from 'utils/timeFormat';
@@ -39,17 +39,30 @@ export const CheckboxCell = React.memo(({ index, trashInProgress }) => {
   const selected = useSelector(state =>
     state.files.selected.FilesListing.includes(index)
   );
-  return trashInProgress ? 
-    <LoadingSpinner placement="inline"/>
-    : <Checkbox isChecked={selected} />;
+  return trashInProgress ? (
+    <LoadingSpinner placement="inline" />
+  ) : (
+    <Checkbox isChecked={selected} />
+  );
 });
 CheckboxCell.propTypes = {
   index: PropTypes.number.isRequired,
-  trashInProgress: PropTypes.bool
+  trashInProgress: PropTypes.bool.isRequired
 };
 
 export const FileNavCell = React.memo(
-  ({ system, path, name, format, api, scheme, href, isPublic, length, trashInProgress }) => {
+  ({
+    system,
+    path,
+    name,
+    format,
+    api,
+    scheme,
+    href,
+    isPublic,
+    length,
+    trashInProgress
+  }) => {
     const dispatch = useDispatch();
     const previewCallback = e => {
       e.stopPropagation();
@@ -71,8 +84,9 @@ export const FileNavCell = React.memo(
 
     return (
       <>
-        { trashInProgress ? 
-        (<div styleName='disabled'>{name}</div>) : 
+        {trashInProgress ? (
+          <div styleName="disabled">{name}</div>
+        ) : (
           <span className="data-files-name">
             <Link
               className="data-files-nav-link"
@@ -85,7 +99,7 @@ export const FileNavCell = React.memo(
               {name}
             </Link>
           </span>
-        }
+        )}
       </>
     );
   }
@@ -100,7 +114,7 @@ FileNavCell.propTypes = {
   href: PropTypes.string.isRequired,
   isPublic: PropTypes.bool,
   length: PropTypes.number.isRequired,
-  trashInProgress: PropTypes.bool
+  trashInProgress: PropTypes.bool.isRequired
 };
 FileNavCell.defaultProps = {
   isPublic: false
@@ -110,44 +124,66 @@ export const FileLengthCell = ({ cell }) => {
   const bytes = cell.value[0];
   const trashInProgress = cell.value[1];
 
-  return trashInProgress ?
-    <div styleName='disabled'>{formatSize(bytes)}</div> 
-    : <span>{formatSize(bytes)}</span>;
+  return trashInProgress ? (
+    <div styleName="disabled">{formatSize(bytes)}</div>
+  ) : (
+    <span>{formatSize(bytes)}</span>
+  );
 };
 FileLengthCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.array }).isRequired
+  cell: PropTypes.shape({ value: PropTypes.shape([]) }).isRequired
 };
 
 export const LastModifiedCell = ({ cell }) => {
   const timeValue = cell.value[0];
   const trashInProgress = cell.value[1];
 
-  return trashInProgress ? 
+  return trashInProgress ? (
     <div styleName="disabled">{formatDateTimeFromValue(timeValue)}</div>
-    : <span>{formatDateTimeFromValue(timeValue)}</span>;
+  ) : (
+    <span>{formatDateTimeFromValue(timeValue)}</span>
+  );
 };
 LastModifiedCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.array }).isRequired
+  cell: PropTypes.shape({ value: PropTypes.shape([]) }).isRequired
 };
 
 export const FileIcon = ({ format, path, trashInProgress }) => {
   const isFolder = format === 'folder';
   const isTrash = path === '/.Trash';
-  const iconName = isTrash ? 'trash' : (isFolder ? 'folder' : 'file');
-  const iconLabel = isTrash ? 'Trash' : (isFolder ? 'Folder' : 'File');
-  return <Icon name={iconName} styleName= {trashInProgress ? 'disabled' : ''}>{iconLabel}</Icon>;
+  let iconName = 'file';
+  let iconLabel = 'File';
+  if (isFolder) {
+    iconName = 'folder';
+    iconLabel = 'Folder';
+    if (isTrash) {
+      iconName = 'trash';
+      iconLabel = 'Trash';
+    }
+  }
+  return (
+    <Icon name={iconName} styleName={trashInProgress ? 'disabled' : ''}>
+      {iconLabel}
+    </Icon>
+  );
 };
 FileIcon.propTypes = {
   format: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
-  trashInProgress: PropTypes.bool
+  trashInProgress: PropTypes.bool.isRequired
 };
 
 export const FileIconCell = ({ cell }) => {
-  return <FileIcon format={cell.value[0]} path={cell.value[1]} trashInProgress={cell.value[2]} />;
+  return (
+    <FileIcon
+      format={cell.value[0]}
+      path={cell.value[1]}
+      trashInProgress={cell.value[2]}
+    />
+  );
 };
 FileIconCell.propTypes = {
-  cell: PropTypes.shape({ value: PropTypes.array }).isRequired
+  cell: PropTypes.shape({ value: PropTypes.shape([]) }).isRequired
 };
 
 export const ViewPathCell = ({ file, trashInProgress }) => {
@@ -161,8 +197,12 @@ export const ViewPathCell = ({ file, trashInProgress }) => {
     });
   };
   return (
-    <Button className="btn btn-sm" color="link" onClick={onClick} 
-    disabled={trashInProgress}>
+    <Button
+      className="btn btn-sm"
+      color="link"
+      onClick={onClick}
+      disabled={trashInProgress}
+    >
       View Path
     </Button>
   );
@@ -170,5 +210,5 @@ export const ViewPathCell = ({ file, trashInProgress }) => {
 
 ViewPathCell.propTypes = {
   file: PropTypes.shape({}).isRequired,
-  trashInProgress: PropTypes.bool
+  trashInProgress: PropTypes.bool.isRequired
 };

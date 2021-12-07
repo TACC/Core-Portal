@@ -38,7 +38,9 @@ describe('DataFilesToolbar', () => {
               path: "" 
             }
           },
-          selected: { FilesListing: [] } },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false},
+        },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture
       }),
@@ -66,7 +68,9 @@ describe('DataFilesToolbar', () => {
               path: "" 
             }
           },
-          selected: { FilesListing: [] } },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false},
+        },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture
       }),
@@ -94,7 +98,9 @@ describe('DataFilesToolbar', () => {
               path: "" 
             }
           },
-          selected: { FilesListing: [] } },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false},
+        },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture
       }),
@@ -122,7 +128,9 @@ describe('DataFilesToolbar', () => {
               path: "" 
             }
           },
-          selected: { FilesListing: [] } },
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false},
+        },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture
       }),
@@ -157,7 +165,8 @@ describe('DataFilesToolbar', () => {
             }
           },
           listing: { FilesListing: [ testFile ] },
-          selected: { FilesListing: [ 0 ] } 
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false} 
        },
         //listing: {  } },
         systems: systemsFixture
@@ -182,7 +191,8 @@ describe('DataFilesToolbar', () => {
             }
           },
           listing: { FilesListing: [] },
-          selected: { FilesListing: [] } 
+          selected: { FilesListing: [] },
+          operationStatus: { trash: false},
        },
         //listing: {  } },
         systems: systemsFixture

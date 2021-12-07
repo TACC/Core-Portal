@@ -844,7 +844,7 @@ export async function emptyUtil(api, scheme, system, path) {
   const url = `/api/datafiles/${api}/delete/${scheme}/${system}${path}/`;
   const request = await fetch(url, {
     method: 'PUT',
-    headers: { 'X-CSRFToken': Cookies.get('csrftoken')},//, 'X-HTTP-Method': 'DELETE' },
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') }, //, 'X-HTTP-Method': 'DELETE' },
     credentials: 'same-origin',
     body: JSON.stringify({})
   });
