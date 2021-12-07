@@ -349,7 +349,7 @@ describe('Edit Required Information', () => {
     expect(getByText(/Submit/)).toBeDefined();
   });  
  
-  it('should pass multiple valid phone numbers and emails', async () => {
+  it('should pass multiple valid phone numbers', async () => {
     const stateWithFields = {
       ...testState,
       fields: {
@@ -358,14 +358,12 @@ describe('Edit Required Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']],
+        titles: [['Other User', 'Other User']]
       }
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
-    stateWithFields['data']['demographics']['phone'] = ('223-043-3406','(541) 754-3010','1-541-754-3010','001-541-754-3010')
-
-
-    const {getByText,queryByText} = render(
+    stateWithFields['data']['demographics']['phone'] = '321-234-2342'
+    var {getByText,queryByText} = render(
       <Provider store={storeWithFields}>
         <EditRequiredInformationModal />
       </Provider>
@@ -373,6 +371,16 @@ describe('Edit Required Information', () => {
     const submitButton = getByLabelText(/required-submit/);
     const clickSpy = jest.spyOn(submitButton, 'click');
     fireEvent.click(submitButton);
+    await wait(() => {
+      expect(queryByText('Phone number is not valid')).toBeNull();
+      expect(clickSpy)
+    });
+    stateWithFields['data']['demographics']['phone'] = '321'
+    var {queryByText} = render(
+      <Provider store={storeWithFields}>
+        <EditRequiredInformationModal />
+      </Provider>
+    );
     await wait(() => {
       expect(queryByText('Phone number is not valid')).toBeNull();
       expect(clickSpy)
@@ -388,7 +396,7 @@ describe('Edit Required Information', () => {
         ethnicities: [['Decline', 'Decline to Identify']],
         genders: [['Other', 'Other']],
         professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']],
+        titles: [['Other User', 'Other User']]
       }
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
