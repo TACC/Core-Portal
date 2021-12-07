@@ -154,7 +154,6 @@ AppInfo.propTypes = {
 
 export const AppSchemaForm = ({ app }) => {
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch({ type: 'GET_SYSTEM_MONITOR' });
   }, [dispatch]);
@@ -270,7 +269,6 @@ export const AppSchemaForm = ({ app }) => {
   } else {
     initialValues.allocation = app.exec_sys.scheduler;
   }
-
   return (
     <div id="appForm-wrapper">
       {/* The !! is needed because the second value of this shorthand 
