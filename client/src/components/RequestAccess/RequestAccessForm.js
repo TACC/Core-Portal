@@ -27,6 +27,7 @@ const RequestAccessForm = () => {
 
   return (
     <Formik
+      validateOnMount
       enableReinitialize
       initialValues={defaultValues}
       validationSchema={formSchema}
