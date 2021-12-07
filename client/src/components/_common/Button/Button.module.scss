@@ -3,7 +3,7 @@
           - `.workbench-content .btn` (not defined in `Workbench.scss`, pending global test)
           - `.btn` (available in `btn.css`, cannot be imported in `Workbench.scss`)
   */
-  composes: btn from '../../../styles/components/bootstrap.button.css';
+  // composes: btn from '../../../styles/components/bootstrap.button.css';
 
   /* Align elements horizontally and vertically */
   display: flex;
