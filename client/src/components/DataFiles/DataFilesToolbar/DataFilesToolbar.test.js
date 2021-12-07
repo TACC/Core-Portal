@@ -136,7 +136,7 @@ describe('DataFilesToolbar', () => {
     expect(queryByText(/Trash/)).toBeFalsy();
   });
 
-  it('disables Trash button for files in .Trash', () => {
+  it('enables Empty button for files in .Trash', () => {
     const testFile = {
       name: 'test.txt',
       path: '/.Trash/test.txt',
@@ -153,7 +153,7 @@ describe('DataFilesToolbar', () => {
         files: { 
           params: { 
             FilesListing: { 
-              path: "/.Trash" 
+              path: ".Trash" 
             }
           },
           listing: { FilesListing: [ testFile ] },
@@ -164,6 +164,31 @@ describe('DataFilesToolbar', () => {
       }),
       createMemoryHistory()
     );
-    expect(getByText(/Trash/).closest('button')).toBeDisabled();
+    expect(getByText(/Empty/).closest('button')).not.toBeDisabled();
+  });
+
+  it('disables Empty button when .Trash is empty', () => {
+    const { getByText } = renderComponent(
+      <DataFilesToolbar scheme="private" api="tapis" />,
+      mockStore({
+        workbench: { config: {
+          extract: '',
+          compress: ''
+        } },
+        files: { 
+          params: { 
+            FilesListing: { 
+              path: ".Trash" 
+            }
+          },
+          listing: { FilesListing: [] },
+          selected: { FilesListing: [] } 
+       },
+        //listing: {  } },
+        systems: systemsFixture
+      }),
+      createMemoryHistory()
+    );
+    expect(getByText(/Empty/).closest('button')).toBeDisabled();
   });
 });
