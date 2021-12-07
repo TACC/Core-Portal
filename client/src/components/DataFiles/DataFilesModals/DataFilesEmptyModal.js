@@ -53,7 +53,11 @@ const DataFilesEmptyModal = React.memo(() => {
       <ModalHeader toggle={toggle} charCode="&#xe912;">
         Empty Trash
       </ModalHeader>
-      <ModalBody style={{ height: '10vh' }}>
+      <ModalBody style={{ height: '18.5vh' }}>
+        <p>
+          Emptying the trash directory will <strong><em>permanently</em></strong>&nbsp;
+          delete all files within. This action cannot be reversed. TACC is not responsible 
+          for lost files.</p>
         <SectionMessage type="warning">
           Are you sure you want to permanently delete these files?
         </SectionMessage>
