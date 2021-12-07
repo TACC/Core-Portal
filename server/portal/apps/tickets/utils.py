@@ -1,6 +1,5 @@
 from portal.apps.tickets import rtUtil
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.core.files.base import ContentFile
 from django.conf import settings
 import requests
 
