@@ -50,4 +50,3 @@ def get_recaptcha_verification(request):
     r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
     recap_result = r.json()
     return recap_result
-
