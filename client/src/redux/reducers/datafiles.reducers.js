@@ -102,6 +102,7 @@ export const initialFilesState = {
     select: {},
     upload: {},
     trash: {},
+    empty: {},
     compress: null,
     extract: null,
     link: {
@@ -153,6 +154,7 @@ export const initialFilesState = {
     link: false,
     pushKeys: false,
     trash: false,
+    empty: false,
     compress: false,
     extract: false,
     manageproject: false,

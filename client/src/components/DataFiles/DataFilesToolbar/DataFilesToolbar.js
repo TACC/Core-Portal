@@ -171,19 +171,12 @@ const DataFilesToolbar = ({ scheme, api }) => {
     });
   }, [selectedFiles, reloadPage]);
 
- const empty = useCallback(() => {
-    /*dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'trash', props: { selectedFiles } }
-    });*/
+  const empty = () => {
     dispatch({
-      type: 'DATA_FILES_EMPTY',
-      payload: {
-        src: trashedFiles,
-        reloadCallback: reloadPage
-      }
+      type: 'DATA_FILES_TOGGLE_MODAL',
+      payload: { operation: 'empty', props: {} }
     });
-  }, [reloadPage, trashedFiles]);
+  };
 
   const permissionParams = { files: selectedFiles, scheme, api };
   const canDownload = getFilePermissions('download', permissionParams);

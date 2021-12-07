@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
+import { SectionMessage} from '_common';
 import { v4 as uuidv4 } from 'uuid';
 
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
@@ -20,22 +21,18 @@ const DataFilesTrashModal = React.memo(() => {
     shallowEqual
   );
 
-  const isOpen = useSelector(state => state.files.modals.trash);
-  const selectedFiles = useSelector(
+  const isOpen = useSelector(state => state.files.modals.empty);
+  const trashedFiles = useSelector(
     state =>
-      state.files.selected.FilesListing.map(i => ({
-        ...state.files.listing.FilesListing[i],
-        id: uuidv4()
-      })),
-    () => true
+      state.files.listing.FilesListing
   );
-  const selected = useMemo(() => selectedFiles, [isOpen]);
+  const trash = useMemo(() => trashedFiles, [isOpen]);
   const status = useSelector(state => state.files.operationStatus.trash);
   const [disabled, setDisabled] = useState(false);
   const toggle = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'trash', props: {} }
+      payload: { operation: 'empty', props: {} }
     });
 
   const onClosed = () => {
@@ -43,57 +40,44 @@ const DataFilesTrashModal = React.memo(() => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
-      payload: { operation: 'trash', status: {} }
+      payload: { operation: 'empty', status: {} }
     });
   };
 
-  const trashCallback = useCallback(() => {
+  const emptyCallback = useCallback(() => {
     setDisabled(true);
-    const filteredSelected = selected.filter(f => status[f.id] !== 'SUCCESS');
     dispatch({
-      type: 'DATA_FILES_TRASH',
+      type: 'DATA_FILES_EMPTY',
       payload: {
-        src: filteredSelected,
+        src: trashedFiles,
         reloadCallback: reloadPage
       }
     });
-  }, [selected, reloadPage]);
+  }, [reloadPage, trashedFiles]);
 
   return (
     <Modal
       isOpen={isOpen}
       onClosed={onClosed}
       toggle={toggle}
-      size="lg"
+      size="md"
       className="dataFilesModal"
     >
       <ModalHeader toggle={toggle} charCode="&#xe912;">
-        Moving {selected.length} File(s) to Trash
+        Empty Trash
       </ModalHeader>
-      <ModalBody style={{ height: '70vh' }}>
-        <div className="row h-100">
-          <div className="col-md-12 d-flex flex-column">
-            {/* Table of selected files */}
-            <DataFilesBreadcrumbs
-              api={params.api}
-              scheme={params.scheme}
-              system={params.system}
-              path={params.path || '/'}
-              section=""
-            />
-            <div className="filesListing">
-              <DataFilesModalSelectedTable data={selected} operation="trash" />
-            </div>
-          </div>
-        </div>
+      <ModalBody style={{ height: '10vh' }}>
+        <SectionMessage type="warning">
+          Are you sure you want to permanently delete these files?
+        </SectionMessage>
       </ModalBody>
       <ModalFooter>
         <Button
           disabled={disabled}
-          onClick={trashCallback}
+          onClick={emptyCallback}
           className="data-files-btn"
         >
-          Trash
+          Delete Files
         </Button>
       </ModalFooter>
     </Modal>
