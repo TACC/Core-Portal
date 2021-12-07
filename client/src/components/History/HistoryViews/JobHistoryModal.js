@@ -116,7 +116,9 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     configDataObj['Temporary Working Directory'] = jobDetails.workPath;
 
   const isTerminalState =
-    jobDetails.status === 'FINISHED' || jobDetails.status === 'FAILED';
+    jobDetails.status === 'FINISHED' ||
+    jobDetails.status === 'FAILED' ||
+    jobDetails.status === 'STOPPED';
 
   const data = {
     Status: <DescriptionList data={statusDataObj} />,
