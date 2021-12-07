@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
 
-const DataFilesTrashModal = React.memo(() => {
+const DataFilesEmptyModal = React.memo(() => {
   const history = useHistory();
   const location = useLocation();
   const reloadPage = () => {
@@ -84,4 +84,4 @@ const DataFilesTrashModal = React.memo(() => {
   );
 });
 
-export default DataFilesTrashModal;
+export default DataFilesEmptyModal;

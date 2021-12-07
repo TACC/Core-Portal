@@ -7,7 +7,7 @@ import DataFilesMkdirModal from './DataFilesMkdirModal';
 import DataFilesRenameModal from './DataFilesRenameModal';
 import DataFilesPushKeysModal from './DataFilesPushKeysModal';
 import DataFilesCopyModal from './DataFilesCopyModal';
-import DataFilesTrashModal from './DataFilesTrashModal';
+import DataFilesEmptyModal from './DataFilesEmptyModal';
 import DataFilesCompressModal from './DataFilesCompressModal';
 import DataFilesExtractModal from './DataFilesExtractModal';
 import DataFilesAddProjectModal from './DataFilesAddProjectModal';
@@ -29,7 +29,7 @@ export default function DataFilesModals() {
       <DataFilesMkdirModal />
       <DataFilesRenameModal />
       <DataFilesPushKeysModal />
-      <DataFilesTrashModal />
+      <DataFilesEmptyModal />
       <DataFilesLinkModal />
       <DataFilesShowPathModal />
       <SystemsPushKeysModal />
