@@ -115,7 +115,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   if (jobDetails.status !== 'FINISHED')
     configDataObj['Temporary Working Directory'] = jobDetails.workPath;
 
-  const jobFinished =
+  const isTerminalState =
     jobDetails.status === 'FINISHED' || jobDetails.status === 'FAILED';
 
   const data = {
@@ -142,7 +142,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
             )
           }}
         />
-        {jobFinished && (
+        {isTerminalState && (
           <Button
             color="primary"
             type="submit"
