@@ -221,16 +221,34 @@ const TicketHistoryCard = ({
   return (
     <Card className="mt-1">
       <CardHeader
+        tabIndex="0"
         onClick={() =>
           dispatch({
             type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
             payload: { index: historyId }
           })
         }
+        onKeyDown={useCallback(
+          e =>
+            e.key === ' ' &&
+            dispatch(
+              {
+                type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
+                payload: { index: historyId }
+              },
+              e.preventDefault()
+            )
+        )}
       >
         <span className="ticket-history-header d-inline-block text-truncate">
           <strong>
-            <span className={ticketHeaderClassName}>
+            <span
+              className={ticketHeaderClassName}
+              id="TicketHeader"
+              role="button"
+              aria-expanded="false"
+              aria-controls="CardBody"
+            >
               {creator} | {`${formatDateTime(created)}`}
             </span>
             {!!attachmentTitles.length && (
@@ -245,7 +263,9 @@ const TicketHistoryCard = ({
         {toggleIcon}
       </CardHeader>
       <Collapse isOpen={isOpen}>
-        <CardBody>{content}</CardBody>
+        <CardBody id="CardBody" role="region" aria-labelledby="TicketHeader">
+          {content}
+        </CardBody>
         {!!attachmentTitles.length && (
           <CardBody>
             <Attachments attachments={attachmentTitles} ticketId={ticketId} />
