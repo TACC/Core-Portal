@@ -1,6 +1,8 @@
 from portal.apps.tickets import rtUtil
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.core.files.base import ContentFile
+from django.conf import settings
+import requests
 
 METADATA_HEADER = "*** Ticket Metadata ***"
 
@@ -36,3 +38,16 @@ def create_ticket(username, first_name, last_name, email, cc, subject,
                                  attachments=attachments)
 
     return JsonResponse({'ticket_id': ticket_id})
+
+
+def get_recaptcha_verification(request):
+    recaptcha_response = request.POST.get('recaptchaResponse')
+    secret_key = getattr(settings, 'RECAPTCHA_SECRET_KEY')
+    data = {
+        'secret': secret_key,
+        'response': recaptcha_response
+    }
+    r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+    recap_result = r.json()
+    return recap_result
+
