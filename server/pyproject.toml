@@ -5,7 +5,7 @@ description = "Django backend for the core portal."
 authors = ["TACC-WMA <wma-portals@tacc.utexas.edu>"]
 
 [tool.poetry.dependencies]
-Django = "^2.2.13"
+Django = "^2.2.24"
 python = "^3.6"
 elasticsearch-dsl = "^7.2.1"
 django-bootstrap4 = "^2.0.1"
