@@ -54,6 +54,7 @@ ul#appBrowser-sidebar {
 }
 #appBrowser-sidebar .nav-link {
   /* RFE: Add `href` on links to: obviate this CSS, provide URL to app state */
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -66,15 +67,28 @@ ul#appBrowser-sidebar {
   border: none;
 }
 
+#appBrowser-sidebar .nav-link.active {
+  font-weight: 700;
+}
+
+#appBrowser-sidebar .nav-link:active {
+  font-weight: 700;
+}
+
+
 #appBrowser-tray {
   flex-grow: 1;
 
   background-color: #f4f4f4;
 }
 
-#appBrowser-sidebar .nav-text,
 #appBrowser-tray .nav-text {
   padding-left: 15px;
   font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
   font-weight: 500;
+}
+
+#appBrowser-sidebar .nav-text {
+  padding-left: 15px;
+  font-size: 0.75rem; /* 12px (10px design * 1.2 design-to-app ratio) */
 }
