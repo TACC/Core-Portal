@@ -128,8 +128,6 @@ export function getJobDisplayInformation(job, app) {
         display.processorsPerNode = job.processorsPerNode;
         display.nodeCount = job.nodeCount;
       }
-
-      display.interactive = app.definition.tags.includes('Interactive');
     } catch (ignore) {
       // ignore if there is problem using the app definition to improve display
     }
