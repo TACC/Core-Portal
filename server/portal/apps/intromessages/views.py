@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class IntroMessagesView(BaseApiView):
     # Get all of the IntroMessages that have been read (unread = False)
     def get(self, request, *args, **kwargs):
-        messages_array = IntroMessages.objects.filter(user=request.user).values('component', 'unread').values()
+        messages_array = IntroMessages.objects.filter(user=request.user).values('component', 'unread')
         messages = [{'component': message['component'], 'unread': message['unread']} for message in messages_array]
         return JsonResponse({'response': messages})
 
