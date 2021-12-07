@@ -44,6 +44,9 @@ const initialMockState = {
     },
     reachedEnd: {
       FilesListing: true
+    },
+    operationStatus: {
+      trash: false
     }
   },
   systems: systemsFixture,

@@ -32,7 +32,13 @@ describe('DataFilesToolbar', () => {
           extract: '',
           compress: ''
         } },
-        files: { selected: { FilesListing: [] } },
+        files: { 
+          params: { 
+            FilesListing: { 
+              path: "" 
+            }
+          },
+          selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture
       }),
@@ -54,7 +60,13 @@ describe('DataFilesToolbar', () => {
           extract: '',
           compress: ''
         } },
-        files: { selected: { FilesListing: [] } },
+        files: { 
+          params: { 
+            FilesListing: { 
+              path: "" 
+            }
+          },
+          selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture
       }),
@@ -76,7 +88,13 @@ describe('DataFilesToolbar', () => {
           extract: '',
           compress: ''
         } },
-        files: { selected: { FilesListing: [] } },
+        files: { 
+          params: { 
+            FilesListing: { 
+              path: "" 
+            }
+          },
+          selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture
       }),
@@ -98,7 +116,13 @@ describe('DataFilesToolbar', () => {
           extract: '',
           compress: ''
         } },
-        files: { selected: { FilesListing: [] } },
+        files: { 
+          params: { 
+            FilesListing: { 
+              path: "" 
+            }
+          },
+          selected: { FilesListing: [] } },
         listing: { selected: { FilesListing: [] } },
         systems: systemsFixture
       }),
@@ -127,6 +151,11 @@ describe('DataFilesToolbar', () => {
           compress: ''
         } },
         files: { 
+          params: { 
+            FilesListing: { 
+              path: "/.Trash" 
+            }
+          },
           listing: { FilesListing: [ testFile ] },
           selected: { FilesListing: [ 0 ] } 
        },
