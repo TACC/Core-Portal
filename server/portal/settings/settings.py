@@ -723,6 +723,12 @@ SETTINGS: WORKBENCH SETTINGS
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
 
 """
+SETTINGS: RECAPTCHA
+"""
+RECAPTCHA_SECRET_KEY = settings_secret._RECAPTCHA_SECRET_KEY
+RECAPTCHA_SITE_KEY =  settings_secret._RECAPTCHA_SITE_KEY
+
+"""
 SETTINGS: LOCAL OVERRIDES
 """
 if os.path.isfile(os.path.join(BASE_DIR, 'settings', 'settings_local.py')):
