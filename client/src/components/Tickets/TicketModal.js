@@ -199,7 +199,7 @@ const TicketHistoryCard = ({
   attachments,
   ticketId
 }) => {
-  const ticketHeaderRef = useRef(null)
+  const ticketHeaderRef = useRef(null);
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
     state.ticketDetailedView.showItems.includes(historyId)
@@ -223,41 +223,36 @@ const TicketHistoryCard = ({
     dispatch({
       type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
       payload: { index: historyId }
-    })
-  }
+    });
+  };
 
-  const onKeyDown = useCallback(
-    (e) => {
-      if (e.key === ' ') {
-        e.preventDefault()
-        dispatch(
-          {
-            type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
-            payload: { index: historyId }
-          }
-        )
-        let expanded = ticketHeaderRef.current.getAttribute("aria-expanded");
-        expanded = expanded == "false" ? false : true
-  
-        ticketHeaderRef.current.setAttribute("aria-expanded", (!expanded).toString())
-        console.log("set", expanded)
-      } 
-  })
+  const onKeyDown = useCallback(e => {
+    if (e.key === ' ') {
+      e.preventDefault();
+      dispatch({
+        type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
+        payload: { index: historyId }
+      });
+      let expanded = ticketHeaderRef.current.getAttribute('aria-expanded');
+      expanded = !expanded;
+
+      ticketHeaderRef.current.setAttribute(
+        'aria-expanded',
+        (!expanded).toString()
+      );
+    }
+  });
 
   return (
     <Card className="mt-1">
-      <CardHeader
-        tabIndex="0"
-        onClick={onClick}
-        onKeyDown={onKeyDown}
-      >
+      <CardHeader tabIndex="0" onClick={onClick} onKeyDown={onKeyDown}>
         <span className="ticket-history-header d-inline-block text-truncate">
           <strong>
             <span
               className={ticketHeaderClassName}
               id="TicketHeader"
               role="button"
-              aria-expanded={isOpen ? "true" : "false"}
+              aria-expanded={isOpen ? 'true' : 'false'}
               aria-controls="CardBody"
               ref={ticketHeaderRef}
             >
