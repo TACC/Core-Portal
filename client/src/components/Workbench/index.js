@@ -14,6 +14,7 @@ function AppRouter() {
   useEffect(() => {
     dispatch({ type: 'FETCH_INTRO' });
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
+    dispatch({ type: 'GET_PROFILE_DATA' });
     dispatch({ type: 'FETCH_WORKBENCH' });
   }, []);
   return (

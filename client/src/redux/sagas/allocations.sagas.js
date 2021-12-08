@@ -4,10 +4,12 @@ import {
   takeLatest,
   call,
   all,
-  select
+  select,
+  debounce
 } from 'redux-saga/effects';
 import { chain, flatten, isEmpty } from 'lodash';
 import { fetchUtil } from 'utils/fetchUtil';
+import Cookies from 'js-cookie';
 import 'cross-fetch';
 
 export function* getAllocations() {
@@ -223,11 +225,163 @@ export const teamPayloadUtil = (
   return { data, loading };
 };
 
+export function* getUsernamesManage(action) {
+  try {
+    yield put({
+      type: 'MANAGE_USERS_INIT',
+      payload: { loading: { [action.payload.projectId]: { loading: true } } }
+    });
+    const json = yield call(getTeamsUtil, action.payload.name);
+    const payload = {
+      data: { [action.payload.projectId]: json },
+      loading: { [action.payload.projectId]: { loading: false } }
+    };
+    yield put({
+      type: 'ADD_USERNAMES_TO_TEAM',
+      payload
+    });
+  } catch (error) {}
+}
+/**
+ * Search for users in TAS
+ * @async
+ * @returns {Array.<Object>}
+ */
+export const searchUsersUtil = async (field, term) => {
+  const res = await fetchUtil({
+    url:
+      'https://portal.tacc.utexas.edu/projects-and-allocations/-/pm/api/users',
+    params: {
+      action: 'search',
+      field,
+      term
+    },
+    init: { fetchParams: null }
+  });
+  const json = res.result;
+  return json;
+};
+export function* searchUsers(action) {
+  try {
+    yield put({ type: 'CLEAR_SEARCH_ERROR' });
+    const { term } = action.payload;
+    const fields = ['lastName', 'username', 'email'];
+    const result = yield all(
+      fields.map(field => call(searchUsersUtil, field, term))
+    );
+    const uniqueUsers = flatten(result).filter(
+      (value, index, array) => array.findIndex(u => u.id === value.id) === index
+    );
+
+    yield put({
+      type: 'ADD_SEARCH_RESULTS',
+      payload: { data: uniqueUsers }
+    });
+  } catch (error) {
+    yield put({ type: 'SEARCH_ERROR' });
+  }
+}
+
+export const manageUtil = async (pid, uid, add = true) => {
+  const r = await fetch(`/api/users/team/manage/${pid}/${uid}`, {
+    headers: { 'X-CSRFToken': Cookies.get('csrftoken') },
+    method: add ? 'POST' : 'DELETE'
+  });
+  const json = r.json();
+  return json;
+};
+
+export function* addUser(action) {
+  try {
+    yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_INIT' });
+    yield call(manageUtil, action.payload.projectId, action.payload.id);
+    yield put({ type: 'ALLOCATION_OPERATION_ADD_USER_COMPLETE' });
+    const { projectId, projectName } = action.payload;
+    yield put({
+      type: 'GET_MANAGE_TEAMS',
+      payload: {
+        projectId,
+        name: projectName
+      }
+    });
+  } catch (error) {
+    yield put({
+      type: 'ALLOCATION_OPERATION_ADD_USER_ERROR',
+      payload: {
+        addUserOperation: {
+          loading: false,
+          error: true,
+          userName: action.payload.id
+        }
+      }
+    });
+  }
+}
+
+export const allocationsTeamSelector = state => state.allocations.teams;
+export function* removeUser(action) {
+  try {
+    yield put({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+      payload: {
+        removingUserOperation: {
+          loading: true,
+          error: false,
+          userName: action.payload.id
+        }
+      }
+    });
+    yield call(manageUtil, action.payload.projectId, action.payload.id, false);
+    // remove user from team state
+    const teams = yield select(allocationsTeamSelector);
+    const updatedTeams = { ...teams };
+    updatedTeams[action.payload.projectId] = teams[
+      action.payload.projectId
+    ].filter(i => i.username !== action.payload.id);
+    yield put({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+      payload: {
+        teams: updatedTeams,
+        removingUserOperation: { loading: false, error: false, userName: '' }
+      }
+    });
+  } catch (error) {
+    yield put({
+      type: 'ALLOCATION_OPERATION_REMOVE_USER_STATUS',
+      payload: {
+        removingUserOperation: {
+          loading: false,
+          error: true,
+          userName: action.payload.id
+        }
+      }
+    });
+  }
+}
+export function* watchAddUser() {
+  yield takeEvery('ADD_USER_TO_TAS_PROJECT', addUser);
+}
+export function* watchRemoveUser() {
+  yield takeEvery('REMOVE_USER_FROM_TAS_PROJECT', removeUser);
+}
+
+export function* watchUserSearch() {
+  yield debounce(750, 'GET_USERS_FROM_SEARCH', searchUsers);
+}
 export function* watchAllocationData() {
   yield takeEvery('GET_ALLOCATIONS', getAllocations);
 }
 export function* watchTeams() {
   yield takeLatest('GET_TEAMS', getUsernames);
 }
-
-export default [watchAllocationData(), watchTeams()];
+export function* watchManageTeams() {
+  yield takeLatest('GET_MANAGE_TEAMS', getUsernamesManage);
+}
+export default [
+  watchAllocationData(),
+  watchTeams(),
+  watchManageTeams(),
+  watchUserSearch(),
+  watchAddUser(),
+  watchRemoveUser()
+];

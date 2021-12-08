@@ -3,7 +3,10 @@ import { shape, arrayOf, number, string } from 'prop-types';
 import { Button, Badge } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { AllocationsTeamViewModal } from './AllocationsModals';
+import {
+  AllocationsTeamViewModal,
+  AllocationsManageTeamModal
+} from './AllocationsModals';
 
 const CELL_PROPTYPES = {
   cell: shape({
@@ -13,8 +16,9 @@ const CELL_PROPTYPES = {
 
 export const Team = ({ cell: { value } }) => {
   const dispatch = useDispatch();
-  const [openModal, setOpenModal] = useState(false);
-  const { projectId } = value;
+  const [teamModal, setTeamModal] = useState(false);
+  const [manageModal, setManageModal] = useState(false);
+  const { projectId, isPi } = value;
   return (
     <>
       <Button
@@ -25,17 +29,41 @@ export const Team = ({ cell: { value } }) => {
             type: 'GET_TEAMS',
             payload: { ...value }
           });
-          setOpenModal(true);
+          setTeamModal(true);
         }}
-        disabled={openModal}
+        disabled={teamModal}
       >
         View Team
       </Button>
       <AllocationsTeamViewModal
-        isOpen={openModal}
-        pid={projectId}
-        toggle={() => setOpenModal(!openModal)}
+        isOpen={teamModal}
+        projectId={projectId}
+        toggle={() => setTeamModal(!teamModal)}
       />
+      {isPi && (
+        <>
+          <span>&nbsp;|&nbsp;</span>
+          <Button
+            className="btn btn-sm"
+            color="link"
+            onClick={() => {
+              dispatch({
+                type: 'GET_MANAGE_TEAMS',
+                payload: { ...value }
+              });
+              setManageModal(true);
+            }}
+          >
+            Manage Team
+          </Button>
+          <AllocationsManageTeamModal
+            isOpen={manageModal}
+            projectId={projectId}
+            projectName={value.name}
+            toggle={() => setManageModal(!manageModal)}
+          />
+        </>
+      )}
     </>
   );
 };
