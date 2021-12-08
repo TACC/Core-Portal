@@ -59,6 +59,7 @@ export const Team = ({ cell: { value } }) => {
           <AllocationsManageTeamModal
             isOpen={manageModal}
             projectId={projectId}
+            projectName={value.name}
             toggle={() => setManageModal(!manageModal)}
           />
         </>

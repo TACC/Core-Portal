@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Input } from 'reactstrap';
+import { LoadingSpinner } from '_common';
 
 import './UserSearchbar.module.scss';
 
@@ -11,7 +12,8 @@ const UserSearchbar = ({
   addDisabled,
   searchDisabled,
   searchResults,
-  placeholder
+  placeholder,
+  onAddLoading
 }) => {
   const [selectedUser, setSelectedUser] = useState('');
   const [inputUser, setInputUser] = useState('');
@@ -66,7 +68,7 @@ const UserSearchbar = ({
               !selectedUser || addDisabled || alreadyMember(selectedUser)
             }
           >
-            Add
+            {onAddLoading ? <LoadingSpinner placement="inline" /> : 'Add'}
           </Button>
         </div>
         <Input
@@ -116,12 +118,14 @@ UserSearchbar.propTypes = {
       email: PropTypes.string
     })
   ).isRequired,
-  placeholder: PropTypes.string
+  placeholder: PropTypes.string,
+  onAddLoading: PropTypes.bool
 };
 UserSearchbar.defaultProps = {
   addDisabled: false,
   searchDisabled: false,
-  placeholder: 'Search by name'
+  placeholder: 'Search by name',
+  onAddLoading: false
 };
 
 export default UserSearchbar;
