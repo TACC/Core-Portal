@@ -4,8 +4,8 @@ import {
   useLocation,
   NavLink as RRNavLink
 } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { Modal, ModalHeader, ModalBody, NavLink } from 'reactstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { Modal, ModalHeader, ModalBody, NavLink, Button } from 'reactstrap';
 import { DescriptionList, LoadingSpinner, Expand, Message } from '_common';
 import PropTypes from 'prop-types';
 import { formatDateTime } from 'utils/timeFormat';
@@ -49,7 +49,8 @@ const reduceInputParameters = data =>
     return acc;
   }, {});
 
-function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
+function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
+  const dispatch = useDispatch();
   const outputPath = `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
   const created = formatDateTime(new Date(jobDetails.created));
   const lastUpdated = formatDateTime(new Date(jobDetails.lastUpdated));
@@ -79,6 +80,23 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
     />
   );
 
+  const resubmitJob = () => {
+    dispatch({
+      type: 'SUBMIT_JOB',
+      payload: {
+        job_id: jobDetails.id,
+        action: 'resubmit',
+        onSuccess: {
+          type: 'GET_JOBS',
+          params: {
+            offset: 0
+          }
+        }
+      }
+    });
+    toggle();
+  };
+
   if ('queue' in jobDisplay) {
     configDataObj.Queue = jobDisplay.queue;
   }
@@ -98,6 +116,11 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
   if (jobDetails.status !== 'FINISHED')
     configDataObj['Temporary Working Directory'] = jobDetails.workPath;
 
+  const isTerminalState =
+    jobDetails.status === 'FINISHED' ||
+    jobDetails.status === 'FAILED' ||
+    jobDetails.status === 'STOPPED';
+
   const data = {
     Status: <DescriptionList data={statusDataObj} />,
     Inputs: <DescriptionList data={inputAndParamsDataObj} />,
@@ -107,20 +130,32 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
 
   return (
     <>
-      <DescriptionList
-        styleName="left-panel panel-content"
-        density="compact"
-        data={{
-          Output: !hideDataFiles && (
-            <DataFilesLink
-              path={outputPath}
-              disabled={!isOutputState(jobDetails.status)}
-            >
-              View in Data Files
-            </DataFilesLink>
-          )
-        }}
-      />
+      <div styleName="left-panel">
+        <DescriptionList
+          styleName="panel-content"
+          density="compact"
+          data={{
+            Output: !hideDataFiles && (
+              <DataFilesLink
+                path={outputPath}
+                disabled={!isOutputState(jobDetails.status)}
+              >
+                View in Data Files
+              </DataFilesLink>
+            )
+          }}
+        />
+        {isTerminalState && (
+          <Button
+            color="primary"
+            type="submit"
+            styleName="submit-button"
+            onClick={resubmitJob}
+          >
+            Resubmit Job
+          </Button>
+        )}
+      </div>
       <DescriptionList styleName="right-panel panel-content" data={data} />
     </>
   );
@@ -131,7 +166,8 @@ JobHistoryContent.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   jobDetails: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  jobDisplay: PropTypes.object.isRequired
+  jobDisplay: PropTypes.object.isRequired,
+  toggle: PropTypes.func.isRequired
 };
 JobHistoryContent.defaultProps = {
   jobName: ''
@@ -194,6 +230,7 @@ function JobHistoryModal({ jobId }) {
               jobName={jobName}
               jobDetails={job}
               jobDisplay={display}
+              toggle={close}
             />
           )}
         </div>
