@@ -49,7 +49,7 @@ const reduceInputParameters = data =>
     return acc;
   }, {});
 
-function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
+function JobHistoryContent({ jobDetails, jobDisplay, jobName, toggle }) {
   const dispatch = useDispatch();
   const outputPath = `${jobDetails.archiveSystem}/${jobDetails.archivePath}`;
   const created = formatDateTime(new Date(jobDetails.created));
@@ -94,6 +94,7 @@ function JobHistoryContent({ jobDetails, jobDisplay, jobName }) {
         }
       }
     });
+    toggle();
   };
 
   if ('queue' in jobDisplay) {
@@ -165,7 +166,8 @@ JobHistoryContent.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   jobDetails: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  jobDisplay: PropTypes.object.isRequired
+  jobDisplay: PropTypes.object.isRequired,
+  toggle: PropTypes.func.isRequired
 };
 JobHistoryContent.defaultProps = {
   jobName: ''
@@ -228,6 +230,7 @@ function JobHistoryModal({ jobId }) {
               jobName={jobName}
               jobDetails={job}
               jobDisplay={display}
+              toggle={close}
             />
           )}
         </div>
