@@ -199,7 +199,6 @@ const TicketHistoryCard = ({
   attachments,
   ticketId
 }) => {
-  const ticketHeaderRef = useRef(null);
   const dispatch = useDispatch();
   const isOpen = useSelector(state =>
     state.ticketDetailedView.showItems.includes(historyId)
@@ -233,13 +232,6 @@ const TicketHistoryCard = ({
         type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
         payload: { index: historyId }
       });
-      let expanded = ticketHeaderRef.current.getAttribute('aria-expanded');
-      expanded = !expanded;
-
-      ticketHeaderRef.current.setAttribute(
-        'aria-expanded',
-        (!expanded).toString()
-      );
     }
   });
 
@@ -252,9 +244,8 @@ const TicketHistoryCard = ({
               className={ticketHeaderClassName}
               id="TicketHeader"
               role="button"
-              aria-expanded={isOpen ? 'true' : 'false'}
+              aria-expanded={isOpen}
               aria-controls="CardBody"
-              ref={ticketHeaderRef}
             >
               {creator} | {`${formatDateTime(created)}`}
             </span>
