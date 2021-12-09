@@ -15,7 +15,6 @@ export function* fetchIntroMessages() {
     const introMessages = yield call(getIntroMessages);
     // create complete list of IntroMessages for the user with status
     // for all messages set to unread (true)
-    console.log(introMessages);
     const messages = {
       ACCOUNT: true,
       ALLOCATIONS: true,

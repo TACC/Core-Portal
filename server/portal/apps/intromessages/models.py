@@ -26,7 +26,6 @@ class IntroMessages(models.Model):
     unread = models.BooleanField(default=True)
 
     def mark_read(self):
-        self.unread = False
         self.save()
 
     # Make each type of IntroMessage unique
