@@ -32,4 +32,17 @@ describe('RequestAccessForm', () => {
     const { getByTestId } = renderComponent(<RequestAccessForm />, store);
     expect(getByTestId('creating-spinner'));
   });
+
+  it('renders a creation error', () => {
+    const store = mockStore({
+      requestAccess: {
+        ...requestAccess,
+        createdTicketId: '1234'
+      },
+      workbench
+    });
+
+    const { getByText } = renderComponent(<RequestAccessForm />, store);
+    expect(getByText(/1234/)).toBeDefined();
+  });
 });
