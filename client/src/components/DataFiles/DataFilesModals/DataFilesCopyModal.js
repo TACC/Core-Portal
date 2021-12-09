@@ -61,15 +61,10 @@ const DataFilesCopyModal = React.memo(() => {
     });
 
   const onOpened = () => {
-    const systemParams = {
-      api: 'tapis',
-      scheme: 'private',
-      system: systems[0].system
-    };
     dispatch({
       type: 'FETCH_FILES_MODAL',
       payload: {
-        ...systemParams,
+        ...params,
         section: 'modal'
       }
     });
