@@ -81,6 +81,10 @@ export function* submitJob(action) {
         payload: res.response
       });
     }
+
+    if (action.payload.onSuccess) {
+      yield put(action.payload.onSuccess);
+    }
   } catch (error) {
     yield put({
       type: 'SUBMIT_JOB_ERROR',
