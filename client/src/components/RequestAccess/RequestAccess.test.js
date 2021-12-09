@@ -10,7 +10,7 @@ import '@testing-library/jest-dom/extend-expect';
 const mockStore = configureStore();
 
 describe('RequestAccess', () => {
-  it('renders portal name withing the module', () => {
+  it('renders portal name within the module', () => {
     const store = mockStore({
       requestAccess,
       workbench: {
