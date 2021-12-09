@@ -25,6 +25,10 @@ class IntroMessages(models.Model):
     component = models.CharField(max_length=300, default='')
     unread = models.BooleanField(default=True)
 
+    def mark_read(self):
+        self.unread = False
+        self.save()
+
     # Make each type of IntroMessage unique
     class Meta:
         unique_together = ('user', 'component',)
