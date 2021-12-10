@@ -16,14 +16,8 @@ import DataFilesSearchbar from '../DataFilesSearchbar/DataFilesSearchbar';
 import DataFilesTable from '../DataFilesTable/DataFilesTable';
 
 const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
+  // Redux hooks
   const dispatch = useDispatch();
-  if (api === 'tapis' && system) {
-    dispatch({
-      type: 'FETCH_SYSTEM_DEFINITION',
-      payload: system
-    });
-  }
-
   const { query_string: queryString, filter } = parse(useLocation().search);
   const { files, loading, error } = useSelector(
     state => ({
