@@ -40,15 +40,16 @@ def test_intromessages_get_unauthenticated_user(client, regular_user):
 @pytest.mark.django_db(transaction=True, reset_sequences=True)
 def test_intromessages_put(client, authenticated_user):
     body = {
-            'ACCOUNT': {'unread': True},
-            'ALLOCATIONS': {'unread': True},
-            'APPLICATIONS': {'unread': True},
-            'DASHBOARD': {'unread': True},
-            'DATA': {'unread': True},
-            'HISTORY': {'unread': False},
-            'TICKETS': {'unread': True},
-            'UI': {'unread': True}
+        'ACCOUNT': 'True',
+        'ALLOCATIONS': 'True',
+        'APPLICATIONS': 'True',
+        'DASHBOARD': 'True',
+        'DATA': 'True',
+        'HISTORY': 'False',
+        'TICKETS': 'True',
+        'UI': 'True'
     }
+
     response = client.put('/api/intromessages/',
                           content_type="application/json",
                           data=body)
@@ -56,15 +57,10 @@ def test_intromessages_put(client, authenticated_user):
     # should be eight rows in the database for the user
     assert len(IntroMessages.objects.all()) == 8
     # let's check to see all rows exist correctly
-    db_messages = IntroMessages.objects.all().values()
     for component_name, component_value in body.items():
-        found = False
         correct_status = False
-        for db_message in db_messages:
-            if db_message['component'] == component_name:
-                found = True
-                if db_message['unread'] == component_value['unread']:
-                    correct_status = True
-                break
-        assert found
+        db_message = IntroMessages.objects.filter(component=component_name)
+        if db_message and db_message[0].unread != component_value:
+            correct_status = True
+
         assert correct_status
