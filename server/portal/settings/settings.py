@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'portal.apps.projects',
     'portal.apps.system_creation',
     'portal.apps.public_data',
+    'portal.apps.request_access',
     'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
 ]
@@ -721,6 +722,12 @@ CHANNEL_LAYERS = {
 SETTINGS: WORKBENCH SETTINGS
 """
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
+
+"""
+SETTINGS: RECAPTCHA
+"""
+RECAPTCHA_SECRET_KEY = settings_secret._RECAPTCHA_SECRET_KEY
+RECAPTCHA_SITE_KEY =  settings_secret._RECAPTCHA_SITE_KEY
 
 """
 SETTINGS: LOCAL OVERRIDES

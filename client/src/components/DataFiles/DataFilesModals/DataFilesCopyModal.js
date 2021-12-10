@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-
+import { SectionMessage } from '_common';
 import DataFilesBreadcrumbs from '../DataFilesBreadcrumbs/DataFilesBreadcrumbs';
 import DataFilesModalListingTable from './DataFilesModalTables/DataFilesModalListingTable';
 import DataFilesModalSelectedTable from './DataFilesModalTables/DataFilesModalSelectedTable';
@@ -33,7 +33,9 @@ const DataFilesCopyModal = React.memo(() => {
   };
   const files = useSelector(state => state.files.listing.modal, shallowEqual);
   const isOpen = useSelector(state => state.files.modals.copy);
-  const { showProjects } = useSelector(state => state.files.modalProps.copy);
+  const { showProjects, canMakePublic } = useSelector(
+    state => state.files.modalProps.copy
+  );
   const status = useSelector(
     state => state.files.operationStatus.copy,
     shallowEqual
@@ -68,20 +70,25 @@ const DataFilesCopyModal = React.memo(() => {
         section: 'modal'
       }
     });
-    dispatch({
-      type: 'DATA_FILES_SET_MODAL_PROPS',
-      payload: {
-        operation: 'copy',
-        props: {}
-      }
-    });
   };
+
+  const excludedSystems = systems
+    .filter(s => s.scheme !== 'private')
+    .filter(s => !(s.scheme === 'public' && canMakePublic))
+    .map(s => s.system);
 
   const onClosed = () => {
     dispatch({ type: 'DATA_FILES_MODAL_CLOSE' });
     dispatch({
       type: 'DATA_FILES_SET_OPERATION_STATUS',
       payload: { operation: 'copy', status: {} }
+    });
+    dispatch({
+      type: 'DATA_FILES_SET_MODAL_PROPS',
+      payload: {
+        operation: 'copy',
+        props: {}
+      }
     });
     setDisabled(false);
   };
@@ -162,9 +169,7 @@ const DataFilesCopyModal = React.memo(() => {
                 section="modal"
                 disabled={disabled}
                 showProjects={showProjects}
-                excludedSystems={systems
-                  .filter(s => s.scheme !== 'private')
-                  .map(s => s.system)}
+                excludedSystems={excludedSystems}
               />
             </div>
             {!showProjects && (
@@ -194,6 +199,14 @@ const DataFilesCopyModal = React.memo(() => {
           </div>
         </div>
       </ModalBody>
+      {modalParams.scheme === 'public' && (
+        <ModalFooter className="d-flex justify-content-start">
+          <SectionMessage type="warning">
+            Files copied to Public Data will be avaliable to general public.{' '}
+            <b>This action cannot be reversed.</b>
+          </SectionMessage>
+        </ModalFooter>
+      )}
     </Modal>
   );
 });

@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False):
 
     if next((sys for sys in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-            if sys['scheme'] == 'projects'
-            and sys['hideSearchBar']
+            if sys.get('scheme', None) == 'projects'
+            and sys.get('hideSearchBar', None)
             and systemId.startswith(settings.PORTAL_PROJECTS_SYSTEM_PREFIX)), None):
         return
 
