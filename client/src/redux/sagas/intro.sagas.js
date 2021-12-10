@@ -49,15 +49,10 @@ export function* watchFetchIntroMessages() {
 export function* saveIntroMessages(action) {
   yield put({ type: 'INTRO_SAVE_STARTED' });
   try {
-    const introMessages = {};
-    Object.entries(action.payload).forEach(([component, unread]) => {
-      introMessages[component] = { unread };
-    });
-
     yield call(fetchUtil, {
       url: '/api/intromessages/',
       method: 'PUT',
-      body: JSON.stringify(introMessages)
+      body: JSON.stringify(action.payload)
     });
 
     yield put({
