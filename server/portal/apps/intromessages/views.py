@@ -24,14 +24,12 @@ class IntroMessagesView(BaseApiView):
     def put(self, request, *args):
         body = json.loads(request.body)
         for component_name, component_value in body.items():
-            db_message = IntroMessages.objects.filter(user=request.user, component=component_name).values()
+            db_message = IntroMessages.objects.filter(user=request.user, component=component_name)
             # if the IntroMessage exists
-            if db_message:
-                if db_message[0]['unread'] != component_value['unread']:
-                    db_message[0]['unread'] = component_value['unread']
-                    db_message_object = IntroMessages(user=request.user, id=db_message[0]['id'], component=component_name, unread=component_value['unread'])
-                    db_message_object.mark_read()
+            if db_message and db_message.unread != component_value:
+                db_message.unread = component_value
+                db_message.save()
             else:
-                new_db_message = IntroMessages(user=request.user, component=component_name, unread=component_value['unread'])
-                new_db_message.mark_read()
+                new_db_message = IntroMessages.objects.create(user=request.user, component=component_name, unread=component_value)
+                new_db_message.save()
         return JsonResponse({'status': 'OK'})
