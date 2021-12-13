@@ -52,69 +52,42 @@ const dummyState = {
 };
 
 const mockStore = configureStore({});
-describe ('testing multiple phone numbers', () =>  {
-  const testState = {
-    ...dummyState,
-    modals: {
-      optional: true
-    }
-  };
-  let getByLabelText;
-  beforeEach(() => {
-    const testStore = mockStore({
-      profile: testState
+const validCases = [['223-043-3406', 'w@utexas.edu'],[ '1-541-754-3010', 'w@yahoo.com',],
+  ['(541) 754-3010','w@gmail.com']];
+describe('various valid input phone numbers and email addresses', () => {
+    const testState = { ...dummyState, modals: { required: true } };
+  test.each(validCases)(
+    "given number and and emails should be valid",
+    async (phoneNumber, email) => {
+    const stateWithFields = {
+      ...testState,
+      fields: {
+        countries: [[230, 'United States']],
+        institutions: [[1, 'University of Texas at Austin']],
+        ethnicities: [['Decline', 'Decline to Identify']],
+        genders: [['Other', 'Other']],
+        professionalLevels: [['Other', 'Other']],
+        titles: [['Other User', 'Other User']],
+      }
+    };
+    const storeWithFields = mockStore({ profile: stateWithFields });
+    stateWithFields['data']['demographics']['phone'] = (phoneNumber);
+    stateWithFields['data']['demographics']['email'] = (email);
+    const {getByLabelText ,queryByText} = render(
+      <Provider store={storeWithFields}>
+        <EditRequiredInformationModal />
+      </Provider>
+    );
+    const submitButton = getByLabelText(/required-submit/);
+    const clickSpy = jest.spyOn(submitButton, 'click');
+    fireEvent.click(submitButton);
+    await wait(() => {
+      expect(queryByText('Phone number is not valid')).toBeNull();
+      expect(queryByText('Please enter a valid email address')).toBeNull();
+      expect(clickSpy)
     });
-    const utils = render(
-      <Provider store={testStore}>
-        <EditRequiredInformationModal />
-      </Provider>
-    );
-    getByLabelText = utils.getByLabelText;
-  });
-
-  const stateWithFields = {
-    ...testState,
-    fields: {
-      countries: [[230, 'United States']],
-      institutions: [[1, 'University of Texas at Austin']],
-      ethnicities: [['Decline', 'Decline to Identify']],
-      genders: [['Other', 'Other']],
-      professionalLevels: [['Other', 'Other']],
-      titles: [['Other User', 'Other User']]
     }
-  };
-  const storeWithFields = mockStore({ profile: stateWithFields });
-  stateWithFields['data']['demographics']['phone'] = '321-234-2342'
-  var {queryByText} = render(
-    <Provider store={storeWithFields}>
-      <EditRequiredInformationModal />
-    </Provider>
   );
-  const submitButton = getByLabelText(/required-submit/);
-  const clickSpy = jest.spyOn(submitButton, 'click');
-  fireEvent.click(submitButton);
- 
-  test('testing with invliad nubmer',  () =>  {
-    stateWithFields['data']['demographics']['phone'] = '321'
-    const {getByText,queryByText} = render(
-      <Provider store={storeWithFields}>
-        <EditRequiredInformationModal />
-      </Provider>
-    );
-    console.log(stateWithFields)
-    expect(queryByText('Phone number is not valid')).toBeNull();
-    expect(clickSpy)
-  });
- test('testing with valid nubmer', () =>  {
-    stateWithFields['data']['demographics']['phone'] = '321'
-    const {getByText,queryByText} = render(
-      <Provider store={storeWithFields}>
-        <EditRequiredInformationModal />
-      </Provider>
-    );
-    expect(queryByText('Phone number is not valid')).toBeNull();
-    expect(clickSpy)
-  });
 });
 
 describe('Change Password', () => {
@@ -413,33 +386,6 @@ describe('Edit Required Information', () => {
     expect(getByText(/Submit/)).toBeDefined();
   });  
  
-  it('should pass multiple valid phone numbers', async () => {
-    const stateWithFields = {
-      ...testState,
-      fields: {
-        countries: [[230, 'United States']],
-        institutions: [[1, 'University of Texas at Austin']],
-        ethnicities: [['Decline', 'Decline to Identify']],
-        genders: [['Other', 'Other']],
-        professionalLevels: [['Other', 'Other']],
-        titles: [['Other User', 'Other User']]
-      }
-    };
-    const storeWithFields = mockStore({ profile: stateWithFields });
-    stateWithFields['data']['demographics']['phone'] = '321-234-2342'
-    var {getByText,queryByText} = render(
-      <Provider store={storeWithFields}>
-        <EditRequiredInformationModal />
-      </Provider>
-    );
-    const submitButton = getByLabelText(/required-submit/);
-    const clickSpy = jest.spyOn(submitButton, 'click');
-    fireEvent.click(submitButton);
-    await wait(() => {
-      expect(queryByText('Phone number is not valid')).toBeNull();
-      expect(clickSpy)
-    });
-  })
   it('should show users errors if the fields are missing or invalid', async () => {
     const stateWithFields = {
       ...testState,
