@@ -5,6 +5,7 @@ import Workbench from './Workbench';
 import * as ROUTES from '../../constants/routes';
 import TicketStandaloneCreate from '../Tickets/TicketStandaloneCreate';
 import PublicData from '../PublicData/PublicData';
+import RequestAccess from '../RequestAccess/RequestAccess';
 import GoogleDrivePrivacyPolicy from '../ManageAccount/GoogleDrivePrivacyPolicy';
 import SiteSearch from '../SiteSearch';
 
@@ -21,6 +22,7 @@ function AppRouter() {
       <Route path={ROUTES.WORKBENCH} component={Workbench} />
       <Route path="/tickets/new" component={TicketStandaloneCreate} />
       <Route path="/public-data" component={PublicData} />
+      <Route path="/request-access" component={RequestAccess} />
       <Route
         path="/googledrive-privacy-policy"
         component={GoogleDrivePrivacyPolicy}

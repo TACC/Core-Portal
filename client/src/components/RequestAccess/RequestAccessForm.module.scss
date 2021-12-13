@@ -1,0 +1,39 @@
+.request-access-form {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  padding-top: 1.1rem;
+  padding-bottom: 1.5rem;
+}
+
+.request-access-text-area {
+  min-height: 5em;
+}
+
+.request-access-button-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: right;
+}
+
+.button {
+  border-radius: 0;
+  margin-left: auto;
+}
+
+.button-primary {
+  background-color: #7754e8 !important;
+  color: white;
+  border-radius: 0;
+  border: none;
+  font-size: 0.75rem;
+}
+
+.help {
+  font-style: italic;
+  font-weight: 400;
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  color: var(--global-color-primary--x-dark);
+}
