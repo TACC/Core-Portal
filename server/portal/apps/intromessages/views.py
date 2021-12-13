@@ -26,7 +26,6 @@ class IntroMessagesView(BaseApiView):
         for component_name, component_value in body.items():
             try:
                 db_message = IntroMessages.objects.get(user=request.user, component=component_name)
-                logger.info(db_message.component)
                 # if the IntroMessage exists
                 if db_message and db_message.unread != component_value:
                     db_message.unread = component_value
