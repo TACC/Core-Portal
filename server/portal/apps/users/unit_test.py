@@ -5,6 +5,7 @@ from portal.apps.auth.models import AgaveOAuthToken
 from pytas.http import TASClient
 from portal.apps.users.utils import get_tas_allocations, get_allocations
 from elasticsearch.exceptions import NotFoundError
+from zeep.exceptions import Fault
 import pytest
 import json
 import os
@@ -282,3 +283,24 @@ def test_delete_user_failure(client, requests_mock, authenticated_user, tas_dele
     requests_mock.delete("{}/v1/projects/1234/users/5678".format(settings.TAS_URL), json=tas_delete_user_error_response)
     response = client.delete('/api/users/team/manage/1234/5678')
     assert response.status_code == 400
+
+
+@pytest.fixture
+def mock_tas_zeep_client(mocker):
+    zeep_client = mocker.patch('portal.apps.users.views.Client', autospec=True)
+    zeep_client.return_value.service.GetAccountsByLastName.return_value = []
+    zeep_client.return_value.service.GetAccountsByEmail.return_value = []
+    zeep_client.return_value.service.GetAccountByLogin.side_effect = Fault("None")
+
+    # Provide the return_value as a fixture a
+    yield zeep_client
+
+
+def test_search_tas_user_unauthenticated(client):
+    response = client.get('/api/users/tas-users/', {"search": "foo"})
+    assert response.status_code == 302
+
+
+def test_search_tas(client, authenticated_user, mock_tas_zeep_client):
+    response = client.get('/api/users/tas-users/', {"search": "foo"})
+    assert response.status_code == 200
