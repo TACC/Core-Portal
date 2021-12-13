@@ -24,12 +24,14 @@ class IntroMessagesView(BaseApiView):
     def put(self, request, *args):
         body = json.loads(request.body)
         for component_name, component_value in body.items():
-            db_message = IntroMessages.objects.filter(user=request.user, component=component_name)
-            # if the IntroMessage exists
-            if db_message and db_message[0].unread != component_value:
-                db_message[0].unread = component_value
-                db_message[0].save()
-            elif not db_message:
+            try:
+                db_message = IntroMessages.objects.get(user=request.user, component=component_name)
+                logger.info(db_message.component)
+                # if the IntroMessage exists
+                if db_message and db_message.unread != component_value:
+                    db_message.unread = component_value
+                    db_message.save()
+            except IntroMessages.DoesNotExist:
                 new_db_message = IntroMessages.objects.create(user=request.user, component=component_name, unread=component_value)
                 new_db_message.save()
         return JsonResponse({'status': 'OK'})
