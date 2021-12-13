@@ -50,7 +50,11 @@
 
   .card-body {
     white-space: pre-wrap;
-    padding: 0 1.25rem 1.25rem 1.25rem;
+  //   padding: 0 1.25rem 1.25rem 1.25rem;
+  }
+
+  .attached{
+    padding-top: 0;
   }
 
   .ticket-responder {
