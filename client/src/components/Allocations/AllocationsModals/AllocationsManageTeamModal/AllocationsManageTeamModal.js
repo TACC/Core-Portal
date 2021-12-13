@@ -187,6 +187,7 @@ const AllocationsManageTeamModal = ({
             searchResults={search.results}
             placeholder="Search by username, email, or last name"
             onAddLoading={addUserOperation.loading}
+            isSearching={search.loading}
           />
         </div>
         <div styleName="listing-wrapper">

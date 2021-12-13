@@ -10,8 +10,8 @@ export const initialState = {
   errors: {},
   search: {
     results: [],
-    term: '',
-    error: false
+    error: false,
+    loading: false
   },
   removingUserOperation: {
     userName: '',
@@ -82,25 +82,33 @@ export function allocations(state = initialState, action) {
           ...action.payload.loading
         }
       };
-    case 'CLEAR_SEARCH_ERROR':
+    case 'SEARCH_INIT':
       return {
         ...state,
         search: {
           ...state.search,
-          error: false
+          results: [],
+          error: false,
+          loading: true
         }
       };
     case 'ADD_SEARCH_RESULTS':
       return {
         ...state,
-        search: { ...state.search, results: action.payload.data, error: false }
+        search: {
+          ...state.search,
+          results: action.payload.data,
+          error: false,
+          loading: false
+        }
       };
     case 'SEARCH_ERROR':
       return {
         ...state,
         search: {
           ...state.search,
-          error: true
+          error: true,
+          loading: false
         }
       };
     case 'ALLOCATION_OPERATION_REMOVE_USER_INIT': {

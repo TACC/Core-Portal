@@ -13,7 +13,8 @@ const UserSearchbar = ({
   searchDisabled,
   searchResults,
   placeholder,
-  onAddLoading
+  onAddLoading,
+  isSearching
 }) => {
   const [selectedUser, setSelectedUser] = useState('');
   const [inputUser, setInputUser] = useState('');
@@ -92,6 +93,11 @@ const UserSearchbar = ({
             /* eslint-enable */
           }
         </datalist>
+        {isSearching && (
+          <LoadingSpinner
+            placement="inline" /* Placeholder; need updated design https://jira.tacc.utexas.edu/browse/FP-1205 */
+          />
+        )}
       </div>
     </div>
   );
@@ -119,7 +125,8 @@ UserSearchbar.propTypes = {
     })
   ).isRequired,
   placeholder: PropTypes.string,
-  onAddLoading: PropTypes.bool
+  onAddLoading: PropTypes.bool,
+  isSearching: PropTypes.bool.isRequired
 };
 UserSearchbar.defaultProps = {
   addDisabled: false,

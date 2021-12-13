@@ -247,15 +247,10 @@ export function* getUsernamesManage(action) {
  * @async
  * @returns {Array.<Object>}
  */
-export const searchUsersUtil = async (field, term) => {
+export const searchUsersUtil = async term => {
   const res = await fetchUtil({
-    url:
-      'https://portal.tacc.utexas.edu/projects-and-allocations/-/pm/api/users',
-    params: {
-      action: 'search',
-      field,
-      term
-    },
+    url: '/api/users/tas-users',
+    params: { search: term },
     init: { fetchParams: null }
   });
   const json = res.result;
@@ -263,19 +258,11 @@ export const searchUsersUtil = async (field, term) => {
 };
 export function* searchUsers(action) {
   try {
-    yield put({ type: 'CLEAR_SEARCH_ERROR' });
-    const { term } = action.payload;
-    const fields = ['lastName', 'username', 'email'];
-    const result = yield all(
-      fields.map(field => call(searchUsersUtil, field, term))
-    );
-    const uniqueUsers = flatten(result).filter(
-      (value, index, array) => array.findIndex(u => u.id === value.id) === index
-    );
-
+    yield put({ type: 'SEARCH_INIT' });
+    const result = yield call(searchUsersUtil, action.payload.term);
     yield put({
       type: 'ADD_SEARCH_RESULTS',
-      payload: { data: uniqueUsers }
+      payload: { data: result }
     });
   } catch (error) {
     yield put({ type: 'SEARCH_ERROR' });
@@ -366,7 +353,7 @@ export function* watchRemoveUser() {
 }
 
 export function* watchUserSearch() {
-  yield debounce(750, 'GET_USERS_FROM_SEARCH', searchUsers);
+  yield debounce(250, 'GET_USERS_FROM_SEARCH', searchUsers);
 }
 export function* watchAllocationData() {
   yield takeEvery('GET_ALLOCATIONS', getAllocations);
