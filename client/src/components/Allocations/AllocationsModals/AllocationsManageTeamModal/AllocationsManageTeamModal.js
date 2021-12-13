@@ -179,7 +179,7 @@ const AllocationsManageTeamModal = ({
         <div styleName="search-bar-wrapper">
           {error ? <Message type="error">Something went wrong.</Message> : null}
           <UserSearchbar
-            members={teams[projectId]}
+            members={isLoading ? [] : teams[projectId]}
             onAdd={onAdd}
             addDisabled={isLoading || addUserOperation.loading}
             searchDisable={isLoading}
