@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useEffect } from 'react';
 import queryStringParser from 'query-string';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import SiteSearchSidebar from './SiteSearchSidebar/SiteSearchSidebar';
 import SiteSearchListing from './SiteSearchListing/SiteSearchListing';
 
-const SiteSearchComponent = ({ filterPriority }) => {
+export const SiteSearchComponent = ({ filterPriorityList }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { filter } = useParams();
@@ -22,8 +22,9 @@ const SiteSearchComponent = ({ filterPriority }) => {
     state => state.siteSearch
   );
   const { user } = useSelector(state => state.authenticatedUser);
+
   /* eslint-disable camelcase */
-  useLayoutEffect(() => {
+  useEffect(() => {
     dispatch({
       type: 'FETCH_SITE_SEARCH',
       payload: { page, query_string, filter: filetypeFilter }
@@ -33,9 +34,9 @@ const SiteSearchComponent = ({ filterPriority }) => {
 
   useEffect(() => {
     if (completed && !filter) {
-      const activeFilter = filterPriority.find(f => results[f].count > 0);
+      const activeFilter = filterPriorityList.find(f => results[f].count > 0);
       history.push(
-        `/search/${activeFilter || filterPriority[0]}/${location.search}`
+        `/search/${activeFilter || filterPriorityList[0]}/${location.search}`
       );
     }
   }, [completed, results, location.search]);
@@ -43,7 +44,6 @@ const SiteSearchComponent = ({ filterPriority }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'row' }}>
       <div className="col-md-2">
-        {/* eslint-disable-next-line camelcase */}
         <SiteSearchSidebar
           queryString={query_string}
           schemes={Object.keys(results).filter(key => results[key].include)}
@@ -56,7 +56,7 @@ const SiteSearchComponent = ({ filterPriority }) => {
           loading={loading}
           error={error}
           filter={filter || 'cms'}
-          results={results[filter] || results[filterPriority[0]]}
+          results={results[filter] || results[filterPriorityList[0]]}
         />
       </div>
       <div className="col-md-2" />
@@ -64,7 +64,7 @@ const SiteSearchComponent = ({ filterPriority }) => {
   );
 };
 SiteSearchComponent.propTypes = {
-  filterPriority: PropTypes.arrayOf(PropTypes.string).isRequired
+  filterPriorityList: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
 const SiteSearch = () => {
@@ -77,14 +77,14 @@ const SiteSearch = () => {
     .filter(s => s.siteSearchPriority !== undefined)
     .sort((a, b) => a.siteSearchPriority - b.siteSearchPriority)
     .map(s => s.scheme);
-  const filterPriority = ['cms'].concat(searchSystems);
+  const filterPriorityList = ['cms'].concat(searchSystems);
 
-  if (!filter || !filterPriority.includes(filter)) {
-    history.push(`/search/${filterPriority[0]}/${location.search}`);
+  if (!filter || !filterPriorityList.includes(filter)) {
+    history.push(`/search/${filterPriorityList[0]}/${location.search}`);
     return <></>;
   }
 
-  return <SiteSearchComponent filterPriority={filterPriority} />;
+  return <SiteSearchComponent filterPriorityList={filterPriorityList} />;
 };
 
 export default SiteSearch;

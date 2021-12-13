@@ -17,8 +17,7 @@ describe("Datafiles Reducer", () => {
         definitions: {
           ...initialSystemState.definitions,
           list: [systemDefinitionFixture],
-          error: false,
-          errorMessage: null,
+          error: {},
           loading: false
         }
     });
