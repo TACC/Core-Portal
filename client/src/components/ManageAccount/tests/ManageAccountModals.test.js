@@ -384,8 +384,8 @@ describe('Edit Required Information', () => {
     });
 
     expect(getByText(/Submit/)).toBeDefined();
-  });  
- 
+  });
+
   it('should show users errors if the fields are missing or invalid', async () => {
     const stateWithFields = {
       ...testState,
