@@ -490,4 +490,3 @@ describe('connect google drive', () => {
     ).toBe('/accounts/applications/googledrive/initialize/');
   });
 });
-
