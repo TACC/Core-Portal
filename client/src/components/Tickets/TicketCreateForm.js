@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector} from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Formik, Form } from 'formik';
@@ -111,6 +111,7 @@ function TicketCreateForm({
 
   const recaptchaRef = React.createRef();
   const [recaptchaResponse, setRecaptchaResponse] = React.useState('');
+  const [disableSubmit, setDisableSubmit] = React.useState(true);
 
   return (
     <Formik
@@ -201,7 +202,10 @@ function TicketCreateForm({
                       ref={recaptchaRef}
                       value={recaptchaResponse}
                       sitekey={sitekey}
-                      onChange={e => setRecaptchaResponse(e)}
+                      onChange={e => {
+                        setRecaptchaResponse(e);
+                        setDisableSubmit(false);
+                      }}
                     />
                   )}
                 </Container>
@@ -227,6 +231,23 @@ function TicketCreateForm({
                     type="submit"
                     color="primary"
                     disabled={!isValid || isSubmitting || creating}
+                  >
+                    {creating && (
+                      <Spinner
+                        size="sm"
+                        color="white"
+                        data-testid="creating-spinner"
+                        className="ticket-create-spinner"
+                      />
+                    )}
+                    Add Ticket
+                  </Button>
+                )}
+                {!isAuthenticated && (
+                  <Button
+                    type="submit"
+                    color="primary"
+                    disabled={disableSubmit}
                   >
                     {creating && (
                       <Spinner
