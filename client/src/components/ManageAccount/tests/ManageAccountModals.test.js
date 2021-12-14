@@ -399,7 +399,7 @@ describe('Edit Required Information', () => {
       }
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
-    stateWithFields['data']['demographics']['phone'] = '122'
+    stateWithFields['data']['demographics']['phone'] = '123'
     stateWithFields['data']['demographics']['email'] = 'email';
 
     rerender(
@@ -412,7 +412,7 @@ describe('Edit Required Information', () => {
     fireEvent.click(submitButton);
 
     await wait(() => {
-      expect(getByText('Phone number is not valid')).not.toBeNull();
+      expect(getByText('Phone number is not valid')).toBeDefined();;
       expect(getByText('Please enter a valid email address')).toBeDefined();
       expect(clickSpy).not.toHaveBeenCalled();
     });
