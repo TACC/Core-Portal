@@ -309,6 +309,12 @@ HAYSTACK_CONNECTIONS = {
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 
 """
+SETTINGS: RECAPTCHA TESTING KEY
+provided by Google at https://developers.google.com/recaptcha/docs/faq#id-like-to-run-automated-tests-with-recaptcha.-what-should-i-do
+"""
+RECAPTCHA_SECRET_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+RECAPTCHA_SITE_KEY =  "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+"""
 SETTINGS: LOGGING
 """
 
