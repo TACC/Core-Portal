@@ -185,11 +185,12 @@ class TasUsersView(BaseApiView):
 
         result = []
         for r in combined_results:
-            if r not in result:
-                result.append({"username": r.Login,
-                               "email": r.Person.Email,
-                               "firstName": r.Person.FirstName,
-                               "lastName": r.Person.LastName})
+            entry = {"username": r.Login,
+                     "email": r.Person.Email,
+                     "firstName": r.Person.FirstName,
+                     "lastName": r.Person.LastName}
+            if entry not in result:
+                result.append(entry)
         return JsonResponse({'result': result})
 
 

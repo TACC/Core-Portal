@@ -286,14 +286,32 @@ def test_delete_user_failure(client, requests_mock, authenticated_user, tas_dele
 
 
 @pytest.fixture
+def mock_tas_account1(mocker):
+    mock_account = mocker.MagicMock()
+    mock_account.Login = "username1"
+    mock_account.Person.Email = "user1@user.com"
+    mock_account.Person.FirstName = "firstName1"
+    mock_account.Person.LastName = "commonLastName"
+    yield mock_account
+
+
+@pytest.fixture
+def mock_tas_account2(mocker):
+    mock_account = mocker.MagicMock()
+    mock_account.Login = "username2"
+    mock_account.Person.Email = "user2@user.com"
+    mock_account.Person.FirstName = "firstName2"
+    mock_account.Person.LastName = "commonLastName"
+    yield mock_account
+
+
+@pytest.fixture
 def mock_tas_zeep_client(mocker):
     zeep_client = mocker.patch('portal.apps.users.views.Client', autospec=True)
     zeep_client.return_value.service.GetAccountsByLastName.return_value = []
     zeep_client.return_value.service.GetAccountsByEmail.return_value = []
     zeep_client.return_value.service.GetAccountByLogin.side_effect = Fault("None")
-
-    # Provide the return_value as a fixture a
-    yield zeep_client
+    yield zeep_client.return_value
 
 
 def test_search_tas_user_unauthenticated(client):
@@ -301,6 +319,18 @@ def test_search_tas_user_unauthenticated(client):
     assert response.status_code == 302
 
 
-def test_search_tas(client, authenticated_user, mock_tas_zeep_client):
+def test_search_tas_empty_response(client, authenticated_user, mock_tas_zeep_client):
     response = client.get('/api/users/tas-users/', {"search": "foo"})
     assert response.status_code == 200
+    assert response.json() == {"result": []}
+
+
+def test_search_tas(client, authenticated_user, mock_tas_zeep_client, mock_tas_account1, mock_tas_account2):
+    mock_tas_zeep_client.service.GetAccountsByLastName.return_value = [mock_tas_account1, mock_tas_account2]
+    mock_tas_zeep_client.service.GetAccountsByEmail.return_value = [mock_tas_account1, mock_tas_account2]
+    response = client.get('/api/users/tas-users/', {"search": "foo"})
+    assert response.status_code == 200
+    assert response.json() == {"result": [{"username": "username1", "email": "user1@user.com",
+                                           "firstName": "firstName1", "lastName": "commonLastName"},
+                                          {"username": "username2", "email": "user2@user.com",
+                                           "firstName": "firstName2", "lastName": "commonLastName"}]}
