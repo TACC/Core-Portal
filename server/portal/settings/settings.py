@@ -15,6 +15,7 @@ import logging
 from kombu import Exchange, Queue
 from portal.settings import settings_secret
 
+
 logger = logging.getLogger(__file__)
 
 
