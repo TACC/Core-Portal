@@ -222,21 +222,23 @@ function TicketCreateForm({
                     Ticket creating error: {creatingErrorMessage}
                   </Alert>
                 )}
-                <Button
-                  type="submit"
-                  color="primary"
-                  disabled={!isValid || isSubmitting || creating}
-                >
-                  {creating && (
-                    <Spinner
-                      size="sm"
-                      color="white"
-                      data-testid="creating-spinner"
-                      className="ticket-create-spinner"
-                    />
-                  )}
-                  Add Ticket
-                </Button>
+                {isAuthenticated && (
+                  <Button
+                    type="submit"
+                    color="primary"
+                    disabled={!isValid || isSubmitting || creating}
+                  >
+                    {creating && (
+                      <Spinner
+                        size="sm"
+                        color="white"
+                        data-testid="creating-spinner"
+                        className="ticket-create-spinner"
+                      />
+                    )}
+                    Add Ticket
+                  </Button>
+                )}
               </div>
             </ModalFooter>
           </Form>
