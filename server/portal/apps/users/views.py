@@ -1,9 +1,16 @@
 import logging
+import requests
+
+from zeep import Client
+from zeep.transports import Transport
+from zeep.cache import InMemoryCache
+from zeep.exceptions import Fault
+
 from portal.views.base import BaseApiView
 from portal.apps.users import utils as users_utils
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
-from django.http import HttpResponseNotFound, JsonResponse
+from django.http import HttpResponseNotFound, HttpResponseBadRequest, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -11,7 +18,8 @@ from django.conf import settings
 from elasticsearch_dsl import Q
 from portal.libs.elasticsearch.docs.base import IndexedFile
 from pytas.http import TASClient
-from portal.apps.users.utils import get_allocations, get_usernames, get_user_data, get_per_user_allocation_usage, add_user, remove_user
+from portal.apps.users.utils import (get_allocations, get_usernames, get_user_data, get_per_user_allocation_usage,
+                                     add_user, remove_user)
 
 logger = logging.getLogger(__name__)
 
@@ -144,6 +152,49 @@ class UserDataView(BaseApiView):
     def get(self, request, username):
         user_data = get_user_data(username)
         return JsonResponse({username: user_data})
+
+
+@method_decorator(login_required, name='dispatch')
+class TasUsersView(BaseApiView):
+    """SOAP search endpoint for TAS users
+    """
+
+    def get(self, request):
+        search_term = request.GET.get('search')
+        if search_term is None:
+            raise HttpResponseBadRequest('No search term provided')
+        session = requests.Session()
+        session.auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
+
+        # SOAP client via zeep
+        client = Client("https://tas.tacc.utexas.edu/TASWebService/PortalService.asmx?WSDL",
+                        transport=Transport(session=session, cache=InMemoryCache()))
+
+        last_name_result = client.service.GetAccountsByLastName(search_term)
+        email_result = client.service.GetAccountsByEmail(search_term)
+
+        try:
+            account_result = client.service.GetAccountByLogin(search_term)
+        except Fault:
+            account_result = None
+
+        combined_results = []
+        if last_name_result:
+            combined_results.extend(last_name_result)
+        if email_result:
+            combined_results.extend(email_result)
+        if account_result:
+            combined_results.append(account_result)
+
+        result = []
+        for r in combined_results:
+            entry = {"username": r.Login,
+                     "email": r.Person.Email,
+                     "firstName": r.Person.FirstName,
+                     "lastName": r.Person.LastName}
+            if entry not in result:
+                result.append(entry)
+        return JsonResponse({'result': result})
 
 
 @method_decorator(login_required, name='dispatch')
