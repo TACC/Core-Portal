@@ -166,6 +166,7 @@ class TasUsersView(BaseApiView):
         session = requests.Session()
         session.auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
 
+        # SOAP client via zeep
         client = Client("https://tas.tacc.utexas.edu/TASWebService/PortalService.asmx?WSDL",
                         transport=Transport(session=session, cache=InMemoryCache()))
 
