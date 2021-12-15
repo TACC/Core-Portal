@@ -8,6 +8,7 @@ import {
   ticketCreate,
   ticketCreateModal
 } from './tickets.reducers';
+import requestAccess from './requestAccess.reducers';
 import systemMonitor from './systemMonitor.reducers';
 import { allocations } from './allocations.reducers';
 import profile from './profile.reducers';
@@ -33,6 +34,7 @@ export default combineReducers({
   ticketDetailedView,
   ticketCreate,
   ticketCreateModal,
+  requestAccess,
   authenticatedUser,
   app,
   apps,
