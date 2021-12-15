@@ -156,6 +156,8 @@ class UserDataView(BaseApiView):
 
 @method_decorator(login_required, name='dispatch')
 class TasUsersView(BaseApiView):
+    """SOAP search endpoint for TAS users
+    """
 
     def get(self, request):
         search_term = request.GET.get('search')
