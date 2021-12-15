@@ -16,6 +16,7 @@ function AppRouter() {
     dispatch({ type: 'FETCH_INTRO' });
     dispatch({ type: 'FETCH_AUTHENTICATED_USER' });
     dispatch({ type: 'FETCH_WORKBENCH' });
+    dispatch({ type: 'FETCH_SYSTEMS' });
   }, []);
   return (
     <Router>
