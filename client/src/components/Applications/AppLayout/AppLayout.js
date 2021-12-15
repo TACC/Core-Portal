@@ -1,21 +1,28 @@
 import React from 'react';
 import { Route, useRouteMatch } from 'react-router-dom';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { LoadingSpinner, Section } from '_common';
+import { LoadingSpinner, Section, SectionMessage } from '_common';
 import './AppLayout.global.css';
 import AppBrowser from '../AppBrowser/AppBrowser';
 import { AppDetail, AppPlaceholder } from '../AppForm/AppForm';
 
-const AppsLayout = () => {
+export const AppsLayout = () => {
   const { params } = useRouteMatch();
-  const { loading, categoryDict } = useSelector(
+  const { loading, categoryDict, error } = useSelector(
     state => ({
       loading: state.apps.loading,
+      error: state.apps.error,
       categoryDict: state.apps.categoryDict
     }),
     shallowEqual
   );
-
+  if (error.isError) {
+    return (
+      <div id="appDetail-wrapper" className="has-message  appDetail-error">
+        <SectionMessage type="warning">Something went wrong.</SectionMessage>
+      </div>
+    );
+  }
   return (
     <>
       {loading && !Object.keys(categoryDict).length ? (

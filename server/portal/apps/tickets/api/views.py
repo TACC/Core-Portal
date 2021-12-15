@@ -2,17 +2,20 @@ import logging
 import re
 from functools import wraps
 from django.core.files.base import ContentFile
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponse
 from django.utils.decorators import method_decorator
 from django.core.exceptions import PermissionDenied
 from portal.apps.tickets import rtUtil
+from portal.apps.tickets import utils
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
 
 logger = logging.getLogger(__name__)
 
+SERVICE_ACCOUNTS = ["portal", "rtprod", "rtdev"]
 ALLOWED_HISTORY_TYPES = ["Correspond", "Create", "Status"]
 METADATA_HEADER = "*** Ticket Metadata ***"
 
@@ -39,43 +42,40 @@ class TicketsView(BaseApiView):
         """Post a new ticket
 
         """
-        rt = rtUtil.DjangoRt()
 
         data = request.POST.copy()
-        email = request.user.email if request.user.is_authenticated else data.get('email')
         subject = data.get('subject')
         problem_description = data.get('problem_description')
         cc = data.get('cc', '')
-
-        attachments = [(f.name, ContentFile(f.read()), f.content_type) for f in request.FILES.getlist('attachments')]
-
-        if subject is None or email is None or problem_description is None:
-            return HttpResponseBadRequest()
-
-        metadata = "{}\n\n".format(METADATA_HEADER)
-        metadata += "Client info:\n{}\n\n".format(request.GET.get('info', "None"))
-
-        for meta in ['HTTP_REFERER', 'HTTP_USER_AGENT', 'SERVER_NAME']:
-            metadata += "{}:\n{}\n\n".format(meta, request.META.get(meta, "None"))
-
-        if request.user.is_authenticated:
-            metadata += "authenticated_user:\n{}\n\n".format(request.user.username)
-            metadata += "authenticated_user_email:\n{}\n\n".format(request.user.email)
-            metadata += "authenticated_user_first_name:\n{}\n\n".format(request.user.first_name)
-            metadata += "authenticated_user_last_name:\n{}\n\n".format(request.user.last_name)
+        attachments = [(f.name, ContentFile(f.read()), f.content_type)
+                       for f in request.FILES.getlist('attachments')]
+        info = request.GET.get('info', "None")
+        meta = request.META
+        is_authenticated = request.user.is_authenticated
+        username = None
+        if (is_authenticated):
+            username = request.user.username
+            email = request.user.email
+            first_name = request.user.first_name
+            last_name = request.user.last_name
         else:
-            metadata += "user_first_name:\n{}\n\n".format(data.get('first_name'))
-            metadata += "user_last_name:\n{}\n\n".format(data.get('last_name'))
+            recap_result = utils.get_recaptcha_verification(request)
+            if not recap_result.get('success', False):
+                raise ApiException('Invalid reCAPTCHA. Please try again.')
+            email = data.get('email')
+            first_name = data.get('first_name')
+            last_name = data.get('last_name')
 
-        problem_description += "\n\n" + metadata
-
-        ticket_id = rt.create_ticket(subject=subject,
-                                     problem_description=problem_description,
-                                     requestor=email,
-                                     cc=cc,
-                                     attachments=attachments)
-
-        return JsonResponse({'ticket_id': ticket_id})
+        return utils.create_ticket(username,
+                                   first_name,
+                                   last_name,
+                                   email,
+                                   cc,
+                                   subject,
+                                   problem_description,
+                                   attachments,
+                                   info,
+                                   meta)
 
 
 def has_access_to_ticket(function):
@@ -113,7 +113,7 @@ class TicketsHistoryView(BaseApiView):
                 entry['Content'] = entry['Description']
 
             # Determine who created this message using portal
-            if entry['Creator'] == "portal":
+            if entry['Creator'] in SERVICE_ACCOUNTS:
                 # Check if its a reply submitted on behalf of a user
                 submitted_for_user = re.search(r'\[Reply submitted on behalf of (.*?)\]',
                                                entry['Content'].splitlines()[-1]) if entry['Content'] else False
@@ -156,7 +156,7 @@ class TicketsHistoryView(BaseApiView):
         if reply is None:
             return HttpResponseBadRequest()
 
-        # Add information on which user submitted this reply (as this is being done by `portal`)
+        # Add information on which user submitted this reply (as this is being done by a service account)
         modified_reply = reply + "\n[Reply submitted on behalf of {}]".format(request.user.username)
 
         attachments = [(f.name, ContentFile(f.read()), f.content_type) for f in request.FILES.getlist('attachments')]
@@ -182,3 +182,15 @@ class TicketsHistoryView(BaseApiView):
         rt = rtUtil.DjangoRt()
         ticket_history = self._get_ticket_history(rt, request.user.username, ticket_id)
         return JsonResponse({'ticket_history': ticket_history})
+
+
+class TicketsAttachmentView(BaseApiView):
+    @has_access_to_ticket
+    def get(self, request, ticket_id, attachment_id):
+        rt = rtUtil.DjangoRt()
+        attachment = rt.getAttachment(ticket_id, attachment_id)
+        content = attachment["Content"]
+        content_type = attachment["ContentType"]
+        response = HttpResponse(content, content_type=content_type)
+        response["Content-Disposition"] = attachment["Headers"]["Content-Disposition"]
+        return response

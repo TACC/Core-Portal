@@ -3,8 +3,8 @@ import { FetchError } from 'utils/fetchUtil';
 import queryStringParser from 'query-string';
 
 // eslint-disable-next-line camelcase
-export async function fetchSiteSearchUtil(page, query_string) {
-  const q = queryStringParser.stringify({ page, query_string });
+export async function fetchSiteSearchUtil(page, query_string, filter) {
+  const q = queryStringParser.stringify({ page, query_string, filter });
   const response = await fetch(`/api/site-search/?${q}`);
   if (!response.ok) {
     let json;
@@ -28,7 +28,8 @@ export function* fetchSiteSearch(action) {
     const response = yield call(
       fetchSiteSearchUtil,
       action.payload.page,
-      action.payload.query_string
+      action.payload.query_string,
+      action.payload.filter
     );
     yield put({
       type: 'FETCH_SITE_SEARCH_SUCCESS',

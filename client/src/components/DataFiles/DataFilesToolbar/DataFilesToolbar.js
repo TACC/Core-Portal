@@ -90,7 +90,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
   const toggleCopyModal = () =>
     dispatch({
       type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: { operation: 'copy', props: { selectedFiles } }
+      payload: { operation: 'copy', props: { selectedFiles, canMakePublic } }
     });
 
   const toggleCompressModal = () => {
@@ -127,17 +127,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
       }
     });
   };
-
-  const toggleMakePublicModal = () => {
-    dispatch({
-      type: 'DATA_FILES_TOGGLE_MODAL',
-      payload: {
-        operation: 'makePublic',
-        props: { selectedFile: selectedFiles[0] }
-      }
-    });
-  };
-
   const download = () => {
     if (canDownload) {
       dispatch({
@@ -164,8 +153,8 @@ const DataFilesToolbar = ({ scheme, api }) => {
 
   const permissionParams = { files: selectedFiles, scheme, api };
   const canDownload = getFilePermissions('download', permissionParams);
-  const isFolderSelected = getFilePermissions(
-    'isFolderSelected',
+  const areMultipleFilesOrFolderSelected = getFilePermissions(
+    'areMultipleFilesOrFolderSelected',
     permissionParams
   );
   const canRename = getFilePermissions('rename', permissionParams);
@@ -222,7 +211,7 @@ const DataFilesToolbar = ({ scheme, api }) => {
             text="Download"
             iconName="download"
             onClick={download}
-            disabled={!canDownload && !isFolderSelected}
+            disabled={!canDownload && !areMultipleFilesOrFolderSelected}
           />
         )}
         {showMakeLink && (
@@ -231,14 +220,6 @@ const DataFilesToolbar = ({ scheme, api }) => {
             iconName="link"
             onClick={toggleLinkModal}
             disabled={!canDownload}
-          />
-        )}
-        {showMakePublic && (
-          <ToolbarButton
-            text="Make Public"
-            iconName="publications"
-            onClick={toggleMakePublicModal}
-            disabled={!canMakePublic}
           />
         )}
         {showTrash && (

@@ -152,20 +152,6 @@ def test_link_put(postits_create, authenticated_user, mock_agave_client, client)
     assert Link.objects.all()[0].get_uuid() == "uuid"
 
 
-def test_generate_notification_on_request(client, authenticated_user, mock_agave_client, agave_indexer):
-    mock_response = {'nativeFormat': 'dir'}
-    mock_agave_client.files.manage.return_value = mock_response
-
-    response = client.put("/api/datafiles/tapis/move/private/frontera.home.username/test.txt/",
-                          content_type="application/json",
-                          data={"dest_path": "/testfol",
-                                "dest_system": "frontera.home.username"})
-    assert response.json() == {'data': mock_response}
-    n = Notification.objects.last()
-    extra_from_notification = n.to_dict()['extra']
-    assert extra_from_notification == {'response': mock_response}
-
-
 def test_get_system(client, authenticated_user, mock_agave_client, agave_storage_system_mock):
     mock_agave_client.systems.get.return_value = agave_storage_system_mock
 
@@ -249,7 +235,7 @@ def test_tapis_file_view_preview_supported_non_text_files(client, authenticated_
         else "https://view.officeapps.live.com/op/view.aspx?src={}".format(POSTIT_HREF)
 
     assert response.status_code == 200
-    assert response.json() == {"data": {"href": href, "fileType": TYPE}}
+    assert response.json() == {"data": {"href": href, "fileType": TYPE, 'content': None, 'error': None}}
 
 
 def test_tapis_file_view_preview_text_file(client, authenticated_user, mock_agave_client, agave_file_listing_mock,
@@ -274,3 +260,28 @@ def test_tapis_file_view_preview_other_text_file(client, authenticated_user, moc
                           data={"href": "https//tapis.example/href"})
     assert response.status_code == 200
     assert response.json() == {"data": {"href": POSTIT_HREF, "fileType": "other", "content": "file content", "error": None}}
+
+
+def test_tapis_file_view_preview_unsupported_file(client, authenticated_user, mock_agave_client, agave_file_listing_mock,
+                                                 requests_mock, agave_indexer):
+    mock_agave_client.files.list.return_value = agave_file_listing_mock
+    mock_agave_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
+    requests_mock.get(POSTIT_HREF, text="file content")
+    response = client.put("/api/datafiles/tapis/preview/private/frontera.home.username/test.html/",
+                          content_type="application/json",
+                          data={"href": "https//tapis.example/href"})
+    assert response.status_code == 200
+    assert response.json() == {"data": {"href": POSTIT_HREF, "fileType": None, "content": None, "error": "This file type must be previewed in a new window."}}
+
+
+def test_tapis_file_view_preview_large_file(client, authenticated_user, mock_agave_client, agave_file_listing_mock,
+                                                  requests_mock, agave_indexer):
+    agave_file_listing_mock[0]["length"] = 5000000
+    mock_agave_client.files.list.return_value = agave_file_listing_mock
+    mock_agave_client.postits.create.return_value = {"_links": {"self": {"href": POSTIT_HREF}}}
+    requests_mock.get(POSTIT_HREF, text="file content")
+    response = client.put("/api/datafiles/tapis/preview/private/frontera.home.username/test.log/",
+                          content_type="application/json",
+                          data={"href": "https//tapis.example/href"})
+    assert response.status_code == 200
+    assert response.json() == {"data": {"href": POSTIT_HREF, "fileType": 'other', "content": None, "error": "File too large to preview in this window."}}

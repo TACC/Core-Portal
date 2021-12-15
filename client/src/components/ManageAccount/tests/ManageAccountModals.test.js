@@ -52,6 +52,43 @@ const dummyState = {
 };
 
 const mockStore = configureStore({});
+const validCases = [['223-043-3406', 'w@utexas.edu'],[ '1-541-754-3010', 'w@yahoo.com',],
+  ['(541) 754-3010','w@gmail.com']];
+describe('various valid input phone numbers and email addresses', () => {
+    const testState = { ...dummyState, modals: { required: true } };
+  test.each(validCases)(
+    "given number and and emails should be valid",
+    async (phoneNumber, email) => {
+    const stateWithFields = {
+      ...testState,
+      fields: {
+        countries: [[230, 'United States']],
+        institutions: [[1, 'University of Texas at Austin']],
+        ethnicities: [['Decline', 'Decline to Identify']],
+        genders: [['Other', 'Other']],
+        professionalLevels: [['Other', 'Other']],
+        titles: [['Other User', 'Other User']],
+      }
+    };
+    const storeWithFields = mockStore({ profile: stateWithFields });
+    stateWithFields['data']['demographics']['phone'] = (phoneNumber);
+    stateWithFields['data']['demographics']['email'] = (email);
+    const {getByLabelText ,queryByText} = render(
+      <Provider store={storeWithFields}>
+        <EditRequiredInformationModal />
+      </Provider>
+    );
+    const submitButton = getByLabelText(/required-submit/);
+    const clickSpy = jest.spyOn(submitButton, 'click');
+    fireEvent.click(submitButton);
+    await wait(() => {
+      expect(queryByText('Phone number is not valid')).toBeNull();
+      expect(queryByText('Please enter a valid email address')).toBeNull();
+      expect(clickSpy)
+    });
+    }
+  );
+});
 
 describe('Change Password', () => {
   test('Change Password Form', async () => {
@@ -362,37 +399,25 @@ describe('Edit Required Information', () => {
       }
     };
     const storeWithFields = mockStore({ profile: stateWithFields });
+    stateWithFields['data']['demographics']['phone'] = '123'
+    stateWithFields['data']['demographics']['email'] = 'email';
 
     rerender(
       <Provider store={storeWithFields}>
         <EditRequiredInformationModal />
       </Provider>
     );
-
-    const emailField = getByLabelText(/email/);
-    const phoneField = getByLabelText(/phone/);
     const submitButton = getByLabelText(/required-submit/);
-
-    // Invalid Entries
-    fireEvent.change(emailField, {
-      target: {
-        value: 'email'
-      }
-    });
-    fireEvent.change(phoneField, {
-      target: {
-        value: '123'
-      }
-    });
-    const clickSpy = () => jest.fn();
-    submitButton.addEventListener('click', clickSpy, false);
+    const clickSpy = jest.spyOn(submitButton, 'click');
     fireEvent.click(submitButton);
-    wait(() => {
-      expect(getByText(/Please enter a valid email address/)).toBeDefined();
-      expect(getByText(/Phone number is not valid/)).toBeDefined();
+
+    await wait(() => {
+      expect(getByText('Phone number is not valid')).toBeDefined();;
+      expect(getByText('Please enter a valid email address')).toBeDefined();
       expect(clickSpy).not.toHaveBeenCalled();
     });
-  });
+  });  
+
 
   it('should render a loading spinner when the form data is being sent to the back-end', () => {
     const stateWithFields = {

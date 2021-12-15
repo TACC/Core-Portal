@@ -122,7 +122,8 @@ _PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'api': 'tapis',
         'icon': 'publications',
         'privilegeRequired': False,
-        'readOnly': False
+        'readOnly': False,
+        'hideSearchBar': False
     },
     {
         'name': 'Google Drive',
@@ -159,20 +160,22 @@ _PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         'settings': {}
     },
     {
-        'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
-        'settings': {
-            'project_sql_id': 12345
-        }
-    },
-    {
         'step': 'portal.apps.onboarding.steps.allocation.AllocationStep',
         'settings': {}
+    },
+    {
+        'step': 'portal.apps.onboarding.steps.project_membership.ProjectMembershipStep',
+        'settings': {
+            'project_sql_id': 12345,
+            'rt_queue': 'Life Sciences'     # Defaults to 'Accounting' if left blank
+        }
     },
     {
         'step': 'portal.apps.onboarding.steps.system_access.SystemAccessStep',
         'settings': {
             'required_systems': ['stampede2.tacc.utexas.edu','ls5.tacc.utexas.edu'],
             'project_sql_id': 12345,
+            'rt_queue': 'Life Sciences'     # Defaults to 'Accounting' if left blank
         }
     },
     {
@@ -248,5 +251,6 @@ _WORKBENCH_SETTINGS = {
     "extractApp": 'extract',
     "makePublic": True,
     "hideApps": False,
-    "hideDataFiles": False
+    "hideDataFiles": False,
+    "onboardingCompleteRedirect": '/workbench/'
 }

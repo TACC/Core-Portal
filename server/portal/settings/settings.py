@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'portal.apps.projects',
     'portal.apps.system_creation',
     'portal.apps.public_data',
+    'portal.apps.request_access',
     'portal.apps.site_search',
     'portal.apps.jupyter_mounts',
 ]
@@ -674,7 +675,7 @@ SUPPORTED_IMAGE_PREVIEW_EXTS = [
 SUPPORTED_TEXT_PREVIEW_EXTS = [
     '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp',
     '.cs', '.css', '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml',
-    '.hh', '.htm', '.html', '.java', '.js', '.less', '.m', '.make', '.md',
+    '.hh', '.java', '.js', '.less', '.m', '.make', '.md',
     '.ml', '.mm', '.msg', '.php', '.pl', '.properties', '.py', '.rb',
     '.sass', '.scala', '.script', '.sh', '.sml', '.sql', '.txt', '.vi',
     '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl', '.json',
@@ -687,6 +688,10 @@ SUPPORTED_OBJECT_PREVIEW_EXTS = [
 
 SUPPORTED_IPYNB_PREVIEW_EXTS = [
     '.ipynb'
+]
+
+SUPPORTED_NEW_WINDOW_PREVIEW_EXTS = [
+    '.htm', '.html'
 ]
 
 SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
@@ -717,6 +722,12 @@ CHANNEL_LAYERS = {
 SETTINGS: WORKBENCH SETTINGS
 """
 WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
+
+"""
+SETTINGS: RECAPTCHA
+"""
+RECAPTCHA_SECRET_KEY = settings_secret._RECAPTCHA_SECRET_KEY
+RECAPTCHA_SITE_KEY =  settings_secret._RECAPTCHA_SITE_KEY
 
 """
 SETTINGS: LOCAL OVERRIDES

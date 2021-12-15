@@ -81,6 +81,10 @@ export function* submitJob(action) {
         payload: res.response
       });
     }
+
+    if (action.payload.onSuccess) {
+      yield put(action.payload.onSuccess);
+    }
   } catch (error) {
     yield put({
       type: 'SUBMIT_JOB_ERROR',
@@ -123,6 +127,11 @@ export function* getJobDetails(action) {
     yield put({
       type: 'JOB_DETAILS_FETCH_SUCCESS',
       payload: { app, job }
+    });
+
+    yield put({
+      type: 'JOBS_LIST_UPDATE_JOB',
+      payload: { job }
     });
   } catch (error) {
     yield put({
