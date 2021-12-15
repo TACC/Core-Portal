@@ -160,7 +160,7 @@ class TasUsersView(BaseApiView):
     def get(self, request):
         search_term = request.GET.get('search')
         if search_term is None:
-            raise HttpResponseBadRequest()
+            raise HttpResponseBadRequest('No search term provided')
         session = requests.Session()
         session.auth = requests.auth.HTTPBasicAuth(settings.TAS_CLIENT_KEY, settings.TAS_CLIENT_SECRET)
 
