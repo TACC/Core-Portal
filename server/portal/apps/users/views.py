@@ -181,7 +181,7 @@ class TasUsersView(BaseApiView):
         if last_name_result:
             combined_results.extend(last_name_result)
         if email_result:
-            combined_results.extend(last_name_result)
+            combined_results.extend(email_result)
         if account_result:
             combined_results.append(account_result)
 
