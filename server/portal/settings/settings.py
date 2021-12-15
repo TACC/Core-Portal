@@ -16,7 +16,6 @@ from kombu import Exchange, Queue
 from portal.settings import settings_secret
 from portal.settings import unit_test_settings
 
-
 logger = logging.getLogger(__file__)
 
 
@@ -727,7 +726,7 @@ WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
 """
 SETTINGS: RECAPTCHA
 """
-if settings_secret._RECAPTCHA_SECRET_KEY and settings_secret._RECAPTCHA_SITE_KEY:
+if hasattr(settings_secret, '_RECAPTCHA_SECRET_KEY'):
     RECAPTCHA_SECRET_KEY = settings_secret._RECAPTCHA_SECRET_KEY
     RECAPTCHA_SITE_KEY =  settings_secret._RECAPTCHA_SITE_KEY
 else:
