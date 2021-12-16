@@ -218,19 +218,35 @@ const TicketHistoryCard = ({
     a => !a[1].toString().startsWith('untitled (')
   );
 
+  const onClick = () => {
+    dispatch({
+      type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
+      payload: { index: historyId }
+    });
+  };
+
+  const onKeyDown = useCallback(e => {
+    if (e.key === ' ') {
+      e.preventDefault();
+      dispatch({
+        type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
+        payload: { index: historyId }
+      });
+    }
+  });
+
   return (
     <Card className="mt-1">
-      <CardHeader
-        onClick={() =>
-          dispatch({
-            type: 'TICKET_DETAILED_VIEW_TOGGLE_SHOW_ITEM',
-            payload: { index: historyId }
-          })
-        }
-      >
+      <CardHeader tabIndex="0" onClick={onClick} onKeyDown={onKeyDown}>
         <span className="ticket-history-header d-inline-block text-truncate">
           <strong>
-            <span className={ticketHeaderClassName}>
+            <span
+              className={ticketHeaderClassName}
+              id="TicketHeader"
+              role="button"
+              aria-expanded={isOpen}
+              aria-controls="CardBody"
+            >
               {creator} | {`${formatDateTime(created)}`}
             </span>
             {!!attachmentTitles.length && (
@@ -245,7 +261,9 @@ const TicketHistoryCard = ({
         {toggleIcon}
       </CardHeader>
       <Collapse isOpen={isOpen}>
-        <CardBody>{content}</CardBody>
+        <CardBody id="CardBody" role="region" aria-labelledby="TicketHeader">
+          {content}
+        </CardBody>
         {!!attachmentTitles.length && (
           <CardBody className="attached">
             <Attachments attachments={attachmentTitles} ticketId={ticketId} />

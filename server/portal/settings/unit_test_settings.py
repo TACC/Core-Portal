@@ -490,7 +490,8 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'portal.storage.community',
         'scheme': 'community',
         'api': 'tapis',
-        'icon': None
+        'icon': None,
+        'siteSearchPriority': 1
     },
     {
         'name': 'Shared Workspaces',
@@ -511,7 +512,8 @@ PORTAL_DATAFILES_STORAGE_SYSTEMS = [
         'system': 'portal.storage.public',
         'scheme': 'public',
         'api': 'tapis',
-        'icon': None
+        'icon': None,
+        'siteSearchPriority': 0
     }
 ]
 
