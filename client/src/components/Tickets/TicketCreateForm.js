@@ -108,6 +108,7 @@ function TicketCreateForm({
 
   const isAuthenticated = authenticatedUser != null;
   const sitekey = useSelector(state => state.workbench.sitekey);
+  const [malfunctionKey, setMalfunctionKey] = React.useState(true);
 
   const recaptchaRef = React.createRef();
   const [recaptchaResponse, setRecaptchaResponse] = React.useState('');
@@ -129,6 +130,7 @@ function TicketCreateForm({
         if (recaptchaResponse) {
           formData.append('recaptchaResponse', recaptchaResponse);
         }
+
         dispatch({
           type: 'TICKET_CREATE',
           payload: {
@@ -140,6 +142,9 @@ function TicketCreateForm({
       }}
     >
       {({ isSubmitting, isValid }) => {
+        if (sitekey === 'no_key') {
+          setMalfunctionKey(false);
+        }
         return (
           <Form className="ticket-create-form">
             <ModalBody className="ticket-create-modal-body">
@@ -197,7 +202,7 @@ function TicketCreateForm({
                       />
                     </Col>
                   </Row>
-                  {!isAuthenticated && (
+                  {!isAuthenticated && malfunctionKey && (
                     <ReCAPTCHA
                       ref={recaptchaRef}
                       value={recaptchaResponse}
@@ -248,7 +253,8 @@ function TicketCreateForm({
                     type="submit"
                     color="primary"
                     disabled={
-                      disableSubmit || !isValid || isSubmitting || creating
+                      malfunctionKey &&
+                      (disableSubmit || !isValid || isSubmitting || creating)
                     }
                   >
                     {creating && (
