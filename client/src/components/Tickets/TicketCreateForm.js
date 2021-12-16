@@ -247,7 +247,7 @@ function TicketCreateForm({
                   <Button
                     type="submit"
                     color="primary"
-                    disabled={disableSubmit}
+                    disabled={disableSubmit || (!isValid || isSubmitting || creating)}
                   >
                     {creating && (
                       <Spinner
