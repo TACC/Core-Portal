@@ -26,7 +26,9 @@ export const CheckboxHeaderCell = () => {
   return (
     <Checkbox
       isChecked={selected}
-      role="button"
+      id="FileCheckboxHeader"
+      role="checkbox"
+      aria-label="select all files"
       tabIndex={0}
       onClick={toggleSelect}
       onKeyDown={handleKeyPress}
@@ -38,7 +40,14 @@ export const CheckboxCell = React.memo(({ index }) => {
   const selected = useSelector(state =>
     state.files.selected.FilesListing.includes(index)
   );
-  return <Checkbox isChecked={selected} />;
+  return (
+    <Checkbox
+      isChecked={selected}
+      id={`FileCheckbox_ ${index}`}
+      role="checkbox"
+      aria-label={`select file ${index}`}
+    />
+  );
 });
 CheckboxCell.propTypes = {
   index: PropTypes.number.isRequired
