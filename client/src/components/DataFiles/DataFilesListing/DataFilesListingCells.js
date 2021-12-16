@@ -43,7 +43,7 @@ export const CheckboxCell = React.memo(({ index }) => {
   return (
     <Checkbox
       isChecked={selected}
-      id={`FileCheckbox_ ${index}`}
+      id={`FileCheckbox_${index}`}
       role="checkbox"
       aria-label={`select file ${index}`}
     />
