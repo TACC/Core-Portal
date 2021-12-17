@@ -37,14 +37,16 @@ def configure_public(settings):
             'system': 'portal.storage.community',
             'scheme': 'community',
             'api': 'tapis',
-            'icon': None
+            'icon': None,
+            'siteSearchPriority': 1
         },
         {
             'name': 'Public Data',
             'system': 'portal.storage.public',
             'scheme': 'public',
             'api': 'tapis',
-            'icon': None
+            'icon': None,
+            'siteSearchPriority': 0
         }
     ]
 

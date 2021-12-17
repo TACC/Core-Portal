@@ -8,8 +8,7 @@ export const initialSystemState = {
   },
   definitions: {
     list: [],
-    error: false,
-    errorMessage: null,
+    error: {},
     loading: true
   }
 };
@@ -59,8 +58,7 @@ export function systems(state = initialSystemState, action) {
         ...state,
         definitions: {
           ...state.definitions,
-          error: false,
-          errorMessage: null,
+          error: {},
           loading: true
         }
       };
@@ -70,8 +68,7 @@ export function systems(state = initialSystemState, action) {
         definitions: {
           ...state.definitions,
           list: addSystemDefinition(action.payload, state.definitions.list),
-          error: false,
-          errorMessage: null,
+          error: {},
           loading: false
         }
       };
@@ -80,8 +77,10 @@ export function systems(state = initialSystemState, action) {
         ...state,
         definitions: {
           ...state.definitions,
-          error: true,
-          errorMessage: action.payload,
+          error: {
+            message: action.payload.message,
+            status: action.payload.status
+          },
           loading: false
         }
       };
