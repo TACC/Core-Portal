@@ -12,6 +12,7 @@ from portal.apps.tickets import rtUtil
 from portal.apps.tickets import utils
 from portal.views.base import BaseApiView
 from portal.exceptions.api import ApiException
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +60,8 @@ class TicketsView(BaseApiView):
             first_name = request.user.first_name
             last_name = request.user.last_name
         else:
-            recap_result = utils.get_recaptcha_verification(request)
-            if recap_result != "no_key":
+            if settings.RECAPTCHA_SECRET_KEY != 'no_key':
+                recap_result = utils.get_recaptcha_verification(request)
                 if not recap_result.get('success', False):
                     raise ApiException('Invalid reCAPTCHA. Please try again.')
             email = data.get('email')
