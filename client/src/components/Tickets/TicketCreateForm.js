@@ -25,6 +25,7 @@ const formSchema = Yup.object().shape({
   problem_description: Yup.string().required('Required'),
   first_name: Yup.string().required('Required'),
   last_name: Yup.string().required('Required'),
+  recaptcha: Yup.string().required,
   email: Yup.string()
     .email('Invalid email')
     .required('Required'),
@@ -99,7 +100,8 @@ function TicketCreateForm({
       last_name: authenticatedUser ? authenticatedUser.last_name : '',
       email: authenticatedUser ? authenticatedUser.email : '',
       cc: '',
-      attachments: []
+      attachments: [],
+      recaptcha: ''
     }),
     [authenticatedUser, initialSubject]
   );
@@ -205,6 +207,7 @@ function TicketCreateForm({
                   {!isAuthenticated && malfunctionKey && (
                     <ReCAPTCHA
                       ref={recaptchaRef}
+                      name="recaptcha"
                       value={recaptchaResponse}
                       sitekey={sitekey}
                       onChange={e => {
