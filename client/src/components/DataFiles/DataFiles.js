@@ -114,11 +114,11 @@ const DataFiles = () => {
   const loading = useSelector(state => state.systems.storage.loading);
   const error = useSelector(state => state.systems.storage.error);
   const systems = useSelector(state => state.systems.storage.configuration);
-
+  var label = "DATA"
   const readOnly =
     listingParams.scheme === 'projects' &&
     (listingParams.system === '' || !listingParams.system);
-
+    
   if (error) {
     return (
       <div styleName="error">
@@ -143,10 +143,14 @@ const DataFiles = () => {
     );
   }
 
+  if (listingParams.system === 'a2cps.storage.community') {
+    label = "COMMUNITY";
+  };
+  
   return (
     <Section
       bodyClassName="has-loaded-datafiles"
-      introMessageName="DATA"
+      introMessageName={label}
       header={
         <DataFilesBreadcrumbs
           api={listingParams.api}
