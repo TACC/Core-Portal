@@ -25,7 +25,7 @@ const formSchema = Yup.object().shape({
   problem_description: Yup.string().required('Required'),
   first_name: Yup.string().required('Required'),
   last_name: Yup.string().required('Required'),
-  recaptcha: Yup.string().required,
+  recaptcha: Yup.string(),
   email: Yup.string()
     .email('Invalid email')
     .required('Required'),
