@@ -2,6 +2,7 @@ import eslint from '@rollup/plugin-eslint';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
+import fs from 'fs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,10 +21,13 @@ export default defineConfig({
   },
 
   server: {
+    host: "cep.dev",
+    https: {
+      key: fs.readFileSync('../server/conf/nginx/certificates/cep.dev.key'),
+      cert: fs.readFileSync('../server/conf/nginx/certificates/cep.dev.crt')
+    },
     hmr: {
-      protocol: 'ws',
       port: 3000,
-      host: 'localhost',
     },
   },
 });
