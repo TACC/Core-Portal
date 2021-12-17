@@ -68,7 +68,7 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
     ({ row }) => (
       <CheckboxCell
         index={row.index}
-        href={row.original._links.self.href}
+        name={row.original.name}
         format={row.original.format}
       />
     ),

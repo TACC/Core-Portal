@@ -36,14 +36,10 @@ export const CheckboxHeaderCell = () => {
   );
 };
 
-export const CheckboxCell = React.memo(({ index, href, format }) => {
+export const CheckboxCell = React.memo(({ index, name, format }) => {
   const selected = useSelector(state =>
     state.files.selected.FilesListing.includes(index)
   );
-  const fileName = href
-    .replace(/%20/g, ' ')
-    .split('//')
-    .pop();
   const itemFormat = format === 'raw' ? 'file' : format;
 
   return (
@@ -51,13 +47,13 @@ export const CheckboxCell = React.memo(({ index, href, format }) => {
       isChecked={selected}
       id={`FileCheckbox_${index}`}
       role="checkbox"
-      aria-label={`select ${itemFormat} ${fileName}`}
+      aria-label={`select ${itemFormat} ${name}`}
     />
   );
 });
 CheckboxCell.propTypes = {
   index: PropTypes.number.isRequired,
-  href: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   format: PropTypes.string.isRequired
 };
 

@@ -56,7 +56,7 @@ describe('CheckBoxCell', () => {
     const { getByRole } = renderComponent(
       <CheckboxCell
         index={0}
-        href="href"
+        name="Foldername"
         format="folder"
       />,
       store,
@@ -71,7 +71,7 @@ describe('CheckBoxCell', () => {
     const { getByRole } = renderComponent(
       <CheckboxCell
         index={0}
-        href="href"
+        name="Filename"
         format="file"
       />,
       store,
