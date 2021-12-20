@@ -15,7 +15,6 @@ import logging
 from kombu import Exchange, Queue
 from portal.settings import settings_secret
 
-
 logger = logging.getLogger(__file__)
 
 
@@ -727,8 +726,8 @@ WORKBENCH_SETTINGS = getattr(settings_custom, '_WORKBENCH_SETTINGS', {})
 """
 SETTINGS: RECAPTCHA
 """
-RECAPTCHA_SECRET_KEY = settings_secret._RECAPTCHA_SECRET_KEY
-RECAPTCHA_SITE_KEY =  settings_secret._RECAPTCHA_SITE_KEY
+RECAPTCHA_SECRET_KEY = getattr(settings_secret, '_RECAPTCHA_SECRET_KEY', None)
+RECAPTCHA_SITE_KEY = getattr(settings_secret, '_RECAPTCHA_SITE_KEY', None)
 
 """
 SETTINGS: LOCAL OVERRIDES
