@@ -32,6 +32,7 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
   const loading = useSelector(state => state.files.loading[section]);
   const err = useSelector(state => state.files.error[section]);
   const modalRefs = useSelector(state => state.files.refs);
+  const systemDefErr = useSelector(state => state.systems.definitions.error);
 
   const filesLength = data.length;
   const isGDrive = currentListing === 'googledrive';
@@ -71,6 +72,15 @@ const DataFilesTablePlaceholder = ({ section, data }) => {
     return (
       <div className="h-100 listing-placeholder">
         <LoadingSpinner />
+      </div>
+    );
+  }
+  if (systemDefErr.status === 403) {
+    return (
+      <div className="h-100 listing-placeholder">
+        <SectionMessage type="warning">
+          Permission denied. You do not have permission to view this system.
+        </SectionMessage>
       </div>
     );
   }
@@ -203,10 +213,12 @@ const DataFilesTableRow = ({
   shadeEvenRows
 }) => {
   const onClick = useCallback(() => rowSelectCallback(index), [index]);
-  const onKeyDown = useCallback(
-    e => e.key === 'Enter' && rowSelectCallback(index),
-    [index]
-  );
+  const onKeyDown = useCallback(e => {
+    if (e.key === ' ') {
+      rowSelectCallback(index);
+      e.preventDefault();
+    }
+  });
   const loadingScroll = useSelector(
     state => state.files.loadingScroll[section]
   );

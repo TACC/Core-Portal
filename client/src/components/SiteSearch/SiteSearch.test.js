@@ -1,6 +1,6 @@
 import React from 'react';
 import { createMemoryHistory } from 'history';
-import SiteSearch from './SiteSearch';
+import { SiteSearchComponent } from './SiteSearch';
 import configureStore from 'redux-mock-store';
 import renderComponent from 'utils/testing';
 import siteSearchResults from './fixtures/siteSearch.fixture.json';
@@ -28,13 +28,15 @@ const mockState = {
   }
 };
 
-describe('SiteSearchListing', () => {
+describe('SiteSearchComponent', () => {
   it('dispatches action and redirects to filter', () => {
-    const history = createMemoryHistory();
+    const history = createMemoryHistory({
+      initialEntries: ['/search']
+    });
     history.push('/search/?page=1&query_string=test');
     const store = mockStore(mockState);
     const { getAllByRole, getByText, getAllByTestId } = renderComponent(
-      <SiteSearch />,
+      <SiteSearchComponent filterPriorityList={['cms']} />,
       store,
       history
     );

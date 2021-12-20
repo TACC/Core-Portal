@@ -27,20 +27,24 @@ const systemsFixture = {
         system: 'cep.storage.community',
         scheme: 'community',
         api: 'tapis',
-        icon: null
+        icon: null,
+        siteSearchPriority: 1
       },
       {
         name: 'Public Data',
         system: 'cep.storage.public',
         scheme: 'public',
         api: 'tapis',
-        icon: null
+        icon: 'publications',
+        siteSearchPriority: 0
       },
       {
         name: 'Shared Workspaces',
         scheme: 'projects',
         api: 'tapis',
         icon: null,
+        privilegeRequired: false,
+        readOnly: false,
         hideSearchBar: false
       },
       {
@@ -48,7 +52,8 @@ const systemsFixture = {
         system: 'googledrive',
         scheme: 'private',
         api: 'googledrive',
-        icon: null
+        icon: null,
+        integration: 'portal.apps.googledrive_integration'
       }
     ],
     error: false,

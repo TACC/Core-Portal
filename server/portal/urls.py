@@ -77,6 +77,10 @@ urlpatterns = [
     path('request-access/', include('portal.apps.request_access.urls', namespace='request_access')),
     path('search/', include('portal.apps.site_search.urls', namespace='site_search')),
 
+    # intromessages
+    path('api/intromessages/', include('portal.apps.intromessages.urls', namespace='intromessages')),
+
+
     # integrations
     path('accounts/applications/googledrive/', include('portal.apps.googledrive_integration.urls', namespace='googledrive_integration')),
 

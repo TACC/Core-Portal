@@ -60,7 +60,8 @@ class SiteSearchApiView(BaseApiView):
         try:
             public_conf = next(conf for conf
                                in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-                               if conf['scheme'] == 'public')
+                               if conf['scheme'] == 'public'
+                               and ('siteSearchPriority' in conf and conf['siteSearchPriority'] is not None))
             (public_total, public_results) = \
                 files_search(qs, public_conf['system'], filter=filter,
                              offset=offset, limit=limit)
@@ -77,7 +78,8 @@ class SiteSearchApiView(BaseApiView):
                 community_conf = \
                     next(conf for conf
                          in settings.PORTAL_DATAFILES_STORAGE_SYSTEMS
-                         if conf['scheme'] == 'community')
+                         if conf['scheme'] == 'community'
+                         and ('siteSearchPriority' in conf and conf['siteSearchPriority'] is not None))
                 (community_total, community_results) = \
                     files_search(qs, community_conf['system'], filter=filter,
                                  offset=offset,

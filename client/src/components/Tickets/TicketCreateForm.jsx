@@ -20,29 +20,6 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import * as ROUTES from '../../constants/routes';
 import './TicketCreateForm.scss';
 
-const formSchema = Yup.object().shape({
-  subject: Yup.string().required('Required'),
-  problem_description: Yup.string().required('Required'),
-  first_name: Yup.string().required('Required'),
-  last_name: Yup.string().required('Required'),
-  email: Yup.string()
-    .email('Invalid email')
-    .required('Required'),
-  cc: Yup.array()
-    .transform((value, originalValue) => {
-      if (
-        Yup.string()
-          .email()
-          .isType(value) &&
-        value !== null
-      ) {
-        return value;
-      }
-      return originalValue ? originalValue.split(/[\s,]+/) : [];
-    })
-    .of(Yup.string().email('Invalid email'))
-});
-
 function CreatedTicketInformation({ provideDashBoardLinkOnSuccess, ticketId }) {
   if (!ticketId) {
     return null;
@@ -90,6 +67,9 @@ function TicketCreateForm({
   const createdTicketId = useSelector(
     state => state.ticketCreate.createdTicketId
   );
+  const recaptchaSiteKey = useSelector(
+    state => state.workbench.recaptchaSiteKey
+  );
 
   const defaultValues = useMemo(
     () => ({
@@ -99,7 +79,8 @@ function TicketCreateForm({
       last_name: authenticatedUser ? authenticatedUser.last_name : '',
       email: authenticatedUser ? authenticatedUser.email : '',
       cc: '',
-      attachments: []
+      attachments: [],
+      recaptchaResponse: ''
     }),
     [authenticatedUser, initialSubject]
   );
@@ -107,13 +88,39 @@ function TicketCreateForm({
   const dispatch = useDispatch();
 
   const isAuthenticated = authenticatedUser != null;
-  const sitekey = useSelector(state => state.workbench.sitekey);
 
-  const recaptchaRef = React.createRef();
-  const [recaptchaResponse, setRecaptchaResponse] = React.useState('');
+  const formShape = {
+    subject: Yup.string().required('Required'),
+    problem_description: Yup.string().required('Required'),
+    first_name: Yup.string().required('Required'),
+    last_name: Yup.string().required('Required'),
+    email: Yup.string()
+      .email('Invalid email')
+      .required('Required'),
+    cc: Yup.array()
+      .transform((value, originalValue) => {
+        if (
+          Yup.string()
+            .email()
+            .isType(value) &&
+          value !== null
+        ) {
+          return value;
+        }
+        return originalValue ? originalValue.split(/[\s,]+/) : [];
+      })
+      .of(Yup.string().email('Invalid email'))
+  };
+
+  if (!isAuthenticated && recaptchaSiteKey) {
+    formShape.recaptchaResponse = Yup.string().required('Required');
+  }
+
+  const formSchema = Yup.object().shape(formShape);
 
   return (
     <Formik
+      validateOnMount
       enableReinitialize
       initialValues={defaultValues}
       validationSchema={formSchema}
@@ -125,9 +132,7 @@ function TicketCreateForm({
             formData.append('attachments', attach)
           );
         }
-        if (recaptchaResponse) {
-          formData.append('recaptchaResponse', recaptchaResponse);
-        }
+
         dispatch({
           type: 'TICKET_CREATE',
           payload: {
@@ -138,7 +143,7 @@ function TicketCreateForm({
         });
       }}
     >
-      {({ isSubmitting, isValid }) => {
+      {({ isSubmitting, isValid, setFieldValue }) => {
         return (
           <Form className="ticket-create-form">
             <ModalBody className="ticket-create-modal-body">
@@ -196,12 +201,13 @@ function TicketCreateForm({
                       />
                     </Col>
                   </Row>
-                  {!isAuthenticated && (
+                  {!isAuthenticated && recaptchaSiteKey && (
                     <ReCAPTCHA
-                      ref={recaptchaRef}
-                      value={recaptchaResponse}
-                      sitekey={sitekey}
-                      onChange={e => setRecaptchaResponse(e)}
+                      name="recaptcha"
+                      sitekey={recaptchaSiteKey}
+                      onChange={e => {
+                        setFieldValue('recaptchaResponse', e);
+                      }}
                     />
                   )}
                 </Container>
