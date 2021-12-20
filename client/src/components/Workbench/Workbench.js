@@ -54,7 +54,6 @@ function Workbench() {
     });
 
     if (setupComplete) {
-      dispatch({ type: 'FETCH_SYSTEMS' });
       dispatch({ type: 'GET_ALLOCATIONS' });
       dispatch({ type: 'GET_APPS' });
       dispatch({ type: 'GET_APP_START' });

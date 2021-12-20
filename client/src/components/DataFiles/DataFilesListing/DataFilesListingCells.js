@@ -22,11 +22,13 @@ export const CheckboxHeaderCell = () => {
         payload: { section: 'FilesListing' }
       });
   };
-  const handleKeyPress = e => e.key === 'enter' && toggleSelect();
+  const handleKeyPress = e => e.key === ' ' && toggleSelect();
   return (
     <Checkbox
       isChecked={selected}
-      role="button"
+      id="FileCheckboxHeader"
+      role="checkbox"
+      aria-label="select all folders and files"
       tabIndex={0}
       onClick={toggleSelect}
       onKeyDown={handleKeyPress}
@@ -34,14 +36,25 @@ export const CheckboxHeaderCell = () => {
   );
 };
 
-export const CheckboxCell = React.memo(({ index }) => {
+export const CheckboxCell = React.memo(({ index, name, format }) => {
   const selected = useSelector(state =>
     state.files.selected.FilesListing.includes(index)
   );
-  return <Checkbox isChecked={selected} />;
+  const itemFormat = format === 'raw' ? 'file' : format;
+
+  return (
+    <Checkbox
+      isChecked={selected}
+      id={`FileCheckbox_${index}`}
+      role="checkbox"
+      aria-label={`select ${itemFormat} ${name}`}
+    />
+  );
 });
 CheckboxCell.propTypes = {
-  index: PropTypes.number.isRequired
+  index: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  format: PropTypes.string.isRequired
 };
 
 export const FileNavCell = React.memo(

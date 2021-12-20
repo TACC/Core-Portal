@@ -54,7 +54,11 @@ describe('CheckBoxCell', () => {
     const history = createMemoryHistory();
     const store = mockStore({ files: { selected: { FilesListing: [0] } } });
     const { getByRole } = renderComponent(
-      <CheckboxCell index={0} />,
+      <CheckboxCell
+        index={0}
+        name="Foldername"
+        format="folder"
+      />,
       store,
       history
     );
@@ -65,7 +69,11 @@ describe('CheckBoxCell', () => {
     const history = createMemoryHistory();
     const store = mockStore({ files: { selected: { FilesListing: [] } } });
     const { getByRole } = renderComponent(
-      <CheckboxCell index={0} />,
+      <CheckboxCell
+        index={0}
+        name="Filename"
+        format="file"
+      />,
       store,
       history
     );

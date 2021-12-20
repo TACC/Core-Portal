@@ -65,7 +65,13 @@ const DataFilesListing = ({ api, scheme, system, path, isPublic }) => {
   }, []);
 
   const checkboxCellCallback = useCallback(
-    ({ row }) => <CheckboxCell index={row.index} />,
+    ({ row }) => (
+      <CheckboxCell
+        index={row.index}
+        name={row.original.name}
+        format={row.original.format}
+      />
+    ),
     []
   );
 
